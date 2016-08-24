@@ -118,6 +118,10 @@ e.processTag = (msg, contents, command) => {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
                 }
                 break;
+            case 'shuffle':
+                replaceString = ''
+                words = shuffle(words)
+                break;
             case 'regexreplace':
                 if (args.length > 3) {
                     if (/^\/?.*\/.*/.test(args[2])) {
@@ -484,7 +488,7 @@ e.processTag = (msg, contents, command) => {
         if (replaceString.indexOf('{') > -1 && replaceString.indexOf('}') > -1) {
             replaceString = replaceString.replace(/\}/g, '&rb;');
         }
-        contents = contents.replace(tagBrackets, replaceString);    
+        contents = contents.replace(tagBrackets, replaceString);
         //console.log(tagBrackets, replaceString, contents);
 
     }
@@ -529,4 +533,25 @@ e.executeTag = (msg, tagName, command) => {
 
         }
     });
+}
+
+
+function shuffle(array) {
+    let counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
 }
