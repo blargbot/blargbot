@@ -484,7 +484,7 @@ e.processTag = (msg, contents, command) => {
         if (replaceString.indexOf('{') > -1 && replaceString.indexOf('}') > -1) {
             replaceString = replaceString.replace(/\}/g, '&rb;');
         }
-        contents = contents.replace(tagBrackets, replaceString);
+        contents = contents.replace(tagBrackets, replaceString);    
         //console.log(tagBrackets, replaceString, contents);
 
     }
