@@ -51,7 +51,7 @@ e.processTag = (msg, contents, command) => {
                     fallback = args[1]
                 break;
             case 'randint':
-                console.log(args.length);
+                //console.log(args.length);
                 if (args.length == 2) {
                     replaceString = bu.bu.getRandomInt(0, parseInt(args[1]));
                 } else if (args.length > 2) {
@@ -64,7 +64,7 @@ e.processTag = (msg, contents, command) => {
                 if (args.length > 2) {
                     var min = parseInt(args[1]);
                     var max = args[2] == 'n' ? words.length : parseInt(args[2]);
-                    console.log(max);
+                    //console.log(max);
                     if (min < max) {
                         for (var i = min; i < max; i++) {
                             if (words[i])
@@ -81,7 +81,7 @@ e.processTag = (msg, contents, command) => {
                         replaceString = tagProcessError(fallback, '`Not enough arguments`');
                     }
                 } else {
-                    console.log(words.length, util.inspect(words));
+                    //console.log(words.length, util.inspect(words));
 
                     if (!(words[0] == '' && words.length == 1)) {
                         replaceString = command;
@@ -480,17 +480,17 @@ e.processTag = (msg, contents, command) => {
                 break;
         }
         replaceString = replaceString.toString();
-        console.log(replaceString);
+        //console.log(replaceString);
         if (replaceString.indexOf('{') > -1 && replaceString.indexOf('}') > -1) {
             replaceString = replaceString.replace(/\}/g, '&rb;');
         }
         contents = contents.replace(tagBrackets, replaceString);
-        console.log(tagBrackets, replaceString, contents);
+        //console.log(tagBrackets, replaceString, contents);
 
     }
     contents = contents.replace(/&rb;/g, '}').replace(/&lb;/g, '{');
     while (/<@!?[0-9]{17,21}>/.test(contents)) {
-        console.log('fuck');
+        //console.log('fuck');
         contents = contents.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, contents.match(/<@!?([0-9]{17,21})>/)[1], true).username)
     }
     return contents.trim();
