@@ -235,6 +235,12 @@ e.init = (v, topConfig, em, database) => {
 
     e.bot = bot = new Eris.Client(config.discord.token, {
         autoReconnect: true,
+        disableEveryone: true,
+        disableEvents: {
+            PRESENCE_DATE: true,
+            VOICE_STATE_UPDATE: true,
+            TYPING_START: true
+        }
     });
 
     bu.init(bot);
@@ -381,6 +387,8 @@ e.init = (v, topConfig, em, database) => {
         }
         bu.logAction(guild, user, mod, 'Unban')
     })
+
+    
 
     bot.on("messageCreate", function (msg) {
 

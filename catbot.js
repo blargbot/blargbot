@@ -12,6 +12,11 @@ e.init = (configuration, database) => {
 
     e.bot = new Eris.Client(config.catbot.token, {
         autoReconnect: true,
+        disableEvents: {
+            PRESENCE_DATE: true,
+            VOICE_STATE_UPDATE: true,
+            TYPING_START: true
+        }
     });
 
     e.bot.on('ready', () => {
