@@ -237,8 +237,8 @@ e.init = (v, topConfig, em, database) => {
         autoReconnect: true,
         disableEveryone: true,
         disableEvents: {
-            PRESENCE_DATE: true,
-            VOICE_STATE_UPDATE: true,
+            //PRESENCE_UPDATE: true,
+         //   VOICE_STATE_UPDATE: true,
             TYPING_START: true
         }
     });
@@ -361,8 +361,9 @@ e.init = (v, topConfig, em, database) => {
     bot.on('guildCreate', (guild) => {
         postStats();
         console.log('added to guild');
-        bu.sendMessageToDiscord(`205153826162868225`, `I was added to the guild \`${guild
-            .name}\` (\`${guild.id}\`)!`);
+        var message = `I was added to the guild \`${guild.name}\` (\`${guild.id}\`)!`
+
+        bu.sendMessageToDiscord(`205153826162868225`, message);
     });
 
     bot.on('messageUpdate', (msg, oldmsg) => {
@@ -388,7 +389,7 @@ e.init = (v, topConfig, em, database) => {
         bu.logAction(guild, user, mod, 'Unban')
     })
 
-    
+
 
     bot.on("messageCreate", function (msg) {
 
@@ -892,45 +893,45 @@ function postStats() {
                 "servercount": bot.guilds.size
             }
         })
-/*
-     var stats2 = JSON.stringify({
-     servercount: bot.guilds.size,
-     key: config.general.carbontoken
-     });
-
-     var options2 = {
-     hostname: 'carbonitex.net',
-     method: 'POST',
-     port: 80,
-     path: `/discord/data/botdata.php`,
-     headers: {
-     "User-Agent": "blargbot/1.0 (ratismal)",
-     "Content-Type": 'application/json',
-     'Content-Length': Buffer.byteLength(stats2)
-     }
-     };
-     var req2 = https.request(options2, function (res2) {
-     var body = '';
-     res2.on('data', function (chunk) {
-     console.log(chunk);
-     body += chunk;
-     });
-
-     res2.on('end', function () {
-     console.log("body: " + body);
-     });
-
-     res2.on('error', function (thing) {
-     console.log(`Result error occurred! ${thing}`);
-     })
-     });
-     req2.on('error', function (err) {
-     console.log(`Request error occurred! ${err}`);
-     });
-     req2.write(stats2);
-     req2.end();
-     }
-     */
+        /*
+             var stats2 = JSON.stringify({
+             servercount: bot.guilds.size,
+             key: config.general.carbontoken
+             });
+        
+             var options2 = {
+             hostname: 'carbonitex.net',
+             method: 'POST',
+             port: 80,
+             path: `/discord/data/botdata.php`,
+             headers: {
+             "User-Agent": "blargbot/1.0 (ratismal)",
+             "Content-Type": 'application/json',
+             'Content-Length': Buffer.byteLength(stats2)
+             }
+             };
+             var req2 = https.request(options2, function (res2) {
+             var body = '';
+             res2.on('data', function (chunk) {
+             console.log(chunk);
+             body += chunk;
+             });
+        
+             res2.on('end', function () {
+             console.log("body: " + body);
+             });
+        
+             res2.on('error', function (thing) {
+             console.log(`Result error occurred! ${thing}`);
+             })
+             });
+             req2.on('error', function (err) {
+             console.log(`Request error occurred! ${err}`);
+             });
+             req2.write(stats2);
+             req2.end();
+             }
+             */
     }
 }
 
