@@ -91,7 +91,12 @@ e.processTag = (msg, contents, command) => {
                 }
                 break;
             case 'argslength':
-                replaceString = words.length
+                console.log(words)
+                var length = words.length
+                if (length == 1 && words[0] == '') {
+                    length = 0
+                }
+                replaceString = length
                 break;
             case 'randchoose':
                 if (args.length > 1) {
