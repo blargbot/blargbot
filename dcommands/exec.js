@@ -31,7 +31,7 @@ ${err.stack}
                 message += stderr
                 //  return;
             }
-            message += stdout
+            message += stdout + '\n```'
             bu.sendMessageToDiscord(msg.channel.id, message)
         });
     }
