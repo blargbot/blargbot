@@ -15,14 +15,14 @@ e.category = bu.CommandType.GENERAL
 
 e.execute = (msg, words, text) => {
     bu.sendMessageToDiscord(msg.channel.id, `blargbot is a multipurpose bot with new features implemented regularly, written in javascript using Eris.
-http://ratismal.github.io/blargbot/
-\`\`\`diff
+http://blarg.stupidcat.me
+\`\`\`xl
 !== { Stats} ==!
-+ running on ${bu.bot.guilds.size} guilds.
-+ running on ${Object.keys(bu.bot.channelGuildMap).length} channels.
-+ serving ${bu.bot.users.size} users.
-+ using ${bu.getMemoryUsage()}MiB RAM
-- current version: ${bu.VERSION}
+Running on ${bu.bot.guilds.size} guilds.
+Running on ${Object.keys(bu.bot.channelGuildMap).length} channels.
+Serving ${bu.bot.users.size} users.
+Using ${bu.getMemoryUsage()}MiB RAM
+Version: ${bu.VERSION}
 \`\`\`
 For commands, do \`help\``);
 }

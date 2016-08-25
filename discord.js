@@ -786,7 +786,7 @@ ${commandList[words[1]].info}`;
                 }
             commandsString += '```'
 
-            bu.sendMessageToDiscord(channel.id, `${commandsString}\n\nFor more information about commands, do \`help <commandname>\` or visit http://ratismal.github.io/blargbot/commands.html`);
+            bu.sendMessageToDiscord(channel.id, `${commandsString}\n\nFor more information about commands, do \`help <commandname>\` or visit http://blarg.stupidcat.me/commands.html`);
         }
         return true;
     } else {
