@@ -23,12 +23,13 @@ e.execute = (msg, words, text) => {
                 if (err) {
                     message += err + '\n'
                 }
-                if (stdout) {
-                    message += stdout + '\n'
-                }
                 if (stderr) {
                     message += stderr + '\n'
                 }
+                if (stdout) {
+                    message += stdout + '\n'
+                }
+                
                 message += '```'
                 bu.sendMessageToDiscord(msg.channel.id, message)
             })

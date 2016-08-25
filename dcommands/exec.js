@@ -26,21 +26,13 @@ ${err.stack}
 \`\`\``);
                 return;
             }
+            var message = '```xl\n'
             if (stderr) {
-                bu.sendMessageToDiscord(msg.channel.id, `std error!
-\`\`\`shell
-${stderr}
-\`\`\``);
-                return;
+                message += stderr
+                //  return;
             }
-            bu.sendMessageToDiscord(msg.channel.id, `Input:
-\`\`\`shell
-${commandToProcess};
-\`\`\`
-Output:
-\`\`\`shell
-${stdout}
-\`\`\``)
+            message += stdout
+            bu.sendMessageToDiscord(msg.channel.id, message)
         });
     }
 }
