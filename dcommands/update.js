@@ -18,7 +18,7 @@ e.category = bu.CommandType.CAT;
 e.execute = (msg, words, text) => {
     if (msg.author.id === bu.CAT_ID) {
         if (!bu.config.general.isbeta) {
-            exec('cd home/cat/blargjs\ngit pull origin master', (err, stdout, stderr) => {
+            exec('cd /home/cat/blargjs\ngit pull origin master', (err, stdout, stderr) => {
                 var message = '```xl\n'
                 if (err) {
                     message += err + '\n'
