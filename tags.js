@@ -514,16 +514,15 @@ function tagProcessError(fallback, errormessage) {
 }
 
 e.executeTag = (msg, tagName, command) => {
-    var stmt = bu.db.prepare(`select contents from tag where title=?`);
-    stmt.get(tagName, (err, row) => {
-        if (!row)
+    bu.db.query(`select contents from tag where title=?`, [tagName], (err, row) => {
+        if (!row[0])
             bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`)
         else {
             var nsfw = false;
-            if (row.contents.indexOf('{nsfw}') > -1) {
+            if (row[0].contents.indexOf('{nsfw}') > -1) {
                 nsfw = true;
             }
-            var message = e.processTag(msg, row.contents, command);
+            var message = e.processTag(msg, row[0].contents, command);
             if (message != '')
                 if (!nsfw)
                     bu.sendMessageToDiscord(msg.channel.id, message);

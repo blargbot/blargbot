@@ -12,11 +12,15 @@ var wordsearch = require('wordsearch');
 const EventEmitter = require('events')
 var reload = require('require-reload')(require)
 var Cleverbot = require('cleverbot-node');
+var mysql = require('mysql')
 cleverbot = new Cleverbot;
 
 class BotEmitter extends EventEmitter { }
 const botEmitter = new BotEmitter();
-
+/*
+TODO: fix the fucking tags
+TODO: modlog
+*/
 var irc = require('./irc.js')
 var discord = require('./discord.js')
 var catbot = require('./catbot.js')
@@ -82,6 +86,12 @@ if (fs.existsSync(path.join(__dirname, 'config.json'))) {
             "isbeta": false,
             "blacklist": {},
             "musicGuilds": {}
+        },
+        "sql": {
+            "host": "hostname",
+            "user": "username",
+            "pass": "password",
+            "database": "database"
         },
         "irc": {
             "server": "irc.example.net",
@@ -224,17 +234,28 @@ if (config.general.databasedir) {
     databaseFile = path.join(__dirname, 'data.db');
 var exists = fs.existsSync(databaseFile);
 var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database(databaseFile);
+var olddb = new sqlite3.Database(databaseFile);
+var db = mysql.createConnection({
+    host: config.sql.host,
+    user: config.sql.user,
+    password: config.sql.pass,
+    database: config.sql.database,
+    charset: 'utf8mb4'
+})
 
+db.connect(err => {
+    if (err) console.log(err)
+    else console.log('Connected to MySQL Database')
+})
 
-db.serialize(function () {
-    db.run(`create table if not exists vars (
-        varname TEXT PRIMARY KEY,
+//db.serialize(function () {
+db.query(`create table if not exists vars (
+        varname VARCHAR(30) PRIMARY KEY,
         varvalue TEXT
     )`)
 
-    db.run(`CREATE TABLE if not exists user (
-        userid TEXT PRIMARY KEY, 
+db.query(`CREATE TABLE if not exists user (
+        userid VARCHAR(30) PRIMARY KEY, 
         username TEXT,
         isbot INTEGER,
         lastspoke DATETIME,
@@ -244,22 +265,24 @@ db.serialize(function () {
         messagecount INTEGER DEFAULT 0
         )`);
 
-        db.run(`CREATE TABLE IF NOT EXISTS modlog (
-            guildid TEXT,
+db.query(`CREATE TABLE IF NOT EXISTS modlog (
+            guildid VARCHAR(30),
             caseid INTEGER,
-            userid TEXT,
-            modid TEXT,
+            userid VARCHAR(30),
+            modid VARCHAR(30),
             type TEXT,
             reason TEXT,
             msgid TEXT,
-            primary key (guildid, caseid)
+            primary key (guildid, caseid),
+            foreign key (userid) references user(userid),
+            foreign key (modid) references user(userid)
         )`)
 
-    db.run(`CREATE TABLE IF NOT EXISTs chatlogs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+db.query(`CREATE TABLE IF NOT EXISTs chatlogs (
+            id INTEGER PRIMARY KEY AUTO_INCREMENT,
             content TEXT,
             attachment TEXT,
-            userid TEXT,
+            userid VARCHAR(30),
             msgid TEXT,
             channelid TEXT,
             guildid TEXT,
@@ -269,8 +292,8 @@ db.serialize(function () {
             foreign key (userid) references user(userid)            
         )`)
 
-    db.run(`CREATE TABLE IF NOT EXISTs catchat (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+db.query(`CREATE TABLE IF NOT EXISTs catchat (
+            id INTEGER PRIMARY KEY AUTO_INCREMENT,
             content TEXT,
             attachment TEXT,
             msgid TEXT,
@@ -280,24 +303,23 @@ db.serialize(function () {
             nsfw INTEGER
                     )`)
 
-    db.run(`create table if not exists tag (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        author TEXT,
+db.query(`create table if not exists tag (
+        id INTEGER PRIMARY KEY AUTO_INCREMENT,
+        author VARCHAR(30),
         contents TEXT,
         title TEXT,
         lastmodified DATETIME,
         foreign key (author) references user(userid)
         )`);
 
-    db.run(`create table if not exists username (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            userid TEXT,
+db.query(`create table if not exists username (
+            id INTEGER PRIMARY KEY AUTO_INCREMENT,
+            userid VARCHAR(30),
             username TEXT,
             namedate DATETIME DEFAULT CURRENT_TIMESTAMP,
             foreign key (userid) references user(userid)
         )`)
-});
-
+//});
 
 /**
  * Time to init the bots

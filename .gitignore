@@ -19,6 +19,7 @@ servers.json
 *.txt
 *.bat
 *.psd
+*.sql
 command.js
 testkek1.js
 testkek.js

@@ -40,7 +40,7 @@ e.init = (configuration, database) => {
                     break;
                 case 'avatar':
                     if (msg.author.id === CAT_ID) {
-                        var request = require('request').defaults({encoding: null});
+                        var request = require('request').defaults({ encoding: null });
                         var avatarUrl = '';
                         if (msg.attachments.length > 0) {
                             avatarUrl = msg.attachments[0].url;
@@ -53,7 +53,7 @@ e.init = (configuration, database) => {
                             if (!error && response.statusCode == 200) {
                                 data = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
                                 console.log(data);
-                                var p1 = e.bot.editSelf({avatar: data});
+                                var p1 = e.bot.editSelf({ avatar: data });
                                 p1.then(function () {
                                     e.bot.createMessage(msg.channel.id, ":ok_hand: Avatar set!");
                                 })
@@ -64,50 +64,47 @@ e.init = (configuration, database) => {
                 case 'pls': // yay markovs
                     var statement = ` from catchat `
                     statement += ` where nsfw <> 1`
-                    var stmt = db.prepare(`select count(*) as count` + statement);
-                    stmt.get((err, row) => {
+                    db.query(`select count(*) as count` + statement, (err, row) => {
                         if (err)
                             console.log(err);
-                        stmt = db.prepare(`select varvalue as pos from vars where varname = ?`)
-                        stmt.get('markovpos', (err2, row2) => {
-                            if (err2) console.log(err2)
-                            if (!row2) {
-                                stmt = db.prepare(`insert into vars (varname, varvalue) values ("markovpos", 0)`)
-                                stmt.run()
-                                e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`)
-                            } else {
-
-                                var max = row.count;
-
-                                if (max >= 100) {
-                                    var diff = getRandomInt(0, 100) - 50
-                                    var pos = parseInt(row2.pos) + diff
-                                    if (pos < 0) {
-                                        pos += max
-                                    }
-                                    if (pos > max) {
-                                        pos -= max
-                                    }
-                                    console.log('Getting message at pos', pos)
-                                    stmt = db.prepare(`select id, content, attachment` + statement + ` limit 1 offset ?`)
-                                    stmt.get(pos, (err3, row3) => {
-                                        if (err3) console.log(err3)
-                                        if (row3) {
-                                            var messageToSend = `${row3.content} ${row3.attachment == 'none' ? '' :
-                                                row3.attachment}`;
-                                            e.bot.createMessage(msg.channel.id, `\u200B` + messageToSend);
-
-                                            stmt = db.prepare(`update vars set varvalue = ? where varname="markovpos"`)
-                                            stmt.run(pos)
-                                        }
-                                    })
-
+                        db.query(`select varvalue as pos from vars where varname = ?`,
+                            ['markovpos'], (err2, row2) => {
+                                if (err2) console.log(err2)
+                                if (!row2) {
+                                    db.query(`insert into vars (varname, varvalue) values ("markovpos", 0)`)
+                                    e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`)
                                 } else {
-                                    e.bot.createMessage(msg.channel.id, `I don't have a big enough sample size.`);
-                                }
 
-                            }
-                        })
+                                    var max = row.count;
+
+                                    if (max >= 100) {
+                                        var diff = getRandomInt(0, 100) - 50
+                                        var pos = parseInt(row2.pos) + diff
+                                        if (pos < 0) {
+                                            pos += max
+                                        }
+                                        if (pos > max) {
+                                            pos -= max
+                                        }
+                                        console.log('Getting message at pos', pos)
+                                        db.query(`select id, content, attachment` + statement + ` limit 1 offset ?`,
+                                            [pos], (err3, row3) => {
+                                                if (err3) console.log(err3)
+                                                if (row3) {
+                                                    var messageToSend = `${row3.content} ${row3.attachment == 'none' ? '' :
+                                                        row3.attachment}`;
+                                                    e.bot.createMessage(msg.channel.id, `\u200B` + messageToSend);
+                                                    db.query(`update vars set varvalue = ? where varname="markovpos"`,
+                                                        [pos])
+                                                }
+                                            })
+
+                                    } else {
+                                        e.bot.createMessage(msg.channel.id, `I don't have a big enough sample size.`);
+                                    }
+
+                                }
+                            })
 
 
                     })

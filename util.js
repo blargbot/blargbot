@@ -21,8 +21,8 @@ e.CommandType = {
         1: { name: 'General', requirement: msg => true },
         2: { name: 'CATZ MEOW MEOW', requirement: msg => msg.author.id == e.CAT_ID },
         3: { name: 'Music', requirement: msg => e.config.discord.musicGuilds[msg.channel.guild.id] },
-        4: { name: 'Bot Commander', requirement: msg => e.hasPerm(msg, 'Bot Commander', true), perm: 'Bot Commander'},
-        5: { name: 'Admin', requirement: msg => e.hasPerm(msg, 'Admin', true), perm: 'Admin'}
+        4: { name: 'Bot Commander', requirement: msg => e.hasPerm(msg, 'Bot Commander', true), perm: 'Bot Commander' },
+        5: { name: 'Admin', requirement: msg => e.hasPerm(msg, 'Admin', true), perm: 'Admin' }
     }
 }
 
@@ -203,35 +203,31 @@ e.logAction = (guild, user, mod, type) => {
     if (e.config.discord.servers[guild.id] && e.config.discord.servers[guild.id].modlog) {
         console.log('fuck2')
 
-        var stmt = e.db.prepare(`select caseid from modlog where guildid = ? order by caseid desc limit 1`)
-        stmt.get(guild.id, (err, row) => {
-            if (err) {
-                console.log(err)
-                return
-            }
-            var caseid = 0
-            if (row && row.caseid >= 0) {
-                caseid = row.caseid + 1
-            }
-            var message = `**Case ${caseid}**
+        e.db.query(`select caseid from modlog where guildid = ? order by caseid desc limit 1`,
+            [guild.id], (err, row) => {
+                if (err) {
+                    console.log(err)
+                    return
+                }
+                var caseid = 0
+                if (row[0] && row[0].caseid >= 0) {
+                    caseid = row[0].caseid + 1
+                }
+                var message = `**Case ${caseid}**
 **Type:** ${type}
 **User:** ${user.username}#${user.discriminator} (${user.id})
 **Reason:** Responsible moderator, please do \`reason ${caseid}\` to set.
 **Moderator:** ${mod ? `${mod.username}#${mod.discriminator}` : 'Unknown'}`
 
-            e.sendMessageToDiscord(e.config.discord.servers[guild.id].modlog, message).then(msg => {
-                stmt = e.db.prepare(`insert into modlog (guildid, caseid, userid, modid, type, msgid) 
-                    values (?, ?, ?, ?, ?, ?)`)
-                stmt.run(guild.id, caseid, user.id, mod ? mod.id : null, type, msg.id, err => {
+                e.sendMessageToDiscord(e.config.discord.servers[guild.id].modlog, message).then(msg => {
+                    e.db.query(`insert into modlog (guildid, caseid, userid, modid, type, msgid) 
+                    values (?, ?, ?, ?, ?, ?)`, [guild.id, caseid, user.id, mod ? mod.id : null, type, msg.id], err => {
+                        console.log(err)
+                    })
+                    return msg
+                }).catch(err => {
                     console.log(err)
                 })
-                return msg
-            }).catch(err => {
-                console.log(err)
             })
-
-
-
-        })
     }
 }

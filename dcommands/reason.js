@@ -17,44 +17,44 @@ e.category = bu.CommandType.ADMIN;
 e.execute = (msg, words, text) => {
 
     if (words.length >= 3 && bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].modlog) {
-        console.log('whew')
-        var stmt = bu.db.prepare('select msgid, modid from modlog where guildid = ? and caseid = ?')
+      //  console.log('whew')
         words.shift()
         var caseid = parseInt(words.shift())
         console.log(caseid)
-        stmt.get(msg.channel.guild.id, caseid, (err, row) => {
-            if (err) {
-                console.log(err)
-                return
-            }
-            console.log('whew2')
-            console.log(util.inspect(row))
-            if (row) {
-                console.log('whew3')
+        bu.db.query('select msgid, modid from modlog where guildid = ? and caseid = ?',
+            [msg.channel.guild.id, caseid], (err, row) => {
+                if (err) {
+                    console.log(err)
+                    return
+                }
+               // console.log('whew2')
+             //   console.log(util.inspect(row))
+                if (row[0]) {
+                 //   console.log('whew3')
 
-                bot.getMessage(bu.config.discord.servers[msg.channel.guild.id].modlog, row.msgid).then(msg2 => {
-                    console.log('whew4')
+                    bot.getMessage(bu.config.discord.servers[msg.channel.guild.id].modlog, row[0].msgid).then(msg2 => {
+                   //     console.log('whew4')
 
-                    var content = msg2.content
+                        var content = msg2.content
 
-                    content = content.replace(/\*\*Reason:\*\*.+?\n/, `**Reason:** ${words.join(' ')}\n`)
-                    stmt = bu.db.prepare('update modlog set reason = ? where guildid = ? and caseid = ?')
-                    stmt.run(words.join(' '), msg.channel.guild.id, caseid, err => {
-                        console.log(err)
+                        content = content.replace(/\*\*Reason:\*\*.+?\n/, `**Reason:** ${words.join(' ')}\n`)
+                        bu.db.query('update modlog set reason = ? where guildid = ? and caseid = ?',
+                            [words.join(' '), msg.channel.guild.id, caseid], err => {
+                                console.log(err)
+                            })
+                        if (!row[0].modid) {
+                            content = content.replace(/\*\*Moderator:\*\*.+/, `**Moderator:** ${msg.author.username}#${msg.author.discriminator}`)
+                            bu.db.query('update modlog set modid = ? where guildid = ? and caseid = ?',
+                                [msg.author.id, msg.channel.guild.id, caseid], err => {
+                                    console.log(err)
+                                })
+                        }
+
+                        bot.editMessage(bu.config.discord.servers[msg.channel.guild.id].modlog, row[0].msgid, content)
+                        bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:')
                     })
-                    if (!row.modid) {
-                        content = content.replace(/\*\*Moderator:\*\*.+/, `**Moderator:** ${msg.author.username}#${msg.author.discriminator}`)
-                        stmt = bu.db.prepare('update modlog set modid = ? where guildid = ? and caseid = ?')
-                        stmt.run(msg.author.id, msg.channel.guild.id, caseid, err => {
-                            console.log(err)
-                        })
-                    }
-
-                    bot.editMessage(bu.config.discord.servers[msg.channel.guild.id].modlog, row.msgid, content)
-                    bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:')
-                })
-            }
-        })
+                }
+            })
     }
 
     /* if (msg.channel.guild.members.get(bot.user.id).permission.json['banMembers']) {

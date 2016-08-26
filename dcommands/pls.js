@@ -34,11 +34,11 @@ e.execute = (msg, words, text) => {
                     bu.sendMessageToDiscord(msg.channel.id, `Markov initiated! Please try again.`)
                 } else {
 
-                    var max = row.count;
+                    var max = row[0].count;
 
                     if (max >= 100) {
                         var diff = bu.getRandomInt(0, 100) - 50
-                        var pos = parseInt(row2.pos) + diff
+                        var pos = parseInt(row2[0].pos) + diff
                         if (pos < 0) {
                             pos += max
                         }
@@ -50,7 +50,7 @@ e.execute = (msg, words, text) => {
                         stmt.get(pos, (err3, row3) => {
                             if (err3) console.log(err3)
                             if (row3) {
-                                var messageToSend = `${row3.content} ${row3.attachment == 'none' ? '' : row3.attachment}`;
+                                var messageToSend = `${row3[0].content} ${row3[0].attachment == 'none' ? '' : row3[0].attachment}`;
                                 bu.sendMessageToDiscord(msg.channel.id, `\u200B` + messageToSend);
 
                                 stmt = bu.db.prepare(`update vars set varvalue = ? where varname="markovpos"`)

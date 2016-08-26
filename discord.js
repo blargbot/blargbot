@@ -238,7 +238,7 @@ e.init = (v, topConfig, em, database) => {
         disableEveryone: true,
         disableEvents: {
             //PRESENCE_UPDATE: true,
-         //   VOICE_STATE_UPDATE: true,
+            //   VOICE_STATE_UPDATE: true,
             TYPING_START: true
         }
     });
@@ -566,23 +566,23 @@ e.init = (v, topConfig, em, database) => {
                 if (msg.author.id == bu.CAT_ID && msg.content.indexOf('discord.gg') == -1) {
                     var prefixes = ["!", "@", "#", "$", "%", "^", "&", "*", ")", "-", "_", "=", "+", "}", "]", "|", ";", ":", "'", ">", "?", "/", "."];
                     if (!msg.content || (prefixes.indexOf(msg.content.substring(0, 1)) == -1) && !msg.content.startsWith('kek!') && !msg.content.startsWith('blarg!') && msg.channel.guild) {
-                        var stmt = db.prepare(`SELECT content from catchat order by rowid desc limit 1`)
-                        stmt.get((err, row) => {
+                        db.query(`SELECT id, content from catchat order by id desc limit 1`, (err, row) => {
+                        
                             if (err)
                                 console.log(err.stack)
-                            if ((row && row.content != msg.content) || msg.content == '') {
+                            if ((row && row[0].content != msg.content) || msg.content == '') {
                                 var content = msg.content;
                                 while (/<@!?[0-9]{17,21}>/.test(content)) {
                                     content = content.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true).username)
                                 }
-                                var statement = `insert into catchat (content, attachment, msgid, channelid, guildid, msgtime, nsfw) values (?, ?, ?, ?, ?, datetime('now'), ?)`
-                                stmt = db.prepare(statement);
+                                var statement = `insert into catchat (content, attachment, msgid, channelid, guildid, msgtime, nsfw) values (?, ?, ?, ?, ?, NOW(), ?)`
                                 var nsfw = config.discord.servers[msg.channel.guild.id] && config.discord.servers[msg.channel.guild.id].nsfw && config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id];
                                 if (nsfw == null) {
                                     nsfw = 0;
                                 }
-                                stmt.run(content, msg.attachments[0] ? msg.attachments[0].url : 'none', msg.id, msg.channel.id, msg.channel.guild.id,
-                                    nsfw);
+                                db.query(statement,
+                                    [content, msg.attachments[0] ? msg.attachments[0].url : 'none', msg.id,
+                                        msg.channel.id, msg.channel.guild.id, nsfw]);
                             }
                         })
                     }
@@ -593,8 +593,8 @@ e.init = (v, topConfig, em, database) => {
 
         }
         if (msg.channel.id != '204404225914961920') {
-            var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions) values (?, ?, ?, ?, ?, ?, datetime('now'), ?, ?)`
-            stmt = db.prepare(statement);
+            var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions) 
+            values (?, ?, (select userid from user where userid = ?), ?, ?, ?, NOW(), ?, ?)`
             var nsfw = config.discord.servers[msg.channel.guild.id] && config.discord.servers[msg.channel.guild.id].nsfw && config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id];
             if (nsfw == null) {
                 nsfw = 0;
@@ -603,8 +603,8 @@ e.init = (v, topConfig, em, database) => {
             for (var i = 0; i < msg.mentions.length; i++) {
                 mentions += msg.mentions[i].username + ',';
             }
-            stmt.run(msg.content, msg.attachments[0] ? msg.attachments[0].url : 'none', msg.author.id, msg.id, msg.channel.id, msg.channel.guild.id,
-                nsfw, mentions);
+            db.query(statement, [msg.content, msg.attachments[0] ? msg.attachments[0].url : 'none',
+                msg.author.id, msg.id, msg.channel.id, msg.channel.guild.id, nsfw, mentions]);
         }
 
     });
@@ -701,8 +701,9 @@ function handleDiscordCommand(channel, user, text, msg) {
     else
         console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) in a PM on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
 
-    var stmt = db.prepare(`UPDATE user set lastcommand=?, lastcommanddate=datetime('now') where userid=?`);
-    stmt.run(text, user.id);
+    db.query(`UPDATE user set lastcommand=?, lastcommanddate=NOW() where userid=?`,
+        [text, user.id]);
+    // stmt.run(text, user.id);
 
     if (msg.channel.guild)
         if (config.discord.servers[channel.guild.id] != null &&
@@ -1041,27 +1042,27 @@ ${err.stack}
 function processUser(msg) {
     try {
         //   db.serialize(() => {
-        var stmt = db.prepare('SELECT userid as id, username from user where userid=?');
-        stmt.get(msg.author.id, (err, row) => {
+        db.query('SELECT userid as id, username from user where userid=?', [msg.author.id], (err, row) => {
             if (!row) {
                 console.log(`inserting user ${msg.author.id} (${msg.author.username})`)
-                stmt = db.prepare(`insert into user (userid, username, lastspoke, isbot, lastchannel, messagecount)`
-                    + `values (?, ?, datetime('now'), ?, ?, 1)`);
-                stmt.run(msg.author.id, msg.author.username, msg.author.bot ? 1 : 0, msg.channel.id);
-                stmt = db.prepare(`insert into username (userid, username) values (?, ?)`);
-                stmt.run(msg.author.id, msg.author.username);
+                db.query(`insert into user (userid, username, lastspoke, isbot, lastchannel, messagecount)`
+                    + `values (?, ?, NOW(), ?, ?, 1)`,
+                    [msg.author.id, msg.author.username, msg.author.bot ? 1 : 0, msg.channel.id]);
+                //stmt.run();
+                db.query(`insert into username (userid, username) values (?, ?)`,
+                    [msg.author.id, msg.author.username]);
             } else {
-                if (row.username != msg.author.username) {
-                    stmt = db.prepare(`update user set username = ?, lastspoke = datetime('now'), lastchannel=?, `
-                        + `messagecount=messagecount + 1 where userid = ?`);
-                    stmt.run(msg.author.username, msg.channel.id, msg.author.id);
-                    stmt = db.prepare(`insert into username (userid, username, namedate) `
-                        + `values (?, ?, datetime('now'))`);
-                    stmt.run(msg.author.id, msg.author.username);
+                if (row[0].username != msg.author.username) {
+                    db.query(`update user set username = ?, lastspoke = NOW(), lastchannel=?, `
+                        + `messagecount=messagecount + 1 where userid = ?`,
+                        [msg.author.username, msg.channel.id, msg.author.id]);
+                    db.query(`insert into username (userid, username, namedate) `
+                        + `values (?, ?, NOW())`,
+                        [msg.author.id, msg.author.username]);
                 } else {
-                    stmt = db.prepare(`update user set lastspoke = datetime('now'), lastchannel=?, `
-                        + `messagecount=messagecount + 1 where userid = ?`);
-                    stmt.run(msg.channel.id, msg.author.id);
+                    db.query(`update user set lastspoke = NOW(), lastchannel=?, `
+                        + `messagecount=messagecount + 1 where userid = ?`,
+                        [msg.channel.id, msg.author.id]);
                 }
             }
         });
@@ -1069,6 +1070,7 @@ function processUser(msg) {
     } catch (err) {
         console.log(err)
     }
+
 }
 
 
