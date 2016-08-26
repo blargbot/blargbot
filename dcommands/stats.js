@@ -16,7 +16,7 @@ e.category = bu.CommandType.GENERAL
 
 e.execute = (msg, words, text) => {
     bu.sendMessageToDiscord(msg.channel.id, `\`\`\`xl
-!== { Stats} ==!
+!== { Stats } ==!
 Running on ${bot.guilds.size} guilds.
 Running on ${Object.keys(bot.channelGuildMap).length} channels.
 Serving ${bot.users.size} users.

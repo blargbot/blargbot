@@ -17,7 +17,7 @@ e.execute = (msg, words, text) => {
     bu.sendMessageToDiscord(msg.channel.id, `blargbot is a multipurpose bot with new features implemented regularly, written in javascript using Eris.
 http://blarg.stupidcat.me
 \`\`\`xl
-!== { Stats} ==!
+!== { Stats } ==!
 Running on ${bu.bot.guilds.size} guilds.
 Running on ${Object.keys(bu.bot.channelGuildMap).length} channels.
 Serving ${bu.bot.users.size} users.
