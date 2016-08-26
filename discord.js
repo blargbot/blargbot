@@ -1041,9 +1041,10 @@ ${err.stack}
  */
 function processUser(msg) {
     try {
+    //    console.log(util.inspect(msg))
         //   db.serialize(() => {
         db.query('SELECT userid as id, username from user where userid=?', [msg.author.id], (err, row) => {
-            if (!row) {
+            if (!row[0]) {
                 console.log(`inserting user ${msg.author.id} (${msg.author.username})`)
                 db.query(`insert into user (userid, username, lastspoke, isbot, lastchannel, messagecount)`
                     + `values (?, ?, NOW(), ?, ?, 1)`,
