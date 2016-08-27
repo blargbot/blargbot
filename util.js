@@ -18,11 +18,28 @@ e.CommandType = {
     COMMANDER: 4,
     ADMIN: 5,
     properties: {
-        1: { name: 'General', requirement: msg => true },
-        2: { name: 'CATZ MEOW MEOW', requirement: msg => msg.author.id == e.CAT_ID },
-        3: { name: 'Music', requirement: msg => e.config.discord.musicGuilds[msg.channel.guild.id] },
-        4: { name: 'Bot Commander', requirement: msg => e.hasPerm(msg, 'Bot Commander', true), perm: 'Bot Commander' },
-        5: { name: 'Admin', requirement: msg => e.hasPerm(msg, 'Admin', true), perm: 'Admin' }
+        1: {
+            name: 'General',
+            requirement: msg => true
+        },
+        2: {
+            name: 'CATZ MEOW MEOW',
+            requirement: msg => msg.author.id == e.CAT_ID
+        },
+        3: {
+            name: 'Music',
+            requirement: msg => !msg.channel.guild ? false : e.config.discord.musicGuilds[msg.channel.guild.id]
+        },
+        4: {
+            name: 'Bot Commander',
+            requirement: msg => !msg.channel.guild ? true : e.hasPerm(msg, 'Bot Commander', true),
+            perm: 'Bot Commander'
+        },
+        5: {
+            name: 'Admin',
+            requirement: msg => !msg.channel.guild ? true : e.hasPerm(msg, 'Admin', true),
+            perm: 'Admin'
+        }
     }
 }
 
@@ -67,7 +84,7 @@ e.sendMessageToDiscord = function (channelId, message, file) {
             return e.bot.createMessage(channelId, message, file).catch(err => console.log(err.stack));
 
     } catch (err) {
-        console.log(err);
+        console.log(err.stack);
     }
 }
 
@@ -222,8 +239,8 @@ e.logAction = (guild, user, mod, type) => {
                 e.sendMessageToDiscord(e.config.discord.servers[guild.id].modlog, message).then(msg => {
                     e.db.query(`insert into modlog (guildid, caseid, userid, modid, type, msgid) 
                     values (?, ?, ?, ?, ?, ?)`, [guild.id, caseid, user.id, mod ? mod.id : null, type, msg.id], err => {
-                        console.log(err)
-                    })
+                            console.log(err)
+                        })
                     return msg
                 }).catch(err => {
                     console.log(err)

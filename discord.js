@@ -21,7 +21,7 @@ cleverbot = new Cleverbot;
 
 //var gm = require('gm');
 var exec = require('child_process').exec;
-var Cleverbot = require('cleverbot-node');
+//var Cleverbot = require('cleverbot-node');
 
 var e = module.exports = {};
 var avatars;
@@ -540,8 +540,8 @@ e.init = (v, topConfig, em, database) => {
                 if (!handleDiscordCommand(msg.channel, msg.author, cleanContent, msg)) {
                     Cleverbot.prepare(function () {
                         cleverbot.write(cleanContent, function (response) {
-                            console.log(cleanContent);
-                            console.log(response);
+                           // console.log(cleanContent);
+                         //   console.log(response);
                             bot.sendChannelTyping(msg.channel.id);
                             setTimeout(function () {
                                 bu.sendMessageToDiscord(msg.channel.id, response.message);
@@ -567,7 +567,7 @@ e.init = (v, topConfig, em, database) => {
                     var prefixes = ["!", "@", "#", "$", "%", "^", "&", "*", ")", "-", "_", "=", "+", "}", "]", "|", ";", ":", "'", ">", "?", "/", "."];
                     if (!msg.content || (prefixes.indexOf(msg.content.substring(0, 1)) == -1) && !msg.content.startsWith('kek!') && !msg.content.startsWith('blarg!') && msg.channel.guild) {
                         db.query(`SELECT id, content from catchat order by id desc limit 1`, (err, row) => {
-                        
+
                             if (err)
                                 console.log(err.stack)
                             if ((row && row[0].content != msg.content) || msg.content == '') {
@@ -787,7 +787,10 @@ ${commandList[words[1]].info}`;
                 }
             commandsString += '```'
 
-            bu.sendMessageToDiscord(channel.id, `${commandsString}\n\nFor more information about commands, do \`help <commandname>\` or visit http://blarg.stupidcat.me/commands.html`);
+            bu.sendMessageToDiscord(channel.id, `${commandsString}\n\n${!msg.channel.guild
+                ? 'Not all of these commands work in DMs.\n'
+                : ''
+                }For more information about commands, do \`help <commandname>\` or visit http://blarg.stupidcat.me/commands.html`);
         }
         return true;
     } else {
@@ -1041,7 +1044,7 @@ ${err.stack}
  */
 function processUser(msg) {
     try {
-    //    console.log(util.inspect(msg))
+        //    console.log(util.inspect(msg))
         //   db.serialize(() => {
         db.query('SELECT userid as id, username from user where userid=?', [msg.author.id], (err, row) => {
             if (!row[0]) {
