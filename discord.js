@@ -289,7 +289,7 @@ e.init = (v, topConfig, em, database) => {
         saveVars()
     })
 
-    avatars = JSON.parse(fs.readFileSync(path.join(__dirname, 'avatars.json'), 'utf8'));
+    avatars = JSON.parse(fs.readFileSync(path.join(__dirname, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
     e.bot = bot;
 
 
