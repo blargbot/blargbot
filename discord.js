@@ -541,7 +541,7 @@ e.init = (v, topConfig, em, database) => {
                     Cleverbot.prepare(function () {
                         cleverbot.write(cleanContent, function (response) {
                            // console.log(cleanContent);
-                         //   console.log(response);
+                         //   console.log(response);    
                             bot.sendChannelTyping(msg.channel.id);
                             setTimeout(function () {
                                 bu.sendMessageToDiscord(msg.channel.id, response.message);
@@ -700,6 +700,10 @@ function handleDiscordCommand(channel, user, text, msg) {
         console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
     else
         console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) in a PM on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
+
+    if (msg.author.bot) {
+        return false;
+    }
 
     db.query(`UPDATE user set lastcommand=?, lastcommanddate=NOW() where userid=?`,
         [text, user.id]);
@@ -1021,7 +1025,7 @@ ${commandToProcess}
 \`\`\`
 Output:
 \`\`\`js
-${eval(commandToProcess)}
+${commandToProcess == '1/0' ? 1 : eval(commandToProcess)}
 \`\`\``);
             if (commandToProcess.indexOf('vars') > -1) {
                 saveVars();

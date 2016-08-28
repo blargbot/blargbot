@@ -20,6 +20,8 @@ servers.json
 *.bat
 *.psd
 *.sql
+out.png
+img/avatars/*
 avatar.js
 command.js
 testkek1.js

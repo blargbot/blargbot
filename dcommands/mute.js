@@ -37,10 +37,10 @@ e.execute = (msg, words, text) => {
                             console.log(err)
                         })
                     }
-                //    bu.sendMessageToDiscord(msg.channel.id, `I created a \`muted\` role. Please try again.`).catch(err => {
-               //         console.log(err)
-              //      })
-              e.execute(msg, words, text)
+                    //    bu.sendMessageToDiscord(msg.channel.id, `I created a \`muted\` role. Please try again.`).catch(err => {
+                    //         console.log(err)
+                    //      })
+                    e.execute(msg, words, text)
 
                 } else {
                     bu.sendMessageToDiscord(msg.channel.id, `I created a \`muted\` role, but don't have permissions to configure it! Either configure it yourself, or make sure I have the \`manage channel\` permission, delete the \`muted\` role, and try again.`)
@@ -69,6 +69,18 @@ e.execute = (msg, words, text) => {
                     var member = msg.channel.guild.members.get(user.id)
                     if (!user)
                         return;
+
+                    var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id))
+                    var userPos = bu.getPosition(msg.member);;
+                    var targetPos = bu.getPosition(msg.channel.guild.members.get(user.id))
+                    if (targetPos >= botPos) {
+                        bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to mute ${user.username}!`)
+                        return;
+                    }
+                    if (targetPos >= userPos) {
+                        bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to mute ${user.username}!`)
+                        return;
+                    }
 
                     if (member.roles.indexOf(bu.config.discord.servers[msg.channel.guild.id].mutedrole) > -1) {
                         bu.sendMessageToDiscord(msg.channel.id, 'That user is already muted!')

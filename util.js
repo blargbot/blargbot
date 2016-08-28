@@ -215,6 +215,16 @@ e.bans = {}
 
 e.unbans = {}
 
+e.getPosition = (member) => {
+    var roles = member.roles
+    var rolepos = 0
+    for (var i = 0; i < roles.length; i++) {
+        var rolenum = member.guild.roles.get(roles[i]).position
+        rolepos = rolepos > rolenum ? rolepos : rolenum
+    }
+    return rolepos
+}
+
 e.logAction = (guild, user, mod, type) => {
     console.log('fuck')
     if (e.config.discord.servers[guild.id] && e.config.discord.servers[guild.id].modlog) {
