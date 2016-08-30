@@ -16,54 +16,47 @@ e.category = bu.CommandType.GENERAL
 e.execute = (msg, words, text) => {
     if (msg.channel.guild.members.get('103347843934212096')) {
         var statement = ` from catchat `
-        //where guildid = ?
-        //   if (!(bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].nsfw && bu.config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id]))
         statement += ` where nsfw <> 1`
-
-        // statement += ` order by RANDOM()`
-        var stmt = bu.db.prepare(`select count(*) as count` + statement);
-        stmt.get((err, row) => {
+        bu.db.query(`select count(*) as count` + statement, (err, row) => {
             if (err)
                 console.log(err);
-            stmt = bu.db.prepare(`select varvalue as pos from vars where varname = ?`)
-            stmt.get('markovpos', (err2, row2) => {
-                if (err2) console.log(err2)
-                if (!row2) {
-                    stmt = bu.db.prepare(`insert into vars (varname, varvalue) values ("markovpos", 0)`)
-                    stmt.run()
-                    bu.sendMessageToDiscord(msg.channel.id, `Markov initiated! Please try again.`)
-                } else {
-
-                    var max = row[0].count;
-
-                    if (max >= 100) {
-                        var diff = bu.getRandomInt(0, 100) - 50
-                        var pos = parseInt(row2[0].pos) + diff
-                        if (pos < 0) {
-                            pos += max
-                        }
-                        if (pos > max) {
-                            pos -= max
-                        }
-                        console.log('Getting message at pos', pos)
-                        stmt = bu.db.prepare(`select id, content, attachment` + statement + ` limit 1 offset ?`)
-                        stmt.get(pos, (err3, row3) => {
-                            if (err3) console.log(err3)
-                            if (row3) {
-                                var messageToSend = `${row3[0].content} ${row3[0].attachment == 'none' ? '' : row3[0].attachment}`;
-                                bu.sendMessageToDiscord(msg.channel.id, `\u200B` + messageToSend);
-
-                                stmt = bu.db.prepare(`update vars set varvalue = ? where varname="markovpos"`)
-                                stmt.run(pos)
-                            }
-                        })
-
+            bu.db.query(`select varvalue as pos from vars where varname = ?`,
+                ['markovpos'], (err2, row2) => {
+                    if (err2) console.log(err2)
+                    if (!row2[0]) {
+                        bu.db.query(`insert into vars (varname, varvalue) values ("markovpos", 0)`)
+                        e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`)
                     } else {
-                        bu.sendMessageToDiscord(msg.channel.id, `I don't have a big enough sample size.`);
-                    }
 
-                }
-            })
+                        var max = row[0].count;
+                        console.log(max)
+                        if (max >= 100) {
+                            var diff = bu.getRandomInt(0, 100) - 50
+                            var pos = parseInt(row2[0].pos) + diff
+                            if (pos < 0) {
+                                pos += max
+                            }
+                            if (pos > max) {
+                                pos -= max
+                            }
+                            console.log('Getting message at pos', pos)
+                            bu.db.query(`select id, content, attachment` + statement + ` limit 1 offset ?`,
+                                [pos], (err3, row3) => {
+                                    if (err3) console.log(err3)
+                                    if (row3[0]) {
+                                        var messageToSend = `${row3[0].content} ${row3[0].attachment == 'none' ? '' :
+                                            row3[0].attachment}`;
+                                        bu.sendMessageToDiscord(msg.channel.id, `\u200B` + messageToSend);
+                                        bu.db.query(`update vars set varvalue = ? where varname="markovpos"`,
+                                            [pos])
+                                    }
+                                })
+                        } else {
+                            bu.sendMessageToDiscord(msg.channel.id, `I don't have a big enough sample size.`);
+                        }
+
+                    }
+                })
 
 
         })
