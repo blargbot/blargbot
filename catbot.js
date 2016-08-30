@@ -70,16 +70,16 @@ e.init = (configuration, database) => {
                         db.query(`select varvalue as pos from vars where varname = ?`,
                             ['markovpos'], (err2, row2) => {
                                 if (err2) console.log(err2)
-                                if (!row2) {
+                                if (!row2[0]) {
                                     db.query(`insert into vars (varname, varvalue) values ("markovpos", 0)`)
                                     e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`)
                                 } else {
 
-                                    var max = row.count;
-
+                                    var max = row[0].count;
+                                    console.log(max)
                                     if (max >= 100) {
                                         var diff = getRandomInt(0, 100) - 50
-                                        var pos = parseInt(row2.pos) + diff
+                                        var pos = parseInt(row2[0].pos) + diff
                                         if (pos < 0) {
                                             pos += max
                                         }
@@ -90,15 +90,14 @@ e.init = (configuration, database) => {
                                         db.query(`select id, content, attachment` + statement + ` limit 1 offset ?`,
                                             [pos], (err3, row3) => {
                                                 if (err3) console.log(err3)
-                                                if (row3) {
-                                                    var messageToSend = `${row3.content} ${row3.attachment == 'none' ? '' :
-                                                        row3.attachment}`;
+                                                if (row3[0]) {
+                                                    var messageToSend = `${row3[0].content} ${row3[0].attachment == 'none' ? '' :
+                                                        row3[0].attachment}`;
                                                     e.bot.createMessage(msg.channel.id, `\u200B` + messageToSend);
                                                     db.query(`update vars set varvalue = ? where varname="markovpos"`,
                                                         [pos])
                                                 }
                                             })
-
                                     } else {
                                         e.bot.createMessage(msg.channel.id, `I don't have a big enough sample size.`);
                                     }
