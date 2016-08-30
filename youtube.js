@@ -163,7 +163,7 @@ exports.nextSong = (msg) => {
         } catch (err) {
             console.log(err);
         }
-        exports.connections.get(msg.channel.guild.id).playFile(cache[nextSong.id].path, { inlineVolume: exports.settings[msg.channel.guild.id].volume / 100 })
+        exports.connections.get(msg.channel.guild.id).playResource(cache[nextSong.id].path, { inlineVolume: exports.settings[msg.channel.guild.id].volume / 100 })
         exports.connections.get(msg.channel.guild.id).setVolume(exports.settings[msg.channel.guild.id].volume / 100)
         currectNext.start = moment()
         if (exports.queue[msg.channel.guild.id][0]) {
