@@ -177,7 +177,7 @@ exports.nextSong = (msg) => {
            } catch (err) {
                console.log(err);
            }
-           exports.connections[msg.channel.guild.id].playFile(nextSong.path, { inlineVolume: exports.settings[msg.channel.guild.id].volume / 100 })
+           exports.connections[msg.channel.guild.id].playResource(nextSong.path, { inlineVolume: exports.settings[msg.channel.guild.id].volume / 100 })
            exports.connections[msg.channel.guild.id].setVolume(exports.settings[msg.channel.guild.id].volume / 100)
            nextSong.start = moment()
            if (exports.queue[msg.channel.id][0]) {
@@ -229,7 +229,7 @@ exports.saveVideo = (msg, id, name, duration, callback) => {
 function addToQueue(msg, id, name, duration) {
 
     //   console.log(util.inspect(exports.connections))
-    //  exports.connections[msg.channel.guild.id].playFile(filepath, { inlineVolume: 0.3 })
+    //  exports.connections[msg.channel.guild.id].playResource(filepath, { inlineVolume: 0.3 })
     //   exports.connections[msg.channel.guild.id].setVolume(0.3);
     if (!exports.queue.hasOwnProperty(msg.channel.guild.id)) {
         exports.queue[msg.channel.guild.id] = [];

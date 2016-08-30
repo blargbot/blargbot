@@ -21,6 +21,7 @@ servers.json
 *.psd
 *.sql
 out.png
+music/*
 img/avatars/*
 avatar.js
 command.js
