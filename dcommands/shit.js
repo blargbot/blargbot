@@ -21,15 +21,20 @@ e.requireCtx = require
 
 e.isCommand = true;
 e.hidden = false
-e.usage = 'shit <text>';
-e.info = `Tells everyone what's shit.`;
+e.usage = 'shit [-p] <text>';
+e.info = `Tells everyone what's shit. Use -p as the first argument to specify it's plural.`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     var shitText = 'Your favourite anime'
     console.log(util.inspect(words))
+    var plural = false
     if (words.length > 1) {
         words.shift()
+        if (words[0] == '-p') {
+            plural = true
+            words.shift()
+        }
         shitText = words.join(' ')
     }
     var timestamp = moment().format().replace(/:/gi, '_');
@@ -56,7 +61,7 @@ e.execute = (msg, words, text) => {
         .write(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`), function (err) {
             if (err) throw err;
             console.log(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`))
-            gm(path.join(__dirname, '..', 'img', 'SHIT.png'))
+            gm(path.join(__dirname, '..', 'img', `SHIT${plural ? 'S' : ''}.png`))
                 .composite(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`))
                 .geometry('+810+31')
                 .options({
