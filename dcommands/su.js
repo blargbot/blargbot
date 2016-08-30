@@ -25,7 +25,7 @@ var songs = []
 var index = null
 var volume = 15
 e.execute = (msg, words, text) => {
-    if (msg.author.id != bu.CAT_ID) {
+    if (msg.channel.guild.id != '206097393383505920') {
         return;
     }
     bot.sendChannelTyping(msg.channel.id)
