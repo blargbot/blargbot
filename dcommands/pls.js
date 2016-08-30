@@ -27,7 +27,6 @@ e.execute = (msg, words, text) => {
                         bu.db.query(`insert into vars (varname, varvalue) values ("markovpos", 0)`)
                         e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`)
                     } else {
-
                         var max = row[0].count;
                         console.log(max)
                         if (max >= 100) {

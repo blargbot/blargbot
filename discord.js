@@ -389,11 +389,16 @@ e.init = (v, topConfig, em, database) => {
         bu.logAction(guild, user, mod, 'Unban')
     })
 
-
+    bot.on('messageDelete', (msg) => {
+  //      console.log(1)
+        if (commandMessages.indexOf(msg.id) > -1) {
+     //      console.log(1)
+            bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick ? msg.member.nick : msg.author.username}** deleted their command message.`)
+            commandMessages.splice(commandMessages.indexOf(msg.id), 1)
+        }
+    })
 
     bot.on("messageCreate", function (msg) {
-
-
         if (msg.author.id == bot.user.id) {
             if (msg.channel.guild)
                 console.log(`[DIS] ${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} `
@@ -540,8 +545,8 @@ e.init = (v, topConfig, em, database) => {
                 if (!handleDiscordCommand(msg.channel, msg.author, cleanContent, msg)) {
                     Cleverbot.prepare(function () {
                         cleverbot.write(cleanContent, function (response) {
-                           // console.log(cleanContent);
-                         //   console.log(response);    
+                            // console.log(cleanContent);
+                            //   console.log(response);    
                             bot.sendChannelTyping(msg.channel.id);
                             setTimeout(function () {
                                 bu.sendMessageToDiscord(msg.channel.id, response.message);
@@ -691,6 +696,8 @@ function switchAvatar(forced) {
         }, 300000);
 }
 
+var commandMessages = []
+
 function handleDiscordCommand(channel, user, text, msg) {
     var words = text.replace(/ +/g, ' ').split(' ');
 
@@ -703,6 +710,10 @@ function handleDiscordCommand(channel, user, text, msg) {
 
     if (msg.author.bot) {
         return false;
+    }
+    commandMessages.push(msg.id)
+    if (commandMessages.length > 100) {
+        commandMessages.shift();
     }
 
     db.query(`UPDATE user set lastcommand=?, lastcommanddate=NOW() where userid=?`,
