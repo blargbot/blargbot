@@ -69,7 +69,6 @@ e.generateFinalImage = function (timestamp, channelid) {
         .in(path.join(__dirname, '..', `img/generated/freefreefreetest3-${timestamp}.png`))
         .in(path.join(__dirname, '..', `img/generated/freefreefreetest4-${timestamp}.png`))
         .in(path.join(__dirname, '..', `img/generated/freefreefreetest5-${timestamp}.png`))
-
         .loop('0')
         .delay('4')
         .write(path.join(__dirname, '..', `img/generated/freefreefree-${timestamp}.gif`), function (err) {
