@@ -21,9 +21,20 @@ e.execute = (msg, words, text) => {
         //do settings shit
         var prefix = bu.config.discord.servers[msg.channel.guild.id].prefix
             ? bu.config.discord.servers[msg.channel.guild.id].prefix : '!'
-        var nsfwMessage = bu.config.discord.servers[msg.channel.guild.id].nsfw
-            ? '\n - ' + Object.keys(bu.config.discord.servers[msg.channel.guild.id].nsfw).join('\n - ')
-            : 'None'
+        var nsfwMessage = 'None set'
+        if (bu.config.discord.servers[msg.channel.guild.id].nsfw) {
+            nsfwMessage = '\n - '
+            var chanarray = Object.keys(bu.config.discord.servers[msg.channel.guild.id].nsfw)
+            for (var i = 0; i < chanarray.length; i++) {
+                if (bu.config.discord.servers[msg.channel.guild.id].nsfw[chanarray[i]]) {
+                    nsfwMessage += bot.getChannel(chanarray[i]).name + '\n - '
+                }
+            }
+            nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 4)
+
+        } 
+        //    ? '\n - ' + Object.keys(bu.config.discord.servers[msg.channel.guild.id].nsfw).join('\n - ')
+       //     : 'None'
         var greeting = bu.config.discord.servers[msg.channel.guild.id].greeting
             ? bu.config.discord.servers[msg.channel.guild.id].greeting : 'Not set'
         var farewell = bu.config.discord.servers[msg.channel.guild.id].farewell
