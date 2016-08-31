@@ -174,7 +174,7 @@ Commands:
             console.log('skipping')
             if (voiceConnections.get(msg.channel.guild.id).ready) {
                 //     if (youtube.queue.hasOwnProperty(msg.channel.guild.id)) {
-                if (words[0] == 'force' && bu.hasPerm('Bot Commander')) {
+                if (words[0] == 'force' && bu.hasPerm(msg, 'Bot Commander')) {
                     voiceConnections.get(msg.channel.guild.id).stopPlaying();
                     return;                    
                 }
