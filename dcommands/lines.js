@@ -30,11 +30,12 @@ e.execute = (msg, words, text) => {
             files.push(path.join(__dirname, fileArray[i]))
         }
     }
-    var lineCount = 0
+ //   var lineCount = 0
     function onComplete(lines) {
         bu.sendMessageToDiscord(msg.channel.id, 'I am made of ' + lines + ' lines.')
     }
     var count = files.length
+    var lines = 0
     for (var i = 0; i < files.length; i++) {
         exec(`wc -l ${files[i]}`, (err, res) => {
             console.log(res)
