@@ -2,7 +2,7 @@ var e = module.exports = {}
 var bu = require('./../util.js')
 var exec = require('child_process').exec;
 var fs = require('fs')
-
+var path = require('path')
 var bot
 e.init = (Tbot) => {
     bot = Tbot
