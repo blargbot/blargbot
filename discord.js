@@ -390,11 +390,14 @@ e.init = (v, topConfig, em, database) => {
     })
 
     bot.on('messageDelete', (msg) => {
-  //      console.log(1)
+        //      console.log(1)
         if (commandMessages.indexOf(msg.id) > -1) {
-     //      console.log(1)
-            bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick ? msg.member.nick : msg.author.username}** deleted their command message.`)
-            commandMessages.splice(commandMessages.indexOf(msg.id), 1)
+            //      console.log(1)
+            if (config.discord.servers[msg.channel.guild.id] != null) {
+                if (config.discord.servers[msg.channel.guild.id].deleteNotifications == true)
+                    bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick ? msg.member.nick : msg.author.username}** deleted their command message.`)
+                commandMessages.splice(commandMessages.indexOf(msg.id), 1)
+            }
         }
     })
 
@@ -711,18 +714,21 @@ function handleDiscordCommand(channel, user, text, msg) {
     if (msg.author.bot) {
         return false;
     }
-    commandMessages.push(msg.id)
-    if (commandMessages.length > 100) {
-        commandMessages.shift();
-    }
+    if (msg.channel.guild) {
+        if (config.discord.servers[channel.guild.id] != null) {
+            if (config.discord.servers[channel.guild.id].deleteNotifications == true) {
+                console.log('pushing')
+                commandMessages.push(msg.id)
+            } if (commandMessages.length > 100) {
+                commandMessages.shift();
+            }
+        }
+        db.query(`UPDATE user set lastcommand=?, lastcommanddate=NOW() where userid=?`,
+            [text, user.id]);
+        // stmt.run(text, user.id);
 
-    db.query(`UPDATE user set lastcommand=?, lastcommanddate=NOW() where userid=?`,
-        [text, user.id]);
-    // stmt.run(text, user.id);
 
-    if (msg.channel.guild)
-        if (config.discord.servers[channel.guild.id] != null &&
-            config.discord.servers[channel.guild.id].commands != null &&
+        if (config.discord.servers[channel.guild.id].commands != null &&
             config.discord.servers[channel.guild.id].commands[words[0]] != null) {
             var command = text.replace(words[0], '').trim();
 
@@ -732,92 +738,93 @@ function handleDiscordCommand(channel, user, text, msg) {
             }
             return;
         }
-    if (config.discord.commands[words[0]] != null) {
-        bu.sendMessageToDiscord(channel.id, `${config.discord.commands[words[0]].replace(/%REPLY/, `<@${user.id}>`)}`);
-    }
+        if (config.discord.commands[words[0]] != null) {
+            bu.sendMessageToDiscord(channel.id, `${config.discord.commands[words[0]].replace(/%REPLY/, `<@${user.id}>`)}`);
+        }
 
 
-    if (words[0].toLowerCase() == 'help') {
-        if (words.length > 1) {
-            var message = '';
-            if (commandList.hasOwnProperty(words[1]) && !commandList[words[1]].hidden
-                && bu.CommandType.properties[commandList[words[1]].category].requirement(msg)) {
-                message = `Command Name: ${commandList[words[1]].name}
+        if (words[0].toLowerCase() == 'help') {
+            if (words.length > 1) {
+                var message = '';
+                if (commandList.hasOwnProperty(words[1]) && !commandList[words[1]].hidden
+                    && bu.CommandType.properties[commandList[words[1]].category].requirement(msg)) {
+                    message = `Command Name: ${commandList[words[1]].name}
 Usage: \`${commandList[words[1]].usage}\`
 ${commandList[words[1]].info}`;
+                } else {
+                    message = `No description could be found for command \`${words[1]}\`.`;
+                }
+                //  message += "\n\nFor more information about commands, visit http://ratismal.github.io/blargbot/commands.html";
+                bu.sendMessageToDiscord(channel.id, message);
             } else {
-                message = `No description could be found for command \`${words[1]}\`.`;
-            }
-            //  message += "\n\nFor more information about commands, visit http://ratismal.github.io/blargbot/commands.html";
-            bu.sendMessageToDiscord(channel.id, message);
-        } else {
-            var commandsString = "```xl\nGeneral Commands:\n help";
-            // console.log(util.inspect(commandList))
-            var generalCommands = []
-            var otherCommands = {}
-            for (var command in commandList) {
-                if (!commandList[command].hidden) {
-                    if (commandList[command].category == bu.CommandType.GENERAL) {
-                        generalCommands.push(command);
-                    }
-                    else {
-                        if (!otherCommands[commandList[command].category])
-                            otherCommands[commandList[command].category] = []
-                        otherCommands[commandList[command].category].push(command)
+                var commandsString = "```xl\nGeneral Commands:\n help";
+                // console.log(util.inspect(commandList))
+                var generalCommands = []
+                var otherCommands = {}
+                for (var command in commandList) {
+                    if (!commandList[command].hidden) {
+                        if (commandList[command].category == bu.CommandType.GENERAL) {
+                            generalCommands.push(command);
+                        }
+                        else {
+                            if (!otherCommands[commandList[command].category])
+                                otherCommands[commandList[command].category] = []
+                            otherCommands[commandList[command].category].push(command)
+                        }
                     }
                 }
-            }
-            generalCommands.sort()
-            for (var i = 0; i < generalCommands.length; i++) {
-                commandsString += `, ${generalCommands[i]}`;
-            }
-            for (var category in otherCommands) {
-                if (bu.CommandType.properties[category].requirement(msg)) {
-                    otherCommands[category].sort()
-                    var otherCommandList = otherCommands[category]
-                    commandsString += `\n${bu.CommandType.properties[category].name} Commands:\n`
-                    for (var i = 0; i < otherCommandList.length; i++) {
-                        commandsString += `${i == 0 ? ' ' : ', '}${otherCommandList[i]}`;
+                generalCommands.sort()
+                for (var i = 0; i < generalCommands.length; i++) {
+                    commandsString += `, ${generalCommands[i]}`;
+                }
+                for (var category in otherCommands) {
+                    if (bu.CommandType.properties[category].requirement(msg)) {
+                        otherCommands[category].sort()
+                        var otherCommandList = otherCommands[category]
+                        commandsString += `\n${bu.CommandType.properties[category].name} Commands:\n`
+                        for (var i = 0; i < otherCommandList.length; i++) {
+                            commandsString += `${i == 0 ? ' ' : ', '}${otherCommandList[i]}`;
+                        }
                     }
                 }
-            }
-            if (msg.channel.guild)
-                if (config.discord.servers[channel.guild.id] != null &&
-                    config.discord.servers[channel.guild.id].commands != null) {
-                    var ccommands = config.discord.servers[channel.guild.id].commands;
-                    var ccommandsString = "Custom Commands:\n";
-                    var helpCommandList = [];
-                    var i = 0;
-                    for (var key in ccommands) {
-                        helpCommandList[i] = key;
-                        i++;
+                if (msg.channel.guild)
+                    if (config.discord.servers[channel.guild.id] != null &&
+                        config.discord.servers[channel.guild.id].commands != null) {
+                        var ccommands = config.discord.servers[channel.guild.id].commands;
+                        var ccommandsString = "Custom Commands:\n";
+                        var helpCommandList = [];
+                        var i = 0;
+                        for (var key in ccommands) {
+                            helpCommandList[i] = key;
+                            i++;
+                        }
+                        helpCommandList.sort();
+                        for (i = 0; i < helpCommandList.length; i++) {
+                            ccommandsString += `${i == 0 ? ' ' : ', '}${helpCommandList[i]}`;
+                        }
+                        commandsString += `\n${ccommandsString}`
+                        //  bu.sendMessageToDiscord(channel.id, `${commandsString}\n\n${ccommandsString}\n\nFor more information about commands, do \`help <commandname>\` or visit http://ratismal.github.io/blargbot/commands.html`);
+                        //   return;
                     }
-                    helpCommandList.sort();
-                    for (i = 0; i < helpCommandList.length; i++) {
-                        ccommandsString += `${i == 0 ? ' ' : ', '}${helpCommandList[i]}`;
-                    }
-                    commandsString += `\n${ccommandsString}`
-                    //  bu.sendMessageToDiscord(channel.id, `${commandsString}\n\n${ccommandsString}\n\nFor more information about commands, do \`help <commandname>\` or visit http://ratismal.github.io/blargbot/commands.html`);
-                    //   return;
-                }
-            commandsString += '```'
+                commandsString += '```'
 
-            bu.sendMessageToDiscord(channel.id, `${commandsString}\n\n${!msg.channel.guild
-                ? 'Not all of these commands work in DMs.\n'
-                : ''
-                }For more information about commands, do \`help <commandname>\` or visit http://blarg.stupidcat.me/commands.html`);
-        }
-        return true;
-    } else {
-        if (commandList.hasOwnProperty(words[0].toLowerCase())) {
-            console.log(words[0])
-            if (bu.CommandType.properties[commandList[words[0].toLowerCase()].category].perm) {
-                if (!bu.hasPerm(msg, bu.CommandType.properties[commandList[words[0].toLowerCase()].category].perm)) {
-                    return true;
-                }
+                bu.sendMessageToDiscord(channel.id, `${commandsString}\n\n${!msg.channel.guild
+                    ? 'Not all of these commands work in DMs.\n'
+                    : ''
+                    }For more information about commands, do \`help <commandname>\` or visit http://blarg.stupidcat.me/commands.html`);
             }
-            commands[commandList[words[0].toLowerCase()].name].execute(msg, words, text);
             return true;
+        } else {
+            if (commandList.hasOwnProperty(words[0].toLowerCase())) {
+                console.log(words[0])
+                if (bu.CommandType.properties[commandList[words[0].toLowerCase()].category].perm) {
+                    if (!bu.hasPerm(msg, bu.CommandType.properties[commandList[words[0].toLowerCase()].category].perm)) {
+                        return true;
+                    }
+                }
+                commands[commandList[words[0].toLowerCase()].name].execute(msg, words, text);
+                return true;
+            }
         }
     }
     return false;
