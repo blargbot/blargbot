@@ -176,7 +176,30 @@ Commands:
                 //     if (youtube.queue.hasOwnProperty(msg.channel.guild.id)) {
 
                 //   } else
-                voiceConnections.get(msg.channel.guild.id).stopPlaying();
+                var votesNeeded = youtube.current[msg.channel.guild.id].votesNeeded
+                if (!youtube.current[msg.channel.guild.id].votes) {
+                    youtube.current[msg.channel.guild.id].votes = []
+                }
+                if (youtube.current[msg.channel.guild.id].votes.indexOf(msg.author.id) > -1) {
+                    bu.sendMessageToDiscord(msg.channel.id, `:no_good: You've already voted to skip! :no_good: `)
+                    return;
+                }
+                youtube.current[msg.channel.guild.id].votes.push(msg.author.id)
+
+                if (youtube.current[msg.channel.guild.id].votes.length >= votesNeeded) {
+                    bu.sendMessageToDiscord(msg.channel.id, `:umbrella2: Skipping the song \`${youtube.cache[youtube.current[msg.channel.guild.id].id].name}\` after ${votesNeeded} votes. :umbrella2:`)
+                    voiceConnections.get(msg.channel.guild.id).stopPlaying();
+
+                } else {
+                    bu.sendMessageToDiscord(msg.channel.id, `:closed_umbrella: ${msg.member.nick
+                        ? msg.member.nick
+                        : msg.author.username} has voted to skip the song \`${
+                        youtube.cache[youtube.current[msg.channel.guild.id].id].name}\`. **${
+                        votesNeeded - youtube.current[msg.channel.guild.id].votes.length
+                        }** more votes are needed to skip the song. :closed_umbrella: `)
+
+                }
+                // voiceConnections.get(msg.channel.guild.id).stopPlaying();
                 //    delete voiceConnections[msg.channel.guild.id];
                 //sendMessage(msg.channel.id, "Ok, I'm done.");
             }
@@ -244,7 +267,7 @@ Commands:
                                 console.log(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
                                 //${bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID).name} (${voiceConnections.get(msg.channel.guild.id).channelID})
                                 if (!bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID)) {
-                                  //  sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, `An error has occured!`)
+                                    //  sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, `An error has occured!`)
                                 } else if (youtube.queue[msg.channel.guild.id] && youtube.queue[msg.channel.guild.id].length > 0) {
                                     //     nextSong = youtube.queue[msg.channel.guild.id].shift();
                                     setTimeout(() => {
@@ -284,7 +307,7 @@ Commands:
             break;
         case 'banish':
             if (voiceConnections.get(msg.channel.guild.id).ready) {
-        //        voiceConnections.get(msg.channel.guild.id).stopPlaying();                
+                //        voiceConnections.get(msg.channel.guild.id).stopPlaying();                
                 voiceConnections.get(msg.channel.guild.id).disconnect();
                 delete youtube.current[msg.channel.guild.id]
                 // delete voiceConnections[msg.channel.guild.id]
@@ -445,5 +468,5 @@ function shuffle(array) {
 
 
 function pad(value, length) {
-    return (value.toString().length < length) ? pad(value+" ", length):value;
+    return (value.toString().length < length) ? pad(value + " ", length) : value;
 }
