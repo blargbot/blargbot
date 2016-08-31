@@ -38,7 +38,7 @@ e.execute = (msg, words, text) => {
     var lines = 0
     for (var i = 0; i < files.length; i++) {
         exec(`wc -l ${files[i]}`, (err, res) => {
-            console.log(res)
+       //     console.log(res)
             lines += parseInt(res.split(' ')[0])
             count--;
             if (count == 0) {
