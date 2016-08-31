@@ -26,6 +26,6 @@ e.execute = (msg, words, text) => {
     var chosenNoun = bu.config.insult.nouns[(bu.getRandomInt(0, bu.config.insult.nouns.length - 1))];
     var chosenVerb = bu.config.insult.verbs[(bu.getRandomInt(0, bu.config.insult.verbs.length - 1))];
     var chosenAdje = bu.config.insult.adjectives[(bu.getRandomInt(0, bu.config.insult.adjectives.length - 1))];
-    var message = `${target}'s ${chosenNoun} ${chosenVerb} ${chosenAdje}!`;
+    var message = `${target}${target == 'Your' ? `` : `'s`} ${chosenNoun} ${chosenVerb} ${chosenAdje}!`;
     bu.sendMessageToDiscord(msg.channel.id, message);
 }
