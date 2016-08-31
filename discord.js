@@ -728,8 +728,8 @@ function handleDiscordCommand(channel, user, text, msg) {
         // stmt.run(text, user.id);
 
 
-        if (config.discord.servers[channel.guild.id].commands != null &&
-            config.discord.servers[channel.guild.id].commands[words[0]] != null) {
+        if (config.discord.servers[channel.guild.id].commands &&
+            config.discord.servers[channel.guild.id].commands[words[0]]) {
             var command = text.replace(words[0], '').trim();
 
             var response = tags.processTag(msg, config.discord.servers[channel.guild.id].commands[words[0]], command);
