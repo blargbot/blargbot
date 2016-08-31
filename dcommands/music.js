@@ -174,7 +174,10 @@ Commands:
             console.log('skipping')
             if (voiceConnections.get(msg.channel.guild.id).ready) {
                 //     if (youtube.queue.hasOwnProperty(msg.channel.guild.id)) {
-
+                if (words[0] == 'force' && bu.hasPerm('Bot Commander')) {
+                    voiceConnections.get(msg.channel.guild.id).stopPlaying();
+                    return;                    
+                }
                 //   } else
                 var votesNeeded = youtube.current[msg.channel.guild.id].votesNeeded
                 if (!youtube.current[msg.channel.guild.id].votes) {
