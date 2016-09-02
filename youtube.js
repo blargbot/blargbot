@@ -302,7 +302,7 @@ function findVideo(msg, text, callback) {
         //      console.log(util.inspect(res.items[0].id))
         //    console.log(util.inspect(res.items[0].snippet))
         if (res.items.length == 0) {
-            exports.bot.createMessage('No results found!')
+            bu.sendMessageToDiscord(msg.channel.id, 'No results found!')
         } else
             callback(res)
     })
