@@ -715,7 +715,7 @@ function handleDiscordCommand(channel, user, text, msg) {
         return false;
     }
     if (msg.channel.guild) {
-        if (config.discord.servers[channel.guild.id] != null) {
+        if (config.discord.servers[channel.guild.id]) {
             if (config.discord.servers[channel.guild.id].deleteNotifications == true) {
                 console.log('pushing')
                 commandMessages.push(msg.id)
@@ -728,7 +728,8 @@ function handleDiscordCommand(channel, user, text, msg) {
         // stmt.run(text, user.id);
 
 
-        if (config.discord.servers[channel.guild.id].commands &&
+        if (config.discord.servers[channel.guild.id] &&
+            config.discord.servers[channel.guild.id].commands &&
             config.discord.servers[channel.guild.id].commands[words[0]]) {
             var command = text.replace(words[0], '').trim();
 
