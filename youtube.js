@@ -284,6 +284,7 @@ function addToQueue(msg, id, name, duration) {
 }
 
 function findVideo(msg, text, callback) {
+    try {
     youtube.search.list({
         key: getKey(),
         maxResults: 1,
@@ -305,6 +306,10 @@ function findVideo(msg, text, callback) {
         } else
             callback(res)
     })
+    } catch (err) {
+        console.log(err)
+        bu.sendMessageToDiscord(msg.channel.id, 'Something went wrong!')
+    }
 }
 
 function play() {
