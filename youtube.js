@@ -60,6 +60,9 @@ exports.handleMusicCommand = function (msg, words, text, connections) {
             query += `${words[i]} `
         }
         if (/https:\/\/www.youtube.com\//.test(query)) {
+            if (/<.+>/.test(query)) {
+                query = query.match(/<(.+)>/)[1]
+            }
             if (/v=(.+?)(&|$)/.test(query)) {
                 var id = query.match(/v=(.+?)(&|$)/)[1];
                 //    console.log(id);
@@ -72,6 +75,10 @@ exports.handleMusicCommand = function (msg, words, text, connections) {
                         if (err) {
                             console.log(err);
                             bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.')
+                            return;
+                        }
+                        if (!res.items[0]) {
+                            bu.sendMessageToDiscord(msg.channel.id, 'No results found!')
                             return;
                         }
                         //          console.log(util.inspect(res))
@@ -96,6 +103,10 @@ exports.handleMusicCommand = function (msg, words, text, connections) {
                         bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.')
                         return;
                     }
+                    if (!res.items[0]) {
+                        bu.sendMessageToDiscord(msg.channel.id, 'No results found!')
+                        return;
+                    }
                     console.log(util.inspect(res))
                     addPlaylistToQueue(msg, id, res);
                 })
@@ -113,6 +124,10 @@ exports.handleMusicCommand = function (msg, words, text, connections) {
                         bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.')
                         return;
                     }
+                    if (!res.items[0]) {
+                        bu.sendMessageToDiscord(msg.channel.id, 'No results found!')
+                        return;
+                    }
                     addToQueue(msg, id, res.items[0].snippet.title, res.items[0].contentDetails.duration);
                 })
             }
@@ -120,7 +135,9 @@ exports.handleMusicCommand = function (msg, words, text, connections) {
                 addToQueue(msg, id, cache[id].name, cache[id].duration);
         } else
             findVideo(msg, query, (res) => {
+
                 var id = res.items[0].id.videoId
+
                 if (!cache[id]) {
                     youtube.videos.list({
                         key: getKey(),
@@ -130,6 +147,10 @@ exports.handleMusicCommand = function (msg, words, text, connections) {
                         if (err) {
                             console.log(err);
                             bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.')
+                            return;
+                        }
+                        if (!res2.items[0]) {
+                            bu.sendMessageToDiscord(msg.channel.id, 'No results found!')
                             return;
                         }
                         addToQueue(msg, res.items[0].id.videoId, res.items[0].snippet.title, res2.items[0].contentDetails.duration);
@@ -285,27 +306,27 @@ function addToQueue(msg, id, name, duration) {
 
 function findVideo(msg, text, callback) {
     try {
-    youtube.search.list({
-        key: getKey(),
-        maxResults: 1,
-        q: text,
-        part: 'snippet',
-        order: 'relevance',
-        type: 'video'
-    }, (err, res) => {
-        if (err) {
-            console.log(err);
-            bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.')
-            return;
-        }
-        //     console.log(util.inspect(res))
-        //      console.log(util.inspect(res.items[0].id))
-        //    console.log(util.inspect(res.items[0].snippet))
-        if (res.items.length == 0) {
-            bu.sendMessageToDiscord(msg.channel.id, 'No results found!')
-        } else
-            callback(res)
-    })
+        youtube.search.list({
+            key: getKey(),
+            maxResults: 1,
+            q: text,
+            part: 'snippet',
+            order: 'relevance',
+            type: 'video'
+        }, (err, res) => {
+            if (err) {
+                console.log(err);
+                bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.')
+                return;
+            }
+            //     console.log(util.inspect(res))
+            //      console.log(util.inspect(res.items[0].id))
+            //    console.log(util.inspect(res.items[0].snippet))
+            if (res.items.length == 0) {
+                bu.sendMessageToDiscord(msg.channel.id, 'No results found!')
+            } else
+                callback(res)
+        })
     } catch (err) {
         console.log(err)
         bu.sendMessageToDiscord(msg.channel.id, 'Something went wrong!')
