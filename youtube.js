@@ -181,20 +181,22 @@ exports.nextSong = (msg) => {
                         bu.bot.deleteMessage(msg2.channel.id, msg2.id)
                     }, 60000)
                 });
+
+            exports.connections.get(msg.channel.guild.id).playResource(cache[nextSong.id].path, { inlineVolume: exports.settings[msg.channel.guild.id].volume / 100 })
+            exports.connections.get(msg.channel.guild.id).setVolume(exports.settings[msg.channel.guild.id].volume / 100)
+            currectNext.start = moment()
+            var membersInChannel = exports.bot.getChannel(exports.bot.voiceConnections.get(msg.channel.guild.id).channelID)
+                .voiceMembers.size - 1
+            var votesNeeded = Math.ceil(membersInChannel / 3)
+            currectNext.votesNeeded = votesNeeded > 0 ? votesNeeded : 1
+            if (exports.queue[msg.channel.guild.id][0]) {
+                var id = exports.queue[msg.channel.guild.id][0].id
+                exports.saveVideo(msg, id, cache[id].name, cache[id].duration)
+            }
         } catch (err) {
             console.log(err);
         }
-        exports.connections.get(msg.channel.guild.id).playResource(cache[nextSong.id].path, { inlineVolume: exports.settings[msg.channel.guild.id].volume / 100 })
-        exports.connections.get(msg.channel.guild.id).setVolume(exports.settings[msg.channel.guild.id].volume / 100)
-        currectNext.start = moment()
-        var membersInChannel = exports.bot.getChannel(exports.bot.voiceConnections.get(msg.channel.guild.id).channelID)
-            .voiceMembers.size - 1
-        var votesNeeded = Math.ceil(membersInChannel / 3)
-        currectNext.votesNeeded = votesNeeded > 0 ? votesNeeded : 1
-        if (exports.queue[msg.channel.guild.id][0]) {
-            var id = exports.queue[msg.channel.guild.id][0].id
-            exports.saveVideo(msg, id, cache[id].name, cache[id].duration)
-        }
+
     });
     /*   } else {
            try {
