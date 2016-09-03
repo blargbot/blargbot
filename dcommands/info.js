@@ -24,5 +24,5 @@ Serving ${bu.bot.users.size} users.
 Using ${bu.getMemoryUsage()}MiB RAM
 Version: ${bu.VERSION}
 \`\`\`
-For commands, do \`help\``);
+For commands, do \`help\`. For information about supporting me, do \`donate\``);
 }
