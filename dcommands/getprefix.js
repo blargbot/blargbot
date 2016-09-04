@@ -17,6 +17,6 @@ e.execute = (msg, words, text) => {
     if (bu.config.discord.servers && bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].prefix) {
         bu.sendMessageToDiscord(msg.channel.id, `My prefix on ${msg.channel.guild.name} is \`${bu.config.discord.servers[msg.channel.guild.id].prefix}\`.`)
     } else {
-        bu.sendMessageToDiscord(msg.channel.id, `My prefix on ${msg.channel.guild.name} is \`!\`.`)
+        bu.sendMessageToDiscord(msg.channel.id, `My prefix on ${msg.channel.guild.name} is \`${bu.config.discord.defaultPrefix}\`.`)
     }
 }

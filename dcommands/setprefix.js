@@ -25,7 +25,9 @@ e.execute = (msg, words, text) => {
 
             bu.sendMessageToDiscord(msg.channel.id, `Set command prefix to '${prefix}'`);
         } else {
-            bu.sendMessageToDiscord(msg.channel.id, `Your custom command prefix cannot be blank!`);
+            delete bu.config.discord.servers[msg.channel.guild.id].prefix;
+            bu.saveConfig();
+            bu.sendMessageToDiscord(msg.channel.id, `Reset your command prefix! It is now \`${bu.config.discord.defaultPrefix}\``);
         }
  //   }
 }

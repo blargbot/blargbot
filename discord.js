@@ -433,11 +433,8 @@ e.init = (v, topConfig, em, database) => {
             }
         }
 
-        var prefix = '!';
+        var prefix = config.discord.defaultPrefix
         if (msg.author.id !== bot.user.id) {
-
-
-
             if (msg.channel.guild) {
                 if (config.discord.servers[msg.channel.guild.id] != null &&
                     config.discord.servers[msg.channel.guild.id].prefix != null) {
