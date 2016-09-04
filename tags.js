@@ -100,7 +100,7 @@ e.processTag = (msg, contents, command) => {
                 break;
             case 'randchoose':
                 if (args.length > 1) {
-                //    console.log(util.inspect(args))
+                    //    console.log(util.inspect(args))
                     replaceString = args[bu.getRandomInt(1, args.length - 1)];
                 } else {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
@@ -489,11 +489,12 @@ e.processTag = (msg, contents, command) => {
                 replaceString = tagProcessError(fallback, '`Tag doesn\'t exist`');
                 break;
         }
-        //    replaceString = replaceString.toString();
         if (!replaceString) {
             console.log(tagBrackets, 'whoops')
             replaceString = ''
         }
+        replaceString = replaceString.toString();
+
         //console.log(replaceString);
         if (replaceString.indexOf('{') > -1 && replaceString.indexOf('}') > -1) {
             replaceString = replaceString.replace(/\}/g, '&rb;');
