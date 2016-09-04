@@ -13,7 +13,7 @@ e.isCommand = true
 e.hidden = false
 e.usage = 'e621 <tags...>';
 e.info = 'Gets three pictures from \'<https://e621.net/>\' using given tags.';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.NSFW
 
 e.execute = (msg, words, text) => {
     var nsfwChannel = false;
@@ -28,14 +28,14 @@ e.execute = (msg, words, text) => {
 
             tagList[i] = tagList[i].toLowerCase();
         }
-   // listylist = tagList;
+    // listylist = tagList;
     //    console.log(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
     if (!nsfwChannel)
         if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
             //        console.log(kek);
-            if (!bu.hasPerm(msg, 'Porn Summoner')) {
-                return;
-            }
+            bu.sendMessageToDiscord(msg.channel.id, `:scream_cat: I can't post something like that here! Go to an NSFW channel :scream_cat:`)
+
+            return
         }
     var query = '';
     for (var tag in tagList) {
@@ -70,7 +70,7 @@ e.execute = (msg, words, text) => {
                     if (err != null) {
                         console.log("error: " + err.message);
                     }
-                //    parsedXml = doc;
+                    //    parsedXml = doc;
                     //console.log("result: " + result);
                     var urlList = [];
                     if (doc.posts.post != null)
@@ -87,7 +87,7 @@ e.execute = (msg, words, text) => {
                     } else {
                         message = `Found ${urlList.length}/50 posts\n`;
                     }
-                 //   parsedUrlList = JSON.parse(JSON.stringify(urlList));
+                    //   parsedUrlList = JSON.parse(JSON.stringify(urlList));
 
                     for (i = 0; i < 3; i++) {
                         if (urlList.length > 0) {

@@ -13,7 +13,7 @@ e.isCommand = true
 e.hidden = false
 e.usage = 'danbooru <tags...>';
 e.info = 'Gets three pictures from \'<https://danbooru.donmai.us/>\' using given tags.';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.NSFW
 
 e.execute = (msg, words, text) => {
     var nsfwChannel = false;
@@ -28,14 +28,14 @@ e.execute = (msg, words, text) => {
 
             tagList[i] = tagList[i].toLowerCase();
         }
-  //  listylist = tagList;
+    //  listylist = tagList;
     //    console.log(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
     if (!nsfwChannel)
         if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
-            //        console.log(kek);
-            if (!bu.hasPerm(msg, 'Porn Summoner')) {
-                return;
-            }
+            //        console.log(kek); 
+            bu.sendMessageToDiscord(msg.channel.id, `:scream_cat: I can't post something like that here! Go to an NSFW channel :scream_cat:`)
+
+            return;
         }
     var query = '';
     for (var tag in tagList) {
@@ -71,7 +71,7 @@ e.execute = (msg, words, text) => {
                 //      console.log("error: " + err.message);
                 //  }
                 var doc = JSON.parse(body);
-   //             danbooruDoc = doc;
+                //             danbooruDoc = doc;
                 //      parsedXml = doc;
                 //console.log("result: " + result);
                 var urlList = [];
@@ -95,8 +95,8 @@ e.execute = (msg, words, text) => {
                     bu.sendMessageToDiscord(msg.channel.id, "No results found!");
                     return;
                 }
-            //    parsedUrlList = JSON.parse(JSON.stringify(urlList));
-          //      danbooruUrl = parsedUrlList;
+                //    parsedUrlList = JSON.parse(JSON.stringify(urlList));
+                //      danbooruUrl = parsedUrlList;
                 for (var i = 0; i < 3; i++) {
                     if (urlList.length > 0) {
                         var choice = bu.getRandomInt(0, urlList.length - 1);

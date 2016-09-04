@@ -14,9 +14,10 @@ e.vars = null
 e.CommandType = {
     GENERAL: 1,
     CAT: 2,
-    MUSIC: 3,
-    COMMANDER: 4,
-    ADMIN: 5,
+    NSFW: 3,
+    MUSIC: 4,
+    COMMANDER: 5,
+    ADMIN: 6,
     properties: {
         1: {
             name: 'General',
@@ -27,15 +28,23 @@ e.CommandType = {
             requirement: msg => msg.author.id == e.CAT_ID
         },
         3: {
+            name: 'NSFW',
+            requirement: msg => {
+                return e.config.discord.servers[msg.channel.guild.id] &&
+                    e.config.discord.servers[msg.channel.guild.id].nsfw &&
+                    e.config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id];
+            }
+        },
+        4: {
             name: 'Music',
             requirement: msg => !msg.channel.guild ? false : e.config.discord.musicGuilds[msg.channel.guild.id]
         },
-        4: {
+        5: {
             name: 'Bot Commander',
             requirement: msg => !msg.channel.guild ? true : e.hasPerm(msg, 'Bot Commander', true),
             perm: 'Bot Commander'
         },
-        5: {
+        6: {
             name: 'Admin',
             requirement: msg => !msg.channel.guild ? true : e.hasPerm(msg, 'Admin', true),
             perm: 'Admin'

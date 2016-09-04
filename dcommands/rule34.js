@@ -13,7 +13,7 @@ e.isCommand = true
 e.hidden = false
 e.usage = 'rule34 <tags...>';
 e.info = 'Gets three pictures from \'<https://rule34.xxx/>\' using given tags.';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.NSFW
 
 e.execute = (msg, words, text) => {
     var nsfwChannel = false;
@@ -30,13 +30,10 @@ e.execute = (msg, words, text) => {
         }
     // listylist = tagList;
     //    console.log(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
-    if (!nsfwChannel)
-        //   if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
-        //        console.log(kek);
-        if (!bu.hasPerm(msg, 'Porn Summoner')) {
-            return;
-            //    }
-        }
+    if (!nsfwChannel) {
+       bu.sendMessageToDiscord(msg.channel.id, `:scream_cat: I can't post something like that here! Go to an NSFW channel :scream_cat:`)
+        return;
+    }
     var query = '';
     for (var tag in tagList) {
         query += tagList[tag] + "%20";
