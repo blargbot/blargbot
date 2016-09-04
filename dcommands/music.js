@@ -176,7 +176,7 @@ Commands:
                 //     if (youtube.queue.hasOwnProperty(msg.channel.guild.id)) {
                 if (words[0] == 'force' && bu.hasPerm(msg, 'Bot Commander')) {
                     voiceConnections.get(msg.channel.guild.id).stopPlaying();
-                    return;                    
+                    return;
                 }
                 //   } else
                 var votesNeeded = youtube.current[msg.channel.guild.id].votesNeeded
@@ -249,18 +249,18 @@ Commands:
                         //      var voicevoiceConnections.get(msg.channel.guild.id) = voice;
                         voice.on('connect', () => {
                             try {
-                            console.log(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                console.log(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
                             } catch (err) {
                                 console.log(err)
-                            }  
-                      });
+                            }
+                        });
                         voice.on('ready', () => {
                             try {
-                            console.log(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                console.log(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
                             } catch (err) {
                                 console.log(err)
-                            }   
-                      })
+                            }
+                        })
                         voice.on('error', (err) => {
                             console.log('Error: ', err);
                         })
@@ -299,7 +299,7 @@ Commands:
                         });
                         return voice;
                     }).catch((err) => {
-                        console.log(err)  
+                        console.log(err)
                     });
 
                 } else {
@@ -329,42 +329,64 @@ Commands:
             break;
 
         default:
-            if (words[0] && words[0] == 'shuffle') {
-                // console.log(util.inspect(youtube.queue[msg.channel.guild.id]))
-                for (var i = 0; i < youtube.queue[msg.channel.guild.id].length; i++) {
-                    console.log(youtube.cache[youtube.queue[msg.channel.guild.id][i].id].name)
-                }
-                console.log('------------------------------------------------------')
-                shuffle(youtube.queue[msg.channel.guild.id])
-                for (var i = 0; i < youtube.queue[msg.channel.guild.id].length; i++) {
-                    console.log(youtube.cache[youtube.queue[msg.channel.guild.id][i].id].name)
-                }
-                //    console.log(util.inspect(youtube.queue[msg.channel.guild.id]))
-                var suits = [':diamonds:', ':spades:', ':clubs:', ':hearts:']
-                shuffle(suits)
-                sendMessage(msg.channel.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
-                    shuffle(suits)
-                    setTimeout(() => {
-                        bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
+            if (words[0]) {
+                switch (words[0]) {
+                    case 'shuffle':
+                        for (var i = 0; i < youtube.queue[msg.channel.guild.id].length; i++) {
+                            console.log(youtube.cache[youtube.queue[msg.channel.guild.id][i].id].name)
+                        }
+                        console.log('------------------------------------------------------')
+                        shuffle(youtube.queue[msg.channel.guild.id])
+                        for (var i = 0; i < youtube.queue[msg.channel.guild.id].length; i++) {
+                            console.log(youtube.cache[youtube.queue[msg.channel.guild.id][i].id].name)
+                        }
+                        //    console.log(util.inspect(youtube.queue[msg.channel.guild.id]))
+                        var suits = [':diamonds:', ':spades:', ':clubs:', ':hearts:']
+                        shuffle(suits)
+                        sendMessage(msg.channel.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
                             shuffle(suits)
                             setTimeout(() => {
-                                bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
+                                bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
                                     shuffle(suits)
                                     setTimeout(() => {
                                         bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
                                             shuffle(suits)
                                             setTimeout(() => {
-                                                bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Queue shuffled! ${suits[1]}`)
+                                                bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
+                                                    shuffle(suits)
+                                                    setTimeout(() => {
+                                                        bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Queue shuffled! ${suits[1]}`)
+                                                    }, 1500)
+                                                })
                                             }, 1500)
                                         })
                                     }, 1500)
                                 })
                             }, 1500)
                         })
-                    }, 1500)
-                })
-                var queue = youtube.queue[msg.channel.guild.id]
-                youtube.saveVideo(msg, queue[0].id, youtube.cache[queue[0].id].name, youtube.cache[queue[0].id].duration)
+                        var queue = youtube.queue[msg.channel.guild.id]
+                        youtube.saveVideo(msg, queue[0].id, youtube.cache[queue[0].id].name, youtube.cache[queue[0].id].duration)
+                        break;
+                    case 'remove':
+                        if (bu.hasPerm(msg, 'Bot Commander')) {
+                            if (words[1]) {
+                                var index = parseInt(words[1]) - 1;
+                                if (youtube.queue[msg.channel.guild.id][index]) {
+                                    var removed = youtube.queue[msg.channel.guild.id].splice(index, 1)
+
+                                    var removedSong = youtube.cache[removed[0].id].name
+                                    //        console.log(util.inspect(removed))
+                                    bu.sendMessageToDiscord(msg.channel.id, `:umbrella: Removed the song **${removedSong}** :umbrella:`)
+
+                                }
+                            }
+                        } else {
+                            bu.sendMessageToDiscord(msg.channel.id, `:no_good: You don't have permissions to remove a song from the queue :no_good:`)
+                        }
+                        break;
+                }
+                // console.log(util.inspect(youtube.queue[msg.channel.guild.id]))
+
             } else {
                 var messageToSend = ':musical_score: Current Queue: :musical_score:\n```xl\n'
 
