@@ -297,6 +297,9 @@ Commands:
                             console.log(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
                             sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, "Bye!");
                         });
+                        return voice;
+                    }).catch((err) => {
+                        console.log(err)  
                     });
 
                 } else {
