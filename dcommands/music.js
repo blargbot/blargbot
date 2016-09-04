@@ -249,14 +249,18 @@ Commands:
                         //      var voicevoiceConnections.get(msg.channel.guild.id) = voice;
                         voice.on('connect', () => {
                             try {
-                            console.log(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
+                            console.log(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
                             } catch (err) {
                                 console.log(err)
                             }  
                       });
                         voice.on('ready', () => {
-                            console.log(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
-                        })
+                            try {
+                            console.log(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                            } catch (err) {
+                                console.log(err)
+                            }   
+                      })
                         voice.on('error', (err) => {
                             console.log('Error: ', err);
                         })
