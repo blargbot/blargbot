@@ -288,7 +288,14 @@ Commands:
                             }
                             //      var voicevoiceConnections.get(msg.channel.guild.id) = voice;
                             voice.on('start', () => {
-
+                                if (bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
+                                    bot.editChannel(channel, {
+                                        topic: `:musical_note: Now playing: ${cache[current[msg.channel.guild.id].id].name} :musical_note:
+Type ${bu.config.discord.servers[msg.channel.guild.id].prefix
+                                            ? bu.config.discord.servers[msg.channel.guild.id].prefix
+                                            : bu.config.discord.defaultPrefix}music for music commands.`
+                                    })
+                                }
                             })
                             voice.on('connect', () => {
                                 try {
@@ -325,6 +332,11 @@ Commands:
                                     } else {
                                         sendMessage(channel, `Jobs done.`);
                                         delete current[msg.channel.guild.id]
+                                        bot.editChannel(channel, {
+                                            topic: `Type ${bu.config.discord.servers[msg.channel.guild.id].prefix
+                                                ? bu.config.discord.servers[msg.channel.guild.id].prefix
+                                                : bu.config.discord.defaultPrefix}music for music commands.`
+                                        })
                                     }
                                 } catch (err) {
                                     console.log(err);
