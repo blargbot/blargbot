@@ -362,8 +362,20 @@ e.init = (v, topConfig, em, database) => {
         postStats();
         console.log('added to guild');
         var message = `I was added to the guild \`${guild.name}\` (\`${guild.id}\`)!`
-
         bu.sendMessageToDiscord(`205153826162868225`, message);
+        console.log('WHY')
+        var message = `Hi! My name is blargbot, a multifunctional discord bot here to serve you! 
+- <:B1nzy:210242619735801856> For command information, please do \`${bu.config.discord.defaultPrefix}help\`!
+- :loudspeaker: For Bot Commander commands, please make sure you have a role titled \`Bot Commander\`.
+- :tools: For Admin commands, please make sure you have a role titled \`Admin\`.
+If you are the owner of this server, here are a few things to know.
+- :speech_left: To enable modlogging, please do create a channel for me to log in and do \`${bu.config.discord.defaultPrefix}modlog\`
+- :see_no_evil: To mark channels as NSFW, please go to them and do \`${bu.config.discord.defaultPrefix}nsfw\`.
+- :exclamation: To change my command prefix, please do \`${bu.config.discord.defaultPrefix}setprefix <anything>\`.
+
+:question: If you have any questions, comments, or concerns, please do \`${bu.config.discord.defaultPrefix}suggest <suggestion>\`. Thanks!
+:thumbsup: I hope you enjoy my services! :thumbsup:`
+        bu.sendMessageToDiscord(guild.id, message)
     });
 
     bot.on('messageUpdate', (msg, oldmsg) => {
