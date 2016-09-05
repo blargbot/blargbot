@@ -104,54 +104,71 @@ e.execute = (msg, words, text) => {
     if (!bu.config.discord.musicGuilds[msg.channel.guild.id]) {
         return;
     }
-    bot.sendChannelTyping(msg.channel.id)
-    if (!voiceSettings[msg.channel.guild.id]) {
-        voiceSettings[msg.channel.guild.id] = {
-            volume: 50,
-            //  currentChannel: msg.channel.guild.defaultChannel,
-            specialUsers: [],
-            blacklist: true
-        }
-    }
-    voiceSettings[msg.channel.guild.id].currentChannel = msg.channel.id;
-    console.log(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} (${msg.channel.id}> ${msg.author.username} (${msg.author.id})> ${msg.content}`);
-    //var command = msg.content.replace('=3', '').trim();
-    //var words = command.split(' ');
-    //  words.shift()
-    if (words.length == 0) {
-        var messageToSend = ':musical_score: Current Queue: :musical_score:\n```xl\n'
+    bot.sendChannelTyping(msg.channel.id).then(() => {
 
-        if (current[msg.channel.guild.id]) {
-            var currentSong = current[msg.channel.guild.id]
-            var timeDiff = moment.duration(moment().diff(moment(currentSong.start)))
-            var timeLength = moment.duration(currentSong.duration)
-            messageToSend += `Right Now: ${currentSong.name} [${createTimeString(timeDiff)}/${createTimeString(timeLength)}]\n`
-        }
 
-        if (queue.hasOwnProperty(msg.channel.guild.id) && queue[msg.channel.guild.id].length > 0) {
-            for (var i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                messageToSend += `${(i + 1) < 10 ? ' ' + (i + 1) : i + 1}: ${queue[msg.channel.guild.id][i].name} - [${createTimeString(moment.duration(queue[msg.channel.guild.id][i].duration))}]\n`
+        if (!voiceSettings[msg.channel.guild.id]) {
+            voiceSettings[msg.channel.guild.id] = {
+                volume: 50,
+                //  currentChannel: msg.channel.guild.defaultChannel,
+                specialUsers: [],
+                blacklist: true
             }
-        } else {
-            messageToSend += 'Nothing queued!'
         }
-        messageToSend += '```'
-        sendMessage(msg.channel.id, messageToSend);
-        return;
-    }
-    switch (words.shift().toLowerCase()) {
-        case "music":
-            if (words[0]) {
-                switch (words.shift()) {
-                    case "eval":
-                        eval1(msg, words.join(' '));
-                        break;
-                    case "eval2":
-                        eval2(msg, words.join(' '));
-                        break;
+        voiceSettings[msg.channel.guild.id].currentChannel = msg.channel.id;
+        console.log(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} (${msg.channel.id}> ${msg.author.username} (${msg.author.id})> ${msg.content}`);
+        //var command = msg.content.replace('=3', '').trim();
+        //var words = command.split(' ');
+        //  words.shift()
+        if (words.length == 0) {
+            var messageToSend = ':musical_score: Current Queue: :musical_score:\n```xl\n'
+
+            if (current[msg.channel.guild.id]) {
+                var currentSong = current[msg.channel.guild.id]
+                var timeDiff = moment.duration(moment().diff(moment(currentSong.start)))
+                var timeLength = moment.duration(currentSong.duration)
+                messageToSend += `Right Now: ${currentSong.name} [${createTimeString(timeDiff)}/${createTimeString(timeLength)}]\n`
+            }
+
+            if (queue.hasOwnProperty(msg.channel.guild.id) && queue[msg.channel.guild.id].length > 0) {
+                for (var i = 0; i < queue[msg.channel.guild.id].length; i++) {
+                    messageToSend += `${(i + 1) < 10 ? ' ' + (i + 1) : i + 1}: ${queue[msg.channel.guild.id][i].name} - [${createTimeString(moment.duration(queue[msg.channel.guild.id][i].duration))}]\n`
                 }
-            } else
-                sendMessage(msg.channel.id, `\`\`\`xl
+            } else {
+                messageToSend += 'Nothing queued!'
+            }
+            messageToSend += '```'
+            sendMessage(msg.channel.id, messageToSend);
+            return;
+        }
+        switch (words.shift().toLowerCase()) {
+            case "music":
+                if (words[0]) {
+                    switch (words.shift()) {
+                        case "eval":
+                            eval1(msg, words.join(' '));
+                            break;
+                        case "eval2":
+                            eval2(msg, words.join(' '));
+                            break;
+                        case 'setchannel':
+                            if (!bu.config.discord.servers[msg.channel.guild.id]) {
+                                bu.config.discord.servers[msg.channel.guild.id] = {}
+                            }
+                            if (bu.config.discord.servers[msg.channel.guild.id].musicChannel == msg.channel.id) {
+                                delete bu.config.discord.servers[msg.channel.guild.id].musicChannel
+                                bu.sendMessageToDiscord(msg.channel.id, 'This is no longer my music channel.')
+
+                            } else {
+                                bu.config.discord.servers[msg.channel.guild.id].musicChannel = msg.channel.id
+                                bu.sendMessageToDiscord(msg.channel.id, 'This is now my music channel.')
+
+                            }
+                            bu.saveConfig()
+                            break;
+                    }
+                } else
+                    sendMessage(msg.channel.id, `\`\`\`xl
 Commands:
  music - shows this message
  summon - summons me to your voice channel
@@ -163,285 +180,299 @@ Commands:
  clear - clears the queue
  queue [shuffle]- shows the current queue, or shuffles it
 \`\`\``);
-            break;
+                break;
 
-        case 'play':
-            if (voiceConnections.get(msg.channel.guild.id) && voiceConnections.get(msg.channel.guild.id).ready)
-                handleMusicCommand(msg, words, msg.content, voiceConnections)
-            else
-                sendMessage(msg.channel.id, `I can't play until I'm in a voice channel!`)
-            break;
-        //          case 'resume':
-        //              if (msg.channel.guild.id in voiceConnections) {
-        //                   voiceConnections[msg.channel.guild.id].resume();
-        //                }
-        //                break;
-        case "stop":
-            if (voiceConnections.get(msg.channel.guild.id).ready) {
-                if (queue.hasOwnProperty(msg.channel.guild.id)) {
-                    queue[msg.channel.guild.id].length = 0
-                }
-                voiceConnections.get(msg.channel.guild.id).stopPlaying();
-                //    delete voiceConnections[msg.channel.guild.id];
-                //sendMessage(msg.channel.id, "Ok, I'm done.");
-            }
-            break;
-        case 'skip':
-            console.log('skipping')
-            if (voiceConnections.get(msg.channel.guild.id).ready) {
-                //     if (queue.hasOwnProperty(msg.channel.guild.id)) {
-                if (words[0] == 'force' && bu.hasPerm(msg, 'Bot Commander')) {
-                    voiceConnections.get(msg.channel.guild.id).stopPlaying();
-                    return;
-                }
-                //   } else
-                var votesNeeded = current[msg.channel.guild.id].votesNeeded
-                if (!current[msg.channel.guild.id].votes) {
-                    current[msg.channel.guild.id].votes = []
-                }
-                if (current[msg.channel.guild.id].votes.indexOf(msg.author.id) > -1) {
-                    bu.sendMessageToDiscord(msg.channel.id, `:no_good: You've already voted to skip! :no_good: `)
-                    return;
-                }
-                current[msg.channel.guild.id].votes.push(msg.author.id)
-
-                if (current[msg.channel.guild.id].votes.length >= votesNeeded) {
-                    bu.sendMessageToDiscord(msg.channel.id, `:umbrella2: Skipping the song \`${cache[current[msg.channel.guild.id].id].name}\` after ${votesNeeded} votes. :umbrella2:`)
-                    voiceConnections.get(msg.channel.guild.id).stopPlaying();
-
-                } else {
-                    bu.sendMessageToDiscord(msg.channel.id, `:closed_umbrella: ${msg.member.nick
-                        ? msg.member.nick
-                        : msg.author.username} has voted to skip the song \`${
-                        cache[current[msg.channel.guild.id].id].name}\`. **${
-                        votesNeeded - current[msg.channel.guild.id].votes.length
-                        }** more votes are needed to skip the song. :closed_umbrella: `)
-
-                }
-                // voiceConnections.get(msg.channel.guild.id).stopPlaying();
-                //    delete voiceConnections[msg.channel.guild.id];
-                //sendMessage(msg.channel.id, "Ok, I'm done.");
-            }
-            break;
-        case 'volume':
-            //   if (msg.channel.guild.id in voiceConnections) {
-            if (words[0]) {
-                var message = '';
-                var newVolume = parseInt(words[0]);
-                console.log(newVolume);
-
-                if (newVolume > 100) {
-                    newVolume = 100
-                    message = `I don't think I can go any louder than 100!\n`
-                } else if (newVolume < 1) {
-                    newVolume = 1
-                    message = `I don't think I can go any quieter than 1!\n`
-                }
-                message += `:speaker: Ok, I'll change my volume to ${newVolume}! :speaker: `
-                sendMessage(msg.channel.id, message);
-                voiceSettings[msg.channel.guild.id].volume = newVolume;
-                //       saveVoiceSettings();
+            case 'play':
+                if (voiceConnections.get(msg.channel.guild.id) && voiceConnections.get(msg.channel.guild.id).ready)
+                    handleMusicCommand(msg, words, msg.content, voiceConnections)
+                else
+                    sendMessage(msg.channel.id, `I can't play until I'm in a voice channel!`)
+                break;
+            //          case 'resume':
+            //              if (msg.channel.guild.id in voiceConnections) {
+            //                   voiceConnections[msg.channel.guild.id].resume();
+            //                }
+            //                break;
+            case "stop":
                 if (voiceConnections.get(msg.channel.guild.id).ready) {
-
-                    voiceConnections.get(msg.channel.guild.id).setVolume(newVolume / 100)
+                    if (queue.hasOwnProperty(msg.channel.guild.id)) {
+                        queue[msg.channel.guild.id].length = 0
+                    }
+                    voiceConnections.get(msg.channel.guild.id).stopPlaying();
+                    //    delete voiceConnections[msg.channel.guild.id];
+                    //sendMessage(msg.channel.id, "Ok, I'm done.");
                 }
-            } else {
-                sendMessage(msg.channel.id, `:speaker: My volume is currently ${voiceSettings[msg.channel.guild.id].volume} :speaker: `)
-            }
-            //       }
-            break;
-        case 'clear':
-            if (queue.hasOwnProperty(msg.channel.guild.id)) {
-                queue[msg.channel.guild.id].length = 0;
-                sendMessage(msg.channel.id, `:ok_hand: Queue cleared! :ok_hand:`)
-            }
-            break;
-        case "summon":
-            if (msg.member.voiceState && msg.member.voiceState.channelID) {
-                if (!voiceConnections.get(msg.channel.guild.id)) {
-                    var p1 = bot.joinVoiceChannel(msg.member.voiceState.channelID);
-                    p1.then(function (voice) {
-                        sendMessage(msg.channel.id, `I'm here!`)
-                        //      var voicevoiceConnections.get(msg.channel.guild.id) = voice;
-                        voice.on('connect', () => {
-                            try {
-                                console.log(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
-                            } catch (err) {
-                                console.log(err)
+                break;
+            case 'skip':
+                console.log('skipping')
+                if (voiceConnections.get(msg.channel.guild.id).ready) {
+                    //     if (queue.hasOwnProperty(msg.channel.guild.id)) {
+                    if (words[0] == 'force' && bu.hasPerm(msg, 'Bot Commander')) {
+                        voiceConnections.get(msg.channel.guild.id).stopPlaying();
+                        return;
+                    }
+                    //   } else
+                    var votesNeeded = current[msg.channel.guild.id].votesNeeded
+                    if (!current[msg.channel.guild.id].votes) {
+                        current[msg.channel.guild.id].votes = []
+                    }
+                    if (current[msg.channel.guild.id].votes.indexOf(msg.author.id) > -1) {
+                        bu.sendMessageToDiscord(msg.channel.id, `:no_good: You've already voted to skip! :no_good: `)
+                        return;
+                    }
+                    current[msg.channel.guild.id].votes.push(msg.author.id)
+
+                    if (current[msg.channel.guild.id].votes.length >= votesNeeded) {
+                        bu.sendMessageToDiscord(msg.channel.id, `:umbrella2: Skipping the song \`${cache[current[msg.channel.guild.id].id].name}\` after ${votesNeeded} votes. :umbrella2:`)
+                        voiceConnections.get(msg.channel.guild.id).stopPlaying();
+
+                    } else {
+                        bu.sendMessageToDiscord(msg.channel.id, `:closed_umbrella: ${msg.member.nick
+                            ? msg.member.nick
+                            : msg.author.username} has voted to skip the song \`${
+                            cache[current[msg.channel.guild.id].id].name}\`. **${
+                            votesNeeded - current[msg.channel.guild.id].votes.length
+                            }** more votes are needed to skip the song. :closed_umbrella: `)
+
+                    }
+                    // voiceConnections.get(msg.channel.guild.id).stopPlaying();
+                    //    delete voiceConnections[msg.channel.guild.id];
+                    //sendMessage(msg.channel.id, "Ok, I'm done.");
+                }
+                break;
+            case 'volume':
+                //   if (msg.channel.guild.id in voiceConnections) {
+                if (words[0]) {
+                    var message = '';
+                    var newVolume = parseInt(words[0]);
+                    console.log(newVolume);
+
+                    if (newVolume > 100) {
+                        newVolume = 100
+                        message = `I don't think I can go any louder than 100!\n`
+                    } else if (newVolume < 1) {
+                        newVolume = 1
+                        message = `I don't think I can go any quieter than 1!\n`
+                    }
+                    message += `:speaker: Ok, I'll change my volume to ${newVolume}! :speaker: `
+                    sendMessage(msg.channel.id, message);
+                    voiceSettings[msg.channel.guild.id].volume = newVolume;
+                    //       saveVoiceSettings();
+                    if (voiceConnections.get(msg.channel.guild.id).ready) {
+
+                        voiceConnections.get(msg.channel.guild.id).setVolume(newVolume / 100)
+                    }
+                } else {
+                    sendMessage(msg.channel.id, `:speaker: My volume is currently ${voiceSettings[msg.channel.guild.id].volume} :speaker: `)
+                }
+                //       }
+                break;
+            case 'clear':
+                if (queue.hasOwnProperty(msg.channel.guild.id)) {
+                    queue[msg.channel.guild.id].length = 0;
+                    sendMessage(msg.channel.id, `:ok_hand: Queue cleared! :ok_hand:`)
+                }
+                break;
+            case "summon":
+                if (msg.member.voiceState && msg.member.voiceState.channelID) {
+                    if (!voiceConnections.get(msg.channel.guild.id)) {
+                        var p1 = bot.joinVoiceChannel(msg.member.voiceState.channelID);
+                        p1.then(function (voice) {
+                            sendMessage(msg.channel.id, `I'm here!`)
+                            var channel = msg.channel.id
+                            if (!bu.config.discord.servers[msg.channel.guild.id]) {
+                                bu.config.discord.servers[msg.channel.guild.id] = {}
                             }
-                        });
-                        voice.on('ready', () => {
-                            try {
-                                console.log(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
-                            } catch (err) {
-                                console.log(err)
+                            if (bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
+                                var channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
                             }
-                        })
-                        voice.on('error', (err) => {
-                            console.log('Error: ', err);
-                        })
-                        voice.on('debug', (debug) => {
-                            console.log('Debug: ', debug);
-                        })
-                        voice.on('warn', (warn) => {
-                            console.log('Warning: ', warn);
-                        })
-                        voice.on('end', function () {
-                            try {
-                                console.log(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
-                                if (!bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID)) {
-                                    //  sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, `An error has occured!`)
-                                } else if (queue[msg.channel.guild.id] && queue[msg.channel.guild.id].length > 0) {
-                                    setTimeout(() => {
-                                        nextSong(msg);
-                                    }, 500)
-                                } else {
-                                    sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, `Jobs done.`);
-                                    delete current[msg.channel.guild.id]
+                            //      var voicevoiceConnections.get(msg.channel.guild.id) = voice;
+                            voice.on('start', () => {
+
+                            })
+                            voice.on('connect', () => {
+                                try {
+                                    console.log(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                } catch (err) {
+                                    console.log(err)
                                 }
-                            } catch (err) {
-                                console.log(err);
+                            });
+                            voice.on('ready', () => {
+                                try {
+                                    console.log(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                } catch (err) {
+                                    console.log(err)
+                                }
+                            })
+                            voice.on('error', (err) => {
+                                console.log('Error: ', err);
+                            })
+                            voice.on('debug', (debug) => {
+                                console.log('Debug: ', debug);
+                            })
+                            voice.on('warn', (warn) => {
+                                console.log('Warning: ', warn);
+                            })
+                            voice.on('end', function () {
+                                try {
+                                    console.log(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
+                                    if (!bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID)) {
+                                        //  sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, `An error has occured!`)
+                                    } else if (queue[msg.channel.guild.id] && queue[msg.channel.guild.id].length > 0) {
+                                        setTimeout(() => {
+                                            nextSong(msg);
+                                        }, 500)
+                                    } else {
+                                        sendMessage(channel, `Jobs done.`);
+                                        delete current[msg.channel.guild.id]
+                                    }
+                                } catch (err) {
+                                    console.log(err);
+                                }
+                            });
+                            voice.on('disconnect', function () {
+                                console.log(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
+                                sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, "Bye!");
+                            });
+                            return voice;
+                        }).catch((err) => {
+                            console.log(err)
+                        });
+
+                    } else {
+                        voice = voiceConnections.get(msg.channel.guild.id);
+                        if (voice.channelID != msg.member.voiceState.channelID) {
+                            //     sendMessage(msg.channel.id, 'I\'m coming!')
+                            sendMessage(msg.channel.id, `I'm here!`)
+
+                            //    voice.pause();
+                            voice.switchChannel(msg.member.voiceState.channelID);
+                            //   voice.resume();
+                        }
+                        //      voiceConnections[msg.channel.guild.id].switchChannel(msg.member.voiceState.channelID);
+                        //        voiceConnections[msg.channel.guild.id].resume();
+                    }
+                } else {
+                    sendMessage(msg.channel.id, `Join a voice channel first!`)
+                }
+                break;
+            case 'banish':
+                if (voiceConnections.get(msg.channel.guild.id).ready) {
+                    //        voiceConnections.get(msg.channel.guild.id).stopPlaying();                
+                    voiceConnections.get(msg.channel.guild.id).disconnect();
+                    delete current[msg.channel.guild.id]
+                    // delete voiceConnections[msg.channel.guild.id]
+                }
+                break;
+
+            default:
+                if (words[0]) {
+                    switch (words[0]) {
+                        case 'shuffle':
+                            for (var i = 0; i < queue[msg.channel.guild.id].length; i++) {
+                                console.log(cache[queue[msg.channel.guild.id][i].id].name)
                             }
-                        });
-                        voice.on('disconnect', function () {
-                            console.log(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
-                            sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, "Bye!");
-                        });
-                        return voice;
-                    }).catch((err) => {
-                        console.log(err)
-                    });
+                            console.log('------------------------------------------------------')
+                            shuffle(queue[msg.channel.guild.id])
+                            for (var i = 0; i < queue[msg.channel.guild.id].length; i++) {
+                                console.log(cache[queue[msg.channel.guild.id][i].id].name)
+                            }
+                            //    console.log(util.inspect(queue[msg.channel.guild.id]))
+                            var suits = [':diamonds:', ':spades:', ':clubs:', ':hearts:']
+                            shuffle(suits)
+                            sendMessage(msg.channel.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
+                                shuffle(suits)
+                                setTimeout(() => {
+                                    bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
+                                        shuffle(suits)
+                                        setTimeout(() => {
+                                            bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
+                                                shuffle(suits)
+                                                setTimeout(() => {
+                                                    bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
+                                                        shuffle(suits)
+                                                        setTimeout(() => {
+                                                            bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Queue shuffled! ${suits[1]}`)
+                                                        }, 1500)
+                                                    })
+                                                }, 1500)
+                                            })
+                                        }, 1500)
+                                    })
+                                }, 1500)
+                            })
+                            var subqueue = queue[msg.channel.guild.id]
+                            var channel = msg.channel.id
+                            if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
+                                channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
+                            }
+                            saveVideo(msg, channel, subqueue[0].id, cache[subqueue[0].id].name, cache[subqueue[0].id].duration)
+                            break;
+                        case 'remove':
+                            if (bu.hasPerm(msg, 'Bot Commander')) {
+                                if (words[1]) {
+                                    var index = parseInt(words[1]) - 1;
+                                    if (queue[msg.channel.guild.id][index]) {
+                                        var removed = queue[msg.channel.guild.id].splice(index, 1)
+
+                                        var removedSong = cache[removed[0].id].name
+                                        //        console.log(util.inspect(removed))
+                                        bu.sendMessageToDiscord(msg.channel.id, `:umbrella: Removed the song **${removedSong}** :umbrella:`)
+
+                                    }
+                                }
+                            } else {
+                                bu.sendMessageToDiscord(msg.channel.id, `:no_good: You don't have permissions to remove a song from the queue :no_good:`)
+                            }
+                            break;
+                    }
+                    // console.log(util.inspect(queue[msg.channel.guild.id]))
 
                 } else {
-                    voice = voiceConnections.get(msg.channel.guild.id);
-                    if (voice.channelID != msg.member.voiceState.channelID) {
-                        //     sendMessage(msg.channel.id, 'I\'m coming!')
-                        sendMessage(msg.channel.id, `I'm here!`)
+                    var messageToSend = ':musical_score: Current Queue: :musical_score:\n```xl\n'
 
-                        //    voice.pause();
-                        voice.switchChannel(msg.member.voiceState.channelID);
-                        //   voice.resume();
-                    }
-                    //      voiceConnections[msg.channel.guild.id].switchChannel(msg.member.voiceState.channelID);
-                    //        voiceConnections[msg.channel.guild.id].resume();
-                }
-            } else {
-                sendMessage(msg.channel.id, `Join a voice channel first!`)
-            }
-            break;
-        case 'banish':
-            if (voiceConnections.get(msg.channel.guild.id).ready) {
-                //        voiceConnections.get(msg.channel.guild.id).stopPlaying();                
-                voiceConnections.get(msg.channel.guild.id).disconnect();
-                delete current[msg.channel.guild.id]
-                // delete voiceConnections[msg.channel.guild.id]
-            }
-            break;
-
-        default:
-            if (words[0]) {
-                switch (words[0]) {
-                    case 'shuffle':
-                        for (var i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                            console.log(cache[queue[msg.channel.guild.id][i].id].name)
-                        }
-                        console.log('------------------------------------------------------')
-                        shuffle(queue[msg.channel.guild.id])
-                        for (var i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                            console.log(cache[queue[msg.channel.guild.id][i].id].name)
-                        }
-                        //    console.log(util.inspect(queue[msg.channel.guild.id]))
-                        var suits = [':diamonds:', ':spades:', ':clubs:', ':hearts:']
-                        shuffle(suits)
-                        sendMessage(msg.channel.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
-                            shuffle(suits)
-                            setTimeout(() => {
-                                bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
-                                    shuffle(suits)
-                                    setTimeout(() => {
-                                        bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
-                                            shuffle(suits)
-                                            setTimeout(() => {
-                                                bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
-                                                    shuffle(suits)
-                                                    setTimeout(() => {
-                                                        bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Queue shuffled! ${suits[1]}`)
-                                                    }, 1500)
-                                                })
-                                            }, 1500)
-                                        })
-                                    }, 1500)
-                                })
-                            }, 1500)
-                        })
-                        var subqueue = queue[msg.channel.guild.id]
-                        saveVideo(msg, subqueue[0].id, cache[subqueue[0].id].name, cache[subqueue[0].id].duration)
-                        break;
-                    case 'remove':
-                        if (bu.hasPerm(msg, 'Bot Commander')) {
-                            if (words[1]) {
-                                var index = parseInt(words[1]) - 1;
-                                if (queue[msg.channel.guild.id][index]) {
-                                    var removed = queue[msg.channel.guild.id].splice(index, 1)
-
-                                    var removedSong = cache[removed[0].id].name
-                                    //        console.log(util.inspect(removed))
-                                    bu.sendMessageToDiscord(msg.channel.id, `:umbrella: Removed the song **${removedSong}** :umbrella:`)
-
-                                }
-                            }
-                        } else {
-                            bu.sendMessageToDiscord(msg.channel.id, `:no_good: You don't have permissions to remove a song from the queue :no_good:`)
-                        }
-                        break;
-                }
-                // console.log(util.inspect(queue[msg.channel.guild.id]))
-
-            } else {
-                var messageToSend = ':musical_score: Current Queue: :musical_score:\n```xl\n'
-
-                if (current[msg.channel.guild.id]) {
-                    var currentSong = current[msg.channel.guild.id]
-                    var timeDiff = moment.duration(moment().diff(moment(currentSong.start)))
-                    var timeLength = moment.duration(cache[currentSong.id].duration)
-                    console.log(currentSong.requester)
-                    var requesterMember = msg.channel.guild.members.get(currentSong.requester);
-                    var requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username
-                    var line = `Right Now: ${cache[currentSong.id].name} [${
-                        createTimeString(timeDiff)}/${createTimeString(timeLength)}] \n           Requested by ${requester}\n`
-                    var oddApo = (line.match(/'/g) || []).length % 2
-                    messageToSend += oddApo == 0 ? line : line.replace(/'/, '\u2019')
-                }
-
-                if (queue.hasOwnProperty(msg.channel.guild.id) && queue[msg.channel.guild.id].length > 0) {
-                    for (var i = 0; i < (queue[msg.channel.guild.id].length <= 10 ? queue[msg.channel.guild.id].length : 10); i++) {
-                        var id = queue[msg.channel.guild.id][i].id
-                        var requesterMember = msg.channel.guild.members.get(queue[msg.channel.guild.id][i].requester);
+                    if (current[msg.channel.guild.id]) {
+                        var currentSong = current[msg.channel.guild.id]
+                        var timeDiff = moment.duration(moment().diff(moment(currentSong.start)))
+                        var timeLength = moment.duration(cache[currentSong.id].duration)
+                        console.log(currentSong.requester)
+                        var requesterMember = msg.channel.guild.members.get(currentSong.requester);
                         var requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username
-                        var name = cache[id].name
-                        if (name.length > 40) {
-                            name = name.substring(0, 44) + "..."
-                        }
-                        var line = `${(i + 1) < 10 ? ' ' + (i + 1) : i + 1}: `
-                        line += name
-                        line = pad(line, 51)
-                        line += ` - [${createTimeString(moment.duration(cache[id].duration))}] (${requester})\n`
+                        var line = `Right Now: ${cache[currentSong.id].name} [${
+                            createTimeString(timeDiff)}/${createTimeString(timeLength)}] \n           Requested by ${requester}\n`
                         var oddApo = (line.match(/'/g) || []).length % 2
                         messageToSend += oddApo == 0 ? line : line.replace(/'/, '\u2019')
                     }
-                    if (queue[msg.channel.guild.id].length > 10) {
-                        messageToSend += `... and ${queue[msg.channel.guild.id].length - 10} more!`
-                    }
-                } else {
-                    messageToSend += 'Nothing queued!'
-                }
-                messageToSend += '```'
-                sendMessage(msg.channel.id, messageToSend);
-            }
-            break;
 
-    }
-    saveVoiceSettings();
+                    if (queue.hasOwnProperty(msg.channel.guild.id) && queue[msg.channel.guild.id].length > 0) {
+                        for (var i = 0; i < (queue[msg.channel.guild.id].length <= 10 ? queue[msg.channel.guild.id].length : 10); i++) {
+                            var id = queue[msg.channel.guild.id][i].id
+                            var requesterMember = msg.channel.guild.members.get(queue[msg.channel.guild.id][i].requester);
+                            var requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username
+                            var name = cache[id].name
+                            if (name.length > 40) {
+                                name = name.substring(0, 44) + "..."
+                            }
+                            var line = `${(i + 1) < 10 ? ' ' + (i + 1) : i + 1}: `
+                            line += name
+                            line = pad(line, 51)
+                            line += ` - [${createTimeString(moment.duration(cache[id].duration))}] (${requester})\n`
+                            var oddApo = (line.match(/'/g) || []).length % 2
+                            messageToSend += oddApo == 0 ? line : line.replace(/'/, '\u2019')
+                        }
+                        if (queue[msg.channel.guild.id].length > 10) {
+                            messageToSend += `... and ${queue[msg.channel.guild.id].length - 10} more!`
+                        }
+                    } else {
+                        messageToSend += 'Nothing queued!'
+                    }
+                    messageToSend += '```'
+                    sendMessage(msg.channel.id, messageToSend);
+                }
+                break;
+        }
+        saveVoiceSettings();
+    })
 }
 
 function createTimeString(d) {
@@ -754,7 +785,11 @@ function handleSoundcloud(msg, query) {
                         } else {
                             if (queue[msg.channel.guild.id].length == 1) {
                                 var id = queue[msg.channel.guild.isd][0].id
-                                saveVideo(msg, id, cache[id].name, cache[id].duration);
+                                var channel = msg.channel.id
+                                if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
+                                    channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
+                                }
+                                saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
                             }
                         }
                     })
@@ -783,18 +818,23 @@ function handleSoundcloud(msg, query) {
 }
 
 function nextSong(msg) {
+    var channel = msg.channel.id
+    if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
+        channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
+    }
+    //  console.log(channel)
     var nextSong = queue[msg.channel.guild.id].shift()
     var currectNext = current[msg.channel.guild.id] = nextSong;
 
-    saveVideo(msg, nextSong.id, cache[nextSong.id].name, cache[nextSong.id].duration, () => {
+    saveVideo(msg, channel, nextSong.id, cache[nextSong.id].name, cache[nextSong.id].duration, () => {
         var requesterMember = msg.channel.guild.members.get(nextSong.requester);
         var requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username
         try {
-            bu.sendMessageToDiscord(msg.channel.id, `:musical_note: Now playing \`${cache[nextSong.id].name}\` in #${
+            bu.sendMessageToDiscord(channel, `:musical_note: Now playing \`${cache[nextSong.id].name}\` in #${
                 bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID).name} - requested by **${requester}** :musical_note: `)
                 .then(msg2 => {
                     setTimeout(() => {
-                        bu.bot.deleteMessage(msg2.channel.id, msg2.id)
+                        bu.bot.deleteMessage(channel, msg2.id)
                     }, 60000)
                 });
 
@@ -807,7 +847,7 @@ function nextSong(msg) {
             currectNext.votesNeeded = votesNeeded > 0 ? votesNeeded : 1
             if (queue[msg.channel.guild.id][0]) {
                 var id = queue[msg.channel.guild.id][0].id
-                saveVideo(msg, id, cache[id].name, cache[id].duration)
+                saveVideo(msg, channel, id, cache[id].name, cache[id].duration)
             }
         } catch (err) {
             console.log(err);
@@ -829,10 +869,11 @@ function nextSong(msg) {
 
 }
 
-function saveVideo(msg, id, name, duration, callback) {
+function saveVideo(msg, channel, id, name, duration, callback) {
+
     console.log(id);
     if (!id) {
-        bot.createMessage(msg.channel.id, `:cry: Error finding song! :cry:`);
+        bot.createMessage(channel, `:cry: Error finding song! :cry:`);
         return;
     }
     //  if (!url)
@@ -842,7 +883,7 @@ function saveVideo(msg, id, name, duration, callback) {
         console.log(url);
         var filepath = path.join(__dirname, '..', 'cache', 'yt', `${id}.mp3`)
         if (!fs.existsSync(filepath)) {
-            bot.createMessage(msg.channel.id, `:cd: Downloading song \`${name}\`... :cd: `).then((newmessage) => {
+            bot.createMessage(channel, `:cd: Downloading song \`${name}\`... :cd: `).then((newmessage) => {
                 var stream = getStreamFromURL(url);
                 //  console.log(util.inspect(stream));
                 var writeStream = fs.createWriteStream(filepath);
@@ -850,9 +891,9 @@ function saveVideo(msg, id, name, duration, callback) {
                 stream.on('end', () => {
                     console.log('done');
                     //    addToQueue(msg, filepath, name, duration);
-                    bot.editMessage(msg.channel.id, newmessage.id, `:dvd: Finished downloading \`${name}\`! :dvd:`)
+                    bot.editMessage(channel, newmessage.id, `:dvd: Finished downloading \`${name}\`! :dvd:`)
                     setTimeout(() => {
-                        bot.deleteMessage(msg.channel.id, newmessage.id);
+                        bot.deleteMessage(channel, newmessage.id);
                     }, 5000)
                     if (callback) {
                         callback()
@@ -871,9 +912,12 @@ function saveVideo(msg, id, name, duration, callback) {
     } else {
         //  url = getSoundcloudUrl(`https://api.soundcloud.com/tracks/${id}/stream`)
         if (!fs.existsSync(cache[id].path))
-            bot.createMessage(msg.channel.id, `:cd: Downloading song \`${name}\`... :cd: `).then((newmessage) => {
+            bot.createMessage(channel, `:cd: Downloading song \`${name}\`... :cd: `).then((newmessage) => {
                 saveSoundcloud(msg, id, () => {
-                    bot.editMessage(msg.channel.id, newmessage.id, `:dvd: Finished downloading \`${name}\`! :dvd:`)
+                    bot.editMessage(channel, newmessage.id, `:dvd: Finished downloading \`${name}\`! :dvd:`)
+                    setTimeout(() => {
+                        bot.deleteMessage(channel, newmessage.id);
+                    }, 5000)
                     if (callback) callback();
                 })
             })
@@ -934,7 +978,11 @@ function addToQueue(msg, id, name, duration, sc) {
     } else {
         if (subqueue.length == 1) {
             var id = subqueue[0].id
-            saveVideo(msg, id, cache[id].name, cache[id].duration);
+            var channel = msg.channel.id
+            if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
+                channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
+            }
+            saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
         }
     }
 }
@@ -1006,7 +1054,11 @@ function addPlaylistToQueue(msg, id, res) {
             } else {
                 if (queue[msg.channel.guild.isd].length == 1) {
                     var id = queue[msg.channel.guild.isd][0].id
-                    saveVideo(msg, id, cache[id].name, cache[id].duration);
+                    var channel = msg.channel.id
+                    if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
+                        channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
+                    }
+                    saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
                 }
             }
         })
