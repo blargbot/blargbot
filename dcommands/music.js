@@ -685,7 +685,7 @@ function saveSoundcloud(msg, id, callback) {
                 })
                 res.on('end', () => {
                     console.log('done')
-               //     console.log(body)
+                    //     console.log(body)
                     writeStream.end()
                     callback()
                 })
@@ -697,7 +697,7 @@ function saveSoundcloud(msg, id, callback) {
 }
 
 function handleSoundcloud(msg, query) {
- //   console.log(uriquery)
+    //   console.log(uriquery)
     SC.get(`/resolve?url=${encodeURIComponent(query)}`, (err, track) => {
         if (err) {
             console.log(err)
@@ -717,38 +717,48 @@ function handleSoundcloud(msg, query) {
                         bu.sendMessageToDiscord(msg.channel.id, `No results found.`)
                         return;
                     }
-               //     console.log(track)
-                    for (var i = 0; i < track.tracks.length; i++) {
-                        var curTrack = track.tracks[i]
-                        console.log(curTrack.id)
-                        if (curTrack.streamable) {
-                            if (!cache[curTrack.id]) {
-                                cache[curTrack.id] = {
-                                    name: curTrack.title,
-                                    path: path.join(__dirname, '..', 'cache', 'sc', `${curTrack.id}.mp3`),
-                                    duration: moment.duration(curTrack.duration).toJSON(),
-                                    sc: true
+                    //     console.log(track)
+                    var added = 0
+                    bu.sendMessageToDiscord(msg.channel.id, 'Processing playlist...').then((msg2) => {
+
+                        for (var i = 0; i < track.tracks.length; i++) {
+                            var curTrack = track.tracks[i]
+                            console.log(curTrack.id)
+                            if (curTrack.streamable) {
+                                if (!cache[curTrack.id]) {
+                                    cache[curTrack.id] = {
+                                        name: curTrack.title,
+                                        path: path.join(__dirname, '..', 'cache', 'sc', `${curTrack.id}.mp3`),
+                                        duration: moment.duration(curTrack.duration).toJSON(),
+                                        sc: true
+                                    }
                                 }
+                                if (!queue[msg.channel.guild.id]) {
+                                    queue[msg.channel.guild.id] = []
+                                }
+                                added++
+                                queue[msg.channel.guild.id].push({
+                                    id: curTrack.id,
+                                    requester: msg.author.id
+                                })
                             }
-                            if (!queue[msg.channel.guild.id]) {
-                                queue[msg.channel.guild.id] = []
+                        }
+                        bot.editMessage(msg.channel.id, msg2.id, `:heavy_check_mark: Added **${added}** items to the queue :heavy_check_mark:`)
+                        setTimeout(() => {
+                            bot.deleteMessage(msg2.channel.id, msg2.id)
+                        }, 15000)
+                        console.log('done')
+                        saveCache()
+                        if (!current[msg.channel.guild.id]) {
+                            nextSong(msg)
+                        } else {
+                            if (queue[msg.channel.guild.id].length == 1) {
+                                var id = queue[msg.channel.guild.isd][0].id
+                                saveVideo(msg, id, cache[id].name, cache[id].duration);
                             }
-                            queue[msg.channel.guild.id].push({
-                                id: curTrack.id,
-                                requester: msg.author.id
-                            })
                         }
-                    }
-                    console.log('done')
-                    saveCache()
-                    if (!current[msg.channel.guild.id]) {
-                        nextSong(msg)
-                    } else {
-                        if (queue[msg.channel.guild.id].length == 1) {
-                            var id = queue[msg.channel.guild.isd][0].id
-                            saveVideo(msg, id, cache[id].name, cache[id].duration);
-                        }
-                    }
+                    })
+
                 })
                 break;
             case 'tracks': //msg, id, name, duration, sc
@@ -987,7 +997,7 @@ function addPlaylistToQueue(msg, id, res) {
                     queue[msg.channel.guild.id] = []
                 queue[msg.channel.guild.id].push(newQueue[i]);
             }
-            bu.bot.editMessage(msg2.channel.id, msg2.id, `:heavy_check_mark: Added ${newQueue.length} items to the queue :heavy_check_mark:`)
+            bu.bot.editMessage(msg2.channel.id, msg2.id, `:heavy_check_mark: Added **${newQueue.length}** items to the queue :heavy_check_mark:`)
             setTimeout(() => {
                 bu.bot.deleteMessage(msg2.channel.id, msg2.id)
             }, 15000)
