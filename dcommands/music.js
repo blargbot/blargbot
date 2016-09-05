@@ -152,19 +152,21 @@ e.execute = (msg, words, text) => {
                             eval2(msg, words.join(' '));
                             break;
                         case 'setchannel':
-                            if (!bu.config.discord.servers[msg.channel.guild.id]) {
-                                bu.config.discord.servers[msg.channel.guild.id] = {}
-                            }
-                            if (bu.config.discord.servers[msg.channel.guild.id].musicChannel == msg.channel.id) {
-                                delete bu.config.discord.servers[msg.channel.guild.id].musicChannel
-                                bu.sendMessageToDiscord(msg.channel.id, 'This is no longer my music channel.')
+                            if (bu.hasPerm(msg, 'Bot Commander')) {
+                                if (!bu.config.discord.servers[msg.channel.guild.id]) {
+                                    bu.config.discord.servers[msg.channel.guild.id] = {}
+                                }
+                                if (bu.config.discord.servers[msg.channel.guild.id].musicChannel == msg.channel.id) {
+                                    delete bu.config.discord.servers[msg.channel.guild.id].musicChannel
+                                    bu.sendMessageToDiscord(msg.channel.id, 'This is no longer my music channel.')
 
-                            } else {
-                                bu.config.discord.servers[msg.channel.guild.id].musicChannel = msg.channel.id
-                                bu.sendMessageToDiscord(msg.channel.id, 'This is now my music channel.')
+                                } else {
+                                    bu.config.discord.servers[msg.channel.guild.id].musicChannel = msg.channel.id
+                                    bu.sendMessageToDiscord(msg.channel.id, 'This is now my music channel.')
 
+                                }
+                                bu.saveConfig()
                             }
-                            bu.saveConfig()
                             break;
                     }
                 } else
