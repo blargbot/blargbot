@@ -3,7 +3,6 @@ var bu = require('./../util.js')
 var fs = require('fs');
 var util = require('util');
 var Eris = require('eris');
-var moment = require('moment');
 var mkdirp = require('mkdirp');
 var path = require('path');
 var http = require('http');
@@ -17,6 +16,16 @@ var youtubeStream = require('youtube-audio-stream')
 var google = require('googleapis')
 var youtube = google.youtube('v3')
 var moment = require('moment')
+var SC = require('node-soundcloud')
+var request = require('request')
+
+SC.init({
+    id: bu.config.general.soundcloud.id,
+    secret: bu.config.general.soundcloud.secret,
+    uri: bu.config.general.soundcloud.uri,
+    accessToken: bu.config.general.soundcloud.accessToken
+});
+
 var dl = {}
 var queue = {}
 var current = {}
@@ -197,14 +206,14 @@ Commands:
                 current[msg.channel.guild.id].votes.push(msg.author.id)
 
                 if (current[msg.channel.guild.id].votes.length >= votesNeeded) {
-                    bu.sendMessageToDiscord(msg.channel.id, `:umbrella2: Skipping the song \`${cache.yt[current[msg.channel.guild.id].id].name}\` after ${votesNeeded} votes. :umbrella2:`)
+                    bu.sendMessageToDiscord(msg.channel.id, `:umbrella2: Skipping the song \`${cache[current[msg.channel.guild.id].id].name}\` after ${votesNeeded} votes. :umbrella2:`)
                     voiceConnections.get(msg.channel.guild.id).stopPlaying();
 
                 } else {
                     bu.sendMessageToDiscord(msg.channel.id, `:closed_umbrella: ${msg.member.nick
                         ? msg.member.nick
                         : msg.author.username} has voted to skip the song \`${
-                        cache.yt[current[msg.channel.guild.id].id].name}\`. **${
+                        cache[current[msg.channel.guild.id].id].name}\`. **${
                         votesNeeded - current[msg.channel.guild.id].votes.length
                         }** more votes are needed to skip the song. :closed_umbrella: `)
 
@@ -334,12 +343,12 @@ Commands:
                 switch (words[0]) {
                     case 'shuffle':
                         for (var i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                            console.log(cache.yt[queue[msg.channel.guild.id][i].id].name)
+                            console.log(cache[queue[msg.channel.guild.id][i].id].name)
                         }
                         console.log('------------------------------------------------------')
                         shuffle(queue[msg.channel.guild.id])
                         for (var i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                            console.log(cache.yt[queue[msg.channel.guild.id][i].id].name)
+                            console.log(cache[queue[msg.channel.guild.id][i].id].name)
                         }
                         //    console.log(util.inspect(queue[msg.channel.guild.id]))
                         var suits = [':diamonds:', ':spades:', ':clubs:', ':hearts:']
@@ -366,7 +375,7 @@ Commands:
                             }, 1500)
                         })
                         var subqueue = queue[msg.channel.guild.id]
-                        saveVideo(msg, subqueue[0].id, cache.yt[subqueue[0].id].name, cache.yt[subqueue[0].id].duration)
+                        saveVideo(msg, subqueue[0].id, cache[subqueue[0].id].name, cache[subqueue[0].id].duration)
                         break;
                     case 'remove':
                         if (bu.hasPerm(msg, 'Bot Commander')) {
@@ -375,7 +384,7 @@ Commands:
                                 if (queue[msg.channel.guild.id][index]) {
                                     var removed = queue[msg.channel.guild.id].splice(index, 1)
 
-                                    var removedSong = cache.yt[removed[0].id].name
+                                    var removedSong = cache[removed[0].id].name
                                     //        console.log(util.inspect(removed))
                                     bu.sendMessageToDiscord(msg.channel.id, `:umbrella: Removed the song **${removedSong}** :umbrella:`)
 
@@ -394,11 +403,11 @@ Commands:
                 if (current[msg.channel.guild.id]) {
                     var currentSong = current[msg.channel.guild.id]
                     var timeDiff = moment.duration(moment().diff(moment(currentSong.start)))
-                    var timeLength = moment.duration(cache.yt[currentSong.id].duration)
+                    var timeLength = moment.duration(cache[currentSong.id].duration)
                     console.log(currentSong.requester)
                     var requesterMember = msg.channel.guild.members.get(currentSong.requester);
                     var requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username
-                    var line = `Right Now: ${cache.yt[currentSong.id].name} [${
+                    var line = `Right Now: ${cache[currentSong.id].name} [${
                         createTimeString(timeDiff)}/${createTimeString(timeLength)}] \n           Requested by ${requester}\n`
                     var oddApo = (line.match(/'/g) || []).length % 2
                     messageToSend += oddApo == 0 ? line : line.replace(/'/, '\u2019')
@@ -409,14 +418,14 @@ Commands:
                         var id = queue[msg.channel.guild.id][i].id
                         var requesterMember = msg.channel.guild.members.get(queue[msg.channel.guild.id][i].requester);
                         var requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username
-                        var name = cache.yt[id].name
+                        var name = cache[id].name
                         if (name.length > 40) {
                             name = name.substring(0, 44) + "..."
                         }
                         var line = `${(i + 1) < 10 ? ' ' + (i + 1) : i + 1}: `
                         line += name
                         line = pad(line, 51)
-                        line += ` - [${createTimeString(moment.duration(cache.yt[id].duration))}] (${requester})\n`
+                        line += ` - [${createTimeString(moment.duration(cache[id].duration))}] (${requester})\n`
                         var oddApo = (line.match(/'/g) || []).length % 2
                         messageToSend += oddApo == 0 ? line : line.replace(/'/, '\u2019')
                     }
@@ -529,7 +538,12 @@ function init(bot, connections, voiceSettings) {
     }
     if (!fs.existsSync(path.join(__dirname, '..', 'cache'))) {
         fs.mkdirSync(path.join(__dirname, '..', 'cache'));
-
+    }
+    if (!fs.existsSync(path.join(__dirname, '..', 'cache', 'yt'))) {
+        fs.mkdirSync(path.join(__dirname, '..', 'cache', 'yt'));
+    }
+    if (!fs.existsSync(path.join(__dirname, '..', 'cache', 'sc'))) {
+        fs.mkdirSync(path.join(__dirname, '..', 'cache', 'sc'));
     }
     if (fs.existsSync(path.join(__dirname, '..', 'cache', 'cache.json'))) {
         var cacheFile = fs.readFileSync(path.join(__dirname, '..', 'cache', 'cache.json'), 'utf8');
@@ -551,13 +565,15 @@ function handleMusicCommand(msg, words, text, connections) {
         for (i = 0; i < words.length; i++) {
             query += `${words[i]} `
         }
-        if (/https:\/\/www.youtube.com\//.test(query)) {
-            if (/<.+>/.test(query)) {
-                query = query.match(/<(.+)>/)[1]
-            }
+        if (/<.+>/.test(query)) {
+            query = query.match(/<(.+)>/)[1]
+        }
+        if (/https:\/\/soundcloud.com/.test(query)) { //SC playlist
+            handleSoundcloud(msg, query)
+        } else if (/https:\/\/www.youtube.com\//.test(query)) {
             if (/v=(.+?)(&|$)/.test(query)) {
                 var id = query.match(/v=(.+?)(&|$)/)[1];
-                if (!cache.yt[id]) {
+                if (!cache[id]) {
                     youtube.videos.list({
                         key: getKey(),
                         id: id,
@@ -576,7 +592,7 @@ function handleMusicCommand(msg, words, text, connections) {
                     })
                 }
                 else
-                    addToQueue(msg, id, cache.yt[id].name, cache.yt[id].duration);
+                    addToQueue(msg, id, cache[id].name, cache[id].duration);
             } else if (/list=(.+?)(&|$)/.test(query)) {
                 var id = query.match(/list=(.+?)(&|$)/)[1];
                 console.log(id)
@@ -600,7 +616,7 @@ function handleMusicCommand(msg, words, text, connections) {
             }
         } else if (/https:\/\/youtu.be\//.test(query)) {
             var id = query.match(/be\/(.+?)(\?|$)/)[1];
-            if (!cache.yt[id]) {
+            if (!cache[id]) {
                 youtube.videos.list({
                     key: getKey(),
                     id: id,
@@ -619,13 +635,13 @@ function handleMusicCommand(msg, words, text, connections) {
                 })
             }
             else
-                addToQueue(msg, id, cache.yt[id].name, cache.yt[id].duration);
+                addToQueue(msg, id, cache[id].name, cache[id].duration);
         } else
             findVideo(msg, query, (res) => {
 
                 var id = res.items[0].id.videoId
 
-                if (!cache.yt[id]) {
+                if (!cache[id]) {
                     youtube.videos.list({
                         key: getKey(),
                         id: res.items[0].id.videoId,
@@ -644,20 +660,127 @@ function handleMusicCommand(msg, words, text, connections) {
                     })
                 }
                 else
-                    addToQueue(msg, id, cache.yt[id].name, cache.yt[id].duration);
+                    addToQueue(msg, id, cache[id].name, cache[id].duration);
             })
     }
+}
+function saveSoundcloud(msg, id, callback) {
+    var url = `https://api.soundcloud.com/tracks/${id}/stream` + '?client_id=' + bu.config.general.soundcloud.id
+    var writeStream = fs.createWriteStream(cache[id].path);
+
+    https.get(url, res => {
+        var body = ''
+        res.on('data', (chunk) => {
+            //  writeStream.write(chunk)
+            body += chunk
+        })
+        res.on('end', () => {
+            var location = JSON.parse(body)
+            https.get(location.location, res => {
+                var body
+
+                res.on('data', chunk => {
+                    writeStream.write(chunk)
+                    body += chunk
+                })
+                res.on('end', () => {
+                    console.log('done')
+               //     console.log(body)
+                    writeStream.end()
+                    callback()
+                })
+            })
+
+
+        })
+    })
+}
+
+function handleSoundcloud(msg, query) {
+ //   console.log(uriquery)
+    SC.get(`/resolve?url=${encodeURIComponent(query)}`, (err, track) => {
+        if (err) {
+            console.log(err)
+            bu.sendMessageToDiscord(msg.channel.id, 'No results found!')
+            return;
+        }
+        var type = track.location.match(/\.com\/(.+?)\//)[1]
+        var id = track.location.match(/([0-9]+)\.json/)[1]
+        console.log(type, id)
+
+        switch (type) {
+            case 'playlists':
+                SC.get(`/playlists/${id}`, (err, track) => {
+                    if (err) {
+                        console.log(err)
+                        console.log('Nothing found');
+                        bu.sendMessageToDiscord(msg.channel.id, `No results found.`)
+                        return;
+                    }
+               //     console.log(track)
+                    for (var i = 0; i < track.tracks.length; i++) {
+                        var curTrack = track.tracks[i]
+                        console.log(curTrack.id)
+                        if (curTrack.streamable) {
+                            if (!cache[curTrack.id]) {
+                                cache[curTrack.id] = {
+                                    name: curTrack.title,
+                                    path: path.join(__dirname, '..', 'cache', 'sc', `${curTrack.id}.mp3`),
+                                    duration: moment.duration(curTrack.duration).toJSON(),
+                                    sc: true
+                                }
+                            }
+                            if (!queue[msg.channel.guild.id]) {
+                                queue[msg.channel.guild.id] = []
+                            }
+                            queue[msg.channel.guild.id].push({
+                                id: curTrack.id,
+                                requester: msg.author.id
+                            })
+                        }
+                    }
+                    console.log('done')
+                    saveCache()
+                    if (!current[msg.channel.guild.id]) {
+                        nextSong(msg)
+                    } else {
+                        if (queue[msg.channel.guild.id].length == 1) {
+                            var id = queue[msg.channel.guild.isd][0].id
+                            saveVideo(msg, id, cache[id].name, cache[id].duration);
+                        }
+                    }
+                })
+                break;
+            case 'tracks': //msg, id, name, duration, sc
+                SC.get(`/tracks/${id}`, (err, track) => {
+                    if (err) {
+                        console.log('Nothing found');
+                        bu.sendMessageToDiscord(msg.channel.id, `No results found.`)
+                        return;
+                    }
+                    console.log(track)
+                    if (!track.streamable) {
+                        bu.sendMessageToDiscord(msg.channel.id, `I can't play that song!`)
+                        return;
+                    }
+                    var duration = moment.duration(track.duration).toJSON()
+                    var name = track.title
+                    addToQueue(msg, id, name, duration, true)
+                })
+                break;
+        }
+    })
 }
 
 function nextSong(msg) {
     var nextSong = queue[msg.channel.guild.id].shift()
     var currectNext = current[msg.channel.guild.id] = nextSong;
 
-    saveVideo(msg, nextSong.id, cache.yt[nextSong.id].name, cache.yt[nextSong.id].duration, () => {
+    saveVideo(msg, nextSong.id, cache[nextSong.id].name, cache[nextSong.id].duration, () => {
         var requesterMember = msg.channel.guild.members.get(nextSong.requester);
         var requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username
         try {
-            bu.sendMessageToDiscord(msg.channel.id, `:musical_note: Now playing \`${cache.yt[nextSong.id].name}\` in #${
+            bu.sendMessageToDiscord(msg.channel.id, `:musical_note: Now playing \`${cache[nextSong.id].name}\` in #${
                 bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID).name} - requested by **${requester}** :musical_note: `)
                 .then(msg2 => {
                     setTimeout(() => {
@@ -665,7 +788,7 @@ function nextSong(msg) {
                     }, 60000)
                 });
 
-            voiceConnections.get(msg.channel.guild.id).playResource(cache.yt[nextSong.id].path, { inlineVolume: voiceSettings[msg.channel.guild.id].volume / 100 })
+            voiceConnections.get(msg.channel.guild.id).playResource(cache[nextSong.id].path, { inlineVolume: voiceSettings[msg.channel.guild.id].volume / 100 })
             voiceConnections.get(msg.channel.guild.id).setVolume(voiceSettings[msg.channel.guild.id].volume / 100)
             currectNext.start = moment()
             var membersInChannel = bot.getChannel(bot.voiceConnections.get(msg.channel.guild.id).channelID)
@@ -674,7 +797,7 @@ function nextSong(msg) {
             currectNext.votesNeeded = votesNeeded > 0 ? votesNeeded : 1
             if (queue[msg.channel.guild.id][0]) {
                 var id = queue[msg.channel.guild.id][0].id
-                saveVideo(msg, id, cache.yt[id].name, cache.yt[id].duration)
+                saveVideo(msg, id, cache[id].name, cache[id].duration)
             }
         } catch (err) {
             console.log(err);
@@ -703,40 +826,56 @@ function saveVideo(msg, id, name, duration, callback) {
         return;
     }
     //  if (!url)
-    url = `https://www.youtube.com/watch?v=${id}`
+    if (!cache[id].sc) {
+        url = `https://www.youtube.com/watch?v=${id}`
 
-    console.log(url);
-    var filepath = path.join(__dirname, '..', 'cache','yt', `${id}.mp3`)
-    if (!fs.existsSync(filepath)) {
-        bot.createMessage(msg.channel.id, `:cd: Downloading song \`${name}\`... :cd: `).then((newmessage) => {
-            var stream = getStreamFromURL(url);
-            //  console.log(util.inspect(stream));
-            var writeStream = fs.createWriteStream(filepath);
-            stream.pipe(writeStream);
-            stream.on('end', () => {
-                console.log('done');
-                //    addToQueue(msg, filepath, name, duration);
-                bot.editMessage(msg.channel.id, newmessage.id, `:dvd: Finished downloading \`${name}\`! :dvd:`)
-                setTimeout(() => {
-                    bot.deleteMessage(msg.channel.id, newmessage.id);
-                }, 5000)
-                if (callback) {
-                    callback()
-                }
-            })
-            writeStream.on('error', (err) => {
-                console.log(err);
-            })
-        });
+        console.log(url);
+        var filepath = path.join(__dirname, '..', 'cache', 'yt', `${id}.mp3`)
+        if (!fs.existsSync(filepath)) {
+            bot.createMessage(msg.channel.id, `:cd: Downloading song \`${name}\`... :cd: `).then((newmessage) => {
+                var stream = getStreamFromURL(url);
+                //  console.log(util.inspect(stream));
+                var writeStream = fs.createWriteStream(filepath);
+                stream.pipe(writeStream);
+                stream.on('end', () => {
+                    console.log('done');
+                    //    addToQueue(msg, filepath, name, duration);
+                    bot.editMessage(msg.channel.id, newmessage.id, `:dvd: Finished downloading \`${name}\`! :dvd:`)
+                    setTimeout(() => {
+                        bot.deleteMessage(msg.channel.id, newmessage.id);
+                    }, 5000)
+                    if (callback) {
+                        callback()
+                    }
+                })
+                writeStream.on('error', (err) => {
+                    console.log(err);
+                })
+            });
 
+        } else {
+            if (callback) {
+                callback()
+            }
+        }
     } else {
-        if (callback) {
-            callback()
+        //  url = getSoundcloudUrl(`https://api.soundcloud.com/tracks/${id}/stream`)
+        if (!fs.existsSync(cache[id].path))
+            bot.createMessage(msg.channel.id, `:cd: Downloading song \`${name}\`... :cd: `).then((newmessage) => {
+                saveSoundcloud(msg, id, () => {
+                    bot.editMessage(msg.channel.id, newmessage.id, `:dvd: Finished downloading \`${name}\`! :dvd:`)
+                    if (callback) callback();
+                })
+            })
+        else {
+            if (callback) callback()
         }
     }
 }
 
-function addToQueue(msg, id, name, duration) {
+
+
+function addToQueue(msg, id, name, duration, sc) {
 
     //   console.log(util.inspect(connections))
     //  connections[msg.channel.guild.id].playResource(filepath, { inlineVolume: 0.3 })
@@ -749,12 +888,12 @@ function addToQueue(msg, id, name, duration) {
     //  console.log(init.hours(), init.minutes(), init.seconds())
 
     for (var i = 0; i < subqueue.length; i++) {
-        init.add(moment.duration(cache.yt[subqueue[i].id].duration))
+        init.add(moment.duration(cache[subqueue[i].id].duration))
         console.log(i, ':', init.hours(), init.minutes(), init.seconds())
     }
     //   console.log(init.hours(), init.minutes(), init.seconds())
     if (current[msg.channel.guild.id]) {
-        init.add(moment.duration(cache.yt[current[msg.channel.guild.id].id].duration))
+        init.add(moment.duration(cache[current[msg.channel.guild.id].id].duration))
         init.subtract(moment.duration(moment().diff(current[msg.channel.guild.id].start)))
     }
 
@@ -763,11 +902,12 @@ function addToQueue(msg, id, name, duration) {
     var lengthUntilString = `${init.hours() > 0 ? `${init.hours()} hours, ` : ''}${init
         .minutes() > 0 ? `${init.minutes()} minutes, and ` : ''}${init.seconds()} seconds`
     subqueue.push({ id: id, requester: msg.author.id })
-    if (!cache.yt[id]) {
-        cache.yt[id] = {
+    if (!cache[id]) {
+        cache[id] = {
             name: name,
-            path: path.join(__dirname, '..', 'cache','yt', `${id}.mp3`),
-            duration: duration
+            path: path.join(__dirname, '..', 'cache', sc ? 'sc' : 'yt', `${id}.mp3`),
+            duration: duration,
+            sc: sc
             //   requester: msg.author.id
         }
         saveCache()
@@ -784,7 +924,7 @@ function addToQueue(msg, id, name, duration) {
     } else {
         if (subqueue.length == 1) {
             var id = subqueue[0].id
-            saveVideo(msg, id, cache.yt[id].name, cache.yt[id].duration);
+            saveVideo(msg, id, cache[id].name, cache[id].duration);
         }
     }
 }
@@ -856,7 +996,7 @@ function addPlaylistToQueue(msg, id, res) {
             } else {
                 if (queue[msg.channel.guild.isd].length == 1) {
                     var id = queue[msg.channel.guild.isd][0].id
-                    saveVideo(msg, id, cache.yt[id].name, cache.yt[id].duration);
+                    saveVideo(msg, id, cache[id].name, cache[id].duration);
                 }
             }
         })
@@ -901,7 +1041,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
                 // var pause = true
                 //    var ii = i;
                 //    console.log(i, res.items.length)
-                if (!cache.yt[res.items[i].contentDetails.videoId]) {
+                if (!cache[res.items[i].contentDetails.videoId]) {
                     youtube.videos.list({
                         key: getKey(),
                         id: res.items[i].contentDetails.videoId,
@@ -922,7 +1062,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
                         //     if (i < 50) {
                         subqueue.push({ id: res2.items[0].id, requester: requesterid })
 
-                        cache.yt[res2.items[0].id] = {
+                        cache[res2.items[0].id] = {
                             name: res2.items[0].snippet.title,
                             id: res2.items[0].id,
                             path: path.join(__dirname, 'cache', `${res2.items[0].id}.mp3`),
