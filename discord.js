@@ -414,14 +414,15 @@ If you are the owner of this server, here are a few things to know.
     })
 
     bot.on("messageCreate", function (msg) {
-        if (msg.author.id == bot.user.id) {
-            if (msg.channel.guild && msg.channel.id != '194950328393793536')
-                console.log(`[DIS] ${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} `
-                    + `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`)
-            else
-                console.log(`[DIS] PM> ${msg.channel.name} (${msg.channel.id})> `
-                    + `${msg.author.username}> ${msg.content} (${msg.id})`)
-        }
+        if (msg.channel.id != '194950328393793536')
+            if (msg.author.id == bot.user.id) {
+                if (msg.channel.guild)
+                    console.log(`[DIS] ${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} `
+                        + `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`)
+                else
+                    console.log(`[DIS] PM> ${msg.channel.name} (${msg.channel.id})> `
+                        + `${msg.author.username}> ${msg.content} (${msg.id})`)
+            }
         if (msg.channel.id === config.discord.channel) {
             if (!(msg.author.id == bot.user.id && msg.content.startsWith("\u200B"))) {
                 var message;
