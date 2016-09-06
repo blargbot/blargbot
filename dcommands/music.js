@@ -1141,7 +1141,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
                         cache[res2.items[0].id] = {
                             name: res2.items[0].snippet.title,
                             id: res2.items[0].id,
-                            path: path.join(__dirname, 'cache','yt', `${res2.items[0].id}.mp3`),
+                            path: path.join(__dirname, '..', 'cache','yt', `${res2.items[0].id}.mp3`),
                             //  requester: requesterid,
                             duration: res2.items[0].contentDetails.duration
                         }
