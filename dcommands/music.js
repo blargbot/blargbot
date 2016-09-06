@@ -798,7 +798,7 @@ function handleSoundcloud(msg, query) {
                             nextSong(msg)
                         } else {
                             if (queue[msg.channel.guild.id].length == 1) {
-                                var id = queue[msg.channel.guild.isd][0].id
+                                var id = queue[msg.channel.guild.id][0].id
                                 var channel = msg.channel.id
                                 if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
                                     channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
@@ -1066,8 +1066,8 @@ function addPlaylistToQueue(msg, id, res) {
             if (!current[msg.channel.guild.id]) {
                 nextSong(msg)
             } else {
-                if (queue[msg.channel.guild.isd].length == 1) {
-                    var id = queue[msg.channel.guild.isd][0].id
+                if (queue[msg.channel.guild.id].length == 1) {
+                    var id = queue[msg.channel.guild.id][0].id
                     var channel = msg.channel.id
                     if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
                         channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
