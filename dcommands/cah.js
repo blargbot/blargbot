@@ -26,20 +26,35 @@ e.info = 'Generates a set of CAH cards.';
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
+    var cont = true;
+    if (bu.config.discord.servers[msg.channel.guild.id] &&
+        bu.config.discord.servers[msg.channel.guild.id].cahNsfw) {
+        if (bu.config.discord.servers[msg.channel.guild.id].nsfw) {
+            if (!bu.config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id]) {
+                cont = false;
+            }
+        } else {
+            cont = false;
+        }
+    }
+    if (!cont) {
+        bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage)
+        return;
+    }
 
     //   console.log(util.inspect(cah))
     var timestamp = moment().format().replace(/:/gi, '_');
     var blackphrase = cah.black[bu.getRandomInt(0, cah.black.length)]
- //   console.log(blackphrase)
+    //   console.log(blackphrase)
     var blankCount = /.\_\_[^\_]/g.test(blackphrase) ? blackphrase.match(/.\_\_[^\_]/g).length : 1
- //   console.log(blankCount)
+    //   console.log(blankCount)
     var canvas = new Canvas(185 * (1 + blankCount), 254)
     var ctx = canvas.getContext('2d')
 
     var blackcard = new Image()
     blackcard.src = fs.readFileSync(path.join(__dirname, '..', 'img', 'blackcard.png'))
     var whitecard = new Image()
-    whitecard.src = fs.readFileSync(path.join(__dirname,  '..', 'img', 'whitecard.png'))
+    whitecard.src = fs.readFileSync(path.join(__dirname, '..', 'img', 'whitecard.png'))
 
     ctx.fillStyle = "white"
     ctx.drawImage(blackcard, 0, 0)

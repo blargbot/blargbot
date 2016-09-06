@@ -31,7 +31,7 @@ e.execute = (msg, words, text) => {
     // listylist = tagList;
     //    console.log(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
     if (!nsfwChannel) {
-       bu.sendMessageToDiscord(msg.channel.id, `:scream_cat: I can't post something like that here! Go to an NSFW channel :scream_cat:`)
+        bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage)
         return;
     }
     var query = '';

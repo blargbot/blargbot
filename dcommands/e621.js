@@ -33,7 +33,7 @@ e.execute = (msg, words, text) => {
     if (!nsfwChannel)
         if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
             //        console.log(kek);
-            bu.sendMessageToDiscord(msg.channel.id, `:scream_cat: I can't post something like that here! Go to an NSFW channel :scream_cat:`)
+            bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage)
 
             return
         }

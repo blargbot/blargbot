@@ -32,9 +32,9 @@ e.execute = (msg, words, text) => {
             }
             nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 4)
 
-        } 
+        }
         //    ? '\n - ' + Object.keys(bu.config.discord.servers[msg.channel.guild.id].nsfw).join('\n - ')
-       //     : 'None'
+        //     : 'None'
         var greeting = bu.config.discord.servers[msg.channel.guild.id].greeting
             ? bu.config.discord.servers[msg.channel.guild.id].greeting : 'Not set'
         var farewell = bu.config.discord.servers[msg.channel.guild.id].farewell
@@ -44,6 +44,8 @@ e.execute = (msg, words, text) => {
         var commandCount = bu.config.discord.servers[msg.channel.guild.id].commands
             ? Object.keys(bu.config.discord.servers[msg.channel.guild.id].commands).length : 0
         var deleteNotif = bu.config.discord.servers[msg.channel.guild.id].deleteNotifications ? true : false
+        var cahNsfw = bu.config.discord.servers[msg.channel.guild.id].cahNsfw ? true : false
+        
         var message = `\`\`\`fix
 Settings for ${msg.channel.guild.name}
 Prefix          : ${prefix}
@@ -53,6 +55,7 @@ Farewell        : ${farewell}
 Modlog Channel  : ${modlogChannel}
 Custom Commands : ${commandCount}
 Track Deletes   : ${deleteNotif}
+CAH is NSFW     : ${cahNsfw}
 \`\`\``
         bu.sendMessageToDiscord(msg.channel.id, message)
 
@@ -63,6 +66,13 @@ Track Deletes   : ${deleteNotif}
                 if (words.length > 0) {
                     var message = ':ok_hand:'
                     switch (words.shift().toLowerCase()) {
+                        case 'cahnsfw':
+                            if (bu.config.discord.servers[msg.channel.guild.id].cahNsfw == true) {
+                                bu.config.discord.servers[msg.channel.guild.id].cahNsfw = false
+                            } else {
+                                bu.config.discord.servers[msg.channel.guild.id].cahNsfw = true
+                            }
+                            break;
                         case 'deletenotification':
                             if (bu.config.discord.servers[msg.channel.guild.id].deleteNotifications == true) {
                                 bu.config.discord.servers[msg.channel.guild.id].deleteNotifications = false
@@ -79,7 +89,7 @@ Track Deletes   : ${deleteNotif}
                             }
                             break;
                         case 'greeting':
-                            if (words.length== 0) {
+                            if (words.length == 0) {
                                 delete bu.config.discord.servers[msg.channel.guild.id].farewell
                             } else {
                                 bu.config.discord.servers[msg.channel.guild.id].farewell = words.join(' ')
@@ -93,7 +103,7 @@ Track Deletes   : ${deleteNotif}
                             }
                             break;
                         default:
-                        message = 'Unknown key!'
+                            message = 'Unknown key!'
                             break;
                     }
                     bu.sendMessageToDiscord(msg.channel.id, message)
@@ -102,7 +112,8 @@ Track Deletes   : ${deleteNotif}
                 break;
             case 'help':
                 bu.sendMessageToDiscord(msg.channel.id, `\`\`\`fix
-You can use \`settings set <key> [value]\` to set the following settings:
+You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.
+  cahNSFW - whether 'cah' can only be done in nsfw channels or not
   deleteNotification - if enabled, notifies you if a user deleted their command
   greeting - what to say to new users when they join. You can also use the \`greet\` command
   farewell - what to say when a user leaves. You can also use the \`farewell\` command
