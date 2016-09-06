@@ -59,34 +59,22 @@ e.execute = (msg, words, text) => {
     var req = https.request(options, function (res) {
         var body = '';
         res.on('data', function (chunk) {
-            //console.log(chunk);
             body += chunk;
         });
 
         res.on('end', function () {
-            //  console.log("body: " + body);
-            //   var xml = JSON.parse(body);
             try {
-                //  if (err != null) {
-                //      console.log("error: " + err.message);
-                //  }
                 var doc = JSON.parse(body);
-                //             danbooruDoc = doc;
-                //      parsedXml = doc;
-                //console.log("result: " + result);
                 var urlList = [];
                 var ii = 0;
                 if (doc.length > 0)
                     for (i = 0; i < doc.length; i++) {
                         var imgUrl;
                         if (doc[i].file_url) {
-                            //       console.log(doc[i].file_url);
                             imgUrl = `http://danbooru.donmai.us${doc[i].file_url}`;
-                            //    console.log(imgUrl);
                             if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg')) {
                                 urlList[ii] = imgUrl;
                                 ii++;
-                                //      console.log(ii);
                             }
                         }
                     }
@@ -95,8 +83,7 @@ e.execute = (msg, words, text) => {
                     bu.sendMessageToDiscord(msg.channel.id, "No results found!");
                     return;
                 }
-                //    parsedUrlList = JSON.parse(JSON.stringify(urlList));
-                //      danbooruUrl = parsedUrlList;
+                message += `Found **${urlList.length}/50** posts\n`
                 for (var i = 0; i < 3; i++) {
                     if (urlList.length > 0) {
                         var choice = bu.getRandomInt(0, urlList.length - 1);
@@ -106,7 +93,6 @@ e.execute = (msg, words, text) => {
                     }
                 }
                 bu.sendMessageToDiscord(msg.channel.id, message);
-                // });
             } catch (err) {
                 console.log(err.stack);
             }

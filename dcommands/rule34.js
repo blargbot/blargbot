@@ -83,7 +83,7 @@ e.execute = (msg, words, text) => {
                         bu.sendMessageToDiscord(msg.channel.id, "No results found!");
                         return;
                     } else {
-                        message = `Found ${urlList.length}/50 posts\n`;
+                        message = `Found **${urlList.length}/50** posts\n`;
                     }
                     //   parsedUrlList = JSON.parse(JSON.stringify(urlList));
 
