@@ -363,6 +363,9 @@ e.init = (v, topConfig, em, database) => {
         console.log('added to guild');
         var message = `I was added to the guild \`${guild.name}\` (\`${guild.id}\`)!`
         bu.sendMessageToDiscord(`205153826162868225`, message);
+        if (bot.guilds.size % 100 == 0) {
+            bu.sendMessageToDiscord(`205153826162868225`, `:tada: I'm now in ${bot.guilds.size} guilds! :tada:`);
+        }
         console.log('WHY')
         var message = `Hi! My name is blargbot, a multifunctional discord bot here to serve you! 
 - <:B1nzy:210242619735801856> For command information, please do \`${bu.config.discord.defaultPrefix}help\`!
