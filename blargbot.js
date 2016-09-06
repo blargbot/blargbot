@@ -44,7 +44,7 @@ botEmitter.on('reloadIrc', () => {
 });
 
 
-var VERSION = "4.3.4";
+var VERSION = "4.3.5";
 /** LOGGING STUFF **/
 
 
