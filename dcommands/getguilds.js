@@ -15,16 +15,20 @@ e.category = blargutil.CommandType.CAT
 
 e.execute = (msg, words, text) => {
     if (msg.author.id === blargutil.CAT_ID) {
-        var message = 'Guilds:\n';
+        var messages = []
+        var i = 0;
+        messages.push(`Guilds (page ${i}):\n`)
         bot.guilds.forEach(function (guild, id) {
-            message += ` - ${guild.name} (${id})\n`;
+            var addTo = ` - ${guild.name} (${id})\n`;
+            if (messages[i].length + addTo > 2000) {
+                i++;
+                messages.push(`Guilds (page ${i}):\n`)
+            }
+            messages[i] += addTo
         });
-        //var keys = bot.guilds.keys();
-        // for (var i = 0; i < keys.length; i++) {
-        //      console.log('kek');
-        //     message += ` - ${bot.guilds.get(keys[i])} (${keys[i]})\n`
-        // }
-        blargutil.sendMessageToDiscord(msg.channel.id, message);
+        for (var i = 0; i < messages.length; i++) {
+            blargutil.sendMessageToDiscord(msg.channel.id, messages[i]);
+        }
 
     }
 }
