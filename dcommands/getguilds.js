@@ -20,7 +20,7 @@ e.execute = (msg, words, text) => {
         messages.push(`Guilds (page ${i}):\n`)
         bot.guilds.forEach(function (guild, id) {
             var addTo = ` - ${guild.name} (${id})\n`;
-            if (messages[i].length + addTo > 2000) {
+            if (messages[i].length + addTo.length > 2000) {
                 i++;
                 messages.push(`Guilds (page ${i}):\n`)
             }
