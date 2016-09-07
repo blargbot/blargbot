@@ -2,15 +2,8 @@ var fs = require('fs');
 var util = require('util');
 var Eris = require('eris');
 var moment = require('moment-timezone');
-var mkdirp = require('mkdirp');
 var path = require('path');
-var http = require('http');
 var https = require('https');
-var xml2js = require('xml2js');
-var _ = require('lodash');
-var gm = require('gm')
-//var im = gm.subClass({ imageMagick: true });
-var wordsearch = require('wordsearch');
 var bu = require('./util.js');
 var tags = require('./tags.js');
 var reload = require('require-reload')(require)
@@ -18,10 +11,6 @@ var request = require('request')
 
 var Cleverbot = require('cleverbot-node');
 cleverbot = new Cleverbot;
-
-//var gm = require('gm');
-var exec = require('child_process').exec;
-//var Cleverbot = require('cleverbot-node');
 
 var e = module.exports = {};
 var avatars;
@@ -95,10 +84,8 @@ function initCommands() {
 function reloadCommand(commandName) {
     if (commands[commandName]) {
         console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module ', commandName)
-        //if (/.+\.js$/.test(commandFile)) {
         if (commands[commandName].shutdown)
             commands[commandName].shutdown()
-        //    reload.emptyCache(commands[commandName].requireCtx)
         commands[commandName] = reload(`./dcommands/${commandName}.js`)
         commands[commandName].init(bot);
         var command = {
@@ -123,7 +110,6 @@ function reloadCommand(commandName) {
         }
         commandList[commandName] = command;
         if (commands[commandName].alias) {
-            //    console.log('it has aliases')
             for (var ii = 0; ii < commands[commandName].alias.length; ii++) {
                 console.log(`    Reloading ${commandName}'s alias`, commands[commandName].alias[ii])
                 commandList[commands[commandName].alias[ii]] = command
@@ -139,7 +125,6 @@ function reloadCommand(commandName) {
 function unloadCommand(commandName) {
     if (commands[commandName]) {
         console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module ', commandName)
-        //if (/.+\.js$/.test(commandFile)) {
 
         if (commands[commandName].sub) {
             for (var subCommand in commands[commandName].sub) {
@@ -149,7 +134,6 @@ function unloadCommand(commandName) {
         }
         delete commandList[commandName];
         if (commands[commandName].alias) {
-            //    console.log('it has aliases')
             for (var ii = 0; ii < commands[commandName].alias.length; ii++) {
                 console.log(`    Unloading ${commandName}'s alias`, commands[commandName].alias[ii])
                 delete commandList[commands[commandName].alias[ii]]
@@ -163,10 +147,7 @@ function unloadCommand(commandName) {
  * @param commandName - the name of the command to load (String)
  */
 function loadCommand(commandName) {
-    //  var commandFile = fileArray[i]
     console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Loading command module ', commandName)
-    // if (/.+\.js$/.test(commandFile)) {
-    //var commandName = commandFile.match(/(.+)\.js$/)[1]
 
     commands[commandName] = require(`./dcommands/${commandName}.js`)
     if (commands[commandName].isCommand) {
@@ -193,13 +174,11 @@ function loadCommand(commandName) {
         }
         commandList[commandName] = command;
         if (commands[commandName].alias) {
-            //    console.log('it has aliases')
             for (var ii = 0; ii < commands[commandName].alias.length; ii++) {
                 console.log(`    Loading ${commandName}'s alias`, commands[commandName].alias[ii])
                 commandList[commands[commandName].alias[ii]] = command
             }
         }
-        // }
     } else {
         console.log('     Skipping non-command ', commandName + '.js');
     }
@@ -405,9 +384,7 @@ If you are the owner of this server, here are a few things to know.
     })
 
     bot.on('messageDelete', (msg) => {
-        //      console.log(1)
         if (commandMessages.indexOf(msg.id) > -1) {
-            //      console.log(1)
             if (config.discord.servers[msg.channel.guild.id] != null) {
                 if (config.discord.servers[msg.channel.guild.id].deleteNotifications == true)
                     bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick ? msg.member.nick : msg.author.username}** deleted their command message.`)
@@ -463,9 +440,6 @@ If you are the owner of this server, here are a few things to know.
 
             if (msg.content.toLowerCase().startsWith('blargbot')) {
                 var index = msg.content.toLowerCase().indexOf('t')
-                //  var tindex = msg.content.indexOf('t')
-
-                //      var index = msg.content.indexOf('t') > msg.content.indexOf('T') ? msg.content.indexOf('T') : msg.content.indexOf('t')
                 console.log(index)
                 prefix = msg.content.substring(0, index + 1);
                 console.log(`'${prefix}'`)
@@ -561,8 +535,6 @@ If you are the owner of this server, here are a few things to know.
                 if (!handleDiscordCommand(msg.channel, msg.author, cleanContent, msg)) {
                     Cleverbot.prepare(function () {
                         cleverbot.write(cleanContent, function (response) {
-                            // console.log(cleanContent);
-                            //   console.log(response);    
                             bot.sendChannelTyping(msg.channel.id);
                             setTimeout(function () {
                                 bu.sendMessageToDiscord(msg.channel.id, response.message);
@@ -570,9 +542,6 @@ If you are the owner of this server, here are a few things to know.
                         });
                     });
                 }
-                ///   cleanWords.shift()
-                // var messageForCleverbot = cleanWords.join(' ');
-
             }
 
             if (msg.content.startsWith(prefix)) {
@@ -701,7 +670,6 @@ var avatarId;
  * @param forced - if true, will not set a timeout (Boolean)
  */
 function switchAvatar(forced) {
-    //   console.log(`Switching avatar to ${avatarId}.`)
     bot.editSelf({ avatar: avatars[avatarId] });
     avatarId++;
     if (avatarId == 8)
@@ -716,8 +684,6 @@ var commandMessages = []
 
 function handleDiscordCommand(channel, user, text, msg) {
     var words = text.replace(/ +/g, ' ').split(' ');
-
-
 
     if (msg.channel.guild)
         console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
@@ -738,8 +704,6 @@ function handleDiscordCommand(channel, user, text, msg) {
         }
         db.query(`UPDATE user set lastcommand=?, lastcommanddate=NOW() where userid=?`,
             [text, user.id]);
-        // stmt.run(text, user.id);
-
 
         if (config.discord.servers[channel.guild.id] &&
             config.discord.servers[channel.guild.id].commands &&
@@ -769,11 +733,9 @@ ${commandList[words[1]].info}`;
             } else {
                 message = `No description could be found for command \`${words[1]}\`.`;
             }
-            //  message += "\n\nFor more information about commands, visit http://ratismal.github.io/blargbot/commands.html";
             bu.sendMessageToDiscord(channel.id, message);
         } else {
             var commandsString = "```xl\nGeneral Commands:\n help";
-            // console.log(util.inspect(commandList))
             var generalCommands = []
             var otherCommands = {}
             for (var command in commandList) {
@@ -818,8 +780,6 @@ ${commandList[words[1]].info}`;
                         ccommandsString += `${i == 0 ? ' ' : ', '}${helpCommandList[i]}`;
                     }
                     commandsString += `\n${ccommandsString}`
-                    //  bu.sendMessageToDiscord(channel.id, `${commandsString}\n\n${ccommandsString}\n\nFor more information about commands, do \`help <commandname>\` or visit http://ratismal.github.io/blargbot/commands.html`);
-                    //   return;
                 }
             commandsString += '```'
 
@@ -841,7 +801,6 @@ ${commandList[words[1]].info}`;
             return true;
         }
     }
-    //  }
     return false;
 }
 
@@ -861,14 +820,12 @@ function createLogs(channelid, msgid, times) {
             for (var i = 0; i < kek.length; i++) {
                 messageLogs.push(`${kek[i].author.username}> ${kek[i].author.id}> ${kek[i].content}`);
             }
-            //    messageLogs[messageI] = kek;
             messageI++;
             setTimeout(() => {
                 createLogs(channelid, kek[kek.length - 1].id, times);
             }, 5000);
         });
     else {
-        //bu.sendMessageToDiscord(channelid, 'done');
     }
 }
 
@@ -934,45 +891,6 @@ function postStats() {
                 "servercount": bot.guilds.size
             }
         })
-        /*
-             var stats2 = JSON.stringify({
-             servercount: bot.guilds.size,
-             key: config.general.carbontoken
-             });
-        
-             var options2 = {
-             hostname: 'carbonitex.net',
-             method: 'POST',
-             port: 80,
-             path: `/discord/data/botdata.php`,
-             headers: {
-             "User-Agent": "blargbot/1.0 (ratismal)",
-             "Content-Type": 'application/json',
-             'Content-Length': Buffer.byteLength(stats2)
-             }
-             };
-             var req2 = https.request(options2, function (res2) {
-             var body = '';
-             res2.on('data', function (chunk) {
-             console.log(chunk);
-             body += chunk;
-             });
-        
-             res2.on('end', function () {
-             console.log("body: " + body);
-             });
-        
-             res2.on('error', function (thing) {
-             console.log(`Result error occurred! ${thing}`);
-             })
-             });
-             req2.on('error', function (err) {
-             console.log(`Request error occurred! ${err}`);
-             });
-             req2.write(stats2);
-             req2.end();
-             }
-             */
     }
 }
 
@@ -1050,7 +968,6 @@ function eval1(msg, text) {
             commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
         else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
             commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
-        //  console.log(commandToProcess);
         try {
             bu.sendMessageToDiscord(msg.channel.id, `Input:
 \`\`\`js
@@ -1081,15 +998,12 @@ ${err.stack}
  */
 function processUser(msg) {
     try {
-        //    console.log(util.inspect(msg))
-        //   db.serialize(() => {
         db.query('SELECT userid as id, username from user where userid=?', [msg.author.id], (err, row) => {
             if (!row || !row[0]) {
                 console.log(`inserting user ${msg.author.id} (${msg.author.username})`)
                 db.query(`insert into user (userid, username, lastspoke, isbot, lastchannel, messagecount)`
                     + `values (?, ?, NOW(), ?, ?, 1)`,
                     [msg.author.id, msg.author.username, msg.author.bot ? 1 : 0, msg.channel.id]);
-                //stmt.run();
                 db.query(`insert into username (userid, username) values (?, ?)`,
                     [msg.author.id, msg.author.username]);
             } else {
@@ -1107,7 +1021,6 @@ function processUser(msg) {
                 }
             }
         });
-        //    });
     } catch (err) {
         console.log(err)
     }

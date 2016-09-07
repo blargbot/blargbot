@@ -210,6 +210,7 @@ if (fs.existsSync(path.join(__dirname, 'config.json'))) {
 }
 
 function reloadConfig() {
+    console.log('Attempting to reload config')
     fs.readFile(path.join(__dirname, 'config.json'), 'utf8', function (err, data) {
         if (err) throw err;
         config = JSON.parse(data);
