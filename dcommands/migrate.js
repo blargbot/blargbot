@@ -33,7 +33,7 @@ e.execute = (msg, words, text) => {
                         }
                         if (mconf.nsfw) {
                             Object.keys(mconf.nsfw).forEach(c => {
-                                bu.db.query(`insert into nsfwchan (channelid, guildid) values (?, ?)`,
+                                bu.db.query(`insert into channel (channelid, guildid, nsfw) values (?, ?, true)`,
                                     [c, guildid])
                             })
                         }
