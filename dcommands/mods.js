@@ -36,7 +36,12 @@ e.execute = (msg, words, text) => {
         }
     })
     mods.forEach(m => {
-        message += `${pad(getName(m), maxLength)} - ${pad(m.status == 'online' ? 'Online' : m.status, 8)} (${m.user.id})\n`
+        console.log(m.status)
+        message += `${pad(getName(m), maxLength)} -${pad(m.status == 'online'
+            ? ' Online'
+            : (m.status == 'idle'
+                ? "'idle' "
+                : ' offline'), 8)} (${m.user.id})\n`
     });
     message += '```'
     bu.sendMessageToDiscord(msg.channel.id, message)
