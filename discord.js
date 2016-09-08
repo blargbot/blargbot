@@ -35,17 +35,19 @@ var commandList = {}
 function initCommands() {
     var fileArray = fs.readdirSync(path.join(__dirname, 'dcommands'));
     for (var i = 0; i < fileArray.length; i++) {
+
         var commandFile = fileArray[i]
         if (/.+\.js$/.test(commandFile)) {
             var commandName = commandFile.match(/(.+)\.js$/)[1]
             loadCommand(commandName);
-            } else {
-                console.log('     Skipping non-command ', commandFile);
+            console.log(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module ', commandName)
+        } else {
+            console.log('     Skipping non-command ', commandFile);
 
-            }
         }
     }
 }
+
 
 /**
  * Reloads a specific command
@@ -90,7 +92,6 @@ function unloadCommand(commandName) {
  * @param commandName - the name of the command to load (String)
  */
 function loadCommand(commandName) {
-    console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Loading command module ', commandName)
 
     commands[commandName] = require(`./dcommands/${commandName}.js`)
     if (commands[commandName].isCommand) {
