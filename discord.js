@@ -595,7 +595,7 @@ If you are the owner of this server, here are a few things to know.
                                         }
                                         var statement = `insert into catchat (content, attachment, msgid, channelid, guildid, msgtime, nsfw) values (?, ?, ?, ?, ?, NOW(), ?)`
                                         var nsfw = 0;
-                                        db.query(`select channelid from nsfwchan where channelid = ?`, [msg.channel.id], (err, row) => {
+                                        db.query(`select channelid from channel where channelid = ?`, [msg.channel.id], (err, row) => {
                                             if (row[0]) {
                                                 nsfw = 1;
                                             }
