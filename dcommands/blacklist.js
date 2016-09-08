@@ -13,17 +13,19 @@ e.info = '';
 e.category = bu.CommandType.COMMANDER;
 
 e.execute = (msg, words, text) => {
-  //  if (bu.hasPerm(msg, 'Bot Commander')) {
-        if (bu.config.discord.blacklist[msg.channel.id]) {
-            //if (bu.config.discord.blacklist[msg.channel.id]) {
-            bu.sendMessageToDiscord(msg.channel.id, `Channel **${msg.channel.name}** is no longer blacklisted.`)
-            bu.config.discord.blacklist[msg.channel.id] = false;
-            // }
+    //  if (bu.hasPerm(msg, 'Bot Commander')) {
+    bu.isBlacklistedChannel(msg.channel.id).then(blacklisted => {
+        if (blacklisted) {
+            bu.db.query(`update channel set blacklisted = false where channelid = ?`, [msg.channel.id], (err) => {
+                bu.sendMessageToDiscord(msg.channel.id, `Channel **${msg.channel.name}** is no longer blacklisted.`);
+            })
+
         } else {
-            bu.sendMessageToDiscord(msg.channel.id, `Channel **${msg.channel.name}** is now blacklisted.`)
-            bu.config.discord.blacklist[msg.channel.id] = true;
+            bu.db.query(`insert into channel (channelid, guildid, blacklisted) values (?, ?, true)
+            on duplicate key update blacklisted=true`, [msg.channel.id, msg.channel.guild.id], (err) => {
+                    bu.sendMessageToDiscord(msg.channel.id, `Channel **${msg.channel.name}** is now blacklisted.`);
+                })
 
         }
-        bu.saveConfig();
- //   }
+    })
 }

@@ -44,7 +44,7 @@ botEmitter.on('reloadIrc', () => {
 });
 
 
-var VERSION = "4.3.6";
+var VERSION = "4.4.0";
 /** LOGGING STUFF **/
 
 
@@ -266,6 +266,34 @@ db.query(`CREATE TABLE if not exists user (
         messagecount INTEGER DEFAULT 0
         )`);
 
+db.query(`CREATE TABLE if not exists guild (
+        guildid VARCHAR(30) PRIMARY KEY, 
+        active bool default 1
+        )`);
+
+db.query(`CREATE TABLE if not exists guildsetting (
+        guildid VARCHAR(30),
+        name VARCHAR(30),
+        value VARCHAR(100),
+        PRIMARY KEY (guildid, name),
+        foreign key (guildid) references guild(guildid)
+        )`)
+
+db.query(`CREATE TABLE if not exists ccommand (
+        commandname VARCHAR(30), 
+        guildid VARCHAR(30),
+        content TEXT,
+        primary key (commandname, guildid),
+        foreign key (guildid) references guild(guildid)
+        )`);
+
+db.query(`CREATE TABLE IF NOT EXISTS channel (
+    channelid VARCHAR(30) PRIMARY KEY,
+    guildid VARCHAR(30),
+    foreign key (guildid) references guild(guildid)
+)`)
+
+
 db.query(`CREATE TABLE IF NOT EXISTS modlog (
             guildid VARCHAR(30),
             caseid INTEGER,
@@ -276,7 +304,8 @@ db.query(`CREATE TABLE IF NOT EXISTS modlog (
             msgid TEXT,
             primary key (guildid, caseid),
             foreign key (userid) references user(userid),
-            foreign key (modid) references user(userid)
+            foreign key (modid) references user(userid),
+            foreign key (guildid) references guild(guildid)
         )`)
 
 db.query(`CREATE TABLE IF NOT EXISTs chatlogs (
@@ -286,11 +315,12 @@ db.query(`CREATE TABLE IF NOT EXISTs chatlogs (
             userid VARCHAR(30),
             msgid TEXT,
             channelid TEXT,
-            guildid TEXT,
+            guildid VARCHAR(30),
             msgtime DATETIME,
             nsfw INTEGER,
             mentions TEXT,
-            foreign key (userid) references user(userid)            
+            foreign key (userid) references user(userid),       
+            foreign key (guildid) references guild(guildid)            
         )`)
 
 db.query(`CREATE TABLE IF NOT EXISTs catchat (
@@ -299,9 +329,10 @@ db.query(`CREATE TABLE IF NOT EXISTs catchat (
             attachment TEXT,
             msgid TEXT,
             channelid TEXT,
-            guildid TEXT,
+            guildid VARCHAR(30),
             msgtime DATETIME,
-            nsfw INTEGER
+            nsfw INTEGER,
+            foreign key (guildid) references guild(guildid)            
                     )`)
 
 db.query(`create table if not exists tag (
@@ -320,6 +351,7 @@ db.query(`create table if not exists username (
             namedate DATETIME DEFAULT CURRENT_TIMESTAMP,
             foreign key (userid) references user(userid)
         )`)
+
 //});
 
 /**

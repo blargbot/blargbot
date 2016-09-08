@@ -1,5 +1,6 @@
 var moment = require('moment-timezone')
-
+var Promise = require('promise')
+var util = require('util')
 var e = module.exports = {}
 e.CAT_ID = "103347843934212096";
 e.catOverrides = true
@@ -29,11 +30,7 @@ e.CommandType = {
         },
         3: {
             name: 'NSFW',
-            requirement: msg => {
-                return e.config.discord.servers[msg.channel.guild.id] &&
-                    e.config.discord.servers[msg.channel.guild.id].nsfw &&
-                    e.config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id];
-            }
+            requirement: msg => true
         },
         4: {
             name: 'Music',
@@ -236,34 +233,139 @@ e.getPosition = (member) => {
 
 e.logAction = (guild, user, mod, type) => {
     console.log('fuck')
-    if (e.config.discord.servers[guild.id] && e.config.discord.servers[guild.id].modlog) {
-        console.log('fuck2')
-
-        e.db.query(`select caseid from modlog where guildid = ? order by caseid desc limit 1`,
-            [guild.id], (err, row) => {
-                if (err) {
-                    console.log(err)
-                    return
-                }
-                var caseid = 0
-                if (row[0] && row[0].caseid >= 0) {
-                    caseid = row[0].caseid + 1
-                }
-                var message = `**Case ${caseid}**
+    e.guildSettings.get(guild.id, 'modlog').then(val => {
+        if (val) {
+            e.db.query(`select caseid from modlog where guildid = ? order by caseid desc limit 1`,
+                [guild.id], (err, row) => {
+                    if (err) {
+                        console.log(err)
+                        return
+                    }
+                    var caseid = 0
+                    if (row[0] && row[0].caseid >= 0) {
+                        caseid = row[0].caseid + 1
+                    }
+                    var message = `**Case ${caseid}**
 **Type:** ${type}
 **User:** ${user.username}#${user.discriminator} (${user.id})
 **Reason:** Responsible moderator, please do \`reason ${caseid}\` to set.
 **Moderator:** ${mod ? `${mod.username}#${mod.discriminator}` : 'Unknown'}`
 
-                e.sendMessageToDiscord(e.config.discord.servers[guild.id].modlog, message).then(msg => {
-                    e.db.query(`insert into modlog (guildid, caseid, userid, modid, type, msgid) 
+                    e.sendMessageToDiscord(val, message).then(msg => {
+                        e.db.query(`insert into modlog (guildid, caseid, userid, modid, type, msgid) 
                     values (?, ?, ?, ?, ?, ?)`, [guild.id, caseid, user.id, mod ? mod.id : null, type, msg.id], err => {
-                            console.log(err)
-                        })
-                    return msg
-                }).catch(err => {
-                    console.log(err)
+                                console.log(err)
+                            })
+                        return msg
+                    }).catch(err => {
+                        console.log(err)
+                    })
                 })
-            })
+        }
+    })
+}
+
+e.isStaff = (m) => {
+    return (m.permission.has('kickMembers')
+        || m.permission.has('banMembers')
+        || m.permission.has('administrator')
+        || m.permission.has('manageChannels')
+        || m.permission.has('manageGuild')
+        || m.permission.has('manageMessages'))
+}
+
+/* SQL STUFF */
+
+e.guildSettings = {
+    set: (guildid, key, value) => {
+        return new Promise((fulfill, reject) => {
+            e.db.query(`insert into guildsetting (guildid, name, value) values (?, ?, ?)
+            on duplicate key update value=values(value)`,
+                [guildid, key, value], (err, rows) => {
+                    if (err) reject(err);
+                    fulfill();
+                })
+        })
+    },
+    get: (guildid, key) => {
+        return new Promise((fulfill, reject) => {
+            e.db.query(`select value from guildsetting where guildid = ? and name = ?`,
+                [guildid, key], (err, rows) => {
+                    if (err) reject(err);
+                    if (rows[0])
+                        fulfill(rows[0].value);
+                    else
+                        fulfill(null)
+                    
+                })
+        })
+    },
+    remove: (guildid, key) => {
+        return new Promise((fulfill, reject) => {
+            e.db.query(`delete from guildsetting where guildid = ? and name = ?`,
+                [guildid, key], (err, rows) => {
+                    if (err) reject(err);
+                    fulfill()
+                })
+        })
     }
+}
+e.ccommand = {
+    set: (guildid, commandname, value) => {
+        return new Promise((fulfill, reject) => {
+            e.db.query(`insert into ccommand (commandname, guildid, content) values (?, ?, ?)
+            on duplicate key update content=values(content)`,
+                [commandname, guildid, value], (err, rows) => {
+                    if (err) reject(err);
+                    fulfill();
+                })
+        })
+    },
+    get: (guildid, commandname) => {
+        return new Promise((fulfill, reject) => {
+            e.db.query(`select content from ccommand where commandname = ? and guildid = ?`,
+                [commandname, guildid], (err, rows) => {
+                    if (err) reject(err);
+                    if (rows[0])
+                        fulfill(rows[0].content);
+                    else
+                        fulfill(null)
+                })
+        })
+    },
+    remove: (guildid, commandname) => {
+        return new Promise((fulfill, reject) => {
+            e.db.query(`delete from ccommand where commandname = ? and guildid = ?`,
+                [commandname, guildid], (err, fields) => {
+                    if (err) reject(err);
+                    fulfill(fields)
+                })
+        })
+    }
+}
+
+e.isNsfwChannel = (channelid) => {
+    return new Promise((fulfill, reject) => {
+        e.db.query(`select channelid from channel where channelid = ? and nsfw = true`, [channelid], (err, rows) => {
+            if (err) reject(err);
+            if (rows[0]) {
+                fulfill(true)
+            } else {
+                fulfill(false)
+            }
+        })
+    })
+}
+
+e.isBlacklistedChannel = (channelid) => {
+    return new Promise((fulfill, reject) => {
+        e.db.query(`select channelid from channel where channelid = ? and blacklisted = true`, [channelid], (err, rows) => {
+            if (err) reject(err);
+            if (rows[0]) {
+                fulfill(true)
+            } else {
+                fulfill(false)
+            }
+        })
+    })
 }

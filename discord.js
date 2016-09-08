@@ -8,6 +8,7 @@ var bu = require('./util.js');
 var tags = require('./tags.js');
 var reload = require('require-reload')(require)
 var request = require('request')
+var Promise = require('promise')
 
 var Cleverbot = require('cleverbot-node');
 cleverbot = new Cleverbot;
@@ -282,9 +283,9 @@ e.init = (v, topConfig, em, database) => {
             console.log(`[${moment().format(`MM/DD HH:mm:ss`)}][WARN][${id}] ${message}`);
     })
 
-    bot.on('error', function (message, id) {
+    bot.on('error', function (err, id) {
         if (error)
-            console.log(`[${moment().format(`MM/DD HH:mm:ss`)}][ERROR][${id}] ${message}`);
+            console.log(`[${moment().format(`MM/DD HH:mm:ss`)}][ERROR][${id}] ${err.stack}`);
     })
 
     bot.on("ready", function () {
@@ -303,25 +304,30 @@ e.init = (v, topConfig, em, database) => {
 
 
     bot.on('guildMemberAdd', function (guild, member) {
-        if (config.discord.servers[guild.id] && config.discord.servers[guild.id].greet) {
-            var message = tags.processTag({
-                channel: guild.defaultChannel,
-                author: member.user,
-                member: member
-            }, config.discord.servers[guild.id].greet, '');
-            bu.sendMessageToDiscord(guild.defaultChannel.id, message);
-        }
+        bu.guildSettings.get(guild.id, 'greeting').then(val => {
+            if (val) {
+                var message = tags.processTag({
+                    channel: guild.defaultChannel,
+                    author: member.user,
+                    member: member
+                }, val, '');
+                bu.sendMessageToDiscord(guild.defaultChannel.id, message);
+            }
+        })
+
     });
 
     bot.on('guildMemberRemove', function (guild, member) {
-        if (config.discord.servers[guild.id] && config.discord.servers[guild.id].farewell) {
-            var message = tags.processTag({
-                channel: guild.defaultChannel,
-                author: member.user,
-                member: member
-            }, config.discord.servers[guild.id].farewell, '');
-            bu.sendMessageToDiscord(guild.defaultChannel.id, message);
-        }
+        bu.guildSettings.get(guild.id, 'farewell').then(val => {
+            if (val) {
+                var message = tags.processTag({
+                    channel: guild.defaultChannel,
+                    author: member.user,
+                    member: member
+                }, val, '');
+                bu.sendMessageToDiscord(guild.defaultChannel.id, message);
+            }
+        })
     });
 
     bot.on('guildMemberRemove', (guild, member) => {
@@ -331,6 +337,7 @@ e.init = (v, topConfig, em, database) => {
                 console.log('removed from guild');
                 bu.sendMessageToDiscord(`205153826162868225`, `I was removed from the guild \`${guild
                     .name}\` (\`${guild.id}\`)!`);
+                db.query(`update guild set active='false' where guildid=?`, [guild.id])
             }
         } catch (err) {
             console.log(err.stack);
@@ -339,15 +346,15 @@ e.init = (v, topConfig, em, database) => {
 
     bot.on('guildCreate', (guild) => {
         postStats();
-        console.log('added to guild');
-        var message = `I was added to the guild \`${guild.name}\` (\`${guild.id}\`)!`
-        bu.sendMessageToDiscord(`205153826162868225`, message);
-        if (bot.guilds.size % 100 == 0) {
-            bu.sendMessageToDiscord(`205153826162868225`, `:tada: I'm now in ${bot.guilds.size} guilds! :tada:`);
-        }
-        console.log('WHY')
-        var message = `Hi! My name is blargbot, a multifunctional discord bot here to serve you! 
-- <:B1nzy:210242619735801856> For command information, please do \`${bu.config.discord.defaultPrefix}help\`!
+        function firstTime() {
+            var message = `I was added to the guild \`${guild.name}\` (\`${guild.id}\`)!`
+            bu.sendMessageToDiscord(`205153826162868225`, message);
+            if (bot.guilds.size % 100 == 0) {
+                bu.sendMessageToDiscord(`205153826162868225`, `:tada: I'm now in ${bot.guilds.size} guilds! :tada:`);
+            }
+            console.log('WHY')
+            var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you! 
+- :computer:  For command information, please do \`${bu.config.discord.defaultPrefix}help\`!
 - :loudspeaker: For Bot Commander commands, please make sure you have a role titled \`Bot Commander\`.
 - :tools: For Admin commands, please make sure you have a role titled \`Admin\`.
 If you are the owner of this server, here are a few things to know.
@@ -357,7 +364,20 @@ If you are the owner of this server, here are a few things to know.
 
 :question: If you have any questions, comments, or concerns, please do \`${bu.config.discord.defaultPrefix}suggest <suggestion>\`. Thanks!
 :thumbsup: I hope you enjoy my services! :thumbsup:`
-        bu.sendMessageToDiscord(guild.id, message)
+            bu.sendMessageToDiscord(guild.id, message2)
+            db.query(`insert into guild (guildid) values (?)
+            on duplicate key update active=1`, [guild.id])
+        }
+        console.log('added to guild');
+        db.query(`select active from guild where guildid = ?`, [guild.id], (err, rows) => {
+            if (!rows[0]) {
+                firstTime()
+            } else {
+                if (!rows[0].active) {
+                    firstTime()
+                }
+            }
+        })
     });
 
     bot.on('messageUpdate', (msg, oldmsg) => {
@@ -385,12 +405,13 @@ If you are the owner of this server, here are a few things to know.
 
     bot.on('messageDelete', (msg) => {
         if (commandMessages.indexOf(msg.id) > -1) {
-            if (config.discord.servers[msg.channel.guild.id] != null) {
-                if (config.discord.servers[msg.channel.guild.id].deleteNotifications == true)
+            bu.guildSettings.get(msg.channel.guild.id, 'deletenotif').then(val => {
+                if (val != '0')
                     bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick ? msg.member.nick : msg.author.username}** deleted their command message.`)
                 commandMessages.splice(commandMessages.indexOf(msg.id), 1)
-            }
+            })
         }
+
     })
 
     bot.on("messageCreate", function (msg) {
@@ -427,175 +448,206 @@ If you are the owner of this server, here are a few things to know.
         }
 
         var prefix = config.discord.defaultPrefix
+        //   bu.guildSettings.get(msg.channel.guild.id, 'prefix').then(val => {
+
+
         if (msg.author.id !== bot.user.id) {
-            if (msg.channel.guild) {
-                if (config.discord.servers[msg.channel.guild.id] != null &&
-                    config.discord.servers[msg.channel.guild.id].prefix != null) {
-                    prefix = config.discord.servers[msg.channel.guild.id].prefix;
-                }
-            } else {
-                prefix = ''
-            }
-
-
-            if (msg.content.toLowerCase().startsWith('blargbot')) {
-                var index = msg.content.toLowerCase().indexOf('t')
-                console.log(index)
-                prefix = msg.content.substring(0, index + 1);
-                console.log(`'${prefix}'`)
-            }
-
-            if (!config.discord.blacklist)
-                config.discord.blacklist = {}
-            if (config.discord.blacklist[msg.channel.id] &&
-                msg.content.replace(prefix, '').split(' ')[0].toLowerCase() != 'blacklist') {
-                return;
-            }
-
-            processUser(msg);
-            if (msg.content.indexOf('(╯°□°）╯︵ ┻━┻') > -1 && msg.channel.guild.id == '110373943822540800' && !msg.author.bot) {
-                var flipMessage = '';
-                if (bot.user.id == '134133271750639616') {
-                    var seed = bu.getRandomInt(0, 3);
-                    switch (seed) {
-                        case 0:
-                            flipMessage = 'Whoops! Let me get that for you ┬──┬﻿ ¯\\\\_(ツ)'
-                            break;
-                        case 1:
-                            flipMessage = '(ヘ･_･)ヘ┳━┳ What are you, an animal?'
-                            break;
-                        case 2:
-                            flipMessage = 'Can you not? ヘ(´° □°)ヘ┳━┳'
-                            break;
-                        case 3:
-                            flipMessage = 'Tables are not meant to be flipped ┬──┬ ノ( ゜-゜ノ)'
-                            break;
-                    }
+            bu.guildSettings.get(msg.channel.guild ? msg.channel.guild.id : '', 'prefix').then(val => {
+                var prefix = undefined;
+                if (msg.channel.guild) {
+                    if (val) prefix = val;
                 } else {
-                    var seed = bu.getRandomInt(0, 3);
-                    switch (seed) {
-                        case 0:
-                            flipMessage = '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Wheee!'
-                            break;
-                        case 1:
-                            flipMessage = '┻━┻ ︵ヽ(`Д´)ﾉ︵﻿ ┻━┻ Get these tables out of my face!'
-                            break;
-                        case 2:
-                            flipMessage = '┻━┻ミ＼(≧ﾛ≦＼) Hey, catch!'
-                            break;
-                        case 3:
-                            flipMessage = 'Flipping tables with elegance! (/¯◡ ‿ ◡)/¯ ~ ┻━┻'
-                            break;
+                    prefix = ''
+                }
+
+                if (msg.content.toLowerCase().startsWith('blargbot')) {
+                    var index = msg.content.toLowerCase().indexOf('t')
+                    //     console.log(index)
+                    prefix = msg.content.substring(0, index + 1);
+                    //   console.log(`'${prefix}'`)
+                } else if (msg.content.toLowerCase().startsWith(bu.config.discord.defaultPrefix)) {
+                    //    var index = msg.content.toLowerCase().indexOf('t')
+                    //     console.log(index)
+                    prefix = bu.config.discord.defaultPrefix;
+                    //   console.log(`'${prefix}'`)
+                }
+
+                bu.isBlacklistedChannel(msg.channel.id).then(blacklisted => {
+
+                    if (blacklisted &&
+                        msg.content.replace(prefix, '').split(' ')[0].toLowerCase() != 'blacklist') {
+                        return;
                     }
-                }
-                bu.sendMessageToDiscord(msg.channel.id, flipMessage);
-            }
 
-            if (msg.content.indexOf('┬─┬﻿ ノ( ゜-゜ノ)') > -1 && msg.channel.guild.id == '110373943822540800' && !msg.author.bot) {
-                var flipMessage = '';
-                if (bot.user.id == '134133271750639616') {
-                    var seed = bu.getRandomInt(0, 3);
-                    switch (seed) {
-                        case 0:
-                            flipMessage = '┬──┬﻿ ¯\\\\_(ツ) A table unflipped is a table saved!'
-                            break;
-                        case 1:
-                            flipMessage = '┣ﾍ(≧∇≦ﾍ)… (≧∇≦)/┳━┳ Unflip that table!'
-                            break;
-                        case 2:
-                            flipMessage = 'Yay! Cleaning up! ┣ﾍ(^▽^ﾍ)Ξ(ﾟ▽ﾟ*)ﾉ┳━┳'
-                            break;
-                        case 3:
-                            flipMessage = 'ヘ(´° □°)ヘ┳━┳ Was that so hard?'
-                            break;
-                    }
-                } else {
-                    var seed = bu.getRandomInt(0, 3);
-                    switch (seed) {
-                        case 0:
-                            flipMessage = '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Here comes the entropy!'
-                            break;
-                        case 1:
-                            flipMessage = 'I\'m sorry, did you just pick that up? ༼ﾉຈل͜ຈ༽ﾉ︵┻━┻'
-                            break;
-                        case 2:
-                            flipMessage = 'Get back on the ground! (╯ರ ~ ರ）╯︵ ┻━┻'
-                            break;
-                        case 3:
-                            flipMessage = 'No need to be so serious! (ﾉ≧∇≦)ﾉ ﾐ ┸━┸'
-                            break;
-                    }
-                }
-                bu.sendMessageToDiscord(msg.channel.id, flipMessage);
-            }
-
-            if (msg.content.startsWith(`<@${bot.user.id}>`) || msg.content.startsWith(`<@!${bot.user.id}>`)) {
-                console.log('lel');
-                var cleanContent = msg.content.replace(/<@!?[0-9]{17,21}>/, '').trim()
-                if (!handleDiscordCommand(msg.channel, msg.author, cleanContent, msg)) {
-                    Cleverbot.prepare(function () {
-                        cleverbot.write(cleanContent, function (response) {
-                            bot.sendChannelTyping(msg.channel.id);
-                            setTimeout(function () {
-                                bu.sendMessageToDiscord(msg.channel.id, response.message);
-                            }, 1500)
-                        });
-                    });
-                }
-            }
-
-            if (msg.content.startsWith(prefix)) {
-                var command = msg.content.replace(prefix, '').trim();
-                console.log(`${prefix} ${command}`);
-                try {
-                    handleDiscordCommand(msg.channel, msg.author, command, msg);
-                } catch (err) {
-                    console.log(err.stack);
-                }
-            } else {
-                if (msg.author.id == bu.CAT_ID && msg.content.indexOf('discord.gg') == -1) {
-                    var prefixes = ["!", "@", "#", "$", "%", "^", "&", "*", ")", "-", "_", "=", "+", "}", "]", "|", ";", ":", "'", ">", "?", "/", "."];
-                    if (!msg.content || (prefixes.indexOf(msg.content.substring(0, 1)) == -1) && !msg.content.startsWith('kek!') && !msg.content.startsWith('blarg!') && msg.channel.guild) {
-                        db.query(`SELECT id, content from catchat order by id desc limit 1`, (err, row) => {
-
-                            if (err)
-                                console.log(err.stack)
-                            if ((row && row[0].content != msg.content) || msg.content == '') {
-                                var content = msg.content;
-                                while (/<@!?[0-9]{17,21}>/.test(content)) {
-                                    content = content.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true).username)
-                                }
-                                var statement = `insert into catchat (content, attachment, msgid, channelid, guildid, msgtime, nsfw) values (?, ?, ?, ?, ?, NOW(), ?)`
-                                var nsfw = config.discord.servers[msg.channel.guild.id] && config.discord.servers[msg.channel.guild.id].nsfw && config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id];
-                                if (nsfw == null) {
-                                    nsfw = 0;
-                                }
-                                db.query(statement,
-                                    [content, msg.attachments[0] ? msg.attachments[0].url : 'none', msg.id,
-                                        msg.channel.id, msg.channel.guild.id, nsfw]);
+                    processUser(msg);
+                    if (msg.content.indexOf('(╯°□°）╯︵ ┻━┻') > -1 && msg.channel.guild.id == '110373943822540800' && !msg.author.bot) {
+                        var flipMessage = '';
+                        if (bot.user.id == '134133271750639616') {
+                            var seed = bu.getRandomInt(0, 3);
+                            switch (seed) {
+                                case 0:
+                                    flipMessage = 'Whoops! Let me get that for you ┬──┬﻿ ¯\\\\_(ツ)'
+                                    break;
+                                case 1:
+                                    flipMessage = '(ヘ･_･)ヘ┳━┳ What are you, an animal?'
+                                    break;
+                                case 2:
+                                    flipMessage = 'Can you not? ヘ(´° □°)ヘ┳━┳'
+                                    break;
+                                case 3:
+                                    flipMessage = 'Tables are not meant to be flipped ┬──┬ ノ( ゜-゜ノ)'
+                                    break;
                             }
-                        })
+                        } else {
+                            var seed = bu.getRandomInt(0, 3);
+                            switch (seed) {
+                                case 0:
+                                    flipMessage = '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Wheee!'
+                                    break;
+                                case 1:
+                                    flipMessage = '┻━┻ ︵ヽ(`Д´)ﾉ︵﻿ ┻━┻ Get these tables out of my face!'
+                                    break;
+                                case 2:
+                                    flipMessage = '┻━┻ミ＼(≧ﾛ≦＼) Hey, catch!'
+                                    break;
+                                case 3:
+                                    flipMessage = 'Flipping tables with elegance! (/¯◡ ‿ ◡)/¯ ~ ┻━┻'
+                                    break;
+                            }
+                        }
+                        bu.sendMessageToDiscord(msg.channel.id, flipMessage);
                     }
-                }
 
-            }
+                    if (msg.content.indexOf('┬─┬﻿ ノ( ゜-゜ノ)') > -1 && msg.channel.guild.id == '110373943822540800' && !msg.author.bot) {
+                        var flipMessage = '';
+                        if (bot.user.id == '134133271750639616') {
+                            var seed = bu.getRandomInt(0, 3);
+                            switch (seed) {
+                                case 0:
+                                    flipMessage = '┬──┬﻿ ¯\\\\_(ツ) A table unflipped is a table saved!'
+                                    break;
+                                case 1:
+                                    flipMessage = '┣ﾍ(≧∇≦ﾍ)… (≧∇≦)/┳━┳ Unflip that table!'
+                                    break;
+                                case 2:
+                                    flipMessage = 'Yay! Cleaning up! ┣ﾍ(^▽^ﾍ)Ξ(ﾟ▽ﾟ*)ﾉ┳━┳'
+                                    break;
+                                case 3:
+                                    flipMessage = 'ヘ(´° □°)ヘ┳━┳ Was that so hard?'
+                                    break;
+                            }
+                        } else {
+                            var seed = bu.getRandomInt(0, 3);
+                            switch (seed) {
+                                case 0:
+                                    flipMessage = '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Here comes the entropy!'
+                                    break;
+                                case 1:
+                                    flipMessage = 'I\'m sorry, did you just pick that up? ༼ﾉຈل͜ຈ༽ﾉ︵┻━┻'
+                                    break;
+                                case 2:
+                                    flipMessage = 'Get back on the ground! (╯ರ ~ ರ）╯︵ ┻━┻'
+                                    break;
+                                case 3:
+                                    flipMessage = 'No need to be so serious! (ﾉ≧∇≦)ﾉ ﾐ ┸━┸'
+                                    break;
+                            }
+                        }
+                        bu.sendMessageToDiscord(msg.channel.id, flipMessage);
+                    }
+                    var commandExecuted = false;
+                    if (msg.content.startsWith(`<@${bot.user.id}>`) || msg.content.startsWith(`<@!${bot.user.id}>`)) {
+                        console.log('lel');
+                        var cleanContent = msg.content.replace(/<@!?[0-9]{17,21}>/, '').trim()
+                        commandExecuted = handleDiscordCommand(msg.channel, msg.author, cleanContent, msg)
+                        if (!commandExecuted) {
+                            Cleverbot.prepare(function () {
+                                cleverbot.write(cleanContent, function (response) {
+                                    bot.sendChannelTyping(msg.channel.id);
+                                    setTimeout(function () {
+                                        bu.sendMessageToDiscord(msg.channel.id, response.message);
+                                    }, 1500)
+                                });
+                            });
+                        }
+                    }
+
+                    if (msg.content.startsWith(prefix)) {
+                        var command = msg.content.replace(prefix, '').trim();
+                        console.log(`${prefix} ${command}`);
+                        try {
+                            commandExecuted = handleDiscordCommand(msg.channel, msg.author, command, msg);
+                        } catch (err) {
+                            console.log(err.stack);
+                        }
+                    } else {
+                        if (msg.author.id == bu.CAT_ID && msg.content.indexOf('discord.gg') == -1) {
+                            var prefixes = ["!", "@", "#", "$", "%", "^", "&", "*", ")", "-", "_", "=", "+", "}", "]", "|", ";", ":", "'", ">", "?", "/", "."];
+                            if (!msg.content || (prefixes.indexOf(msg.content.substring(0, 1)) == -1) && !msg.content.startsWith('kek!') && !msg.content.startsWith('blarg!') && msg.channel.guild) {
+                                db.query(`SELECT id, content from catchat order by id desc limit 1`, (err, row) => {
+
+                                    if (err)
+                                        console.log(err.stack)
+                                    if ((row[0] && row[0].content != msg.content) || msg.content == '') {
+                                        var content = msg.content;
+                                        while (/<@!?[0-9]{17,21}>/.test(content)) {
+                                            content = content.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true).username)
+                                        }
+                                        var statement = `insert into catchat (content, attachment, msgid, channelid, guildid, msgtime, nsfw) values (?, ?, ?, ?, ?, NOW(), ?)`
+                                        var nsfw = 0;
+                                        db.query(`select channelid from nsfwchan where channelid = ?`, [msg.channel.id], (err, row) => {
+                                            if (row[0]) {
+                                                nsfw = 1;
+                                            }
+                                            db.query(statement,
+                                                [content, msg.attachments[0] ? msg.attachments[0].url : 'none', msg.id,
+                                                    msg.channel.id, msg.channel.guild.id, nsfw]);
+                                        })
 
 
+                                    }
+                                })
+                            }
+                        }
+
+                    }
+                    if (msg.channel.guild) {
+                        if (commandExecuted)
+                            bu.guildSettings.get(msg.channel.id, 'deletenotif').then(val => {
+                                if (val != '0') {
+                                    commandMessages.push(msg.id)
+                                    if (commandMessages.length > 100) {
+                                        commandMessages.shift();
+                                    }
+                                }
+                            })
+
+                        db.query(`UPDATE user set lastcommand=?, lastcommanddate=NOW() where userid=?`,
+                            [cleanContent, msg.author.id]);
+                        //}
+                    }
+                })
+
+            })
         }
         if (msg.channel.id != '204404225914961920') {
             var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions) 
             values (?, ?, (select userid from user where userid = ?), ?, ?, ?, NOW(), ?, ?)`
-            var nsfw = config.discord.servers[msg.channel.guild.id] && config.discord.servers[msg.channel.guild.id].nsfw && config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id];
-            if (nsfw == null) {
-                nsfw = 0;
-            }
-            var mentions = ''
-            for (var i = 0; i < msg.mentions.length; i++) {
-                mentions += msg.mentions[i].username + ',';
-            }
-            db.query(statement, [msg.content, msg.attachments[0] ? msg.attachments[0].url : 'none',
-                msg.author.id, msg.id, msg.channel.id, msg.channel.guild.id, nsfw, mentions]);
+            var nsfw = 0;
+            db.query(`select channelid from channel where channelid = ? and nsfw = true`, [msg.channel.id], (err, row) => {
+                if (row[0]) {
+                    nsfw = 1;
+                }
+                var mentions = ''
+                for (var i = 0; i < msg.mentions.length; i++) {
+                    mentions += msg.mentions[i].username + ',';
+                }
+                db.query(statement, [msg.content, msg.attachments[0] ? msg.attachments[0].url : 'none',
+                    msg.author.id, msg.id, msg.channel.id, msg.channel.guild.id, nsfw, mentions]);
+            })
+
         }
+
 
     });
     initCommands();
@@ -683,125 +735,129 @@ function switchAvatar(forced) {
 var commandMessages = []
 
 function handleDiscordCommand(channel, user, text, msg) {
-    var words = text.replace(/ +/g, ' ').split(' ');
+    return new Promise((fulfill, reject) => {
+        var words = text.replace(/ +/g, ' ').split(' ');
 
-    if (msg.channel.guild)
-        console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
-    else
-        console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) in a PM on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
+        if (msg.channel.guild)
+            console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
+        else
+            console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) in a PM on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
 
-    if (msg.author.bot) {
-        return false;
-    }
-    if (msg.channel.guild) {
-        if (config.discord.servers[channel.guild.id]) {
-            if (config.discord.servers[channel.guild.id].deleteNotifications == true) {
-                console.log('pushing')
-                commandMessages.push(msg.id)
-            } if (commandMessages.length > 100) {
-                commandMessages.shift();
-            }
+        if (msg.author.bot) {
+            fulfill(false)
         }
-        db.query(`UPDATE user set lastcommand=?, lastcommanddate=NOW() where userid=?`,
-            [text, user.id]);
+        if (msg.channel.guild) {
+            bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]).then(val => {
+                if (val) {
+                    var command = text.replace(words[0], '').trim();
 
-        if (config.discord.servers[channel.guild.id] &&
-            config.discord.servers[channel.guild.id].commands &&
-            config.discord.servers[channel.guild.id].commands[words[0]]) {
-            var command = text.replace(words[0], '').trim();
+                    var response = tags.processTag(msg, val, command);
+                    if (response !== "null") {
+                        bu.sendMessageToDiscord(channel.id, response);
+                    }
+                    fulfill(true)
+                } else {
+                    if (config.discord.commands[words[0]] != null) {
+                        bu.sendMessageToDiscord(channel.id, `${
+                            config.discord.commands[words[0]]
+                                .replace(/%REPLY/, `<@${user.id}>`)}`);
+                        fulfill(true)
 
-            var response = tags.processTag(msg, config.discord.servers[channel.guild.id].commands[words[0]], command);
-            if (response !== "null") {
-                bu.sendMessageToDiscord(channel.id, response);
-            }
-            return;
-        }
-        if (config.discord.commands[words[0]] != null) {
-            bu.sendMessageToDiscord(channel.id, `${config.discord.commands[words[0]].replace(/%REPLY/, `<@${user.id}>`)}`);
-        }
-    }
+                    }
 
-
-    if (words[0].toLowerCase() == 'help') {
-        if (words.length > 1) {
-            var message = '';
-            if (commandList.hasOwnProperty(words[1]) && !commandList[words[1]].hidden
-                && bu.CommandType.properties[commandList[words[1]].category].requirement(msg)) {
-                message = `Command Name: ${commandList[words[1]].name}
+                    if (words[0].toLowerCase() == 'help') {
+                        if (words.length > 1) {
+                            var message = '';
+                            if (commandList.hasOwnProperty(words[1]) && !commandList[words[1]].hidden
+                                && bu.CommandType.properties[commandList[words[1]].category].requirement(msg)) {
+                                message = `Command Name: ${commandList[words[1]].name}
 Usage: \`${commandList[words[1]].usage}\`
 ${commandList[words[1]].info}`;
-            } else {
-                message = `No description could be found for command \`${words[1]}\`.`;
-            }
-            bu.sendMessageToDiscord(channel.id, message);
-        } else {
-            var commandsString = "```xl\nGeneral Commands:\n help";
-            var generalCommands = []
-            var otherCommands = {}
-            for (var command in commandList) {
-                if (!commandList[command].hidden) {
-                    if (commandList[command].category == bu.CommandType.GENERAL) {
-                        generalCommands.push(command);
-                    }
-                    else {
-                        if (!otherCommands[commandList[command].category])
-                            otherCommands[commandList[command].category] = []
-                        otherCommands[commandList[command].category].push(command)
-                    }
-                }
-            }
-            generalCommands.sort()
-            for (var i = 0; i < generalCommands.length; i++) {
-                commandsString += `, ${generalCommands[i]}`;
-            }
-            for (var category in otherCommands) {
-                if (bu.CommandType.properties[category].requirement(msg)) {
-                    otherCommands[category].sort()
-                    var otherCommandList = otherCommands[category]
-                    commandsString += `\n${bu.CommandType.properties[category].name} Commands:\n`
-                    for (var i = 0; i < otherCommandList.length; i++) {
-                        commandsString += `${i == 0 ? ' ' : ', '}${otherCommandList[i]}`;
-                    }
-                }
-            }
-            if (msg.channel.guild)
-                if (config.discord.servers[channel.guild.id] != null &&
-                    config.discord.servers[channel.guild.id].commands != null) {
-                    var ccommands = config.discord.servers[channel.guild.id].commands;
-                    var ccommandsString = "Custom Commands:\n";
-                    var helpCommandList = [];
-                    var i = 0;
-                    for (var key in ccommands) {
-                        helpCommandList[i] = key;
-                        i++;
-                    }
-                    helpCommandList.sort();
-                    for (i = 0; i < helpCommandList.length; i++) {
-                        ccommandsString += `${i == 0 ? ' ' : ', '}${helpCommandList[i]}`;
-                    }
-                    commandsString += `\n${ccommandsString}`
-                }
-            commandsString += '```'
+                            } else {
+                                message = `No description could be found for command \`${words[1]}\`.`;
+                            }
+                            bu.sendMessageToDiscord(channel.id, message);
+                        } else {
+                            var commandsString = "```xl\nGeneral Commands:\n help";
+                            var generalCommands = []
+                            var otherCommands = {}
+                            for (var command in commandList) {
+                                if (!commandList[command].hidden) {
+                                    if (commandList[command].category == bu.CommandType.GENERAL) {
+                                        generalCommands.push(command);
+                                    }
+                                    else {
+                                        if (!otherCommands[commandList[command].category])
+                                            otherCommands[commandList[command].category] = []
+                                        otherCommands[commandList[command].category].push(command)
+                                    }
+                                }
+                            }
+                            generalCommands.sort()
+                            for (var i = 0; i < generalCommands.length; i++) {
+                                commandsString += `, ${generalCommands[i]}`;
+                            }
+                            for (var category in otherCommands) {
+                                if (bu.CommandType.properties[category].requirement(msg)) {
+                                    otherCommands[category].sort()
+                                    var otherCommandList = otherCommands[category]
+                                    commandsString += `\n${bu.CommandType.properties[category].name} Commands:\n`
+                                    for (var i = 0; i < otherCommandList.length; i++) {
+                                        commandsString += `${i == 0 ? ' ' : ', '}${otherCommandList[i]}`;
+                                    }
+                                }
+                            }
+                            db.query(`select commandname from ccommand where guildid = ?`,
+                                [msg.channel.guild ? msg.channel.guild.id : ''], (err, rows) => {
+                                    if (rows.length > 0) {
+                                        var ccommandsString = "Custom Commands:\n";
+                                        var helpCommandList = [];
+                                        var i = 0;
+                                        for (var key in rows) {
+                                            helpCommandList[i] = rows[key].commandname;
+                                            i++;
+                                        }
+                                        helpCommandList.sort();
+                                        for (i = 0; i < helpCommandList.length; i++) {
+                                            ccommandsString += `${i == 0 ? ' ' : ', '}${helpCommandList[i]}`;
+                                        }
+                                        commandsString += `\n${ccommandsString}`
+                                    }
 
-            bu.sendMessageToDiscord(channel.id, `${commandsString}\n${!msg.channel.guild
-                ? 'Not all of these commands work in DMs.\n'
-                : ''
-                }For more information about commands, do \`help <commandname>\` or visit http://blarg.stupidcat.me/commands.html`);
-        }
-        return true;
-    } else {
-        if (commandList.hasOwnProperty(words[0].toLowerCase())) {
-            console.log(words[0])
-            if (bu.CommandType.properties[commandList[words[0].toLowerCase()].category].perm) {
-                if (!bu.hasPerm(msg, bu.CommandType.properties[commandList[words[0].toLowerCase()].category].perm)) {
-                    return true;
+                                    commandsString += '```'
+
+                                    bu.sendMessageToDiscord(channel.id, `${commandsString}\n${!msg.channel.guild
+                                        ? 'Not all of these commands work in DMs.\n'
+                                        : ''
+                                        }For more information about commands, do \`help <commandname>\` or visit http://blarg.stupidcat.me/commands.html`);
+                                })
+                        }
+                        fulfill(true)
+                    } else {
+                        if (commandList.hasOwnProperty(words[0].toLowerCase())) {
+                            console.log(words[0])
+                            if (bu.CommandType.properties[commandList[words[0].toLowerCase()].category].perm) {
+                                if (!bu.hasPerm(msg, bu.CommandType.properties[commandList[words[0].toLowerCase()].category].perm)) {
+                                    fulfill(false)
+                                    return;
+                                }
+                            }
+                            commands[commandList[words[0].toLowerCase()].name].execute(msg, words, text);
+                            fulfill(true)
+                        }
+                    }
                 }
-            }
-            commands[commandList[words[0].toLowerCase()].name].execute(msg, words, text);
-            return true;
+            })
+
         }
-    }
-    return false;
+
+
+    });
+
+
+
+
+    //return false;
 }
 
 var messageLogs = [];

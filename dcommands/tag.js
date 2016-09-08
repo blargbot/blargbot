@@ -134,20 +134,7 @@ e.execute = (msg, words, text) => {
                 });
                 break;
             case 'help':
-                bu.sendMessageToDiscord(msg.channel.id, `\`\`\`diff
-!=== { Tag Usage } ===!
-+ tag <name> - executes tag with given name
-+ tag create <name> <content> - creates a new tag with given name and content
-+ tag rename <tag1> <tag2> - renames the tag by the name of \`tag1\` to \`tag2\`
-+ tag edit <name> <content> - edits an existing tag with given content, provided that you were the one who created it
-+ tag delete <name> - deletes the tag with given name, provided that you own it
-+ tag raw <name> - displays the raw code of a tag
-+ tag author <tag> - displays the name of who made the tag
-+ tag search <name> - searches for a tag based on the provided name
-+ tag list - lists all tags 
-+ tag help - shows this message
-For more information about tags, visit http://ratismal.github.io/blargbot/tags.html
-\`\`\``)
+                bu.sendMessageToDiscord(msg.channel.id, tagHelp)
                 break;
             case 'raw':
                 bu.db.query(`select contents from tag where title=?`, [words[2]], (err, row) => {
@@ -249,18 +236,23 @@ ${row[0].contents}
                 break;
         }
     } else {
-        bu.sendMessageToDiscord(msg.channel.id, `\`\`\`diff
-!=== { Tag Usage } ===!
-+ tag <name> - executes tag with given name
-+ tag create <name> <content> - creates a new tag with given name and content
-+ tag edit <name> <content> - edits an existing tag with given content, provided that you were the one who created it
-+ tag delete <name> - deletes the tag with given name, provided that you own it
-+ tag raw <name> - displays the raw code of a tag
-+ tag author <tag> - displays the name of who made the tag
-+ tag search <name> - searches for a tag based on the provided name
-+ tag list - lists all tags 
-+ tag help - shows this message
-For more information about tags, visit http://ratismal.github.io/blargbot/tags.html
-\`\`\``)
+        bu.sendMessageToDiscord(msg.channel.id, tagHelp)
     }
 }
+
+
+var tagHelp = `\`\`\`xl
+!=== { Tag Usage } ===!
++ Tag <name> - executes tag with given name
++ Tag Create <name> <content> - creates a new tag with given name and content
++ Tag Rename <tag1> <tag2> - renames the tag by the name of \`tag1\` to \`tag2\`
++ Tag Edit <name> <content> - edits an existing tag with given content, provided that you were the one who created it
++ Tag Delete <name> - deletes the tag with given name, provided that you own it
++ Tag Raw <name> - displays the raw code of a tag
++ Tag Author <tag> - displays the name of who made the tag
++ Tag Search <name> - searches for a tag based on the provided name
++ Tag List - lists all tags 
++ Tag Help - shows this message
+NOTE: Any NSFW tags must contain '{nsfw}' somewhere in their body, or they will be deleted and you will be blacklisted.
+For more information about tags, visit http://ratismal.github.io/blargbot/tags.html
+\`\`\``

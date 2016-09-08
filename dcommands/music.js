@@ -153,22 +153,20 @@ e.execute = (msg, words, text) => {
                             break;
                         case 'setchannel':
                             if (bu.hasPerm(msg, 'Bot Commander')) {
-                                if (!bu.config.discord.servers[msg.channel.guild.id]) {
-                                    bu.config.discord.servers[msg.channel.guild.id] = {}
-                                }
-                                if (bu.config.discord.servers[msg.channel.guild.id].musicChannel == msg.channel.id) {
-                                    delete bu.config.discord.servers[msg.channel.guild.id].musicChannel
-                                    bu.sendMessageToDiscord(msg.channel.id, 'This is no longer my music channel.')
+                                bu.guildSettings.get(msg.channel.guild.id, 'musicchannel').then(channel => {
+                                    if (channel == msg.channel.id) {
+                                        bu.guildSettings.remove(msg.channel.guild.id, 'musicchannel').then(fields => {
+                                            bu.sendMessageToDiscord(msg.channel.id, 'This is no longer my music channel.')
+                                        })
+                                    } else {
+                                        bu.guildSettings.set(msg.channel.guild.id, 'musicchannel', msg.channel.id)
+                                        bu.sendMessageToDiscord(msg.channel.id, 'This is now my music channel.')
+                                    }
+                                })
 
-                                } else {
-                                    bu.config.discord.servers[msg.channel.guild.id].musicChannel = msg.channel.id
-                                    bu.sendMessageToDiscord(msg.channel.id, 'This is now my music channel.')
-
-                                }
-                                bu.saveConfig()
                             }
-                            break;
                     }
+                    break;
                 } else
                     sendMessage(msg.channel.id, `\`\`\`xl
 Commands:
@@ -281,74 +279,70 @@ Commands:
                         var p1 = bot.joinVoiceChannel(msg.member.voiceState.channelID);
                         p1.then(function (voice) {
                             sendMessage(msg.channel.id, `I'm here!`)
-                            var channel = msg.channel.id
-                            if (!bu.config.discord.servers[msg.channel.guild.id]) {
-                                bu.config.discord.servers[msg.channel.guild.id] = {}
-                            }
-                            if (bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
-                                var channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
-                            }
-                            //      var voicevoiceConnections.get(msg.channel.guild.id) = voice;
-                            voice.on('start', () => {
-                                if (bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
-                                    bot.editChannel(channel, {
-                                        topic: `:musical_note: Now playing: ${cache[current[msg.channel.guild.id].id].name} :musical_note:
-Type ${bu.config.discord.servers[msg.channel.guild.id].prefix
-                                            ? bu.config.discord.servers[msg.channel.guild.id].prefix
-                                            : bu.config.discord.defaultPrefix}music for music commands.`
-                                    })
-                                }
-                            })
-                            voice.on('connect', () => {
-                                try {
-                                    console.log(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
-                                } catch (err) {
-                                    console.log(err)
-                                }
-                            });
-                            voice.on('ready', () => {
-                                try {
-                                    console.log(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
-                                } catch (err) {
-                                    console.log(err)
-                                }
-                            })
-                            voice.on('error', (err) => {
-                                console.log('Error: ', err);
-                            })
-                            voice.on('debug', (debug) => {
-                                console.log('Debug: ', debug);
-                            })
-                            voice.on('warn', (warn) => {
-                                console.log('Warning: ', warn);
-                            })
-                            voice.on('end', function () {
-                                try {
-                                    console.log(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
-                                    if (!bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID)) {
-                                        //  sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, `An error has occured!`)
-                                    } else if (queue[msg.channel.guild.id] && queue[msg.channel.guild.id].length > 0) {
-                                        setTimeout(() => {
-                                            nextSong(msg);
-                                        }, 500)
-                                    } else {
-                                        sendMessage(channel, `Jobs done.`);
-                                        delete current[msg.channel.guild.id]
+                            bu.guildSettings.get(msg.channel.guild.id, 'musicchannel').then(channel => {
+                                if (!channel) channel = msg.channel.id
+                                voice.on('start', () => {
+                                    bu.guildSettings.get(msg.channel.guild.id, 'prefix').then(prefix => {
                                         bot.editChannel(channel, {
-                                            topic: `Type ${bu.config.discord.servers[msg.channel.guild.id].prefix
-                                                ? bu.config.discord.servers[msg.channel.guild.id].prefix
-                                                : bu.config.discord.defaultPrefix}music for music commands.`
+                                            topic: `:musical_note: Now playing: ${cache[current[msg.channel.guild.id].id].name} :musical_note:
+Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music commands.`
                                         })
+                                    })
+
+                                })
+                                voice.on('connect', () => {
+                                    try {
+                                        console.log(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                    } catch (err) {
+                                        console.log(err)
                                     }
-                                } catch (err) {
-                                    console.log(err);
-                                }
-                            });
-                            voice.on('disconnect', function () {
-                                console.log(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
-                                sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, "Bye!");
-                            });
-                            return voice;
+                                });
+                                voice.on('ready', () => {
+                                    try {
+                                        console.log(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                    } catch (err) {
+                                        console.log(err)
+                                    }
+                                })
+                                voice.on('error', (err) => {
+                                    console.log('Error: ', err);
+                                })
+                                voice.on('debug', (debug) => {
+                                    console.log('Debug: ', debug);
+                                })
+                                voice.on('warn', (warn) => {
+                                    console.log('Warning: ', warn);
+                                })
+                                voice.on('end', function () {
+                                    try {
+                                        console.log(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
+                                        if (!bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID)) {
+                                            //  sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, `An error has occured!`)
+                                        } else if (queue[msg.channel.guild.id] && queue[msg.channel.guild.id].length > 0) {
+                                            setTimeout(() => {
+                                                nextSong(msg);
+                                            }, 500)
+                                        } else {
+                                            sendMessage(channel, `Jobs done.`);
+                                            delete current[msg.channel.guild.id]
+                                            bu.guildSettings.get(msg.channel.guild.id, 'prefix').then(prefix => {
+                                                bot.editChannel(channel, {
+                                                    topic: `Type ${prefix
+                                                        ? prefix
+                                                        : bu.config.discord.defaultPrefix}music for music commands.`
+                                                })
+                                            })
+
+                                        }
+                                    } catch (err) {
+                                        console.log(err);
+                                    }
+                                });
+                                voice.on('disconnect', function () {
+                                    console.log(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
+                                    sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, "Bye!");
+                                });
+                            })
                         }).catch((err) => {
                             console.log(err)
                         });
@@ -416,11 +410,10 @@ Type ${bu.config.discord.servers[msg.channel.guild.id].prefix
                                 }, 1500)
                             })
                             var subqueue = queue[msg.channel.guild.id]
-                            var channel = msg.channel.id
-                            if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
-                                channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
-                            }
-                            saveVideo(msg, channel, subqueue[0].id, cache[subqueue[0].id].name, cache[subqueue[0].id].duration)
+                            bu.guildSettings.get(msg.channel.guild.id, 'musicchannel').then(channel => {
+                                if (!channel) channel = msg.channel.id;
+                                saveVideo(msg, channel, subqueue[0].id, cache[subqueue[0].id].name, cache[subqueue[0].id].duration)
+                            })
                             break;
                         case 'remove':
                             if (bu.hasPerm(msg, 'Bot Commander')) {
@@ -799,11 +792,10 @@ function handleSoundcloud(msg, query) {
                         } else {
                             if (queue[msg.channel.guild.id].length == 1) {
                                 var id = queue[msg.channel.guild.id][0].id
-                                var channel = msg.channel.id
-                                if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
-                                    channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
-                                }
-                                saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
+                                bu.guildSettings.get(msg.channel.guild.id, 'musicchannel').then(channel => {
+                                    if (!channel) channel = msg.channel.id;
+                                    saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
+                                })
                             }
                         }
                     })
@@ -832,55 +824,42 @@ function handleSoundcloud(msg, query) {
 }
 
 function nextSong(msg) {
-    var channel = msg.channel.id
-    if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
-        channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
-    }
-    //  console.log(channel)
-    var nextSong = queue[msg.channel.guild.id].shift()
-    var currectNext = current[msg.channel.guild.id] = nextSong;
-
-    saveVideo(msg, channel, nextSong.id, cache[nextSong.id].name, cache[nextSong.id].duration, () => {
-        var requesterMember = msg.channel.guild.members.get(nextSong.requester);
-        var requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username
-        try {
-            bu.sendMessageToDiscord(channel, `:musical_note: Now playing \`${cache[nextSong.id].name}\` in #${
-                bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID).name} - requested by **${requester}** :musical_note: `)
-                .then(msg2 => {
-                    setTimeout(() => {
-                        bu.bot.deleteMessage(channel, msg2.id)
-                    }, 60000)
-                });
-
-            voiceConnections.get(msg.channel.guild.id).playResource(cache[nextSong.id].path, { inlineVolume: voiceSettings[msg.channel.guild.id].volume / 100 })
-            voiceConnections.get(msg.channel.guild.id).setVolume(voiceSettings[msg.channel.guild.id].volume / 100)
-            currectNext.start = moment()
-            var membersInChannel = bot.getChannel(bot.voiceConnections.get(msg.channel.guild.id).channelID)
-                .voiceMembers.size - 1
-            var votesNeeded = Math.ceil(membersInChannel / 3)
-            currectNext.votesNeeded = votesNeeded > 0 ? votesNeeded : 1
-            if (queue[msg.channel.guild.id][0]) {
-                var id = queue[msg.channel.guild.id][0].id
-                saveVideo(msg, channel, id, cache[id].name, cache[id].duration)
-            }
-        } catch (err) {
-            console.log(err);
+    bu.guildSettings.get(msg.channel.guild.id, 'musicchannel').then(channel => {
+        if (!channel) {
+            channel = msg.channel.id;
         }
+        var nextSong = queue[msg.channel.guild.id].shift()
+        var currectNext = current[msg.channel.guild.id] = nextSong;
 
-    });
-    /*   } else {
-           try {
-               bot.createMessage(msg.channel.id, `:musical_note: Now playing \`${nextSong.name}\` in #${bot.getChannel(connections[msg.channel.guild.id].channelID).name} :musical_note: `);
-           } catch (err) {
-               console.log(err);
-           }
-           connections[msg.channel.guild.id].playResource(nextSong.path, { inlineVolume: settings[msg.channel.guild.id].volume / 100 })
-           connections[msg.channel.guild.id].setVolume(settings[msg.channel.guild.id].volume / 100)
-           nextSong.start = moment()
-           if (queue[msg.channel.id][0]) {
-               saveVideo(msg, queue[msg.channel.id][0].id, queue[msg.channel.id][0].name, queue[msg.channel.id][0].duration)
-           }*/
+        saveVideo(msg, channel, nextSong.id, cache[nextSong.id].name, cache[nextSong.id].duration, () => {
+            var requesterMember = msg.channel.guild.members.get(nextSong.requester);
+            var requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username
+            try {
+                bu.sendMessageToDiscord(channel, `:musical_note: Now playing \`${cache[nextSong.id].name}\` in #${
+                    bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID).name} - requested by **${requester}** :musical_note: `)
+                    .then(msg2 => {
+                        setTimeout(() => {
+                            bu.bot.deleteMessage(channel, msg2.id)
+                        }, 60000)
+                    });
 
+                voiceConnections.get(msg.channel.guild.id).playResource(cache[nextSong.id].path, { inlineVolume: voiceSettings[msg.channel.guild.id].volume / 100 })
+                voiceConnections.get(msg.channel.guild.id).setVolume(voiceSettings[msg.channel.guild.id].volume / 100)
+                currectNext.start = moment()
+                var membersInChannel = bot.getChannel(bot.voiceConnections.get(msg.channel.guild.id).channelID)
+                    .voiceMembers.size - 1
+                var votesNeeded = Math.ceil(membersInChannel / 3)
+                currectNext.votesNeeded = votesNeeded > 0 ? votesNeeded : 1
+                if (queue[msg.channel.guild.id][0]) {
+                    var id = queue[msg.channel.guild.id][0].id
+                    saveVideo(msg, channel, id, cache[id].name, cache[id].duration)
+                }
+            } catch (err) {
+                console.log(err);
+            }
+
+        });
+    })
 }
 
 function saveVideo(msg, channel, id, name, duration, callback) {
@@ -992,11 +971,12 @@ function addToQueue(msg, id, name, duration, sc) {
     } else {
         if (subqueue.length == 1) {
             var id = subqueue[0].id
-            var channel = msg.channel.id
-            if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
-                channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
-            }
-            saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
+            bu.guildSettings.get(msg.channel.guild.id, 'musicchannel').then(channel => {
+                if (!channel) {
+                    channel = msg.channel.id;
+                }
+                saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
+            })
         }
     }
 }
@@ -1068,11 +1048,12 @@ function addPlaylistToQueue(msg, id, res) {
             } else {
                 if (queue[msg.channel.guild.id].length == 1) {
                     var id = queue[msg.channel.guild.id][0].id
-                    var channel = msg.channel.id
-                    if (bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].musicChannel) {
-                        channel = bu.config.discord.servers[msg.channel.guild.id].musicChannel
-                    }
-                    saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
+                    bu.guildSettings.get(msg.channel.guild.id, 'musicchannel').then(channel => {
+                        if (!channel) {
+                            channel = msg.channel.id;
+                        }
+                        saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
+                    })
                 }
             }
         })
@@ -1141,7 +1122,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
                         cache[res2.items[0].id] = {
                             name: res2.items[0].snippet.title,
                             id: res2.items[0].id,
-                            path: path.join(__dirname, '..', 'cache','yt', `${res2.items[0].id}.mp3`),
+                            path: path.join(__dirname, '..', 'cache', 'yt', `${res2.items[0].id}.mp3`),
                             //  requester: requesterid,
                             duration: res2.items[0].contentDetails.duration
                         }

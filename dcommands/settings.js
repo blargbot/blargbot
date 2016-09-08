@@ -15,111 +15,103 @@ e.info = 'Gets or sets the settings for the current guild.';
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words, text) => {
-    if (!bu.config.discord.servers[msg.channel.guild.id])
-        bu.config.discord.servers[msg.channel.guild.id] = {}
     if (words.length == 1) {
         //do settings shit
-        var prefix = bu.config.discord.servers[msg.channel.guild.id].prefix
-            ? bu.config.discord.servers[msg.channel.guild.id].prefix : '!'
-        var nsfwMessage = 'None set'
-        if (bu.config.discord.servers[msg.channel.guild.id].nsfw) {
-            nsfwMessage = '\n - '
-            var chanarray = Object.keys(bu.config.discord.servers[msg.channel.guild.id].nsfw)
-            for (var i = 0; i < chanarray.length; i++) {
-                if (bu.config.discord.servers[msg.channel.guild.id].nsfw[chanarray[i]]) {
-                    nsfwMessage += bot.getChannel(chanarray[i]).name + '\n - '
+        bu.db.query(`select name, value from guildsetting where guildid=?`, [msg.channel.guild.id], (err, rows) => {
+            bu.db.query(`select channelid, nsfw, blacklisted from channel where guildid=?`, [msg.channel.guild.id], (err, rows2) => {
+                var nsfw = [];
+                var blacklisted = []
+                for (var i = 0; i < rows2.length; i++) {
+                    if (rows2[i].nsfw) {
+                        nsfw.push(rows2[i].channelid)
+                    }
+                    if (rows2[i].blacklisted) {
+                        blacklisted.push(rows2[i].channelid)
+                    }
                 }
-            }
-            nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 4)
+                var settings = {}
+                for (var i = 0; i < rows.length; i++) {
+                    settings[rows[i].name] = rows[i].value
+                }
 
-        }
-        //    ? '\n - ' + Object.keys(bu.config.discord.servers[msg.channel.guild.id].nsfw).join('\n - ')
-        //     : 'None'
-        var greeting = bu.config.discord.servers[msg.channel.guild.id].greeting
-            ? bu.config.discord.servers[msg.channel.guild.id].greeting : 'Not set'
-        var farewell = bu.config.discord.servers[msg.channel.guild.id].farewell
-            ? bu.config.discord.servers[msg.channel.guild.id].farewell : 'Not set'
-        var modlogChannel = bu.config.discord.servers[msg.channel.guild.id].modlog
-            ? bot.getChannel(bu.config.discord.servers[msg.channel.guild.id].modlog).name : 'Not set'
-        var commandCount = bu.config.discord.servers[msg.channel.guild.id].commands
-            ? Object.keys(bu.config.discord.servers[msg.channel.guild.id].commands).length : 0
-        var deleteNotif = bu.config.discord.servers[msg.channel.guild.id].deleteNotifications ? true : false
-        var cahNsfw = bu.config.discord.servers[msg.channel.guild.id].cahNsfw ? true : false
-        
-        var message = `\`\`\`fix
-Settings for ${msg.channel.guild.name}
-Prefix          : ${prefix}
-NSFW Channels   : ${nsfwMessage}
-Greeting        : ${greeting}
-Farewell        : ${farewell}
-Modlog Channel  : ${modlogChannel}
-Custom Commands : ${commandCount}
-Track Deletes   : ${deleteNotif}
-CAH is NSFW     : ${cahNsfw}
+                var prefix = settings.prefix
+                    ? settings.prefix : 'no custom prefix set'
+                var nsfwMessage = 'none set'
+                if (nsfw.length > 0) {
+                    nsfwMessage = ''
+                    for (var i = 0; i < nsfw.length; i++) {
+                        nsfwMessage += bot.getChannel(nsfw[i]).name + '\n                - '
+                    }
+                    nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 19)
+                }
+                var blacklistMessage = 'none set'
+                if (blacklisted.length > 0) {
+                    blacklistMessage = ''
+                    for (var i = 0; i < blacklisted.length; i++) {
+                        blacklistMessage += bot.getChannel(blacklisted[i]).name + '\n                - '
+                    }
+                    blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19)
+                }
+                var greeting = settings.greeting
+                    ? settings.greeting : 'not set'
+                var farewell = settings.farewell
+                    ? settings.farewell : 'not set'
+                var modlogChannel = settings.modlog
+                    ? bot.getChannel(settings.modlog).name : 'not set'
+                var deleteNotif = settings.deletenotif ? true : false
+                var cahNsfw = settings.cahnsfw ? true : false
+                var mutedRole = settings.mutedrole ? settings.mutedrole : 'not set'
+                var message = `\`\`\`xl
+Settings For ${msg.channel.guild.name}
+         Prefix : ${prefix}
+  NSFW Channels : ${nsfwMessage}
+    Blacklisted : ${blacklistMessage}  
+       Greeting : ${greeting}
+       Farewell : ${farewell}
+ Modlog Channel : ${modlogChannel}
+     Muted Role : ${mutedRole}
+  Track Deletes : ${deleteNotif}
+    CAH is NSFW : ${cahNsfw}
 \`\`\``
-        bu.sendMessageToDiscord(msg.channel.id, message)
+                bu.sendMessageToDiscord(msg.channel.id, message)
+            })
+        })
+
 
     } else {
         words.shift()
         switch (words.shift().toLowerCase()) {
             case 'set':
                 if (words.length > 0) {
-                    var message = ':ok_hand:'
-                    switch (words.shift().toLowerCase()) {
-                        case 'cahnsfw':
-                            if (bu.config.discord.servers[msg.channel.guild.id].cahNsfw == true) {
-                                bu.config.discord.servers[msg.channel.guild.id].cahNsfw = false
-                            } else {
-                                bu.config.discord.servers[msg.channel.guild.id].cahNsfw = true
-                            }
-                            break;
-                        case 'deletenotification':
-                            if (bu.config.discord.servers[msg.channel.guild.id].deleteNotifications == true) {
-                                bu.config.discord.servers[msg.channel.guild.id].deleteNotifications = false
-                            } else {
-                                bu.config.discord.servers[msg.channel.guild.id].deleteNotifications = true
-                            }
-
-                            break;
-                        case 'greeting':
-                            if (words.length == 0) {
-                                delete bu.config.discord.servers[msg.channel.guild.id].greeting
-                            } else {
-                                bu.config.discord.servers[msg.channel.guild.id].greeting = words.join(' ')
-                            }
-                            break;
-                        case 'greeting':
-                            if (words.length == 0) {
-                                delete bu.config.discord.servers[msg.channel.guild.id].farewell
-                            } else {
-                                bu.config.discord.servers[msg.channel.guild.id].farewell = words.join(' ')
-                            }
-                            break;
-                        case 'prefix':
-                            if (words.length == 0) {
-                                delete bu.config.discord.servers[msg.channel.guild.id].prefix
-                            } else {
-                                bu.config.discord.servers[msg.channel.guild.id].prefix = words.join(' ')
-                            }
-                            break;
-                        default:
-                            message = 'Unknown key!'
-                            break;
+                    var key = words.shift()
+                    var value = words.join(' ')
+                    if (settings[key]) {
+                        bu.guildSettings.set(msg.channel.guild.id, key, value).then(() => {
+                            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:')
+                        })
+                    } else {
+                        bu.sendMessageToDiscord(msg.channel.id, 'Invalid key!');
                     }
-                    bu.sendMessageToDiscord(msg.channel.id, message)
-                    bu.saveConfig()
                 }
                 break;
-            case 'help':
-                bu.sendMessageToDiscord(msg.channel.id, `\`\`\`fix
-You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.
-  cahNSFW - whether 'cah' can only be done in nsfw channels or not
-  deleteNotification - if enabled, notifies you if a user deleted their command
-  greeting - what to say to new users when they join. You can also use the \`greet\` command
-  farewell - what to say when a user leaves. You can also use the \`farewell\` command
-  prefix - the custom command prefix. You can also use the \`setprefix\` command
-\`\`\``)
+            case 'help':           
+                var message = '```xl\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
+                for (key in settings) {
+                    message += key.toUpperCase() + ' - ' + settings[key] + '\n'
+                }
+                message += '```'
+                bu.sendMessageToDiscord(msg.channel.id, message)
                 break;
         }
     }
+}
+
+var settings = {
+    cahnsfw: `whether 'cah' can only be done in nsfw channels or not. Set to '0' to disable.`,
+    deletenotif: `if enabled, notifies you if a user deleted their command. Set to '0' to disable.`,
+    greeting: `what to say to new users when they join. You can also use the \`greet\` command`,
+    farewell: `what to say when a user leaves. You can also use the \`farewell\` command`,
+    prefix: `the custom command prefix. You can also use the \`setprefix\` command`,
+    modlog: `the id of the modlog channel. You can also use the \`modlog\` command`,
+    mutedrole: `the id of the muted role.`
 }

@@ -21,7 +21,10 @@ e.execute = (msg, words, text) => {
         words.shift()
         var caseid = parseInt(words.shift())
         console.log(caseid)
-        bu.db.query('select msgid, modid from modlog where guildid = ? and caseid = ?',
+        bu.db.query(`select msgid, modid, guildsetting.value as channelid from modlog 
+        inner join guildsetting 
+            on modlog.guildid = guildsetting.guildid and guildsetting.name = "modlog"
+        where modlog.guildid = ? and caseid = ?`,
             [msg.channel.guild.id, caseid], (err, row) => {
                 if (err) {
                     console.log(err)
@@ -32,7 +35,7 @@ e.execute = (msg, words, text) => {
                 if (row[0]) {
                  //   console.log('whew3')
 
-                    bot.getMessage(bu.config.discord.servers[msg.channel.guild.id].modlog, row[0].msgid).then(msg2 => {
+                    bot.getMessage(row[0].channelid, row[0].msgid).then(msg2 => {
                    //     console.log('whew4')
 
                         var content = msg2.content
@@ -50,7 +53,7 @@ e.execute = (msg, words, text) => {
                                 })
                         }
 
-                        bot.editMessage(bu.config.discord.servers[msg.channel.guild.id].modlog, row[0].msgid, content)
+                        bot.editMessage(row[0].channelid, row[0].msgid, content)
                         bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:')
                     })
                 }

@@ -14,20 +14,16 @@ e.info = 'Sets the command prefix.';
 e.category = bu.CommandType.COMMANDER
 
 e.execute = (msg, words, text) => {
-   // if (bu.hasPerm(msg, 'Bot Commander')) {
-        if (words.length > 1) {
-            if (bu.config.discord.servers[msg.channel.guild.id] == null) {
-                bu.config.discord.servers[msg.channel.guild.id] = {};
-            }
-            var prefix = text.replace(words[0], '').trim();
-            bu.config.discord.servers[msg.channel.guild.id].prefix = prefix;
-            bu.saveConfig();
-
-            bu.sendMessageToDiscord(msg.channel.id, `Set command prefix to '${prefix}'`);
-        } else {
-            delete bu.config.discord.servers[msg.channel.guild.id].prefix;
-            bu.saveConfig();
-            bu.sendMessageToDiscord(msg.channel.id, `Reset your command prefix! It is now \`${bu.config.discord.defaultPrefix}\``);
-        }
- //   }
+    if (words.length > 1) {
+        var prefix = text.replace(words[0], '').trim();
+        bu.guildSettings.set(msg.channel.guild.id, 'prefix', prefix).then(() => {
+            bu.sendMessageToDiscord(msg.channel.id, `Set the custom command prefix to '${prefix}'`);
+        })
+    } else {
+        bu.guildSettings.remove(msg.channel.guild.id, 'prefix').then(fields => {
+            bu.sendMessageToDiscord(msg.channel.id, `Reset your command prefix!`);
+        })
+        
+    }
+    //   }
 }

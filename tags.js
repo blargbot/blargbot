@@ -533,12 +533,14 @@ e.executeTag = (msg, tagName, command) => {
                 if (!nsfw)
                     bu.sendMessageToDiscord(msg.channel.id, message);
                 else {
-                    if (bu.config.discord.servers[msg.channel.guild.id] &&
-                        bu.config.discord.servers[msg.channel.guild.id].nsfw &&
-                        bu.config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id]) {
-                        bu.sendMessageToDiscord(msg.channel.id, message);
-                    } else
-                        bu.sendMessageToDiscord(msg.channel.id, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
+                    bu.db.query('select channelid from nsfwchan where channelid = ?', [msg.channel.id], (err, rows) => {
+                        if (rows[0]) {
+                            bu.sendMessageToDiscord(msg.channel.id, message);
+
+                        } else {
+                            bu.sendMessageToDiscord(msg.channel.id, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
+                        }
+                    })
                 }
 
         }

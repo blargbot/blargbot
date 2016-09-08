@@ -20,12 +20,7 @@ e.execute = (msg, words, text) => {
         includeOffline = false;
     }
     var mods = msg.channel.guild.members.filter(m => {
-        return !m.user.bot && (m.permission.has('kickMembers')
-            || m.permission.has('banMembers')
-            || m.permission.has('administrator')
-            || m.permission.has('manageChannels')
-            || m.permission.has('manageGuild')
-            || m.permission.has('manageMessages'))
+        return !m.user.bot && bu.isStaff(m)
             && (includeOffline || m.status == 'online');
     });
     var message = '```xl\n'
@@ -36,7 +31,7 @@ e.execute = (msg, words, text) => {
         }
     })
     mods.forEach(m => {
-        console.log(m.status)
+    //    console.log(m.status)
         message += `${pad(getName(m), maxLength)} -${pad(m.status == 'online'
             ? ' Online'
             : (m.status == 'idle'

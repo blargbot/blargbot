@@ -14,13 +14,9 @@ e.info = 'Creates a custom command.';
 e.category = bu.CommandType.COMMANDER
 
 e.execute = (msg, words, text) => {
-  //  if (!bu.hasPerm(msg, "Bot Commander")) {
-  //      return;
- //   }
-    if (bu.config.discord.servers[msg.channel.guild.id] == null)
-        bu.config.discord.servers[msg.channel.guild.id] = {};
-    if (bu.config.discord.servers[msg.channel.guild.id].commands == null)
-        bu.config.discord.servers[msg.channel.guild.id].commands = {};
+    //  if (!bu.hasPerm(msg, "Bot Commander")) {
+    //      return;
+    //   }
 
     if (words.length == 1) {
         bu.sendMessageToDiscord(msg.channel.id, `Do \`help\` for a list of commands.
@@ -33,20 +29,17 @@ See http://ratismal.github.io/blargbot/commands.html#ccommand for usage instruct
         return;
     }
     if (words.length == 2) {
-        if (bu.config.discord.servers[msg.channel.guild.id].commands[words[1]] != null) {
-            delete bu.config.discord.servers[msg.channel.guild.id].commands[words[1]];
-            bu.sendMessageToDiscord(msg.channel.id, `Deleted command ${words[1]}`);
-        } else {
-            bu.sendMessageToDiscord(msg.channel.id, `Command ${words[1]} does not exist.`);
-        }
+        bu.ccommand.remove(msg.channel.guild.id, words[1]).then(fields => {
+            if (fields.affectedRows > 0)
+                bu.sendMessageToDiscord(msg.channel.id, `Deleted command ${words[1]}`);
+            else
+                bu.sendMessageToDiscord(msg.channel.id, `Command ${words[1]} does not exist.`);
+
+        })
     } else {
-        if (bu.config.discord.servers[msg.channel.guild.id].commands[words[1]] == null) {
-            bu.config.discord.servers[msg.channel.guild.id].commands[words[1]] = text.replace(`${words[0]} ${words[1]} `, '');
-            bu.sendMessageToDiscord(msg.channel.id, `Created command ${words[1]}`);
-        } else {
-            bu.config.discord.servers[msg.channel.guild.id].commands[words[1]] = text.replace(`${words[0]} ${words[1]} `, '');
-            bu.sendMessageToDiscord(msg.channel.id, `Overwrote command ${words[1]}`);
-        }
+        bu.ccommand.set(msg.channel.guild.id, words[1], text.replace(`${words[0]} ${words[1]} `, '')).then(val => {
+            bu.sendMessageToDiscord(msg.channel.id, `Set command ${words[1]}`);            
+        })
     }
-    bu.saveConfig();
+   // bu.saveConfig();
 }

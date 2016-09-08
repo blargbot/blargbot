@@ -14,19 +14,21 @@ e.info = 'Sets the current channel as NSFW';
 e.category = bu.CommandType.COMMANDER
 
 e.execute = (msg, words, text) => {
-   // if (!bu.hasPerm(msg, 'Bot Commander')) {
-   //     return;
-  //  }
-    if (!bu.config.discord.servers[msg.channel.guild.id])
-        bu.config.discord.servers[msg.channel.guild.id] = {};
-    if (!bu.config.discord.servers[msg.channel.guild.id].nsfw)
-        bu.config.discord.servers[msg.channel.guild.id].nsfw = {};
-    if (!bu.config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id]) {
-        bu.config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id] = true;
-        bu.sendMessageToDiscord(msg.channel.id, `Channel '${msg.channel.name}' is now NSFW.`);
-    } else {
-        bu.config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id] = false;
-        bu.sendMessageToDiscord(msg.channel.id, `Channel '${msg.channel.name}' is no longer NSFW.`);
-    }
-    bu.saveConfig();
+    // if (!bu.hasPerm(msg, 'Bot Commander')) {
+    //     return;
+    //  }
+    bu.isNsfwChannel(msg.channel.id).then(nsfw => {
+        if (nsfw) {
+            bu.db.query(`update channel set nsfw = false where channelid = ?`, [msg.channel.id], (err) => {
+                bu.sendMessageToDiscord(msg.channel.id, `Channel **${msg.channel.name}** is no longer NSFW.`);
+            })
+
+        } else {
+            bu.db.query(`insert into channel (channelid, guildid, nsfw) values (?, ?, true)
+            on duplicate key update nsfw=true`, [msg.channel.id, msg.channel.guild.id], (err) => {
+                bu.sendMessageToDiscord(msg.channel.id, `Channel **${msg.channel.name}** is now NSFW.`);
+            })
+
+        }
+    })
 }

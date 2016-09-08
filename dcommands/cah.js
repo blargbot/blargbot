@@ -27,21 +27,25 @@ e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     var cont = true;
-    if (bu.config.discord.servers[msg.channel.guild.id] &&
-        bu.config.discord.servers[msg.channel.guild.id].cahNsfw) {
-        if (bu.config.discord.servers[msg.channel.guild.id].nsfw) {
-            if (!bu.config.discord.servers[msg.channel.guild.id].nsfw[msg.channel.id]) {
-                cont = false;
+    new Promise((fulfill, reject) => {
+        bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw').then(val => {
+            if (val != '0') {
+                bu.isNsfwChannel(msg.channel.id).then(cont => {
+                    fulfill(cont)
+                })
+            } else {
+                fulfill(true)
             }
-        } else {
-            cont = false;
-        }
-    }
-    if (!cont) {
-        bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage)
-        return;
-    }
+        })
+    }).then(cont => {
+        if (cont)
+            doit();
+        else
+            bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage)
+    })
+}
 
+function doit() {
     //   console.log(util.inspect(cah))
     var timestamp = moment().format().replace(/:/gi, '_');
     var blackphrase = cah.black[bu.getRandomInt(0, cah.black.length)]
@@ -77,7 +81,6 @@ e.execute = (msg, words, text) => {
         name: 'cards.png',
         file: data
     })
-
 
 }
 
