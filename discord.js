@@ -38,38 +38,7 @@ function initCommands() {
         var commandFile = fileArray[i]
         if (/.+\.js$/.test(commandFile)) {
             var commandName = commandFile.match(/(.+)\.js$/)[1]
-
-            commands[commandName] = require(`./dcommands/${commandFile}`)
-            if (commands[commandName].isCommand) {
-                console.log(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module ', commandFile)
-                commands[commandName].init(bot);
-                var command = {
-                    name: commandName,
-                    usage: commands[commandName].usage,
-                    info: commands[commandName].info,
-                    hidden: commands[commandName].hidden,
-                    category: commands[commandName].category
-                }
-                if (commands[commandName].sub) {
-                    for (var subCommand in commands[commandName].sub) {
-                        console.log(`    Loading ${commandName}'s subcommand`, subCommand)
-
-                        commandList[subCommand] = {
-                            name: commandName,
-                            usage: commands[commandName].sub[subCommand].usage,
-                            info: commands[commandName].sub[subCommand].info,
-                            hidden: commands[commandName].hidden,
-                            category: commands[commandName].category
-                        }
-                    }
-                }
-                commandList[commandName] = command;
-                if (commands[commandName].alias) {
-                    for (var ii = 0; ii < commands[commandName].alias.length; ii++) {
-                        console.log(`    Loading ${commandName}'s alias`, commands[commandName].alias[ii])
-                        commandList[commands[commandName].alias[ii]] = command
-                    }
-                }
+            loadCommand(commandName);
             } else {
                 console.log('     Skipping non-command ', commandFile);
 
@@ -88,34 +57,7 @@ function reloadCommand(commandName) {
         if (commands[commandName].shutdown)
             commands[commandName].shutdown()
         commands[commandName] = reload(`./dcommands/${commandName}.js`)
-        commands[commandName].init(bot);
-        var command = {
-            name: commandName,
-            usage: commands[commandName].usage,
-            info: commands[commandName].info,
-            hidden: commands[commandName].hidden,
-            category: commands[commandName].category
-        }
-        if (commands[commandName].sub) {
-            for (var subCommand in commands[commandName].sub) {
-                console.log(`    Reloading ${commandName}'s subcommand`, subCommand)
-
-                commandList[subCommand] = {
-                    name: commandName,
-                    usage: commands[commandName].sub[subCommand].usage,
-                    info: commands[commandName].sub[subCommand].info,
-                    hidden: commands[commandName].hidden,
-                    category: commands[commandName].category
-                }
-            }
-        }
-        commandList[commandName] = command;
-        if (commands[commandName].alias) {
-            for (var ii = 0; ii < commands[commandName].alias.length; ii++) {
-                console.log(`    Reloading ${commandName}'s alias`, commands[commandName].alias[ii])
-                commandList[commands[commandName].alias[ii]] = command
-            }
-        }
+        buildCommand(commandName);
     }
 }
 
@@ -152,36 +94,41 @@ function loadCommand(commandName) {
 
     commands[commandName] = require(`./dcommands/${commandName}.js`)
     if (commands[commandName].isCommand) {
-        commands[commandName].init(bot);
-        var command = {
-            name: commandName,
-            usage: commands[commandName].usage,
-            info: commands[commandName].info,
-            hidden: commands[commandName].hidden,
-            category: commands[commandName].category
-        }
-        if (commands[commandName].sub) {
-            for (var subCommand in commands[commandName].sub) {
-                console.log(`    Loading ${commandName}'s subcommand`, subCommand)
-
-                commandList[subCommand] = {
-                    name: commandName,
-                    usage: commands[commandName].sub[subCommand].usage,
-                    info: commands[commandName].sub[subCommand].info,
-                    hidden: commands[commandName].hidden,
-                    category: commands[commandName].category
-                }
-            }
-        }
-        commandList[commandName] = command;
-        if (commands[commandName].alias) {
-            for (var ii = 0; ii < commands[commandName].alias.length; ii++) {
-                console.log(`    Loading ${commandName}'s alias`, commands[commandName].alias[ii])
-                commandList[commands[commandName].alias[ii]] = command
-            }
-        }
+        buildCommand(commandName);
     } else {
         console.log('     Skipping non-command ', commandName + '.js');
+    }
+}
+
+// Refactored a major part of loadCommand and reloadCommand into this
+function buildCommand(commandName) {
+    commands[commandName].init(bot);
+    var command = {
+        name: commandName,
+        usage: commands[commandName].usage,
+        info: commands[commandName].info,
+        hidden: commands[commandName].hidden,
+        category: commands[commandName].category
+    }
+    if (commands[commandName].sub) {
+        for (var subCommand in commands[commandName].sub) {
+            console.log(`    Loading ${commandName}'s subcommand`, subCommand)
+
+            commandList[subCommand] = {
+                name: commandName,
+                usage: commands[commandName].sub[subCommand].usage,
+                info: commands[commandName].sub[subCommand].info,
+                hidden: commands[commandName].hidden,
+                category: commands[commandName].category
+            }
+        }
+    }
+    commandList[commandName] = command;
+    if (commands[commandName].alias) {
+        for (var ii = 0; ii < commands[commandName].alias.length; ii++) {
+            console.log(`    Loading ${commandName}'s alias`, commands[commandName].alias[ii])
+            commandList[commands[commandName].alias[ii]] = command
+        }
     }
 }
 
