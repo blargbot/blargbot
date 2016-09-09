@@ -365,7 +365,7 @@ If you are the owner of this server, here are a few things to know.
     bot.on('messageDelete', (msg) => {
         if (commandMessages.indexOf(msg.id) > -1) {
             bu.guildSettings.get(msg.channel.guild.id, 'deletenotif').then(val => {
-                if (val != '0')
+                if (val && val != 0)
                     bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick
                         ? msg.member.nick
                         : msg.author.username}** deleted their command message.`);
@@ -953,7 +953,7 @@ var tables = {
 
 function flipTables(msg, unflip) {
     bu.guildSettings.get(msg.channel.guild.id, 'tableflip').then(val => {
-        if (val != '0') {
+        if (val && val != 0) {
             var seed = bu.getRandomInt(0, 3);
             bu.sendMessageToDiscord(msg.channel.id,
                 tables[unflip ? 'unflip' : 'flip'][bu.config.isbeta ? 'beta' : 'prod'][seed]);

@@ -25,7 +25,7 @@ e.category = bu.CommandType.GENERAL;
 e.execute = (msg) => {
     new Promise((fulfill) => {
         bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw').then(val => {
-            if (val != '0') {
+            if (val && val != 0) {
                 bu.isNsfwChannel(msg.channel.id).then(cont => {
                     fulfill(cont);
                 });

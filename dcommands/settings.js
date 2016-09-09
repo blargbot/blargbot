@@ -59,10 +59,10 @@ e.execute = (msg, words) => {
                     ? settings.farewell : 'not set';
                 var modlogChannel = settings.modlog
                     ? bot.getChannel(settings.modlog).name : 'not set';
-                var deleteNotif = settings.deletenotif != false ? true : false;
-                var cahNsfw = settings.cahnsfw != false ? true : false;
+                var deleteNotif = settings.deletenotif != 0 ? true : false;
+                var cahNsfw = settings.cahnsfw && settings.cahnsfw != 0 ? true : false;
                 var mutedRole = settings.mutedrole ? settings.mutedrole : 'not set';
-                var tableFlip = settings.tableflip != false ? true : false;
+                var tableFlip = settings.tableflip && settings.tableflip != 0 ? true : false;
                 var message = `\`\`\`xl
 Settings For ${msg.channel.guild.name}
          Prefix : ${prefix}
