@@ -329,8 +329,8 @@ If you are the owner of this server, here are a few things to know.
 ❓ If you have any questions, comments, or concerns, please do \`${bu.config.discord.defaultPrefix}suggest <suggestion>\`. Thanks!
 👍 I hope you enjoy my services! 👍`;
             bu.sendMessageToDiscord(guild.id, message2);
-            db.query(`insert into guild (guildid) values (?)
-            on duplicate key update active=1`, [guild.id]);
+            db.query(`insert into guild (guildid, name) values (?, ?)
+            on duplicate key update active=1`, [guild.id, guild.name]);
         }
 
         console.log('added to guild');
@@ -963,7 +963,7 @@ function flipTables(msg, unflip) {
         if (val && val != 0) {
             var seed = bu.getRandomInt(0, 3);
             bu.sendMessageToDiscord(msg.channel.id,
-                tables[unflip ? 'unflip' : 'flip'][bu.config.isbeta ? 'beta' : 'prod'][seed]);
+                tables[unflip ? 'unflip' : 'flip'][bu.config.general.isbeta ? 'beta' : 'prod'][seed]);
         }
     });
 
