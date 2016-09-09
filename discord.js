@@ -294,6 +294,13 @@ e.init = (v, topConfig, em, database) => {
                         .name}\` (\`${guild.id}\`)!`);
                 db.query(`update guild set active='false' where guildid=?`
                     , [guild.id]);
+
+                bot.getDMChannel(guild.ownerID).then(channel => {
+                    bu.sendMessageToDiscord(channel.id, `Hi! 
+I see I was removed from your guild **${guild.name}**, and I'm sorry I wasn't able to live up to your expectations.
+If it's too much trouble, could you please tell me why you decided to remove me, what you didn't like about me, or what you think could be improved? It would be very helpful.
+You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you for your time!`);
+                });
             }
         } catch (err) {
             console.log(err.stack);
@@ -536,7 +543,7 @@ If you are the owner of this server, here are a few things to know.
                     mentions += msg.mentions[i].username + ',';
                 }
                 db.query(statement, [msg.content, msg.attachments[0] ? msg.attachments[0].url : 'none',
-                    msg.author.id, msg.id, msg.channel.id, msg.channel.guild.id, nsfw, mentions]);
+                    msg.author.id, msg.id, msg.channel.id, msg.channel.guild ? msg.channel.guild.id : 'DM', nsfw, mentions]);
             });
 
         }
