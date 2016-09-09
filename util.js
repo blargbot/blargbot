@@ -12,6 +12,11 @@ e.VERSION = null
 e.startTime = null
 e.vars = null
 
+// A list of command modules
+e.commands = {}
+// A list of command names/descriptions for each alias or subcommand
+e.commandList = {}
+
 e.CommandType = {
     GENERAL: 1,
     CAT: 2,
@@ -296,7 +301,7 @@ e.guildSettings = {
                         fulfill(rows[0].value);
                     else
                         fulfill(null)
-                    
+
                 })
         })
     },

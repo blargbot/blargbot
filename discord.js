@@ -24,10 +24,7 @@ var VERSION
 
 e.requireCtx = require
 
-// A list of command modules
-var commands = {}
-// A list of command names/descriptions for each alias or subcommand
-var commandList = {}
+
 
 /**
  * Initializes every command found in the dcommands directory - hooray for modules!
@@ -54,11 +51,11 @@ function initCommands() {
  * @param commandName - the name of the command to reload (String)
  */
 function reloadCommand(commandName) {
-    if (commands[commandName]) {
+    if (bu.commands[commandName]) {
         console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module ', commandName)
-        if (commands[commandName].shutdown)
-            commands[commandName].shutdown()
-        commands[commandName] = reload(`./dcommands/${commandName}.js`)
+        if (bu.commands[commandName].shutdown)
+            bu.commands[commandName].shutdown()
+        bu.commands[commandName] = reload(`./dcommands/${commandName}.js`)
         buildCommand(commandName);
     }
 }
@@ -68,20 +65,20 @@ function reloadCommand(commandName) {
  * @param commandName - the name of the command to unload (String)
  */
 function unloadCommand(commandName) {
-    if (commands[commandName]) {
+    if (bu.commands[commandName]) {
         console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module ', commandName)
 
-        if (commands[commandName].sub) {
-            for (var subCommand in commands[commandName].sub) {
+        if (bu.commands[commandName].sub) {
+            for (var subCommand in bu.commands[commandName].sub) {
                 console.log(`    Unloading ${commandName}'s subcommand`, subCommand)
-                delete commandList[subCommand];
+                delete bu.commandList[subCommand];
             }
         }
-        delete commandList[commandName];
-        if (commands[commandName].alias) {
-            for (var ii = 0; ii < commands[commandName].alias.length; ii++) {
-                console.log(`    Unloading ${commandName}'s alias`, commands[commandName].alias[ii])
-                delete commandList[commands[commandName].alias[ii]]
+        delete bu.commandList[commandName];
+        if (bu.commands[commandName].alias) {
+            for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
+                console.log(`    Unloading ${commandName}'s alias`, bu.commands[commandName].alias[ii])
+                delete bu.commandList[bu.commands[commandName].alias[ii]]
             }
         }
     }
@@ -93,8 +90,8 @@ function unloadCommand(commandName) {
  */
 function loadCommand(commandName) {
 
-    commands[commandName] = require(`./dcommands/${commandName}.js`)
-    if (commands[commandName].isCommand) {
+    bu.commands[commandName] = require(`./dcommands/${commandName}.js`)
+    if (bu.commands[commandName].isCommand) {
         buildCommand(commandName);
     } else {
         console.log('     Skipping non-command ', commandName + '.js');
@@ -103,32 +100,32 @@ function loadCommand(commandName) {
 
 // Refactored a major part of loadCommand and reloadCommand into this
 function buildCommand(commandName) {
-    commands[commandName].init(bot);
+    bu.commands[commandName].init(bot);
     var command = {
         name: commandName,
-        usage: commands[commandName].usage,
-        info: commands[commandName].info,
-        hidden: commands[commandName].hidden,
-        category: commands[commandName].category
+        usage: bu.commands[commandName].usage,
+        info: bu.commands[commandName].info,
+        hidden: bu.commands[commandName].hidden,
+        category: bu.commands[commandName].category
     }
-    if (commands[commandName].sub) {
-        for (var subCommand in commands[commandName].sub) {
+    if (bu.commands[commandName].sub) {
+        for (var subCommand in bu.commands[commandName].sub) {
             console.log(`    Loading ${commandName}'s subcommand`, subCommand)
 
-            commandList[subCommand] = {
+            bu.commandList[subCommand] = {
                 name: commandName,
-                usage: commands[commandName].sub[subCommand].usage,
-                info: commands[commandName].sub[subCommand].info,
-                hidden: commands[commandName].hidden,
-                category: commands[commandName].category
+                usage: bu.commands[commandName].sub[subCommand].usage,
+                info: bu.commands[commandName].sub[subCommand].info,
+                hidden: bu.commands[commandName].hidden,
+                category: bu.commands[commandName].category
             }
         }
     }
-    commandList[commandName] = command;
-    if (commands[commandName].alias) {
-        for (var ii = 0; ii < commands[commandName].alias.length; ii++) {
-            console.log(`    Loading ${commandName}'s alias`, commands[commandName].alias[ii])
-            commandList[commands[commandName].alias[ii]] = command
+    bu.commandList[commandName] = command;
+    if (bu.commands[commandName].alias) {
+        for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
+            console.log(`    Loading ${commandName}'s alias`, bu.commands[commandName].alias[ii])
+            bu.commandList[bu.commands[commandName].alias[ii]] = command
         }
     }
 }
@@ -303,8 +300,8 @@ e.init = (v, topConfig, em, database) => {
             console.log('WHY')
             var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you! 
 - :computer:  For command information, please do \`${bu.config.discord.defaultPrefix}help\`!
-- :loudspeaker: For Bot Commander commands, please make sure you have a role titled \`Bot Commander\`.
-- :tools: For Admin commands, please make sure you have a role titled \`Admin\`.
+- :loudspeaker: For Bot Commander bu.commands, please make sure you have a role titled \`Bot Commander\`.
+- :tools: For Admin bu.commands, please make sure you have a role titled \`Admin\`.
 If you are the owner of this server, here are a few things to know.
 - :speech_left: To enable modlogging, please do create a channel for me to log in and do \`${bu.config.discord.defaultPrefix}modlog\`
 - :see_no_evil: To mark channels as NSFW, please go to them and do \`${bu.config.discord.defaultPrefix}nsfw\`.
@@ -621,115 +618,50 @@ function handleDiscordCommand(channel, user, text, msg) {
         if (msg.channel.guild)
             console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
         else
-            console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) in a PM on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
+            console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
 
         if (msg.author.bot) {
             fulfill(false)
         }
-        if (msg.channel.guild) {
-            bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]).then(val => {
-                if (val) {
-                    var command = text.replace(words[0], '').trim();
+        bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]).then(val => {
+            if (val) {
+                var command = text.replace(words[0], '').trim();
 
-                    var response = tags.processTag(msg, val, command);
-                    if (response !== "null") {
-                        bu.sendMessageToDiscord(channel.id, response);
-                    }
-                    fulfill(true)
-                } else {
-                    if (config.discord.commands[words[0]] != null) {
-                        bu.sendMessageToDiscord(channel.id, `${
-                            config.discord.commands[words[0]]
-                                .replace(/%REPLY/, `<@${user.id}>`)}`);
-                        fulfill(true)
-
-                    }
-
-                    if (words[0].toLowerCase() == 'help') {
-                        if (words.length > 1) {
-                            var message = '';
-                            if (commandList.hasOwnProperty(words[1]) && !commandList[words[1]].hidden
-                                && bu.CommandType.properties[commandList[words[1]].category].requirement(msg)) {
-                                message = `Command Name: ${commandList[words[1]].name}
-Usage: \`${commandList[words[1]].usage}\`
-${commandList[words[1]].info}`;
-                            } else {
-                                message = `No description could be found for command \`${words[1]}\`.`;
-                            }
-                            bu.sendMessageToDiscord(channel.id, message);
-                        } else {
-                            var commandsString = "```xl\nGeneral Commands:\n help";
-                            var generalCommands = []
-                            var otherCommands = {}
-                            for (var command in commandList) {
-                                if (!commandList[command].hidden) {
-                                    if (commandList[command].category == bu.CommandType.GENERAL) {
-                                        generalCommands.push(command);
-                                    }
-                                    else {
-                                        if (!otherCommands[commandList[command].category])
-                                            otherCommands[commandList[command].category] = []
-                                        otherCommands[commandList[command].category].push(command)
-                                    }
-                                }
-                            }
-                            generalCommands.sort()
-                            for (var i = 0; i < generalCommands.length; i++) {
-                                commandsString += `, ${generalCommands[i]}`;
-                            }
-                            for (var category in otherCommands) {
-                                if (bu.CommandType.properties[category].requirement(msg)) {
-                                    otherCommands[category].sort()
-                                    var otherCommandList = otherCommands[category]
-                                    commandsString += `\n${bu.CommandType.properties[category].name} Commands:\n`
-                                    for (var i = 0; i < otherCommandList.length; i++) {
-                                        commandsString += `${i == 0 ? ' ' : ', '}${otherCommandList[i]}`;
-                                    }
-                                }
-                            }
-                            db.query(`select commandname from ccommand where guildid = ?`,
-                                [msg.channel.guild ? msg.channel.guild.id : ''], (err, rows) => {
-                                    if (rows.length > 0) {
-                                        var ccommandsString = "Custom Commands:\n";
-                                        var helpCommandList = [];
-                                        var i = 0;
-                                        for (var key in rows) {
-                                            helpCommandList[i] = rows[key].commandname;
-                                            i++;
-                                        }
-                                        helpCommandList.sort();
-                                        for (i = 0; i < helpCommandList.length; i++) {
-                                            ccommandsString += `${i == 0 ? ' ' : ', '}${helpCommandList[i]}`;
-                                        }
-                                        commandsString += `\n${ccommandsString}`
-                                    }
-
-                                    commandsString += '```'
-
-                                    bu.sendMessageToDiscord(channel.id, `${commandsString}\n${!msg.channel.guild
-                                        ? 'Not all of these commands work in DMs.\n'
-                                        : ''
-                                        }For more information about commands, do \`help <commandname>\` or visit http://blarg.stupidcat.me/commands.html`);
-                                })
-                        }
-                        fulfill(true)
-                    } else {
-                        if (commandList.hasOwnProperty(words[0].toLowerCase())) {
-                            console.log(words[0])
-                            if (bu.CommandType.properties[commandList[words[0].toLowerCase()].category].perm) {
-                                if (!bu.hasPerm(msg, bu.CommandType.properties[commandList[words[0].toLowerCase()].category].perm)) {
-                                    fulfill(false)
-                                    return;
-                                }
-                            }
-                            commands[commandList[words[0].toLowerCase()].name].execute(msg, words, text);
-                            fulfill(true)
-                        }
-                    }
+                var response = tags.processTag(msg, val, command);
+                if (response !== "null") {
+                    bu.sendMessageToDiscord(channel.id, response);
                 }
-            })
+                fulfill(true)
+            } else {
+                if (config.discord.commands[words[0]] != null) {
+                    bu.sendMessageToDiscord(channel.id, `${
+                        config.discord.commands[words[0]]
+                            .replace(/%REPLY/, `<@${user.id}>`)}`);
+                    fulfill(true)
 
-        }
+                } else {
+
+                    //  if (words[0].toLowerCase() == 'help') {
+                    //      
+                    //      fulfill(true)
+                    //  } else {
+                    if (bu.commandList.hasOwnProperty(words[0].toLowerCase())) {
+                        console.log(words[0])
+                        if (bu.CommandType.properties[bu.commandList[words[0].toLowerCase()].category].perm) {
+                            if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[words[0].toLowerCase()].category].perm)) {
+                                fulfill(false)
+                                return;
+                            }
+                        }
+                        bu.commands[bu.commandList[words[0].toLowerCase()].name].execute(msg, words, text);
+                        fulfill(true)
+                    }
+                    //    }
+                }
+            }
+        })
+
+        //}
 
 
     });
