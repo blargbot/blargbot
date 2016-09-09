@@ -14,6 +14,6 @@ e.usage = 'uptime';
 e.info = 'Tells you how long I have been up';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     bu.sendMessageToDiscord(msg.channel.id, `Bot Uptime: ${bu.createTimeDiffString(moment(), bu.startTime)}`);
 };

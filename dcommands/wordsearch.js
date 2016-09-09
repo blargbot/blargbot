@@ -14,7 +14,7 @@ e.usage = 'wordsearch';
 e.info = 'Gives you wordsearch help';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     if (words.length > 1) {
         words.shift();
         switch (words.shift().toLowerCase()) {
@@ -88,12 +88,13 @@ var alphaChart = {
 };
 
 
-function wordSearchGuess(msg, words) {
+//function wordSearchGuess(msg, words) {
 
-}
+//}
 
 function initWordSearch(msg, words, size) {
     //   words.shift();
+    var i;
     if (!size) {
         size = [10, 10];
     }
@@ -106,7 +107,7 @@ function initWordSearch(msg, words, size) {
     var line1 = '';
     var line2 = '';
     var output = '```xl\n';
-    for (var i = 0; i < search.grid[0].length; i++) {
+    for (i = 0; i < search.grid[0].length; i++) {
         if (size[0] > 10)
             if (i < 10) {
                 line1 += ` ${i}`;
@@ -121,11 +122,11 @@ function initWordSearch(msg, words, size) {
     }
     output += line1 + (size[0] > 10 ? '\n' + line2 : '') + '\n';
     console.log(line1, '\n', line2);
-    for (var i = 0; i < search.grid[0].length; i++) {
+    for (i = 0; i < search.grid[0].length; i++) {
         output += '--';
     }
     output += '-+\n';
-    for (var i = 0; i < search.grid.length; i++) {
+    for (i = 0; i < search.grid.length; i++) {
         for (var ii = 0; ii < search.grid[i].length; ii++) {
             output += ` ${search.grid[i][ii].toUpperCase()}`;
         }
@@ -157,16 +158,16 @@ function solveWordSearch(msg) {
             line1 += ` ${i}`;
     }
 
-    output += line1 + +(search.grid[0].length > 10 ? '\n' + line2 : '') + '\n';
-    for (var i = 0; i < search.solved[0].length; i++) {
+    output += line1 + (search.grid[0].length > 10 ? '\n' + line2 : '') + '\n';
+    for (i = 0; i < search.solved[0].length; i++) {
         output += ` ${i}`;
     }
     output += '\n';
-    for (var i = 0; i < search.solved[0].length; i++) {
+    for (i = 0; i < search.solved[0].length; i++) {
         output += '--';
     }
     output += '-+\n';
-    for (var i = 0; i < search.solved.length; i++) {
+    for (i = 0; i < search.solved.length; i++) {
         for (var ii = 0; ii < search.solved[i].length; ii++) {
             output += ` ${search.solved[i][ii].toUpperCase()}`;
         }

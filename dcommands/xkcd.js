@@ -16,13 +16,13 @@ e.category = bu.CommandType.GENERAL;
 
 var xkcdMax = 0;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     getXkcd(msg.channel.id, words);
 };
 
 function getXkcd(channel, words) {
     if (xkcdMax === 0) {
-        http.get("http://xkcd.com/info.0.json", function (res) {
+        http.get('http://xkcd.com/info.0.json', function (res) {
             var body = '';
             res.on('data', function (chunk) {
                 body += chunk;
@@ -49,7 +49,7 @@ function getXkcd(channel, words) {
     }
     var url = '';
     if (choice === 0) {
-        url = "http://xkcd.com/info.0.json";
+        url = 'http://xkcd.com/info.0.json';
     } else {
         url = `http://xkcd.com/${choice}/info.0.json`;
     }

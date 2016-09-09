@@ -13,7 +13,7 @@ e.usage = 'tidy [amount]';
 e.info = 'Clears messages from chat. Defaults to 25.';
 e.category = bu.CommandType.ADMIN;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
   //  if (!bu.hasPerm(msg, 'Bot Commander')) {
  //       return;
   //  }

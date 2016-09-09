@@ -15,7 +15,7 @@ e.usage = 'Yo shit waddup we\'re updating';
 e.info = 'Does a git pull';
 e.category = bu.CommandType.CAT;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     if (msg.author.id === bu.CAT_ID) {
         if (!bu.config.general.isbeta) {
             exec('cd /home/cat/blargjs\ngit pull origin master', (err, stdout, stderr) => {

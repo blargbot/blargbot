@@ -47,15 +47,15 @@ e.init = (configuration, database) => {
                         } else if (words.length > 0) {
                             avatarUrl = words[0];
                         } else {
-                            e.bot.createMessage(msg.channel.id, "No URL given.");
+                            e.bot.createMessage(msg.channel.id, 'No URL given.');
                         }
                         request.get(avatarUrl, function (error, response, body) {
                             if (!error && response.statusCode == 200) {
-                                data = "data:" + response.headers["content-type"] + ";base64," + new Buffer(body).toString('base64');
+                                data = 'data:' + response.headers['content-type'] + ';base64,' + new Buffer(body).toString('base64');
                                 console.log(data);
                                 var p1 = e.bot.editSelf({ avatar: data });
                                 p1.then(function () {
-                                    e.bot.createMessage(msg.channel.id, ":ok_hand: Avatar set!");
+                                    e.bot.createMessage(msg.channel.id, ':ok_hand: Avatar set!');
                                 });
                             }
                         });
@@ -71,7 +71,7 @@ e.init = (configuration, database) => {
                             ['markovpos'], (err2, row2) => {
                                 if (err2) console.log(err2);
                                 if (!row2[0]) {
-                                    db.query(`insert into vars (varname, varvalue) values ("markovpos", 0)`);
+                                    db.query(`insert into vars (varname, varvalue) values ('markovpos', 0)`);
                                     e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`);
                                 } else {
 
@@ -94,7 +94,7 @@ e.init = (configuration, database) => {
                                                     var messageToSend = `${row3[0].content} ${row3[0].attachment == 'none' ? '' :
                                                         row3[0].attachment}`;
                                                     e.bot.createMessage(msg.channel.id, `\u200B` + messageToSend);
-                                                    db.query(`update vars set varvalue = ? where varname="markovpos"`,
+                                                    db.query(`update vars set varvalue = ? where varname='markovpos'`,
                                                         [pos]);
                                                 }
                                             });
@@ -112,8 +112,8 @@ e.init = (configuration, database) => {
         }
     });
 
-    e.bot.connect()
-}
+    e.bot.connect();
+};
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -121,7 +121,7 @@ function getRandomInt(min, max) {
 
 function eval2(msg, text) {
     if (msg.author.id == CAT_ID) {
-        var commandToProcess = text.replace("eval2 ", "");
+        var commandToProcess = text.replace('eval2 ', '');
         console.log(commandToProcess);
         try {
             e.bot.createMessage(msg.channel.id, `\`\`\`js
@@ -137,8 +137,8 @@ ${eval(`${commandToProcess}.toString()`)}
 
 function eval1(msg, text) {
     if (msg.author.id == CAT_ID) {
-        console.log('fucking fuck', text)
-        var commandToProcess = text.replace("eval ", "");
+        console.log('fucking fuck', text);
+        var commandToProcess = text.replace('eval ', '');
         if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
             commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
         else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))

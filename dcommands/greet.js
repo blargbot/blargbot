@@ -17,7 +17,7 @@ e.category = bu.CommandType.COMMANDER;
 e.execute = (msg, words, text) => {
 
     if (words.length == 1) {
-        bu.guildSettings.remove(msg.channel.guild.id, 'greeting').then(fields => {
+        bu.guildSettings.remove(msg.channel.guild.id, 'greeting').then(() => {
             bu.sendMessageToDiscord(msg.channel.id, 'Disabled greetings');
         });
         return;

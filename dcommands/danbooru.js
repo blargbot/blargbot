@@ -15,7 +15,7 @@ e.usage = 'danbooru <tags...>';
 e.info = 'Gets three pictures from \'<https://danbooru.donmai.us/>\' using given tags.';
 e.category = bu.CommandType.NSFW;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
         var tagList = JSON.parse(JSON.stringify(words));
         delete tagList[0];
@@ -36,20 +36,20 @@ e.execute = (msg, words, text) => {
             }
         var query = '';
         for (var tag in tagList) {
-            query += tagList[tag] + "%20";
+            query += tagList[tag] + '%20';
         }
 
-        var url = "/posts.json?limit=" + 50 + "&tags=" + query;
+        var url = '/posts.json?limit=' + 50 + '&tags=' + query;
         var message = '';
 
-        console.log("url: " + url);
+        console.log('url: ' + url);
         var options = {
             hostname: 'danbooru.donmai.us',
             method: 'GET',
             port: 443,
             path: url,
             headers: {
-                "User-Agent": "blargbot/1.0 (ratismal)"
+                'User-Agent': 'blargbot/1.0 (ratismal)'
             }
         };
 
@@ -77,14 +77,14 @@ e.execute = (msg, words, text) => {
                         }
                     console.log(urlList.length);
                     if (urlList.length == 0) {
-                        bu.sendMessageToDiscord(msg.channel.id, "No results found!");
+                        bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
                         return;
                     }
                     message += `Found **${urlList.length}/50** posts\n`;
                     for (var i = 0; i < 3; i++) {
                         if (urlList.length > 0) {
                             var choice = bu.getRandomInt(0, urlList.length - 1);
-                            message += urlList[choice] + "\n";
+                            message += urlList[choice] + '\n';
                             console.log(`${choice} / ${urlList.length} - ${urlList[choice]}`);
                             urlList.splice(choice, 1);
                         }

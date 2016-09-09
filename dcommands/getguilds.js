@@ -13,7 +13,7 @@ e.usage = '';
 e.info = '';
 e.category = blargutil.CommandType.CAT;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     if (msg.author.id === blargutil.CAT_ID) {
         var gArray = bot.guilds.map(m => m);
         if (words[1]) {
@@ -24,7 +24,7 @@ e.execute = (msg, words, text) => {
         var messages = [];
         var i = 0;
         messages.push(`Guilds (page ${i}):\n`);
-        gArray.forEach(function (guild, id) {
+        gArray.forEach(function (guild) {
             var addTo = ` - ${guild.name} (${guild.id})\n`;
             if (messages[i].length + addTo.length > 2000) {
                 i++;
@@ -32,7 +32,7 @@ e.execute = (msg, words, text) => {
             }
             messages[i] += addTo;
         });
-        for (var i = 0; i < messages.length; i++) {
+        for (i = 0; i < messages.length; i++) {
             blargutil.sendMessageToDiscord(msg.channel.id, messages[i]);
         }
 

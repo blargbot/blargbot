@@ -14,13 +14,13 @@ e.usage = 'kick <user>';
 e.info = 'Kicks a user.';
 e.category = bu.CommandType.ADMIN;
 
-e.execute = (msg, words, text) => {
-    if (!msg.channel.guild.members.get(bot.user.id).permission.json['kickMembers']) {
+e.execute = (msg, words) => {
+    if (!msg.channel.guild.members.get(bot.user.id).permission.kickMembers) {
         bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to kick users!`);
         return;
 
     }
-    if (!msg.member.permission.json['kickMembers']) {
+    if (!msg.member.permission.json.kickMembers) {
         bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to kick users!`);
         return;
     }

@@ -13,7 +13,7 @@ e.usage = 'info';
 e.info = 'Returns some info about me.';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     bu.sendMessageToDiscord(msg.channel.id, `blargbot is a multipurpose bot with new features implemented regularly, written in javascript using Eris.
 http://blarg.stupidcat.me
 \`\`\`xl

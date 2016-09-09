@@ -1,8 +1,7 @@
 var moment = require('moment-timezone');
 var Promise = require('promise');
-var util = require('util');
 var e = module.exports = {};
-e.CAT_ID = "103347843934212096";
+e.CAT_ID = '103347843934212096';
 e.catOverrides = true;
 
 e.db = null;
@@ -27,7 +26,7 @@ e.CommandType = {
     properties: {
         1: {
             name: 'General',
-            requirement: msg => true
+            requirement: () => true
         },
         2: {
             name: 'CATZ MEOW MEOW',
@@ -35,7 +34,7 @@ e.CommandType = {
         },
         3: {
             name: 'NSFW',
-            requirement: msg => true
+            requirement: () => true
         },
         4: {
             name: 'Music',
@@ -66,7 +65,9 @@ e.init = (Tbot) => {
  * @returns {boolean}
  */
 e.hasPerm = (msg, perm, quiet) => {
-    if ((msg.member.id === e.CAT_ID && e.catOverrides) || msg.channel.guild.ownerID == msg.member.id || msg.member.permission['administrator']) {
+    if ((msg.member.id === e.CAT_ID && e.catOverrides)
+        || msg.channel.guild.ownerID == msg.member.id
+        || msg.member.permission.administraton) {
         return true;
     }
     var roles = msg.channel.guild.roles.filter(m => m.name == perm);
@@ -107,6 +108,7 @@ e.sendMessageToDiscord = function (channelId, message, file) {
  * @returns {User|null}
  */
 e.getUserFromName = (msg, name, quiet) => {
+    var userList;
     var userId;
     var discrim;
     if (/<@!?[0-9]{17,21}>/.test(name)) {
@@ -122,7 +124,7 @@ e.getUserFromName = (msg, name, quiet) => {
         name = name.substring(0, name.length - 5);
     }
     if (!discrim) {
-        var userList = msg.channel.guild.members.filter(m => m.user.username && m.user.username == name);
+        userList = msg.channel.guild.members.filter(m => m.user.username && m.user.username == name);
         if (userList.length == 0) {
             userList = msg.channel.guild.members.filter(m => m.user.username && m.user.username.toLowerCase() == name);
         }
@@ -155,7 +157,7 @@ e.getUserFromName = (msg, name, quiet) => {
     } else {
         var userListString = '';
         for (var i = 0; i < userList.length; i++) {
-            userListString += `- ${userList[i].user.username}#${userList[i].user.discriminator}\n`
+            userListString += `- ${userList[i].user.username}#${userList[i].user.discriminator}\n`;
         }
         if (!quiet)
             e.sendMessageToDiscord(msg.channel.id, `Multiple users found!\`\`\`
@@ -163,23 +165,21 @@ ${userListString}
 \`\`\``);
         return null;
     }
-
-
-}
+};
 
 /**
  * Saves the config file
  */
 e.saveConfig = () => {
     e.emitter.emit('saveConfig');
-}
+};
 
 /**
  * Reloads the user list (only for irc)
  */
 e.reloadUserList = () => {
     e.emitter.emit('ircUserList');
-}
+};
 
 /**
  * Gets a random integer within the range
@@ -189,7 +189,7 @@ e.reloadUserList = () => {
  */
 e.getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
+};
 
 /**
  * Creates an uptime string
@@ -211,7 +211,7 @@ e.createTimeDiffString = (moment1, moment2) => {
     diff.subtract(minutes, 'm');
     var seconds = diff.seconds();
     return `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds`;
-}
+};
 
 /**
  * Gets how much memory the bot is currently using
@@ -220,55 +220,55 @@ e.createTimeDiffString = (moment1, moment2) => {
 e.getMemoryUsage = () => {
     var memory = process.memoryUsage();
     return memory.rss / 1024 / 1024;
-}
+};
 
-e.bans = {}
+e.bans = {};
 
-e.unbans = {}
+e.unbans = {};
 
 e.getPosition = (member) => {
-    var roles = member.roles
-    var rolepos = 0
+    var roles = member.roles;
+    var rolepos = 0;
     for (var i = 0; i < roles.length; i++) {
-        var rolenum = member.guild.roles.get(roles[i]).position
-        rolepos = rolepos > rolenum ? rolepos : rolenum
+        var rolenum = member.guild.roles.get(roles[i]).position;
+        rolepos = rolepos > rolenum ? rolepos : rolenum;
     }
-    return rolepos
-}
+    return rolepos;
+};
 
 e.logAction = (guild, user, mod, type) => {
-    console.log('fuck')
+    console.log('fuck');
     e.guildSettings.get(guild.id, 'modlog').then(val => {
         if (val) {
             e.db.query(`select caseid from modlog where guildid = ? order by caseid desc limit 1`,
                 [guild.id], (err, row) => {
                     if (err) {
-                        console.log(err)
-                        return
+                        console.log(err);
+                        return;
                     }
-                    var caseid = 0
+                    var caseid = 0;
                     if (row[0] && row[0].caseid >= 0) {
-                        caseid = row[0].caseid + 1
+                        caseid = row[0].caseid + 1;
                     }
                     var message = `**Case ${caseid}**
 **Type:** ${type}
 **User:** ${user.username}#${user.discriminator} (${user.id})
 **Reason:** Responsible moderator, please do \`reason ${caseid}\` to set.
-**Moderator:** ${mod ? `${mod.username}#${mod.discriminator}` : 'Unknown'}`
+**Moderator:** ${mod ? `${mod.username}#${mod.discriminator}` : 'Unknown'}`;
 
                     e.sendMessageToDiscord(val, message).then(msg => {
                         e.db.query(`insert into modlog (guildid, caseid, userid, modid, type, msgid) 
                     values (?, ?, ?, ?, ?, ?)`, [guild.id, caseid, user.id, mod ? mod.id : null, type, msg.id], err => {
-                                console.log(err)
-                            })
-                        return msg
+                                console.log(err);
+                            });
+                        return msg;
                     }).catch(err => {
-                        console.log(err)
-                    })
-                })
+                        console.log(err);
+                    });
+                });
         }
-    })
-}
+    });
+};
 
 e.isStaff = (m) => {
     return (m.permission.has('kickMembers')
@@ -276,8 +276,8 @@ e.isStaff = (m) => {
         || m.permission.has('administrator')
         || m.permission.has('manageChannels')
         || m.permission.has('manageGuild')
-        || m.permission.has('manageMessages'))
-}
+        || m.permission.has('manageMessages'));
+};
 
 /* SQL STUFF */
 
@@ -286,11 +286,11 @@ e.guildSettings = {
         return new Promise((fulfill, reject) => {
             e.db.query(`insert into guildsetting (guildid, name, value) values (?, ?, ?)
             on duplicate key update value=values(value)`,
-                [guildid, key, value], (err, rows) => {
+                [guildid, key, value], (err) => {
                     if (err) reject(err);
                     fulfill();
-                })
-        })
+                });
+        });
     },
     get: (guildid, key) => {
         return new Promise((fulfill, reject) => {
@@ -300,31 +300,31 @@ e.guildSettings = {
                     if (rows[0])
                         fulfill(rows[0].value);
                     else
-                        fulfill(null)
+                        fulfill(null);
 
-                })
-        })
+                });
+        });
     },
     remove: (guildid, key) => {
         return new Promise((fulfill, reject) => {
             e.db.query(`delete from guildsetting where guildid = ? and name = ?`,
-                [guildid, key], (err, rows) => {
+                [guildid, key], (err) => {
                     if (err) reject(err);
-                    fulfill()
-                })
-        })
+                    fulfill();
+                });
+        });
     }
-}
+};
 e.ccommand = {
     set: (guildid, commandname, value) => {
         return new Promise((fulfill, reject) => {
             e.db.query(`insert into ccommand (commandname, guildid, content) values (?, ?, ?)
             on duplicate key update content=values(content)`,
-                [commandname, guildid, value], (err, rows) => {
+                [commandname, guildid, value], (err) => {
                     if (err) reject(err);
                     fulfill();
-                })
-        })
+                });
+        });
     },
     get: (guildid, commandname) => {
         return new Promise((fulfill, reject) => {
@@ -334,43 +334,43 @@ e.ccommand = {
                     if (rows[0])
                         fulfill(rows[0].content);
                     else
-                        fulfill(null)
-                })
-        })
+                        fulfill(null);
+                });
+        });
     },
     remove: (guildid, commandname) => {
         return new Promise((fulfill, reject) => {
             e.db.query(`delete from ccommand where commandname = ? and guildid = ?`,
                 [commandname, guildid], (err, fields) => {
                     if (err) reject(err);
-                    fulfill(fields)
-                })
-        })
+                    fulfill(fields);
+                });
+        });
     }
-}
+};
 
 e.isNsfwChannel = (channelid) => {
     return new Promise((fulfill, reject) => {
         e.db.query(`select channelid from channel where channelid = ? and nsfw = true`, [channelid], (err, rows) => {
             if (err) reject(err);
             if (rows[0]) {
-                fulfill(true)
+                fulfill(true);
             } else {
-                fulfill(false)
+                fulfill(false);
             }
-        })
-    })
-}
+        });
+    });
+};
 
 e.isBlacklistedChannel = (channelid) => {
     return new Promise((fulfill, reject) => {
         e.db.query(`select channelid from channel where channelid = ? and blacklisted = true`, [channelid], (err, rows) => {
             if (err) reject(err);
             if (rows[0]) {
-                fulfill(true)
+                fulfill(true);
             } else {
-                fulfill(false)
+                fulfill(false);
             }
-        })
-    })
-}
+        });
+    });
+};

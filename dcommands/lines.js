@@ -16,7 +16,7 @@ e.usage = 'lines';
 e.info = 'Gets the number of lines the bot is made of';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     var fileArray = fs.readdirSync(path.join(__dirname, '..'));
     var files = [];
     for (var i = 0; i < fileArray.length; i++) {
@@ -25,7 +25,7 @@ e.execute = (msg, words, text) => {
         }
     }
     fileArray = fs.readdirSync(path.join(__dirname));
-    for (var i = 0; i < fileArray.length; i++) {
+    for (i = 0; i < fileArray.length; i++) {
         if (fileArray[i].endsWith('.js')) {
             files.push(path.join(__dirname, fileArray[i]));
         }
@@ -36,14 +36,15 @@ e.execute = (msg, words, text) => {
     }
     var count = files.length;
     var lines = 0;
-    for (var i = 0; i < files.length; i++) {
-        exec(`wc -l ${files[i]}`, (err, res) => {
+    function addLines (err, res) {
        //     console.log(res)
             lines += parseInt(res.split(' ')[0]);
             count--;
             if (count == 0) {
                 onComplete(lines);
             }
-        });
+        }
+    for (i = 0; i < files.length; i++) {
+        exec(`wc -l ${files[i]}`, addLines);
     }
 };

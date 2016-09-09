@@ -1,8 +1,6 @@
 var e = module.exports = {};
 var bu = require('./../util.js');
 var request = require('request');
-var util = require('util');
-var xml2js = require('xml2js');
 var moment = require('moment');
 
 var bot;
@@ -25,7 +23,7 @@ var part = {
     pronoun: 'p'
 };
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     words.shift();
     var args = words.join(' ');
     var config = bu.config;

@@ -24,7 +24,7 @@ See http://ratismal.github.io/blargbot/commands.html#ccommand for usage instruct
         return;
     }
 
-    if (words[1].toLowerCase() === "ccommand") {
+    if (words[1].toLowerCase() === 'ccommand') {
         bu.sendMessageToDiscord(msg.channel.id, `You cannot overwrite \`ccommand\``);
         return;
     }
@@ -37,7 +37,7 @@ See http://ratismal.github.io/blargbot/commands.html#ccommand for usage instruct
 
         });
     } else {
-        bu.ccommand.set(msg.channel.guild.id, words[1], text.replace(`${words[0]} ${words[1]} `, '')).then(val => {
+        bu.ccommand.set(msg.channel.guild.id, words[1], text.replace(`${words[0]} ${words[1]} `, '')).then(() => {
             bu.sendMessageToDiscord(msg.channel.id, `Set command ${words[1]}`);            
         });
     }

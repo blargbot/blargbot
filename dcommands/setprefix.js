@@ -20,7 +20,7 @@ e.execute = (msg, words, text) => {
             bu.sendMessageToDiscord(msg.channel.id, `Set the custom command prefix to '${prefix}'`);
         });
     } else {
-        bu.guildSettings.remove(msg.channel.guild.id, 'prefix').then(fields => {
+        bu.guildSettings.remove(msg.channel.guild.id, 'prefix').then(() => {
             bu.sendMessageToDiscord(msg.channel.id, `Reset your command prefix!`);
         });
         

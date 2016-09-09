@@ -29,7 +29,7 @@ var messages = [
     `Eat Arby's.`
 ];
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     var message = messages[bu.getRandomInt(0, messages.length - 1)];
     bot.createMessage(msg.channel.id, message).then((msg2) => {
         var ms = moment().diff(moment(msg2.timestamp));

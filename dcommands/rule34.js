@@ -1,21 +1,20 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
-var xml2js = require('xml2js')
-var https = require('https')
-var util = require('util')
-var bot
+var e = module.exports = {};
+var bu = require('./../util.js');
+var xml2js = require('xml2js');
+var https = require('https');
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'rule34 <tags...>';
 e.info = 'Gets three pictures from \'<https://rule34.xxx/>\' using given tags.';
-e.category = bu.CommandType.NSFW
+e.category = bu.CommandType.NSFW;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
 
         var tagList = JSON.parse(JSON.stringify(words));
@@ -29,25 +28,25 @@ e.execute = (msg, words, text) => {
         // listylist = tagList;
         //    console.log(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel) {
-            bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage)
+            bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage);
             return;
-        };;;;;;;;;;;;;;;
+        }
         var query = '';
         for (var tag in tagList) {
-            query += tagList[tag] + "%20";
+            query += tagList[tag] + '%20';
         }
 
         var url = `/index.php?page=dapi&s=post&q=index&limit=${50}&tags=${query}`;
 
         var message = '';
-        console.log("url: " + url);
+        console.log('url: ' + url);
         var options = {
             hostname: 'rule34.xxx',
             method: 'GET',
             port: 443,
             path: url,
             headers: {
-                "User-Agent": "blargbot/1.0 (ratismal)"
+                'User-Agent': 'blargbot/1.0 (ratismal)'
             }
         };
         var req = https.request(options, function (res) {
@@ -58,27 +57,27 @@ e.execute = (msg, words, text) => {
             });
 
             res.on('end', function () {
-                //  console.log("body: " + body);
+                //  console.log('body: ' + body);
                 //   var xml = JSON.parse(body);
                 try {
                     xml2js.parseString(body, function (err, doc) {
                         if (err != null) {
-                            console.log("error: " + err.message);
+                            console.log('error: ' + err.message);
                         }
                         //    parsedXml = doc;
-                        //console.log("result: " + result);
+                        //console.log('result: ' + result);
                         var urlList = [];
                         //   console.log(util.inspect(doc.posts.post[0]))
                         if (doc.posts.post != null)
                             for (i = 0; i < doc.posts.post.length; i++) {
-                                var imgUrl = doc.posts.post[i]['$'].file_url;
+                                var imgUrl = doc.posts.post[i].$.file_url;
                                 console.log(imgUrl);
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
-                                    urlList.push('http:' + doc.posts.post[i]['$'].file_url);
+                                    urlList.push('http:' + doc.posts.post[i].$.file_url);
                             }
                         //    console.log(util.inspect(urlList));
                         if (urlList.length == 0) {
-                            bu.sendMessageToDiscord(msg.channel.id, "No results found!");
+                            bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
                             return;
                         } else {
                             message = `Found **${urlList.length}/50** posts\n`;
@@ -88,7 +87,7 @@ e.execute = (msg, words, text) => {
                         for (i = 0; i < 3; i++) {
                             if (urlList.length > 0) {
                                 var choice = bu.getRandomInt(0, urlList.length - 1);
-                                message += urlList[choice] + "\n";
+                                message += urlList[choice] + '\n';
                                 console.log(`${choice} / ${urlList.length} - ${urlList[choice]}`);
                                 urlList.splice(choice, 1);
                             }
@@ -102,6 +101,5 @@ e.execute = (msg, words, text) => {
             });
         });
         req.end();
-    })
-
-}
+    });
+};

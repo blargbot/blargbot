@@ -14,7 +14,7 @@ e.usage = 'mods [online]';
 e.info = `Get's a list of mods.`;
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     var includeOffline = true;
     if (words[1] && words[1].toLowerCase() == 'online') {
         includeOffline = false;
@@ -35,7 +35,7 @@ e.execute = (msg, words, text) => {
         message += `${pad(getName(m), maxLength)} -${pad(m.status == 'online'
             ? ' Online'
             : (m.status == 'idle'
-                ? "'idle' "
+                ? '\'idle\' '
                 : ' offline'), 8)} (${m.user.id})\n`;
     });
     message += '```';
@@ -46,5 +46,5 @@ function getName(member) {
 }
 
 function pad(value, length) {
-    return (value.toString().length < length) ? pad(value + " ", length) : value;
+    return (value.toString().length < length) ? pad(value + ' ', length) : value;
 }

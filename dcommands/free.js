@@ -44,7 +44,7 @@ e.execute = function (msg, words, text) {
                             e.generateFrame(timestamp, 3, () => {
                                 e.generateFrame(timestamp, 4, () => {
                                     e.generateFrame(timestamp, 5, () => {
-                                        var image = e.generateFinalImage(timestamp, msg.channel.id);
+                                        e.generateFinalImage(timestamp, msg.channel.id);
                                         // console.log(2, image)
                                         // fulfill(image);
                                     });
@@ -109,7 +109,7 @@ e.generateFinalImage = function (timestamp, channelid) {
             }
             */
         });
-}
+};
 
 e.generateCaption = function (timestamp, text, callback) {
     gm()
@@ -151,7 +151,7 @@ e.generateLowerCaption = function (timestamp, text, callback) {
         })
         .write(path.join(__dirname, '..', `img/generated/freefreefreeLowerCaption-${timestamp}.png`), function (err) {
             if (err) throw err;
-            callback()
+            callback();
         });
 };
 
@@ -172,10 +172,10 @@ e.generateFrame = function (timestamp, iteration, callback) {
                 //.drawText(0, 50, "Fuck my life! This is a super long string I hope it wraps", 'North')
                 .write(path.join(__dirname, '..', `img/generated/freefreefreetest${iteration}-${timestamp}.png`), function (err) {
                     if (err) throw err;
-                    callback()
+                    callback();
                 });
         });
-}
+};
 
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;

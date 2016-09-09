@@ -14,7 +14,7 @@ e.usage = 'user [id/name/mention]';
 e.info = 'Gets information about specified user';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     var userToGet;
     if (!words[1]) {
         userToGet = msg.member;
@@ -34,8 +34,8 @@ Nickname: ${userToGet.nick}
 Discriminator: ${userToGet.user.discriminator}
 ${!userToGet.user.bot ? 'Account Type: User' : 'Account Type: Bot'}
 ID: ${userToGet.user.id}
-Account created on ${moment(userToGet.user.createdAt).format("dddd, MMMM Do YYYY, h:mm:ss a")}
-Account joined guild '${msg.channel.guild.name}' on ${moment(userToGet.joinedAt).format("dddd, MMMM Do YYYY, h:mm:ss a")}
+Account created on ${moment(userToGet.user.createdAt).format('dddd, MMMM Do YYYY, h:mm:ss a')}
+Account joined guild '${msg.channel.guild.name}' on ${moment(userToGet.joinedAt).format('dddd, MMMM Do YYYY, h:mm:ss a')}
 ${userToGet.game == null ? `Not playing anything` : `Currently ${userToGet.game.type != null && userToGet.game.type > 0 ? 'streaming' : 'playing'} ${userToGet.game.name}`}
 Allowed permissions: ${userToGet.permission.allow}
 Denied permissions: ${userToGet.permission.deny}

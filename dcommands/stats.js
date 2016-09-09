@@ -14,7 +14,7 @@ e.usage = 'stats';
 e.info = 'Gives you some information about me';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     bu.sendMessageToDiscord(msg.channel.id, `\`\`\`xl
 !== { Stats } ==!
 Running on ${bot.guilds.size} guilds.

@@ -14,7 +14,7 @@ e.usage = 'donate';
 e.info = 'Gets you my donation information';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     bot.getDMChannel(msg.author.id).then(channel => {
         bu.sendMessageToDiscord(channel.id, `Hi! This is stupid cat, creator of blargbot. I hope you're enjoying it!
 

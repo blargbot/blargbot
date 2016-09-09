@@ -1,6 +1,5 @@
 var e = module.exports = {};
 var bu = require('./../util.js');
-var util = require('util');
 var bot;
 e.init = (Tbot) => {
     bot = Tbot;
@@ -14,7 +13,7 @@ e.usage = 'reason <case> <reason>';
 e.info = 'Sets the reason for an action.';
 e.category = bu.CommandType.ADMIN;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
 
     if (words.length >= 3 && bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].modlog) {
       //  console.log('whew')

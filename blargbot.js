@@ -3,17 +3,11 @@ var util = require('util');
 var moment = require('moment-timezone');
 var mkdirp = require('mkdirp');
 var path = require('path');
-var http = require('http');
-var https = require('https');
-var xml2js = require('xml2js');
-var _ = require('lodash');
-var gm = require('gm');
-var wordsearch = require('wordsearch');
 const EventEmitter = require('events');
 var reload = require('require-reload')(require);
 var Cleverbot = require('cleverbot-node');
 var mysql = require('mysql');
-cleverbot = new Cleverbot;
+cleverbot = new Cleverbot();
 
 class BotEmitter extends EventEmitter { }
 const botEmitter = new BotEmitter();
@@ -44,13 +38,13 @@ botEmitter.on('reloadIrc', () => {
 });
 
 
-var VERSION = "4.4.0";
+var VERSION = '4.4.0';
 /** LOGGING STUFF **/
 
 
 /** File Stuff */
-mkdirp(path.join(__dirname, 'logs'), function (err) {
-    var logFile = fs.createWriteStream(path.join(__dirname, "logs/" + moment().format().replace(/:/gi, "_") + ".log"), { flags: 'w' });
+mkdirp(path.join(__dirname, 'logs'), function () {
+    var logFile = fs.createWriteStream(path.join(__dirname, 'logs/' + moment().format().replace(/:/gi, '_') + '.log'), { flags: 'w' });
 
     var logStdout = process.stdout;
 
@@ -68,141 +62,141 @@ if (fs.existsSync(path.join(__dirname, 'config.json'))) {
     var config = JSON.parse(configFile);
 } else {
     config = {
-        "general": {
-            "pass": "password",
-            "default_auth": "",
-            "notification_timer": 600,
-            "notifications": true,
-            "eat_faces": false,
-            "imgflip-user": "username",
-            "imgflip-pass": "password",
-            "databasedir": "data.db"
+        'general': {
+            'pass': 'password',
+            'default_auth': '',
+            'notification_timer': 600,
+            'notifications': true,
+            'eat_faces': false,
+            'imgflip-user': 'username',
+            'imgflip-pass': 'password',
+            'databasedir': 'data.db'
         },
-        "discord": {
-            "channel": "000000000",
-            "commands": {},
-            "servers": {},
-            "token": "token",
-            "isbeta": false,
-            "blacklist": {},
-            "musicGuilds": {}
+        'discord': {
+            'channel': '000000000',
+            'commands': {},
+            'servers': {},
+            'token': 'token',
+            'isbeta': false,
+            'blacklist': {},
+            'musicGuilds': {}
         },
-        "sql": {
-            "host": "hostname",
-            "user": "username",
-            "pass": "password",
-            "database": "database"
+        'sql': {
+            'host': 'hostname',
+            'user': 'username',
+            'pass': 'password',
+            'database': 'database'
         },
-        "irc": {
-            "server": "irc.example.net",
-            "channel": "#example",
-            "nick": "nickname",
-            "nickserv_name": "username",
-            "nickserv_pass": "password"
+        'irc': {
+            'server': 'irc.example.net',
+            'channel': '#example',
+            'nick': 'nickname',
+            'nickserv_name': 'username',
+            'nickserv_pass': 'password'
         },
-        "insult": {
-            "verbs": [
-                "smells like",
-                "looks like",
-                "is",
-                "sounds like",
-                "appears to be",
-                "wants to be",
-                "looks just like",
-                "smells oddly similar to",
-                "is jealous of",
-                "is as stupid as",
-                "laughs like"
+        'insult': {
+            'verbs': [
+                'smells like',
+                'looks like',
+                'is',
+                'sounds like',
+                'appears to be',
+                'wants to be',
+                'looks just like',
+                'smells oddly similar to',
+                'is jealous of',
+                'is as stupid as',
+                'laughs like'
             ],
-            "nouns": [
-                "mother",
-                "mom",
-                "father",
-                "dad",
-                "goat",
-                "cheese",
-                "dick",
-                "boob",
-                "eye",
-                "mouth",
-                "nose",
-                "ear",
-                "sister",
-                "sis",
-                "brother",
-                "bro",
-                "seagull",
-                "tea",
-                "mother-in-law",
-                "rabbit",
-                "dog",
-                "cat",
-                "left foot",
-                "body",
-                "brain",
-                "face",
-                "favourite thing"
+            'nouns': [
+                'mother',
+                'mom',
+                'father',
+                'dad',
+                'goat',
+                'cheese',
+                'dick',
+                'boob',
+                'eye',
+                'mouth',
+                'nose',
+                'ear',
+                'sister',
+                'sis',
+                'brother',
+                'bro',
+                'seagull',
+                'tea',
+                'mother-in-law',
+                'rabbit',
+                'dog',
+                'cat',
+                'left foot',
+                'body',
+                'brain',
+                'face',
+                'favourite thing'
             ],
-            "adjectives": [
-                "a piece of cheese",
-                "a smelly fish",
-                "jam",
-                "tea",
-                "a skunk",
-                "a fart",
-                "a piece of toast",
-                "my mom",
-                "your mom",
-                "my dad",
-                "your dad",
-                "my sister",
-                "your sister",
-                "my brother",
-                "your brother",
-                "my cat",
-                "my dog",
-                "my lizard",
-                "my seagull",
-                "gross",
-                "farts",
-                "ugly",
-                "Captain America",
-                "javascript",
-                "C#",
-                "LUA",
-                "python3.5",
-                "a furry",
-                "an anthropomorphic horse",
-                "a tentacle monster",
-                "fuck",
-                "meow",
-                "mississippi",
-                "the entire UK",
-                "Japan",
-                "anime",
-                "dickgirls",
-                "a really stupid cat",
-                "a sentient robot",
-                "teaching a robot to love",
-                "anime girls with really large boobs who want to eat all of your cream",
-                "salty",
-                "smegma",
-                "mouldy cheese",
-                "obesity",
-                "Donald Trump",
-                "stupid people",
-                "crabcakes",
-                "firepoles",
-                "blue waffle",
-                "a really bad random insult generators",
-                "a terrible AI",
-                "cleverbot",
-                "b1nzy",
-                "a drunken goblin",
-                "poorly censored porn",
-                "an egg left in the sun for too long",
-                "#BREXIT",
-                "leaving the EU"
+            'adjectives': [
+                'a piece of cheese',
+                'a smelly fish',
+                'jam',
+                'tea',
+                'a skunk',
+                'a fart',
+                'a piece of toast',
+                'my mom',
+                'your mom',
+                'my dad',
+                'your dad',
+                'my sister',
+                'your sister',
+                'my brother',
+                'your brother',
+                'my cat',
+                'my dog',
+                'my lizard',
+                'my seagull',
+                'gross',
+                'farts',
+                'ugly',
+                'Captain America',
+                'javascript',
+                'C#',
+                'LUA',
+                'python3.5',
+                'a furry',
+                'an anthropomorphic horse',
+                'a tentacle monster',
+                'fuck',
+                'meow',
+                'mississippi',
+                'the entire UK',
+                'Japan',
+                'anime',
+                'dickgirls',
+                'a really stupid cat',
+                'a sentient robot',
+                'teaching a robot to love',
+                'anime girls with really large boobs who want to eat all of your cream',
+                'salty',
+                'smegma',
+                'mouldy cheese',
+                'obesity',
+                'Donald Trump',
+                'stupid people',
+                'crabcakes',
+                'firepoles',
+                'blue waffle',
+                'a really bad random insult generators',
+                'a terrible AI',
+                'cleverbot',
+                'b1nzy',
+                'a drunken goblin',
+                'poorly censored porn',
+                'an egg left in the sun for too long',
+                '#BREXIT',
+                'leaving the EU'
             ]
         }
     };
@@ -233,9 +227,6 @@ if (config.general.databasedir) {
         databaseFile = path.join(__dirname, config.general.databasedir);
 } else
     databaseFile = path.join(__dirname, 'data.db');
-var exists = fs.existsSync(databaseFile);
-var sqlite3 = require('sqlite3').verbose();
-var olddb = new sqlite3.Database(databaseFile);
 var db = mysql.createConnection({
     host: config.sql.host,
     user: config.sql.user,
@@ -333,7 +324,7 @@ db.query(`CREATE TABLE IF NOT EXISTs catchat (
             msgtime DATETIME,
             nsfw INTEGER,
             foreign key (guildid) references guild(guildid)            
-                    )`)
+                    )`);
 
 db.query(`create table if not exists tag (
         id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -350,16 +341,16 @@ db.query(`create table if not exists username (
             username TEXT,
             namedate DATETIME DEFAULT CURRENT_TIMESTAMP,
             foreign key (userid) references user(userid)
-        )`)
+        )`);
 
 //});
 
 /**
  * Time to init the bots
  */
-irc.init(VERSION, config, botEmitter)
-discord.init(VERSION, config, botEmitter, db)
-catbot.init(config, db)
+irc.init(VERSION, config, botEmitter);
+discord.init(VERSION, config, botEmitter, db);
+catbot.init(config, db);
 
 
 

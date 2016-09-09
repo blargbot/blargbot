@@ -13,7 +13,7 @@ e.usage = 'getprefix';
 e.info = 'Gets the command prefix for the current guild.';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     bu.guildSettings.get(msg.channel.guild.id, 'prefix').then(prefix => {
         if (prefix)
             bu.sendMessageToDiscord(msg.channel.id, `My prefix on ${msg.channel.guild.name} is \`${prefix}\`.

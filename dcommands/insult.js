@@ -13,13 +13,13 @@ e.usage = 'insult [name]';
 e.info = 'Generates a random insult directed at the name supplied.';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     var target = '';
     if (words.length === 1) {
         target = 'Your';
     } else {
         for (var i = 1; i < words.length; i++) {
-            target += words[i] + " ";
+            target += words[i] + ' ';
         }
         target = target.substring(0, target.length - 1);
     }

@@ -15,9 +15,9 @@ e.info = 'Gets a picture of a cat.';
 e.category = bu.CommandType.GENERAL;
 
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     var output;
-    http.get("http://random.cat/meow", function (res) {
+    http.get('http://random.cat/meow', function (res) {
         var body = '';
         res.on('data', function (chunk) {
             body += chunk;

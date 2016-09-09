@@ -14,14 +14,15 @@ e.usage = 'settings [help|set <key>]';
 e.info = 'Gets or sets the settings for the current guild.';
 e.category = bu.CommandType.ADMIN;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     if (words.length == 1) {
         //do settings shit
         bu.db.query(`select name, value from guildsetting where guildid=?`, [msg.channel.guild.id], (err, rows) => {
             bu.db.query(`select channelid, nsfw, blacklisted from channel where guildid=?`, [msg.channel.guild.id], (err, rows2) => {
                 var nsfw = [];
                 var blacklisted = [];
-                for (var i = 0; i < rows2.length; i++) {
+                var i;
+                for (i = 0; i < rows2.length; i++) {
                     if (rows2[i].nsfw) {
                         nsfw.push(rows2[i].channelid);
                     }
@@ -30,7 +31,7 @@ e.execute = (msg, words, text) => {
                     }
                 }
                 var settings = {};
-                for (var i = 0; i < rows.length; i++) {
+                for (i = 0; i < rows.length; i++) {
                     settings[rows[i].name] = rows[i].value;
                 }
 
@@ -39,7 +40,7 @@ e.execute = (msg, words, text) => {
                 var nsfwMessage = 'none set';
                 if (nsfw.length > 0) {
                     nsfwMessage = '';
-                    for (var i = 0; i < nsfw.length; i++) {
+                    for (i = 0; i < nsfw.length; i++) {
                         nsfwMessage += bot.getChannel(nsfw[i]).name + '\n                - ';
                     }
                     nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 19);
@@ -47,7 +48,7 @@ e.execute = (msg, words, text) => {
                 var blacklistMessage = 'none set';
                 if (blacklisted.length > 0) {
                     blacklistMessage = '';
-                    for (var i = 0; i < blacklisted.length; i++) {
+                    for (i = 0; i < blacklisted.length; i++) {
                         blacklistMessage += bot.getChannel(blacklisted[i]).name + '\n                - ';
                     }
                     blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19);
@@ -80,10 +81,11 @@ Settings For ${msg.channel.guild.name}
         });
     } else {
         words.shift();
+        var key;
         switch (words.shift().toLowerCase()) {
             case 'set':
                 if (words.length > 0) {
-                    var key = words.shift();
+                    key = words.shift();
                     var value = words.join(' ');
                     if (settings[key]) {
                         bu.guildSettings.set(msg.channel.guild.id, key, value).then(() => {
@@ -115,4 +117,4 @@ var settings = {
     modlog: `the id of the modlog channel. You can also use the \`modlog\` command`,
     mutedrole: `the id of the muted role.`,
     tableflip: `whether the bot should respond to tableflips/unflips. Set to '0' to disable.`
-}
+};

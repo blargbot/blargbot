@@ -14,7 +14,7 @@ e.usage = 'Unmute <user>';
 e.info = 'Unmutes a user.';
 e.category = bu.CommandType.ADMIN;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     bu.guildSettings.get(msg.channel.guild.id, 'mutedrole').then(mutedrole => {
 
         if (!mutedrole) {
@@ -22,8 +22,8 @@ e.execute = (msg, words, text) => {
         }
         if (words.length > 1) {
 
-            if (msg.channel.guild.members.get(bot.user.id).permission.json['manageRoles']) {
-                if (msg.member.permission.json['manageRoles']) {
+            if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
+                if (msg.member.permission.json.manageRoles) {
                     if (words[1]) {
                         var user = bu.getUserFromName(msg, words[1]);
                         var member = msg.channel.guild.members.get(user.id);

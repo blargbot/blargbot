@@ -17,6 +17,7 @@ e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     if (words[1]) {
+        var tagList;
         //       console.log(words[1]);
         //        console.log(words.length);
         switch (words[1].toLowerCase()) {
@@ -87,36 +88,36 @@ e.execute = (msg, words, text) => {
                                                 bu.sendMessageToDiscord(msg.channel.id, `❌ The tag \`${words[3]}\` already exist! ❌`);
                                                 bu.db.commit((err) => {
                                                     if (err) bu.db.rollback(() => {
-                                                        console.log(err)
-                                                    })
-                                                })
+                                                        console.log(err);
+                                                    });
+                                                });
 
                                             }
                                         });
                                 } else {
-                                    bu.sendMessageToDiscord(msg.channel.id, `❌ The tag \`${words[2]}\` doesn't exist! ❌`)
+                                    bu.sendMessageToDiscord(msg.channel.id, `❌ The tag \`${words[2]}\` doesn't exist! ❌`);
                                     bu.db.commit((err) => {
                                         if (err) bu.db.rollback(() => {
-                                            console.log(err)
-                                        })
-                                    })
+                                            console.log(err);
+                                        });
+                                    });
                                 }
                             });
-                    })
+                    });
                 }
                 break;
             case 'edit':
                 bu.db.query(`select author from tag where title=?`,
                     [words[2]], (err, row) => {
                         if (!row[0])
-                            bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`)
+                            bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
                         else if (row[0].author != msg.author.id)
-                            bu.sendMessageToDiscord(msg.channel.id, `❌ You don't own this tag! ❌`)
+                            bu.sendMessageToDiscord(msg.channel.id, `❌ You don't own this tag! ❌`);
                         else {
                             bu.db.query('update tag set contents=? where title=?',
                                 [text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim(),
                                     words[2]]);
-                            bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` edited. ✅`)
+                            bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` edited. ✅`);
 
                         }
                     });
@@ -124,22 +125,22 @@ e.execute = (msg, words, text) => {
             case 'delete':
                 bu.db.query(`select author from tag where title=?`, [words[2]], (err, row) => {
                     if (!row[0])
-                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`)
+                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
                     else if (row[0].author != msg.author.id)
-                        bu.sendMessageToDiscord(msg.channel.id, `❌ You don't own this tag! ❌`)
+                        bu.sendMessageToDiscord(msg.channel.id, `❌ You don't own this tag! ❌`);
                     else {
-                        bu.db.query(`delete from tag where title=?`, [words[2]])
-                        bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` is gone forever! ✅`)
+                        bu.db.query(`delete from tag where title=?`, [words[2]]);
+                        bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` is gone forever! ✅`);
                     }
                 });
                 break;
             case 'help':
-                bu.sendMessageToDiscord(msg.channel.id, tagHelp)
+                bu.sendMessageToDiscord(msg.channel.id, tagHelp);
                 break;
             case 'raw':
                 bu.db.query(`select contents from tag where title=?`, [words[2]], (err, row) => {
                     if (!row[0])
-                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`)
+                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
                     else if (row[0].author != msg.author.id)
                         bu.sendMessageToDiscord(msg.channel.id, `The code for ${words[2]} is:
 \`\`\`
@@ -150,7 +151,7 @@ ${row[0].contents}
             case 'author':
                 bu.db.query(`select author from tag where title=?`, [words[2]], (err, row) => {
                     if (!row[0])
-                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`)
+                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
                     else {
                         bu.sendMessageToDiscord(msg.channel.id, `The tag \`${words[2]}\` was made by **${bot.users.get(row[0].author).username}#${bot.users.get(row[0].author).discriminator}**`);
                     }
@@ -158,15 +159,13 @@ ${row[0].contents}
                 break;
             case 'search':
                 //    var tagList = 'Found these tags:\n';
-                var tagList = [];
+                tagList = [];
                 bu.db.query(`select title from tag where title like ?`, [`%${words[2]}%`], (err, row) => {
                     //     console.log('err');
                     //  if (!err)
-                    tagList.push(row[0].title);
-                    //   else {
-
-                    //   }
-                }, (err, retrieved) => {
+                    for (i = 0; i < row.length; i++) {
+                        tagList.push(row[i].title);
+                    }
                     tagList.sort();
                     console.log('all done');
                     var tagMessage = '';
@@ -181,27 +180,22 @@ ${row[0].contents}
 
             case 'list':
                 if (!words[2]) {
-                    var tagList = [];
-                    var stmt = bu.db.query(`select title from tag`, (err, row) => {
-                        //     console.log('err');
-                        //  if (!err)
+                    tagList = [];
+                    bu.db.query(`select title from tag`, (err, row) => {
                         for (var i = 0; i < row.length; i++) {
                             tagList.push(row[i].title);
                         }
-                        //   else {
-
-                        //   }
                         tagList.sort();
                         console.log('all done');
                         var tagMessage = '';
-                        for (var i = 0; i < tagList.length; i++) {
+                        for (i = 0; i < tagList.length; i++) {
                             tagMessage += ` ${tagList[i]},`;
                         }
                         var message = `Found ${tagList.length} tags.\n\`\`\`${tagMessage.trim()}\n\`\`\``;
                         bu.sendMessageToDiscord(msg.channel.id, message);
                     });
                 } else {
-                    var tagList = [];
+                    tagList = [];
                     var userToSearch = text.replace(words[0], '').trim().replace(words[1], '').trim();
                     console.log(userToSearch);
                     var obtainedUser = bu.getUserFromName(msg, userToSearch);
@@ -221,24 +215,24 @@ ${row[0].contents}
                         tagList.sort();
                         console.log('all done');
                         var tagMessage = '';
-                        for (var i = 0; i < tagList.length; i++) {
+                        for (i = 0; i < tagList.length; i++) {
                             tagMessage += ` ${tagList[i]},`;
                         }
                         var message = `Found ${tagList.length} tags made by **${obtainedUser.username}#${obtainedUser.discriminator}**.\n\`\`\`${tagMessage.trim()}\n\`\`\``;
                         bu.sendMessageToDiscord(msg.channel.id, message);
-                    })
+                    });
                 }
                 break;
             default:
                 var command = text.replace(words[0], '').trim().replace(words[1], '').trim();
                 //    console.log('FUCK FUCK FUCK ' + command);
-                tags.executeTag(msg, words[1], command)
+                tags.executeTag(msg, words[1], command);
                 break;
         }
     } else {
-        bu.sendMessageToDiscord(msg.channel.id, tagHelp)
+        bu.sendMessageToDiscord(msg.channel.id, tagHelp);
     }
-}
+};
 
 
 var tagHelp = `\`\`\`xl
@@ -255,4 +249,4 @@ var tagHelp = `\`\`\`xl
 + Tag Help - shows this message
 NOTE: Any NSFW tags must contain '{nsfw}' somewhere in their body, or they will be deleted and you will be blacklisted.
 For more information about tags, visit http://ratismal.github.io/blargbot/tags.html
-\`\`\``
+\`\`\``;

@@ -16,7 +16,7 @@ e.category = bu.CommandType.CAT;
 
 e.execute = (msg, words, text) => {
     if (msg.author.id === bu.CAT_ID) {
-        var commandToProcess = text.replace("exec ", "");
+        var commandToProcess = text.replace(words[0] + ' ', '');
         console.log(commandToProcess);
         exec(commandToProcess, function (err, stdout, stderr) {
             if (err) {

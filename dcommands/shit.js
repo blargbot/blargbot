@@ -3,11 +3,9 @@ var bu = require('./../util.js');
 var gm = require('gm');
 var path = require('path');
 var moment = require('moment');
-var fs = require('fs');
 var util = require('util');
 var bot;
 var Canvas = require('canvas');
-var Image = Canvas.Image;
 var Font = Canvas.Font;
 console.log(util.inspect(Font));
 //var animeace = new Font('Anime Ace 2.0 BB', path.join(__dirname, 'img', 'fonts', 'animeace2_reg.ttf'))
@@ -25,7 +23,7 @@ e.usage = 'shit [-p] <text>';
 e.info = `Tells everyone what's shit. Use -p as the first argument to specify it's plural.`;
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     var shitText = 'Your favourite anime';
     console.log(util.inspect(words));
     var plural = false;

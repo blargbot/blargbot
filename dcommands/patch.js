@@ -14,7 +14,7 @@ e.usage = 'patch <features> [ | <fixes> ]';
 e.info = 'Makes a patch note';
 e.category = bu.CommandType.CAT;
 var changeChannel = '222199986123833344';
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     if (msg.author.id != bu.CAT_ID) {
         return;
     }

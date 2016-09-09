@@ -1,5 +1,4 @@
 var bu = require('./../util.js');
-var moment = require('moment');
 var util = require('util');
 
 var e = module.exports = {};
@@ -19,7 +18,7 @@ e.category = bu.CommandType.CAT;
 
 var confirmIrc = false;
 var confirmDiscord = false;
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     if (msg.author.id == bu.CAT_ID) {
         words.shift();
         console.log(util.inspect(words));
@@ -49,13 +48,13 @@ e.execute = (msg, words, text) => {
             if (words[0] && words[0].toLowerCase() == 'discord') {
                 //   console.log('meow')
                 if (!confirmDiscord) {
-                    bu.sendMessageToDiscord(msg.channel.id, "I really hope you know what you're doing. " +
-                        "Type that command again to confirm.");
+                    bu.sendMessageToDiscord(msg.channel.id, 'I really hope you know what you\'re doing. ' +
+                        'Type that command again to confirm.');
                     confirmDiscord = true;
                     // }
                 } else {
                     bu.sendMessageToDiscord(msg.channel.id, `:ok_hand: Reloading the discord module :ok_hand:`)
-                        .then((msg) => {
+                        .then(() => {
                             bu.emitter.emit('reloadDiscord');
                         });
                     // }
@@ -69,7 +68,7 @@ e.execute = (msg, words, text) => {
                     //     }
                 } else {
                     bu.sendMessageToDiscord(msg.channel.id, `:ok_hand: Reloading the irc module :ok_hand:`)
-                        .then((msg) => {
+                        .then(() => {
                             bu.emitter.emit('reloadIrc');
                         });
                 }

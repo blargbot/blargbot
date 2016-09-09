@@ -15,7 +15,7 @@ e.usage = 'time <timezone>';
 e.info = 'Gets the time in a certain timezone';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     var message = `It is currently ${moment().format('LT')} where I am!`;
     console.log(util.inspect(words));
     if (words.length == 2) {

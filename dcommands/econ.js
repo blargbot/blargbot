@@ -14,9 +14,9 @@ e.usage = 'econ <from> <to> <amount>';
 e.info = 'Converts currency using recent rates.';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     if (words.length < 4) {
-        bu.sendMessageToDiscord(msg.channel.id, "Incorrect usage!\n`econ \<from> \<to> \<amount>`");
+        bu.sendMessageToDiscord(msg.channel.id, 'Incorrect usage!\n`econ \<from> \<to> \<amount>`');
         return;
     }
     var to = words[2].toUpperCase();
@@ -32,7 +32,7 @@ e.execute = (msg, words, text) => {
         });
         res.on('end', function () {
             var rates = JSON.parse(body);
-            if (rates.error != null && rates.error === "Invalid base") {
+            if (rates.error != null && rates.error === 'Invalid base') {
                 bu.sendMessageToDiscord(msg.channel.id, `Invalid currency ${from}\n\`econ \<from\> \<to\> \<amount\>\``);
                 return;
             }

@@ -13,7 +13,7 @@ e.usage = 'pls';
 e.info = 'Gets messages made by the stupid cat on your guild';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     if (msg.channel.guild.members.get('103347843934212096')) {
         var statement = ` from catchat `;
         statement += ` where nsfw <> 1`;

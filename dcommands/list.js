@@ -13,7 +13,7 @@ e.usage = '';
 e.info = '';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg) => {
     if (msg.channel.id === config.discord.channel) {
         bu.reloadUserList();
         bu.sendMessageToDiscord(msg.channel.id, 'Reloaded the user list! Check the channel topic.');

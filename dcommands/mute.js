@@ -17,7 +17,7 @@ e.category = bu.CommandType.ADMIN;
 e.execute = (msg, words, text) => {
     bu.guildSettings.get(msg.channel.guild.id, 'mutedrole').then(mutedrole => {
         if (!mutedrole) {
-            if (msg.channel.guild.members.get(bot.user.id).permission.json['manageRoles']) {
+            if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
                 bot.createRole(msg.channel.guild.id).then(role => {
                     console.log(role.id);
                     bot.editRole(msg.channel.guild.id, role.id, {
@@ -26,14 +26,12 @@ e.execute = (msg, words, text) => {
                         permissions: 0
                     });
                     bu.guildSettings.set(msg.channel.guild.id, 'mutedrole', role.id).then(() => {
-                        if (msg.channel.guild.members.get(bot.user.id).permission.json['manageChannels']) {
+                        if (msg.channel.guild.members.get(bot.user.id).permission.json.manageChannels) {
                             var channels = msg.channel.guild.channels.map(m => m);
                             console.log(channels.length);
                             for (var i = 0; i < channels.length; i++) {
                                 console.log(`Modifying ${channels[i].name}`);
-                                bot.editChannelPermission(channels[i].id, role.id, 0, 2048, "role").catch(err => {
-                                    console.log(err);
-                                });
+                                bot.editChannelPermission(channels[i].id, role.id, 0, 2048, 'role').catch(logError);
                             }
                             e.execute(msg, words, text);
                         } else {
@@ -48,15 +46,15 @@ e.execute = (msg, words, text) => {
             return;
         } else {
             if (!msg.channel.guild.roles.get(mutedrole)) {
-                bu.guildSettings.remove(msg.channel.guild.id, 'mutedrole').then(fields => {
+                bu.guildSettings.remove(msg.channel.guild.id, 'mutedrole').then(() => {
                     e.execute(msg, words, text);
                 });
                 return;
             }
         }
         if (words.length > 1) {
-            if (msg.channel.guild.members.get(bot.user.id).permission.json['manageRoles']) {
-                if (msg.member.permission.json['manageRoles']) {
+            if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
+                if (msg.member.permission.json.manageRoles) {
                     if (words[1]) {
                         var user = bu.getUserFromName(msg, words[1]);
                         var member = msg.channel.guild.members.get(user.id);
@@ -64,7 +62,7 @@ e.execute = (msg, words, text) => {
                             return;
 
                         var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
-                        var userPos = bu.getPosition(msg.member);;
+                        var userPos = bu.getPosition(msg.member);
                         var targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
                         if (targetPos >= botPos) {
                             bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to mute ${user.username}!`);
@@ -83,8 +81,8 @@ e.execute = (msg, words, text) => {
                             bot.editGuildMember(msg.channel.guild.id, user.id, {
                                 roles: roles
                             });
-                            bu.logAction(msg.channel.guild, user, msg.author, 'Mute')
-                            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:')
+                            bu.logAction(msg.channel.guild, user, msg.author, 'Mute');
+                            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
                         }
 
 
@@ -98,12 +96,15 @@ e.execute = (msg, words, text) => {
                     }
                     //bot.ban
                 } else {
-                    bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`)
+                    bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`);
                 }
             } else {
-                bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`)
+                bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
             }
         }
-    })
+    });
+};
 
+function logError(err) {
+    console.log(err);
 }

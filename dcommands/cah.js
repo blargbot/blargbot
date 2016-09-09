@@ -1,10 +1,7 @@
 var e = module.exports = {};
 var bu = require('./../util.js');
-var gm = require('gm');
 var path = require('path');
-var moment = require('moment');
 var fs = require('fs');
-var util = require('util');
 var bot;
 var cah = {};
 var Canvas = require('canvas');
@@ -25,9 +22,8 @@ e.usage = 'cah';
 e.info = 'Generates a set of CAH cards.';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
-    var cont = true;
-    new Promise((fulfill, reject) => {
+e.execute = (msg) => {
+    new Promise((fulfill) => {
         bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw').then(val => {
             if (val != '0') {
                 bu.isNsfwChannel(msg.channel.id).then(cont => {
@@ -47,7 +43,6 @@ e.execute = (msg, words, text) => {
 
 function doit() {
     //   console.log(util.inspect(cah))
-    var timestamp = moment().format().replace(/:/gi, '_');
     var blackphrase = cah.black[bu.getRandomInt(0, cah.black.length)];
     //   console.log(blackphrase)
     var blankCount = /.\_\_[^\_]/g.test(blackphrase) ? blackphrase.match(/.\_\_[^\_]/g).length : 1;
@@ -60,10 +55,10 @@ function doit() {
     var whitecard = new Image();
     whitecard.src = fs.readFileSync(path.join(__dirname, '..', 'img', 'whitecard.png'));
 
-    ctx.fillStyle = "white";
+    ctx.fillStyle = 'white';
     ctx.drawImage(blackcard, 0, 0);
     wrapText(ctx, blackphrase, 19, 38, 144, 20);
-    ctx.fillStyle = "black";
+    ctx.fillStyle = 'black';
     var usedCards = [];
     for (var i = 0; i < blankCount; i++) {
         ctx.drawImage(whitecard, ((i + 1) * (184 + 1)), 0);

@@ -14,9 +14,9 @@ e.usage = 'unban <userid>';
 e.info = 'Unbans a user.';
 e.category = bu.CommandType.ADMIN;
 
-e.execute = (msg, words, text) => {
-    if (msg.channel.guild.members.get(bot.user.id).permission.json['banMembers']) {
-        if (msg.member.permission.json['banMembers']) {
+e.execute = (msg, words) => {
+    if (msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
+        if (msg.member.permission.banMembers) {
             if (words[1]) {
                 var userid = words[1];
                 
