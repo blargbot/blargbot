@@ -1,0 +1,13 @@
+{
+"esversion": 6,
+"node": true,
+"browser": false,
+"laxcomma": true,
+"laxbreak": true,
+"unused": true,
+"nonbsp": true,
+"quotmark": "single",
+"-W100": true,
+"-W041": true,
+"evil": true
+}

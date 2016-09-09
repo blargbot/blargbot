@@ -6,38 +6,39 @@ var path = require('path');
 var https = require('https');
 var bu = require('./util.js');
 var tags = require('./tags.js');
-var reload = require('require-reload')(require)
-var request = require('request')
-var Promise = require('promise')
+var reload = require('require-reload')(require);
+var request = require('request');
+var Promise = require('promise');
 
 var Cleverbot = require('cleverbot-node');
-cleverbot = new Cleverbot;
+cleverbot = new Cleverbot();
 
-var e = module.exports = {};
-var avatars;
-var vars;
-var config;
-var emitter
-var bot;
-var db
-var VERSION
+var e = module.exports = {}
+    , avatars
+    , vars
+    , config
+    , emitter
+    , bot
+    , db
+    , VERSION;
 
-e.requireCtx = require
-
+e.requireCtx = require;
 
 
 /**
- * Initializes every command found in the dcommands directory - hooray for modules!
+ * Initializes every command found in the dcommands directory 
+ * - hooray for modules!
  */
 function initCommands() {
     var fileArray = fs.readdirSync(path.join(__dirname, 'dcommands'));
     for (var i = 0; i < fileArray.length; i++) {
 
-        var commandFile = fileArray[i]
+        var commandFile = fileArray[i];
         if (/.+\.js$/.test(commandFile)) {
-            var commandName = commandFile.match(/(.+)\.js$/)[1]
+            var commandName = commandFile.match(/(.+)\.js$/)[1];
             loadCommand(commandName);
-            console.log(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module ', commandName)
+            console.log(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module '
+                , commandName);
         } else {
             console.log('     Skipping non-command ', commandFile);
 
@@ -52,10 +53,11 @@ function initCommands() {
  */
 function reloadCommand(commandName) {
     if (bu.commands[commandName]) {
-        console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module ', commandName)
+        console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module '
+            , commandName);
         if (bu.commands[commandName].shutdown)
-            bu.commands[commandName].shutdown()
-        bu.commands[commandName] = reload(`./dcommands/${commandName}.js`)
+            bu.commands[commandName].shutdown();
+        bu.commands[commandName] = reload(`./dcommands/${commandName}.js`);
         buildCommand(commandName);
     }
 }
@@ -66,19 +68,22 @@ function reloadCommand(commandName) {
  */
 function unloadCommand(commandName) {
     if (bu.commands[commandName]) {
-        console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module ', commandName)
+        console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module '
+            , commandName);
 
         if (bu.commands[commandName].sub) {
             for (var subCommand in bu.commands[commandName].sub) {
-                console.log(`    Unloading ${commandName}'s subcommand`, subCommand)
+                console.log(`    Unloading ${commandName}'s subcommand`
+                    , subCommand);
                 delete bu.commandList[subCommand];
             }
         }
         delete bu.commandList[commandName];
         if (bu.commands[commandName].alias) {
             for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
-                console.log(`    Unloading ${commandName}'s alias`, bu.commands[commandName].alias[ii])
-                delete bu.commandList[bu.commands[commandName].alias[ii]]
+                console.log(`    Unloading ${commandName}'s alias`
+                    , bu.commands[commandName].alias[ii]);
+                delete bu.commandList[bu.commands[commandName].alias[ii]];
             }
         }
     }
@@ -90,7 +95,7 @@ function unloadCommand(commandName) {
  */
 function loadCommand(commandName) {
 
-    bu.commands[commandName] = require(`./dcommands/${commandName}.js`)
+    bu.commands[commandName] = require(`./dcommands/${commandName}.js`);
     if (bu.commands[commandName].isCommand) {
         buildCommand(commandName);
     } else {
@@ -107,10 +112,10 @@ function buildCommand(commandName) {
         info: bu.commands[commandName].info,
         hidden: bu.commands[commandName].hidden,
         category: bu.commands[commandName].category
-    }
+    };
     if (bu.commands[commandName].sub) {
         for (var subCommand in bu.commands[commandName].sub) {
-            console.log(`    Loading ${commandName}'s subcommand`, subCommand)
+            console.log(`    Loading ${commandName}'s subcommand`, subCommand);
 
             bu.commandList[subCommand] = {
                 name: commandName,
@@ -118,14 +123,15 @@ function buildCommand(commandName) {
                 info: bu.commands[commandName].sub[subCommand].info,
                 hidden: bu.commands[commandName].hidden,
                 category: bu.commands[commandName].category
-            }
+            };
         }
     }
     bu.commandList[commandName] = command;
     if (bu.commands[commandName].alias) {
         for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
-            console.log(`    Loading ${commandName}'s alias`, bu.commands[commandName].alias[ii])
-            bu.commandList[bu.commands[commandName].alias[ii]] = command
+            console.log(`    Loading ${commandName}'s alias`
+                , bu.commands[commandName].alias[ii]);
+            bu.commandList[bu.commands[commandName].alias[ii]] = command;
         }
     }
 }
@@ -142,19 +148,17 @@ var error = true;
  * @param database - the sqlite3 database (Database)
  */
 e.init = (v, topConfig, em, database) => {
-    VERSION = v
-    db = database
+    VERSION = v;
+    db = database;
     emitter = em;
     config = topConfig;
 
     if (fs.existsSync(path.join(__dirname, 'vars.json'))) {
-        var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json'), 'utf8');
+        var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json')
+            , 'utf8');
         vars = JSON.parse(varsFile);
     } else {
-        vars = {
-            save: "fs.writeFile(path.join(__dirname, 'vars.json'), JSON.stringify(vars, null, 4));",
-            reload: "fs.readFile(path.join(__dirname, 'vars.json'), 'utf8', function (err, data) {\nif (err) throw err;\nvars = JSON.parse(data);\n});"
-        };
+        vars = {};
         saveVars();
     }
 
@@ -171,71 +175,76 @@ e.init = (v, topConfig, em, database) => {
     bu.init(bot);
     bu.bot = bot;
     bu.db = database;
-    bu.config = config
-    bu.emitter = em
-    bu.VERSION = v
-    bu.startTime = startTime
+    bu.config = config;
+    bu.emitter = em;
+    bu.VERSION = v;
+    bu.startTime = startTime;
     bu.vars = vars;
-    tags.init(bot)
+    tags.init(bot);
 
     /**
      * EventEmitter stuff
      */
     emitter.on('discordMessage', (message, attachment) => {
         if (attachment)
-            bu.sendMessageToDiscord(config.discord.channel, message, attachment)
+            bu.sendMessageToDiscord(config.discord.channel
+                , message
+                , attachment);
         else
             bu.sendMessageToDiscord(config.discord.channel, message);
-    })
+    });
 
     emitter.on('discordTopic', (topic) => {
         bot.editChannel(config.discord.channel, {
             topic: topic
         });
-    })
+    });
 
     emitter.on('eval', (msg, text) => {
-        eval1(msg, text)
-    })
+        eval1(msg, text);
+    });
     emitter.on('eval2', (msg, text) => {
-        eval2(msg, text)
-    })
+        eval2(msg, text);
+    });
 
     emitter.on('reloadCommand', (commandName) => {
-        reloadCommand(commandName)
+        reloadCommand(commandName);
     });
     emitter.on('loadCommand', (commandName) => {
-        loadCommand(commandName)
+        loadCommand(commandName);
     });
     emitter.on('unloadCommand', (commandName) => {
-        unloadCommand(commandName)
+        unloadCommand(commandName);
     });
     emitter.on('saveVars', () => {
-        saveVars()
-    })
+        saveVars();
+    });
 
-    avatars = JSON.parse(fs.readFileSync(path.join(__dirname, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
+    avatars = JSON.parse(fs.readFileSync(path.join(__dirname
+        , `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
     e.bot = bot;
 
 
     bot.on('debug', function (message, id) {
         if (debug)
-            console.log(`[${moment().format(`MM/DD HH:mm:ss`)}][DEBUG][${id}] ${message}`);
-    })
+            console.log(`[${moment()
+                .format(`MM/DD HH:mm:ss`)}][DEBUG][${id}] ${message}`);
+    });
 
     bot.on('warn', function (message, id) {
         if (warn)
-            console.log(`[${moment().format(`MM/DD HH:mm:ss`)}][WARN][${id}] ${message}`);
-    })
+            console.log(`[${moment()
+                .format(`MM/DD HH:mm:ss`)}][WARN][${id}] ${message}`);
+    });
 
     bot.on('error', function (err, id) {
         if (error)
-            console.log(`[${moment().format(`MM/DD HH:mm:ss`)}][ERROR][${id}] ${err.stack}`);
-    })
+            console.log(`[${moment()
+                .format(`MM/DD HH:mm:ss`)}][ERROR][${id}] ${err.stack}`);
+    });
 
-    bot.on("ready", function () {
-        console.log("Ready!");
-        console.log("I am a beautiful person. I have to go to school today.");
+    bot.on('ready', function () {
+        console.log('Ready!');
 
         gameId = bu.getRandomInt(0, 4);
         if (config.general.isbeta)
@@ -258,7 +267,7 @@ e.init = (v, topConfig, em, database) => {
                 }, val, '');
                 bu.sendMessageToDiscord(guild.defaultChannel.id, message);
             }
-        })
+        });
 
     });
 
@@ -272,7 +281,7 @@ e.init = (v, topConfig, em, database) => {
                 }, val, '');
                 bu.sendMessageToDiscord(guild.defaultChannel.id, message);
             }
-        })
+        });
     });
 
     bot.on('guildMemberRemove', (guild, member) => {
@@ -280,9 +289,11 @@ e.init = (v, topConfig, em, database) => {
             if (member.id === bot.user.id) {
                 postStats();
                 console.log('removed from guild');
-                bu.sendMessageToDiscord(`205153826162868225`, `I was removed from the guild \`${guild
-                    .name}\` (\`${guild.id}\`)!`);
-                db.query(`update guild set active='false' where guildid=?`, [guild.id])
+                bu.sendMessageToDiscord(`205153826162868225`
+                    , `I was removed from the guild \`${guild
+                        .name}\` (\`${guild.id}\`)!`);
+                db.query(`update guild set active='false' where guildid=?`
+                    , [guild.id]);
             }
         } catch (err) {
             console.log(err.stack);
@@ -292,85 +303,89 @@ e.init = (v, topConfig, em, database) => {
     bot.on('guildCreate', (guild) => {
         postStats();
         function firstTime() {
-            var message = `I was added to the guild \`${guild.name}\` (\`${guild.id}\`)!`
+            var message = `I was added to the guild \`${guild.name}\``
+                + ` (\`${guild.id}\`)!`;
             bu.sendMessageToDiscord(`205153826162868225`, message);
             if (bot.guilds.size % 100 == 0) {
-                bu.sendMessageToDiscord(`205153826162868225`, `:tada: I'm now in ${bot.guilds.size} guilds! :tada:`);
+                bu.sendMessageToDiscord(`205153826162868225`, `🎉 I'm now `
+                    + `in ${bot.guilds.size} guilds! 🎉`);
             }
-            console.log('WHY')
             var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you! 
-- :computer:  For command information, please do \`${bu.config.discord.defaultPrefix}help\`!
-- :loudspeaker: For Bot Commander bu.commands, please make sure you have a role titled \`Bot Commander\`.
-- :tools: For Admin bu.commands, please make sure you have a role titled \`Admin\`.
+- 💻 For command information, please do \`${bu.config.discord.defaultPrefix}help\`!
+- 📢 For Bot Commander bu.commands, please make sure you have a role titled \`Bot Commander\`.
+- 🛠 For Admin bu.commands, please make sure you have a role titled \`Admin\`.
 If you are the owner of this server, here are a few things to know.
-- :speech_left: To enable modlogging, please do create a channel for me to log in and do \`${bu.config.discord.defaultPrefix}modlog\`
-- :see_no_evil: To mark channels as NSFW, please go to them and do \`${bu.config.discord.defaultPrefix}nsfw\`.
-- :exclamation: To change my command prefix, please do \`${bu.config.discord.defaultPrefix}setprefix <anything>\`.
+- 🗨 To enable modlogging, please do create a channel for me to log in and do \`${bu.config.discord.defaultPrefix}modlog\`
+- 🙈 To mark channels as NSFW, please go to them and do \`${bu.config.discord.defaultPrefix}nsfw\`.
+- ❗ To change my command prefix, please do \`${bu.config.discord.defaultPrefix}setprefix <anything>\`.
 
-:question: If you have any questions, comments, or concerns, please do \`${bu.config.discord.defaultPrefix}suggest <suggestion>\`. Thanks!
-:thumbsup: I hope you enjoy my services! :thumbsup:`
-            bu.sendMessageToDiscord(guild.id, message2)
+❓ If you have any questions, comments, or concerns, please do \`${bu.config.discord.defaultPrefix}suggest <suggestion>\`. Thanks!
+👍 I hope you enjoy my services! 👍`;
+            bu.sendMessageToDiscord(guild.id, message2);
             db.query(`insert into guild (guildid) values (?)
-            on duplicate key update active=1`, [guild.id])
+            on duplicate key update active=1`, [guild.id]);
         }
+
         console.log('added to guild');
-        db.query(`select active from guild where guildid = ?`, [guild.id], (err, rows) => {
-            if (!rows[0]) {
-                firstTime()
-            } else {
-                if (!rows[0].active) {
-                    firstTime()
+        db.query(`select active from guild where guildid = ?`, [guild.id]
+            , (err, rows) => {
+                if (!rows[0]) {
+                    firstTime();
+                } else {
+                    if (!rows[0].active) {
+                        firstTime();
+                    }
                 }
-            }
-        })
+            });
     });
 
-    bot.on('messageUpdate', (msg, oldmsg) => {
+    bot.on('messageUpdate', (msg) => {
         if (msg.author.id == bot.user.id) {
-            console.log(`Message ${msg.id} was updated to '${msg.content}''`)
+            console.log(`Message ${msg.id} was updated to '${msg.content}''`);
         }
-    })
+    });
 
     bot.on('guildBanAdd', (guild, user) => {
-        var mod
+        var mod;
         if (bu.bans[guild.id] && bu.bans[guild.id][user.id]) {
-            mod = bot.users.get(bu.bans[guild.id][user.id])
-            delete bu.bans[guild.id][user.id]
+            mod = bot.users.get(bu.bans[guild.id][user.id]);
+            delete bu.bans[guild.id][user.id];
         }
-        bu.logAction(guild, user, mod, 'Ban')
-    })
+        bu.logAction(guild, user, mod, 'Ban');
+    });
     bot.on('guildBanRemove', (guild, user) => {
-        var mod
+        var mod;
         if (bu.unbans[guild.id] && bu.unbans[guild.id][user.id]) {
-            mod = bot.users.get(bu.unbans[guild.id][user.id])
-            delete bu.unbans[guild.id][user.id]
+            mod = bot.users.get(bu.unbans[guild.id][user.id]);
+            delete bu.unbans[guild.id][user.id];
         }
-        bu.logAction(guild, user, mod, 'Unban')
-    })
+        bu.logAction(guild, user, mod, 'Unban');
+    });
 
     bot.on('messageDelete', (msg) => {
         if (commandMessages.indexOf(msg.id) > -1) {
             bu.guildSettings.get(msg.channel.guild.id, 'deletenotif').then(val => {
                 if (val != '0')
-                    bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick ? msg.member.nick : msg.author.username}** deleted their command message.`)
-                commandMessages.splice(commandMessages.indexOf(msg.id), 1)
-            })
+                    bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick
+                        ? msg.member.nick
+                        : msg.author.username}** deleted their command message.`);
+                commandMessages.splice(commandMessages.indexOf(msg.id), 1);
+            });
         }
+    });
 
-    })
-
-    bot.on("messageCreate", function (msg) {
+    bot.on('messageCreate', function (msg) {
         if (msg.channel.id != '194950328393793536')
             if (msg.author.id == bot.user.id) {
                 if (msg.channel.guild)
                     console.log(`[DIS] ${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} `
-                        + `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`)
+                        + `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
                 else
                     console.log(`[DIS] PM> ${msg.channel.name} (${msg.channel.id})> `
-                        + `${msg.author.username}> ${msg.content} (${msg.id})`)
+                        + `${msg.author.username}> ${msg.content} (${msg.id})`);
             }
         if (msg.channel.id === config.discord.channel) {
-            if (!(msg.author.id == bot.user.id && msg.content.startsWith("\u200B"))) {
+            if (!(msg.author.id == bot.user.id && msg.content.startsWith('\u200B'))) {
                 var message;
                 if (msg.content.startsWith('_') && msg.content.endsWith('_'))
                     message = ` * ${msg.member.nick ? msg.member.nick : msg.author.username} ${msg.cleanContent
@@ -386,27 +401,23 @@ If you are the owner of this server, here are a few things to know.
                 var attachUrl = '';
                 if (msg.attachments.length > 0) {
                     console.log(util.inspect(msg.attachments[0]));
-                    attachUrl += " " + msg.attachments[0].url;
+                    attachUrl += ` ${msg.attachments[0].url}`;
                 }
                 sendMessageToIrc(message + attachUrl);
             }
         }
 
-        var prefix = config.discord.defaultPrefix
-        //   bu.guildSettings.get(msg.channel.guild.id, 'prefix').then(val => {
-
-
         if (msg.author.id !== bot.user.id) {
             bu.guildSettings.get(msg.channel.guild ? msg.channel.guild.id : '', 'prefix').then(val => {
-                var prefix = undefined;
+                var prefix;
                 if (msg.channel.guild) {
                     if (val) prefix = val;
                 } else {
-                    prefix = ''
+                    prefix = '';
                 }
 
                 if (msg.content.toLowerCase().startsWith('blargbot')) {
-                    var index = msg.content.toLowerCase().indexOf('t')
+                    var index = msg.content.toLowerCase().indexOf('t');
                     //     console.log(index)
                     prefix = msg.content.substring(0, index + 1);
                     //   console.log(`'${prefix}'`)
@@ -428,22 +439,21 @@ If you are the owner of this server, here are a few things to know.
                     if (msg.content.indexOf('(╯°□°）╯︵ ┻━┻') > -1 && !msg.author.bot) {
                         flipTables(msg, false);
                     }
-
                     if (msg.content.indexOf('┬─┬﻿ ノ( ゜-゜ノ)') > -1 && !msg.author.bot) {
                         flipTables(msg, true);
                     }
                     var commandExecuted = false;
                     if (msg.content.startsWith(`<@${bot.user.id}>`) || msg.content.startsWith(`<@!${bot.user.id}>`)) {
                         console.log('lel');
-                        var cleanContent = msg.content.replace(/<@!?[0-9]{17,21}>/, '').trim()
-                        commandExecuted = handleDiscordCommand(msg.channel, msg.author, cleanContent, msg)
+                        var cleanContent = msg.content.replace(/<@!?[0-9]{17,21}>/, '').trim();
+                        commandExecuted = handleDiscordCommand(msg.channel, msg.author, cleanContent, msg);
                         if (!commandExecuted) {
                             Cleverbot.prepare(function () {
                                 cleverbot.write(cleanContent, function (response) {
                                     bot.sendChannelTyping(msg.channel.id);
                                     setTimeout(function () {
                                         bu.sendMessageToDiscord(msg.channel.id, response.message);
-                                    }, 1500)
+                                    }, 1500);
                                 });
                             });
                         }
@@ -459,18 +469,24 @@ If you are the owner of this server, here are a few things to know.
                         }
                     } else {
                         if (msg.author.id == bu.CAT_ID && msg.content.indexOf('discord.gg') == -1) {
-                            var prefixes = ["!", "@", "#", "$", "%", "^", "&", "*", ")", "-", "_", "=", "+", "}", "]", "|", ";", ":", "'", ">", "?", "/", "."];
-                            if (!msg.content || (prefixes.indexOf(msg.content.substring(0, 1)) == -1) && !msg.content.startsWith('kek!') && !msg.content.startsWith('blarg!') && msg.channel.guild) {
+                            var prefixes = ['!', '@', '#', '$', '%', '^', '&'
+                                , '*', ')', '-', '_', '=', '+', '}', ']', '|'
+                                , ';', ':', '\'', '>', '?', '/', '.', '"'];
+                            if (!msg.content ||
+                                (prefixes.indexOf(msg.content.substring(0, 1)) == -1)
+                                && !msg.content.startsWith('k!')
+                                && !msg.content.startsWith('b!')
+                                && msg.channel.guild) {
                                 db.query(`SELECT id, content from catchat order by id desc limit 1`, (err, row) => {
 
                                     if (err)
-                                        console.log(err.stack)
+                                        console.log(err.stack);
                                     if ((row[0] && row[0].content != msg.content) || msg.content == '') {
                                         var content = msg.content;
                                         while (/<@!?[0-9]{17,21}>/.test(content)) {
-                                            content = content.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true).username)
+                                            content = content.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true).username);
                                         }
-                                        var statement = `insert into catchat (content, attachment, msgid, channelid, guildid, msgtime, nsfw) values (?, ?, ?, ?, ?, NOW(), ?)`
+                                        var statement = `insert into catchat (content, attachment, msgid, channelid, guildid, msgtime, nsfw) values (?, ?, ?, ?, ?, NOW(), ?)`;
                                         var nsfw = 0;
                                         db.query(`select channelid from channel where channelid = ?`, [msg.channel.id], (err, row) => {
                                             if (row[0]) {
@@ -479,11 +495,11 @@ If you are the owner of this server, here are a few things to know.
                                             db.query(statement,
                                                 [content, msg.attachments[0] ? msg.attachments[0].url : 'none', msg.id,
                                                     msg.channel.id, msg.channel.guild.id, nsfw]);
-                                        })
+                                        });
 
 
                                     }
-                                })
+                                });
                             }
                         }
 
@@ -492,36 +508,36 @@ If you are the owner of this server, here are a few things to know.
                         if (commandExecuted)
                             bu.guildSettings.get(msg.channel.id, 'deletenotif').then(val => {
                                 if (val != '0') {
-                                    commandMessages.push(msg.id)
+                                    commandMessages.push(msg.id);
                                     if (commandMessages.length > 100) {
                                         commandMessages.shift();
                                     }
                                 }
-                            })
+                            });
 
                         db.query(`UPDATE user set lastcommand=?, lastcommanddate=NOW() where userid=?`,
-                            [cleanContent, msg.author.id]);
+                            [msg.cleanContent, msg.author.id]);
                         //}
                     }
-                })
+                });
 
-            })
+            });
         }
         if (msg.channel.id != '204404225914961920') {
             var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions) 
-            values (?, ?, (select userid from user where userid = ?), ?, ?, ?, NOW(), ?, ?)`
+            values (?, ?, (select userid from user where userid = ?), ?, ?, ?, NOW(), ?, ?)`;
             var nsfw = 0;
             db.query(`select channelid from channel where channelid = ? and nsfw = true`, [msg.channel.id], (err, row) => {
                 if (row[0]) {
                     nsfw = 1;
                 }
-                var mentions = ''
+                var mentions = '';
                 for (var i = 0; i < msg.mentions.length; i++) {
                     mentions += msg.mentions[i].username + ',';
                 }
                 db.query(statement, [msg.content, msg.attachments[0] ? msg.attachments[0].url : 'none',
                     msg.author.id, msg.id, msg.channel.id, msg.channel.guild.id, nsfw, mentions]);
-            })
+            });
 
         }
 
@@ -530,7 +546,7 @@ If you are the owner of this server, here are a few things to know.
     initCommands();
     bot.connect();
 
-}
+};
 
 
 /**
@@ -569,7 +585,7 @@ function switchGame(forced) {
             name = `in ${bot.guilds.size} guilds!`;
             break;
         case 2:
-            name = `in ${Object.keys(bot.channelGuildMap).length} channels!`
+            name = `in ${Object.keys(bot.channelGuildMap).length} channels!`;
             break;
         case 3:
             name = `with tiny bits of string!`;
@@ -581,7 +597,7 @@ function switchGame(forced) {
             name = `on version ${bu.VERSION}!`;
             break;
         case 6:
-            name = `type 'blargbot help'!`
+            name = `type 'blargbot help'!`;
             break;
     }
     bot.editGame({
@@ -609,10 +625,10 @@ function switchAvatar(forced) {
         }, 300000);
 }
 
-var commandMessages = []
+var commandMessages = [];
 
 function handleDiscordCommand(channel, user, text, msg) {
-    return new Promise((fulfill, reject) => {
+    return new Promise((fulfill) => {
         var words = text.replace(/ +/g, ' ').split(' ');
 
         if (msg.channel.guild)
@@ -621,23 +637,23 @@ function handleDiscordCommand(channel, user, text, msg) {
             console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
 
         if (msg.author.bot) {
-            fulfill(false)
+            fulfill(false);
         }
         bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]).then(val => {
             if (val) {
                 var command = text.replace(words[0], '').trim();
 
                 var response = tags.processTag(msg, val, command);
-                if (response !== "null") {
+                if (response !== 'null') {
                     bu.sendMessageToDiscord(channel.id, response);
                 }
-                fulfill(true)
+                fulfill(true);
             } else {
                 if (config.discord.commands[words[0]] != null) {
                     bu.sendMessageToDiscord(channel.id, `${
                         config.discord.commands[words[0]]
                             .replace(/%REPLY/, `<@${user.id}>`)}`);
-                    fulfill(true)
+                    fulfill(true);
 
                 } else {
 
@@ -646,27 +662,25 @@ function handleDiscordCommand(channel, user, text, msg) {
                     //      fulfill(true)
                     //  } else {
                     if (bu.commandList.hasOwnProperty(words[0].toLowerCase())) {
-                        console.log(words[0])
+                        console.log(words[0]);
                         if (bu.CommandType.properties[bu.commandList[words[0].toLowerCase()].category].perm) {
                             if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[words[0].toLowerCase()].category].perm)) {
-                                fulfill(false)
+                                fulfill(false);
                                 return;
                             }
                         }
                         bu.commands[bu.commandList[words[0].toLowerCase()].name].execute(msg, words, text);
-                        fulfill(true)
+                        fulfill(true);
                     }
                     //    }
                 }
             }
-        })
+        });
 
         //}
 
 
     });
-
-
 
 
     //return false;
@@ -720,13 +734,13 @@ function postStats() {
         port: 443,
         path: `/api/bots/${bot.user.id}/stats`,
         headers: {
-            "User-Agent": "blargbot/1.0 (ratismal)",
-            "Authorization": vars.botlisttoken,
-            "Content-Type": 'application/json',
+            'User-Agent': 'blargbot/1.0 (ratismal)',
+            'Authorization': vars.botlisttoken,
+            'Content-Type': 'application/json',
             'Content-Length': Buffer.byteLength(stats)
         }
     };
-    console.log('Posting to abal')
+    console.log('Posting to abal');
     var req = https.request(options, function (res) {
         var body = '';
         res.on('data', function (chunk) {
@@ -735,12 +749,12 @@ function postStats() {
         });
 
         res.on('end', function () {
-            console.log("body: " + body);
+            console.log('body: ' + body);
         });
 
         res.on('error', function (thing) {
             console.log(`Result error occurred! ${thing}`);
-        })
+        });
     });
     req.on('error', function (err) {
         console.log(`Request error occurred! ${err}`);
@@ -749,16 +763,16 @@ function postStats() {
     req.end();
 
     if (!config.general.isbeta) {
-        console.log('Posting to matt')
+        console.log('Posting to matt');
 
         request.post({
-            "url": "https://www.carbonitex.net/discord/data/botdata.php",
-            "headers": { "content-type": "application/json" }, "json": true,
+            'url': 'https://www.carbonitex.net/discord/data/botdata.php',
+            'headers': { 'content-type': 'application/json' }, 'json': true,
             body: {
-                "key": config.general.carbontoken,
-                "servercount": bot.guilds.size
+                'key': config.general.carbontoken,
+                'servercount': bot.guilds.size
             }
-        })
+        });
     }
 }
 
@@ -775,8 +789,8 @@ function fml(id) {
         port: 443,
         path: `/api/bots/${id}`,
         headers: {
-            "User-Agent": "blargbot/1.0 (ratismal)",
-            "Authorization": vars.botlisttoken
+            'User-Agent': 'blargbot/1.0 (ratismal)',
+            'Authorization': vars.botlisttoken
         }
     };
 
@@ -788,13 +802,13 @@ function fml(id) {
         });
 
         res.on('end', function () {
-            console.log("body: " + body);
+            console.log('body: ' + body);
             lastUserStatsKek = JSON.parse(body);
         });
 
         res.on('error', function (thing) {
             console.log(`Result Error: ${thing}`);
-        })
+        });
     });
     req.on('error', function (err) {
         console.log(`Request Error: ${err}`);
@@ -810,7 +824,7 @@ function fml(id) {
  */
 function eval2(msg, text) {
     if (msg.author.id === bu.CAT_ID) {
-        var commandToProcess = text.replace("eval2 ", "");
+        var commandToProcess = text.replace('eval2 ', '');
         console.log(commandToProcess);
         try {
             bu.sendMessageToDiscord(msg.channel.id, `\`\`\`js
@@ -831,7 +845,7 @@ ${eval(`${commandToProcess}.toString()`)}
  */
 function eval1(msg, text) {
     if (msg.author.id === bu.CAT_ID) {
-        var commandToProcess = text.replace("eval ", "");
+        var commandToProcess = text.replace('eval ', '');
         if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
             commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
         else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
@@ -868,7 +882,7 @@ function processUser(msg) {
     try {
         db.query('SELECT userid as id, username from user where userid=?', [msg.author.id], (err, row) => {
             if (!row || !row[0]) {
-                console.log(`inserting user ${msg.author.id} (${msg.author.username})`)
+                console.log(`inserting user ${msg.author.id} (${msg.author.username})`);
                 db.query(`insert into user (userid, username, lastspoke, isbot, lastchannel, messagecount)`
                     + `values (?, ?, NOW(), ?, ?, 1)`,
                     [msg.author.id, msg.author.username, msg.author.bot ? 1 : 0, msg.channel.id]);
@@ -890,7 +904,7 @@ function processUser(msg) {
             }
         });
     } catch (err) {
-        console.log(err)
+        console.log(err);
     }
 
 }
@@ -903,7 +917,7 @@ var startTime = moment();
  * @param msg - the message to send (String)
  */
 function sendMessageToIrc(msg) {
-    emitter.emit('ircMessage', msg)
+    emitter.emit('ircMessage', msg);
 }
 
 var tables = {
@@ -935,7 +949,7 @@ var tables = {
             'No need to be so serious! (ﾉ≧∇≦)ﾉ ﾐ ┸━┸'
         ]
     }
-}
+};
 
 function flipTables(msg, unflip) {
     bu.guildSettings.get(msg.channel.guild.id, 'tableflip').then(val => {
@@ -944,6 +958,6 @@ function flipTables(msg, unflip) {
             bu.sendMessageToDiscord(msg.channel.id,
                 tables[unflip ? 'unflip' : 'flip'][bu.config.isbeta ? 'beta' : 'prod'][seed]);
         }
-    })
+    });
 
 }

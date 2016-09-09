@@ -1,20 +1,20 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
+    bot = Tbot;
+};
 
-e.requireCtx = require
+e.requireCtx = require;
 
 e.isCommand = true;
-e.hidden = false
+e.hidden = false;
 e.usage = 'help [command]';
 e.info = 'Gets a list of command or specific command help.';
 e.category = bu.CommandType.GENERAL;
 
-e.execute = (msg, words, text) => {
+e.execute = (msg, words) => {
     if (words.length > 1) {
         var message = '';
         if (bu.commandList.hasOwnProperty(words[1]) && !bu.commandList[words[1]].hidden
@@ -27,9 +27,9 @@ ${bu.commandList[words[1]].info}`;
         }
         bu.sendMessageToDiscord(msg.channel.id, message);
     } else {
-        var commandsString = "```xl\nGeneral Commands:\n  ";
-        var generalCommands = []
-        var otherCommands = {}
+        var commandsString = '```xl\nGeneral Commands:\n  ';
+        var generalCommands = [];
+        var otherCommands = {};
         for (var command in bu.commandList) {
             if (!bu.commandList[command].hidden) {
                 if (bu.commandList[command].category == bu.CommandType.GENERAL) {
@@ -37,25 +37,25 @@ ${bu.commandList[words[1]].info}`;
                 }
                 else {
                     if (!otherCommands[bu.commandList[command].category])
-                        otherCommands[bu.commandList[command].category] = []
-                    otherCommands[bu.commandList[command].category].push(command)
+                        otherCommands[bu.commandList[command].category] = [];
+                    otherCommands[bu.commandList[command].category].push(command);
                 }
             }
         }
-        generalCommands.sort()
-        commandsString += generalCommands.join(', ')
+        generalCommands.sort();
+        commandsString += generalCommands.join(', ');
         for (var category in otherCommands) {
             if (bu.CommandType.properties[category].requirement(msg)) {
-                otherCommands[category].sort()
-                var otherCommandList = otherCommands[category]
-                commandsString += `\n${bu.CommandType.properties[category].name} Commands:\n  `
-                commandsString += otherCommandList.join(', ')
+                otherCommands[category].sort();
+                var otherCommandList = otherCommands[category];
+                commandsString += `\n${bu.CommandType.properties[category].name} Commands:\n  `;
+                commandsString += otherCommandList.join(', ');
             }
         }
         bu.db.query(`select commandname from ccommand where guildid = ?`,
             [msg.channel.guild ? msg.channel.guild.id : ''], (err, rows) => {
                 if (rows.length > 0) {
-                    var ccommandsString = "Custom Commands:\n  ";
+                    var ccommandsString = 'Custom Commands:\n  ';
                     var helpCommandList = [];
                     var i = 0;
                     for (var key in rows) {
@@ -63,16 +63,16 @@ ${bu.commandList[words[1]].info}`;
                         i++;
                     }
                     helpCommandList.sort();
-                    ccommandsString += helpCommandList.join(', ')
-                    commandsString += `\n${ccommandsString}`
+                    ccommandsString += helpCommandList.join(', ');
+                    commandsString += `\n${ccommandsString}`;
                 }
 
-                commandsString += '```'
+                commandsString += '```';
 
                 bu.sendMessageToDiscord(msg.channel.id, `${commandsString}\n${!msg.channel.guild
                     ? 'Not all of these bu.commands work in DMs.\n'
                     : ''
                     }For more information about bu.commands, do \`help <commandname>\` or visit http://blarg.stupidcat.me/bu.commands.html`);
-            })
+            });
     }
-}
+};
