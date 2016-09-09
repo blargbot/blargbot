@@ -428,80 +428,12 @@ If you are the owner of this server, here are a few things to know.
                     }
 
                     processUser(msg);
-                    if (msg.content.indexOf('(╯°□°）╯︵ ┻━┻') > -1 && msg.channel.guild.id == '110373943822540800' && !msg.author.bot) {
-                        var flipMessage = '';
-                        if (bot.user.id == '134133271750639616') {
-                            var seed = bu.getRandomInt(0, 3);
-                            switch (seed) {
-                                case 0:
-                                    flipMessage = 'Whoops! Let me get that for you ┬──┬﻿ ¯\\\\_(ツ)'
-                                    break;
-                                case 1:
-                                    flipMessage = '(ヘ･_･)ヘ┳━┳ What are you, an animal?'
-                                    break;
-                                case 2:
-                                    flipMessage = 'Can you not? ヘ(´° □°)ヘ┳━┳'
-                                    break;
-                                case 3:
-                                    flipMessage = 'Tables are not meant to be flipped ┬──┬ ノ( ゜-゜ノ)'
-                                    break;
-                            }
-                        } else {
-                            var seed = bu.getRandomInt(0, 3);
-                            switch (seed) {
-                                case 0:
-                                    flipMessage = '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Wheee!'
-                                    break;
-                                case 1:
-                                    flipMessage = '┻━┻ ︵ヽ(`Д´)ﾉ︵﻿ ┻━┻ Get these tables out of my face!'
-                                    break;
-                                case 2:
-                                    flipMessage = '┻━┻ミ＼(≧ﾛ≦＼) Hey, catch!'
-                                    break;
-                                case 3:
-                                    flipMessage = 'Flipping tables with elegance! (/¯◡ ‿ ◡)/¯ ~ ┻━┻'
-                                    break;
-                            }
-                        }
-                        bu.sendMessageToDiscord(msg.channel.id, flipMessage);
+                    if (msg.content.indexOf('(╯°□°）╯︵ ┻━┻') > -1 && !msg.author.bot) {
+                        flipTables(msg, false);
                     }
 
-                    if (msg.content.indexOf('┬─┬﻿ ノ( ゜-゜ノ)') > -1 && msg.channel.guild.id == '110373943822540800' && !msg.author.bot) {
-                        var flipMessage = '';
-                        if (bot.user.id == '134133271750639616') {
-                            var seed = bu.getRandomInt(0, 3);
-                            switch (seed) {
-                                case 0:
-                                    flipMessage = '┬──┬﻿ ¯\\\\_(ツ) A table unflipped is a table saved!'
-                                    break;
-                                case 1:
-                                    flipMessage = '┣ﾍ(≧∇≦ﾍ)… (≧∇≦)/┳━┳ Unflip that table!'
-                                    break;
-                                case 2:
-                                    flipMessage = 'Yay! Cleaning up! ┣ﾍ(^▽^ﾍ)Ξ(ﾟ▽ﾟ*)ﾉ┳━┳'
-                                    break;
-                                case 3:
-                                    flipMessage = 'ヘ(´° □°)ヘ┳━┳ Was that so hard?'
-                                    break;
-                            }
-                        } else {
-                            var seed = bu.getRandomInt(0, 3);
-                            switch (seed) {
-                                case 0:
-                                    flipMessage = '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Here comes the entropy!'
-                                    break;
-                                case 1:
-                                    flipMessage = 'I\'m sorry, did you just pick that up? ༼ﾉຈل͜ຈ༽ﾉ︵┻━┻'
-                                    break;
-                                case 2:
-                                    flipMessage = 'Get back on the ground! (╯ರ ~ ರ）╯︵ ┻━┻'
-                                    break;
-                                case 3:
-                                    flipMessage = 'No need to be so serious! (ﾉ≧∇≦)ﾉ ﾐ ┸━┸'
-                                    break;
-                            }
-                        }
-                        bu.sendMessageToDiscord(msg.channel.id, flipMessage);
+                    if (msg.content.indexOf('┬─┬﻿ ノ( ゜-゜ノ)') > -1 && !msg.author.bot) {
+                        flipTables(msg, true);
                     }
                     var commandExecuted = false;
                     if (msg.content.startsWith(`<@${bot.user.id}>`) || msg.content.startsWith(`<@!${bot.user.id}>`)) {
@@ -1040,4 +972,46 @@ var startTime = moment();
  */
 function sendMessageToIrc(msg) {
     emitter.emit('ircMessage', msg)
+}
+
+var tables = {
+    flip: {
+        prod: [
+            'Whoops! Let me get that for you ┬──┬﻿ ¯\\\\_(ツ)',
+            '(ヘ･_･)ヘ┳━┳ What are you, an animal?',
+            'Can you not? ヘ(´° □°)ヘ┳━┳',
+            'Tables are not meant to be flipped ┬──┬ ノ( ゜-゜ノ)'
+        ],
+        beta: [
+            '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Wheee!',
+            '┻━┻ ︵ヽ(`Д´)ﾉ︵﻿ ┻━┻ Get these tables out of my face!',
+            '┻━┻ミ＼(≧ﾛ≦＼) Hey, catch!',
+            'Flipping tables with elegance! (/¯◡ ‿ ◡)/¯ ~ ┻━┻'
+        ]
+    },
+    unflip: {
+        prod: [
+            '┬──┬﻿ ¯\\\\_(ツ) A table unflipped is a table saved!',
+            '┣ﾍ(≧∇≦ﾍ)… (≧∇≦)/┳━┳ Unflip that table!',
+            'Yay! Cleaning up! ┣ﾍ(^▽^ﾍ)Ξ(ﾟ▽ﾟ*)ﾉ┳━┳',
+            'ヘ(´° □°)ヘ┳━┳ Was that so hard?'
+        ],
+        beta: [
+            '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Here comes the entropy!',
+            'I\'m sorry, did you just pick that up? ༼ﾉຈل͜ຈ༽ﾉ︵┻━┻',
+            'Get back on the ground! (╯ರ ~ ರ）╯︵ ┻━┻',
+            'No need to be so serious! (ﾉ≧∇≦)ﾉ ﾐ ┸━┸'
+        ]
+    }
+}
+
+function flipTables(msg, unflip) {
+    bu.guildSettings.get(msg.channel.guild.id, 'tableflip').then(val => {
+        if (val != '0') {
+            var seed = bu.getRandomInt(0, 3);
+            bu.sendMessageToDiscord(msg.channel.id,
+                tables[unflip ? 'unflip' : 'flip'][bu.config.isbeta ? 'beta' : 'prod'][seed]);
+        }
+    })
+
 }

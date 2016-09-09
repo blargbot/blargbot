@@ -53,14 +53,15 @@ e.execute = (msg, words, text) => {
                     blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19)
                 }
                 var greeting = settings.greeting
-                    ? settings.greeting : 'not set'
+                    ? settings.greeting : 'not set';
                 var farewell = settings.farewell
-                    ? settings.farewell : 'not set'
+                    ? settings.farewell : 'not set';
                 var modlogChannel = settings.modlog
-                    ? bot.getChannel(settings.modlog).name : 'not set'
-                var deleteNotif = settings.deletenotif ? true : false
-                var cahNsfw = settings.cahnsfw ? true : false
-                var mutedRole = settings.mutedrole ? settings.mutedrole : 'not set'
+                    ? bot.getChannel(settings.modlog).name : 'not set';
+                var deleteNotif = settings.deletenotif ? true : false;
+                var cahNsfw = settings.cahnsfw ? true : false;
+                var mutedRole = settings.mutedrole ? settings.mutedrole : 'not set';
+                var tableFlip = settings.tableflip ? true : false;
                 var message = `\`\`\`xl
 Settings For ${msg.channel.guild.name}
          Prefix : ${prefix}
@@ -72,12 +73,11 @@ Settings For ${msg.channel.guild.name}
      Muted Role : ${mutedRole}
   Track Deletes : ${deleteNotif}
     CAH is NSFW : ${cahNsfw}
-\`\`\``
-                bu.sendMessageToDiscord(msg.channel.id, message)
+     Tableflips : ${tableFlip}
+\`\`\``;
+                bu.sendMessageToDiscord(msg.channel.id, message);
             })
         })
-
-
     } else {
         words.shift()
         switch (words.shift().toLowerCase()) {
@@ -94,7 +94,7 @@ Settings For ${msg.channel.guild.name}
                     }
                 }
                 break;
-            case 'help':           
+            case 'help':
                 var message = '```xl\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
                 for (key in settings) {
                     message += key.toUpperCase() + ' - ' + settings[key] + '\n'
@@ -113,5 +113,6 @@ var settings = {
     farewell: `what to say when a user leaves. You can also use the \`farewell\` command`,
     prefix: `the custom command prefix. You can also use the \`setprefix\` command`,
     modlog: `the id of the modlog channel. You can also use the \`modlog\` command`,
-    mutedrole: `the id of the muted role.`
+    mutedrole: `the id of the muted role.`,
+    tableflip: `whether the bot should respond to tableflips/unflips. Set to '0' to disable.`
 }
