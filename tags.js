@@ -1,7 +1,6 @@
 var e = module.exports = {};
 var bu = require('./util.js');
 var moment = require('moment-timezone');
-var util = require('util');
 var bu = require('./util.js');
 
 var bot;
@@ -34,12 +33,16 @@ e.processTag = (msg, contents, command) => {
     var fallback = '';
     while (contents.indexOf('{') > -1 && contents.indexOf('}') > -1 &&
         contents.indexOf('{') < contents.indexOf('}')) {
-        var tagEnds = contents.indexOf('}');
-        var tagBegins = tagEnds == -1 ? -1 : contents.lastIndexOf('{', tagEnds);
-        var tagBrackets = contents.substring(tagBegins, tagEnds + 1);
-        var tag = contents.substring(tagBegins + 1, tagEnds);
-        var args = tag.split(';');
-        var replaceString = '';
+        var tagEnds = contents.indexOf('}')
+            , tagBegins = tagEnds == -1 ? -1 : contents.lastIndexOf('{', tagEnds)
+            , tagBrackets = contents.substring(tagBegins, tagEnds + 1)
+            , tag = contents.substring(tagBegins + 1, tagEnds)
+            , args = tag.split(';')
+            , replaceString = ''
+            , i
+            , obtainedUser
+            , formatCode
+            , createdDate;
         switch (args[0].toLowerCase()) {
             case 'randuser':
                 replaceString = msg.channel.guild.members.map(m => m)[bu.getRandomInt(0, msg.channel.guild.members.map(m => m).length - 1)].user.id;
@@ -66,7 +69,7 @@ e.processTag = (msg, contents, command) => {
                     var max = args[2] == 'n' ? words.length : parseInt(args[2]);
                     //console.log(max);
                     if (min < max) {
-                        for (var i = min; i < max; i++) {
+                        for (i = min; i < max; i++) {
                             if (words[i])
                                 replaceString += ` ${words[i]}`;
                         }
@@ -129,10 +132,11 @@ e.processTag = (msg, contents, command) => {
                 words = shuffle(words);
                 break;
             case 'regexreplace':
+                var regexList;
                 if (args.length > 3) {
                     if (/^\/?.*\/.*/.test(args[2])) {
                         //var
-                        var regexList = args[2].match(/^\/?(.*)\/(.*)/);
+                        regexList = args[2].match(/^\/?(.*)\/(.*)/);
                         replaceString = args[1].replace(new RegExp(regexList[1], regexList[2]), args[3]);
                     } else {
                         replaceString = tagProcessError(fallback, '`Invalid regex string`');
@@ -140,7 +144,7 @@ e.processTag = (msg, contents, command) => {
                 } else if (args.length == 3) {
                     if (/^\/?.*\/.*/.test(args[1])) {
                         try {
-                            var regexList = args[1].match(/^\/?(.*)\/(.*)/);
+                            regexList = args[1].match(/^\/?(.*)\/(.*)/);
                             contents = contents.replace(new RegExp(regexList[1], regexList[2]), args[2]);
                         } catch (err) {
                             replaceString = tagProcessError(fallback, err.message);
@@ -176,27 +180,27 @@ e.processTag = (msg, contents, command) => {
                     var result = tagGetFloat(args[2]);
                     switch (args[1]) {
                         case '+':
-                            for (var i = 3; i < args.length; i++) {
+                            for (i = 3; i < args.length; i++) {
                                 result += tagGetFloat(args[i]);
                             }
                             break;
                         case '-':
-                            for (var i = 3; i < args.length; i++) {
+                            for (i = 3; i < args.length; i++) {
                                 result -= tagGetFloat(args[i]);
                             }
                             break;
                         case '*':
-                            for (var i = 3; i < args.length; i++) {
+                            for (i = 3; i < args.length; i++) {
                                 result *= tagGetFloat(args[i]);
                             }
                             break;
                         case '/':
-                            for (var i = 3; i < args.length; i++) {
+                            for (i = 3; i < args.length; i++) {
                                 result /= tagGetFloat(args[i]);
                             }
                             break;
                         case '%':
-                            for (var i = 3; i < args.length; i++) {
+                            for (i = 3; i < args.length; i++) {
                                 result %= tagGetFloat(args[i]);
                             }
                             break;
@@ -266,15 +270,8 @@ e.processTag = (msg, contents, command) => {
 
                 break;
             case 'username':
-                if (args.length == 1) {
-                    var obtainedUser = msg.author;
-                } else {
-                    if (args[2]) {
-                        var obtainedUser = bu.getUserFromName(msg, args[1], true);
-                    } else {
-                        var obtainedUser = bu.getUserFromName(msg, args[1]);
-                    }
-                }
+                obtainedUser = getUser(msg, args);
+
                 if (obtainedUser)
                     replaceString = obtainedUser.username;
                 else {
@@ -287,15 +284,8 @@ e.processTag = (msg, contents, command) => {
 
                 break;
             case 'usernick':
-                if (args.length == 1) {
-                    var obtainedUser = msg.author;
-                } else {
-                    if (args[2]) {
-                        var obtainedUser = bu.getUserFromName(msg, args[1], true);
-                    } else {
-                        var obtainedUser = bu.getUserFromName(msg, args[1]);
-                    }
-                }
+                obtainedUser = getUser(msg, args);
+
                 if (obtainedUser) {
                     replaceString = msg.channel.guild.members.get(obtainedUser.id) && msg.channel.guild.members.get(obtainedUser.id).nick
                         ? msg.channel.guild.members.get(obtainedUser.id).nick
@@ -307,15 +297,7 @@ e.processTag = (msg, contents, command) => {
 
                 break;
             case 'userdiscrim':
-                if (args.length == 1) {
-                    var obtainedUser = msg.author;
-                } else {
-                    if (args[2]) {
-                        var obtainedUser = bu.getUserFromName(msg, args[1], true);
-                    } else {
-                        var obtainedUser = bu.getUserFromName(msg, args[1]);
-                    }
-                }
+                obtainedUser = getUser(msg, args);
                 if (obtainedUser)
                     replaceString = obtainedUser.discriminator;
 
@@ -326,15 +308,8 @@ e.processTag = (msg, contents, command) => {
 
                 break;
             case 'userid':
-                if (args.length == 1) {
-                    var obtainedUser = msg.author;
-                } else {
-                    if (args[2]) {
-                        var obtainedUser = bu.getUserFromName(msg, args[1], true);
-                    } else {
-                        var obtainedUser = bu.getUserFromName(msg, args[1]);
-                    }
-                }
+                obtainedUser = getUser(msg, args);
+
                 if (obtainedUser)
                     replaceString = obtainedUser.id;
 
@@ -345,15 +320,8 @@ e.processTag = (msg, contents, command) => {
 
                 break;
             case 'useravatar':
-                if (args.length == 1) {
-                    var obtainedUser = msg.author;
-                } else {
-                    if (args[2]) {
-                        var obtainedUser = bu.getUserFromName(msg, args[1], true);
-                    } else {
-                        var obtainedUser = bu.getUserFromName(msg, args[1]);
-                    }
-                }
+                obtainedUser = getUser(msg, args);
+
                 if (obtainedUser)
                     replaceString = obtainedUser.avatarURL;
 
@@ -363,15 +331,8 @@ e.processTag = (msg, contents, command) => {
                     replaceString = args[1];
                 break;
             case 'userreply':
-                if (args.length == 1) {
-                    var obtainedUser = msg.author;
-                } else {
-                    if (args[2]) {
-                        var obtainedUser = bu.getUserFromName(msg, args[1], true);
-                    } else {
-                        var obtainedUser = bu.getUserFromName(msg, args[1]);
-                    }
-                }
+                obtainedUser = getUser(msg, args);
+
                 if (obtainedUser)
                     replaceString = obtainedUser.mention;
 
@@ -382,15 +343,8 @@ e.processTag = (msg, contents, command) => {
 
                 break;
             case 'usergame':
-                if (args.length == 1) {
-                    var obtainedUser = msg.author;
-                } else {
-                    if (args[2]) {
-                        var obtainedUser = bu.getUserFromName(msg, args[1], true);
-                    } else {
-                        var obtainedUser = bu.getUserFromName(msg, args[1]);
-                    }
-                }
+                obtainedUser = getUser(msg, args);
+
                 if (obtainedUser)
                     replaceString = obtainedUser.game ? obtainedUser.game.name : nothing;
 
@@ -401,15 +355,8 @@ e.processTag = (msg, contents, command) => {
 
                 break;
             case 'usergametype':
-                if (args.length == 1) {
-                    var obtainedUser = msg.author;
-                } else {
-                    if (args[2]) {
-                        var obtainedUser = bu.getUserFromName(msg, args[1], true);
-                    } else {
-                        var obtainedUser = bu.getUserFromName(msg, args[1]);
-                    }
-                }
+                obtainedUser = getUser(msg, args);
+
                 if (obtainedUser)
                     replaceString = obtainedUser.game ? (obtainedUser.game.type > 0 ? 'streaming' : 'playing') : '';
 
@@ -420,18 +367,11 @@ e.processTag = (msg, contents, command) => {
 
                 break;
             case 'usercreatedat':
-                if (args.length == 1) {
-                    var obtainedUser = msg.author;
-                } else {
-                    if (args[3]) {
-                        var obtainedUser = bu.getUserFromName(msg, args[1], true);
-                    } else {
-                        var obtainedUser = bu.getUserFromName(msg, args[1]);
-                    }
-                }
+                obtainedUser = getUser(msg, args);
+
                 if (obtainedUser) {
-                    var createdDate = obtainedUser.createdAt;
-                    var formatCode = '';
+                    createdDate = obtainedUser.createdAt;
+                    formatCode = '';
                     if (args[2])
                         formatCode = args[2];
 
@@ -445,18 +385,11 @@ e.processTag = (msg, contents, command) => {
 
                 break;
             case 'userjoinedat':
-                if (args.length == 1) {
-                    var obtainedUser = msg.author;
-                } else {
-                    if (args[3]) {
-                        var obtainedUser = bu.getUserFromName(msg, args[1], true);
-                    } else {
-                        var obtainedUser = bu.getUserFromName(msg, args[1]);
-                    }
-                }
+                obtainedUser = getUser(msg, args);
+
                 if (obtainedUser) {
-                    var createdDate = msg.channel.guild.members.get(obtainedUser.id).joinedAt;
-                    var formatCode = '';
+                    createdDate = msg.channel.guild.members.get(obtainedUser.id).joinedAt;
+                    formatCode = '';
                     if (args[2])
                         formatCode = args[2];
 
@@ -468,8 +401,8 @@ e.processTag = (msg, contents, command) => {
                 break;
             case 'guildcreatedat':
 
-                var createdDate = msg.channel.guild.createdAt;
-                var formatCode = '';
+                createdDate = msg.channel.guild.createdAt;
+                formatCode = '';
                 if (args[2])
                     formatCode = args[2];
 
@@ -477,9 +410,9 @@ e.processTag = (msg, contents, command) => {
                 break;
             case 'hash':
                 if (args[1]) {
-                    replaceString = args[1].split("").reduce(function (a, b) {
+                    replaceString = args[1].split('').reduce(function (a, b) {
                         a = ((a << 5) - a) + b.charCodeAt(0);
-                        return a & a
+                        return a & a;
                     }, 0);
                 }
                 else
@@ -490,8 +423,8 @@ e.processTag = (msg, contents, command) => {
                 break;
         }
         if (!replaceString) {
-            console.log(tagBrackets, 'whoops')
-            replaceString = ''
+            console.log(tagBrackets, 'whoops');
+            replaceString = '';
         }
         replaceString = replaceString.toString();
 
@@ -506,23 +439,23 @@ e.processTag = (msg, contents, command) => {
     contents = contents.replace(/&rb;/g, '}').replace(/&lb;/g, '{');
     while (/<@!?[0-9]{17,21}>/.test(contents)) {
         //console.log('fuck');
-        contents = contents.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, contents.match(/<@!?([0-9]{17,21})>/)[1], true).username)
+        contents = contents.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, contents.match(/<@!?([0-9]{17,21})>/)[1], true).username);
     }
     return contents.trim();
-}
+};
 
 function tagGetFloat(arg) {
     return parseFloat(arg) ? parseFloat(arg) : 0;
 }
 
 function tagProcessError(fallback, errormessage) {
-    return fallback == '' ? errormessage : fallback
+    return fallback == '' ? errormessage : fallback;
 }
 
 e.executeTag = (msg, tagName, command) => {
     bu.db.query(`select contents from tag where title=?`, [tagName], (err, row) => {
         if (!row[0])
-            bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`)
+            bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
         else {
             var nsfw = false;
             if (row[0].contents.indexOf('{nsfw}') > -1) {
@@ -540,12 +473,12 @@ e.executeTag = (msg, tagName, command) => {
                         } else {
                             bu.sendMessageToDiscord(msg.channel.id, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
                         }
-                    })
+                    });
                 }
 
         }
     });
-}
+};
 
 
 function shuffle(array) {
@@ -566,4 +499,18 @@ function shuffle(array) {
     }
 
     return array;
+}
+
+function getUser(msg, args) {
+    var obtainedUser;
+    if (args.length == 1) {
+        obtainedUser = msg.author;
+    } else {
+        if (args[2]) {
+            obtainedUser = bu.getUserFromName(msg, args[1], true);
+        } else {
+            obtainedUser = bu.getUserFromName(msg, args[1]);
+        }
+    }
+    return obtainedUser;
 }

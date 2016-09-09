@@ -5,13 +5,10 @@ var moment = require('moment-timezone');
 var mkdirp = require('mkdirp');
 var path = require('path');
 var http = require('http');
-var https = require('https');
-var xml2js = require('xml2js');
-var gm = require('gm');
 var freefreefree = require('./dcommands/free.js');
 
 var Cleverbot = require('cleverbot-node');
-cleverbot = new Cleverbot;
+cleverbot = new Cleverbot();
 
 var e = module.exports = {};
 e.requireCtx = require;
@@ -41,13 +38,13 @@ e.init = (v, topConfig, em) => {
     e.bot = bot = ircbot;
 
     notifInterval = setInterval(function () {
-        console.log("[NOT] Doing notifications");
+        console.log('[NOT] Doing notifications');
         for (var user in ircUserList) {
             if (user !== bot.nick) {
                 var tempFile = getUserFile(user);
                 if (tempFile.notify) {
                     if (!tempFile.read) {
-                        sendNoticeToIrc(user, "You have unread messages. Type '!mail read' to read them.");
+                        sendNoticeToIrc(user, 'You have unread messages. Type \'!mail read\' to read them.');
                     }
                 }
             }
@@ -61,15 +58,15 @@ e.init = (v, topConfig, em) => {
         reloadUserList();
     });
 
-    bot.addListener('motd', function (motd) {
-        sendMessageToIrc("nickserv", `identify ${config.irc.nickserv_name} ${config.irc.nickserv_pass}`);
+    bot.addListener('motd', function () {
+        sendMessageToIrc('nickserv', `identify ${config.irc.nickserv_name} ${config.irc.nickserv_pass}`);
     });
 
     bot.addListener('names', function (channel, nicks) {
-        var message = "Online Users: ";
+        var message = 'Online Users: ';
         for (var key in nicks) {
             message += `${key}, `;
-            ircUserList[key] = "";
+            ircUserList[key] = '';
         }
         ///  ircUserList = nicks;
         console.log(message);
@@ -185,7 +182,7 @@ e.init = (v, topConfig, em) => {
     //     console.log(motd);
     //  });
 
-    bot.addListener('action', (sender, channel, text, message) => {
+    bot.addListener('action', (sender, channel, text) => {
         sendMessageToDiscord(` * ${sender} ${text}`);
     });
 
@@ -197,38 +194,19 @@ e.init = (v, topConfig, em) => {
 function handleIrcCommand(channel, user, text) {
     var words = text.split(' ');
     console.log(`[IRC] User ${user} executed command ${words[0]}`);
+    var time
+        , userFile;
     switch (words[0].toLowerCase()) {
-        case "help":
-            sendIrcCommandMessage(channel, "Valid commands: servers, ping, mail, seen, uptime, " +
-                "notify, version, cat, roll, xkcd, insult, econ, reload, time");
+        case 'help':
+            sendIrcCommandMessage(channel, 'Valid commands: servers, ping, mail, seen, uptime, ' +
+                'notify, version, cat, roll, xkcd, insult, econ, reload, time');
             break;
-        case "reload":
+        case 'reload':
             reloadConfig();
             sendIrcCommandMessage(channel, `Reloaded config`);
             break;
         case 'time':
-            var message = `It is currently ${moment().format('LT')} where I am!`;
-            console.log(util.inspect(words));
-            if (words.length == 2) {
-                var location = words[1].split('/');
-                if (location.length == 2)
-                    message = `In ${location[1]}, it is currently ${moment().tz(words[1]).format('LT')}`;
-                else {
-                    message = 'Invalid parameters! See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for timezone codes that I understand.';
-                }
-            } else if (words.length > 3) {
-                var location1 = words[1].split('/');
-                var location2 = words[2].split('/');
-                if (location1.length == 2 && location2.length == 2) {
-                    var time = moment.tz(words[3], 'hh:mma', words[1]).tz(words[2]).format('LT');
-                    if (time != 'Invalid date')
-                        message = `When it's ${moment(words[3], 'hh:mma').format('LT')} in ${location1[1]}, it's ${time} in ${location2[1]}.`;
-                    else
-                        message = `Please use the format 'hh:mma' in your time.`;
-                } else
-                    message = 'Invalid parameters! See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for timezone codes that I understand.';
-            }
-            sendMessageToIrc(channel, message)
+            getTime(channel, user, words);
             break;
         case 'free':
             //     bot.sendChannelTyping(channelid);
@@ -241,42 +219,42 @@ function handleIrcCommand(channel, user, text) {
             });
 
             break;
-        case "servers":
+        case 'servers':
             var servers;
             if (!fs.existsSync('servers.json')) {
                 servers = {
-                    example: "server"
+                    example: 'server'
                 };
                 fs.writeFile('servers.json', JSON.stringify(servers, null, 4));
             } else {
-                servers = getJsonFile("servers.json");
+                servers = getJsonFile('servers.json');
             }
             for (var key in servers.servers) {
-                sendIrcCommandMessage(channel, `${key}: ${servers.servers[key]}`)
+                sendIrcCommandMessage(channel, `${key}: ${servers.servers[key]}`);
             }
             break;
-        case "ping":
+        case 'ping':
             sendIrcCommandMessage(channel, `Pong!`);
             break;
-        case "mail":
+        case 'mail':
             if (words.length == 1) {
                 sendIrcCommandMessage(channel, `Mail commands: read, send, mark`);
             } else {
                 switch (words[1]) {
-                    case "send":
+                    case 'send':
                         if (words.length <= 3) {
-                            sendIrcCommandMessage(channel, "You are missing parameters - !mail send \<name\> \<message\>");
+                            sendIrcCommandMessage(channel, 'You are missing parameters - !mail send \<name\> \<message\>');
                         } else {
                             var recipient = words[2];
                             userFile = getUserFile(recipient);
-                            var timeStamp = `[${moment().format("MM/DD HH:mm")}]`;
+                            var timeStamp = `[${moment().format('MM/DD HH:mm')}]`;
                             var messageToSend = text.replace(`mail send ${recipient} `, '');
                             userFile.mail[userFile.number] = {
                                 read: false,
                                 sender: user,
                                 message: messageToSend,
                                 timestamp: timeStamp
-                            }
+                            };
                             userFile.number += 1;
                             userFile.read = false;
                             saveUserFile(recipient, userFile);
@@ -284,10 +262,10 @@ function handleIrcCommand(channel, user, text) {
                                 `Message queued: '${messageToSend}' to ${recipient} at ${timeStamp}`);
                         }
                         break;
-                    case "read":
+                    case 'read':
                         userFile = getUserFile(user);
                         var readAll = false;
-                        if (words.length > 2 && words[2] === "all") {
+                        if (words.length > 2 && words[2] === 'all') {
                             sendNoticeToIrc(user, `Showing all recorded messages.`);
                             readAll = true;
                         } else {
@@ -319,10 +297,10 @@ function handleIrcCommand(channel, user, text) {
                             sendNoticeToIrc(user, `Do '!mail mark' to mark these messages are read`);
                         }
                         break;
-                    case "mark":
+                    case 'mark':
                         userFile = getUserFile(user);
 
-                        for (var key in userFile.mail) {
+                        for (key in userFile.mail) {
                             if (!userFile.mail[key].read) {
                                 userFile.mail[key].read = true;
                             }
@@ -337,26 +315,26 @@ function handleIrcCommand(channel, user, text) {
                 }
             }
             break;
-        case "seen":
+        case 'seen':
             try {
                 if (words[1].toLowerCase() in ircUserList) {
-                    sendIrcCommandMessage(channel, `${words[1]} is online right now!`)
+                    sendIrcCommandMessage(channel, `${words[1]} is online right now!`);
                 } else {
-                    var userFile = getUserFile(words[1], true);
-                    var time = createTimeDiffString(moment(), moment(userFile.seen))
+                    userFile = getUserFile(words[1], true);
+                    time = createTimeDiffString(moment(), moment(userFile.seen));
                     console.log(time, moment(), moment(userFile.seen), userFile.seen);
                     sendIrcCommandMessage(channel, `I haven't seen ${words[1]} in ${time}`);
                 }
             } catch (err) {
-                sendIrcCommandMessage(channel, `I don't think I've ever seen ${words[1]} before!`)
+                sendIrcCommandMessage(channel, `I don't think I've ever seen ${words[1]} before!`);
             }
             break;
-        case "uptime":
+        case 'uptime':
             var uptimeString = `Catter uptime: ${createTimeDiffString(moment(), startTime)}`;
             sendIrcCommandMessage(channel, uptimeString);
             break;
-        case "notify":
-            var userFile = getUserFile(user);
+        case 'notify':
+            userFile = getUserFile(user);
             userFile.notify = !userFile.notify;
             saveUserFile(user, userFile);
             if (userFile.notify) {
@@ -365,30 +343,30 @@ function handleIrcCommand(channel, user, text) {
                 sendIrcCommandMessage(channel, `Disabled notifications for ${user}`);
             }
             break;
-        case "version":
+        case 'version':
             sendIrcCommandMessage(channel, `I am running blargbot version ${VERSION}`);
             break;
-        case "cat":
+        case 'cat':
             console.log('meow');
             getCat(channel);
             break;
-        case "roll":
+        case 'roll':
             getRoll(channel, user, words);
             break;
-        case "insult":
+        case 'insult':
             getInsult(channel, words);
             break;
-        case "econ":
+        case 'econ':
             getEcon(channel, words);
             break;
-        case "xkcd":
+        case 'xkcd':
             getXkcd(channel, words);
             break;
     }
 }
 
 function reloadUserList() {
-    bot.send("NAMES", config.irc.channel);
+    bot.send('NAMES', config.irc.channel);
 }
 
 
@@ -418,13 +396,13 @@ function getUserFilePath(name) {
 
 function createDefaultUserFile(name) {
     var defaultContents = '{' +
-        `"name": "${name}", ` +
-        `"read": ${true}, ` +
-        `"number": 0, ` +
-        `"notify": ${true}, ` +
-        `"seen": "${moment().format()}", ` +
-        '"mail": {}' +
-        '}';
+        `'name': '${name}', ` +
+        `'read': ${true}, ` +
+        `'number': 0, ` +
+        `'notify': ${true}, ` +
+        `'seen': '${moment().format()}', ` +
+        `mail': {}` +
+        `}`;
 
     console.log(defaultContents);
     var jsonFile = JSON.parse(defaultContents);
@@ -460,16 +438,16 @@ function sendMessageToDiscord(msg) {
 }
 
 function changeDiscordTopic(topic) {
-    emitter.emit('discordTopic', topic)
+    emitter.emit('discordTopic', topic);
 }
 
 function reloadConfig() {
     emitter.emit('reloadConfig');
 }
 
-function saveConfig() {
-    emitter.emit('saveConfig');
-}
+//function saveConfig() {
+//    emitter.emit('saveConfig');
+//}
 
 function sendDiscordAttachment(msg, attach) {
     emitter.emit('discordMessage', msg, attach);
@@ -477,7 +455,7 @@ function sendDiscordAttachment(msg, attach) {
 
 function getCat(channel) {
     var output;
-    http.get("http://random.cat/meow", function (res) {
+    http.get('http://random.cat/meow', function (res) {
         var body = '';
         res.on('data', function (chunk) {
             body += chunk;
@@ -494,7 +472,7 @@ function getCat(channel) {
 var xkcdMax = 0;
 function getXkcd(channel, words) {
     if (xkcdMax === 0) {
-        http.get("http://xkcd.com/info.0.json", function (res) {
+        http.get('http://xkcd.com/info.0.json', function (res) {
             var body = '';
             res.on('data', function (chunk) {
                 body += chunk;
@@ -521,7 +499,7 @@ function getXkcd(channel, words) {
     }
     var url = '';
     if (choice === 0) {
-        url = "http://xkcd.com/info.0.json";
+        url = 'http://xkcd.com/info.0.json';
     } else {
         url = `http://xkcd.com/${choice}/info.0.json`;
     }
@@ -545,7 +523,7 @@ Comic #${output.num}
                 message = `${output.img}
 !=-= [ ${output.title}, ${output.year} ] =-=!
 Comic #${output.num}
-+ ${output.alt}`
++ ${output.alt}`;
             }
             sendMessageToIrc(channel, message);
             xkcdMax = output.num;
@@ -556,7 +534,7 @@ Comic #${output.num}
 }
 
 function getTime(channel, user, words) {
-    var message = 'meow'
+    var message = 'meow';
     console.log(util.inspect(words));
     if (words.length > 1) {
         var location = words[1].split('/');
@@ -588,6 +566,8 @@ function createTimeDiffString(moment1, moment2) {
 }
 
 function getRoll(channel, user, words) {
+    var i;
+    var total;
     var message = ``;
     if (bot === BotEnum.DISCORD) {
         message += `<@${user.id}>, `;
@@ -604,39 +584,39 @@ function getRoll(channel, user, words) {
             console.log(`The cat chosen is ${seed} `);
             switch (seed) {
                 case 0:
-                    catUrl = "http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif";
+                    catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';
                     break;
                 case 1:
-                    catUrl = "http://random.cat/i/024_-_H1NMbQr.gif";
+                    catUrl = 'http://random.cat/i/024_-_H1NMbQr.gif';
                     break;
                 case 2:
-                    catUrl = "http://random.cat/i/081_-_DWzDbUH.gif";
+                    catUrl = 'http://random.cat/i/081_-_DWzDbUH.gif';
                     break;
                 default:
-                    catUrl = "http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif";
+                    catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';
                     break;
             }
             sendMessageToIrc(channel, catUrl);
             return;
         }
         if (words[1].indexOf('rick') > -1) {
-            sendMessageToIrc(channel, "http://static.celebuzz.com/uploads/2015/08/rick-roll-82415-1.gif");
+            sendMessageToIrc(channel, 'http://static.celebuzz.com/uploads/2015/08/rick-roll-82415-1.gif');
             return;
         }
         if (words[1] == 'character') {
             //  sendMessageToIrc(channel, 'So you want to roll a character, huh?');
-            var message = 'Rolling a character:\n```xl\n'
+            message = 'Rolling a character:\n```xl\n';
             for (var ii = 0; ii < 6; ii++) {
-                message += `Stat #${ii + 1} - [`
+                message += `Stat #${ii + 1} - [`;
                 var rolls = [];
-                for (var i = 0; i < 4; i++) {
-                    var roll = getRandomInt(1, 6)
+                for (i = 0; i < 4; i++) {
+                    var roll = getRandomInt(1, 6);
                     rolls.push(roll);
-                    message += `${roll}, `
+                    message += `${roll}, `;
                 }
-                rolls.sort()
-                var total = 0
-                for (var i = 0; i < rolls.length; i++) {
+                rolls.sort();
+                total = 0;
+                for (i = 0; i < rolls.length; i++) {
                     total += rolls[i];
                 }
                 var newtotal = total - rolls[0];
@@ -651,7 +631,7 @@ function getRoll(channel, user, words) {
             var dice = words[1].split('d');
             max = dice[1];
             message += `${dice[0]}d${max}`;
-            for (var i = 0; i < dice[0]; i++) {
+            for (i = 0; i < dice[0]; i++) {
                 rollList[i] = getRandomInt(1, max);
             }
         } else {
@@ -665,7 +645,7 @@ function getRoll(channel, user, words) {
         rollList[0] = getRandomInt(1, max);
     }
     message += ` - [`;
-    var total = 0;
+    total = 0;
     for (i = 0; i < rollList.length; i++) {
         total += rollList[i];
         message += `${rollList[i]}, `;
@@ -699,7 +679,7 @@ function getInsult(channel, words) {
         target = 'Your';
     } else {
         for (var i = 1; i < words.length; i++) {
-            target += words[i] + " ";
+            target += words[i] + ' ';
         }
         target = target.substring(0, target.length - 1);
     }
@@ -712,7 +692,7 @@ function getInsult(channel, words) {
 
 function getEcon(channel, words) {
     if (words.length < 4) {
-        sendMessageToIrc(channel, "Incorrect usage!\n`econ \<from> \<to> \<amount>`");
+        sendMessageToIrc(channel, 'Incorrect usage!\n`econ \<from> \<to> \<amount>`');
         return;
     }
     var to = words[2].toUpperCase();
@@ -728,7 +708,7 @@ function getEcon(channel, words) {
         });
         res.on('end', function () {
             var rates = JSON.parse(body);
-            if (rates.error != null && rates.error === "Invalid base") {
+            if (rates.error != null && rates.error === 'Invalid base') {
                 sendMessageToIrc(channel, `Invalid currency ${from}\n\`econ \<from\> \<to\> \<amount\>\``);
                 return;
             }
