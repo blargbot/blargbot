@@ -1,17 +1,17 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'roll [dice] [modifier]';
 e.info = 'Rolls an amount of dice (ex. 1d20) and adds the modifier.';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     var message = ``;
@@ -51,17 +51,17 @@ e.execute = (msg, words, text) => {
         }
         if (words[1] == 'character') {
             //  sendMessageToDiscord(channel, 'So you want to roll a character, huh?', bot);
-            var message = 'Rolling a character:\n```xl\n'
+            var message = 'Rolling a character:\n```xl\n';
             for (var ii = 0; ii < 6; ii++) {
-                message += `Stat #${ii + 1} - [`
+                message += `Stat #${ii + 1} - [`;
                 var rolls = [];
                 for (var i = 0; i < 4; i++) {
-                    var roll = bu.getRandomInt(1, 6)
+                    var roll = bu.getRandomInt(1, 6);
                     rolls.push(roll);
-                    message += `${roll}, `
+                    message += `${roll}, `;
                 }
-                rolls.sort()
-                var total = 0
+                rolls.sort();
+                var total = 0;
                 for (var i = 0; i < rolls.length; i++) {
                     total += rolls[i];
                 }
@@ -117,4 +117,4 @@ e.execute = (msg, words, text) => {
         }
     }
     bu.sendMessageToDiscord(msg.channel.id, message);
-}
+};

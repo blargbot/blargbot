@@ -1,18 +1,18 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
-var moment = require('moment-timezone')
+var e = module.exports = {};
+var bu = require('./../util.js');
+var moment = require('moment-timezone');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'stats';
 e.info = 'Gives you some information about me';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     bu.sendMessageToDiscord(msg.channel.id, `\`\`\`xl
@@ -24,4 +24,4 @@ Using ${bu.getMemoryUsage()}MiB RAM
 Running for ${bu.createTimeDiffString(moment(), bu.startTime)}
 Version: ${bu.VERSION}
 \`\`\``);
-}
+};

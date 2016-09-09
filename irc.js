@@ -7,14 +7,14 @@ var path = require('path');
 var http = require('http');
 var https = require('https');
 var xml2js = require('xml2js');
-var gm = require('gm')
-var freefreefree = require('./dcommands/free.js')
+var gm = require('gm');
+var freefreefree = require('./dcommands/free.js');
 
 var Cleverbot = require('cleverbot-node');
 cleverbot = new Cleverbot;
 
-var e = module.exports = {}
-e.requireCtx = require
+var e = module.exports = {};
+e.requireCtx = require;
 //var gm = require('gm');
 var Cleverbot = require('cleverbot-node');
 var bot;
@@ -22,23 +22,23 @@ var bot;
 // TODO: Refactor this mess
 
 var ircUserList = {};
-var config
-var emitter
+var config;
+var emitter;
 
-var notifInterval
-var VERSION
+var notifInterval;
+var VERSION;
 
 e.init = (v, topConfig, em) => {
-    VERSION = v
+    VERSION = v;
     config = topConfig;
-    emitter = em
+    emitter = em;
     var ircbot = new irc.Client(config.irc.server, config.irc.nick, {
         channels: [config.irc.channel],
         realName: 'blargbot',
         userName: 'blargbot',
         autoRejoin: true
     });
-    e.bot = bot = ircbot
+    e.bot = bot = ircbot;
 
     notifInterval = setInterval(function () {
         console.log("[NOT] Doing notifications");
@@ -56,13 +56,13 @@ e.init = (v, topConfig, em) => {
 
     emitter.on('ircMessage', (message) => {
         sendMessageToIrc(config.irc.channel, message);
-    })
+    });
     emitter.on('ircUserList', () => {
         reloadUserList();
-    })
+    });
 
     bot.addListener('motd', function (motd) {
-        sendMessageToIrc("nickserv", `identify ${config.irc.nickserv_name} ${config.irc.nickserv_pass}`)
+        sendMessageToIrc("nickserv", `identify ${config.irc.nickserv_name} ${config.irc.nickserv_pass}`);
     });
 
     bot.addListener('names', function (channel, nicks) {
@@ -101,7 +101,7 @@ e.init = (v, topConfig, em) => {
                         setTimeout(function () {
                             sendIrcCommandMessage(to, response.message);
                             //    bot.sendChannelTyping(msg.channel.id);
-                        }, 1500)
+                        }, 1500);
                     });
                 });
             }
@@ -187,12 +187,12 @@ e.init = (v, topConfig, em) => {
 
     bot.addListener('action', (sender, channel, text, message) => {
         sendMessageToDiscord(` * ${sender} ${text}`);
-    })
+    });
 
     bot.addListener('error', function (message) {
         console.log('An IRC error occured: ', message);
     });
-}
+};
 
 function handleIrcCommand(channel, user, text) {
     var words = text.split(' ');
@@ -207,7 +207,7 @@ function handleIrcCommand(channel, user, text) {
             sendIrcCommandMessage(channel, `Reloaded config`);
             break;
         case 'time':
-            var message = `It is currently ${moment().format('LT')} where I am!`
+            var message = `It is currently ${moment().format('LT')} where I am!`;
             console.log(util.inspect(words));
             if (words.length == 2) {
                 var location = words[1].split('/');
@@ -220,11 +220,11 @@ function handleIrcCommand(channel, user, text) {
                 var location1 = words[1].split('/');
                 var location2 = words[2].split('/');
                 if (location1.length == 2 && location2.length == 2) {
-                    var time = moment.tz(words[3], 'hh:mma', words[1]).tz(words[2]).format('LT')
+                    var time = moment.tz(words[3], 'hh:mma', words[1]).tz(words[2]).format('LT');
                     if (time != 'Invalid date')
-                        message = `When it's ${moment(words[3], 'hh:mma').format('LT')} in ${location1[1]}, it's ${time} in ${location2[1]}.`
+                        message = `When it's ${moment(words[3], 'hh:mma').format('LT')} in ${location1[1]}, it's ${time} in ${location2[1]}.`;
                     else
-                        message = `Please use the format 'hh:mma' in your time.`
+                        message = `Please use the format 'hh:mma' in your time.`;
                 } else
                     message = 'Invalid parameters! See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for timezone codes that I understand.';
             }

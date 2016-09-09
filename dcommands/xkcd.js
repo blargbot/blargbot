@@ -1,24 +1,24 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
-var http = require('http')
+var e = module.exports = {};
+var bu = require('./../util.js');
+var http = require('http');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'xkcd [number]';
 e.info = 'Gets an xkcd comic. If a number is not specified, gets a random one.';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.GENERAL;
 
 var xkcdMax = 0;
 
 e.execute = (msg, words, text) => {
-    getXkcd(msg.channel.id, words)
-}
+    getXkcd(msg.channel.id, words);
+};
 
 function getXkcd(channel, words) {
     if (xkcdMax === 0) {

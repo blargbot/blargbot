@@ -1,17 +1,17 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'suggest <suggestion>';
 e.info = 'Sends me a suggestion. Thanks for the feedback!';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     if (words.length > 1) {
@@ -24,4 +24,4 @@ e.execute = (msg, words, text) => {
 \`\`\``);
         bu.sendMessageToDiscord(msg.channel.id, "Suggestion sent! :ok_hand:");
     }
-}
+};

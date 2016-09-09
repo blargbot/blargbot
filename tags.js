@@ -1,13 +1,13 @@
-var e = module.exports = {}
-var bu = require('./util.js')
-var moment = require('moment-timezone')
-var util = require('util')
-var bu = require('./util.js')
+var e = module.exports = {};
+var bu = require('./util.js');
+var moment = require('moment-timezone');
+var util = require('util');
+var bu = require('./util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
+    bot = Tbot;
+};
 
 e.processTag = (msg, contents, command) => {
     var words = command.replace(/ +/g, ' ').split(' ');
@@ -45,10 +45,10 @@ e.processTag = (msg, contents, command) => {
                 replaceString = msg.channel.guild.members.map(m => m)[bu.getRandomInt(0, msg.channel.guild.members.map(m => m).length - 1)].user.id;
                 break;
             case '//':
-                break
+                break;
             case 'fallback':
                 if (args[1])
-                    fallback = args[1]
+                    fallback = args[1];
                 break;
             case 'randint':
                 //console.log(args.length);
@@ -91,12 +91,12 @@ e.processTag = (msg, contents, command) => {
                 }
                 break;
             case 'argslength':
-                console.log(words)
-                var length = words.length
+                console.log(words);
+                var length = words.length;
                 if (length == 1 && words[0] == '') {
-                    length = 0
+                    length = 0;
                 }
-                replaceString = length
+                replaceString = length;
                 break;
             case 'randchoose':
                 if (args.length > 1) {
@@ -125,8 +125,8 @@ e.processTag = (msg, contents, command) => {
                 }
                 break;
             case 'shuffle':
-                replaceString = ''
-                words = shuffle(words)
+                replaceString = '';
+                words = shuffle(words);
                 break;
             case 'regexreplace':
                 if (args.length > 3) {
@@ -212,39 +212,39 @@ e.processTag = (msg, contents, command) => {
                     switch (args[1]) {
                         case '==':
                             if (args[2] == args[3])
-                                replaceString = args[4]
+                                replaceString = args[4];
                             else
-                                replaceString = args[5]
+                                replaceString = args[5];
                             break;
                         case '!=':
                             if (args[2] != args[3])
-                                replaceString = args[4]
+                                replaceString = args[4];
                             else
-                                replaceString = args[5]
+                                replaceString = args[5];
                             break;
                         case '>=':
                             if (args[2] >= args[3])
-                                replaceString = args[4]
+                                replaceString = args[4];
                             else
-                                replaceString = args[5]
+                                replaceString = args[5];
                             break;
                         case '<=':
                             if (args[2] <= args[3])
-                                replaceString = args[4]
+                                replaceString = args[4];
                             else
-                                replaceString = args[5]
+                                replaceString = args[5];
                             break;
                         case '>':
                             if (args[2] > args[3])
-                                replaceString = args[4]
+                                replaceString = args[4];
                             else
-                                replaceString = args[5]
+                                replaceString = args[5];
                             break;
                         case '<':
                             if (args[2] < args[3])
-                                replaceString = args[4]
+                                replaceString = args[4];
                             else
-                                replaceString = args[5]
+                                replaceString = args[5];
                             break;
                     }
                 } else {

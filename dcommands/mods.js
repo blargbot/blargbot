@@ -1,21 +1,21 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
+    bot = Tbot;
+};
 
-e.requireCtx = require
+e.requireCtx = require;
 
 e.isCommand = true;
-e.hidden = false
+e.hidden = false;
 e.usage = 'mods [online]';
 e.info = `Get's a list of mods.`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
-    var includeOffline = true
+    var includeOffline = true;
     if (words[1] && words[1].toLowerCase() == 'online') {
         includeOffline = false;
     }
@@ -23,26 +23,26 @@ e.execute = (msg, words, text) => {
         return !m.user.bot && bu.isStaff(m)
             && (includeOffline || m.status == 'online');
     });
-    var message = '```xl\n'
+    var message = '```xl\n';
     var maxLength = 0;
     mods.forEach(m => {
         if (getName(m).length > maxLength) {
-            maxLength = getName(m).length
+            maxLength = getName(m).length;
         }
-    })
+    });
     mods.forEach(m => {
     //    console.log(m.status)
         message += `${pad(getName(m), maxLength)} -${pad(m.status == 'online'
             ? ' Online'
             : (m.status == 'idle'
                 ? "'idle' "
-                : ' offline'), 8)} (${m.user.id})\n`
+                : ' offline'), 8)} (${m.user.id})\n`;
     });
-    message += '```'
-    bu.sendMessageToDiscord(msg.channel.id, message)
-}
+    message += '```';
+    bu.sendMessageToDiscord(msg.channel.id, message);
+};
 function getName(member) {
-    return member.user.username
+    return member.user.username;
 }
 
 function pad(value, length) {

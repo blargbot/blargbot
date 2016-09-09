@@ -1,15 +1,15 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
+    bot = Tbot;
+};
 
-e.requireCtx = require
+e.requireCtx = require;
 
 e.isCommand = true;
-e.hidden = false
+e.hidden = false;
 e.usage = 'donate';
 e.info = 'Gets you my donation information';
 e.category = bu.CommandType.GENERAL;
@@ -26,7 +26,7 @@ Thank you for your time. I really appreciate all of my users! :3
 Paypal: <http://goo.gl/Cv4M7P>
 Patreon: <https://www.patreon.com/stupidcat>
 ---------------------------------------------
-`)
-    })
+`);
+    });
 
-}
+};

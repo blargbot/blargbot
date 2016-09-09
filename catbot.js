@@ -1,14 +1,14 @@
 var Eris = require('eris');
 
 
-var e = module.exports = {}
+var e = module.exports = {};
 var db;
-var config
-var CAT_ID = '103347843934212096'
+var config;
+var CAT_ID = '103347843934212096';
 e.init = (configuration, database) => {
 
-    db = database
-    config = configuration
+    db = database;
+    config = configuration;
 
     e.bot = new Eris.Client(config.catbot.token, {
         autoReconnect: true,
@@ -20,23 +20,23 @@ e.init = (configuration, database) => {
     });
 
     e.bot.on('ready', () => {
-        console.log('stupid cat> YO SHIT WADDUP ITS DA CAT HERE')
-    })
+        console.log('stupid cat> YO SHIT WADDUP ITS DA CAT HERE');
+    });
 
     e.bot.on('messageCreate', (msg) => {
-        var prefix = config.general.isbeta ? 'catbeta' : 'cat'
+        var prefix = config.general.isbeta ? 'catbeta' : 'cat';
         if (msg.content.startsWith(prefix)) {
             var command = msg.content.replace(prefix, '').trim();
-            console.log('stupid cat>', msg.author.username, msg.author.id, prefix, command)
-            var words = command.split(' ')
+            console.log('stupid cat>', msg.author.username, msg.author.id, prefix, command);
+            var words = command.split(' ');
             switch (words.shift().toLowerCase()) {
                 case 'eval':
-                    console.log('evaling')
-                    eval1(msg, words.join(' '))
+                    console.log('evaling');
+                    eval1(msg, words.join(' '));
                     break;
                 case 'eval2':
-                    console.log('eval2ing')
-                    eval2(msg, words.join(' '))
+                    console.log('eval2ing');
+                    eval2(msg, words.join(' '));
                     break;
                 case 'avatar':
                     if (msg.author.id === CAT_ID) {
@@ -56,61 +56,61 @@ e.init = (configuration, database) => {
                                 var p1 = e.bot.editSelf({ avatar: data });
                                 p1.then(function () {
                                     e.bot.createMessage(msg.channel.id, ":ok_hand: Avatar set!");
-                                })
+                                });
                             }
                         });
                     }
                     break;
                 case 'pls': // yay markovs
-                    var statement = ` from catchat `
-                    statement += ` where nsfw <> 1`
+                    var statement = ` from catchat `;
+                    statement += ` where nsfw <> 1`;
                     db.query(`select count(*) as count` + statement, (err, row) => {
                         if (err)
                             console.log(err);
                         db.query(`select varvalue as pos from vars where varname = ?`,
                             ['markovpos'], (err2, row2) => {
-                                if (err2) console.log(err2)
+                                if (err2) console.log(err2);
                                 if (!row2[0]) {
-                                    db.query(`insert into vars (varname, varvalue) values ("markovpos", 0)`)
-                                    e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`)
+                                    db.query(`insert into vars (varname, varvalue) values ("markovpos", 0)`);
+                                    e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`);
                                 } else {
 
                                     var max = row[0].count;
-                                    console.log(max)
+                                    console.log(max);
                                     if (max >= 100) {
-                                        var diff = getRandomInt(0, 100) - 50
-                                        var pos = parseInt(row2[0].pos) + diff
+                                        var diff = getRandomInt(0, 100) - 50;
+                                        var pos = parseInt(row2[0].pos) + diff;
                                         if (pos < 0) {
-                                            pos += max
+                                            pos += max;
                                         }
                                         if (pos > max) {
-                                            pos -= max
+                                            pos -= max;
                                         }
-                                        console.log('Getting message at pos', pos)
+                                        console.log('Getting message at pos', pos);
                                         db.query(`select id, content, attachment` + statement + ` limit 1 offset ?`,
                                             [pos], (err3, row3) => {
-                                                if (err3) console.log(err3)
+                                                if (err3) console.log(err3);
                                                 if (row3[0]) {
                                                     var messageToSend = `${row3[0].content} ${row3[0].attachment == 'none' ? '' :
                                                         row3[0].attachment}`;
                                                     e.bot.createMessage(msg.channel.id, `\u200B` + messageToSend);
                                                     db.query(`update vars set varvalue = ? where varname="markovpos"`,
-                                                        [pos])
+                                                        [pos]);
                                                 }
-                                            })
+                                            });
                                     } else {
                                         e.bot.createMessage(msg.channel.id, `I don't have a big enough sample size.`);
                                     }
 
                                 }
-                            })
+                            });
 
 
-                    })
+                    });
                     break;
             }
         }
-    })
+    });
 
     e.bot.connect()
 }

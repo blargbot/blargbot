@@ -7,12 +7,12 @@ var http = require('http');
 var https = require('https');
 var xml2js = require('xml2js');
 var _ = require('lodash');
-var gm = require('gm')
+var gm = require('gm');
 var wordsearch = require('wordsearch');
-const EventEmitter = require('events')
-var reload = require('require-reload')(require)
+const EventEmitter = require('events');
+var reload = require('require-reload')(require);
 var Cleverbot = require('cleverbot-node');
-var mysql = require('mysql')
+var mysql = require('mysql');
 cleverbot = new Cleverbot;
 
 class BotEmitter extends EventEmitter { }
@@ -21,26 +21,26 @@ const botEmitter = new BotEmitter();
 TODO: fix the fucking tags
 TODO: modlog
 */
-var irc = require('./irc.js')
-var discord = require('./discord.js')
-var catbot = require('./catbot.js')
+var irc = require('./irc.js');
+var discord = require('./discord.js');
+var catbot = require('./catbot.js');
 botEmitter.on('reloadConfig', () => {
-    reloadConfig()
-})
+    reloadConfig();
+});
 botEmitter.on('saveConfig', () => {
-    saveConfig()
-})
+    saveConfig();
+});
 botEmitter.on('reloadDiscord', () => {
-    discord.bot.disconnect(false)
-    reload.emptyCache(discord.requireCtx)
-    discord = reload('./discord.js')
-    discord.init(VERSION, config, botEmitter, db)
+    discord.bot.disconnect(false);
+    reload.emptyCache(discord.requireCtx);
+    discord = reload('./discord.js');
+    discord.init(VERSION, config, botEmitter, db);
 });
 botEmitter.on('reloadIrc', () => {
-    irc.bot.disconnect('Reloading!')
-    reload.emptyCache(irc.requireCtx)
-    irc = reload('./irc.js')
-    irc.init(VERSION, config, botEmitter)
+    irc.bot.disconnect('Reloading!');
+    reload.emptyCache(irc.requireCtx);
+    irc = reload('./irc.js');
+    irc.init(VERSION, config, botEmitter);
 });
 
 
@@ -210,7 +210,7 @@ if (fs.existsSync(path.join(__dirname, 'config.json'))) {
 }
 
 function reloadConfig() {
-    console.log('Attempting to reload config')
+    console.log('Attempting to reload config');
     fs.readFile(path.join(__dirname, 'config.json'), 'utf8', function (err, data) {
         if (err) throw err;
         config = JSON.parse(data);
@@ -242,18 +242,18 @@ var db = mysql.createConnection({
     password: config.sql.pass,
     database: config.sql.database,
     charset: 'utf8mb4'
-})
+});
 
 db.connect(err => {
-    if (err) console.log(err)
-    else console.log('Connected to MySQL Database')
-})
+    if (err) console.log(err);
+    else console.log('Connected to MySQL Database');
+});
 
 //db.serialize(function () {
 db.query(`create table if not exists vars (
         varname VARCHAR(30) PRIMARY KEY,
         varvalue TEXT
-    )`)
+    )`);
 
 db.query(`CREATE TABLE if not exists user (
         userid VARCHAR(30) PRIMARY KEY, 
@@ -277,7 +277,7 @@ db.query(`CREATE TABLE if not exists guildsetting (
         value VARCHAR(100),
         PRIMARY KEY (guildid, name),
         foreign key (guildid) references guild(guildid)
-        )`)
+        )`);
 
 db.query(`CREATE TABLE if not exists ccommand (
         commandname VARCHAR(30), 
@@ -291,7 +291,7 @@ db.query(`CREATE TABLE IF NOT EXISTS channel (
     channelid VARCHAR(30) PRIMARY KEY,
     guildid VARCHAR(30),
     foreign key (guildid) references guild(guildid)
-)`)
+)`);
 
 
 db.query(`CREATE TABLE IF NOT EXISTS modlog (
@@ -306,7 +306,7 @@ db.query(`CREATE TABLE IF NOT EXISTS modlog (
             foreign key (userid) references user(userid),
             foreign key (modid) references user(userid),
             foreign key (guildid) references guild(guildid)
-        )`)
+        )`);
 
 db.query(`CREATE TABLE IF NOT EXISTs chatlogs (
             id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -321,7 +321,7 @@ db.query(`CREATE TABLE IF NOT EXISTs chatlogs (
             mentions TEXT,
             foreign key (userid) references user(userid),       
             foreign key (guildid) references guild(guildid)            
-        )`)
+        )`);
 
 db.query(`CREATE TABLE IF NOT EXISTs catchat (
             id INTEGER PRIMARY KEY AUTO_INCREMENT,

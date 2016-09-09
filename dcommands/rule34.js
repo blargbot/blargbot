@@ -31,7 +31,7 @@ e.execute = (msg, words, text) => {
         if (!nsfwChannel) {
             bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage)
             return;
-        }
+        };;;;;;;;;;;;;;;
         var query = '';
         for (var tag in tagList) {
             query += tagList[tag] + "%20";

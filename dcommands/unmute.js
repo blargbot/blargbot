@@ -1,15 +1,15 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
+    bot = Tbot;
+};
 
-e.requireCtx = require
+e.requireCtx = require;
 
 e.isCommand = true;
-e.hidden = false
+e.hidden = false;
 e.usage = 'Unmute <user>';
 e.info = 'Unmutes a user.';
 e.category = bu.CommandType.ADMIN;
@@ -18,28 +18,28 @@ e.execute = (msg, words, text) => {
     bu.guildSettings.get(msg.channel.guild.id, 'mutedrole').then(mutedrole => {
 
         if (!mutedrole) {
-            bu.sendMessageToDiscord(msg.channel.id, `No muted users were found. You can only unmute users muted with \`mute\`.`)
+            bu.sendMessageToDiscord(msg.channel.id, `No muted users were found. You can only unmute users muted with \`mute\`.`);
         }
         if (words.length > 1) {
 
             if (msg.channel.guild.members.get(bot.user.id).permission.json['manageRoles']) {
                 if (msg.member.permission.json['manageRoles']) {
                     if (words[1]) {
-                        var user = bu.getUserFromName(msg, words[1])
-                        var member = msg.channel.guild.members.get(user.id)
+                        var user = bu.getUserFromName(msg, words[1]);
+                        var member = msg.channel.guild.members.get(user.id);
                         if (!user)
                             return;
 
                         if (member.roles.indexOf(mutedrole) == -1) {
-                            bu.sendMessageToDiscord(msg.channel.id, 'That user isn\'t muted!')
+                            bu.sendMessageToDiscord(msg.channel.id, 'That user isn\'t muted!');
                         } else {
-                            var roles = member.roles
-                            roles.splice(roles.indexOf(mutedrole), 1)
+                            var roles = member.roles;
+                            roles.splice(roles.indexOf(mutedrole), 1);
                             bot.editGuildMember(msg.channel.guild.id, user.id, {
                                 roles: roles
-                            })
-                            bu.logAction(msg.channel.guild, user, msg.author, 'Unmute')
-                            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:')
+                            });
+                            bu.logAction(msg.channel.guild, user, msg.author, 'Unmute');
+                            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
                         }
 
 
@@ -53,11 +53,11 @@ e.execute = (msg, words, text) => {
                     }
                     //bot.ban
                 } else {
-                    bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`)
+                    bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`);
                 }
             } else {
-                bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`)
+                bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
             }
         }
-    })
-}
+    });
+};

@@ -1,48 +1,48 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
-var gm = require('gm')
-var path = require('path')
-var moment = require('moment')
-var fs = require('fs')
-var util = require('util')
-var bot
-var Canvas = require('canvas')
-var Image = Canvas.Image
-var Font = Canvas.Font
-console.log(util.inspect(Font))
+var e = module.exports = {};
+var bu = require('./../util.js');
+var gm = require('gm');
+var path = require('path');
+var moment = require('moment');
+var fs = require('fs');
+var util = require('util');
+var bot;
+var Canvas = require('canvas');
+var Image = Canvas.Image;
+var Font = Canvas.Font;
+console.log(util.inspect(Font));
 //var animeace = new Font('Anime Ace 2.0 BB', path.join(__dirname, 'img', 'fonts', 'animeace2_reg.ttf'))
 
 e.init = (Tbot) => {
-    bot = Tbot
+    bot = Tbot;
 
-}
+};
 
-e.requireCtx = require
+e.requireCtx = require;
 
 e.isCommand = true;
-e.hidden = false
+e.hidden = false;
 e.usage = 'shit [-p] <text>';
 e.info = `Tells everyone what's shit. Use -p as the first argument to specify it's plural.`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
-    var shitText = 'Your favourite anime'
-    console.log(util.inspect(words))
-    var plural = false
+    var shitText = 'Your favourite anime';
+    console.log(util.inspect(words));
+    var plural = false;
     if (words.length > 1) {
-        words.shift()
+        words.shift();
         if (words[0] == '-p') {
-            plural = true
-            words.shift()
+            plural = true;
+            words.shift();
         }
-        shitText = words.join(' ')
+        shitText = words.join(' ');
     }
     var timestamp = moment().format().replace(/:/gi, '_');
     //  gm(path.join(__dirname, '..', 'img', 'SHIT.png'))
     ///      .write(path.join(__dirname, '..', 'img', 'generated', 'SHIT.png'), (err) => {
     //          console.log(err)
     //      })
-    bot.sendChannelTyping(msg.channel.id)
+    bot.sendChannelTyping(msg.channel.id);
     gm()
         .command('convert')
         //   .fontSize(40)
@@ -60,7 +60,7 @@ e.execute = (msg, words, text) => {
         })
         .write(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`), function (err) {
             if (err) throw err;
-            console.log(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`))
+            console.log(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`));
             gm(path.join(__dirname, '..', 'img', `SHIT${plural ? 'S' : ''}.png`))
                 .composite(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`))
                 .geometry('+810+31')
@@ -86,14 +86,14 @@ e.execute = (msg, words, text) => {
                     bot.createMessage(msg.channel.id, '', {
                         name: 'SHIT.png',
                         file: buf
-                    })
-                })
+                    });
+                });
             //   .write(path.join(__dirname, '..', `img/generated/shit-${timestamp}.png`), (err) => {
             //        console.log(err)
             //  })
             //   })
         });
-}
+};
 /*
     var canvas = new Canvas(1031, 749)
     var ctx = canvas.getContext('2d')

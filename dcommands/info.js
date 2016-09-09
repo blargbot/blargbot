@@ -1,17 +1,17 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'info';
 e.info = 'Returns some info about me.';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     bu.sendMessageToDiscord(msg.channel.id, `blargbot is a multipurpose bot with new features implemented regularly, written in javascript using Eris.
@@ -25,4 +25,4 @@ Using ${bu.getMemoryUsage()}MiB RAM
 Version: ${bu.VERSION}
 \`\`\`
 For commands, do \`help\`. For information about supporting me, do \`donate\``);
-}
+};

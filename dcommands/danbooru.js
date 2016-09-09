@@ -1,19 +1,19 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
-var https = require('https')
+var e = module.exports = {};
+var bu = require('./../util.js');
+var https = require('https');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
+    bot = Tbot;
+};
 
-e.requireCtx = require
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'danbooru <tags...>';
 e.info = 'Gets three pictures from \'<https://danbooru.donmai.us/>\' using given tags.';
-e.category = bu.CommandType.NSFW
+e.category = bu.CommandType.NSFW;
 
 e.execute = (msg, words, text) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
@@ -30,7 +30,7 @@ e.execute = (msg, words, text) => {
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
                 //        console.log(kek); 
-                bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage)
+                bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage);
 
                 return;
             }
@@ -80,7 +80,7 @@ e.execute = (msg, words, text) => {
                         bu.sendMessageToDiscord(msg.channel.id, "No results found!");
                         return;
                     }
-                    message += `Found **${urlList.length}/50** posts\n`
+                    message += `Found **${urlList.length}/50** posts\n`;
                     for (var i = 0; i < 3; i++) {
                         if (urlList.length > 0) {
                             var choice = bu.getRandomInt(0, urlList.length - 1);
@@ -96,6 +96,6 @@ e.execute = (msg, words, text) => {
             });
         });
         req.end();
-    })
+    });
 
-}
+};

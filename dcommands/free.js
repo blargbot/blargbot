@@ -1,8 +1,8 @@
-var gm = require('gm')
-var path = require('path')
-var fs = require('fs')
+var gm = require('gm');
+var path = require('path');
+var fs = require('fs');
 var moment = require('moment');
-var bu = require('./../util.js')
+var bu = require('./../util.js');
 
 //var promise = require('promise')
 //var im = gm.subClass({ imageMagick: true });
@@ -11,17 +11,17 @@ var bot;
 var e = module.exports = {};
 e.init = (Tbot) => {
     bot = Tbot;
-}
-e.requireCtx = require
+};
+e.requireCtx = require;
 
-e.isCommand = true
+e.isCommand = true;
 e.hidden = false;
-e.usage = '`free <message> [ | <lower message>]'
-e.info = 'Tells everyone what you got for free'
-e.category = bu.CommandType.GENERAL
+e.usage = '`free <message> [ | <lower message>]';
+e.info = 'Tells everyone what you got for free';
+e.category = bu.CommandType.GENERAL;
 
 e.execute = function (msg, words, text) {
-    text = text.replace(words[0], '').trim()
+    text = text.replace(words[0], '').trim();
     bot.sendChannelTyping(msg.channel.id);
 
     //  return new promise((fulfill, reject) => {
@@ -34,7 +34,7 @@ e.execute = function (msg, words, text) {
             cap1 = text;
         }
         var timestamp = moment().format().replace(/:/gi, '_');
-        console.log(`Generating image for text '${text}'`)
+        console.log(`Generating image for text '${text}'`);
 
         e.generateCaption(timestamp, cap1, () => {
             e.generateLowerCaption(timestamp, cap2, () => {
@@ -58,7 +58,7 @@ e.execute = function (msg, words, text) {
         });
    // });
 
-}
+};
 
 
 e.generateFinalImage = function (timestamp, channelid) {
@@ -76,14 +76,14 @@ e.generateFinalImage = function (timestamp, channelid) {
             //sendMessageToDiscord(msg.channel.id, 'done');
 
             try {
-                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest0-${timestamp}.png`))
-                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest1-${timestamp}.png`))
-                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest2-${timestamp}.png`))
-                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest3-${timestamp}.png`))
-                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest4-${timestamp}.png`))
-                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest5-${timestamp}.png`))
-                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreeCaption-${timestamp}.png`))
-                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreeLowerCaption-${timestamp}.png`))
+                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest0-${timestamp}.png`));
+                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest1-${timestamp}.png`));
+                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest2-${timestamp}.png`));
+                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest3-${timestamp}.png`));
+                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest4-${timestamp}.png`));
+                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest5-${timestamp}.png`));
+                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreeCaption-${timestamp}.png`));
+                fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreeLowerCaption-${timestamp}.png`));
             } catch (err) {
                 console.log(err);
             }
@@ -96,7 +96,7 @@ e.generateFinalImage = function (timestamp, channelid) {
             bot.createMessage(channelid, `It really works!`, {
                 name: 'freefreefree.gif',
                 file: image
-            })
+            });
          //   fulfill(image);
 
             /*

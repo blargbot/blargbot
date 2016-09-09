@@ -1,17 +1,17 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = '';
 e.info = '';
-e.category = bu.CommandType.CAT
+e.category = bu.CommandType.CAT;
 
 e.execute = (msg, words, text) => {
     if (msg.user.id === bu.CAT_ID) {
@@ -31,8 +31,8 @@ e.execute = (msg, words, text) => {
                 var p1 = bot.editSelf({avatar: data});
                 p1.then(function () {
                     bu.sendMessageToDiscord(msg.channel.id, ":ok_hand: Avatar set!");
-                })
+                });
             }
         });
     }
-}
+};

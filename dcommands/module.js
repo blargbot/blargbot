@@ -1,20 +1,20 @@
-var bu = require('./../util.js')
-var moment = require('moment')
-var util = require('util')
+var bu = require('./../util.js');
+var moment = require('moment');
+var util = require('util');
 
-var e = module.exports = {}
+var e = module.exports = {};
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
+e.isCommand = true;
 e.hidden = false;
 e.usage = 'module <reload|unload|load> <name>';
 e.info = 'Loads, unloads, or reloads a command module';
-e.category = bu.CommandType.CAT
+e.category = bu.CommandType.CAT;
 
 
 var confirmIrc = false;
@@ -22,23 +22,23 @@ var confirmDiscord = false;
 e.execute = (msg, words, text) => {
     if (msg.author.id == bu.CAT_ID) {
         words.shift();
-        console.log(util.inspect(words))
+        console.log(util.inspect(words));
         if (words.length > 1) {
             switch (words.shift().toLowerCase()) {
                 case 'reload':
-                    bu.emitter.emit('reloadCommand', words[0])
+                    bu.emitter.emit('reloadCommand', words[0]);
                     // console.log(words[0])
                     bu.sendMessageToDiscord(msg.channel.id, `:ok_hand: Reloaded command ${words[0]} :ok_hand:`);
                     break;
                 case 'unload':
-                    bu.emitter.emit('unloadCommand', words[0])
+                    bu.emitter.emit('unloadCommand', words[0]);
                     //    console.log(words[0])
                     bu.sendMessageToDiscord(msg.channel.id, `:ok_hand: Unloaded command ${words[0]} :ok_hand:`);
 
 
                     break;
                 case 'load':
-                    bu.emitter.emit('loadCommand', words[0])
+                    bu.emitter.emit('loadCommand', words[0]);
                     //    console.log(words[0])
                     bu.sendMessageToDiscord(msg.channel.id, `:ok_hand: Loaded command ${words[0]} :ok_hand:`);
 
@@ -50,7 +50,7 @@ e.execute = (msg, words, text) => {
                 //   console.log('meow')
                 if (!confirmDiscord) {
                     bu.sendMessageToDiscord(msg.channel.id, "I really hope you know what you're doing. " +
-                        "Type that command again to confirm.")
+                        "Type that command again to confirm.");
                     confirmDiscord = true;
                     // }
                 } else {
@@ -64,7 +64,7 @@ e.execute = (msg, words, text) => {
             } else if (words[0] && words[0].toLowerCase() == 'irc') {
                 if (!confirmIrc) {
                     bu.sendMessageToDiscord(msg.channel.id, `I really hope you know what you're doing. ` +
-                        `Type that command again to confirm.`)
+                        `Type that command again to confirm.`);
                     confirmIrc = true;
                     //     }
                 } else {
@@ -77,4 +77,4 @@ e.execute = (msg, words, text) => {
             }
         }
     }
-}
+};

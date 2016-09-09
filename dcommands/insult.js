@@ -1,17 +1,17 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'insult [name]';
 e.info = 'Generates a random insult directed at the name supplied.';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     var target = '';
@@ -28,4 +28,4 @@ e.execute = (msg, words, text) => {
     var chosenAdje = bu.config.insult.adjectives[(bu.getRandomInt(0, bu.config.insult.adjectives.length - 1))];
     var message = `${target}${target == 'Your' ? `` : `'s`} ${chosenNoun} ${chosenVerb} ${chosenAdje}!`;
     bu.sendMessageToDiscord(msg.channel.id, message);
-}
+};

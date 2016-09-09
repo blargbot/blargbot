@@ -1,18 +1,18 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
-var moment = require('moment')
+var e = module.exports = {};
+var bu = require('./../util.js');
+var moment = require('moment');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'user [id/name/mention]';
 e.info = 'Gets information about specified user';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     var userToGet;
@@ -20,7 +20,7 @@ e.execute = (msg, words, text) => {
         userToGet = msg.member;
     } else {
         userToGet = bu.getUserFromName(msg, words[1]);
-        userToGet = bot.guilds.get(msg.channel.guild.id).members.get(userToGet.id)
+        userToGet = bot.guilds.get(msg.channel.guild.id).members.get(userToGet.id);
     }
     if (!userToGet) {
         //   sendMessageToDiscord(msg.channel.id, 'Unable to find that user on this guild!');
@@ -42,4 +42,4 @@ Denied permissions: ${userToGet.permission.deny}
 \`\`\`
 ${userToGet.user.avatarURL}`;
     bu.sendMessageToDiscord(msg.channel.id, message);
-}
+};

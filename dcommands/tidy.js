@@ -1,17 +1,17 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'tidy [amount]';
 e.info = 'Clears messages from chat. Defaults to 25.';
-e.category = bu.CommandType.ADMIN
+e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words, text) => {
   //  if (!bu.hasPerm(msg, 'Bot Commander')) {
@@ -30,11 +30,11 @@ e.execute = (msg, words, text) => {
                 bot.deleteMessage(msg.channel.id, val.id).catch(err => console.log(err));
             }, 5000);
         });
-        return num
+        return num;
     }).catch((err) => {
         if (err) {
-            bu.sendMessageToDiscord(msg.channel.id, 'I need to be able to Manage Messages to do that!')
-            console.log(err)
+            bu.sendMessageToDiscord(msg.channel.id, 'I need to be able to Manage Messages to do that!');
+            console.log(err);
         } 
-    })
-}
+    });
+};

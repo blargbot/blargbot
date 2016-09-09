@@ -1,5 +1,5 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 var fs = require('fs');
 var util = require('util');
 var Eris = require('eris');
@@ -11,13 +11,13 @@ var xml2js = require('xml2js');
 var gm = require('gm');
 var CAT_ID = "103347843934212096";
 //var youtube = require('./../js');
-var reload = require('require-reload')
-var youtubeStream = require('youtube-audio-stream')
-var google = require('googleapis')
-var youtube = google.youtube('v3')
-var moment = require('moment')
-var SC = require('node-soundcloud')
-var request = require('request')
+var reload = require('require-reload');
+var youtubeStream = require('youtube-audio-stream');
+var google = require('googleapis');
+var youtube = google.youtube('v3');
+var moment = require('moment');
+var SC = require('node-soundcloud');
+var request = require('request');
 
 SC.init({
     id: bu.config.general.soundcloud.id,
@@ -26,20 +26,20 @@ SC.init({
     accessToken: bu.config.general.soundcloud.accessToken
 });
 
-var dl = {}
-var queue = {}
-var current = {}
-var cache = {}
-var bot
+var dl = {};
+var queue = {};
+var current = {};
+var cache = {};
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-    voiceConnections = bot.voiceConnections
-    init(bot, voiceConnections, voiceSettings)
+    bot = Tbot;
+    voiceConnections = bot.voiceConnections;
+    init(bot, voiceConnections, voiceSettings);
 
-}
+};
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'music';
 e.info = 'Get the music commands!';
 e.sub = {
@@ -75,9 +75,9 @@ e.sub = {
         usage: 'queue [shuffle]',
         info: 'Shows the current queue, or shuffles it'
     }
-}
-e.category = bu.CommandType.MUSIC
-e.requireCtx = require
+};
+e.category = bu.CommandType.MUSIC;
+e.requireCtx = require;
 
 
 var stream;
@@ -86,7 +86,7 @@ if (fs.existsSync(path.join(__dirname, '../voiceSettings.json'))) {
     var voiceFile = fs.readFileSync(path.join(__dirname, '../voiceSettings.json'), 'utf8');
     var voiceSettings = JSON.parse(voiceFile);
 } else {
-    voiceSettings = {}
+    voiceSettings = {};
     saveVoiceSettings();
 }
 function reloadVoiceSettings() {
@@ -113,7 +113,7 @@ e.execute = (msg, words, text) => {
                 //  currentChannel: msg.channel.guild.defaultChannel,
                 specialUsers: [],
                 blacklist: true
-            }
+            };
         }
         voiceSettings[msg.channel.guild.id].currentChannel = msg.channel.id;
         console.log(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} (${msg.channel.id}> ${msg.author.username} (${msg.author.id})> ${msg.content}`);
@@ -121,23 +121,23 @@ e.execute = (msg, words, text) => {
         //var words = command.split(' ');
         //  words.shift()
         if (words.length == 0) {
-            var messageToSend = ':musical_score: Current Queue: :musical_score:\n```xl\n'
+            var messageToSend = ':musical_score: Current Queue: :musical_score:\n```xl\n';
 
             if (current[msg.channel.guild.id]) {
-                var currentSong = current[msg.channel.guild.id]
-                var timeDiff = moment.duration(moment().diff(moment(currentSong.start)))
-                var timeLength = moment.duration(currentSong.duration)
-                messageToSend += `Right Now: ${currentSong.name} [${createTimeString(timeDiff)}/${createTimeString(timeLength)}]\n`
+                var currentSong = current[msg.channel.guild.id];
+                var timeDiff = moment.duration(moment().diff(moment(currentSong.start)));
+                var timeLength = moment.duration(currentSong.duration);
+                messageToSend += `Right Now: ${currentSong.name} [${createTimeString(timeDiff)}/${createTimeString(timeLength)}]\n`;
             }
 
             if (queue.hasOwnProperty(msg.channel.guild.id) && queue[msg.channel.guild.id].length > 0) {
                 for (var i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                    messageToSend += `${(i + 1) < 10 ? ' ' + (i + 1) : i + 1}: ${queue[msg.channel.guild.id][i].name} - [${createTimeString(moment.duration(queue[msg.channel.guild.id][i].duration))}]\n`
+                    messageToSend += `${(i + 1) < 10 ? ' ' + (i + 1) : i + 1}: ${queue[msg.channel.guild.id][i].name} - [${createTimeString(moment.duration(queue[msg.channel.guild.id][i].duration))}]\n`;
                 }
             } else {
-                messageToSend += 'Nothing queued!'
+                messageToSend += 'Nothing queued!';
             }
-            messageToSend += '```'
+            messageToSend += '```';
             sendMessage(msg.channel.id, messageToSend);
             return;
         }
@@ -156,13 +156,13 @@ e.execute = (msg, words, text) => {
                                 bu.guildSettings.get(msg.channel.guild.id, 'musicchannel').then(channel => {
                                     if (channel == msg.channel.id) {
                                         bu.guildSettings.remove(msg.channel.guild.id, 'musicchannel').then(fields => {
-                                            bu.sendMessageToDiscord(msg.channel.id, 'This is no longer my music channel.')
-                                        })
+                                            bu.sendMessageToDiscord(msg.channel.id, 'This is no longer my music channel.');
+                                        });
                                     } else {
-                                        bu.guildSettings.set(msg.channel.guild.id, 'musicchannel', msg.channel.id)
-                                        bu.sendMessageToDiscord(msg.channel.id, 'This is now my music channel.')
+                                        bu.guildSettings.set(msg.channel.guild.id, 'musicchannel', msg.channel.id);
+                                        bu.sendMessageToDiscord(msg.channel.id, 'This is now my music channel.');
                                     }
-                                })
+                                });
 
                             }
                     }
@@ -184,7 +184,7 @@ Commands:
 
             case 'play':
                 if (voiceConnections.get(msg.channel.guild.id) && voiceConnections.get(msg.channel.guild.id).ready)
-                    handleMusicCommand(msg, words, msg.content, voiceConnections)
+                    handleMusicCommand(msg, words, msg.content, voiceConnections);
                 else
                     sendMessage(msg.channel.id, `I can't play until I'm in a voice channel!`)
                 break;

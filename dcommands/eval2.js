@@ -1,5 +1,5 @@
 var e = module.exports = {}
-var bu = require('./../util.js')
+var bu = require('./../util.js');;;;;;;;;;;
 
 var bot
 e.init = (Tbot) => {

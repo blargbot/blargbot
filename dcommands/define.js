@@ -1,19 +1,19 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
-var request = require('request')
-var util = require('util')
-var xml2js = require('xml2js')
-var moment = require('moment')
+var e = module.exports = {};
+var bu = require('./../util.js');
+var request = require('request');
+var util = require('util');
+var xml2js = require('xml2js');
+var moment = require('moment');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
+    bot = Tbot;
+};
 
-e.requireCtx = require
+e.requireCtx = require;
 
 e.isCommand = true;
-e.hidden = false
+e.hidden = false;
 e.usage = 'define <word>';
 e.info = 'Gets the definition for the specified word (english).';
 e.category = bu.CommandType.GENERAL;
@@ -23,30 +23,30 @@ var part = {
     noun: 'n',
     adjective: 'a',
     pronoun: 'p'
-}
+};
 
 e.execute = (msg, words, text) => {
-    words.shift()
-    var args = words.join(' ')
-    var config = bu.config
+    words.shift();
+    var args = words.join(' ');
+    var config = bu.config;
     if (!config.general.wordapis)
         config.general.wordapis = {
             day: moment().format('D'),
             uses: 0
-        }
+        };
 
     if (config.general.wordapis.day != moment().format('D')) {
-        config.general.wordapis.day = moment().format('D')
-        config.general.wordapis.uses = 0
+        config.general.wordapis.day = moment().format('D');
+        config.general.wordapis.uses = 0;
     }
     var max = config.general.isbeta ? 250 : 1500;
     if (config.general.wordapis.uses > max) {
-        bu.sendMessageToDiscord(msg.channel.id, 'I have used up all of my api queries for today. Sorry!')
+        bu.sendMessageToDiscord(msg.channel.id, 'I have used up all of my api queries for today. Sorry!');
         return;
     }
-    config.general.wordapis.uses++
-    bu.saveConfig()
-    console.log('whew')
+    config.general.wordapis.uses++;
+    bu.saveConfig();
+    console.log('whew');
     request({
         url: `https://wordsapiv1.p.mashape.com/words/${args}`,
         headers: {
@@ -59,21 +59,21 @@ e.execute = (msg, words, text) => {
             var res = JSON.parse(body);
             var message = `Definitions for ${args}:\n`;
             if (res.results) {
-                message += `\`\`\`xl\n`
+                message += `\`\`\`xl\n`;
 
                 for (i = 0; i < res.results.length; i++) {
-                    var type = res.results[i].partOfSpeech
-                    message += `${res.results.length >= 10 ? (i + 1 < 10 ? ` ${i+1}` : i+1) : i+1}: (${part[type] ? part[type] : type}) ${res.results[i].definition}\n`
+                    var type = res.results[i].partOfSpeech;
+                    message += `${res.results.length >= 10 ? (i + 1 < 10 ? ` ${i+1}` : i+1) : i+1}: (${part[type] ? part[type] : type}) ${res.results[i].definition}\n`;
                 }
-                message += `\`\`\``
+                message += `\`\`\``;
                 
                 //message.edit("```xl\nDefinitions for " + args + ":\n" + final + "\n```");
             } else {
-                message += 'No results found!'
+                message += 'No results found!';
             }
-            bu.sendMessageToDiscord(msg.channel.id, message)
+            bu.sendMessageToDiscord(msg.channel.id, message);
         } else {
-            bu.sendMessageToDiscord(msg.channel.id, 'No results found!')
+            bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
             
         }
     });
@@ -134,4 +134,4 @@ e.execute = (msg, words, text) => {
     })
     */
 
-}
+};

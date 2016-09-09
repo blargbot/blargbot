@@ -1,18 +1,18 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
-var http = require('http')
+var e = module.exports = {};
+var bu = require('./../util.js');
+var http = require('http');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
+    bot = Tbot;
+};
 
-e.isCommand = true
-e.requireCtx = require
-e.hidden = false
+e.isCommand = true;
+e.requireCtx = require;
+e.hidden = false;
 e.usage = 'cat <tags>';
 e.info = 'Gets a picture of a cat.';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.GENERAL;
 
 
 e.execute = (msg, words, text) => {
@@ -29,4 +29,4 @@ e.execute = (msg, words, text) => {
             bu.sendMessageToDiscord(msg.channel.id, output.file);
         });
     });
-}
+};

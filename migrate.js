@@ -1,7 +1,7 @@
-var mysql = require('mysql')
-var fs = require('fs')
-var path = require('path')
-var util = require('util')
+var mysql = require('mysql');
+var fs = require('fs');
+var path = require('path');
+var util = require('util');
 if (fs.existsSync(path.join(__dirname, 'config.json'))) {
     var configFile = fs.readFileSync(path.join(__dirname, 'config.json'), 'utf8');
     var config = JSON.parse(configFile);
@@ -24,18 +24,18 @@ var db = mysql.createConnection({
     password: config.sql.pass,
     database: config.sql.database,
     charset: 'utf8mb4_general_ci'
-})
+});
 //users()
-init()
+init();
 //db.query('select * from modlog', (err, row) => {
 //    console.log(util.inspect(row))
 //})
 function init() {
-    console.log('Initializing. Thing will start in ~10 seconds.')
+    console.log('Initializing. Thing will start in ~10 seconds.');
     db.query(`create table if not exists vars (
         varname VARCHAR(30) PRIMARY KEY,
         varvalue TEXT
-    ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`)
+    ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`);
 
     db.query(`CREATE TABLE if not exists user (
         userid VARCHAR(30) PRIMARY KEY, 
@@ -59,7 +59,7 @@ function init() {
             primary key (guildid, caseid),
             foreign key (userid) references user(userid),
             foreign key (modid) references user(userid)
-        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`)
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`);
 
     db.query(`CREATE TABLE IF NOT EXISTs chatlogs (
             id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -73,7 +73,7 @@ function init() {
             nsfw INTEGER,
             mentions TEXT,
             foreign key (userid) references user(userid)            
-        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`)
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`);
 
     db.query(`CREATE TABLE IF NOT EXISTs catchat (
             id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -84,7 +84,7 @@ function init() {
             guildid TEXT,
             msgtime DATETIME,
             nsfw INTEGER
-                    ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`)
+                    ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`);
 
     db.query(`create table if not exists tag (
         id INTEGER PRIMARY KEY AUTO_INCREMENT,
@@ -101,21 +101,21 @@ function init() {
             username TEXT,
             namedate DATETIME DEFAULT CURRENT_TIMESTAMP,
             foreign key (userid) references user(userid)
-        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`)
+        ) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci`);
     setTimeout(function () {
-        users()
-    }, 10000)
+        users();
+    }, 10000);
 }
 function users() {
-    console.log('Migrating users')
+    console.log('Migrating users');
     olddb.all(`select * from user`, (err, rows) => {
         if (err) {
-            console.log(err)
-            return
+            console.log(err);
+            return;
         }
-        var count = rows.length
+        var count = rows.length;
         function done() {
-            usernames()
+            usernames();
         }
         for (var i = 0; i < rows.length; i++) {
             db.query(`insert into user 
@@ -124,31 +124,31 @@ function users() {
                 [rows[i].userid, rows[i].username, rows[i].isbot, rows[i].lastchannel, rows[i].lastspoke, rows[i].lastcommand, rows[i].lastcommanddate, rows[i].messagecount],
                 (err, result) => {
                     if (err) {
-                        console.log(err)
+                        console.log(err);
                         return;
                     }
                     count--;
-                    console.log(count)
+                    console.log(count);
                     if (count == 0) {
-                        done()
+                        done();
                     }
-                })
+                });
         }
-    })
+    });
 }
 
 
 function usernames() {
-    console.log('Migrating usernames')
+    console.log('Migrating usernames');
 
     olddb.all(`select * from username`, (err, rows) => {
         if (err) {
-            console.log(err)
-            return
+            console.log(err);
+            return;
         }
-        var count = rows.length
+        var count = rows.length;
         function done() {
-            catchat()
+            catchat();
         }
         for (var i = 0; i < rows.length; i++) {
             db.query(`insert into username
@@ -157,14 +157,14 @@ function usernames() {
                 [rows[i].id, rows[i].userid, rows[i].username, rows[i].namedate],
                 (err, result) => {
                     if (err) {
-                        console.log(err)
+                        console.log(err);
                         return;
                     }
                     count--;
-                    console.log(count)
+                    console.log(count);
 
                     if (count == 0) {
-                        done()
+                        done();
                     }
                 })
         }

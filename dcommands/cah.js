@@ -1,26 +1,26 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
-var gm = require('gm')
-var path = require('path')
-var moment = require('moment')
-var fs = require('fs')
-var util = require('util')
-var bot
-var cah = {}
-var Canvas = require('canvas')
-var Image = Canvas.Image
+var e = module.exports = {};
+var bu = require('./../util.js');
+var gm = require('gm');
+var path = require('path');
+var moment = require('moment');
+var fs = require('fs');
+var util = require('util');
+var bot;
+var cah = {};
+var Canvas = require('canvas');
+var Image = Canvas.Image;
 
 e.init = (Tbot) => {
-    bot = Tbot
+    bot = Tbot;
     if (fs.existsSync(path.join(__dirname, '..', 'cah.json'))) {
         cah = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'cah.json'), 'utf8'));
     }
-}
+};
 
-e.requireCtx = require
+e.requireCtx = require;
 
 e.isCommand = true;
-e.hidden = false
+e.hidden = false;
 e.usage = 'cah';
 e.info = 'Generates a set of CAH cards.';
 e.category = bu.CommandType.GENERAL;
@@ -31,56 +31,56 @@ e.execute = (msg, words, text) => {
         bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw').then(val => {
             if (val != '0') {
                 bu.isNsfwChannel(msg.channel.id).then(cont => {
-                    fulfill(cont)
-                })
+                    fulfill(cont);
+                });
             } else {
-                fulfill(true)
+                fulfill(true);
             }
-        })
+        });
     }).then(cont => {
         if (cont)
             doit();
         else
-            bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage)
-    })
-}
+            bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage);
+    });
+};
 
 function doit() {
     //   console.log(util.inspect(cah))
     var timestamp = moment().format().replace(/:/gi, '_');
-    var blackphrase = cah.black[bu.getRandomInt(0, cah.black.length)]
+    var blackphrase = cah.black[bu.getRandomInt(0, cah.black.length)];
     //   console.log(blackphrase)
-    var blankCount = /.\_\_[^\_]/g.test(blackphrase) ? blackphrase.match(/.\_\_[^\_]/g).length : 1
+    var blankCount = /.\_\_[^\_]/g.test(blackphrase) ? blackphrase.match(/.\_\_[^\_]/g).length : 1;
     //   console.log(blankCount)
-    var canvas = new Canvas(185 * (1 + blankCount), 254)
-    var ctx = canvas.getContext('2d')
+    var canvas = new Canvas(185 * (1 + blankCount), 254);
+    var ctx = canvas.getContext('2d');
 
-    var blackcard = new Image()
-    blackcard.src = fs.readFileSync(path.join(__dirname, '..', 'img', 'blackcard.png'))
-    var whitecard = new Image()
-    whitecard.src = fs.readFileSync(path.join(__dirname, '..', 'img', 'whitecard.png'))
+    var blackcard = new Image();
+    blackcard.src = fs.readFileSync(path.join(__dirname, '..', 'img', 'blackcard.png'));
+    var whitecard = new Image();
+    whitecard.src = fs.readFileSync(path.join(__dirname, '..', 'img', 'whitecard.png'));
 
-    ctx.fillStyle = "white"
-    ctx.drawImage(blackcard, 0, 0)
+    ctx.fillStyle = "white";
+    ctx.drawImage(blackcard, 0, 0);
     wrapText(ctx, blackphrase, 19, 38, 144, 20);
-    ctx.fillStyle = "black"
-    var usedCards = []
+    ctx.fillStyle = "black";
+    var usedCards = [];
     for (var i = 0; i < blankCount; i++) {
-        ctx.drawImage(whitecard, ((i + 1) * (184 + 1)), 0)
+        ctx.drawImage(whitecard, ((i + 1) * (184 + 1)), 0);
 
-        var whitephrase = cah.white[bu.getRandomInt(0, cah.black.length)]
+        var whitephrase = cah.white[bu.getRandomInt(0, cah.black.length)];
         while (usedCards.indexOf(whitephrase) > -1) {
-            whitephrase = cah.white[bu.getRandomInt(0, cah.black.length)]
+            whitephrase = cah.white[bu.getRandomInt(0, cah.black.length)];
         }
         usedCards.push(whitephrase);
         wrapText(ctx, whitephrase, 19 + ((i + 1) * (184 + 1)), 38, 144, 20);
     }
 
-    var data = canvas.toBuffer()
+    var data = canvas.toBuffer();
     bu.sendMessageToDiscord(msg.channel.id, ``, {
         name: 'cards.png',
         file: data
-    })
+    });
 
 }
 

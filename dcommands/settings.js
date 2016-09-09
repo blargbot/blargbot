@@ -1,15 +1,15 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
+var e = module.exports = {};
+var bu = require('./../util.js');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
+    bot = Tbot;
+};
 
-e.requireCtx = require
+e.requireCtx = require;
 
 e.isCommand = true;
-e.hidden = false
+e.hidden = false;
 e.usage = 'settings [help|set <key>]';
 e.info = 'Gets or sets the settings for the current guild.';
 e.category = bu.CommandType.ADMIN;
@@ -20,37 +20,37 @@ e.execute = (msg, words, text) => {
         bu.db.query(`select name, value from guildsetting where guildid=?`, [msg.channel.guild.id], (err, rows) => {
             bu.db.query(`select channelid, nsfw, blacklisted from channel where guildid=?`, [msg.channel.guild.id], (err, rows2) => {
                 var nsfw = [];
-                var blacklisted = []
+                var blacklisted = [];
                 for (var i = 0; i < rows2.length; i++) {
                     if (rows2[i].nsfw) {
-                        nsfw.push(rows2[i].channelid)
+                        nsfw.push(rows2[i].channelid);
                     }
                     if (rows2[i].blacklisted) {
-                        blacklisted.push(rows2[i].channelid)
+                        blacklisted.push(rows2[i].channelid);
                     }
                 }
-                var settings = {}
+                var settings = {};
                 for (var i = 0; i < rows.length; i++) {
-                    settings[rows[i].name] = rows[i].value
+                    settings[rows[i].name] = rows[i].value;
                 }
 
                 var prefix = settings.prefix
-                    ? settings.prefix : 'no custom prefix set'
-                var nsfwMessage = 'none set'
+                    ? settings.prefix : 'no custom prefix set';
+                var nsfwMessage = 'none set';
                 if (nsfw.length > 0) {
-                    nsfwMessage = ''
+                    nsfwMessage = '';
                     for (var i = 0; i < nsfw.length; i++) {
-                        nsfwMessage += bot.getChannel(nsfw[i]).name + '\n                - '
+                        nsfwMessage += bot.getChannel(nsfw[i]).name + '\n                - ';
                     }
-                    nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 19)
+                    nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 19);
                 }
-                var blacklistMessage = 'none set'
+                var blacklistMessage = 'none set';
                 if (blacklisted.length > 0) {
-                    blacklistMessage = ''
+                    blacklistMessage = '';
                     for (var i = 0; i < blacklisted.length; i++) {
-                        blacklistMessage += bot.getChannel(blacklisted[i]).name + '\n                - '
+                        blacklistMessage += bot.getChannel(blacklisted[i]).name + '\n                - ';
                     }
-                    blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19)
+                    blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19);
                 }
                 var greeting = settings.greeting
                     ? settings.greeting : 'not set';
@@ -76,19 +76,19 @@ Settings For ${msg.channel.guild.name}
      Tableflips : ${tableFlip}
 \`\`\``;
                 bu.sendMessageToDiscord(msg.channel.id, message);
-            })
-        })
+            });
+        });
     } else {
-        words.shift()
+        words.shift();
         switch (words.shift().toLowerCase()) {
             case 'set':
                 if (words.length > 0) {
-                    var key = words.shift()
-                    var value = words.join(' ')
+                    var key = words.shift();
+                    var value = words.join(' ');
                     if (settings[key]) {
                         bu.guildSettings.set(msg.channel.guild.id, key, value).then(() => {
-                            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:')
-                        })
+                            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+                        });
                     } else {
                         bu.sendMessageToDiscord(msg.channel.id, 'Invalid key!');
                     }
@@ -97,14 +97,14 @@ Settings For ${msg.channel.guild.name}
             case 'help':
                 var message = '```xl\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
                 for (key in settings) {
-                    message += key.toUpperCase() + ' - ' + settings[key] + '\n'
+                    message += key.toUpperCase() + ' - ' + settings[key] + '\n';
                 }
-                message += '```'
-                bu.sendMessageToDiscord(msg.channel.id, message)
+                message += '```';
+                bu.sendMessageToDiscord(msg.channel.id, message);
                 break;
         }
     }
-}
+};
 
 var settings = {
     cahnsfw: `whether 'cah' can only be done in nsfw channels or not. Set to '0' to disable.`,

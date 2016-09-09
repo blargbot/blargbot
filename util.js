@@ -1,21 +1,21 @@
-var moment = require('moment-timezone')
-var Promise = require('promise')
-var util = require('util')
-var e = module.exports = {}
+var moment = require('moment-timezone');
+var Promise = require('promise');
+var util = require('util');
+var e = module.exports = {};
 e.CAT_ID = "103347843934212096";
-e.catOverrides = true
+e.catOverrides = true;
 
-e.db = null
-e.config = null
-e.emitter = null
-e.VERSION = null
-e.startTime = null
-e.vars = null
+e.db = null;
+e.config = null;
+e.emitter = null;
+e.VERSION = null;
+e.startTime = null;
+e.vars = null;
 
 // A list of command modules
-e.commands = {}
+e.commands = {};
 // A list of command names/descriptions for each alias or subcommand
-e.commandList = {}
+e.commandList = {};
 
 e.CommandType = {
     GENERAL: 1,
@@ -52,11 +52,11 @@ e.CommandType = {
             perm: 'Admin'
         }
     }
-}
+};
 
 e.init = (Tbot) => {
-    e.bot = Tbot
-}
+    e.bot = Tbot;
+};
 
 /**
  * Checks if a user has a role with a specific name
@@ -78,7 +78,7 @@ e.hasPerm = (msg, perm, quiet) => {
     if (!quiet)
         e.sendMessageToDiscord(msg.channel.id, `You need the role '${perm}' in order to use this command!`);
     return false;
-}
+};
 
 /**
  * Sends a message to discord.
@@ -97,7 +97,7 @@ e.sendMessageToDiscord = function (channelId, message, file) {
     } catch (err) {
         console.log(err.stack);
     }
-}
+};
 
 /**
  * Gets a user from a name (smartly)
@@ -150,10 +150,10 @@ e.getUserFromName = (msg, name, quiet) => {
         return userList[0].user;
     } else if (userList.length == 0) {
         if (!quiet)
-            e.sendMessageToDiscord(msg.channel.id, `No users found.`)
+            e.sendMessageToDiscord(msg.channel.id, `No users found.`);
         return null;
     } else {
-        var userListString = ''
+        var userListString = '';
         for (var i = 0; i < userList.length; i++) {
             userListString += `- ${userList[i].user.username}#${userList[i].user.discriminator}\n`
         }

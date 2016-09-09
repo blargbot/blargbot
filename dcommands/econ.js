@@ -1,18 +1,18 @@
-var e = module.exports = {}
-var bu = require('./../util.js')
-var http = require('http')
+var e = module.exports = {};
+var bu = require('./../util.js');
+var http = require('http');
 
-var bot
+var bot;
 e.init = (Tbot) => {
-    bot = Tbot
-}
-e.requireCtx = require
+    bot = Tbot;
+};
+e.requireCtx = require;
 
-e.isCommand = true
-e.hidden = false
+e.isCommand = true;
+e.hidden = false;
 e.usage = 'econ <from> <to> <amount>';
 e.info = 'Converts currency using recent rates.';
-e.category = bu.CommandType.GENERAL
+e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     if (words.length < 4) {
@@ -46,4 +46,4 @@ e.execute = (msg, words, text) => {
 
         });
     });
-}
+};
