@@ -35,13 +35,13 @@ e.execute = (msg) => {
         });
     }).then(cont => {
         if (cont)
-            doit();
+            doit(msg);
         else
             bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage);
     });
 };
 
-function doit() {
+function doit(msg) {
     //   console.log(util.inspect(cah))
     var blackphrase = cah.black[bu.getRandomInt(0, cah.black.length)];
     //   console.log(blackphrase)
@@ -75,6 +75,8 @@ function doit() {
     bu.sendMessageToDiscord(msg.channel.id, ``, {
         name: 'cards.png',
         file: data
+    }).catch(err => {
+        console.log(err);
     });
 
 }
