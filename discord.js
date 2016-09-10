@@ -319,10 +319,10 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
             }
             var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you! 
 - 💻 For command information, please do \`${bu.config.discord.defaultPrefix}help\`!
-- 📢 For Bot Commander bu.commands, please make sure you have a role titled \`Bot Commander\`.
-- 🛠 For Admin bu.commands, please make sure you have a role titled \`Admin\`.
+- 📢 For Bot Commander commands, please make sure you have a role titled \`Bot Commander\`.
+- 🛠 For Admin commands, please make sure you have a role titled \`Admin\`.
 If you are the owner of this server, here are a few things to know.
-- 🗨 To enable modlogging, please do create a channel for me to log in and do \`${bu.config.discord.defaultPrefix}modlog\`
+- 🗨 To enable modlogging, please create a channel for me to log in and do \`${bu.config.discord.defaultPrefix}modlog\`
 - 🙈 To mark channels as NSFW, please go to them and do \`${bu.config.discord.defaultPrefix}nsfw\`.
 - ❗ To change my command prefix, please do \`${bu.config.discord.defaultPrefix}setprefix <anything>\`.
 
