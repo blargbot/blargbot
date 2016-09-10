@@ -346,9 +346,27 @@ If you are the owner of this server, here are a few things to know.
             });
     });
 
-    bot.on('messageUpdate', (msg) => {
-        if (msg.author.id == bot.user.id) {
-            console.log(`Message ${msg.id} was updated to '${msg.content}''`);
+    bot.on('messageUpdate', (msg, oldmsg) => {
+        if (oldmsg) {
+            if (msg.author.id == bot.user.id) {
+                console.log(`Message ${msg.id} was updated to '${msg.content}''`);
+            }
+            if (msg.channel.id != '204404225914961920') {
+                var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions, type) 
+            values (?, ?, (select userid from user where userid = ?), ?, ?, ?, NOW(), ?, ?, 1)`;
+                var nsfw = 0;
+                db.query(`select channelid from channel where channelid = ? and nsfw = true`, [msg.channel.id], (err, row) => {
+                    if (row[0]) {
+                        nsfw = 1;
+                    }
+                    var mentions = '';
+                    for (var i = 0; i < msg.mentions.length; i++) {
+                        mentions += msg.mentions[i].username + ',';
+                    }
+                    db.query(statement, [msg.content, msg.attachments[0] ? msg.attachments[0].url : 'none',
+                        msg.author.id, msg.id, msg.channel.id, msg.channel.guild ? msg.channel.guild.id : 'DM', nsfw, mentions]);
+                });
+            }
         }
     });
 
@@ -377,6 +395,22 @@ If you are the owner of this server, here are a few things to know.
                         ? msg.member.nick
                         : msg.author.username}** deleted their command message.`);
                 commandMessages.splice(commandMessages.indexOf(msg.id), 1);
+            });
+        }
+        if (msg.channel.id != '204404225914961920') {
+            var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions, type) 
+            values (?, ?, (select userid from user where userid = ?), ?, ?, ?, NOW(), ?, ?, 2)`;
+            var nsfw = 0;
+            db.query(`select channelid from channel where channelid = ? and nsfw = true`, [msg.channel.id], (err, row) => {
+                if (row[0]) {
+                    nsfw = 1;
+                }
+                var mentions = '';
+                for (var i = 0; i < msg.mentions.length; i++) {
+                    mentions += msg.mentions[i].username + ',';
+                }
+                db.query(statement, [msg.content, msg.attachments[0] ? msg.attachments[0].url : 'none',
+                    msg.author.id, msg.id, msg.channel.id, msg.channel.guild ? msg.channel.guild.id : 'DM', nsfw, mentions]);
             });
         }
     });
@@ -532,7 +566,7 @@ If you are the owner of this server, here are a few things to know.
             });
         }
         if (msg.channel.id != '204404225914961920') {
-            var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions, messagetype) 
+            var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions, type) 
             values (?, ?, (select userid from user where userid = ?), ?, ?, ?, NOW(), ?, ?, 0)`;
             var nsfw = 0;
             db.query(`select channelid from channel where channelid = ? and nsfw = true`, [msg.channel.id], (err, row) => {
