@@ -816,7 +816,8 @@ function postStats() {
             'headers': { 'content-type': 'application/json' }, 'json': true,
             body: {
                 'key': config.general.carbontoken,
-                'servercount': bot.guilds.size
+                'servercount': bot.guilds.size,
+                'logoid': 'https://i.imgur.com/uVq0zdO.png'
             }
         });
     }
