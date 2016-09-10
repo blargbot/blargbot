@@ -100,6 +100,11 @@ e.sendMessageToDiscord = function (channelId, message, file) {
     }
 };
 
+//Alias of sendMessageToDiscord
+e.send = (channelId, message, file) => {
+    e.sendMessageToDiscord(channelId, message, file);
+};
+
 /**
  * Gets a user from a name (smartly)
  * @param msg - the message (Message)
