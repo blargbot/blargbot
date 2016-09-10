@@ -56,9 +56,9 @@ e.processTag = (msg, contents, command) => {
             case 'randint':
                 //console.log(args.length);
                 if (args.length == 2) {
-                    replaceString = bu.bu.getRandomInt(0, parseInt(args[1]));
+                    replaceString = bu.getRandomInt(0, parseInt(args[1]));
                 } else if (args.length > 2) {
-                    replaceString = bu.bu.getRandomInt(parseInt(args[1]), parseInt(args[2]));
+                    replaceString = bu.getRandomInt(parseInt(args[1]), parseInt(args[2]));
                 } else {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
                 }
