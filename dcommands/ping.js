@@ -25,16 +25,13 @@ var messages = [
     `Truth is false.`,
     `Forsake everything.`,
     `Your existence is pitiful.`,
-    `We are all already dead.`,
-    `Eat Arby's.`
+    `We are all already dead.`
 ];
 
 e.execute = (msg) => {
     var message = messages[bu.getRandomInt(0, messages.length - 1)];
     bot.createMessage(msg.channel.id, message).then((msg2) => {
-        var ms = moment().diff(moment(msg2.timestamp));
-        bot.editMessage(msg2.channel.id, msg2.id, `Pong! (${ms}ms)\u202e`);
-    
+        bot.editMessage(msg2.channel.id, msg2.id, `Pong! (${msg2.timestamp - msg.timestamp}ms)\u202e`);
         return msg2;
     }).catch(err => console.log(err.stack));
 };
