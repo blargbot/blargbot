@@ -382,6 +382,8 @@ If you are the owner of this server, here are a few things to know.
     });
 
     bot.on('messageCreate', function (msg) {
+        processUser(msg);
+
         if (msg.channel.id != '194950328393793536')
             if (msg.author.id == bot.user.id) {
                 if (msg.channel.guild)
@@ -442,7 +444,6 @@ If you are the owner of this server, here are a few things to know.
                         return;
                     }
 
-                    processUser(msg);
                     if (msg.content.indexOf('(╯°□°）╯︵ ┻━┻') > -1 && !msg.author.bot) {
                         flipTables(msg, false);
                     }
@@ -531,8 +532,8 @@ If you are the owner of this server, here are a few things to know.
             });
         }
         if (msg.channel.id != '204404225914961920') {
-            var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions) 
-            values (?, ?, (select userid from user where userid = ?), ?, ?, ?, NOW(), ?, ?)`;
+            var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions, messagetype) 
+            values (?, ?, (select userid from user where userid = ?), ?, ?, ?, NOW(), ?, ?, 0)`;
             var nsfw = 0;
             db.query(`select channelid from channel where channelid = ? and nsfw = true`, [msg.channel.id], (err, row) => {
                 if (row[0]) {
