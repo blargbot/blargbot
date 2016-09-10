@@ -676,7 +676,11 @@ function handleDiscordCommand(channel, user, text, msg) {
                                 return;
                             }
                         }
-                        bu.commands[bu.commandList[words[0].toLowerCase()].name].execute(msg, words, text);
+                        var commandName = bu.commandList[words[0].toLowerCase()].name;
+                        db.query(`insert into stats (commandname, uses, lastused) values (?, 1, NOW())
+            on duplicate key update uses = uses + 1 , lastused=NOW()`, [commandName]);
+                        bu.commands[commandName].execute(msg, words, text);
+
                         fulfill(true);
                     }
                     //    }

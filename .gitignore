@@ -24,6 +24,7 @@ out.png
 music/*
 img/avatars/*
 avatar.js
+ratelimit.js
 command.js
 testkek1.js
 testkek.js

@@ -38,7 +38,7 @@ botEmitter.on('reloadIrc', () => {
 });
 
 
-var VERSION = '4.4.2';
+var VERSION = '4.4.3';
 /** LOGGING STUFF **/
 
 
@@ -255,6 +255,12 @@ db.query(`CREATE TABLE if not exists user (
         lastcommand TEXT,
         lastcommanddate DATETIME,
         messagecount INTEGER DEFAULT 0
+        )`);
+
+db.query(`CREATE TABLE if not exists stats (
+        commandname varchar(30) primary key,
+        uses integer,
+        lastused DATETIME default NOW()
         )`);
 
 db.query(`CREATE TABLE if not exists guild (
