@@ -78,7 +78,7 @@ e.generateFinalImage = function (timestamp, channelid) {
         .toBuffer('PNG', (err, buf) => {
             if (err) throw err;
             bot.createMessage(channelid, 'It really works!', {
-                name: 'FREE.png',
+                name: 'FREE.gif',
                 file: buf
             });
             try {
