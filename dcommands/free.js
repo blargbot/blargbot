@@ -75,7 +75,7 @@ e.generateFinalImage = function (timestamp, channelid) {
         .in(path.join(__dirname, '..', `img/generated/freefreefreetest5-${timestamp}.png`))
         .loop('0')
         .delay('4')
-        .toBuffer('PNG', (err, buf) => {
+        .toBuffer('GIF', (err, buf) => {
             if (err) throw err;
             bot.createMessage(channelid, 'It really works!', {
                 name: 'FREE.gif',
