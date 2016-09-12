@@ -16,47 +16,51 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = '`free <message> [ | <lower message>]';
+e.usage = '`free <caption> [ | <lower caption>]';
 e.info = 'Tells everyone what you got for free';
 e.category = bu.CommandType.GENERAL;
 
 e.execute = function (msg, words, text) {
+    if (words.length == 1) {
+        bu.send(msg.channel.id, 'Usage: `free <caption> [ | <lower caption>]`');
+        return;
+    }
     text = text.replace(words[0], '').trim();
     bot.sendChannelTyping(msg.channel.id);
 
     //  return new promise((fulfill, reject) => {
-        var cap1 = '';
-        var cap2;
-        if (text.indexOf('|') > -1) {
-            cap1 = text.split('|')[0].trim();
-            cap2 = text.split('|')[1].trim();
-        } else {
-            cap1 = text;
-        }
-        var timestamp = moment().format().replace(/:/gi, '_');
-        console.log(`Generating image for text '${text}'`);
+    var cap1 = '';
+    var cap2;
+    if (text.indexOf('|') > -1) {
+        cap1 = text.split('|')[0].trim();
+        cap2 = text.split('|')[1].trim();
+    } else {
+        cap1 = text;
+    }
+    var timestamp = moment().format().replace(/:/gi, '_');
+    console.log(`Generating image for text '${text}'`);
 
-        e.generateCaption(timestamp, cap1, () => {
-            e.generateLowerCaption(timestamp, cap2, () => {
-                e.generateFrame(timestamp, 0, () => {
-                    e.generateFrame(timestamp, 1, () => {
-                        e.generateFrame(timestamp, 2, () => {
-                            e.generateFrame(timestamp, 3, () => {
-                                e.generateFrame(timestamp, 4, () => {
-                                    e.generateFrame(timestamp, 5, () => {
-                                        e.generateFinalImage(timestamp, msg.channel.id);
-                                        // console.log(2, image)
-                                        // fulfill(image);
-                                    });
+    e.generateCaption(timestamp, cap1, () => {
+        e.generateLowerCaption(timestamp, cap2, () => {
+            e.generateFrame(timestamp, 0, () => {
+                e.generateFrame(timestamp, 1, () => {
+                    e.generateFrame(timestamp, 2, () => {
+                        e.generateFrame(timestamp, 3, () => {
+                            e.generateFrame(timestamp, 4, () => {
+                                e.generateFrame(timestamp, 5, () => {
+                                    e.generateFinalImage(timestamp, msg.channel.id);
+                                    // console.log(2, image)
+                                    // fulfill(image);
                                 });
                             });
                         });
                     });
                 });
-
             });
+
         });
-   // });
+    });
+    // });
 
 };
 
@@ -71,10 +75,12 @@ e.generateFinalImage = function (timestamp, channelid) {
         .in(path.join(__dirname, '..', `img/generated/freefreefreetest5-${timestamp}.png`))
         .loop('0')
         .delay('4')
-        .write(path.join(__dirname, '..', `img/generated/freefreefree-${timestamp}.gif`), function (err) {
+        .toBuffer('PNG', (err, buf) => {
             if (err) throw err;
-            //sendMessageToDiscord(msg.channel.id, 'done');
-
+            bot.createMessage(channelid, 'It really works!', {
+                name: 'FREE.png',
+                file: buf
+            });
             try {
                 fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest0-${timestamp}.png`));
                 fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreetest1-${timestamp}.png`));
@@ -87,28 +93,35 @@ e.generateFinalImage = function (timestamp, channelid) {
             } catch (err) {
                 console.log(err);
             }
-
-
-            var fuckyou = fs.readFileSync(path.join(__dirname, '..', `img/generated/freefreefree-${timestamp}.gif`));
-            //  console.log(3, fuckyou)
-            var image = new Buffer(fuckyou);
-            //   console.log(4, image);
-            bot.createMessage(channelid, `It really works!`, {
-                name: 'freefreefree.gif',
-                file: image
-            });
-         //   fulfill(image);
-
-            /*
-, function (err, data) {
-                if (err) console.log(err.stack);
-                var image = new Buffer(data);
-                console.log(1, image);
-                return image;
-                //callback(image);
-            }
-            */
         });
+        /*
+        .write(path.join(__dirname, '..', `img/generated/freefreefree-${timestamp}.gif`), function (err) {
+        if (err) throw err;
+        //sendMessageToDiscord(msg.channel.id, 'done');
+
+
+
+
+        var fuckyou = fs.readFileSync(path.join(__dirname, '..', `img/generated/freefreefree-${timestamp}.gif`));
+        //  console.log(3, fuckyou)
+        var image = new Buffer(fuckyou);
+        //   console.log(4, image);
+        bot.createMessage(channelid, `It really works!`, {
+            name: 'freefreefree.gif',
+            file: image
+        });
+        //   fulfill(image);
+
+        /*
+, function (err, data) {
+            if (err) console.log(err.stack);
+            var image = new Buffer(data);
+            console.log(1, image);
+            return image;
+            //callback(image);
+        }
+        */
+ //   });
 };
 
 e.generateCaption = function (timestamp, text, callback) {
