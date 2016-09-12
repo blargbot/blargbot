@@ -116,7 +116,7 @@ function buildCommand(commandName) {
     if (bu.commands[commandName].longinfo) {
         bu.db.query(`insert into command (commandname, cusage, info, type) values (?, ?, ?, ?)
             on duplicate key update info = values(info), cusage = values(cusage), type = values(type)`,
-            [commandName, command.usage, bu.commands[commandName].longinfo, command.category]);
+            [commandName, command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'), bu.commands[commandName].longinfo, command.category]);
     }
     if (bu.commands[commandName].sub) {
         for (var subCommand in bu.commands[commandName].sub) {
