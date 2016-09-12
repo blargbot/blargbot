@@ -35,7 +35,7 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + 'where `number` is the amount of lines to get. '
     + 'For more specific logs, you can specify a (case insensitive) '
     + 'type and parameter as follows:</p><p>'
-    + '<pre>Types: \n'
+    + '<pre><code>Types: \n'
     + '     -MESSAGE (-M)\n'
     + '        CREATE - Gets original messages.\n'
     + '        UPDATE - Gets message edits.\n'
@@ -44,11 +44,11 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + '        <name or id> - Gets messages made by specific user.\n'
     + '     -ORDER (-O)\n'
     + '        DESC - Get\'s the newest messages first (default).\n'
-    + '        ASC  - Get\'s the oldest messages first.</pre></p>'
+    + '        ASC  - Get\'s the oldest messages first.</code></pre></p>'
     + '<p>For example, if you wanted to get 100 messages `stupid cat` deleted, you would do this:<\p>'
-    + '<code><pre>logs 100 -message delete -user stupid cat</pre></code>'
+    + '<pre><code>logs 100 -message delete -user stupid cat</code></pre>'
     + '<p>If you want to use multiple of the same type, separate parameters with commas. For example:</p>'
-    + '<code><pre>logs 100 -m create, update -u stupid cat, dumb cat</pre></code>';
+    + '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {
