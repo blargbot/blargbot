@@ -11,7 +11,9 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'kick <user>';
-e.info = 'Kicks a user.';
+e.info = 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.';
+e.longinfo = `<p>Kicks a user from the guild.</p>
+    <p>If mod-logging is enabled, the kick will be logged.</p>`;
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {

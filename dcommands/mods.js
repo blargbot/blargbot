@@ -11,7 +11,8 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'mods [online]';
-e.info = `Get's a list of mods.`;
+e.info = `Gets a list of mods.`;
+e.longinfo = `<p>Gets a list of mods on the guild.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {

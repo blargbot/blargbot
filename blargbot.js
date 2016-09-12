@@ -237,16 +237,21 @@ var db = mysql.createConnection({
 
 db.connect(err => {
     if (err) console.log(err);
-    else console.log('Connected to MySQL Database');
-});
+    else {
+        console.log('Connected to MySQL Database');
+        db.query(`create table if not exists command (
+    commandname VARCHAR(30) PRIMARY KEY,
+    info TEXT,
+    cusage TEXT,
+    type INT(11)
+)`);
 
-//db.serialize(function () {
-db.query(`create table if not exists vars (
+        db.query(`create table if not exists vars (
         varname VARCHAR(30) PRIMARY KEY,
         varvalue TEXT
     )`);
 
-db.query(`CREATE TABLE if not exists user (
+        db.query(`CREATE TABLE if not exists user (
         userid VARCHAR(30) PRIMARY KEY, 
         username TEXT,
         isbot INTEGER,
@@ -257,18 +262,18 @@ db.query(`CREATE TABLE if not exists user (
         messagecount INTEGER DEFAULT 0
         )`);
 
-db.query(`CREATE TABLE if not exists stats (
+        db.query(`CREATE TABLE if not exists stats (
         commandname varchar(30) primary key,
         uses integer,
         lastused DATETIME default NOW()
         )`);
 
-db.query(`CREATE TABLE if not exists guild (
+        db.query(`CREATE TABLE if not exists guild (
         guildid VARCHAR(30) PRIMARY KEY, 
         active bool default 1
         )`);
 
-db.query(`CREATE TABLE if not exists guildsetting (
+        db.query(`CREATE TABLE if not exists guildsetting (
         guildid VARCHAR(30),
         name VARCHAR(30),
         value VARCHAR(100),
@@ -276,7 +281,7 @@ db.query(`CREATE TABLE if not exists guildsetting (
         foreign key (guildid) references guild(guildid)
         )`);
 
-db.query(`CREATE TABLE if not exists ccommand (
+        db.query(`CREATE TABLE if not exists ccommand (
         commandname VARCHAR(30), 
         guildid VARCHAR(30),
         content TEXT,
@@ -284,14 +289,14 @@ db.query(`CREATE TABLE if not exists ccommand (
         foreign key (guildid) references guild(guildid)
         )`);
 
-db.query(`CREATE TABLE IF NOT EXISTS channel (
+        db.query(`CREATE TABLE IF NOT EXISTS channel (
     channelid VARCHAR(30) PRIMARY KEY,
     guildid VARCHAR(30),
     foreign key (guildid) references guild(guildid)
 )`);
 
 
-db.query(`CREATE TABLE IF NOT EXISTS modlog (
+        db.query(`CREATE TABLE IF NOT EXISTS modlog (
             guildid VARCHAR(30),
             caseid INTEGER,
             userid VARCHAR(30),
@@ -305,7 +310,7 @@ db.query(`CREATE TABLE IF NOT EXISTS modlog (
             foreign key (guildid) references guild(guildid)
         )`);
 
-db.query(`CREATE TABLE IF NOT EXISTs chatlogs (
+        db.query(`CREATE TABLE IF NOT EXISTs chatlogs (
             id INTEGER PRIMARY KEY AUTO_INCREMENT,
             content TEXT,
             attachment TEXT,
@@ -320,7 +325,7 @@ db.query(`CREATE TABLE IF NOT EXISTs chatlogs (
             foreign key (guildid) references guild(guildid)            
         )`);
 
-db.query(`CREATE TABLE IF NOT EXISTs catchat (
+        db.query(`CREATE TABLE IF NOT EXISTs catchat (
             id INTEGER PRIMARY KEY AUTO_INCREMENT,
             content TEXT,
             attachment TEXT,
@@ -332,7 +337,7 @@ db.query(`CREATE TABLE IF NOT EXISTs catchat (
             foreign key (guildid) references guild(guildid)            
                     )`);
 
-db.query(`create table if not exists tag (
+        db.query(`create table if not exists tag (
         id INTEGER PRIMARY KEY AUTO_INCREMENT,
         author VARCHAR(30),
         contents TEXT,
@@ -341,22 +346,33 @@ db.query(`create table if not exists tag (
         foreign key (author) references user(userid)
         )`);
 
-db.query(`create table if not exists username (
+        db.query(`create table if not exists username (
             id INTEGER PRIMARY KEY AUTO_INCREMENT,
             userid VARCHAR(30),
             username TEXT,
             namedate DATETIME DEFAULT CURRENT_TIMESTAMP,
             foreign key (userid) references user(userid)
         )`);
+        setTimeout(() => {
+            init();
+        }, 500);
+    }
+});
+
+//db.serialize(function () {
+
 
 //});
 
 /**
  * Time to init the bots
  */
-irc.init(VERSION, config, botEmitter);
-discord.init(VERSION, config, botEmitter, db);
-catbot.init(config, db);
+function init() {
+    irc.init(VERSION, config, botEmitter);
+    discord.init(VERSION, config, botEmitter, db);
+    catbot.init(config, db);
+}
+
 
 
 

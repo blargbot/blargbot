@@ -8,8 +8,9 @@ e.init = (Tbot) => {
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = '';
-e.info = '';
+e.usage = 'blacklist';
+e.info = 'Blacklists the current channel. The bot will not respond until you do `blacklist` again.';
+e.longinfo = `<p>Blacklists the current channel. The bot will not respond until you do the command again.</p>`;
 e.category = bu.CommandType.COMMANDER;
 
 e.execute = (msg) => {

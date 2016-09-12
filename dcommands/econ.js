@@ -12,6 +12,14 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'econ <from> <to> <amount>';
 e.info = 'Converts currency using recent rates.';
+e.longinfo = `<p>Converts currency using recent rates.
+        Example:</p>
+
+<pre><code>User&gt; blargbot econ USD CAD 1
+blargbot&gt; @User, 1.0 USD is equivalent to X.X CAD
+</code></pre>
+
+    <p>Currency codes are not case sensitive.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {

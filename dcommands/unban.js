@@ -11,7 +11,9 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'unban <userid>';
-e.info = 'Unbans a user.';
+e.info = 'Unbans a user.\nIf mod-logging is enabled, the unban will be logged.';
+e.longinfo = `<p>Unbans a user.</p>
+    <p>If mod-logging is enabled, the unban will be logged.</p>`;
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {

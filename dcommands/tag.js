@@ -12,6 +12,33 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'tag help';
 e.info = 'Gets tag command help';
+e.longinfo = `<p>
+        Tags are like public custom commands. You can create them on one guild, and use them on another. Anyone is
+        capable of making tags. Tags use a <a href="tags.html">tagging system</a>, so they can can range from simple to
+        complex. See the <a href="tags.html">tag</a> page for more details.
+    </p>
+    <pre><code>tag &lt;name&gt;</code></pre>
+    <p>
+        Executes a tag with the given name.
+    </p>
+    <pre><code>tag create &lt;name&gt; &lt;content&gt;</code></pre>
+    <p>
+        Creates a tag with the given name and content. The name must be unique.
+    </p>
+    <pre><code>tag edit &lt;name&gt; &lt;content&gt;</code></pre>
+    <p>Edits an existing tag. You must own it to edit it!</p>
+    <pre><code>tag delete &lt;name&gt;</code></pre>
+    <p>Deletes the specified tag. You must own it to delete it!</p>
+    <pre><code>tag raw &lt;name&gt;</code></pre>
+    <p>Outputs the raw tag</p>
+    <pre><code>tag author &lt;name&gt;</code></pre>
+    <p>Tells you who made the specified tag</p>
+    <pre><code>tag search &lt;name&gt;</code></pre>
+    <p>Searches for tags with given name</p>
+    <pre><code>tag list</code></pre>
+    <p>Lists all tags</p>
+    <pre><code>tag help</code></pre>
+    <p>Gets basic tag help.</p>`;
 e.alias = ['t'];
 e.category = bu.CommandType.GENERAL;
 

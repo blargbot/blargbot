@@ -11,6 +11,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'version';
 e.info = 'Tells you what version I am on';
+e.longinfo = `<p>Tells you what version the bot is currently running on.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {

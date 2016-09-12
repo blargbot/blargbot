@@ -11,6 +11,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'insult [name]';
 e.info = 'Generates a random insult directed at the name supplied.';
+e.longinfo = `<p>Generates an insult, directed at whatever name is supplied. If a name isn't supplied, defaults to 'Your'</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {

@@ -11,7 +11,9 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'Unmute <user>';
-e.info = 'Unmutes a user.';
+e.info = 'Unmutes a user.\nIf mod-logging is enabled, the unmute will be logged.';
+e.longinfo = `<p>Unmutes a user.</p>
+    <p>If mod-logging is enabled, the unmute will be logged.</p>`;
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {

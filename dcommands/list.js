@@ -11,7 +11,7 @@ e.isCommand = true;
 e.hidden = true;
 e.usage = '';
 e.info = '';
-e.category = bu.CommandType.GENERAL;
+e.category = bu.CommandType.CAT;
 
 e.execute = (msg) => {
     if (msg.channel.id === config.discord.channel) {

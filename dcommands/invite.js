@@ -11,6 +11,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'invite';
 e.info = 'Gets you invite information.';
+e.longinfo = `<p>Does the same thing as <code>invite</code>.</p>`;
 e.alias = ['join'];
 e.category = bu.CommandType.GENERAL;
 

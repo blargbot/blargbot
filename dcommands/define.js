@@ -13,7 +13,8 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'define <word>';
-e.info = 'Gets the definition for the specified word (english).';
+e.info = 'Gets the definition for the specified word. The word must be in english.';
+e.longinfo = `<p>Gets the definition for the specified word. The word must be in english.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 var part = {

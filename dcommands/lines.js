@@ -13,7 +13,8 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = true;
 e.usage = 'lines';
-e.info = 'Gets the number of lines the bot is made of';
+e.info = 'Gets the number of lines the bot is made of.';
+e.longinfo = `<p>Gets the number of lines the bot is made of.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {

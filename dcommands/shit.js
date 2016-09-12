@@ -20,7 +20,8 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'shit [-p] <text>';
-e.info = `Tells everyone what's shit. Use -p as the first argument to specify it's plural.`;
+e.info = `Tells everyone what's shit. Use -p as the first argument to specify the text is plural.`;
+e.longinfo = `<p>Tells everyone what's shit. Use <code>-p</code> as the first argument to specify the text as plural.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {

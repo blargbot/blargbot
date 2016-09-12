@@ -10,7 +10,8 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'purge';
-e.info = 'Purges messages made by blargbot';
+e.info = 'Purges messages made by me.';
+e.longinfo = `<p>Deletes all the messages in the current channel made by the bot, within 100 messages.</p>`;
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg) => {

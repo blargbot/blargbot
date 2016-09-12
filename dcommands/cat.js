@@ -12,6 +12,8 @@ e.requireCtx = require;
 e.hidden = false;
 e.usage = 'cat <tags>';
 e.info = 'Gets a picture of a cat.';
+e.info = '<p>Displays a picture of a cat, taken from <a href="http://random.cat/">random.cat</a></p>';
+
 e.category = bu.CommandType.GENERAL;
 
 

@@ -12,7 +12,8 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'ping';
-e.info = 'Pong!';
+e.info = 'Pong!\nFind the command latency.';
+e.longinfo = '<p>Pong!</p><p>Find the command latency.</p>';
 e.category = bu.CommandType.GENERAL;
 
 var messages = [

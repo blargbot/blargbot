@@ -12,6 +12,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'stats';
 e.info = 'Gives you some information about me';
+e.longinfo = `<p>Gives you information about the bot.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {

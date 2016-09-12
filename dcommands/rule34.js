@@ -12,6 +12,8 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'rule34 <tags...>';
 e.info = 'Gets three pictures from \'<https://rule34.xxx/>\' using given tags.';
+e.longinfo = `<p>Displays three images obtained from <a href="http://rule34.xxx/">rule34.xxx</a> using the provided tags.
+        The current channel needs to be marked as NSFW in order for the command to work.</p>`;
 e.category = bu.CommandType.NSFW;
 
 e.execute = (msg, words) => {

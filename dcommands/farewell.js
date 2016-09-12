@@ -12,6 +12,14 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'farewell [message]';
 e.info = 'Sets a farewell message for when users leave.';
+e.longinfo = `<p>Sets a farewell message for any user who leaves your guild. You can use the <a href="tags.html">tagging
+        system</a>
+        for more customization. For
+        example:</p>
+
+    <pre><code>User&gt; blargbot farewell **{username}** has left. Bye!
+blargbot&gt; Greeting set. Simulation: **User has left. Bye!
+</code></pre>`;
 e.category = bu.CommandType.COMMANDER;
 
 e.execute = (msg, words, text) => {

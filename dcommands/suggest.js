@@ -11,6 +11,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'suggest <suggestion>';
 e.info = 'Sends me a suggestion. Thanks for the feedback!';
+e.longinfo = `<p>Sends a suggestion to my guild. Thank you for the feedback! It's very important to me.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {

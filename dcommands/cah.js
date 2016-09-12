@@ -20,6 +20,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'cah';
 e.info = 'Generates a set of CAH cards.';
+e.longinfo = '<p>Generates a random set of Cards Against Humanity cards.</p>';
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {

@@ -12,6 +12,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'user [id/name/mention]';
 e.info = 'Gets information about specified user';
+e.longinfo = `<p>Gets information about the specified user.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {

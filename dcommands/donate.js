@@ -12,6 +12,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'donate';
 e.info = 'Gets you my donation information';
+e.longinfo = `<p>DMs you a list of my donation information.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {

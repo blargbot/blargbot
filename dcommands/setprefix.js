@@ -9,8 +9,9 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'setprefix <prefix>';
+e.usage = 'setprefix [prefix]';
 e.info = 'Sets the command prefix.';
+e.longinfo = `<p>Sets the custom command prefix for the guild. You can set it to anything. If no prefix is specified, disables the custom prefix.</p>`;
 e.category = bu.CommandType.COMMANDER;
 
 e.execute = (msg, words, text) => {

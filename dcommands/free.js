@@ -18,6 +18,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = '`free <caption> [ | <lower caption>]';
 e.info = 'Tells everyone what you got for free';
+e.longinfo = `<p>Tells everyone what you got for free.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = function (msg, words, text) {

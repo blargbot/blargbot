@@ -12,6 +12,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'wordsearch';
 e.info = 'Gives you wordsearch help';
+e.longinfo = `<p>Gives you the help menu for the wordsearch. This feature currently a WIP.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {

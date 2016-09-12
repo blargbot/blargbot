@@ -12,6 +12,8 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'help [command]';
 e.info = 'Gets a list of command or specific command help.';
+e.longinfo = `<p>Returns a list of commands and custom commands. If a command name is specified, it will return a description
+        of that command instead.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {

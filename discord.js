@@ -113,6 +113,11 @@ function buildCommand(commandName) {
         hidden: bu.commands[commandName].hidden,
         category: bu.commands[commandName].category
     };
+    if (bu.commands[commandName].longinfo) {
+        bu.db.query(`insert into command (commandname, cusage, info, type) values (?, ?, ?, ?)
+            on duplicate key update info = values(info), cusage = values(cusage), type = values(type)`,
+            [commandName, command.usage, bu.commands[commandName].longinfo, command.category]);
+    }
     if (bu.commands[commandName].sub) {
         for (var subCommand in bu.commands[commandName].sub) {
             console.log(`    Loading ${commandName}'s subcommand`, subCommand);
@@ -181,6 +186,7 @@ e.init = (v, topConfig, em, database) => {
     bu.startTime = startTime;
     bu.vars = vars;
     tags.init(bot);
+    bu.db.query(`delete from command`);
 
     /**
      * EventEmitter stuff

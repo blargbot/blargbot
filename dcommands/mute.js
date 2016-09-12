@@ -11,7 +11,16 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'mute <user>';
-e.info = 'Mutes a user.';
+e.info = 'Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to '
+    + '`manage roles` to create and assign the role, and `manage channels` to configure '
+    + 'the role. You are able to manually configure the role without the bot, but the bot has to make it. '
+    + 'Deleting the muted role causes it to be regenerated.\n'
+    + 'If mod-logging is enabled, the mute will be logged.';
+e.longinfo = `<p>Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to
+        <code>manage roles</code> to create and assign the role, and <code>manage channels</code> to configure
+        the role. You are able to manually configure the role without the bot, but the bot has to make it.
+        Deleting the muted role causes it to be regenerated.</p>
+    <p>If mod-logging is enabled, the mute will be logged.</p>`;
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words, text) => {

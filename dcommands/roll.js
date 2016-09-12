@@ -11,6 +11,9 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'roll [dice] [modifier]';
 e.info = 'Rolls an amount of dice (ex. 1d20) and adds the modifier.';
+e.longinfo = `<p>Rolls dice and adds a modifier. You can specify the number of dice and how many sides they have with the notation
+        <code>XdY</code>, where X is number of dice and Y is number of sides. If no dice are specified, it defaults to
+        <code>1d20</code>.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {

@@ -10,7 +10,8 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'reason <case> <reason>';
-e.info = 'Sets the reason for an action.';
+e.info = 'Sets the reason for an action on the modlog.';
+e.longinfo = `<p>Sets the reason for an action on the modlog.</p>`;
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {

@@ -11,6 +11,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'tidy [amount]';
 e.info = 'Clears messages from chat. Defaults to 25.';
+e.longinfo = `<p>Cleans a number of messages, defaulting to 25.</p>`;
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {

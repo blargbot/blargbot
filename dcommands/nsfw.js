@@ -10,7 +10,9 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'nsfw';
-e.info = 'Sets the current channel as NSFW';
+e.info = 'Designates the current channel as NSFW, allowing you to use NSFW commands.';
+e.longinfo = '<p>Designates the current channel as NSFW, allowing you to use NSFW commands.</p>';
+
 e.category = bu.CommandType.COMMANDER;
 
 e.execute = (msg) => {

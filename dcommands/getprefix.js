@@ -11,6 +11,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'getprefix';
 e.info = 'Gets the command prefix for the current guild.';
+e.longinfo = `<p>Returns the command prefix for the current guild.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {
