@@ -14,7 +14,7 @@ e.info = 'Sets the reason for an action.';
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {
-    bu.guildSettings.get(guild.id, 'modlog').then(val => {
+    bu.guildSettings.get(msg.channel.guild.id, 'modlog').then(val => {
         if (val) {
             if (words.length >= 3) {
                 //  console.log('whew')
