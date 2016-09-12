@@ -14,50 +14,54 @@ e.info = 'Sets the reason for an action.';
 e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {
-
-    if (words.length >= 3 && bu.config.discord.servers[msg.channel.guild.id] && bu.config.discord.servers[msg.channel.guild.id].modlog) {
-      //  console.log('whew')
-        words.shift();
-        var caseid = parseInt(words.shift());
-        console.log(caseid);
-        bu.db.query(`select msgid, modid, guildsetting.value as channelid from modlog 
+    e.guildSettings.get(guild.id, 'modlog').then(val => {
+        if (val) {
+            if (words.length >= 3) {
+                //  console.log('whew')
+                words.shift();
+                var caseid = parseInt(words.shift());
+                console.log(caseid);
+                bu.db.query(`select msgid, modid, guildsetting.value as channelid from modlog 
         inner join guildsetting 
             on modlog.guildid = guildsetting.guildid and guildsetting.name = "modlog"
         where modlog.guildid = ? and caseid = ?`,
-            [msg.channel.guild.id, caseid], (err, row) => {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
-               // console.log('whew2')
-             //   console.log(util.inspect(row))
-                if (row[0]) {
-                 //   console.log('whew3')
-
-                    bot.getMessage(row[0].channelid, row[0].msgid).then(msg2 => {
-                   //     console.log('whew4')
-
-                        var content = msg2.content;
-
-                        content = content.replace(/\*\*Reason:\*\*.+?\n/, `**Reason:** ${words.join(' ')}\n`);
-                        bu.db.query('update modlog set reason = ? where guildid = ? and caseid = ?',
-                            [words.join(' '), msg.channel.guild.id, caseid], err => {
-                                console.log(err);
-                            });
-                        if (!row[0].modid) {
-                            content = content.replace(/\*\*Moderator:\*\*.+/, `**Moderator:** ${msg.author.username}#${msg.author.discriminator}`);
-                            bu.db.query('update modlog set modid = ? where guildid = ? and caseid = ?',
-                                [msg.author.id, msg.channel.guild.id, caseid], err => {
-                                    console.log(err);
-                                });
+                    [msg.channel.guild.id, caseid], (err, row) => {
+                        if (err) {
+                            console.log(err);
+                            return;
                         }
+                        // console.log('whew2')
+                        //   console.log(util.inspect(row))
+                        if (row[0]) {
+                            //   console.log('whew3')
 
-                        bot.editMessage(row[0].channelid, row[0].msgid, content);
-                        bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+                            bot.getMessage(row[0].channelid, row[0].msgid).then(msg2 => {
+                                //     console.log('whew4')
+
+                                var content = msg2.content;
+
+                                content = content.replace(/\*\*Reason:\*\*.+?\n/, `**Reason:** ${words.join(' ')}\n`);
+                                bu.db.query('update modlog set reason = ? where guildid = ? and caseid = ?',
+                                    [words.join(' '), msg.channel.guild.id, caseid], err => {
+                                        console.log(err);
+                                    });
+                                if (!row[0].modid) {
+                                    content = content.replace(/\*\*Moderator:\*\*.+/, `**Moderator:** ${msg.author.username}#${msg.author.discriminator}`);
+                                    bu.db.query('update modlog set modid = ? where guildid = ? and caseid = ?',
+                                        [msg.author.id, msg.channel.guild.id, caseid], err => {
+                                            console.log(err);
+                                        });
+                                }
+
+                                bot.editMessage(row[0].channelid, row[0].msgid, content);
+                                bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+                            });
+                        }
                     });
-                }
-            });
-    }
+            }
+        }
+    });
+
 
     /* if (msg.channel.guild.members.get(bot.user.id).permission.json['banMembers']) {
          if (msg.member.permission.json['banMembers']) {
