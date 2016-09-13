@@ -491,27 +491,51 @@ If you are the owner of this server, here are a few things to know.
                         flipTables(msg, true);
                     }
                     var commandExecuted = false;
+                    var doCleverbot = false;
                     if (msg.content.startsWith(`<@${bot.user.id}>`) || msg.content.startsWith(`<@!${bot.user.id}>`)) {
-                        console.log('lel');
-                        var cleanContent = msg.content.replace(/<@!?[0-9]{17,21}>/, '').trim();
-                        commandExecuted = handleDiscordCommand(msg.channel, msg.author, cleanContent, msg);
-                        if (!commandExecuted) {
-                            Cleverbot.prepare(function () {
-                                cleverbot.write(cleanContent, function (response) {
-                                    bot.sendChannelTyping(msg.channel.id);
-                                    setTimeout(function () {
-                                        bu.sendMessageToDiscord(msg.channel.id, response.message);
-                                    }, 1500);
-                                });
-                            });
-                        }
-                    }
+                        prefix = msg.content.match(/<@!?[0-9]{17,21}>/)[0];
+                        console.log('Was a mention');
+                        doCleverbot = true;
+                        /*
+                        commandExecuted = handleDiscordCommand(msg.channel, msg.author, cleanContent, msg).then(wasCommand => {
+                            console.log(wasCommand);
+                            if (!wasCommand) {
+                                
+                            }
+                        });
+                        */
+                        //console.log(commandExecuted);
 
+                    }
+                    //console.log(prefix);
                     if (msg.content.startsWith(prefix)) {
                         var command = msg.content.replace(prefix, '').trim();
                         console.log(`${prefix} ${command}`);
                         try {
-                            commandExecuted = handleDiscordCommand(msg.channel, msg.author, command, msg);
+                            commandExecuted = handleDiscordCommand(msg.channel, msg.author, command, msg).then(wasCommand => {
+                                console.log(wasCommand);
+                                if (wasCommand) {
+                                    bu.guildSettings.get(msg.channel.id, 'deletenotif').then(val => {
+                                        if (val != '0') {
+                                            commandMessages.push(msg.id);
+                                            if (commandMessages.length > 100) {
+                                                commandMessages.shift();
+                                            }
+                                        }
+                                    });
+                                } else {
+                                    if (doCleverbot) {
+                                        Cleverbot.prepare(function () {
+                                            cleverbot.write(msg.cleanContent, function (response) {
+                                                bot.sendChannelTyping(msg.channel.id);
+                                                setTimeout(function () {
+                                                    bu.sendMessageToDiscord(msg.channel.id, response.message);
+                                                }, 1500);
+                                            });
+                                        });
+                                    }
+                                }
+                            });
                         } catch (err) {
                             console.log(err.stack);
                         }
@@ -553,15 +577,7 @@ If you are the owner of this server, here are a few things to know.
 
                     }
                     if (msg.channel.guild) {
-                        if (commandExecuted)
-                            bu.guildSettings.get(msg.channel.id, 'deletenotif').then(val => {
-                                if (val != '0') {
-                                    commandMessages.push(msg.id);
-                                    if (commandMessages.length > 100) {
-                                        commandMessages.shift();
-                                    }
-                                }
-                            });
+
 
                         db.query(`UPDATE user set lastcommand=?, lastcommanddate=NOW() where userid=?`,
                             [msg.cleanContent, msg.author.id]);
@@ -723,6 +739,8 @@ function handleDiscordCommand(channel, user, text, msg) {
                         bu.commands[commandName].execute(msg, words, text);
 
                         fulfill(true);
+                    } else {
+                        fulfill(false);
                     }
                     //    }
                 }
