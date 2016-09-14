@@ -128,7 +128,7 @@ e.execute = (msg, words) => {
         }
         console.log(util.inspect(types));
         console.log(util.inspect(users));
-        var statement = `select type, content, attachment, userid, mentions, msgid, msgtime from chatlogs where `;
+        var statement = `select type, content, attachment, chatlogs.userid, mentions, msgid, msgtime, username from chatlogs inner join user on chatlogs.userid = user.userid where `;
         for (i = 0; i < types.length; i++) {
             statement += `${i == 0 ? '(' : ''}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? 'or ' : ') and '}`;
         }
@@ -159,7 +159,7 @@ e.execute = (msg, words) => {
                 //console.log(i, addTo);
                 //logString += addTo;
                 table.push([messageType
-                    , bot.users.get(rows[i].userid) ? bot.users.get(rows[i].userid).username : 'null'
+                    , rows[i].username
                     , rows[i].userid
                     , rows[i].msgid
                     , moment(rows[i].msgtime).format('lll')
