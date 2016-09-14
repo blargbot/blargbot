@@ -245,6 +245,7 @@ e.logAction = (guild, user, mod, type) => {
     console.log('type', user.username);
     e.guildSettings.get(guild.id, 'modlog').then(val => {
         if (val) {
+            
             e.db.query(`select caseid from modlog where guildid = ? order by caseid desc limit 1`,
                 [guild.id], (err, row) => {
                     if (err) {

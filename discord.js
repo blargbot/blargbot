@@ -526,12 +526,18 @@ If you are the owner of this server, here are a few things to know.
                                 } else {
                                     if (doCleverbot) {
                                         Cleverbot.prepare(function () {
-                                            cleverbot.write(msg.cleanContent, function (response) {
-                                                bot.sendChannelTyping(msg.channel.id);
-                                                setTimeout(function () {
-                                                    bu.sendMessageToDiscord(msg.channel.id, response.message);
-                                                }, 1500);
-                                            });
+                                            var username = msg.channel.guild.members.get(bot.user.id).nick
+                                                ? msg.channel.guild.members.get(bot.user.id).nick
+                                                : bot.user.username;
+                                            var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
+                                            console.log(msgToSend);
+                                            cleverbot.write(msgToSend
+                                                , function (response) {
+                                                    bot.sendChannelTyping(msg.channel.id);
+                                                    setTimeout(function () {
+                                                        bu.sendMessageToDiscord(msg.channel.id, response.message);
+                                                    }, 1500);
+                                                });
                                         });
                                     }
                                 }
@@ -950,33 +956,37 @@ ${err.stack}
  * @param msg - message (Message)
  */
 function processUser(msg) {
-    try {
-        db.query('SELECT userid as id, username from user where userid=?', [msg.author.id], (err, row) => {
-            if (!row || !row[0]) {
-                console.log(`inserting user ${msg.author.id} (${msg.author.username})`);
-                db.query(`insert into user (userid, username, lastspoke, isbot, lastchannel, messagecount)`
-                    + `values (?, ?, NOW(), ?, ?, 1)`,
-                    [msg.author.id, msg.author.username, msg.author.bot ? 1 : 0, msg.channel.id]);
-                db.query(`insert into username (userid, username) values (?, ?)`,
-                    [msg.author.id, msg.author.username]);
-            } else {
-                if (row[0].username != msg.author.username) {
-                    db.query(`update user set username = ?, lastspoke = NOW(), lastchannel=?, `
-                        + `messagecount=messagecount + 1 where userid = ?`,
-                        [msg.author.username, msg.channel.id, msg.author.id]);
-                    db.query(`insert into username (userid, username, namedate) `
-                        + `values (?, ?, NOW())`,
+    return new Promise((fulfill, reject) => {
+        try {
+            db.query('SELECT userid as id, username from user where userid=?', [msg.author.id], (err, row) => {
+                if (!row || !row[0]) {
+                    console.log(`inserting user ${msg.author.id} (${msg.author.username})`);
+                    db.query(`insert into user (userid, username, lastspoke, isbot, lastchannel, messagecount)`
+                        + `values (?, ?, NOW(), ?, ?, 1)`,
+                        [msg.author.id, msg.author.username, msg.author.bot ? 1 : 0, msg.channel.id]);
+                    db.query(`insert into username (userid, username) values (?, ?)`,
                         [msg.author.id, msg.author.username]);
+                    fulfill();
                 } else {
-                    db.query(`update user set lastspoke = NOW(), lastchannel=?, `
-                        + `messagecount=messagecount + 1 where userid = ?`,
-                        [msg.channel.id, msg.author.id]);
+                    if (row[0].username != msg.author.username) {
+                        db.query(`update user set username = ?, lastspoke = NOW(), lastchannel=?, `
+                            + `messagecount=messagecount + 1 where userid = ?`,
+                            [msg.author.username, msg.channel.id, msg.author.id]);
+                        db.query(`insert into username (userid, username, namedate) `
+                            + `values (?, ?, NOW())`,
+                            [msg.author.id, msg.author.username]);
+                    } else {
+                        db.query(`update user set lastspoke = NOW(), lastchannel=?, `
+                            + `messagecount=messagecount + 1 where userid = ?`,
+                            [msg.channel.id, msg.author.id]);
+                    }
+                    fulfill();
                 }
-            }
-        });
-    } catch (err) {
-        console.log(err);
-    }
+            });
+        } catch (err) {
+            reject(err);
+        }
+    });
 
 }
 
