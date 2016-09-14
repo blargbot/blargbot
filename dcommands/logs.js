@@ -159,7 +159,7 @@ e.execute = (msg, words) => {
                 //console.log(i, addTo);
                 //logString += addTo;
                 table.push([messageType
-                    , bot.users.get(rows[i].userid).username
+                    , bot.users.get(rows[i].userid) ? bot.users.get(rows[i].userid).username : 'null'
                     , rows[i].userid
                     , rows[i].msgid
                     , moment(rows[i].msgtime).format('lll')
