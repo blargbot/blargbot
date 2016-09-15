@@ -42,6 +42,7 @@ e.execute = (msg, words) => {
         for (i = 0; i < messages.length; i++) {
             blargutil.sendMessageToDiscord(msg.channel.id, messages[i]);
         }
+        blargutil.sendMessageToDiscord(msg.channel.id, `${gArray.length} guilds total.`);
 
     }
 };
