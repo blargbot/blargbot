@@ -15,11 +15,14 @@ e.category = blargutil.CommandType.CAT;
 
 e.execute = (msg, words) => {
     if (msg.author.id === blargutil.CAT_ID) {
-        var gArray = bot.guilds.map(m => m);
+        var gArray;
         if (words[1]) {
             if (words[1].toLowerCase() == 'bots') {
-                gArray = bot.guilds.filter(m => m.name.toLowerCase().indexOf('bot') > -1);
+                gArray = bot.guilds.filter(m => m.members.filter(m2 => m2.user.bot).length / m.memberCount > 0.8 || /bot/gi.test(m.name));
             }
+        }
+        if (!gArray) {
+        var gArray = bot.guilds.map(m => m);            
         }
         var messages = [];
         var i = 0;
