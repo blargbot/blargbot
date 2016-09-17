@@ -24,7 +24,7 @@ I don't like to beg, but right now I'm a student. Tuition is expensive, and main
 Thank you for your time. I really appreciate all of my users! :3
 
 ---------------------------------------------
-Paypal: <http://goo.gl/Cv4M7P>
+Paypal: <https://paypal.me/stupidcat>
 Patreon: <https://www.patreon.com/stupidcat>
 ---------------------------------------------
 `);
