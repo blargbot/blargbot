@@ -1,5 +1,6 @@
 var moment = require('moment-timezone');
 var Promise = require('promise');
+var request = require('request');
 var e = module.exports = {};
 e.CAT_ID = '103347843934212096';
 e.catOverrides = true;
@@ -208,8 +209,8 @@ e.sendFile = (channelid, message, url) => {
             Bot.createMessage(channelid, message, {
                 name: filename,
                 file: body
-            })
-        })
+            });
+        });
     }
 }
 
