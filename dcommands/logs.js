@@ -168,12 +168,12 @@ e.execute = (msg, words) => {
                     , rows[i].mentions]);
             }
             console.log(table.toString());
-            bot.getDMChannel(msg.author.id).then(pc => {
-                bu.send(pc.id, `Here are your logs for ${msg.channel.name}!`, {
-                    file: 'Note: You may need to disable word wrapping to properly view this file.\nAll timestamps are in UTC time (+0).\nQuery: ' + statement + '\n' + table.toString(),
-                    name: `${msg.channel.name} - ${msg.channel.guild.name}.log`
-                });
+            //  bot.getDMChannel(msg.author.id).then(pc => {
+            bu.send(msg.channel.id, `Here are your logs for ${msg.channel.name}!`, {
+                file: 'Note: You may need to disable word wrapping to properly view this file.\nAll timestamps are in UTC time (+0).\nQuery: ' + statement + '\n' + table.toString(),
+                name: `${msg.channel.name} - ${msg.channel.guild.name}.log`
             });
+            //   });
 
         });
     } else {
