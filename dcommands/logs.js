@@ -133,7 +133,7 @@ e.execute = (msg, words) => {
             statement += `${i == 0 ? '(' : ''}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? 'or ' : ') and '}`;
         }
         for (i = 0; i < users.length; i++) {
-            statement += `${i == 0 ? '(' : ''}userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? 'or ' : ') and '}`;
+            statement += `${i == 0 ? '(' : ''}chatlogs.userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? 'or ' : ') and '}`;
         }
         statement += 'channelid = ' + bu.db.escape(msg.channel.id) + '  order by id ' + (order ? 'asc' : 'desc') + (numberOfMessages > 0 && !isNaN(numberOfMessages) ? ' limit ' + bu.db.escape(numberOfMessages) : '');
         console.log(statement);
