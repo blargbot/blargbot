@@ -196,6 +196,23 @@ e.getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
+
+e.sendFile = (channelid, message, url) => {
+    var i = url.lastIndexOf('/');
+    if (i != -1) {
+        var filename = url.substring(i + 1, url.length);
+        request({
+            uri: url,
+            encoding: null
+        }, function (err, res, body) {
+            Bot.createMessage(channelid, message, {
+                name: filename,
+                file: body
+            })
+        })
+    }
+}
+
 /**
  * Creates an uptime string
  * @param moment1 - start time
@@ -245,7 +262,7 @@ e.logAction = (guild, user, mod, type) => {
     console.log('type', user.username);
     e.guildSettings.get(guild.id, 'modlog').then(val => {
         if (val) {
-            
+
             e.db.query(`select caseid from modlog where guildid = ? order by caseid desc limit 1`,
                 [guild.id], (err, row) => {
                     if (err) {
