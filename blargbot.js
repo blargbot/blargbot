@@ -38,7 +38,7 @@ botEmitter.on('reloadIrc', () => {
 });
 
 
-var VERSION = '4.4.4';
+var VERSION = '4.4.5';
 /** LOGGING STUFF **/
 
 
@@ -260,6 +260,13 @@ db.connect(err => {
         lastcommand TEXT,
         lastcommanddate DATETIME,
         messagecount INTEGER DEFAULT 0
+        )`);
+
+        db.query(`CREATE TABLE if not exists todo (
+            userid VARCHAR(30),
+            itemid INTEGER,
+            content TEXT,
+            primary key(userid, itemid)
         )`);
 
         db.query(`CREATE TABLE if not exists stats (
