@@ -27,8 +27,9 @@ e.processTag = (msg, contents, command) => {
         .replace(/\{guilddefaultchannelid}/gi, msg.channel.guild.defaultChannel.id)
         .replace(/\{guilddefaultchannelname}/gi, msg.channel.guild.defaultChannel.name)
         .replace(/\{nsfw}/gi, '')
-        .replace(/\{rb}/gi, '&rb;')
-        .replace(/\{lb}/gi, '&lb;');
+        .replace(/\{rb}/gi, '%RB%')
+        .replace(/\{lb}/gi, '%LB%')
+        .replace(/\{semi}/g, '%SEMI%');
 
     var fallback = '';
     while (contents.indexOf('{') > -1 && contents.indexOf('}') > -1 &&
@@ -423,17 +424,14 @@ e.processTag = (msg, contents, command) => {
                 break;
         }
         if (!replaceString) {
-            console.log(tagBrackets, 'whoops');
             replaceString = '';
         }
         replaceString = replaceString.toString();
-
-        //console.log(replaceString);
-        if (replaceString.indexOf('{') > -1 && replaceString.indexOf('}') > -1) {
-            replaceString = replaceString.replace(/\}/g, '&rb;');
-        }
+        replaceString = replaceString.replace(/\}/gi, '%RB%')
+            .replace(/\{/gi, '%LB%')
+            .replace(/\;/g, '%SEMI%')
+        console.log(tagBrackets, replaceString);
         contents = contents.replace(tagBrackets, replaceString);
-        //console.log(tagBrackets, replaceString, contents);
 
     }
     contents = contents.replace(/&rb;/g, '}').replace(/&lb;/g, '{');
