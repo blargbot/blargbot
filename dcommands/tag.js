@@ -14,8 +14,8 @@ e.usage = 'tag help';
 e.info = 'Gets tag command help';
 e.longinfo = `<p>
         Tags are like public custom commands. You can create them on one guild, and use them on another. Anyone is
-        capable of making tags. Tags use a <a href="tags.html">tagging system</a>, so they can can range from simple to
-        complex. See the <a href="tags.html">tag</a> page for more details.
+        capable of making tags. Tags use a <a href="/tags/">tagging system</a>, so they can can range from simple to
+        complex. See the <a href="/tags/">tag</a> page for more details.
     </p>
     <pre><code>tag &lt;name&gt;</code></pre>
     <p>
@@ -275,5 +275,5 @@ var tagHelp = `\`\`\`xl
 + Tag List - lists all tags 
 + Tag Help - shows this message
 NOTE: Any NSFW tags must contain '{nsfw}' somewhere in their body, or they will be deleted and you will be blacklisted.
-For more information about tags, visit http://ratismal.github.io/blargbot/tags.html
-\`\`\``;
+\`\`\`
+For more information about tags, visit https://blargbot.xyz/tags`;

@@ -74,7 +74,7 @@ ${bu.commandList[words[1]].info}`;
                 bu.sendMessageToDiscord(msg.channel.id, `${commandsString}\n${!msg.channel.guild
                     ? 'Not all of these bu.commands work in DMs.\n'
                     : ''
-                    }For more information about bu.commands, do \`help <commandname>\` or visit http://blarg.stupidcat.me/bu.commands.html`);
+                    }For more information about bu.commands, do \`help <commandname>\` or visit https://blargbot.xyz/commands`);
             });
     }
 };

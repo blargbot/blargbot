@@ -16,7 +16,7 @@ e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {
     bu.sendMessageToDiscord(msg.channel.id, `blargbot is a multipurpose bot with new features implemented regularly, written in javascript using Eris.
-http://blarg.stupidcat.me
+https://blargbot.xyz
 \`\`\`xl
 !== { Stats } ==!
 Running on ${bu.bot.guilds.size} guilds.
