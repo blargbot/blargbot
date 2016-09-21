@@ -206,7 +206,7 @@ e.sendFile = (channelid, message, url) => {
             uri: url,
             encoding: null
         }, function (err, res, body) {
-            Bot.createMessage(channelid, message, {
+            e.bot.createMessage(channelid, message, {
                 name: filename,
                 file: body
             });

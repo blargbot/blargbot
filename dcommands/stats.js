@@ -16,13 +16,18 @@ e.longinfo = `<p>Gives you information about the bot.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {
-    bu.sendMessageToDiscord(msg.channel.id, `\`\`\`xl
+    bu.sendMessageToDiscord(msg.channel.id, `\`\`\`prolog
 !== { Stats } ==!
-Running on ${bot.guilds.size} guilds.
-Running on ${Object.keys(bot.channelGuildMap).length} channels.
-Serving ${bot.users.size} users.
-Using ${bu.getMemoryUsage()}MiB RAM
-Running for ${bu.createTimeDiffString(moment(), bu.startTime)}
-Version: ${bu.VERSION}
+${pad('Guilds:', 10)} ${bot.guilds.size}
+${pad('Channels:', 10)} ${Object.keys(bot.channelGuildMap).length}
+${pad('Users:', 10)} ${bot.users.size}
+${pad('RAM:', 10)} ${bu.getMemoryUsage()}MiB
+${pad('Uptime:', 10)} ${bu.createTimeDiffString(moment(), bu.startTime)}
+${pad('Version:', 10)} ${bu.VERSION}
 \`\`\``);
 };
+
+
+function pad(value, length) {
+    return (value.toString().length < length) ? pad(' ' + value, length) : value;
+}

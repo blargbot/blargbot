@@ -16,6 +16,7 @@ e.longinfo = `<p>Gets a list of mods on the guild.</p>`;
 e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
+    try {
     var includeOffline = true;
     if (words[1] && words[1].toLowerCase() == 'online') {
         includeOffline = false;
@@ -24,23 +25,25 @@ e.execute = (msg, words) => {
         return !m.user.bot && bu.isStaff(m)
             && (includeOffline || m.status == 'online');
     });
-    var message = '```xl\n';
     var maxLength = 0;
     mods.forEach(m => {
         if (getName(m).length > maxLength) {
             maxLength = getName(m).length;
         }
     });
+    var message = '';
     mods.forEach(m => {
-    //    console.log(m.status)
-        message += `${pad(getName(m), maxLength)} -${pad(m.status == 'online'
-            ? ' Online'
+        //    console.log(m.status)
+        message += `${(m.status == 'online'
+            ? '<:vpOnline:212789758110334977>'
             : (m.status == 'idle'
-                ? '\'idle\' '
-                : ' offline'), 8)} (${m.user.id})\n`;
+                ? '<:vpAway:212789859071426561>'
+                : '<:vpOffline:212790005943369728>'))} **${getName(m)}** (${m.user.id})\n`;
     });
-    message += '```';
     bu.sendMessageToDiscord(msg.channel.id, message);
+    } catch (err) {
+        console.log(err);
+    }
 };
 function getName(member) {
     return member.user.username;

@@ -29,7 +29,7 @@ ${bu.commandList[words[1]].info}`;
         }
         bu.sendMessageToDiscord(msg.channel.id, message);
     } else {
-        var commandsString = '```xl\nGeneral Commands:\n  ';
+        var commandsString = '```prolog\nGeneral Commands:\n  ';
         var generalCommands = [];
         var otherCommands = {};
         for (var command in bu.commandList) {

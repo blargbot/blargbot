@@ -864,7 +864,7 @@ function fml(id) {
         hostname: 'bots.discord.pw',
         method: 'GET',
         port: 443,
-        path: `/api/bots/${id}`,
+        path: `/api/users/${id}`,
         headers: {
             'User-Agent': 'blargbot/1.0 (ratismal)',
             'Authorization': vars.botlisttoken
@@ -881,6 +881,7 @@ function fml(id) {
         res.on('end', function () {
             console.log('body: ' + body);
             lastUserStatsKek = JSON.parse(body);
+            console.dir(lastUserStatsKek);
         });
 
         res.on('error', function (thing) {

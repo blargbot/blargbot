@@ -64,7 +64,7 @@ e.execute = (msg, words) => {
                 var cahNsfw = settings.cahnsfw && settings.cahnsfw != 0 ? true : false;
                 var mutedRole = settings.mutedrole ? settings.mutedrole : 'not set';
                 var tableFlip = settings.tableflip && settings.tableflip != 0 ? true : false;
-                var message = `\`\`\`xl
+                var message = `\`\`\`prolog
 Settings For ${msg.channel.guild.name}
          Prefix : ${prefix}
   NSFW Channels : ${nsfwMessage}
@@ -98,7 +98,7 @@ Settings For ${msg.channel.guild.name}
                 }
                 break;
             case 'help':
-                var message = '```xl\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
+                var message = '```fix\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
                 for (key in settings) {
                     message += key.toUpperCase() + ' - ' + settings[key] + '\n';
                 }

@@ -60,17 +60,13 @@ function getXkcd(channel, words) {
             body += chunk;
         });
         res.on('end', function () {
-            console.log(body);
             var output = JSON.parse(body);
             var message = '';
             //  if (bot === BotEnum.DISCORD) {
-            message = `${output.img}
-\`\`\`diff
-!=-= [ ${output.title}, ${output.year} ] =-=!
-Comic #${output.num}
-+ ${output.alt}
-\`\`\``;
-            bu.sendMessageToDiscord(channel, message);
+            message = `__**${output.title}, ${output.year}**__
+*Comic #${output.num}*
+${output.alt}`;
+            bu.sendFile(channel, message, output.img);
             xkcdMax = output.num;
             //getXkcd(channel, words, bot);
             //sendMessageToDiscord(channel, output.file, bot);

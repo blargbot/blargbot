@@ -262,18 +262,18 @@ ${row[0].contents}
 };
 
 
-var tagHelp = `\`\`\`xl
-!=== { Tag Usage } ===!
-+ Tag <name> - executes tag with given name
-+ Tag Create <name> <content> - creates a new tag with given name and content
-+ Tag Rename <tag1> <tag2> - renames the tag by the name of \`tag1\` to \`tag2\`
-+ Tag Edit <name> <content> - edits an existing tag with given content, provided that you were the one who created it
-+ Tag Delete <name> - deletes the tag with given name, provided that you own it
-+ Tag Raw <name> - displays the raw code of a tag
-+ Tag Author <tag> - displays the name of who made the tag
-+ Tag Search <name> - searches for a tag based on the provided name
-+ Tag List - lists all tags 
-+ Tag Help - shows this message
+var tagHelp = `\`\`\`fix
+Tag Usage
+  Tag <name> - executes tag with given name
+  Tag Create <name> <content> - creates a new tag with given name and content
+  Tag Rename <tag1> <tag2> - renames the tag by the name of \`tag1\` to \`tag2\`
+  Tag Edit <name> <content> - edits an existing tag with given content, provided that you were the one who created it
+  Tag Delete <name> - deletes the tag with given name, provided that you own it
+  Tag Raw <name> - displays the raw code of a tag
+  Tag Author <tag> - displays the name of who made the tag
+  Tag Search <name> - searches for a tag based on the provided name
+  Tag List - lists all tags 
+  Tag Help - shows this message
 NOTE: Any NSFW tags must contain '{nsfw}' somewhere in their body, or they will be deleted and you will be blacklisted.
 \`\`\`
 For more information about tags, visit https://blargbot.xyz/tags`;

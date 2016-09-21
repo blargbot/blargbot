@@ -17,13 +17,15 @@ e.category = bu.CommandType.GENERAL;
 e.execute = (msg) => {
     bu.sendMessageToDiscord(msg.channel.id, `blargbot is a multipurpose bot with new features implemented regularly, written in javascript using Eris.
 https://blargbot.xyz
-\`\`\`xl
+\`\`\`prolog
 !== { Stats } ==!
-Running on ${bu.bot.guilds.size} guilds.
-Running on ${Object.keys(bu.bot.channelGuildMap).length} channels.
-Serving ${bu.bot.users.size} users.
-Using ${bu.getMemoryUsage()}MiB RAM
-Version: ${bu.VERSION}
+${pad('Guilds:', 10)} ${bot.guilds.size}
+${pad('Channels:', 10)} ${Object.keys(bot.channelGuildMap).length}
+${pad('Users:', 10)} ${bot.users.size}
+${pad('RAM:', 10)} ${bu.getMemoryUsage()}MiB
+${pad('Uptime:', 10)} ${bu.createTimeDiffString(moment(), bu.startTime)}
+${pad('Version:', 10)} ${bu.VERSION}
 \`\`\`
 For commands, do \`help\`. For information about supporting me, do \`donate\``);
+
 };

@@ -136,7 +136,7 @@ e.execute = (msg, words) => {
                     }
                     break;
                 } else
-                    sendMessage(msg.channel.id, `\`\`\`xl
+                    sendMessage(msg.channel.id, `\`\`\`fix
 Commands:
  music - shows this message
  summon - summons me to your voice channel
@@ -346,12 +346,12 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
                     switch (words[0]) {
                         case 'shuffle':
                             for (i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                                console.log(cache[queue[msg.channel.guild.id][i].id].name);
+                           //     console.log(cache[queue[msg.channel.guild.id][i].id].name);
                             }
-                            console.log('------------------------------------------------------');
+                         //   console.log('------------------------------------------------------');
                             shuffle(queue[msg.channel.guild.id]);
                             for (i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                                console.log(cache[queue[msg.channel.guild.id][i].id].name);
+                        //        console.log(cache[queue[msg.channel.guild.id][i].id].name);
                             }
                             //    console.log(util.inspect(queue[msg.channel.guild.id]))
                             var suits = [':diamonds:', ':spades:', ':clubs:', ':hearts:'];
@@ -413,7 +413,7 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
 };
 
 function sendQueue(msg) {
-    messageToSend = ':musical_score: Current Queue: :musical_score:\n```xl\n';
+    messageToSend = ':musical_score: Current Queue: :musical_score:\n```css\n';
     var requester
         , requesterMember
         , line
