@@ -29,3 +29,8 @@ ${pad('Version:', 10)} ${bu.VERSION}
 For commands, do \`help\`. For information about supporting me, do \`donate\``);
 
 };
+
+
+function pad(value, length) {
+    return (value.toString().length < length) ? pad(' ' + value, length) : value;
+}
