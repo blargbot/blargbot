@@ -429,12 +429,12 @@ e.processTag = (msg, contents, command) => {
         replaceString = replaceString.toString();
         replaceString = replaceString.replace(/\}/gi, '%RB%')
             .replace(/\{/gi, '%LB%')
-            .replace(/\;/g, '%SEMI%')
+            .replace(/\;/g, '%SEMI%');
         console.log(tagBrackets, replaceString);
         contents = contents.replace(tagBrackets, replaceString);
 
     }
-    contents = contents.replace(/&rb;/g, '}').replace(/&lb;/g, '{');
+    contents = contents.replace(/%RB%/g, '}').replace(/%LB%/g, '{').replace(/%SEMI%/g, ';');
     while (/<@!?[0-9]{17,21}>/.test(contents)) {
         //console.log('fuck');
         contents = contents.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, contents.match(/<@!?([0-9]{17,21})>/)[1], true).username);
