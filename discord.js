@@ -175,7 +175,8 @@ e.init = (v, topConfig, em, database) => {
             //PRESENCE_UPDATE: true,
             //   VOICE_STATE_UPDATE: true,
             TYPING_START: true
-        }
+        },
+        getAllUsers: true
     });
 
     bu.init(bot);
