@@ -9,6 +9,7 @@ var tags = require('./tags.js');
 var reload = require('require-reload')(require);
 var request = require('request');
 var Promise = require('promise');
+var interface = require('./interface.js');
 
 var Cleverbot = require('cleverbot-node');
 cleverbot = new Cleverbot();
@@ -251,7 +252,7 @@ e.init = (v, topConfig, em, database) => {
 
     bot.on('ready', function () {
         console.log('Ready!');
-
+        interface.init(bot);
         gameId = bu.getRandomInt(0, 4);
         if (config.general.isbeta)
             avatarId = 4;

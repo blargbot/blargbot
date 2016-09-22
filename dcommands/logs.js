@@ -3,6 +3,7 @@ var bu = require('./../util.js');
 var util = require('util');
 var Table = require('cli-table');
 var moment = require('moment-timezone');
+var Promise = require('promise');
 var bot;
 e.init = (Tbot) => {
     bot = Tbot;
@@ -126,60 +127,54 @@ e.execute = (msg, words) => {
                 }
             }
         }
-        console.log(util.inspect(types));
-        console.log(util.inspect(users));
-        var statement = `select type, content, attachment, chatlogs.userid, mentions, msgid, msgtime, username from chatlogs inner join user on chatlogs.userid = user.userid where `;
-        for (i = 0; i < types.length; i++) {
-            statement += `${i == 0 ? '(' : ''}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? 'or ' : ') and '}`;
-        }
-        for (i = 0; i < users.length; i++) {
-            statement += `${i == 0 ? '(' : ''}chatlogs.userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? 'or ' : ') and '}`;
-        }
-        statement += 'channelid = ' + bu.db.escape(msg.channel.id) + '  order by id ' + (order ? 'asc' : 'desc') + (numberOfMessages > 0 && !isNaN(numberOfMessages) ? ' limit ' + bu.db.escape(numberOfMessages) : '');
-        console.log(statement);
-        bu.db.query(statement, (err, rows) => {
-            if (err) {
-                console.log(err);
-                bu.send(msg.channel.id, `Something went wrong!`);
-                return;
-            }
-            console.log(rows.length);
-            var table = new Table({
-                head: ['Type', 'Username', 'User ID', 'Message ID', 'Time', 'Content', 'Attachment', 'Mentions']
-                //    , colWidths: [9, 30, 25, 25, 100, 40, 40]
-            });
-            for (i = 0; i < rows.length; i++) {
-                console.log(rows[i].msgtime);
-                var messageType = rows[i].type == 0
-                    ? 'CREATE'
-                    : (rows[i].type == 1
-                        ? 'UPDATE'
-                        : 'DELETE');
-                //  var addTo = `${messageType}:\t${bot.users.get(rows[i].userid).username}\t${rows[i].userid}>\t${rows[i].content}\t${rows[i].attachment != 'none' ? `ATTACHMENT: ${rows[i].attachment}\t` : ''}${rows[i].mentions != '' ? `MENTIONS: ${rows[i].mentions}` : ''}\n`;
-                //console.log(i, addTo);
-                //logString += addTo;
-                table.push([messageType
-                    , rows[i].username
-                    , rows[i].userid
-                    , rows[i].msgid
-                    , moment(rows[i].msgtime).format('lll')
-                    , rows[i].content
-                    , rows[i].attachment == 'none' ? '' : rows[i].attachment
-                    , rows[i].mentions]);
-            }
-            console.log(table.toString());
-            //  bot.getDMChannel(msg.author.id).then(pc => {
-            bu.send(msg.channel.id, `Here are your logs for ${msg.channel.name}!`, {
-                file: 'Note: You may need to disable word wrapping to properly view this file.\nAll timestamps are in UTC time (+0).\nQuery: ' + statement + '\n' + table.toString(),
-                name: `${msg.channel.name} - ${msg.channel.guild.name}.log`
-            });
-            //   });
+        bu.db.query('select id from chatlogs order by id desc limit 1', (err, rows) => {
+            console.log('wut', rows);
+            if (rows && rows[0]) {
+                console.log(util.inspect(types));
+                console.log(util.inspect(users));
+                var statement = `select type, content, attachment, chatlogs.userid, mentions, msgid, msgtime, username from chatlogs inner join user on chatlogs.userid = user.userid where id <= ${bu.db.escape(rows[0].id)} `;
+                for (i = 0; i < types.length; i++) {
+                    statement += `${i == 0 ? '(' : ''}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? 'or ' : ') and '}`;
+                }
+                for (i = 0; i < users.length; i++) {
+                    statement += `${i == 0 ? '(' : ''}chatlogs.userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? 'or ' : ') and '}`;
+                }
+                statement += 'channelid = ' + bu.db.escape(msg.channel.id) + '  order by id ' + (order ? 'asc' : 'desc') + (numberOfMessages > 0 && !isNaN(numberOfMessages) ? ' limit ' + bu.db.escape(numberOfMessages) : '');
+                console.log(statement);
 
+                insertQuery(msg, statement).then(key => {
+                    bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
+                });
+            }
         });
+
     } else {
         bu.sendMessageToDiscord(msg.channel.id, 'Not enough parameters were given!');
     }
 };
+
+function insertQuery(msg, statement) {
+    return new Promise((fulfill) => {
+        function attemptInsert() {
+            var key = randomString(6);
+            console.log(key);
+            bu.db.query('select keycode from logs where keycode = ?', [key], (rows) => {
+                if (rows && rows[0]) {
+                    attemptInsert();
+                } else {
+                    bu.db.query(`insert into logs (keycode, statement, channelid) values (?, ?, ?)`, [key, statement, msg.channel.id], () => {
+                        fulfill(key);
+                    });
+                }
+            });
+        }
+        attemptInsert();
+    });
+}
+
+function randomString(length) {
+    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
+}
 
 var typeRef = {
     CREATE: 0,
