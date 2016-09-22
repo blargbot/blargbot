@@ -18,7 +18,8 @@ e.init = (b) => {
                 id: user.id,
                 username: user.username,
                 discriminator: user.discriminator,
-                avatarURL: user.avatarURL
+                avatarURL: user.avatarURL,
+                bot: user.bot
             };
         } else {
             objectToSend = notFound;
