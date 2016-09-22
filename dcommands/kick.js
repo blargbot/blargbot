@@ -55,6 +55,8 @@ e.execute = (msg, words) => {
         bu.logAction(msg.channel.guild, user, msg.author, 'Kick');
         bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
 
+    } else {
+        bu.send(msg.channel.id, `You didn't tell me who to kick!`);
     }
     //bot.ban
 
