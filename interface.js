@@ -56,15 +56,15 @@ e.init = (b) => {
         res.end(checkAuth(objectToSend, req));
     });
 
-    var server = app.listen(8081, function () {
-        var host = server.address().address;
-        var port = server.address().port;
-        console.log('Interface listening at http://%s:%s', host, port);
-    });
+ //   var server = app.listen(8081, function () {
+ //       var host = server.address().address;
+ //       var port = server.address().port;
+ //       console.log('Interface listening at http://%s:%s', host, port);
+ //   });
 };
 
 function checkAuth(object, req, res) {
-    //console.dir(req.get('key'));
+  //  console.dir(req.get('key'), bu.config.general.interface_key);
     if (bu.config.general.interface_key != req.get('key'))
         object = {
             error: 403,

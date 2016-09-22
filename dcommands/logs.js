@@ -132,7 +132,7 @@ e.execute = (msg, words) => {
             if (rows && rows[0]) {
                 console.log(util.inspect(types));
                 console.log(util.inspect(users));
-                var statement = `select type, content, attachment, chatlogs.userid, mentions, msgid, msgtime, username from chatlogs inner join user on chatlogs.userid = user.userid where id <= ${bu.db.escape(rows[0].id)} `;
+                var statement = `select type, content, attachment, chatlogs.userid, mentions, msgid, msgtime, username from chatlogs inner join user on chatlogs.userid = user.userid where id <= ${bu.db.escape(rows[0].id)} and `;
                 for (i = 0; i < types.length; i++) {
                     statement += `${i == 0 ? '(' : ''}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? 'or ' : ') and '}`;
                 }
