@@ -38,8 +38,10 @@ e.execute = (msg, words) => {
                         switch (words[1].toLowerCase()) {
                             case 'major':
                                 type = 1;
+                                break;
                             case 'overhaul':
                                 type = 0;
+                                break;
                         }
                     }
                     var oldVersion = bu.config.version;
