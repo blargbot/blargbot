@@ -542,6 +542,9 @@ If you are the owner of this server, here are a few things to know.
                                         });
                                     }
                                 }
+                                return wasCommand;
+                            }).catch(err => {
+                                console.log(err);
                             });
                         } catch (err) {
                             console.log(err.stack);
@@ -743,8 +746,11 @@ function handleDiscordCommand(channel, user, text, msg) {
                         var commandName = bu.commandList[words[0].toLowerCase()].name;
                         db.query(`insert into stats (commandname, uses, lastused) values (?, 1, NOW())
             on duplicate key update uses = uses + 1 , lastused=NOW()`, [commandName]);
-                        bu.commands[commandName].execute(msg, words, text);
-
+                        try {
+                            bu.commands[commandName].execute(msg, words, text);
+                        } catch (err) {
+                            reject(err);
+                        }
                         fulfill(true);
                     } else {
                         fulfill(false);
