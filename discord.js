@@ -356,6 +356,9 @@ If you are the owner of this server, here are a few things to know.
 
     bot.on('messageUpdate', (msg, oldmsg) => {
         if (oldmsg) {
+            if (msg.content == oldmsg.content) {
+                return;
+            }
             if (msg.author.id == bot.user.id) {
                 console.log(`Message ${msg.id} was updated to '${msg.content}''`);
             }
