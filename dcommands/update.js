@@ -17,25 +17,39 @@ e.category = bu.CommandType.CAT;
 
 e.execute = (msg, words) => {
     if (msg.author.id === bu.CAT_ID) {
-        
+
         if (!bu.config.general.isbeta) {
             exec('cd /home/cat/blargjs\ngit pull origin master', (err, stdout, stderr) => {
                 var message = '```xl\n';
                 if (err) {
                     message += err + '\n';
-                    console.log('err', err);
                 }
                 if (stderr) {
                     message += stderr + '\n';
-                    console.log('stderr', stderr);
                 }
                 if (stdout) {
                     message += stdout + '\n';
-                    console.log('stdout', stdout);
                 }
-                
+
                 message += '```';
+                if (stdout != 'Already up-to-date.') {
+                    var type = 2;
+                    if (words.length > 1) {
+                        switch (words[1].toLowerCase()) {
+                            case 'major':
+                                type = 1;
+                            case 'overhaul':
+                                type = 0;
+                        }
+                    }
+                    var oldVersion = bu.config.version;
+                    var bits = oldVersion.split('.');
+                    bits[type] = parseInt(bits[type]) + 1;
+                    bu.config.version = bits.join('.');
+                    message += `\nNow running on version \`${bu.config.version}\`!`;
+                }
                 bu.sendMessageToDiscord(msg.channel.id, message);
+
             });
         } else {
             bu.sendMessageToDiscord(msg.channel.id, `Whoa, you can't do that! This is the beta build!`);
