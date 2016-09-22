@@ -47,6 +47,7 @@ e.execute = (msg, words) => {
                     bits[type] = parseInt(bits[type]) + 1;
                     bu.config.version = bits.join('.');
                     message += `\nNow running on version \`${bu.config.version}\`!`;
+                    bu.saveConfig();
                 }
                 bu.sendMessageToDiscord(msg.channel.id, message);
 
