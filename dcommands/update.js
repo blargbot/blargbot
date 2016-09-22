@@ -48,6 +48,7 @@ e.execute = (msg, words) => {
                     var bits = oldVersion.split('.');
                     bits[type] = parseInt(bits[type]) + 1;
                     bu.config.version = bits.join('.');
+                    bu.VERSION = bu.config.version;
                     message += `\nNow running on version \`${bu.config.version}\`!`;
                     bu.saveConfig();
                 }
