@@ -38,7 +38,6 @@ botEmitter.on('reloadIrc', () => {
 });
 
 
-var VERSION = '4.5.1';
 /** LOGGING STUFF **/
 
 
@@ -61,147 +60,11 @@ if (fs.existsSync(path.join(__dirname, 'config.json'))) {
     var configFile = fs.readFileSync(path.join(__dirname, 'config.json'), 'utf8');
     var config = JSON.parse(configFile);
 } else {
-    config = {
-        'general': {
-            'pass': 'password',
-            'default_auth': '',
-            'notification_timer': 600,
-            'notifications': true,
-            'eat_faces': false,
-            'imgflip-user': 'username',
-            'imgflip-pass': 'password',
-            'databasedir': 'data.db'
-        },
-        'discord': {
-            'channel': '000000000',
-            'commands': {},
-            'servers': {},
-            'token': 'token',
-            'isbeta': false,
-            'blacklist': {},
-            'musicGuilds': {}
-        },
-        'sql': {
-            'host': 'hostname',
-            'user': 'username',
-            'pass': 'password',
-            'database': 'database'
-        },
-        'irc': {
-            'server': 'irc.example.net',
-            'channel': '#example',
-            'nick': 'nickname',
-            'nickserv_name': 'username',
-            'nickserv_pass': 'password'
-        },
-        'insult': {
-            'verbs': [
-                'smells like',
-                'looks like',
-                'is',
-                'sounds like',
-                'appears to be',
-                'wants to be',
-                'looks just like',
-                'smells oddly similar to',
-                'is jealous of',
-                'is as stupid as',
-                'laughs like'
-            ],
-            'nouns': [
-                'mother',
-                'mom',
-                'father',
-                'dad',
-                'goat',
-                'cheese',
-                'dick',
-                'boob',
-                'eye',
-                'mouth',
-                'nose',
-                'ear',
-                'sister',
-                'sis',
-                'brother',
-                'bro',
-                'seagull',
-                'tea',
-                'mother-in-law',
-                'rabbit',
-                'dog',
-                'cat',
-                'left foot',
-                'body',
-                'brain',
-                'face',
-                'favourite thing'
-            ],
-            'adjectives': [
-                'a piece of cheese',
-                'a smelly fish',
-                'jam',
-                'tea',
-                'a skunk',
-                'a fart',
-                'a piece of toast',
-                'my mom',
-                'your mom',
-                'my dad',
-                'your dad',
-                'my sister',
-                'your sister',
-                'my brother',
-                'your brother',
-                'my cat',
-                'my dog',
-                'my lizard',
-                'my seagull',
-                'gross',
-                'farts',
-                'ugly',
-                'Captain America',
-                'javascript',
-                'C#',
-                'LUA',
-                'python3.5',
-                'a furry',
-                'an anthropomorphic horse',
-                'a tentacle monster',
-                'fuck',
-                'meow',
-                'mississippi',
-                'the entire UK',
-                'Japan',
-                'anime',
-                'dickgirls',
-                'a really stupid cat',
-                'a sentient robot',
-                'teaching a robot to love',
-                'anime girls with really large boobs who want to eat all of your cream',
-                'salty',
-                'smegma',
-                'mouldy cheese',
-                'obesity',
-                'Donald Trump',
-                'stupid people',
-                'crabcakes',
-                'firepoles',
-                'blue waffle',
-                'a really bad random insult generators',
-                'a terrible AI',
-                'cleverbot',
-                'b1nzy',
-                'a drunken goblin',
-                'poorly censored porn',
-                'an egg left in the sun for too long',
-                '#BREXIT',
-                'leaving the EU'
-            ]
-        }
-    };
+    config = {};
     saveConfig();
 }
+var VERSION = config.version;
+
 
 function reloadConfig() {
     console.log('Attempting to reload config');
