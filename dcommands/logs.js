@@ -140,7 +140,7 @@ e.execute = (msg, words) => {
                 console.log('wut', rows);
                 if (rows && rows[0]) {
                     statementWhere += 'and id >= ' + bu.db.escape(rows[0].id);
-                    var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd}`;
+                    var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd.replace('desc', 'asc')}`;
                     console.log(statement);
 
                     insertQuery(msg, statement).then(key => {
