@@ -49,7 +49,7 @@ e.execute = (msg, words, text) => {
         //        console.log(words.length);
         switch (words[1].toLowerCase()) {
             case 'test':
-                bu.sendMessageToDiscord(msg.channel.id, 'Test output:\n' + tags.processTag(msg, text.replace(words[0], '').trim().replace(words[1], '').trim(), ''));
+                bu.sendMessageToDiscord(msg.channel.id, 'Test output:\n' + tags.processTag(msg, text.replace(words[0], '').trim().replace(words[1], '').trim(), '', 'testTag'));
                 break;
             case 'create':
                 if (words.length > 3) {

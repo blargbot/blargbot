@@ -8,7 +8,8 @@ e.init = (Tbot) => {
     bot = Tbot;
 };
 
-e.processTag = (msg, contents, command) => {
+e.processTag = (msg, contents, command, tagName) => {
+    tagName = tagName || 'unnamed';
     var words = command.replace(/ +/g, ' ').split(' ');
 
     if (contents.split(' ')[0].indexOf('help') > -1) {
@@ -158,19 +159,25 @@ e.processTag = (msg, contents, command) => {
                 }
                 break;
             case 'get':
+                if (!bu.vars[tagName]) {
+                    bu.vars[tagName] = {};
+                }
                 if (args.length > 1) {
-                    replaceString = bu.vars[args[1]];
+                    replaceString = bu.vars[tagName][args[1]];
                 } else {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
                 }
                 break;
             case 'set':
+                if (!bu.vars[tagName]) {
+                    bu.vars[tagName] = {};
+                }
                 if (args.length > 2) {
-                    bu.vars[args[1]] = args[2];
+                    bu.vars[tagName || 'unnamed'][args[1]] = args[2];
                     bu.emitter.emit('saveVars');
                 }
                 else if (args.length == 2) {
-                    delete bu.vars[args[1]];
+                    delete bu.vars[tagName][args[1]];
                     bu.emitter.emit('saveVars');
                 } else {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
@@ -459,7 +466,7 @@ e.executeTag = (msg, tagName, command) => {
             if (row[0].contents.indexOf('{nsfw}') > -1) {
                 nsfw = true;
             }
-            var message = e.processTag(msg, row[0].contents, command);
+            var message = e.processTag(msg, row[0].contents, command, tagName);
             if (message != '')
                 if (!nsfw)
                     bu.sendMessageToDiscord(msg.channel.id, message);
