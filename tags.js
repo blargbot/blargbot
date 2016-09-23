@@ -9,7 +9,7 @@ e.init = (Tbot) => {
 };
 
 e.processTag = (msg, contents, command, tagName) => {
-    tagName = tagName || 'unnamed';
+    tagName = tagName || msg.channel.guild.id;
     var words = command.replace(/ +/g, ' ').split(' ');
 
     if (contents.split(' ')[0].indexOf('help') > -1) {
@@ -45,6 +45,10 @@ e.processTag = (msg, contents, command, tagName) => {
             , obtainedUser
             , formatCode
             , createdDate;
+
+        for (i = 0; i < args.length; i++) {
+            args[i] = args[i].replace(/^[\s\n]+|[\s\n]+$/g, '');
+        }
         switch (args[0].toLowerCase()) {
             case 'randuser':
                 replaceString = msg.channel.guild.members.map(m => m)[bu.getRandomInt(0, msg.channel.guild.members.map(m => m).length - 1)].user.id;
@@ -78,7 +82,6 @@ e.processTag = (msg, contents, command, tagName) => {
                     } else {
                         replaceString = tagProcessError(fallback, '`MIN is greater than MAX`');
                     }
-
                 } else if (args.length == 2) {
                     if (words[parseInt(args[1])]) {
                         replaceString = words[parseInt(args[1])];
@@ -173,7 +176,7 @@ e.processTag = (msg, contents, command, tagName) => {
                     bu.vars[tagName] = {};
                 }
                 if (args.length > 2) {
-                    bu.vars[tagName || 'unnamed'][args[1]] = args[2];
+                    bu.vars[tagName][args[1]] = args[2];
                     bu.emitter.emit('saveVars');
                 }
                 else if (args.length == 2) {
