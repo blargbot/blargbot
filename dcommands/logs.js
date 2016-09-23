@@ -61,7 +61,6 @@ e.execute = (msg, words) => {
             , order;
         console.log(util.inspect(words));
         for (var i = 0; i < words.length; i++) {
-            console.log(i, words[i]);
             if (i >= 1) {
                 //   console.log('fbaoisfs');
                 if (words[i].toLowerCase() == '-m' || words[i].toLowerCase() == '-message') {
@@ -103,13 +102,10 @@ e.execute = (msg, words) => {
         if (order == null) {
             order = false;
         }
-        console.log(user, type);
         var typesRaw = type.split(',')
             , usersRaw = user.split(',')
             , types = []
             , users = [];
-        console.log(util.inspect(typesRaw));
-        console.log(util.inspect(usersRaw));
         for (i = 0; i < typesRaw.length; i++) {
             if (typesRaw[i] != '') {
                 types.push(typesRaw[i].toUpperCase().trim());
@@ -127,26 +123,31 @@ e.execute = (msg, words) => {
                 }
             }
         }
-        bu.db.query('select id from chatlogs order by id desc limit 1', (err, rows) => {
-            console.log('wut', rows);
-            if (rows && rows[0]) {
-                console.log(util.inspect(types));
-                console.log(util.inspect(users));
-                var statement = `select type, content, attachment, chatlogs.userid, mentions, msgid, msgtime, username from chatlogs inner join user on chatlogs.userid = user.userid where id <= ${bu.db.escape(rows[0].id)} and `;
-                for (i = 0; i < types.length; i++) {
-                    statement += `${i == 0 ? '(' : ''}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? 'or ' : ') and '}`;
-                }
-                for (i = 0; i < users.length; i++) {
-                    statement += `${i == 0 ? '(' : ''}chatlogs.userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? 'or ' : ') and '}`;
-                }
-                statement += 'channelid = ' + bu.db.escape(msg.channel.id) + '  order by id ' + (order ? 'asc' : 'desc') + (numberOfMessages > 0 && !isNaN(numberOfMessages) ? ' limit ' + bu.db.escape(numberOfMessages) : '');
-                console.log(statement);
+        var statementPrefix = 'select type, content, attachment, chatlogs.userid, mentions, msgid, msgtime, username from ';
+        var statementFrom = 'chatlogs inner join user on chatlogs.userid = user.userid ';
+        var statementWhere = `where channelid = ${bu.db.escape(msg.channel.id)} `;
+        var statementEnd = 'order by id ' + (order ? 'asc' : 'desc')
+            + (!isNaN(numberOfMessages) && numberOfMessages > 0
+                ? ' limit ' + bu.db.escape(numberOfMessages) : '');
+        for (i = 0; i < types.length; i++) {
+            statementWhere += `${i == 0 ? '(' : ''}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? 'or ' : ') and '}`;
+        }
+        for (i = 0; i < users.length; i++) {
+            statementWhere += `${i == 0 ? '(' : ''}chatlogs.userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? 'or ' : ') and '}`;
+        }
+        var IDStatement = `select id from (select id from chatlogs ${statementWhere} ${statementEnd}) as lastid order by id asc limit 1`;
+        bu.db.query(IDStatement, (err, rows) => {
+                console.log('wut', rows);
+                if (rows && rows[0]) {
+                    statementWhere += 'and id >= ' + bu.db.escape(rows[0].id);
+                    var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd}`;
+                    console.log(statement);
 
-                insertQuery(msg, statement).then(key => {
-                    bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
-                });
-            }
-        });
+                    insertQuery(msg, statement).then(key => {
+                        bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
+                    });
+                }
+            });
 
     } else {
         bu.sendMessageToDiscord(msg.channel.id, 'Not enough parameters were given!');
