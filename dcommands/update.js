@@ -32,7 +32,7 @@ e.execute = (msg, words) => {
                 }
 
                 message += '```';
-                if (stdout != 'Already up-to-date.') {
+                if (stdout.indexOf('Already up-to-date.') > -1) {
                     var type = 2;
                     if (words.length > 1) {
                         switch (words[1].toLowerCase()) {
