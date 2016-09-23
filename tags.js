@@ -162,7 +162,7 @@ e.processTag = (msg, contents, command, tagName, author) => {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
                 }
                 break;
-            case 'tget':
+            case 'get':
                 if (!bu.vars[tagName]) {
                     bu.vars[tagName] = {};
                 }
@@ -172,7 +172,7 @@ e.processTag = (msg, contents, command, tagName, author) => {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
                 }
                 break;
-            case 'tset':
+            case 'set':
                 if (!bu.vars[tagName]) {
                     bu.vars[tagName] = {};
                 }
@@ -187,18 +187,18 @@ e.processTag = (msg, contents, command, tagName, author) => {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
                 }
                 break;
-            case 'get':
+            case 'aget':
                 if (!bu.vars[author]) {
                     bu.vars[author] = {};
                 }
                 if (args.length > 1) {
                     replaceString = (bu.vars[author][args[1]] || 0) + '';
-                    
+
                 } else {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
                 }
                 break;
-            case 'set':
+            case 'aset':
                 if (!bu.vars[author]) {
                     bu.vars[author] = {};
                 }
