@@ -20,6 +20,7 @@ servers.json
 *.bat
 *.psd
 *.sql
+*.diff
 out.png
 music/*
 img/avatars/*

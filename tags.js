@@ -8,8 +8,9 @@ e.init = (Tbot) => {
     bot = Tbot;
 };
 
-e.processTag = (msg, contents, command, tagName) => {
+e.processTag = (msg, contents, command, tagName, author) => {
     tagName = tagName || msg.channel.guild.id;
+    author = author || msg.channel.guild.id;
     var words = command.replace(/ +/g, ' ').split(' ');
 
     if (contents.split(' ')[0].indexOf('help') > -1) {
@@ -161,17 +162,17 @@ e.processTag = (msg, contents, command, tagName) => {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
                 }
                 break;
-            case 'get':
+            case 'tget':
                 if (!bu.vars[tagName]) {
                     bu.vars[tagName] = {};
                 }
                 if (args.length > 1) {
-                    replaceString = bu.vars[tagName][args[1]];
+                    replaceString = (bu.vars[tagName][args[1]] || 0) + '';
                 } else {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
                 }
                 break;
-            case 'set':
+            case 'tset':
                 if (!bu.vars[tagName]) {
                     bu.vars[tagName] = {};
                 }
@@ -181,6 +182,32 @@ e.processTag = (msg, contents, command, tagName) => {
                 }
                 else if (args.length == 2) {
                     delete bu.vars[tagName][args[1]];
+                    bu.emitter.emit('saveVars');
+                } else {
+                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
+                }
+                break;
+            case 'get':
+                if (!bu.vars[author]) {
+                    bu.vars[author] = {};
+                }
+                if (args.length > 1) {
+                    replaceString = (bu.vars[author][args[1]] || 0) + '';
+                    
+                } else {
+                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
+                }
+                break;
+            case 'set':
+                if (!bu.vars[author]) {
+                    bu.vars[author] = {};
+                }
+                if (args.length > 2) {
+                    bu.vars[author][args[1]] = args[2];
+                    bu.emitter.emit('saveVars');
+                }
+                else if (args.length == 2) {
+                    delete bu.vars[author][args[1]];
                     bu.emitter.emit('saveVars');
                 } else {
                     replaceString = tagProcessError(fallback, '`Not enough arguments`');
@@ -461,7 +488,7 @@ function tagProcessError(fallback, errormessage) {
 }
 
 e.executeTag = (msg, tagName, command) => {
-    bu.db.query(`select contents from tag where title=?`, [tagName], (err, row) => {
+    bu.db.query(`select contents, author from tag where title=?`, [tagName], (err, row) => {
         if (!row[0])
             bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
         else {
@@ -469,7 +496,7 @@ e.executeTag = (msg, tagName, command) => {
             if (row[0].contents.indexOf('{nsfw}') > -1) {
                 nsfw = true;
             }
-            var message = e.processTag(msg, row[0].contents, command, tagName);
+            var message = e.processTag(msg, row[0].contents, command, tagName, row[0].author);
             if (message != '')
                 if (!nsfw)
                     bu.sendMessageToDiscord(msg.channel.id, message);
