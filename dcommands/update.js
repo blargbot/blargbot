@@ -6,7 +6,7 @@ var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
     bu = blargutil;
-    
+
     e.category = bu.CommandType.CAT;
 };
 
@@ -49,7 +49,7 @@ e.execute = (msg, words) => {
                     var oldVersion = bu.config.version;
                     var bits = oldVersion.split('.');
                     bits[type] = parseInt(bits[type]) + 1;
-                    while (type < 4) {
+                    while (type < 2) {
                         type++;
                         bits[type] = 0;
                     }
