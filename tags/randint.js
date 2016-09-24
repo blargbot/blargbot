@@ -13,7 +13,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `randint`;
-e.args = `(min) &lt;max&gt;`;
+e.args = `[min] &lt;max&gt;`;
 e.usage = `{randint[;min];max}`;
 e.desc = `If only max is specified, gets a random number between max and 0. If both arguments are
                                 specified,

@@ -13,7 +13,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `username`;
-e.args = `(user) (quiet)`;
+e.args = `[user] [quiet]`;
 e.usage = `{username[;user[;quiet]]}`;
 e.desc = `Returns the user's name. If <code>name</code> is specified, gets that user instead. If
                                 <code>quiet</code> is

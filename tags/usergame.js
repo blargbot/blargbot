@@ -13,7 +13,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `usergame`;
-e.args = `(user) (quiet)`;
+e.args = `[user] [quiet]`;
 e.usage = `{usergame[;user[;quiet]]}`;
 e.desc = `Returns the game the user is playing. If the user isn't playing a game, returns the word 'nothing'. If <code>name</code> is specified, gets that user instead. If
                                 <code>quiet</code> is

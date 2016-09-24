@@ -14,7 +14,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `userjoinedat`;
-e.args = `(format) (user) (quiet)`;
+e.args = `[format] [user] [quiet]`;
 e.usage = `{userjoinedat[;format[;user[;quiet]]]}`;
 e.desc = `Returns the date the user joined the current guild, in UTC+0. If a <code>format</code> code is
                                 specified,

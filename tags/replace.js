@@ -13,7 +13,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `replace`;
-e.args = `(toreplace) &lt;phrase&gt; &lt;replacewith&gt;`;
+e.args = `[toreplace] &lt;phrase&gt; &lt;replacewith&gt;`;
 e.usage = `{replace[;textToReplace];phrase;replaceWith}`;
 e.desc = `Replaces the <code>phrase</code> with <code>replacewith</code>. If
                                 <code>toreplace</code> is

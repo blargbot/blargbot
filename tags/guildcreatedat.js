@@ -14,7 +14,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `guildcreatedat`;
-e.args = `(format)`;
+e.args = `[format]`;
 e.usage = `{guildcreatedat}`;
 e.desc = `Returns the date the current guild was created, in UTC+0. If a <code>format</code> code is specified,
                                 the date

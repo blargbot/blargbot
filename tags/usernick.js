@@ -13,7 +13,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `usernick`;
-e.args = `(user) (quiet)`;
+e.args = `[user] [quiet]`;
 e.usage = `{usernick[;user[;quiet]]}`;
 e.desc = `Returns the user's nickname. If it doesn't exist, returns their username instead. If
                                 <code>name</code>

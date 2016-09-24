@@ -13,7 +13,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `args`;
-e.args = `(index) (range)`;
+e.args = `[index] [range]`;
 e.usage = `{args[;index;[range]]}`;
 e.desc = `Gets user input. Specifying an index will only get the word at that location, specifying
                                 a range

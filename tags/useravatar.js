@@ -13,7 +13,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `useravatar`;
-e.args = `(user) (quiet)`;
+e.args = `[user] [quiet]`;
 e.usage = `{useravatar[;user[;quiet]]}`;
 e.desc = `Returns the user's avatar. If <code>name</code> is specified, gets that user instead. If
                                 <code>quiet</code> is

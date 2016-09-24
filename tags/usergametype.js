@@ -13,7 +13,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `usergametype`;
-e.args = `(user) (quiet)`;
+e.args = `[user] [quiet]`;
 e.usage = `{usergametype[;user[;quiet]]}`;
 e.desc = `Returns how the user is playing the game (playing, streaming). If <code>name</code> is
                                 specified,

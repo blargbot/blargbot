@@ -14,7 +14,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `usercreatedat`;
-e.args = `(format) (user) (quiet)`;
+e.args = `[format] [user] [quiet]`;
 e.usage = `{usercreatedat[;format[;user[;quiet]]]}`;
 e.desc = `Returns the date the user was created, in UTC+0. If a <code>format</code> code is specified, the
                                 date is

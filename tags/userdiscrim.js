@@ -13,7 +13,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `userdiscrim`;
-e.args = `(user) (quiet)`;
+e.args = `[user] [quiet]`;
 e.usage = `{userdiscrim[;user[;quiet]]}`;
 e.desc = `Returns the user's discriminator. If <code>name</code> is specified, gets that user
                                 instead. If
