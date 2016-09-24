@@ -76,7 +76,7 @@ function reloadConfig() {
 }
 
 function saveConfig() {
-    fs.writeFile(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 4));
+    fs.writeFile(path.join(__dirname, 'config.json'), JSON.stringify(bu.config, null, 4));
 }
 
 
