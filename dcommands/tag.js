@@ -140,7 +140,7 @@ e.execute = (msg, words, text) => {
                 bu.db.query(`select author from tag where title=?`,
                     [words[2]], (err, row) => {
                         if (!row[0])
-                            bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
+                            bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
                         else if (row[0].author != msg.author.id)
                             bu.sendMessageToDiscord(msg.channel.id, `❌ You don't own this tag! ❌`);
                         else {
@@ -155,7 +155,7 @@ e.execute = (msg, words, text) => {
             case 'delete':
                 bu.db.query(`select author from tag where title=?`, [words[2]], (err, row) => {
                     if (!row[0])
-                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
+                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
                     else if (row[0].author != msg.author.id)
                         bu.sendMessageToDiscord(msg.channel.id, `❌ You don't own this tag! ❌`);
                     else {
@@ -170,7 +170,7 @@ e.execute = (msg, words, text) => {
             case 'raw':
                 bu.db.query(`select contents from tag where title=?`, [words[2]], (err, row) => {
                     if (!row[0])
-                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
+                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
                     else if (row[0].author != msg.author.id)
                         bu.sendMessageToDiscord(msg.channel.id, `The code for ${words[2]} is:
 \`\`\`
@@ -181,7 +181,7 @@ ${row[0].contents}
             case 'author':
                 bu.db.query(`select author from tag where title=?`, [words[2]], (err, row) => {
                     if (!row[0])
-                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
+                        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
                     else {
                         bu.sendMessageToDiscord(msg.channel.id, `The tag \`${words[2]}\` was made by **${bot.users.get(row[0].author).username}#${bot.users.get(row[0].author).discriminator}**`);
                     }
