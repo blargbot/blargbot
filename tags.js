@@ -60,9 +60,9 @@ function buildTag(tagName) {
     };
     bu.tagList[bu.tags[tagName].name] = tag;
     bu.db.query('delete from rawtag', () => {
-        bu.db.query(`insert into rawtag (tagname, tusage, args, description, examplein, exampleout) values (?, ?, ?, ?, ?, ?)
+        bu.db.query(`insert into rawtag (tagname, tusage, args, description, examplein, exampleout, type) values (?, ?, ?, ?, ?, ?, ?)
            `,
-            [tagName, tag.usage, tag.args, tag.desc, tag.exampleIn, tag.exampleOut]);
+            [tagName, tag.usage, tag.args, tag.desc, tag.exampleIn, tag.exampleOut, bu.tags[tagName].category]);
     });
 
 }
