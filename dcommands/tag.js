@@ -236,11 +236,7 @@ ${row[0].contents}
                         //   }
                         tagList.sort();
                         console.log('all done');
-                        var tagMessage = '';
-                        for (i = 0; i < tagList.length; i++) {
-                            tagMessage += ` ${tagList[i]},`;
-                        }
-                        var message = `Found ${tagList.length} tags made by **${obtainedUser.username}#${obtainedUser.discriminator}**.\n\`\`\`${tagMessage.trim()}\n\`\`\``;
+                        var message = `Found ${tagList.length} tags made by **${obtainedUser.username}#${obtainedUser.discriminator}**.\n\`\`\`${tagList.join(', ').trim()}\n\`\`\``;
                         bu.sendMessageToDiscord(msg.channel.id, message);
                     });
                 }
