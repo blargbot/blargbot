@@ -1,0 +1,41 @@
+var e = module.exports = {};
+var bu;
+
+var bot;
+e.init = (Tbot, blargutil) => {
+    bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.TagType.COMPLEX;
+};
+
+e.requireCtx = require;
+
+e.isTag = true;
+e.name = 'hash';
+e.args = '&lt;text&gt;';
+e.usage = '{hash;text}';
+e.desc = 'Returns the numeric hash of any given text, based on the unicode value of each individual character. This results in seemingly randomly generated numbers that are constant for each specific query.';
+e.exampleIn = 'The hash of brown is {hash;brown}';
+e.exampleOut = 'The hash of brown is 94011702';
+
+
+e.execute = (msg, args, fallback) => {
+    var replaceString = '';
+    var replaceContent = false;
+
+    if (args[1]) {
+        replaceString = args[1].split('').reduce(function (a, b) {
+            a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+        }, 0);
+    }
+    else
+        replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
+
+
+    return {
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

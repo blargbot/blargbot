@@ -18,8 +18,8 @@ e.commands = {};
 // A list of command names/descriptions for each alias or subcommand
 e.commandList = {};
 
+e.tags = {};
 e.tagList = {};
-
 e.TagType = {
     SIMPLE: 1,
     COMPLEX: 2,
@@ -437,25 +437,27 @@ e.shuffle = (array) => {
     return array;
 }
 
-e.getUser = (msg, args) => {
+e.getUser = (msg, args, index) => {
     var obtainedUser;
-    if (args.length == 1) {
+    if (!index) index = 1;
+
+    if (args.length == index) {
         obtainedUser = msg.author;
     } else {
-        if (args[2]) {
-            obtainedUser = bu.getUserFromName(msg, args[1], true);
+        if (args[index + 1]) {
+            obtainedUser = e.getUserFromName(msg, args[index], true);
         } else {
-            obtainedUser = bu.getUserFromName(msg, args[1]);
+            obtainedUser = e.getUserFromName(msg, args[index]);
         }
     }
     return obtainedUser;
-}
+};
 
 
 e.tagGetFloat = (arg) => {
     return parseFloat(arg) ? parseFloat(arg) : 0;
-}
+};
 
 e.tagProcessError = (fallback, errormessage) => {
     return fallback == '' ? errormessage : fallback;
-}
+};

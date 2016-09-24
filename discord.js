@@ -188,7 +188,7 @@ e.init = (blargutil, v, em, database) => {
     bu.VERSION = v;
     bu.startTime = startTime;
     bu.vars = vars;
-    tags.init(bot);
+    tags.init(bot, bu);
     bu.db.query(`delete from command`);
 
     /**

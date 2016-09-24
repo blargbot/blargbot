@@ -1,12 +1,71 @@
 var e = module.exports = {};
-var bu = require('./util.js');
+var bu;
 var moment = require('moment-timezone');
-var bu = require('./util.js');
+var fs = require('fs');
+var path = require('path');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
+    bu = blargutil;
     bot = Tbot;
+    initTags();
 };
+
+
+/**
+ * Initializes every command found in the dcommands directory 
+ * - hooray for modules!
+ */
+function initTags() {
+    var fileArray = fs.readdirSync(path.join(__dirname, 'tags'));
+    for (var i = 0; i < fileArray.length; i++) {
+
+        var tagFile = fileArray[i];
+        if (/.+\.js$/.test(tagFile)) {
+            var tagName = tagFile.match(/(.+)\.js$/)[1];
+            loadTag(tagName);
+            console.log(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module '
+                , tagName);
+        } else {
+            console.log('     Skipping non-tag ', tagFile);
+
+        }
+    }
+}
+
+/**
+ * Loads a specific command
+ * @param commandName - the name of the command to load (String)
+ */
+function loadTag(tagName) {
+
+    bu.tags[tagName] = require(`./tags/${tagName}.js`);
+    if (bu.tags[tagName].isTag) {
+        buildTag(tagName);
+    } else {
+        console.log('     Skipping non-tag ', tagName + '.js');
+    }
+}
+
+// Refactored a major part of loadCommand and reloadCommand into this
+function buildTag(tagName) {
+    bu.tags[tagName].init(bot, bu);
+    var tag = {
+        tagName: tagName,
+        args: bu.tags[tagName].args,
+        usage: bu.tags[tagName].usage,
+        desc: bu.tags[tagName].desc,
+        exampleIn: bu.tags[tagName].exampleIn,
+        exampleOut: bu.tags[tagName].exampleOut
+    };
+    bu.tagList[bu.tags[tagName].name] = tag;
+    bu.db.query('delete from rawtag', () => {
+        bu.db.query(`insert into rawtag (tagname, tusage, args, description, examplein, exampleout) values (?, ?, ?, ?, ?, ?)
+           `,
+            [tagName, tag.usage, tag.args, tag.desc, tag.exampleIn, tag.exampleOut]);
+    });
+
+}
 
 e.processTag = (msg, contents, command, tagName, author) => {
     tagName = tagName || msg.channel.guild.id;
@@ -16,22 +75,7 @@ e.processTag = (msg, contents, command, tagName, author) => {
     if (contents.split(' ')[0].indexOf('help') > -1) {
         contents = '\u200B' + contents;
     }
-    contents = contents.replace(/\{channelid}/gi, msg.channel.id)
-        .replace(/\{channelname}/gi, msg.channel.name)
-        .replace(/\{channelpos}/gi, msg.channel.position)
-        .replace(/\{guildid}/gi, msg.channel.guild.id)
-        .replace(/\{guildname}/gi, msg.channel.guild.name)
-        .replace(/\{guildmembers}/gi, msg.channel.guild.memberCount)
-        .replace(/\{guildownerid}/gi, msg.channel.guild.ownerID)
-        .replace(/\{guildownername}/gi, bot.users.get(msg.channel.guild.ownerID).username)
-        .replace(/\{guildownernick}/gi, msg.channel.guild.members.get(msg.channel.guild.ownerID).nick ? msg.channel.guild.members.get(msg.channel.guild.ownerID).nick : bot.users.get(msg.channel.guild.ownerID).username)
-        .replace(/\{guildicon}/gi, `https://cdn.discordapp.com/icons/${msg.channel.guild.id}/${msg.channel.guild.icon}.jpg`)
-        .replace(/\{guilddefaultchannelid}/gi, msg.channel.guild.defaultChannel.id)
-        .replace(/\{guilddefaultchannelname}/gi, msg.channel.guild.defaultChannel.name)
-        .replace(/\{nsfw}/gi, '')
-        .replace(/\{rb}/gi, '%RB%')
-        .replace(/\{lb}/gi, '%LB%')
-        .replace(/\{semi}/g, '%SEMI%');
+
 
     var fallback = '';
     while (contents.indexOf('{') > -1 && contents.indexOf('}') > -1 &&
@@ -43,439 +87,52 @@ e.processTag = (msg, contents, command, tagName, author) => {
             , args = tag.split(';')
             , replaceString = ''
             , i
-            , obtainedUser
-            , formatCode
-            , createdDate;
+            , replaceObj = {
+                replaceString: '',
+                replaceContent: false
+            };
+
 
         for (i = 0; i < args.length; i++) {
             args[i] = args[i].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
-        switch (args[0].toLowerCase()) {
-            case 'randuser':
-                replaceString = msg.channel.guild.members.map(m => m)[bu.getRandomInt(0, msg.channel.guild.members.map(m => m).length - 1)].user.id;
-                break;
-            case '//':
-                break;
-            case 'fallback':
-                if (args[1])
-                    fallback = args[1];
-                break;
-            case 'randint':
-                //console.log(args.length);
-                if (args.length == 2) {
-                    replaceString = bu.getRandomInt(0, parseInt(args[1]));
-                } else if (args.length > 2) {
-                    replaceString = bu.getRandomInt(parseInt(args[1]), parseInt(args[2]));
-                } else {
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                }
-                break;
-            case 'args':
-                if (args.length > 2) {
-                    var min = parseInt(args[1]);
-                    var max = args[2] == 'n' ? words.length : parseInt(args[2]);
-                    //console.log(max);
-                    if (min < max) {
-                        for (i = min; i < max; i++) {
-                            if (words[i])
-                                replaceString += ` ${words[i]}`;
-                        }
-                    } else {
-                        replaceString = tagProcessError(fallback, '`MIN is greater than MAX`');
-                    }
-                } else if (args.length == 2) {
-                    if (words[parseInt(args[1])]) {
-                        replaceString = words[parseInt(args[1])];
-                    } else {
-                        replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                    }
-                } else {
-                    //console.log(words.length, util.inspect(words));
-
-                    if (!(words[0] == '' && words.length == 1)) {
-                        replaceString = command;
-                    }
-                    else
-                        replaceString = tagProcessError(fallback, '`User gave no args`');
-                }
-                break;
-            case 'argslength':
-                console.log(words);
-                var length = words.length;
-                if (length == 1 && words[0] == '') {
-                    length = 0;
-                }
-                replaceString = length;
-                break;
-            case 'randchoose':
-                if (args.length > 1) {
-                    //    console.log(util.inspect(args))
-                    replaceString = args[bu.getRandomInt(1, args.length - 1)];
-                } else {
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                }
-                break;
-            case 'choose':
-                if (args.length > 2) {
-                    replaceString = args[parseInt(args[1]) + 2];
-                    if (!replaceString) {
-                        replaceString = args[2];
-                    }
-                } else
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                break;
-            case 'replace':
-                if (args.length > 3) {
-                    replaceString = args[1].replace(args[2], args[3]);
-                } else if (args.length == 3) {
-                    contents = contents.replace(args[1], args[2]);
-                } else {
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                }
-                break;
-            case 'shuffle':
+        if (bu.tagList.hasOwnProperty(args[0].toLowerCase())) {
+            replaceObj = bu.tags[bu.tagList[args[0].toLowerCase()].tagName].execute(msg, args, fallback, words, author, tagName);
+        } else {
+            replaceObj.replaceString = bu.tagProcessError(fallback, '`Tag doesn\'t exist`');
+        }
+        console.log('replacecontent:',replaceObj.replaceContent);
+        if (replaceObj.fallback !== undefined) {
+            fallback = replaceObj.fallback;
+        }
+        if (replaceObj == '') {
+            contents = '';
+        }
+        else if (replaceObj.replaceContent) {
+            if (replaceObj.replace == undefined) {
+                contents = replaceObj.replaceString;
+            } else {
+                contents.replace(tagBrackets, '');
+                contents = contents.replace(replaceObj.replace, replaceObj.replaceString);
+            }
+        } else {
+            replaceString = replaceObj.replaceString;
+            if (!replaceString) {
                 replaceString = '';
-                words = shuffle(words);
-                break;
-            case 'regexreplace':
-                var regexList;
-                if (args.length > 3) {
-                    if (/^\/?.*\/.*/.test(args[2])) {
-                        //var
-                        regexList = args[2].match(/^\/?(.*)\/(.*)/);
-                        replaceString = args[1].replace(new RegExp(regexList[1], regexList[2]), args[3]);
-                    } else {
-                        replaceString = tagProcessError(fallback, '`Invalid regex string`');
-                    }
-                } else if (args.length == 3) {
-                    if (/^\/?.*\/.*/.test(args[1])) {
-                        try {
-                            regexList = args[1].match(/^\/?(.*)\/(.*)/);
-                            contents = contents.replace(new RegExp(regexList[1], regexList[2]), args[2]);
-                        } catch (err) {
-                            replaceString = tagProcessError(fallback, err.message);
-                        }
-                    } else {
-                        replaceString = tagProcessError(fallback, '`Invalid regex string`');
-                    }
-                } else {
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                }
-                break;
-            case 'get':
-                if (!bu.vars[tagName]) {
-                    bu.vars[tagName] = {};
-                }
-                if (args.length > 1) {
-                    replaceString = bu.vars[tagName][args[1]] || 0;
-                } else {
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                }
-                break;
-            case 'set':
-                if (!bu.vars[tagName]) {
-                    bu.vars[tagName] = {};
-                }
-                if (args.length > 2) {
-                    bu.vars[tagName][args[1]] = args[2];
-                    bu.emitter.emit('saveVars');
-                }
-                else if (args.length == 2) {
-                    delete bu.vars[tagName][args[1]];
-                    bu.emitter.emit('saveVars');
-                } else {
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                }
-                break;
-            case 'aget':
-                if (!bu.vars[author]) {
-                    bu.vars[author] = {};
-                }
-                if (args.length > 1) {
-                    replaceString = bu.vars[author][args[1]] || 0;
-
-                } else {
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                }
-                break;
-            case 'aset':
-                if (!bu.vars[author]) {
-                    bu.vars[author] = {};
-                }
-                if (args.length > 2) {
-                    bu.vars[author][args[1]] = args[2];
-                    bu.emitter.emit('saveVars');
-                }
-                else if (args.length == 2) {
-                    delete bu.vars[author][args[1]];
-                    bu.emitter.emit('saveVars');
-                } else {
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                }
-                break;
-            case 'math':
-                if (args.length > 2) {
-                    var result = tagGetFloat(args[2]);
-                    switch (args[1]) {
-                        case '+':
-                            for (i = 3; i < args.length; i++) {
-                                result += tagGetFloat(args[i]);
-                            }
-                            break;
-                        case '-':
-                            for (i = 3; i < args.length; i++) {
-                                result -= tagGetFloat(args[i]);
-                            }
-                            break;
-                        case '*':
-                            for (i = 3; i < args.length; i++) {
-                                result *= tagGetFloat(args[i]);
-                            }
-                            break;
-                        case '/':
-                            for (i = 3; i < args.length; i++) {
-                                result /= tagGetFloat(args[i]);
-                            }
-                            break;
-                        case '%':
-                            for (i = 3; i < args.length; i++) {
-                                result %= tagGetFloat(args[i]);
-                            }
-                            break;
-                    }
-                    replaceString = result;
-                } else {
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                }
-
-                break;
-            case 'if':
-                if (args.length > 5) {
-                    switch (args[1]) {
-                        case '==':
-                            if (args[2] == args[3])
-                                replaceString = args[4];
-                            else
-                                replaceString = args[5];
-                            break;
-                        case '!=':
-                            if (args[2] != args[3])
-                                replaceString = args[4];
-                            else
-                                replaceString = args[5];
-                            break;
-                        case '>=':
-                            if (args[2] >= args[3])
-                                replaceString = args[4];
-                            else
-                                replaceString = args[5];
-                            break;
-                        case '<=':
-                            if (args[2] <= args[3])
-                                replaceString = args[4];
-                            else
-                                replaceString = args[5];
-                            break;
-                        case '>':
-                            if (args[2] > args[3])
-                                replaceString = args[4];
-                            else
-                                replaceString = args[5];
-                            break;
-                        case '<':
-                            if (args[2] < args[3])
-                                replaceString = args[4];
-                            else
-                                replaceString = args[5];
-                            break;
-                    }
-                } else {
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                }
-                break;
-            case 'lower':
-                if (args.length > 1)
-                    replaceString = args[1].toLowerCase();
-                else
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-
-                break;
-            case 'upper':
-                if (args.length > 1)
-                    replaceString = args[1].toUpperCase();
-                else
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-
-                break;
-            case 'username':
-                obtainedUser = getUser(msg, args);
-
-                if (obtainedUser)
-                    replaceString = obtainedUser.username;
-                else {
-                    if (!args[2])
-                        return '';
-                    else
-                        replaceString = args[1];
-                }
-
-
-                break;
-            case 'usernick':
-                obtainedUser = getUser(msg, args);
-
-                if (obtainedUser) {
-                    replaceString = msg.channel.guild.members.get(obtainedUser.id) && msg.channel.guild.members.get(obtainedUser.id).nick
-                        ? msg.channel.guild.members.get(obtainedUser.id).nick
-                        : obtainedUser.username;
-                } else if (!args[2])
-                    return '';
-                else
-                    replaceString = args[1];
-
-                break;
-            case 'userdiscrim':
-                obtainedUser = getUser(msg, args);
-                if (obtainedUser)
-                    replaceString = obtainedUser.discriminator;
-
-                else if (!args[2])
-                    return '';
-                else
-                    replaceString = args[1];
-
-                break;
-            case 'userid':
-                obtainedUser = getUser(msg, args);
-
-                if (obtainedUser)
-                    replaceString = obtainedUser.id;
-
-                else if (!args[2])
-                    return '';
-                else
-                    replaceString = args[1];
-
-                break;
-            case 'useravatar':
-                obtainedUser = getUser(msg, args);
-
-                if (obtainedUser)
-                    replaceString = obtainedUser.avatarURL;
-
-                else if (!args[2])
-                    return '';
-                else
-                    replaceString = args[1];
-                break;
-            case 'userreply':
-                obtainedUser = getUser(msg, args);
-
-                if (obtainedUser)
-                    replaceString = obtainedUser.mention;
-
-                else if (!args[2])
-                    return '';
-                else
-                    replaceString = args[1];
-
-                break;
-            case 'usergame':
-                obtainedUser = getUser(msg, args);
-
-                if (obtainedUser)
-                    replaceString = obtainedUser.game ? obtainedUser.game.name : nothing;
-
-                else if (!args[2])
-                    return '';
-                else
-                    replaceString = args[1];
-
-                break;
-            case 'usergametype':
-                obtainedUser = getUser(msg, args);
-
-                if (obtainedUser)
-                    replaceString = obtainedUser.game ? (obtainedUser.game.type > 0 ? 'streaming' : 'playing') : '';
-
-                else if (!args[2])
-                    return '';
-                else
-                    replaceString = args[1];
-
-                break;
-            case 'usercreatedat':
-                obtainedUser = getUser(msg, args);
-
-                if (obtainedUser) {
-                    createdDate = obtainedUser.createdAt;
-                    formatCode = '';
-                    if (args[2])
-                        formatCode = args[2];
-
-                    replaceString = moment(createdDate).format(formatCode);
-                }
-
-                else if (!args[3])
-                    return '';
-                else
-                    replaceString = args[1];
-
-                break;
-            case 'userjoinedat':
-                obtainedUser = getUser(msg, args);
-
-                if (obtainedUser) {
-                    createdDate = msg.channel.guild.members.get(obtainedUser.id).joinedAt;
-                    formatCode = '';
-                    if (args[2])
-                        formatCode = args[2];
-
-                    replaceString = moment(createdDate).format(formatCode);
-                } else if (!args[2])
-                    return '';
-                else
-                    replaceString = args[1];
-                break;
-            case 'guildcreatedat':
-
-                createdDate = msg.channel.guild.createdAt;
-                formatCode = '';
-                if (args[2])
-                    formatCode = args[2];
-
-                replaceString = moment(createdDate).format(formatCode);
-                break;
-            case 'hash':
-                if (args[1]) {
-                    replaceString = args[1].split('').reduce(function (a, b) {
-                        a = ((a << 5) - a) + b.charCodeAt(0);
-                        return a & a;
-                    }, 0);
-                }
-                else
-                    replaceString = tagProcessError(fallback, '`Not enough arguments`');
-                break;
-            default:
-                replaceString = tagProcessError(fallback, '`Tag doesn\'t exist`');
-                break;
+            }
+            replaceString = replaceString.toString();
+            replaceString = replaceString.replace(/\}/gi, '%RB%')
+                .replace(/\{/gi, '%LB%')
+                .replace(/\;/g, '%SEMI%');
+            console.log(tagBrackets, replaceString);
+            contents = contents.replace(tagBrackets, replaceString);
         }
-        if (!replaceString) {
-            replaceString = '';
-        }
-        replaceString = replaceString.toString();
-        replaceString = replaceString.replace(/\}/gi, '%RB%')
-            .replace(/\{/gi, '%LB%')
-            .replace(/\;/g, '%SEMI%');
-        console.log(tagBrackets, replaceString);
-        contents = contents.replace(tagBrackets, replaceString);
-
     }
     contents = contents.replace(/%RB%/g, '}').replace(/%LB%/g, '{').replace(/%SEMI%/g, ';');
     while (/<@!?[0-9]{17,21}>/.test(contents)) {
-        //console.log('fuck');
         contents = contents.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, contents.match(/<@!?([0-9]{17,21})>/)[1], true).username);
     }
+    console.log('Done!', contents.trim());
     return contents.trim();
 };
 
