@@ -59,7 +59,6 @@ e.execute = (msg, words) => {
             , user = ''
             , current
             , order;
-        console.log(util.inspect(words));
         for (var i = 0; i < words.length; i++) {
             if (i >= 1) {
                 //   console.log('fbaoisfs');
@@ -75,7 +74,6 @@ e.execute = (msg, words) => {
                     //    console.log('Adding users now');
                     current = 2;
                 } else {
-                    console.log(current);
                     switch (current) {
                         case 0: //message
                             //      console.log('type');
@@ -130,15 +128,15 @@ e.execute = (msg, words) => {
             + (!isNaN(numberOfMessages) && numberOfMessages > 0
                 ? ' limit ' + bu.db.escape(numberOfMessages) : '');
         for (i = 0; i < types.length; i++) {
-            statementWhere += `${i == 0 ? '(' : ''}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? 'or ' : ') and '}`;
+            statementWhere += ` ${i == 0 ? ' and (' : ' or '}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? ' ' : ') '}`;
         }
         for (i = 0; i < users.length; i++) {
-            statementWhere += `${i == 0 ? '(' : ''}chatlogs.userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? 'or ' : ') and '}`;
+            statementWhere += ` ${i == 0 ? ' and (' : ' or '}chatlogs.userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? ' ' : ') '}`;
         }
         var IDStatement = `select id from (select id from chatlogs ${statementWhere} ${statementEnd}) as lastid order by id asc limit 1`;
         bu.db.query(IDStatement, (err, rows) => {
-            console.log('wut', rows);
             if (rows && rows[0]) {
+               
                 statementWhere += 'and id >= ' + bu.db.escape(rows[0].id);
                 var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd.replace('desc', 'asc')}`;
                 console.log(statement);
@@ -146,6 +144,9 @@ e.execute = (msg, words) => {
                 insertQuery(msg, statement).then(key => {
                     bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
                 });
+            } else {
+                    bu.send(msg.channel.id, 'No results found.');
+
             }
         });
 
