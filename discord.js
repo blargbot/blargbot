@@ -401,7 +401,7 @@ If you are the owner of this server, here are a few things to know.
 
     bot.on('messageDelete', (msg) => {
 
-        if (commandMessage[msg.channel.guild.id] && commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
+        if (commandMessages[msg.channel.guild.id] && commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
             bu.guildSettings.get(msg.channel.guild.id, 'deletenotif').then(val => {
                 if (val && val != 0)
                     bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick
