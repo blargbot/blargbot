@@ -1,18 +1,21 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
 };
 e.requireCtx = require;
 
 e.isCommand = true;
+
 e.hidden = false;
 e.usage = 'insult [name]';
 e.info = 'Generates a random insult directed at the name supplied.';
 e.longinfo = `<p>Generates an insult, directed at whatever name is supplied. If a name isn't supplied, defaults to 'Your'</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
     var target = '';

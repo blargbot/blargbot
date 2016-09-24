@@ -1,10 +1,14 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var http = require('http');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
+
 };
 e.requireCtx = require;
 
@@ -13,7 +17,6 @@ e.hidden = false;
 e.usage = 'xkcd [number]';
 e.info = 'Gets an xkcd comic. If a number is not specified, gets a random one.';
 e.longinfo = `<p>Gives you an xkcd comic. If a number isn't specified, it gives you a random one.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 var xkcdMax = 0;
 

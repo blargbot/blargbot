@@ -1,21 +1,24 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
 };
 
 e.requireCtx = require;
 
 e.isCommand = true;
+
 e.hidden = true;
 e.usage = 'lines';
 e.info = 'Gets the number of lines the bot is made of.';
 e.longinfo = `<p>Gets the number of lines the bot is made of.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {
     var fileArray = fs.readdirSync(path.join(__dirname, '..'));
@@ -31,20 +34,20 @@ e.execute = (msg) => {
             files.push(path.join(__dirname, fileArray[i]));
         }
     }
- //   var lineCount = 0
+    //   var lineCount = 0
     function onComplete(lines) {
         bu.sendMessageToDiscord(msg.channel.id, 'I am made of ' + lines + ' lines.');
     }
     var count = files.length;
     var lines = 0;
-    function addLines (err, res) {
-       //     console.log(res)
-            lines += parseInt(res.split(' ')[0]);
-            count--;
-            if (count == 0) {
-                onComplete(lines);
-            }
+    function addLines(err, res) {
+        //     console.log(res)
+        lines += parseInt(res.split(' ')[0]);
+        count--;
+        if (count == 0) {
+            onComplete(lines);
         }
+    }
     for (i = 0; i < files.length; i++) {
         exec(`wc -l ${files[i]}`, addLines);
     }

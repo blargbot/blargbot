@@ -2,24 +2,24 @@ var gm = require('gm');
 var path = require('path');
 var fs = require('fs');
 var moment = require('moment');
-var bu = require('./../util.js');
-
-//var promise = require('promise')
-//var im = gm.subClass({ imageMagick: true });
+var bu;
 var bot;
 
 var e = module.exports = {};
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
 };
 e.requireCtx = require;
 
 e.isCommand = true;
+
 e.hidden = false;
 e.usage = 'free <caption> [ | <lower caption>]';
 e.info = 'Tells everyone what you got for free';
 e.longinfo = `<p>Tells everyone what you got for free.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = function (msg, words, text) {
     if (words.length == 1) {
@@ -95,34 +95,34 @@ e.generateFinalImage = function (timestamp, channelid) {
                 console.log(err);
             }
         });
-        /*
-        .write(path.join(__dirname, '..', `img/generated/freefreefree-${timestamp}.gif`), function (err) {
-        if (err) throw err;
-        //sendMessageToDiscord(msg.channel.id, 'done');
+    /*
+    .write(path.join(__dirname, '..', `img/generated/freefreefree-${timestamp}.gif`), function (err) {
+    if (err) throw err;
+    //sendMessageToDiscord(msg.channel.id, 'done');
 
 
 
 
-        var fuckyou = fs.readFileSync(path.join(__dirname, '..', `img/generated/freefreefree-${timestamp}.gif`));
-        //  console.log(3, fuckyou)
-        var image = new Buffer(fuckyou);
-        //   console.log(4, image);
-        bot.createMessage(channelid, `It really works!`, {
-            name: 'freefreefree.gif',
-            file: image
-        });
-        //   fulfill(image);
+    var fuckyou = fs.readFileSync(path.join(__dirname, '..', `img/generated/freefreefree-${timestamp}.gif`));
+    //  console.log(3, fuckyou)
+    var image = new Buffer(fuckyou);
+    //   console.log(4, image);
+    bot.createMessage(channelid, `It really works!`, {
+        name: 'freefreefree.gif',
+        file: image
+    });
+    //   fulfill(image);
 
-        /*
+    /*
 , function (err, data) {
-            if (err) console.log(err.stack);
-            var image = new Buffer(data);
-            console.log(1, image);
-            return image;
-            //callback(image);
-        }
-        */
- //   });
+        if (err) console.log(err.stack);
+        var image = new Buffer(data);
+        console.log(1, image);
+        return image;
+        //callback(image);
+    }
+    */
+    //   });
 };
 
 e.generateCaption = function (timestamp, text, callback) {

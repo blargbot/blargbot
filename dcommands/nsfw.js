@@ -1,9 +1,12 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+    e.category = bu.CommandType.COMMANDER;
+
 };
 e.requireCtx = require;
 
@@ -13,7 +16,6 @@ e.usage = 'nsfw';
 e.info = 'Designates the current channel as NSFW, allowing you to use NSFW commands.';
 e.longinfo = '<p>Designates the current channel as NSFW, allowing you to use NSFW commands.</p>';
 
-e.category = bu.CommandType.COMMANDER;
 
 e.execute = (msg) => {
     // if (!bu.hasPerm(msg, 'Bot Commander')) {

@@ -1,9 +1,14 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+
+    e.category = bu.CommandType.ADMIN;
+
 };
 
 e.requireCtx = require;
@@ -14,8 +19,6 @@ e.usage = 'kick <user>';
 e.info = 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.';
 e.longinfo = `<p>Kicks a user from the guild.</p>
     <p>If mod-logging is enabled, the kick will be logged.</p>`;
-e.category = bu.CommandType.ADMIN;
-
 e.execute = (msg, words) => {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.kickMembers) {
         bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to kick users!`);

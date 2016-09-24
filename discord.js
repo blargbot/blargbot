@@ -4,7 +4,7 @@ var Eris = require('eris');
 var moment = require('moment-timezone');
 var path = require('path');
 var https = require('https');
-var bu = require('./util.js');
+var bu;
 var tags = require('./tags.js');
 var reload = require('require-reload')(require);
 var request = require('request');
@@ -106,7 +106,7 @@ function loadCommand(commandName) {
 
 // Refactored a major part of loadCommand and reloadCommand into this
 function buildCommand(commandName) {
-    bu.commands[commandName].init(bot);
+    bu.commands[commandName].init(bot, bu);
     var command = {
         name: commandName,
         usage: bu.commands[commandName].usage,
@@ -153,11 +153,12 @@ var error = true;
  * @param em - the event emitter (EventEmitter)
  * @param database - the sqlite3 database (Database)
  */
-e.init = (v, topConfig, em, database) => {
+e.init = (blargutil, v, em, database) => {
+    bu = blargutil;
     VERSION = v;
     db = database;
     emitter = em;
-    config = topConfig;
+    config = bu.config;
 
     if (fs.existsSync(path.join(__dirname, 'vars.json'))) {
         var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json')

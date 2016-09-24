@@ -1,17 +1,15 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var gm = require('gm');
 var path = require('path');
 var moment = require('moment');
 var util = require('util');
 var bot;
-var Canvas = require('canvas');
-var Font = Canvas.Font;
-console.log(util.inspect(Font));
-//var animeace = new Font('Anime Ace 2.0 BB', path.join(__dirname, 'img', 'fonts', 'animeace2_reg.ttf'))
-
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
 
 };
 
@@ -22,7 +20,6 @@ e.hidden = false;
 e.usage = 'shit [-p] <text>';
 e.info = `Tells everyone what's shit. Use -p as the first argument to specify the text is plural.`;
 e.longinfo = `<p>Tells everyone what's shit. Use <code>-p</code> as the first argument to specify the text as plural.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
     var shitText = 'Your favourite anime';

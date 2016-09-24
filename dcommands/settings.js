@@ -1,9 +1,13 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.ADMIN;
+
 };
 
 e.requireCtx = require;
@@ -13,7 +17,6 @@ e.hidden = false;
 e.usage = 'settings [help|set <key>]';
 e.info = 'Gets or sets the settings for the current guild.';
 e.longinfo = '<p>Gets or sets the settigns for the current guild.</p>';
-e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {
     if (words.length == 1) {

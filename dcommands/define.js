@@ -1,21 +1,24 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var request = require('request');
 var moment = require('moment');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
 };
 
 e.requireCtx = require;
 
 e.isCommand = true;
+
 e.hidden = false;
 e.usage = 'define <word>';
 e.info = 'Gets the definition for the specified word. The word must be in english.';
 e.longinfo = `<p>Gets the definition for the specified word. The word must be in english.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 var part = {
     verb: 'v',
@@ -53,7 +56,7 @@ e.execute = (msg, words) => {
             'Accept': 'application/json'
         }
     }, function (error, response, body) {
-        
+
         if (!error && response.statusCode == 200) {
             var res = JSON.parse(body);
             var message = `Definitions for ${args}:\n`;
@@ -62,10 +65,10 @@ e.execute = (msg, words) => {
 
                 for (i = 0; i < res.results.length; i++) {
                     var type = res.results[i].partOfSpeech;
-                    message += `${res.results.length >= 10 ? (i + 1 < 10 ? ` ${i+1}` : i+1) : i+1}: (${part[type] ? part[type] : type}) ${res.results[i].definition}\n`;
+                    message += `${res.results.length >= 10 ? (i + 1 < 10 ? ` ${i + 1}` : i + 1) : i + 1}: (${part[type] ? part[type] : type}) ${res.results[i].definition}\n`;
                 }
                 message += `\`\`\``;
-                
+
                 //message.edit("```xl\nDefinitions for " + args + ":\n" + final + "\n```");
             } else {
                 message += 'No results found!';
@@ -73,7 +76,7 @@ e.execute = (msg, words) => {
             bu.sendMessageToDiscord(msg.channel.id, message);
         } else {
             bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
-            
+
         }
     });
     //  var url = `http://www.google.com/dictionary/json?callback=a&sl=en&tl=en&q=${words}`

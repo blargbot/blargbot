@@ -1,5 +1,5 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var fs = require('fs');
 var util = require('util');
 var path = require('path');
@@ -11,24 +11,25 @@ var youtube = google.youtube('v3');
 var moment = require('moment');
 var SC = require('node-soundcloud');
 
-SC.init({
-    id: bu.config.general.soundcloud.id,
-    secret: bu.config.general.soundcloud.secret,
-    uri: bu.config.general.soundcloud.uri,
-    accessToken: bu.config.general.soundcloud.accessToken
-});
 
 var queue = {};
 var current = {};
 var cache = {};
 var bot;
-e.init = (Tbot) => {
+
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
-    voiceConnections = bot.voiceConnections;
+    bu = blargutil;
     init(bot, voiceConnections, voiceSettings);
+    e.category = bu.CommandType.MUSIC;
 
+    SC.init({
+        id: bu.config.general.soundcloud.id,
+        secret: bu.config.general.soundcloud.secret,
+        uri: bu.config.general.soundcloud.uri,
+        accessToken: bu.config.general.soundcloud.accessToken
+    });
 };
-
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'music';
@@ -67,7 +68,6 @@ e.sub = {
         info: 'Shows the current queue, or shuffles it'
     }
 };
-e.category = bu.CommandType.MUSIC;
 e.requireCtx = require;
 
 
@@ -346,12 +346,12 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
                     switch (words[0]) {
                         case 'shuffle':
                             for (i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                           //     console.log(cache[queue[msg.channel.guild.id][i].id].name);
+                                //     console.log(cache[queue[msg.channel.guild.id][i].id].name);
                             }
-                         //   console.log('------------------------------------------------------');
+                            //   console.log('------------------------------------------------------');
                             shuffle(queue[msg.channel.guild.id]);
                             for (i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                        //        console.log(cache[queue[msg.channel.guild.id][i].id].name);
+                                //        console.log(cache[queue[msg.channel.guild.id][i].id].name);
                             }
                             //    console.log(util.inspect(queue[msg.channel.guild.id]))
                             var suits = [':diamonds:', ':spades:', ':clubs:', ':hearts:'];

@@ -1,11 +1,14 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
-};
+    bu = blargutil;
 
+
+    e.category = bu.CommandType.GENERAL;
+};
 e.requireCtx = require;
 
 e.isCommand = true;
@@ -14,7 +17,6 @@ e.usage = 'help [command]';
 e.info = 'Gets a list of command or specific command help.';
 e.longinfo = `<p>Returns a list of commands and custom commands. If a command name is specified, it will return a description
         of that command instead.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
     if (words.length > 1) {

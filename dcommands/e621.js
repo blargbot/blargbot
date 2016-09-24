@@ -1,11 +1,15 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var xml2js = require('xml2js');
 var https = require('https');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+
+    e.category = bu.CommandType.NSFW;
 };
 e.requireCtx = require;
 
@@ -16,7 +20,6 @@ e.info = 'Gets three pictures from \'<https://e621.net/>\' using given tags.';
 e.longinfo = `<p>Displays three images obtained from <a href="http://e621.net/">e621.net</a> using the provided tags. You can use
         up to 6 tags at a time. Results have the possibility of being NSFW. If the current channel is not designated as
         NSFW, a user needs to include the 'rating:safe' tag in order to use the command.</p>`;
-e.category = bu.CommandType.NSFW;
 
 e.execute = (msg, words) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {

@@ -1,9 +1,13 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.ADMIN;
+
 };
 
 e.requireCtx = require;
@@ -14,23 +18,22 @@ e.usage = 'unban <userid>';
 e.info = 'Unbans a user.\nIf mod-logging is enabled, the unban will be logged.';
 e.longinfo = `<p>Unbans a user.</p>
     <p>If mod-logging is enabled, the unban will be logged.</p>`;
-e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {
     if (msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
         if (msg.member.permission.banMembers) {
             if (words[1]) {
                 var userid = words[1];
-                
+
 
                 if (!bu.unbans[msg.channel.guild.id])
                     bu.unbans[msg.channel.guild.id] = {};
                 bu.unbans[msg.channel.guild.id][userid] = msg.author.id;
-                
-                bot.unbanGuildMember(msg.channel.guild.id, userid);
-                                bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
 
-            //    bu.logAction(msg.channel.guild, user, msg.author, 'Ban')
+                bot.unbanGuildMember(msg.channel.guild.id, userid);
+                bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+
+                //    bu.logAction(msg.channel.guild, user, msg.author, 'Ban')
             }
             //bot.ban
         } else {

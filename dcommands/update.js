@@ -1,10 +1,13 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var exec = require('child_process').exec;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+    e.category = bu.CommandType.CAT;
+
 };
 
 e.requireCtx = require;
@@ -13,7 +16,6 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'Yo shit waddup we\'re updating';
 e.info = 'Does a git pull';
-e.category = bu.CommandType.CAT;
 
 e.execute = (msg, words) => {
     if (msg.author.id === bu.CAT_ID) {

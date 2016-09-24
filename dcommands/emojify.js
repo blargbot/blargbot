@@ -1,9 +1,13 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var request = require('request');
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+
+    e.category = bu.CommandType.GENERAL;
 };
 
 e.requireCtx = require;
@@ -13,7 +17,6 @@ e.hidden = false;
 e.usage = 'emojify <text>';
 e.alias = ['💬'];
 e.info = 'Gets emojis based on input.';
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
     var options = {

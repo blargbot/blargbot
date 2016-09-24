@@ -1,18 +1,21 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
 };
 e.requireCtx = require;
 
 e.isCommand = true;
+
 e.hidden = false;
 e.usage = 'getprefix';
 e.info = 'Gets the command prefix for the current guild.';
 e.longinfo = `<p>Returns the command prefix for the current guild.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {
     bu.guildSettings.get(msg.channel.guild.id, 'prefix').then(prefix => {

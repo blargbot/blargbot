@@ -25,9 +25,9 @@ var emitter;
 var notifInterval;
 var VERSION;
 
-e.init = (v, topConfig, em) => {
+e.init = (bu, v, em) => {
     VERSION = v;
-    config = topConfig;
+    config = bu.config;
     emitter = em;
     var ircbot = new irc.Client(config.irc.server, config.irc.nick, {
         channels: [config.irc.channel],

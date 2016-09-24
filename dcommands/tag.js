@@ -1,10 +1,14 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var tags = require('./../tags');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
+
 };
 e.requireCtx = require;
 
@@ -40,7 +44,6 @@ e.longinfo = `<p>
     <pre><code>tag help</code></pre>
     <p>Gets basic tag help.</p>`;
 e.alias = ['t'];
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words, text) => {
     if (words[1]) {

@@ -1,27 +1,31 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
 var path = require('path');
 var fs = require('fs');
 var bot;
 var cah = {};
 var Canvas = require('canvas');
 var Image = Canvas.Image;
+var bu;
 
-e.init = (Tbot) => {
+var bot;
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
     if (fs.existsSync(path.join(__dirname, '..', 'cah.json'))) {
         cah = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'cah.json'), 'utf8'));
     }
+
+    e.category = bu.CommandType.GENERAL;
 };
+
+e.isCommand = true;
 
 e.requireCtx = require;
 
-e.isCommand = true;
 e.hidden = false;
 e.usage = 'cah';
 e.info = 'Generates a set of CAH cards.';
 e.longinfo = '<p>Generates a random set of Cards Against Humanity cards.</p>';
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {
     new Promise((fulfill) => {

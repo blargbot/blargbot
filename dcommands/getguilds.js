@@ -1,17 +1,20 @@
 var e = module.exports = {};
-var blargutil = require('./../util.js');
+var blargutil;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, bu) => {
     bot = Tbot;
+    blargutil = bu;
+
+    e.category = blargutil.CommandType.CAT;
 };
 e.requireCtx = require;
 
 e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
-e.category = blargutil.CommandType.CAT;
+
+    e.hidden = false;
+    e.usage = '';
+    e.info = '';
 
 e.execute = (msg, words) => {
     if (msg.author.id === blargutil.CAT_ID) {

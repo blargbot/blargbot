@@ -1,9 +1,13 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
+
 };
 
 e.requireCtx = require;
@@ -12,7 +16,6 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'tokenify <input>';
 e.info = 'Converts the given input into a token.';
-e.category = bu.CommandType.GENERAL;
 e.longinfo = '<p>Converts the given input into a token.</p>';
 
 e.execute = (msg, words, text) => {

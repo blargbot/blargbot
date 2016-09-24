@@ -1,9 +1,13 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
+
 };
 
 e.requireCtx = require;
@@ -15,7 +19,6 @@ e.info = 'Access your todo list.\n'
     + 'To add items, do `todo add <item>`.\n'
     + 'To remove items, do `todo remove <item id>`, where item id is the number shown when you do `todo` by itself.';
 e.longinfo = `<p>Access your todo list.</p><p>To add items, do <code>todo add &lt;item&gt;</code>.</p><p>To remove items, do <code>todo remove &lt;item id&gt;</code>, where item id is the number shown when you do <code>&lt;todo&gt;</code> by itself.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
     var db = bu.db;

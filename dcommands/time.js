@@ -1,11 +1,15 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var moment = require('moment-timezone');
 var util = require('util');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
+
 };
 e.requireCtx = require;
 
@@ -18,7 +22,6 @@ e.info = 'Tells you the current time in the specified timezone. If timezone2 and
 e.longinfo = `    <p>Tells you the current time in the specified timezone. If timezone2 and time are specified, converts the time from
     timezone to timezone2. Time must be formatted as <code>hh:mm[AM/PM]</code>, and timezones must use
         <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">these</a> timezone codes.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
     var message = `It is currently ${moment().format('LT')} where I am!`;

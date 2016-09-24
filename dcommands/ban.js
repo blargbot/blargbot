@@ -1,21 +1,22 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+    e.category = bu.CommandType.ADMIN;
 };
-
+e.isCommand = true;
 e.requireCtx = require;
 
-e.isCommand = true;
 e.hidden = false;
 e.usage = 'ban <user> [days]';
 e.info = 'Bans a user, where `days` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.';
 e.longinfo = `<p>Bans a user, where <code>days</code> is the number of days to delete messages for.</p>
 <p>If mod-logging is enabled, the ban will be logged.</p>`;
 
-e.category = bu.CommandType.ADMIN;
+
 
 e.execute = (msg, words) => {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {

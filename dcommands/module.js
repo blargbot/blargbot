@@ -1,20 +1,23 @@
-var bu = require('./../util.js');
+var bu;
 var util = require('util');
 
 var e = module.exports = {};
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.CAT;
+
 };
 e.requireCtx = require;
 
 e.isCommand = true;
+
 e.hidden = false;
 e.usage = 'module <reload|unload|load> <name>';
 e.info = 'Loads, unloads, or reloads a command module';
-e.category = bu.CommandType.CAT;
-
 
 var confirmIrc = false;
 var confirmDiscord = false;

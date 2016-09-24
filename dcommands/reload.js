@@ -1,9 +1,13 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.CAT;
+
 };
 e.requireCtx = require;
 
@@ -11,7 +15,6 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = '';
 e.info = '';
-e.category = bu.CommandType.CAT;
 
 e.execute = (msg) => {
     if (msg.author.id === bu.CAT_ID) {

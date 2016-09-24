@@ -479,13 +479,6 @@ e.processTag = (msg, contents, command, tagName, author) => {
     return contents.trim();
 };
 
-function tagGetFloat(arg) {
-    return parseFloat(arg) ? parseFloat(arg) : 0;
-}
-
-function tagProcessError(fallback, errormessage) {
-    return fallback == '' ? errormessage : fallback;
-}
 
 e.executeTag = (msg, tagName, command) => {
     bu.db.query(`select contents, author from tag where title=?`, [tagName], (err, row) => {
@@ -515,37 +508,3 @@ e.executeTag = (msg, tagName, command) => {
     });
 };
 
-
-function shuffle(array) {
-    let counter = array.length;
-
-    // While there are elements in the array
-    while (counter > 0) {
-        // Pick a random index
-        let index = Math.floor(Math.random() * counter);
-
-        // Decrease counter by 1
-        counter--;
-
-        // And swap the last element with it
-        let temp = array[counter];
-        array[counter] = array[index];
-        array[index] = temp;
-    }
-
-    return array;
-}
-
-function getUser(msg, args) {
-    var obtainedUser;
-    if (args.length == 1) {
-        obtainedUser = msg.author;
-    } else {
-        if (args[2]) {
-            obtainedUser = bu.getUserFromName(msg, args[1], true);
-        } else {
-            obtainedUser = bu.getUserFromName(msg, args[1]);
-        }
-    }
-    return obtainedUser;
-}

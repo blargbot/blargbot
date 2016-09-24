@@ -1,9 +1,13 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.CAT;
+
 };
 
 e.requireCtx = require;
@@ -12,7 +16,6 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'patch <features> [ | <fixes> ]';
 e.info = 'Makes a patch note';
-e.category = bu.CommandType.CAT;
 var changeChannel = '222199986123833344';
 e.execute = (msg, words) => {
     if (msg.author.id != bu.CAT_ID) {

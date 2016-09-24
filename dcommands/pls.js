@@ -1,9 +1,12 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+    e.category = bu.CommandType.GENERAL;
+
 };
 e.requireCtx = require;
 
@@ -11,7 +14,6 @@ e.isCommand = true;
 e.hidden = true;
 e.usage = 'pls';
 e.info = 'Gets messages made by the stupid cat on your guild';
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {
     if (msg.channel.guild.members.get('103347843934212096')) {

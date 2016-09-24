@@ -1,14 +1,15 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var util = require('util');
-var Table = require('cli-table');
-var moment = require('moment-timezone');
 var Promise = require('promise');
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
-};
+    bu = blargutil;
 
+
+    e.category = bu.CommandType.ADMIN;
+};
 e.requireCtx = require;
 
 e.isCommand = true;
@@ -50,7 +51,6 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + '<pre><code>logs 100 -message delete -user stupid cat</code></pre>'
     + '<p>If you want to use multiple of the same type, separate parameters with commas. For example:</p>'
     + '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
-e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {
     if (words.length > 1) {
@@ -137,17 +137,17 @@ e.execute = (msg, words) => {
         }
         var IDStatement = `select id from (select id from chatlogs ${statementWhere} ${statementEnd}) as lastid order by id asc limit 1`;
         bu.db.query(IDStatement, (err, rows) => {
-                console.log('wut', rows);
-                if (rows && rows[0]) {
-                    statementWhere += 'and id >= ' + bu.db.escape(rows[0].id);
-                    var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd.replace('desc', 'asc')}`;
-                    console.log(statement);
+            console.log('wut', rows);
+            if (rows && rows[0]) {
+                statementWhere += 'and id >= ' + bu.db.escape(rows[0].id);
+                var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd.replace('desc', 'asc')}`;
+                console.log(statement);
 
-                    insertQuery(msg, statement).then(key => {
-                        bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
-                    });
-                }
-            });
+                insertQuery(msg, statement).then(key => {
+                    bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
+                });
+            }
+        });
 
     } else {
         bu.sendMessageToDiscord(msg.channel.id, 'Not enough parameters were given!');

@@ -1,10 +1,14 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var moment = require('moment');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
+
 };
 e.requireCtx = require;
 
@@ -13,7 +17,6 @@ e.hidden = false;
 e.usage = 'user [id/name/mention]';
 e.info = 'Gets information about specified user';
 e.longinfo = `<p>Gets information about the specified user.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
     var userToGet;

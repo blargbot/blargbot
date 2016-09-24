@@ -1,8 +1,12 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.ADMIN;
+
 };
 
 e.requireCtx = require;
@@ -12,7 +16,6 @@ e.hidden = false;
 e.usage = 'reason <case> <reason>';
 e.info = 'Sets the reason for an action on the modlog.';
 e.longinfo = `<p>Sets the reason for an action on the modlog.</p>`;
-e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words) => {
     bu.guildSettings.get(msg.channel.guild.id, 'modlog').then(val => {

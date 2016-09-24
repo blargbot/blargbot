@@ -1,10 +1,14 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var tags = require('./../tags');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+
+    e.category = bu.CommandType.COMMANDER;
 };
 e.requireCtx = require;
 
@@ -20,7 +24,6 @@ e.longinfo = `<p>Sets a farewell message for any user who leaves your guild. You
     <pre><code>User&gt; blargbot farewell **{username}** has left. Bye!
 blargbot&gt; Greeting set. Simulation: **User has left. Bye!
 </code></pre>`;
-e.category = bu.CommandType.COMMANDER;
 
 e.execute = (msg, words, text) => {
 

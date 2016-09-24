@@ -1,9 +1,12 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.COMMANDER;
 };
 e.requireCtx = require;
 
@@ -38,7 +41,6 @@ User&gt; blargbot test
         or disable them entirely. If the command content is "null" (without the quotations), blargbot will have no
         output whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the 'ccommand'
         command.</p>`;
-e.category = bu.CommandType.COMMANDER;
 
 e.execute = (msg, words, text) => {
     //  if (!bu.hasPerm(msg, "Bot Commander")) {
@@ -65,8 +67,8 @@ See http://ratismal.github.io/blargbot/commands.html#ccommand for usage instruct
         });
     } else {
         bu.ccommand.set(msg.channel.guild.id, words[1], text.replace(`${words[0]} ${words[1]} `, '')).then(() => {
-            bu.sendMessageToDiscord(msg.channel.id, `Set command ${words[1]}`);            
+            bu.sendMessageToDiscord(msg.channel.id, `Set command ${words[1]}`);
         });
     }
-   // bu.saveConfig();
+    // bu.saveConfig();
 };

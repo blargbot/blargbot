@@ -1,10 +1,14 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var xml2js = require('xml2js');
 var https = require('https');
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.NSFW;
+
 };
 e.requireCtx = require;
 
@@ -14,7 +18,6 @@ e.usage = 'rule34 <tags...>';
 e.info = 'Gets three pictures from \'<https://rule34.xxx/>\' using given tags.';
 e.longinfo = `<p>Displays three images obtained from <a href="http://rule34.xxx/">rule34.xxx</a> using the provided tags.
         The current channel needs to be marked as NSFW in order for the command to work.</p>`;
-e.category = bu.CommandType.NSFW;
 
 e.execute = (msg, words) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {

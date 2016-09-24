@@ -1,9 +1,13 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
+
 };
 e.requireCtx = require;
 
@@ -14,7 +18,6 @@ e.info = 'Rolls an amount of dice (ex. 1d20) and adds the modifier.';
 e.longinfo = `<p>Rolls dice and adds a modifier. You can specify the number of dice and how many sides they have with the notation
         <code>XdY</code>, where X is number of dice and Y is number of sides. If no dice are specified, it defaults to
         <code>1d20</code>.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
     var message = ``;

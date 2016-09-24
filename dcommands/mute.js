@@ -1,11 +1,13 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
-};
+    bu = blargutil;
+    e.category = bu.CommandType.ADMIN;
 
+};
 e.requireCtx = require;
 
 e.isCommand = true;
@@ -21,7 +23,6 @@ e.longinfo = `<p>Gives the user a special muted role. On first run, this role wi
         the role. You are able to manually configure the role without the bot, but the bot has to make it.
         Deleting the muted role causes it to be regenerated.</p>
     <p>If mod-logging is enabled, the mute will be logged.</p>`;
-e.category = bu.CommandType.ADMIN;
 
 e.execute = (msg, words, text) => {
     bu.guildSettings.get(msg.channel.guild.id, 'mutedrole').then(mutedrole => {

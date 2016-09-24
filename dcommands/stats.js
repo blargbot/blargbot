@@ -1,10 +1,14 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var moment = require('moment-timezone');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
+
 };
 e.requireCtx = require;
 
@@ -13,7 +17,6 @@ e.hidden = false;
 e.usage = 'stats';
 e.info = 'Gives you some information about me';
 e.longinfo = `<p>Gives you information about the bot.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg) => {
     bu.sendMessageToDiscord(msg.channel.id, `\`\`\`prolog

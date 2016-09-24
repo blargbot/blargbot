@@ -12,10 +12,26 @@ e.VERSION = null;
 e.startTime = null;
 e.vars = null;
 
+
 // A list of command modules
 e.commands = {};
 // A list of command names/descriptions for each alias or subcommand
 e.commandList = {};
+
+e.tagList = {};
+
+e.TagType = {
+    SIMPLE: 1,
+    COMPLEX: 2,
+    properties: {
+        1: {
+            name: 'Simple'
+        },
+        2: {
+            name: 'Complex'
+        }
+    }
+}
 
 e.CommandType = {
     GENERAL: 1,
@@ -398,3 +414,48 @@ e.isBlacklistedChannel = (channelid) => {
         });
     });
 };
+
+
+
+e.shuffle = (array) => {
+    let counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+}
+
+e.getUser = (msg, args) => {
+    var obtainedUser;
+    if (args.length == 1) {
+        obtainedUser = msg.author;
+    } else {
+        if (args[2]) {
+            obtainedUser = bu.getUserFromName(msg, args[1], true);
+        } else {
+            obtainedUser = bu.getUserFromName(msg, args[1]);
+        }
+    }
+    return obtainedUser;
+}
+
+
+e.tagGetFloat = (arg) => {
+    return parseFloat(arg) ? parseFloat(arg) : 0;
+}
+
+e.tagProcessError = (fallback, errormessage) => {
+    return fallback == '' ? errormessage : fallback;
+}

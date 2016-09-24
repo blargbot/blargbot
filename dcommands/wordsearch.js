@@ -1,10 +1,14 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var wordsearch = require('wordsearch');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
+
 };
 e.requireCtx = require;
 
@@ -13,7 +17,6 @@ e.hidden = false;
 e.usage = 'wordsearch';
 e.info = 'Gives you wordsearch help';
 e.longinfo = `<p>Gives you the help menu for the wordsearch. This feature currently a WIP.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
     if (words.length > 1) {

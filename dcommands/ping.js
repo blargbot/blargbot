@@ -1,11 +1,15 @@
-var bu = require('./../util.js');
+var bu;
 var moment = require('moment');
 
 var e = module.exports = {};
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.CommandType.GENERAL;
+
 };
 e.requireCtx = require;
 
@@ -14,7 +18,6 @@ e.hidden = false;
 e.usage = 'ping';
 e.info = 'Pong!\nFind the command latency.';
 e.longinfo = '<p>Pong!</p><p>Find the command latency.</p>';
-e.category = bu.CommandType.GENERAL;
 
 var messages = [
     `Existance is a lie.`,

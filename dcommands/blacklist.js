@@ -1,17 +1,19 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
-};
+    bu = blargutil;
 
+    e.category = bu.CommandType.COMMANDER;
+};
 e.isCommand = true;
+
 e.hidden = false;
 e.usage = 'blacklist';
 e.info = 'Blacklists the current channel. The bot will not respond until you do `blacklist` again.';
 e.longinfo = `<p>Blacklists the current channel. The bot will not respond until you do the command again.</p>`;
-e.category = bu.CommandType.COMMANDER;
 
 e.execute = (msg) => {
     //  if (bu.hasPerm(msg, 'Bot Commander')) {

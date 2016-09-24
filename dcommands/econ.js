@@ -1,10 +1,14 @@
 var e = module.exports = {};
-var bu = require('./../util.js');
+var bu;
 var http = require('http');
 
 var bot;
-e.init = (Tbot) => {
+e.init = (Tbot, blargutil) => {
     bot = Tbot;
+    bu = blargutil;
+
+
+    e.category = bu.CommandType.GENERAL;
 };
 e.requireCtx = require;
 
@@ -20,7 +24,6 @@ blargbot&gt; @User, 1.0 USD is equivalent to X.X CAD
 </code></pre>
 
     <p>Currency codes are not case sensitive.</p>`;
-e.category = bu.CommandType.GENERAL;
 
 e.execute = (msg, words) => {
     if (words.length < 4) {
