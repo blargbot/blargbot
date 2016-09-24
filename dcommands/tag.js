@@ -198,11 +198,7 @@ ${row[0].contents}
                     }
                     tagList.sort();
                     console.log('all done');
-                    var tagMessage = '';
-                    for (var i = 0; i < tagList.length; i++) {
-                        tagMessage += ` ${tagList[i]},`;
-                    }
-                    var message = `Found ${tagList.length} tags matching '${words[2]}'.\n\`\`\`${tagMessage.trim()}\n\`\`\``;
+                    var message = `Found ${tagList.length} tags matching '${words[2]}'.\n\`\`\`${tagList.join(', ').trim()}\n\`\`\``;
                     bu.sendMessageToDiscord(msg.channel.id, message);
                 });
 
@@ -217,11 +213,7 @@ ${row[0].contents}
                         }
                         tagList.sort();
                         console.log('all done');
-                        var tagMessage = '';
-                        for (i = 0; i < tagList.length; i++) {
-                            tagMessage += ` ${tagList[i]},`;
-                        }
-                        var message = `Found ${tagList.length} tags.\n\`\`\`${tagMessage.trim()}\n\`\`\``;
+                        var message = `Found ${tagList.length} tags.\n\`\`\`${tagList.join(', ').trim()}\n\`\`\``;
                         bu.sendMessageToDiscord(msg.channel.id, message);
                     });
                 } else {
