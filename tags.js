@@ -140,7 +140,7 @@ e.processTag = (msg, contents, command, tagName, author) => {
 e.executeTag = (msg, tagName, command) => {
     bu.db.query(`select contents, author from tag where title=?`, [tagName], (err, row) => {
         if (!row[0])
-            bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exists! ❌`);
+            bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
         else {
             var nsfw = false;
             if (row[0].contents.indexOf('{nsfw}') > -1) {
