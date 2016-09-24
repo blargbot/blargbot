@@ -130,7 +130,8 @@ e.processTag = (msg, contents, command, tagName, author) => {
     }
     contents = contents.replace(/%RB%/g, '}').replace(/%LB%/g, '{').replace(/%SEMI%/g, ';');
     while (/<@!?[0-9]{17,21}>/.test(contents)) {
-        contents = contents.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, contents.match(/<@!?([0-9]{17,21})>/)[1], true).username);
+        var user = bu.getUserFromName(msg, contents.match(/<@!?([0-9]{17,21})>/)[1], true);
+        contents = contents.replace(/<@!?[0-9]{17,21}>/, '@' + user.username + '#' + user.discriminator);
     }
     console.log('Done!', contents.trim());
     return contents.trim();
