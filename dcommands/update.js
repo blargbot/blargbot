@@ -46,7 +46,6 @@ e.execute = (msg, words) => {
                                 break;
                         }
                     }
-                    
                     var oldVersion = bu.config.version;
                     var bits = oldVersion.split('.');
                     bits[type] = parseInt(bits[type]) + 1;
