@@ -400,13 +400,14 @@ If you are the owner of this server, here are a few things to know.
     });
 
     bot.on('messageDelete', (msg) => {
-        if (commandMessages.indexOf(msg.id) > -1) {
+
+        if (commandMessage[msg.channel.guild.id] && commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
             bu.guildSettings.get(msg.channel.guild.id, 'deletenotif').then(val => {
                 if (val && val != 0)
                     bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick
                         ? msg.member.nick
                         : msg.author.username}** deleted their command message.`);
-                commandMessages.splice(commandMessages.indexOf(msg.id), 1);
+                commandMessages[msg.channel.guild.id].splice(commandMessages[msg.channel.guild.id].indexOf(msg.id), 1);
             });
         }
         if (msg.channel.id != '204404225914961920') {
@@ -523,9 +524,12 @@ If you are the owner of this server, here are a few things to know.
                                 if (wasCommand) {
                                     bu.guildSettings.get(msg.channel.id, 'deletenotif').then(val => {
                                         if (val != '0') {
-                                            commandMessages.push(msg.id);
-                                            if (commandMessages.length > 100) {
-                                                commandMessages.shift();
+                                            if (!commandMessages[msg.channel.guild.id]) {
+                                                commandMessages[msg.channel.guild.id] = [];
+                                            }
+                                            commandMessages[msg.channel.guild.id].push(msg.id);
+                                            if (commandMessages[msg.channel.guild.id].length > 100) {
+                                                commandMessages[msg.channel.guild.id].shift();
                                             }
                                         }
                                     });
@@ -704,7 +708,7 @@ function switchAvatar(forced) {
         }, 300000);
 }
 
-var commandMessages = [];
+var commandMessages = {};
 
 function handleDiscordCommand(channel, user, text, msg) {
     return new Promise((fulfill) => {
