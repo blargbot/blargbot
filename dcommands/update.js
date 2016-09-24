@@ -46,13 +46,14 @@ e.execute = (msg, words) => {
                                 break;
                         }
                     }
+                    
                     var oldVersion = bu.config.version;
                     var bits = oldVersion.split('.');
                     bits[type] = parseInt(bits[type]) + 1;
                     while (type > 0) {
                         type--;
                         bits[type] = 0;
-                    } 
+                    }
                     bu.config.version = bits.join('.');
                     bu.VERSION = bu.config.version;
                     message += `\nNow running on version \`${bu.config.version}\`!`;
