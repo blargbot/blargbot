@@ -48,8 +48,8 @@ e.execute = (msg, words) => {
                     var oldVersion = bu.config.version;
                     var bits = oldVersion.split('.');
                     bits[type] = parseInt(bits[type]) + 1;
-                    while (type > 0) {
-                        type--;
+                    while (type < 4) {
+                        type++;
                         bits[type] = 0;
                     }
                     bu.config.version = bits.join('.');
