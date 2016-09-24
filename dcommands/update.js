@@ -7,7 +7,6 @@ e.init = (Tbot, blargutil) => {
     bot = Tbot;
     bu = blargutil;
     e.category = bu.CommandType.CAT;
-
 };
 
 e.requireCtx = require;
