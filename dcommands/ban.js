@@ -32,8 +32,10 @@ e.execute = (msg, words) => {
 
     if (words[1]) {
         var user = bu.getUserFromName(msg, words[1]);
-        if (!user)
+        if (!user) {
+            bu.send(msg.channel.id, `I couldn't find that user. Try using \`hackban\` with their ID or a mention instead.`);
             return;
+        }
         var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
         var userPos = bu.getPosition(msg.member);
         var targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
