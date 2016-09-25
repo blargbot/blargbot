@@ -22,6 +22,8 @@ e.init = (b, blargutil) => {
                 avatarURL: user.avatarURL,
                 bot: user.bot
             };
+        res.end(checkAuth(objectToSend, req, res));
+            
         } else {
             bu.db.query(`select username, isbot from user where userid = ?`, [req.params.id], (err, rows) => {
                 if (rows && rows[0]) {
@@ -35,9 +37,10 @@ e.init = (b, blargutil) => {
                 } else {
                     objectToSend = notFound;
                 }
+        res.end(checkAuth(objectToSend, req, res));
+                
             });
         }
-        res.end(checkAuth(objectToSend, req, res));
     });
 
     app.get('/channel/:id', (req, res) => {
