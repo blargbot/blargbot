@@ -1000,17 +1000,17 @@ function processUser(msg) {
             db.query('SELECT userid as id, username from user where userid=?', [msg.author.id], (err, row) => {
                 if (!row || !row[0]) {
                     console.log(`inserting user ${msg.author.id} (${msg.author.username})`);
-                    db.query(`insert into user (userid, username, lastspoke, isbot, lastchannel, messagecount)`
-                        + `values (?, ?, NOW(), ?, ?, 1)`,
-                        [msg.author.id, msg.author.username, msg.author.bot ? 1 : 0, msg.channel.id]);
+                    db.query(`insert into user (userid, username, discriminator, lastspoke, isbot, lastchannel, messagecount)`
+                        + `values (?, ?, ?, NOW(), ?, ?, 1)`,
+                        [msg.author.id, msg.author.username, msg.author.discriminator, msg.author.bot ? 1 : 0, msg.channel.id]);
                     db.query(`insert into username (userid, username) values (?, ?)`,
                         [msg.author.id, msg.author.username]);
                     fulfill();
                 } else {
                     if (row[0].username != msg.author.username) {
-                        db.query(`update user set username = ?, lastspoke = NOW(), lastchannel=?, `
+                        db.query(`update user set username = ?, discriminator = ?, lastspoke = NOW(), lastchannel=?, `
                             + `messagecount=messagecount + 1 where userid = ?`,
-                            [msg.author.username, msg.channel.id, msg.author.id]);
+                            [msg.author.username, msg.author.discriminator, msg.channel.id, msg.author.id]);
                         db.query(`insert into username (userid, username, namedate) `
                             + `values (?, ?, NOW())`,
                             [msg.author.id, msg.author.username]);
