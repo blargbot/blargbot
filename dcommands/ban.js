@@ -49,14 +49,13 @@ e.execute = (msg, words) => {
         }
         if (!bu.bans[msg.channel.guild.id])
             bu.bans[msg.channel.guild.id] = {};
-        bu.bans[msg.channel.guild.id][user.id] = msg.author.id;
+        bu.bans[msg.channel.guild.id][user.id] = { mod: msg.author, type: 'Ban' };
         var deletedays = 1;
         if (words[2])
             deletedays = parseInt(words[2]);
         bot.banGuildMember(msg.channel.guild.id, user.id, deletedays).then(() => {
-            bu.logAction(msg.channel.guild, user, msg.author, 'Ban');
+            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
         });
-        bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
     }
     //bot.ban
 

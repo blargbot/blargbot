@@ -384,11 +384,16 @@ If you are the owner of this server, here are a few things to know.
     });
 
     bot.on('guildBanAdd', (guild, user) => {
+        var mod;
+        var type = 'Ban';
+        var reason;
         if (bu.bans[guild.id] && bu.bans[guild.id][user.id]) {
+            mod = bu.bans[guild.id][user.id].mod;
+            type = bu.bans[guild.id][user.id].type;
+            reason = bu.bans[guild.id][user.id].reason;
             delete bu.bans[guild.id][user.id];
-            return;
         }
-        bu.logAction(guild, user, null, 'Ban');
+        bu.logAction(guild, user, mod, type, reason);
     });
     bot.on('guildBanRemove', (guild, user) => {
         var mod;
@@ -474,9 +479,8 @@ If you are the owner of this server, here are a few things to know.
                             console.log('BANN TIME');
                             if (!bu.bans[msg.channel.guild.id])
                                 bu.bans[msg.channel.guild.id] = {};
-                            bu.bans[msg.channel.guild.id][msg.author.id] = bot.user.id;
+                            bu.bans[msg.channel.guild.id][msg.author.id] = { mod: bot.user, type: 'Auto-Ban', reason: 'Mention spam' };
                             bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1).then(() => {
-                                bu.logAction(msg.channel.guild, msg.author, bot.user, 'Auto-Ban', 'Mention spam');
                             }).catch(() => {
                                 delete bu.bans[msg.channel.guild.id][msg.author.id];
                                 bu.send(msg.channel.id, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);

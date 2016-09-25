@@ -41,22 +41,23 @@ e.execute = (msg, words, text) => {
             userId = text.match(/([0-9]{17,21})/)[1];
         } else {
             bu.send(msg.channel.id, `That wasn't an ID or a mention. Please try again.`);
+            return;
         }
+        console.log(userId);
 
         if (!bu.bans[msg.channel.guild.id])
             bu.bans[msg.channel.guild.id] = {};
-        bu.bans[msg.channel.guild.id][user.id] = msg.author.id;
+        bu.bans[msg.channel.guild.id][userId] = { mod: msg.author, type: 'Hack-Ban' };
         var deletedays = 1;
         if (words[2])
             deletedays = parseInt(words[2]);
         bot.banGuildMember(msg.channel.guild.id, userId, deletedays).then(() => {
-            bu.logAction(msg.channel.guild, {
-                id: userId,
-                username: 'Unknown',
-                discriminator: '????'    
-            }, msg.author, 'Hack-Ban');
-        });
-        bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+            bu.db.query('select usernamme, discriminator from user where userid = ?', [msg.channel.guild.id], (err, rows) => {
+                bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+                return;
+            });
+        }).catch(console.log);
+
     }
     //bot.ban
 
