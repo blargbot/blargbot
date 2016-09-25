@@ -1,12 +1,13 @@
 var express = require('express');
-var bu = require('./util.js');
+var bu;
 
 var app;
 var e = module.exports;
 var bot;
 
-e.init = (b) => {
+e.init = (b, blargutil) => {
     bot = b;
+    bu = blargutil;
     app = express();
     app.get('/user/:id', (req, res) => {
         //console.log()
