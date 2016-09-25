@@ -31,7 +31,7 @@ e.execute = (msg, words, text) => {
 
 
     if (words[1]) {
-        var user = bu.getUserFromName(msg, words[1]);
+        var user = bu.getUserFromName(msg, words[1], true);
         if (user) {
             bu.send(msg.channel.id, 'That user is here! Please do `ban` instead.');
             return;

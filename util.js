@@ -135,11 +135,15 @@ e.getUserFromName = (msg, name, quiet) => {
     var discrim;
     if (/<@!?[0-9]{17,21}>/.test(name)) {
         userId = name.match(/<@!?([0-9]{17,21})>/)[1];
-        return e.bot.users.get(userId);
+        if (msg.channel.guild.members.get(userId)) {
+            return msg.channel.guild.members.get(userId).user;
+        }
     }
     if (/[0-9]{17,21}/.test(name)) {
         userId = name.match(/([0-9]{17,21})/)[1];
-        return e.bot.users.get(userId);
+        if (msg.channel.guild.members.get(userId)) {
+            return msg.channel.guild.members.get(userId).user;
+        }
     }
     if (/^.*#\d{4}$/.test(name)) {
         discrim = name.match(/^.*#(\d{4}$)/)[1];
