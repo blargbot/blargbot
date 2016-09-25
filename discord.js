@@ -1014,6 +1014,10 @@ function processUser(msg) {
                         db.query(`insert into username (userid, username, namedate) `
                             + `values (?, ?, NOW())`,
                             [msg.author.id, msg.author.username]);
+                    } else if (row[0].discriminator != msg.author.discriminator) {
+                        db.query(`update user set discriminator = ?, lastspoke = NOW(), lastchannel=?, `
+                            + `messagecount=messagecount + 1 where userid = ?`,
+                            [msg.author.discriminator, msg.channel.id, msg.author.id]);
                     } else {
                         db.query(`update user set lastspoke = NOW(), lastchannel=?, `
                             + `messagecount=messagecount + 1 where userid = ?`,
