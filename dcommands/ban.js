@@ -12,8 +12,8 @@ e.requireCtx = require;
 
 e.hidden = false;
 e.usage = 'ban <user> [days]';
-e.info = 'Bans a user, where `days` is the number of days to delete messages for.\nIf mod-logging is enabled, the ban will be logged.';
-e.longinfo = `<p>Bans a user, where <code>days</code> is the number of days to delete messages for.</p>
+e.info = 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.';
+e.longinfo = `<p>Bans a user, where <code>days</code> is the number of days to delete messages for. Defaults to 1.</p>
 <p>If mod-logging is enabled, the ban will be logged.</p>`;
 
 
@@ -48,7 +48,7 @@ e.execute = (msg, words) => {
         if (!bu.bans[msg.channel.guild.id])
             bu.bans[msg.channel.guild.id] = {};
         bu.bans[msg.channel.guild.id][user.id] = msg.author.id;
-        var deletedays = 0;
+        var deletedays = 1;
         if (words[2])
             deletedays = parseInt(words[2]);
         bot.banGuildMember(msg.channel.guild.id, user.id, deletedays);
