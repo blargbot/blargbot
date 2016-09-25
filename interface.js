@@ -23,7 +23,19 @@ e.init = (b, blargutil) => {
                 bot: user.bot
             };
         } else {
-            objectToSend = notFound;
+            bu.db.query(`select username, isbot from user where userid = ?`, [req.params.id], (err, rows) => {
+                if (rows && rows[0]) {
+                    objectToSend = {
+                        id: req.param.id,
+                        username: rows[0].username,
+                        discriminator: '????',
+                        avatarURL: 'not found',
+                        bot: rows[0].isbot
+                    };
+                } else {
+                    objectToSend = notFound;
+                }
+            });
         }
         res.end(checkAuth(objectToSend, req, res));
     });
