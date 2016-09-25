@@ -118,7 +118,9 @@ e.execute = (msg, words) => {
             var name = usersRaw[i].trim();
             var u = bu.getUserFromName(msg, name, false);
             if (!u) {
-                return;
+                if (/[0-9]{17,21}/.test(usersRaw[i])) {
+                    users.push(usersRaw[i].match(/([0-9]{17,21})/)[1]);
+                }
             } else {
                 users.push(u.id);
             }
@@ -144,7 +146,7 @@ e.execute = (msg, words) => {
             statementWhere += 'and id >= ' + bu.db.escape(rows[0].id);
             var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd.replace('desc', 'asc')}`;
             console.log(statement);
-    console.log(statement);
+            console.log(statement);
 
             insertQuery(msg, statement).then(key => {
                 bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
