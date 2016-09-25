@@ -384,12 +384,11 @@ If you are the owner of this server, here are a few things to know.
     });
 
     bot.on('guildBanAdd', (guild, user) => {
-        var mod;
         if (bu.bans[guild.id] && bu.bans[guild.id][user.id]) {
-            mod = bot.users.get(bu.bans[guild.id][user.id]);
             delete bu.bans[guild.id][user.id];
+            return;
         }
-        bu.logAction(guild, user, mod, 'Ban');
+        bu.logAction(guild, user, null, 'Ban');
     });
     bot.on('guildBanRemove', (guild, user) => {
         var mod;
@@ -432,6 +431,8 @@ If you are the owner of this server, here are a few things to know.
     bot.on('messageCreate', function (msg) {
         processUser(msg);
 
+
+
         if (msg.channel.id != '194950328393793536')
             if (msg.author.id == bot.user.id) {
                 if (msg.channel.guild)
@@ -465,6 +466,26 @@ If you are the owner of this server, here are a few things to know.
         }
 
         if (msg.author.id !== bot.user.id) {
+            bu.guildSettings.get(msg.channel.guild ? msg.channel.guild.id : '', 'antimention').then(val => {
+                if (val) {
+                    var parsedAntiMention = parseInt(val);
+                    if (!(parsedAntiMention == 0 || isNaN(parsedAntiMention))) {
+                        if (msg.mentions.length >= parsedAntiMention) {
+                            console.log('BANN TIME');
+                            if (!bu.bans[msg.channel.guild.id])
+                                bu.bans[msg.channel.guild.id] = {};
+                            bu.bans[msg.channel.guild.id][msg.author.id] = bot.user.id;
+                            bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1).then(() => {
+                                bu.logAction(msg.channel.guild, msg.author, bot.user, 'Auto-Ban', 'Mention spam');
+                            }).catch(() => {
+                                delete bu.bans[msg.channel.guild.id][msg.author.id];
+                                bu.send(msg.channel.id, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
+                            });
+                        }
+                    }
+                }
+            });
+
             bu.guildSettings.get(msg.channel.guild ? msg.channel.guild.id : '', 'prefix').then(val => {
                 var prefix;
                 if (msg.channel.guild) {

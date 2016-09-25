@@ -275,7 +275,7 @@ e.getPosition = (member) => {
     return rolepos;
 };
 
-e.logAction = (guild, user, mod, type) => {
+e.logAction = (guild, user, mod, type, reason) => {
     console.log('type', user.username);
     e.guildSettings.get(guild.id, 'modlog').then(val => {
         if (val) {
@@ -293,7 +293,7 @@ e.logAction = (guild, user, mod, type) => {
                     var message = `**Case ${caseid}**
 **Type:** ${type}
 **User:** ${user.username}#${user.discriminator} (${user.id})
-**Reason:** Responsible moderator, please do \`reason ${caseid}\` to set.
+**Reason:** ${reason || `Responsible moderator, please do \`reason ${caseid}\` to set.`}
 **Moderator:** ${mod ? `${mod.username}#${mod.discriminator}` : 'Unknown'}`;
 
                     e.sendMessageToDiscord(val, message).then(msg => {

@@ -20,6 +20,7 @@ var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
     bu = blargutil;
+    voiceConnections = bot.voiceConnections;
     init(bot, voiceConnections, voiceSettings);
     e.category = bu.CommandType.MUSIC;
 

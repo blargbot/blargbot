@@ -40,8 +40,8 @@ e.execute = (msg, words) => {
                 }
 
                 var prefix = settings.prefix
-                    ? settings.prefix : 'no custom prefix set';
-                var nsfwMessage = 'none set';
+                    ? settings.prefix : 'Not Set';
+                var nsfwMessage = 'None Set';
                 if (nsfw.length > 0) {
                     nsfwMessage = '';
                     for (i = 0; i < nsfw.length; i++) {
@@ -49,7 +49,7 @@ e.execute = (msg, words) => {
                     }
                     nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 19);
                 }
-                var blacklistMessage = 'none set';
+                var blacklistMessage = 'None Set';
                 if (blacklisted.length > 0) {
                     blacklistMessage = '';
                     for (i = 0; i < blacklisted.length; i++) {
@@ -58,15 +58,26 @@ e.execute = (msg, words) => {
                     blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19);
                 }
                 var greeting = settings.greeting
-                    ? settings.greeting : 'not set';
+                    ? settings.greeting : 'Not Set';
                 var farewell = settings.farewell
-                    ? settings.farewell : 'not set';
+                    ? settings.farewell : 'Not Set';
                 var modlogChannel = settings.modlog
-                    ? bot.getChannel(settings.modlog).name : 'not set';
+                    ? bot.getChannel(settings.modlog).name : 'Not Set';
                 var deleteNotif = settings.deletenotif != 0 ? true : false;
                 var cahNsfw = settings.cahnsfw && settings.cahnsfw != 0 ? true : false;
-                var mutedRole = settings.mutedrole ? settings.mutedrole : 'not set';
+                var mutedRole = settings.mutedrole ? settings.mutedrole : 'Not Set';
                 var tableFlip = settings.tableflip && settings.tableflip != 0 ? true : false;
+                var parsedAntiMention;
+                if (settings.antimention) {
+                    parsedAntiMention = parseInt(settings.antimention);
+                    if (parsedAntiMention == 0 || isNaN(parsedAntiMention)) {
+                        parsedAntiMention = 'Disabled';
+                    }
+                } else {
+                    parsedAntiMention = 'Disabled';
+                }
+                var antiMention = parsedAntiMention;
+
                 var message = `\`\`\`prolog
 Settings For ${msg.channel.guild.name}
          Prefix : ${prefix}
@@ -79,6 +90,7 @@ Settings For ${msg.channel.guild.name}
   Track Deletes : ${deleteNotif}
     CAH is NSFW : ${cahNsfw}
      Tableflips : ${tableFlip}
+   Anti-Mention : ${antiMention}
 \`\`\``;
                 bu.sendMessageToDiscord(msg.channel.id, message);
             });
@@ -120,5 +132,6 @@ var settings = {
     prefix: `the custom command prefix. You can also use the \`setprefix\` command`,
     modlog: `the id of the modlog channel. You can also use the \`modlog\` command`,
     mutedrole: `the id of the muted role.`,
-    tableflip: `whether the bot should respond to tableflips/unflips. Set to '0' to disable.`
+    tableflip: `whether the bot should respond to tableflips/unflips. Set to '0' to disable.`,
+    antimention: `the number of unique mentions required to warrant a ban (for anti-mention spam). Set to '0' to disable. Recommended: 25`    
 };
