@@ -53,106 +53,107 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
 
 e.execute = (msg, words) => {
+    var numberOfMessages = NaN
+        , type = ''
+        , user = ''
+        , current
+        , order;
     if (words.length > 1) {
-        var numberOfMessages = parseInt(words[1])
-            , type = ''
-            , user = ''
-            , current
-            , order;
-        for (var i = 0; i < words.length; i++) {
-            if (i >= 1) {
-                //   console.log('fbaoisfs');
-                if (words[i].toLowerCase() == '-m' || words[i].toLowerCase() == '-message') {
-                    //     console.log('Addings types now');
-                    current = 0;
-                    type += ',';
-                } else if (words[i].toLowerCase() == '-u' || words[i].toLowerCase() == '-user') {
-                    //    console.log('Adding users now');
-                    current = 1;
-                    user += ',';
-                } else if (words[i].toLowerCase() == '-o' || words[i].toLowerCase() == '-order') {
-                    //    console.log('Adding users now');
-                    current = 2;
-                } else {
-                    switch (current) {
-                        case 0: //message
-                            //      console.log('type');
-                            type += words[i] + ' ';
-                            break;
-                        case 1: //user
-                            //     console.log('user');
-                            user += words[i] + ' ';
-                            break;
-                        case 2:
-                            if (words[i].toUpperCase().startsWith('ASC') && order == null) {
-                                order = true;
-                            } else if (words[i].toUpperCase().startsWith('DESC') && order == null) {
-                                order = false;
-                            }
-                            break;
-                        default:
-                            console.log('wut');
-                            break;
-                    }
-                }
-            }
-        }
-        if (order == null) {
-            order = false;
-        }
-        var typesRaw = type.split(',')
-            , usersRaw = user.split(',')
-            , types = []
-            , users = [];
-        for (i = 0; i < typesRaw.length; i++) {
-            if (typesRaw[i] != '') {
-                types.push(typesRaw[i].toUpperCase().trim());
-            }
-        }
-
-        for (i = 0; i < usersRaw.length; i++) {
-            if (usersRaw[i] != '') {
-                var name = usersRaw[i].trim();
-                var u = bu.getUserFromName(msg, name, false);
-                if (!u) {
-                    return;
-                } else {
-                    users.push(u.id);
-                }
-            }
-        }
-        var statementPrefix = 'select type, content, attachment, chatlogs.userid, mentions, msgid, msgtime, username from ';
-        var statementFrom = 'chatlogs inner join user on chatlogs.userid = user.userid ';
-        var statementWhere = `where channelid = ${bu.db.escape(msg.channel.id)} `;
-        var statementEnd = 'order by id ' + (order ? 'asc' : 'desc')
-            + (!isNaN(numberOfMessages) && numberOfMessages > 0
-                ? ' limit ' + bu.db.escape(numberOfMessages) : '');
-        for (i = 0; i < types.length; i++) {
-            statementWhere += ` ${i == 0 ? ' and (' : ' or '}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? ' ' : ') '}`;
-        }
-        for (i = 0; i < users.length; i++) {
-            statementWhere += ` ${i == 0 ? ' and (' : ' or '}chatlogs.userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? ' ' : ') '}`;
-        }
-        var IDStatement = `select id from (select id from chatlogs ${statementWhere} ${statementEnd}) as lastid order by id asc limit 1`;
-        bu.db.query(IDStatement, (err, rows) => {
-            if (rows && rows[0]) {
-               
-                statementWhere += 'and id >= ' + bu.db.escape(rows[0].id);
-                var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd.replace('desc', 'asc')}`;
-                console.log(statement);
-
-                insertQuery(msg, statement).then(key => {
-                    bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
-                });
-            } else {
-                    bu.send(msg.channel.id, 'No results found.');
-
-            }
-        });
-
-    } else {
-        bu.sendMessageToDiscord(msg.channel.id, 'Not enough parameters were given!');
+        numberOfMessages = parseInt(words[1]);
     }
+
+    for (var i = 0; i < words.length; i++) {
+        if (i >= 1) {
+            //   console.log('fbaoisfs');
+            if (words[i].toLowerCase() == '-m' || words[i].toLowerCase() == '-message') {
+                //     console.log('Addings types now');
+                current = 0;
+                type += ',';
+            } else if (words[i].toLowerCase() == '-u' || words[i].toLowerCase() == '-user') {
+                //    console.log('Adding users now');
+                current = 1;
+                user += ',';
+            } else if (words[i].toLowerCase() == '-o' || words[i].toLowerCase() == '-order') {
+                //    console.log('Adding users now');
+                current = 2;
+            } else {
+                switch (current) {
+                    case 0: //message
+                        //      console.log('type');
+                        type += words[i] + ' ';
+                        break;
+                    case 1: //user
+                        //     console.log('user');
+                        user += words[i] + ' ';
+                        break;
+                    case 2:
+                        if (words[i].toUpperCase().startsWith('ASC') && order == null) {
+                            order = true;
+                        } else if (words[i].toUpperCase().startsWith('DESC') && order == null) {
+                            order = false;
+                        }
+                        break;
+                    default:
+                        console.log('wut');
+                        break;
+                }
+            }
+        }
+    }
+    if (order == null) {
+        order = false;
+    }
+    var typesRaw = type.split(',')
+        , usersRaw = user.split(',')
+        , types = []
+        , users = [];
+    for (i = 0; i < typesRaw.length; i++) {
+        if (typesRaw[i] != '') {
+            types.push(typesRaw[i].toUpperCase().trim());
+        }
+    }
+
+    for (i = 0; i < usersRaw.length; i++) {
+        if (usersRaw[i] != '') {
+            var name = usersRaw[i].trim();
+            var u = bu.getUserFromName(msg, name, false);
+            if (!u) {
+                return;
+            } else {
+                users.push(u.id);
+            }
+        }
+    }
+    var statementPrefix = 'select type, content, attachment, chatlogs.userid, mentions, msgid, msgtime, username from ';
+    var statementFrom = 'chatlogs inner join user on chatlogs.userid = user.userid ';
+    var statementWhere = `where channelid = ${bu.db.escape(msg.channel.id)} `;
+    var statementEnd = 'order by id ' + (order ? 'asc' : 'desc')
+        + (!isNaN(numberOfMessages) && numberOfMessages > 0
+            ? ' limit ' + bu.db.escape(numberOfMessages) : '');
+    for (i = 0; i < types.length; i++) {
+        statementWhere += ` ${i == 0 ? ' and (' : ' or '}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? ' ' : ') '}`;
+    }
+    for (i = 0; i < users.length; i++) {
+        statementWhere += ` ${i == 0 ? ' and (' : ' or '}chatlogs.userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? ' ' : ') '}`;
+    }
+    var IDStatement = `select id from (select id from chatlogs ${statementWhere} ${statementEnd}) as lastid order by id asc limit 1`;
+    console.log(IDStatement);
+    bu.db.query(IDStatement, (err, rows) => {
+        if (rows && rows[0]) {
+
+            statementWhere += 'and id >= ' + bu.db.escape(rows[0].id);
+            var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd.replace('desc', 'asc')}`;
+            console.log(statement);
+    console.log(statement);
+
+            insertQuery(msg, statement).then(key => {
+                bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
+            });
+        } else {
+            bu.send(msg.channel.id, 'No results found.');
+
+        }
+    });
 };
 
 function insertQuery(msg, statement) {
