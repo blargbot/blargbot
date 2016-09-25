@@ -21,7 +21,7 @@ e.longinfo = `<p>Unbans a user.</p>
 
 e.execute = (msg, words) => {
     if (msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
-        if (msg.member.permission.banMembers) {
+        if (msg.member.permission.json.banMembers) {
             if (words[1]) {
                 var userid = words[1];
 
