@@ -13,7 +13,7 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'reason <case> <reason>';
+e.usage = 'reason <caseid | latest> <reason>';
 e.info = 'Sets the reason for an action on the modlog.';
 e.longinfo = `<p>Sets the reason for an action on the modlog.</p>`;
 
@@ -21,6 +21,10 @@ e.execute = (msg, words) => {
     bu.guildSettings.get(msg.channel.guild.id, 'modlog').then(val => {
         if (val) {
             if (words.length >= 3) {
+                var latest = false;
+                if (words[1].toLowerCase() == 'latest') {
+                    latest = true;
+                }
                 //  console.log('whew')
                 words.shift();
                 var caseid = parseInt(words.shift());
@@ -28,8 +32,8 @@ e.execute = (msg, words) => {
                 bu.db.query(`select msgid, modid, guildsetting.value as channelid from modlog 
         inner join guildsetting 
             on modlog.guildid = guildsetting.guildid and guildsetting.name = "modlog"
-        where modlog.guildid = ? and caseid = ?`,
-                    [msg.channel.guild.id, caseid], (err, row) => {
+        where modlog.guildid = ? ${latest ? 'order by caseid desc limit 1' : 'and caseid = ' + bu.db.escape(caseid)}`,
+                    [msg.channel.guild.id], (err, row) => {
                         if (err) {
                             console.log(err);
                             return;
