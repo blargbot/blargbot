@@ -27,7 +27,7 @@ e.execute = (msg, args, fallback) => {
     var replaceContent = false;
 
     if (args.length > 2) {
-        replaceString = args[parseInt(args[1]) + 2];
+        replaceString = args[parseInt(bu.processSpecial(args[1])) + 2];
         if (!replaceString) {
             replaceString = args[2];
         }

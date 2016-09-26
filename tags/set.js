@@ -23,17 +23,18 @@ e.exampleOut = ``;
 e.execute = (msg, args, fallback, words, author, tagName) => {
     var replaceString = '';
     var replaceContent = false;
+    var construct = [];
 
     if (!bu.vars[tagName]) {
         bu.vars[tagName] = {};
     }
     if (args.length > 2) {
-        bu.vars[tagName][args[1]] = args[2];
-        bu.emitter.emit('saveVars');
+        construct = ['set', tagName, args[1], args[2]];
+        replaceString = bu.specialCharBegin + construct.join(bu.specialCharDiv) + bu.specialCharEnd;
     }
     else if (args.length == 2) {
-        delete bu.vars[tagName][args[1]];
-        bu.emitter.emit('saveVars');
+        construct = ['remove', tagName, args[1]];
+        replaceString = bu.specialCharBegin + construct.join(bu.specialCharDiv) + bu.specialCharEnd;
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
     }

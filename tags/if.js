@@ -34,39 +34,41 @@ e.execute = (msg, args, fallback) => {
     var replaceContent = false;
 
     if (args.length > 5) {
+        var arg1 = bu.processSpecial(args[2]);
+        var arg2 = bu.processSpecial(args[3]);
         switch (args[1]) {
             case '==':
-                if (args[2] == args[3])
+                if (arg1 == arg2)
                     replaceString = args[4];
                 else
                     replaceString = args[5];
                 break;
             case '!=':
-                if (args[2] != args[3])
+                if (arg1 != arg2)
                     replaceString = args[4];
                 else
                     replaceString = args[5];
                 break;
             case '>=':
-                if (args[2] >= args[3])
+                if (arg1 >= arg2)
                     replaceString = args[4];
                 else
                     replaceString = args[5];
                 break;
             case '<=':
-                if (args[2] <= args[3])
+                if (arg1 <= arg2)
                     replaceString = args[4];
                 else
                     replaceString = args[5];
                 break;
             case '>':
-                if (args[2] > args[3])
+                if (arg1 > arg2)
                     replaceString = args[4];
                 else
                     replaceString = args[5];
                 break;
             case '<':
-                if (args[2] < args[3])
+                if (arg1 < arg2)
                     replaceString = args[4];
                 else
                     replaceString = args[5];
@@ -75,7 +77,7 @@ e.execute = (msg, args, fallback) => {
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
     }
-
+    replaceString = bu.processSpecial(replaceString);
     return {
         replaceString: replaceString,
         replaceContent: replaceContent

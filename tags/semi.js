@@ -15,13 +15,13 @@ e.isTag = true;
 e.name = `semi`;
 e.args = ``;
 e.usage = `{semi}`;
-e.desc = `Will be replaced by <code>;</code> on execution. <code>%SEMI%</code> works too.`;
+e.desc = `Will be replaced by <code>;</code> on execution.`;
 e.exampleIn = `This is a semicolon! {semi}`;
 e.exampleOut = `This is a semicolon! ;`;
 
 
 e.execute = (msg, args, fallback) => {
-    var replaceString = '%SEMI%';
+    var replaceString = bu.specialCharBegin + 'SEMI' + bu.specialCharEnd;
     var replaceContent = false;
 
 

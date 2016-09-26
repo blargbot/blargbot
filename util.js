@@ -12,6 +12,11 @@ e.VERSION = null;
 e.startTime = null;
 e.vars = null;
 
+// A special character for tag injections
+e.specialCharBegin = '\uE001';
+e.specialCharDiv = '\uE002';
+e.specialCharEnd = '\uE003';
+
 
 // A list of command modules
 e.commands = {};
@@ -323,6 +328,54 @@ e.isStaff = (m) => {
         || m.permission.has('manageMessages'));
 };
 
+e.processSpecial = (contents, final) => {
+    while (contents.indexOf(e.specialCharBegin) > -1 && contents.indexOf(e.specialCharEnd) > -1 &&
+        contents.indexOf(e.specialCharBegin) < contents.indexOf(e.specialCharEnd)) {
+        var tagEnds = contents.indexOf(e.specialCharEnd),
+            tagBegins = tagEnds == -1 ? -1 : contents.lastIndexOf(e.specialCharBegin, tagEnds),
+            tagBrackets = contents.substring(tagBegins, tagEnds + 1),
+            tag = contents.substring(tagBegins + 1, tagEnds),
+            args = tag.split(e.specialCharDiv),
+            replaceString = '',
+            replace = true;
+
+        switch (args[0].toLowerCase()) {
+            case 'set':
+                e.vars[args[1]][args[2]] = args[3];
+                e.emitter.emit('saveVars');
+                break;
+            case 'remove':
+                delete e.vars[args[1]][args[2]];
+                e.emitter.emit('saveVars');
+                break;
+            case 'get':
+                replaceString = e.vars[args[1]][args[2]]
+                    .replace(new RegExp(e.specialCharBegin, 'g'), '')
+                    .replace(new RegExp(e.specialCharDiv, 'g'), '')
+                    .replace(new RegExp(e.specialCharEnd, 'g'), '');
+                break;
+            case 'rb':
+                if (final)
+                    replaceString = '}';
+                else replace = false;
+                break;
+            case 'lb':
+                if (final)
+                    replaceString = '{';
+                else replace = false;
+                break;
+            case 'semi':
+                if (final)
+                    replaceString = ';';
+                else replace = false;
+        }
+        console.log(tagBrackets, replaceString);
+        if (replace)
+            contents = contents.replace(tagBrackets, replaceString);
+    }
+    return contents;
+};
+
 /* SQL STUFF */
 
 e.guildSettings = {
@@ -445,6 +498,7 @@ e.getUser = (msg, args, index) => {
     var obtainedUser;
     if (!index) index = 1;
 
+    msg.content = e.processSpecial(msg.content);
     if (args.length == index) {
         obtainedUser = msg.author;
     } else {

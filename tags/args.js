@@ -60,6 +60,10 @@ e.execute = (msg, args, fallback, words) => {
         else
             replaceString = bu.tagProcessError(fallback, '`User gave no args`');
     }
+    replaceString = replaceString + '';
+
+    replaceString = replaceString.replace(new RegExp(bu.specialCharBegin, 'g'), '').replace(new RegExp(bu.specialCharDiv, 'g'), '').replace(new RegExp(bu.specialCharEnd, 'g'), '');
+
     return {
         replaceString: replaceString,
         replaceContent: replaceContent

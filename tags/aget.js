@@ -23,16 +23,16 @@ e.exampleOut = `This is a test var`;
 e.execute = (msg, args, fallback, words, author) => {
     var replaceString = '';
     var replaceContent = false;
-
+    var construct;
     if (!bu.vars[author]) {
         bu.vars[author] = {};
     }
     if (args.length > 1) {
-        replaceString = bu.vars[author][args[1]] || 0;
+        construct = ['get', author, args[1]];
+        replaceString = bu.specialCharBegin + construct.join(bu.specialCharDiv) + bu.specialCharEnd;
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
     }
-
     return {
         replaceString: replaceString,
         replaceContent: replaceContent

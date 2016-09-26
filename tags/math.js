@@ -31,27 +31,27 @@ e.execute = (msg, args, fallback) => {
         switch (args[1]) {
             case '+':
                 for (var i = 3; i < args.length; i++) {
-                    result += bu.tagGetFloat(args[i]);
+                    result += bu.tagGetFloat(bu.processSpecial(args[i]));
                 }
                 break;
             case '-':
                 for (i = 3; i < args.length; i++) {
-                    result -= bu.tagGetFloat(args[i]);
+                    result -= bu.tagGetFloat(bu.processSpecial(args[i]));
                 }
                 break;
             case '*':
                 for (i = 3; i < args.length; i++) {
-                    result *= bu.tagGetFloat(args[i]);
+                    result *= bu.tagGetFloat(bu.processSpecial(args[i]));
                 }
                 break;
             case '/':
                 for (i = 3; i < args.length; i++) {
-                    result /= bu.tagGetFloat(args[i]);
+                    result /= bu.tagGetFloat(bu.processSpecial(args[i]));
                 }
                 break;
             case '%':
                 for (i = 3; i < args.length; i++) {
-                    result %= bu.tagGetFloat(args[i]);
+                    result %= bu.tagGetFloat(bu.processSpecial(args[i]));
                 }
                 break;
         }

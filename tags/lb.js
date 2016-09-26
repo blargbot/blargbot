@@ -15,13 +15,13 @@ e.isTag = true;
 e.name = `lb`;
 e.args = ``;
 e.usage = `{lb}`;
-e.desc = `Will be replaced by <code>{</code> on execution. <code>%LB%</code> works too.`;
+e.desc = `Will be replaced by <code>{</code> on execution.`;
 e.exampleIn = `This is a bracket! {lb}`;
 e.exampleOut = `This is a bracket! {`;
 
 
 e.execute = (msg, args, fallback) => {
-    var replaceString = '%LB%';
+    var replaceString = bu.specialCharBegin + 'LB' + bu.specialCharEnd;
     var replaceContent = false;
 
 
