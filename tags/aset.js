@@ -12,7 +12,7 @@ e.init = (Tbot, blargutil) => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `set`;
+e.name = `aset`;
 e.args = `&lt;name&gt; &lt;value&gt;`;
 e.usage = `{aset;name;value}`;
 e.desc = `Stores a variable. These variables are saved between sessions, and are unique per-author.`;
