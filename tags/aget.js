@@ -12,11 +12,11 @@ e.init = (Tbot, blargutil) => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `get`;
+e.name = `aget`;
 e.args = `&lt;name&gt;`;
 e.usage = `{aget;name}`;
 e.desc = `Returns a stored variable. Variables are unique per-author.`;
-e.exampleIn = `{get;testvar}`;
+e.exampleIn = `{aget;testvar}`;
 e.exampleOut = `This is a test var`;
 
 
