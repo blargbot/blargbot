@@ -349,8 +349,8 @@ e.processSpecial = (contents, final) => {
                 e.emitter.emit('saveVars');
                 break;
             case 'get':
-                replaceString = e.vars[args[1]][args[2]]
-                    .replace(new RegExp(e.specialCharBegin, 'g'), '')
+                replaceString = e.vars[args[1]][args[2]] || '';
+                replaceString = replaceString.replace(new RegExp(e.specialCharBegin, 'g'), '')
                     .replace(new RegExp(e.specialCharDiv, 'g'), '')
                     .replace(new RegExp(e.specialCharEnd, 'g'), '');
                 break;
