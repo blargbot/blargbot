@@ -329,6 +329,7 @@ e.isStaff = (m) => {
 };
 
 e.processSpecial = (contents, final) => {
+    console.log('Processing a special tag');
     while (contents.indexOf(e.specialCharBegin) > -1 && contents.indexOf(e.specialCharEnd) > -1 &&
         contents.indexOf(e.specialCharBegin) < contents.indexOf(e.specialCharEnd)) {
         var tagEnds = contents.indexOf(e.specialCharEnd),

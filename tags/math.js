@@ -27,10 +27,11 @@ e.execute = (msg, args, fallback) => {
     var replaceString = '';
     var replaceContent = false;
     if (args.length > 2) {
-        var result = bu.tagGetFloat(args[2]);
+        var result = bu.tagGetFloat(bu.processSpecial(args[2]));
         switch (args[1]) {
             case '+':
                 for (var i = 3; i < args.length; i++) {
+                    console.log('+ args', args[i]);
                     result += bu.tagGetFloat(bu.processSpecial(args[i]));
                 }
                 break;
