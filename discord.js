@@ -737,7 +737,7 @@ function switchAvatar(forced) {
 var commandMessages = {};
 
 function handleDiscordCommand(channel, user, text, msg) {
-    return new Promise((fulfill) => {
+    return new Promise((fulfill, reject) => {
         var words = text.replace(/ +/g, ' ').split(' ');
 
         if (msg.channel.guild)
@@ -773,7 +773,7 @@ function handleDiscordCommand(channel, user, text, msg) {
                     if (bu.commandList.hasOwnProperty(words[0].toLowerCase())) {
                         console.log(words[0]);
                         if (bu.CommandType.properties[bu.commandList[words[0].toLowerCase()].category].perm) {
-                            if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[words[0].toLowerCase()].category].perm)) {
+                            if (!bu.isStaff(msg.member) && !bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[words[0].toLowerCase()].category].perm)) {
                                 fulfill(false);
                                 return;
                             }
