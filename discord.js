@@ -709,7 +709,7 @@ function switchGame(forced) {
             name = `type 'blargbot help'!`;
             break;
     }
-    bot.editGame({
+    bot.editStatus(null, {
         name: name
     });
     if (!forced)
