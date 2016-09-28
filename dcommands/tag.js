@@ -67,6 +67,8 @@ e.execute = (msg, words, text) => {
                                     [msg.author.id, title,
                                         text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()]);
                                 bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${title}\` created. ✅`);
+                        bu.send('230810364164440065', `**__Create__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()}\`\`\``);
+                                
                             } else
                                 bu.sendMessageToDiscord(msg.channel.id, `❌ That tag already exists! ❌`);
                         });
@@ -113,6 +115,7 @@ e.execute = (msg, words, text) => {
                                                     });
                                                 });
                                                 bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` has been renamed to \`${words[3]}\`. ✅`);
+                        bu.send('230810364164440065', `**__Rename__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Old Tag:** ${words[2]}\n  **New Tag**: ${words[3]}`);
 
                                             } else {
                                                 bu.sendMessageToDiscord(msg.channel.id, `❌ The tag \`${words[3]}\` already exist! ❌`);
@@ -148,7 +151,8 @@ e.execute = (msg, words, text) => {
                                 [text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim(),
                                     words[2]]);
                             bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` edited. ✅`);
-
+                        bu.send('230810364164440065', `**__Edit__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()}\`\`\``);
+                            
                         }
                     });
                 break;
@@ -161,6 +165,7 @@ e.execute = (msg, words, text) => {
                     else {
                         bu.db.query(`delete from tag where title=?`, [words[2]]);
                         bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` is gone forever! ✅`);
+                        bu.send('230810364164440065', `**__Delete__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}`);
                     }
                 });
                 break;
