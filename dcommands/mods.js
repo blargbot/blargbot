@@ -35,14 +35,19 @@ e.execute = (msg, words) => {
             }
         });
         var message = '';
-        mods.forEach(m => {
-            //    console.log(m.status)
-            message += `${(m.status == 'online'
-                ? '<:vpOnline:212789758110334977>'
-                : (m.status == 'idle'
-                    ? '<:vpAway:212789859071426561>'
-                    : '<:vpOffline:212790005943369728>'))} **${getName(m)}** (${m.user.id})\n`;
+        mods.filter(m => m.status == 'online').forEach(m => {
+            message += `<:vpOnline:212789758110334977> **${getName(m)}** (${m.user.id})\n`;
         });
+        mods.filter(m => m.status == 'idle').forEach(m => {
+            message += `<:vpAway:212789859071426561> **${getName(m)}** (${m.user.id})\n`;
+        });
+        mods.filter(m => m.status == 'dnd').forEach(m => {
+            message += `<:vpAway:212789859071426561> **${getName(m)}** (${m.user.id}) - DO NOT DISTURB\n`;
+        });
+        mods.filter(m => m.status == 'offline').forEach(m => {
+            message += `<:vpOffline:212790005943369728> **${getName(m)}** (${m.user.id})\n`;
+        });
+        
         bu.sendMessageToDiscord(msg.channel.id, message);
     } catch (err) {
         console.log(err);
