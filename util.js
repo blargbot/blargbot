@@ -64,12 +64,12 @@ e.CommandType = {
         },
         5: {
             name: 'Bot Commander',
-            requirement: msg => !msg.channel.guild ? true : e.hasPerm(msg, 'Bot Commander', true),
+            requirement: msg => !msg.channel.guild ? true : e.isStaff(msg.member) || e.hasPerm(msg, 'Bot Commander', true),
             perm: 'Bot Commander'
         },
         6: {
             name: 'Admin',
-            requirement: msg => !msg.channel.guild ? true : e.hasPerm(msg, 'Admin', true),
+            requirement: msg => !msg.channel.guild ? true : e.isStaff(msg.member) || e.hasPerm(msg, 'Admin', true),
             perm: 'Admin'
         }
     }
