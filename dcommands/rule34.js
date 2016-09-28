@@ -24,8 +24,7 @@ e.execute = (msg, words) => {
 
         var tagList = JSON.parse(JSON.stringify(words));
         delete tagList[0];
-        bu.send('230801689551175681', `**__rule34__:** tags: \`${tagList.join(' ')}\` **user:** ${msg.author.username} (${msg.author.id}) **channel:** ${msg.channel.name} (${msg.channel.id}) **guild:** ${msg.channel.guild.name} (${msg.channel.guild.id}) **NSFW Channel:** ${nsfwChannel}`);
-
+        bu.send('230801689551175681', `**__rule34__:** \n  **tags:** \`${tagList.join(' ')}\` \n  **user:** ${msg.author.username} (${msg.author.id}) \n  **channel:** ${msg.channel.name} (${msg.channel.id}) \n  **guild:** ${msg.channel.guild.name} (${msg.channel.guild.id}) \n  **NSFW Channel:** ${nsfwChannel}`);
         if (words.length > 1)
             for (i = 1; i < tagList.length; i++) {
                 console.log(`${i}: ${tagList[i]}`);
