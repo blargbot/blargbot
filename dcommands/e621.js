@@ -26,8 +26,10 @@ e.execute = (msg, words) => {
 
         var tagList = JSON.parse(JSON.stringify(words));
         delete tagList[0];
+        bu.send('230801689551175681', `**${msg.author.username} (${msg.author.id})** executed command e621 with tags \`${tagList.join(' ')}\` in channel **${msg.channel.name} (${msg.channel.id})**, *guild ${msg.channel.guild.name} (${msg.channel.guild.id})*`);
+
         if (words.length > 1)
-            for (i = 1; i < tagList.length; i++) {
+            for (let i = 1; i < tagList.length; i++) {
                 console.log(`${i}: ${tagList[i]}`);
 
                 tagList[i] = tagList[i].toLowerCase();
@@ -78,7 +80,7 @@ e.execute = (msg, words) => {
                         //console.log('result: ' + result);
                         var urlList = [];
                         if (doc.posts.post != null)
-                            for (i = 0; i < doc.posts.post.length; i++) {
+                            for (let i = 0; i < doc.posts.post.length; i++) {
                                 var imgUrl = doc.posts.post[i].file_url[0];
                                 //    console.log(imgUrl);
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
@@ -93,7 +95,7 @@ e.execute = (msg, words) => {
                         }
                         //   parsedUrlList = JSON.parse(JSON.stringify(urlList));
 
-                        for (i = 0; i < 3; i++) {
+                        for (let i = 0; i < 3; i++) {
                             if (urlList.length > 0) {
                                 var choice = bu.getRandomInt(0, urlList.length - 1);
                                 message += urlList[choice] + '\n';

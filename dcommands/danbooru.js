@@ -25,6 +25,8 @@ e.execute = (msg, words) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
         var tagList = JSON.parse(JSON.stringify(words));
         delete tagList[0];
+        bu.send('230801689551175681', `**${msg.author.username} (${msg.author.id})** executed command danbooru with tags \`${tagList.join(' ')}\` in channel **${msg.channel.name} (${msg.channel.id})**, *guild ${msg.channel.guild.name} (${msg.channel.guild.id})*`);
+
         if (words.length > 1)
             for (i = 1; i < tagList.length; i++) {
                 console.log(`${i}: ${tagList[i]}`);
