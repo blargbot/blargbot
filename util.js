@@ -331,6 +331,9 @@ e.isStaff = (m) => {
 e.processSpecial = (contents, final) => {
     console.log('Processing a special tag');
     contents += '';
+    let eek1 = '\uE001';
+    let eek2 = '\uE002';
+    contents.replace(/\uE010|\uE011/g, '');
     while (contents.indexOf(e.specialCharBegin) > -1 && contents.indexOf(e.specialCharEnd) > -1 &&
         contents.indexOf(e.specialCharBegin) < contents.indexOf(e.specialCharEnd)) {
         var tagEnds = contents.indexOf(e.specialCharEnd),
@@ -359,23 +362,26 @@ e.processSpecial = (contents, final) => {
             case 'rb':
                 if (final)
                     replaceString = '}';
-                else replace = false;
+                else
+                    replaceString = '\uE010rb\uE011';
                 break;
             case 'lb':
                 if (final)
                     replaceString = '{';
-                else replace = false;
+                else
+                    replaceString = '\uE010lb\uE011';
                 break;
             case 'semi':
                 if (final)
                     replaceString = ';';
-                else replace = false;
+                else
+                    replaceString = '\uE010semi\uE011';
         }
         console.log(tagBrackets, replaceString);
         if (replace)
             contents = contents.replace(tagBrackets, replaceString);
-    }
-    return contents;
+    }   
+    return contents.replace(/\uE010/g, e.specialCharBegin).replace(/\uE011/g, e.specialCharEnd);
 };
 
 /* SQL STUFF */

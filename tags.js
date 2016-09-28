@@ -90,8 +90,14 @@ e.processTag = (msg, contents, command, tagName, author) => {
             , i
             , replaceObj;
 
+        var loop = 0;
         while (contents.indexOf('{') > -1 && contents.indexOf('}') > -1 &&
             contents.indexOf('{') < contents.indexOf('}')) {
+            if (++loop >= 1000) {
+                contents = `Terminated process after ${loop} iterations.`;
+                break;
+            }
+
             tagEnds = contents.indexOf('}');
             tagBegins = tagEnds == -1 ? -1 : contents.lastIndexOf('{', tagEnds);
             tagBrackets = contents.substring(tagBegins, tagEnds + 1);
@@ -139,7 +145,7 @@ e.processTag = (msg, contents, command, tagName, author) => {
                 contents = contents.replace(tagBrackets, replaceString);
             }
         }
-        
+
         contents = bu.processSpecial(contents, true) + '';
         // contents = contents.replace(/%RB%/g, '}').replace(/%LB%/g, '{').replace(/%SEMI%/g, ';');
         while (/<@!?[0-9]{17,21}>/.test(contents)) {
