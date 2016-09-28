@@ -45,7 +45,9 @@ e.execute = (msg, words) => {
                 if (nsfw.length > 0) {
                     nsfwMessage = '';
                     for (i = 0; i < nsfw.length; i++) {
-                        nsfwMessage += bot.getChannel(nsfw[i]).name + '\n                - ';
+                        let channel = bot.getChannel(nsfw[i]);
+                        if (channel)
+                            nsfwMessage += `${channel.name} (${nsfw[i]})\n                - `;
                     }
                     nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 19);
                 }
@@ -53,7 +55,9 @@ e.execute = (msg, words) => {
                 if (blacklisted.length > 0) {
                     blacklistMessage = '';
                     for (i = 0; i < blacklisted.length; i++) {
-                        blacklistMessage += bot.getChannel(blacklisted[i]).name + '\n                - ';
+                        let channel = bot.getChannel(blacklisted[i]);
+                        if (channel)
+                            blacklistMessage += `${channel.name} (${blacklisted[i]}\n                - `;
                     }
                     blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19);
                 }
@@ -61,8 +65,16 @@ e.execute = (msg, words) => {
                     ? settings.greeting : 'Not Set';
                 var farewell = settings.farewell
                     ? settings.farewell : 'Not Set';
-                var modlogChannel = settings.modlog
-                    ? bot.getChannel(settings.modlog).name : 'Not Set';
+                var modlogChannel;
+                if (settings.modlog) {
+                    let channel = bot.getChannel(settings.modlog);
+                    if (channel)
+                        modlogChannel = `${channel.name} (${settings.modlog})`;
+                    else 
+                    modlogChannel = `Channel Not Found (${settings.modlog})` ;
+                } else {
+                    modlogChannel = 'Not Set';
+                }
                 var deleteNotif = settings.deletenotif != 0 ? true : false;
                 var cahNsfw = settings.cahnsfw && settings.cahnsfw != 0 ? true : false;
                 var mutedRole = settings.mutedrole ? settings.mutedrole : 'Not Set';
@@ -133,5 +145,5 @@ var settings = {
     modlog: `the id of the modlog channel. You can also use the \`modlog\` command`,
     mutedrole: `the id of the muted role.`,
     tableflip: `whether the bot should respond to tableflips/unflips. Set to '0' to disable.`,
-    antimention: `the number of unique mentions required to warrant a ban (for anti-mention spam). Set to '0' to disable. Recommended: 25`    
+    antimention: `the number of unique mentions required to warrant a ban (for anti-mention spam). Set to '0' to disable. Recommended: 25`
 };
