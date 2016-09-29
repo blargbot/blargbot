@@ -81,6 +81,12 @@ e.processTag = (msg, contents, command, tagName, author) => {
 
         var fallback = '';
 
+        contents = bu.processTag(msg, words, contents, fallback, author, tagName);
+        contents = bu.processSpecial(contents, true);
+        bu.emitter.emit('saveVars');
+
+        return contents;
+/*
         var tagEnds
             , tagBegins
             , tagBrackets
@@ -154,9 +160,12 @@ e.processTag = (msg, contents, command, tagName, author) => {
         }
         console.log('Done!', contents.trim());
         return contents.trim();
+        */
     } catch (err) {
         console.log(err);
     }
+    
+
 };
 
 e.executeTag = (msg, tagName, command) => {

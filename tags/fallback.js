@@ -23,15 +23,18 @@ e.exampleIn = `{fallback;This tag failed} {randint}`;
 e.exampleOut = `This tag failed`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
     var replaceString = '';
     var replaceContent = false;
-    if (args[1])
-        fallback = args[1];
+    if (params.args[1])
+        params.fallback = params.args[1];
 
     return {
         replaceString: replaceString,
         replaceContent: replaceContent,
-        fallback: fallback
+        fallback: params.fallback
     };
 };

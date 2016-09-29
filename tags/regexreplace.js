@@ -26,7 +26,12 @@ e.exampleIn = `I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e
 e.exampleOut = `I likn ta cansumn chnnsn.`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let args = params.args
+        , fallback = params.fallback;
     var returnObj = {
         replaceContent: false
     };

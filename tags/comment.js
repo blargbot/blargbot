@@ -20,7 +20,7 @@ e.exampleIn = 'This is a sentence. {//;This is a comment.}';
 e.exampleOut = 'This is a sentence.';
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = () => {
     var replaceString = '';
     var replaceContent = false;
 

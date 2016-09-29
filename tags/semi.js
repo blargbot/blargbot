@@ -20,7 +20,7 @@ e.exampleIn = `This is a semicolon! {semi}`;
 e.exampleOut = `This is a semicolon! ;`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = () => {
     var replaceString = bu.specialCharBegin + 'SEMI' + bu.specialCharEnd;
     var replaceContent = false;
 

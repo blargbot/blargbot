@@ -20,7 +20,11 @@ e.exampleIn = `This guild's name is {guildname}`;
 e.exampleOut = `This guild's name is TestGuild`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let msg = params.msg;
     var replaceString = msg.channel.guild.name;
     var replaceContent = false;
 

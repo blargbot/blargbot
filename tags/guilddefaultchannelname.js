@@ -20,7 +20,11 @@ e.exampleIn = `Default channel is {guilddefaultchannelname}`;
 e.exampleOut = `Default channel is defaultchannel`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let msg = params.msg;
     var replaceString = msg.channel.guild.defaultChannel.name;
     var replaceContent = false;
 

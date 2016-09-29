@@ -20,15 +20,23 @@ e.exampleIn = `{abs;-535}`;
 e.exampleOut = `535`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let args = params.args
+        , fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
+    for (let i = 0; i < args.length; i++) {
+
+    }
     if (args[1]) {
         var asNumber = parseFloat(args[1]);
         if (!isNaN(asNumber)) {
             replaceString = Math.abs(asNumber);
         } else {
-        replaceString = bu.tagProcessError(fallback, '`Not a number`');
+            replaceString = bu.tagProcessError(fallback, '`Not a number`');
         }
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');

@@ -20,7 +20,12 @@ e.exampleIn = 'The hash of brown is {hash;brown}';
 e.exampleOut = 'The hash of brown is 94011702';
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let args = params.args
+        , fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
 

@@ -16,6 +16,7 @@ e.vars = null;
 e.specialCharBegin = '\uE001';
 e.specialCharDiv = '\uE002';
 e.specialCharEnd = '\uE003';
+e.tagDiv = '\uE004';
 
 
 // A list of command modules
@@ -344,6 +345,98 @@ e.isStaff = (m) => {
         || m.permission.has('manageMessages'));
 };
 
+function setCharAt(str, index, chr) {
+    if (index > str.length - 1) return str;
+    return str.substr(0, index) + chr + str.substr(index + 1);
+}
+
+e.processTagInner = (params, i) => {
+    return e.processTag(params.msg
+        , params.words
+        , params.args[i]
+        , params.fallback
+        , params.author
+        , params.tagName);
+}
+
+e.processTag = (msg, words, contents, fallback, author, tagName) => {
+    console.log('Contents:', contents);
+    let level = 0;
+    let lastIndex = 0;
+    let coords = [];
+    for (let i = 0; i < contents.length; i++) {
+        if (contents[i] == '{') {
+            if (level == 0) {
+                lastIndex = i;
+            }
+            level++;
+        } else if (contents[i] == '}') {
+            level--;
+            if (level == 0) {
+                coords.push([lastIndex, i + 1]);
+            }
+        } else if (contents[i] == ';') {
+            if (level == 1) {
+                contents = setCharAt(contents, i, e.tagDiv);
+            }
+        }
+    }
+    let subtags = []
+    for (let i = 0; i < coords.length; i++) {
+        subtags.push(contents.substring(coords[i][0], coords[i][1]));
+    }
+    for (let i = 0; i < subtags.length; i++) {
+        let tagBrackets = subtags[i]
+            , tag = tagBrackets.substring(1, tagBrackets.length - 1)
+            , args = tag.split(e.tagDiv)
+            , replaceString
+            , replaceObj = {
+                replaceString: '',
+                replaceContent: false
+            };
+        for (i = 0; i < args.length; i++) {
+            args[i] = args[i].replace(/^[\s\n]+|[\s\n]+$/g, '');
+        }
+        if (e.tagList.hasOwnProperty(args[0].toLowerCase())) {
+            replaceObj = e.tags[e.tagList[args[0].toLowerCase()].tagName].execute({
+                msg: msg,
+                args: args,
+                fallback: fallback,
+                words: words,
+                author: author,
+                tagname: tagName
+            });
+        } else {
+            replaceObj.replaceString = e.tagProcessError(fallback, '`Tag doesn\'t exist`');
+        }
+
+        if (replaceObj == '') {
+            contents = '';
+        }
+        else if (replaceObj.replaceContent) {
+            if (replaceObj.replace == undefined) {
+                contents = replaceObj.replaceString;
+            } else {
+                contents.replace(tagBrackets, '');
+                contents = contents.replace(replaceObj.replace, replaceObj.replaceString);
+            }
+        } else {
+            replaceString = replaceObj.replaceString;
+            if (!replaceString) {
+                replaceString = '';
+            }
+            replaceString = replaceString.toString();
+            replaceString = replaceString.replace(/\}/gi, `${e.specialCharBegin}RB${e.specialCharEnd}`)
+                .replace(/\{/gi, `${e.specialCharBegin}LB${e.specialCharEnd}`)
+                .replace(/\;/g, `${e.specialCharBegin}SEMI${e.specialCharEnd}`);
+            console.log(tagBrackets, replaceString);
+            contents = contents.replace(tagBrackets, replaceString);
+        }
+        // console.log(contents.substring(coords[i][0], coords[i][1]));
+    }
+    return contents;
+};
+
 e.processSpecial = (contents, final) => {
     console.log('Processing a special tag');
     contents += '';
@@ -361,20 +454,6 @@ e.processSpecial = (contents, final) => {
             replace = true;
 
         switch (args[0].toLowerCase()) {
-            case 'set':
-                e.vars[args[1]][args[2]] = args[3];
-                e.emitter.emit('saveVars');
-                break;
-            case 'remove':
-                delete e.vars[args[1]][args[2]];
-                e.emitter.emit('saveVars');
-                break;
-            case 'get':
-                replaceString = e.vars[args[1]][args[2]] || '';
-                replaceString = replaceString.replace(new RegExp(e.specialCharBegin, 'g'), '')
-                    .replace(new RegExp(e.specialCharDiv, 'g'), '')
-                    .replace(new RegExp(e.specialCharEnd, 'g'), '');
-                break;
             case 'rb':
                 if (final)
                     replaceString = '}';
@@ -537,7 +616,7 @@ e.getUser = (msg, args, index) => {
 
 
 e.tagGetFloat = (arg) => {
-    return parseFloat(arg) ? parseFloat(arg) : 0;
+    return parseFloat(arg) ? parseFloat(arg) : NaN;
 };
 
 e.tagProcessError = (fallback, errormessage) => {

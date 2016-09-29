@@ -20,8 +20,11 @@ e.exampleIn = `This channel's name is #{channelname}`;
 e.exampleOut = `This channel's name is #test-channel`;
 
 
-e.execute = (msg, args, fallback) => {
-    var replaceString = msg.channel.name;
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    var replaceString = params.msg.channel.name;
     var replaceContent = false;
 
 

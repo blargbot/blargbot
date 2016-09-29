@@ -20,10 +20,12 @@ e.exampleIn = `This channel is in position {channelpos}`;
 e.exampleOut = `This channel is in position 1`;
 
 
-e.execute = (msg, args, fallback) => {
-    var replaceString = msg.channel.position;
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    var replaceString = params.msg.channel.position;
     var replaceContent = false;
-
 
     return {
         replaceString: replaceString,

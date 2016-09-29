@@ -20,16 +20,20 @@ e.exampleIn = `{get;testvar}`;
 e.exampleOut = `This is a test var`;
 
 
-e.execute = (msg, args, fallback, words, author, tagName) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let args = params.args
+        , fallback = params.fallback
+        , tagName = params.tagName;
     var replaceString = '';
     var replaceContent = false;
-    var construct = [];
     if (!bu.vars[tagName]) {
         bu.vars[tagName] = {};
     }
     if (args.length > 1) {
-        construct = ['get', tagName, args[1]];
-        replaceString = bu.specialCharBegin + construct.join(bu.specialCharDiv) + bu.specialCharEnd;
+        replaceString = bu.vars[tagName][args[1]];
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
     }

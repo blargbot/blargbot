@@ -25,8 +25,13 @@ e.exampleIn = `I like {replace;to eat;eat;nom} cheese. {replace;cheese;ham}`;
 e.exampleOut = `I like to nom ham`;
 
 
-e.execute = (msg, args, fallback) => {
-    var returnObj = { replaceContent: false }
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let args = params.args
+        , fallback = params.fallback;
+    var returnObj = { replaceContent: false };
     if (args.length > 3) {
 
         returnObj.replaceString = args[1].replace(args[2], args[3]);

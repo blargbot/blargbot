@@ -24,13 +24,52 @@ e.exampleIn = `You rolled a {randint;1;6}`;
 e.exampleOut = `You rolled a 5`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let args = params.args
+        , fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
+    var parsedFallback = parseInt(fallback);
     if (args.length == 2) {
-        replaceString = bu.getRandomInt(0, parseInt(bu.processSpecial(args[1])));
+        let args1 = parseInt(args[1]);
+        if (isNaN(args1)) {
+            if (isNaN(parsedFallback)) {
+                return {
+                    replaceString: bu.tagProcessError(fallback, '`Not a number`'),
+                    replaceContent: replaceContent
+                };
+            } else {
+                args1 = parsedFallback;
+            }
+        }
+        replaceString = bu.getRandomInt(0, args1);
     } else if (args.length > 2) {
-        replaceString = bu.getRandomInt(parseInt(bu.processSpecial(args[1])), parseInt(bu.processSpecial(args[2])));
+        let args1 = parseInt(args[1]);
+        if (isNaN(args1)) {
+            if (isNaN(parsedFallback)) {
+                return {
+                    replaceString: bu.tagProcessError(fallback, '`Not a number`'),
+                    replaceContent: replaceContent
+                };
+            } else {
+                args1 = parsedFallback;
+            }
+        }
+        let args2 = parseInt(args[2]);
+        if (isNaN(args2)) {
+            if (isNaN(parsedFallback)) {
+                return {
+                    replaceString: bu.tagProcessError(fallback, '`Not a number`'),
+                    replaceContent: replaceContent
+                };
+            } else {
+                args2 = parsedFallback;
+            }
+        }
+        replaceString = bu.getRandomInt(args1, args2);
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
     }

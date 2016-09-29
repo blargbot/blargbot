@@ -29,55 +29,69 @@ e.exampleIn = `{if;&lt;=;5;10;5 is less than or equal to 10;5 is greater than 10
 e.exampleOut = `5 is less than or equal to 10`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    // for (let i = 1; i < params.args.length; i++) {
+    //      params.args[i] = bu.processTagInner(params, i);
+    // }
+    let args = params.args
+        , fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
 
-    if (args.length > 5) {
-        var arg1 = bu.processSpecial(args[2]);
-        var arg2 = bu.processSpecial(args[3]);
+    if (args.length > 4) {
+        var arg1 = bu.processTagInner(params, 2);
+        var arg2 = bu.processTagInner(params, 3);
         switch (args[1]) {
             case '==':
                 if (arg1 == arg2)
                     replaceString = args[4];
                 else
-                    replaceString = args[5];
+                    replaceString = args[5] || '';
                 break;
             case '!=':
                 if (arg1 != arg2)
                     replaceString = args[4];
                 else
-                    replaceString = args[5];
+                    replaceString = args[5] || '';
                 break;
             case '>=':
                 if (arg1 >= arg2)
                     replaceString = args[4];
                 else
-                    replaceString = args[5];
+                    replaceString = args[5] || '';
                 break;
             case '<=':
                 if (arg1 <= arg2)
                     replaceString = args[4];
                 else
-                    replaceString = args[5];
+                    replaceString = args[5] || '';
                 break;
             case '>':
                 if (arg1 > arg2)
                     replaceString = args[4];
                 else
-                    replaceString = args[5];
+                    replaceString = args[5] || '';
                 break;
             case '<':
                 if (arg1 < arg2)
                     replaceString = args[4];
                 else
-                    replaceString = args[5];
+                    replaceString = args[5] || '';
+                break;
+            default:
+                replaceString = bu.tagProcessError(fallback, '`Invalid Operator`');
                 break;
         }
+        replaceString = bu.processTag(params.msg
+            , params.words
+            , replaceString
+            , params.fallback
+            , params.author
+            , params.tagName);
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
     }
-    replaceString = bu.processSpecial(replaceString);
+
     return {
         replaceString: replaceString,
         replaceContent: replaceContent

@@ -24,7 +24,12 @@ e.exampleIn = `Your nick is {usernick}`;
 e.exampleOut = `Your nick is cat`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let args = params.args
+        , msg = params.msg;
     var replaceString = '';
     var replaceContent = false;
 

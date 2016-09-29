@@ -20,7 +20,8 @@ e.exampleIn = `This is a bracket! {lb}`;
 e.exampleOut = `This is a bracket! {`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = () => {
+    
     var replaceString = bu.specialCharBegin + 'LB' + bu.specialCharEnd;
     var replaceContent = false;
 

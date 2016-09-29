@@ -20,7 +20,12 @@ e.exampleIn = `The guild's icon is {guildicon}`;
 e.exampleOut = `The guild's icon is (icon url)`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let msg = params.msg;
+
     var replaceString = `https://cdn.discordapp.com/icons/${msg.channel.guild.id}/${msg.channel.guild.icon}.jpg`;
     var replaceContent = false;
 

@@ -20,21 +20,23 @@ e.exampleIn = `{set;testvar;This is a test var}`;
 e.exampleOut = ``;
 
 
-e.execute = (msg, args, fallback, words, author, tagName) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let args = params.args
+        , fallback = params.fallback
+        , tagName = params.tagName;
     var replaceString = '';
     var replaceContent = false;
-    var construct = [];
-
     if (!bu.vars[tagName]) {
         bu.vars[tagName] = {};
     }
     if (args.length > 2) {
-        construct = ['set', tagName, args[1], args[2]];
-        replaceString = bu.specialCharBegin + construct.join(bu.specialCharDiv) + bu.specialCharEnd;
+        bu.vars[tagName][args[1]] = args[2];
     }
     else if (args.length == 2) {
-        construct = ['remove', tagName, args[1]];
-        replaceString = bu.specialCharBegin + construct.join(bu.specialCharDiv) + bu.specialCharEnd;
+        delete bu.vars[tagName][args[1]];
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
     }

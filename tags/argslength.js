@@ -20,7 +20,11 @@ e.exampleIn = 'You said {argslength} words.';
 e.exampleOut = 'Input: <code>I am saying things.</code><br>Output: <code>You said 4 words.</code>';
 
 
-e.execute = (msg, args, fallback, words) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let words = params.words;
     var replaceString = '';
     var replaceContent = false;
     var length = words.length;

@@ -20,7 +20,11 @@ e.exampleIn = `This guild has {guildmembers} members.`;
 e.exampleOut = `This guild has 123 members.`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let msg = params.msg;
     var replaceString = msg.channel.guild.memberCount;
     var replaceContent = false;
 

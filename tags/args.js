@@ -29,7 +29,13 @@ e.exampleOut = `
                             `;
 
 
-e.execute = (msg, args, fallback, words) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let words = params.words
+        , args = params.args
+        , fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
 

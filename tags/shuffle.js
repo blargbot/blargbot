@@ -20,7 +20,8 @@ e.exampleIn = `{shuffle} {args;0} {args;1} {args;2}`;
 e.exampleOut = `Input: <code>one two three</code><br>Output: <code>three one two</code>`;
 
 
-e.execute = (msg, args, fallback, words) => {
+e.execute = (params) => {
+    let words = params.words;
     var replaceString = '';
     var replaceContent = false;
 

@@ -20,7 +20,8 @@ e.exampleIn = `This command is not safe! {nsfw}`;
 e.exampleOut = `This command is not safe!`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = () => {
+    
     var replaceString = '';
     var replaceContent = false;
 

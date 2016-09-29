@@ -27,7 +27,12 @@ e.exampleIn = `This guild was created on {guildcreatedat;YYYY/MM/DD HH:mm:ss}`;
 e.exampleOut = `This guild was created on 2016/01/01 01:00:00`;
 
 
-e.execute = (msg, args, fallback) => {
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let args = params.args
+        , msg = params.msg;
     var replaceString = '';
     var replaceContent = false;
     var createdDate = msg.channel.guild.createdAt;

@@ -20,8 +20,11 @@ e.exampleIn = `This channel's id is {channelid}`;
 e.exampleOut = `This channel's id is 1234567890123456`;
 
 
-e.execute = (msg, args, fallback) => {
-    var replaceString = msg.channel.id;
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    var replaceString = params.msg.channel.id;
     var replaceContent = false;
 
     
