@@ -141,7 +141,7 @@ e.sendMessageToDiscord = function (channelId, message, file) {
 
 //Alias of sendMessageToDiscord
 e.send = (channelId, message, file) => {
-    e.sendMessageToDiscord(channelId, message, file);
+    return e.sendMessageToDiscord(channelId, message, file);
 };
 
 /**
