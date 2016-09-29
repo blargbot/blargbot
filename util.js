@@ -345,6 +345,8 @@ e.isStaff = (m) => {
         || m.permission.has('manageMessages'));
 };
 
+e.debug = false;
+
 function setCharAt(str, index, chr) {
     if (index > str.length - 1) return str;
     return str.substr(0, index) + chr + str.substr(index + 1);
@@ -360,7 +362,7 @@ e.processTagInner = (params, i) => {
 }
 
 e.processTag = (msg, words, contents, fallback, author, tagName) => {
-    console.log('Contents:', contents);
+    //   console.log('Contents:', contents);
     let level = 0;
     let lastIndex = 0;
     let coords = [];
@@ -381,7 +383,7 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
             }
         }
     }
-    let subtags = []
+    let subtags = [];
     for (let i = 0; i < coords.length; i++) {
         subtags.push(contents.substring(coords[i][0], coords[i][1]));
     }
@@ -394,8 +396,8 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
                 replaceString: '',
                 replaceContent: false
             };
-        for (i = 0; i < args.length; i++) {
-            args[i] = args[i].replace(/^[\s\n]+|[\s\n]+$/g, '');
+        for (let ii = 0; ii < args.length; ii++) {
+            args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
         if (e.tagList.hasOwnProperty(args[0].toLowerCase())) {
             replaceObj = e.tags[e.tagList[args[0].toLowerCase()].tagName].execute({
@@ -429,7 +431,8 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
             replaceString = replaceString.replace(/\}/gi, `${e.specialCharBegin}RB${e.specialCharEnd}`)
                 .replace(/\{/gi, `${e.specialCharBegin}LB${e.specialCharEnd}`)
                 .replace(/\;/g, `${e.specialCharBegin}SEMI${e.specialCharEnd}`);
-            console.log(tagBrackets, replaceString);
+            if (e.debug)
+                console.log('Contents:', contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
             contents = contents.replace(tagBrackets, replaceString);
         }
         // console.log(contents.substring(coords[i][0], coords[i][1]));
@@ -438,7 +441,8 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
 };
 
 e.processSpecial = (contents, final) => {
-    console.log('Processing a special tag');
+    if (e.debug)
+        console.log('Processing a special tag');
     contents += '';
     let eek1 = '\uE001';
     let eek2 = '\uE002';
