@@ -17,7 +17,7 @@ e.args = '&lt;text&gt; &lt;start&gt; [end]';
 e.usage = '{substring;text;start[;end]}';
 e.desc = 'Returns a chunk of text between the start and end indexes. If end is not specified, it assumes the length of the text.';
 e.exampleIn = 'Hello {substring;world;2;3}!';
-e.exampleOut = 'Hello rl!';
+e.exampleOut = 'Hello r!';
 
 e.execute = (params) => {
     for (let i = 1; i < params.args.length; i++) {
