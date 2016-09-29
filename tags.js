@@ -83,7 +83,6 @@ e.processTag = (msg, contents, command, tagName, author) => {
 
         contents = bu.processTag(msg, words, contents, fallback, author, tagName);
         contents = bu.processSpecial(contents, true);
-        bu.emitter.emit('saveVars');
 
         return contents;
 /*

@@ -34,9 +34,13 @@ e.execute = (params) => {
     }
     if (args.length > 2) {
         bu.vars[tagName][args[1]] = args[2];
+        bu.emitter.emit('saveVars');
+
     }
     else if (args.length == 2) {
         delete bu.vars[tagName][args[1]];
+        bu.emitter.emit('saveVars');
+
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
     }
