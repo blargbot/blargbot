@@ -11,8 +11,8 @@ var request = require('request');
 var Promise = require('promise');
 var webInterface = require('./interface.js');
 
-var Cleverbot = require('cleverbot-node');
-cleverbot = new Cleverbot();
+const Cleverbot = require('cleverbot-node');
+var cleverbot = new Cleverbot();
 
 var e = module.exports = {}
     , avatars
@@ -567,6 +567,7 @@ If you are the owner of this server, here are a few things to know.
                                                 : bot.user.username;
                                             var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
                                             console.log(msgToSend);
+                                            bu.cleverbotStats++;
                                             cleverbot.write(msgToSend
                                                 , function (response) {
                                                     bot.sendChannelTyping(msg.channel.id);
@@ -781,6 +782,12 @@ function handleDiscordCommand(channel, user, text, msg) {
                         var commandName = bu.commandList[words[0].toLowerCase()].name;
                         db.query(`insert into stats (commandname, uses, lastused) values (?, 1, NOW())
             on duplicate key update uses = uses + 1 , lastused=NOW()`, [commandName]);
+                        if (bu.commandStats.hasOwnProperty(commandName)) {
+                            bu.commandStats[commandName]++;
+                        } else {
+                            bu.commandStats[commandName] = 1;
+                        }
+                        bu.commandUses++;
                         try {
                             bu.commands[commandName].execute(msg, words, text);
                         } catch (err) {

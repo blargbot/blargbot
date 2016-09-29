@@ -22,6 +22,13 @@ e.specialCharEnd = '\uE003';
 e.commands = {};
 // A list of command names/descriptions for each alias or subcommand
 e.commandList = {};
+// A list of command usage for the current session
+e.commandStats = {};
+e.commandUses = 0;
+// How many times cleverbot has been used
+e.cleverbotStats = 0;
+// How many messages the bot has made
+e.messageStats = 0;
 
 e.tags = {};
 e.tagList = {};
@@ -79,6 +86,14 @@ e.init = (Tbot) => {
     e.bot = Tbot;
 };
 
+e.compareStats = (a, b) => {
+    if (a.uses < b.uses)
+        return -1;
+    if (a.uses > b.uses)
+        return 1;
+    return 0;
+}
+
 /**
  * Checks if a user has a role with a specific name
  * @param msg - the message (Message)
@@ -111,6 +126,7 @@ e.hasPerm = (msg, perm, quiet) => {
  * @returns {Promise.<Message>}
  */
 e.sendMessageToDiscord = function (channelId, message, file) {
+    e.messageStats++;
     try {
         if (!file)
             return e.bot.createMessage(channelId, message).catch(err => console.log(err.stack));
@@ -380,7 +396,7 @@ e.processSpecial = (contents, final) => {
         console.log(tagBrackets, replaceString);
         if (replace)
             contents = contents.replace(tagBrackets, replaceString);
-    }   
+    }
     return contents.replace(/\uE010/g, e.specialCharBegin).replace(/\uE011/g, e.specialCharEnd);
 };
 
