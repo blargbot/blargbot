@@ -359,7 +359,7 @@ e.processTagInner = (params, i) => {
         , params.fallback
         , params.author
         , params.tagName);
-}
+};
 
 e.processTag = (msg, words, contents, fallback, author, tagName) => {
     //   console.log('Contents:', contents);
@@ -406,12 +406,14 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
                 fallback: fallback,
                 words: words,
                 author: author,
-                tagname: tagName
+                tagName: tagName
             });
         } else {
             replaceObj.replaceString = e.tagProcessError(fallback, '`Tag doesn\'t exist`');
         }
-
+        if (replaceObj.fallback) {
+            fallback = replaceObj.fallback;
+        }
         if (replaceObj == '') {
             contents = '';
         }
