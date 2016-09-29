@@ -444,7 +444,7 @@ e.processSpecial = (contents, final) => {
     if (e.debug)
         console.log('Processing a special tag');
     contents += '';
-    let eek1 = '\uE001';
+    let eek1 = '\uE001'; 
     let eek2 = '\uE002';
     contents.replace(/\uE010|\uE011/g, '');
     while (contents.indexOf(e.specialCharBegin) > -1 && contents.indexOf(e.specialCharEnd) > -1 &&
