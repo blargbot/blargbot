@@ -6,6 +6,7 @@ var mkdirp = require('mkdirp');
 var path = require('path');
 var http = require('http');
 var freefreefree = require('./dcommands/free.js');
+var bu;
 
 var Cleverbot = require('cleverbot-node');
 cleverbot = new Cleverbot();
@@ -25,8 +26,9 @@ var emitter;
 var notifInterval;
 var VERSION;
 
-e.init = (bu, v, em) => {
+e.init = (blargutil, v, em) => {
     VERSION = v;
+    bu = blargutil;
     config = bu.config;
     emitter = em;
     var ircbot = new irc.Client(config.irc.server, config.irc.nick, {
@@ -200,6 +202,11 @@ function handleIrcCommand(channel, user, text) {
         case 'help':
             sendIrcCommandMessage(channel, 'Valid commands: servers, ping, mail, seen, uptime, ' +
                 'notify, version, cat, roll, xkcd, insult, econ, reload, time');
+            break;
+        case 'list':
+            var userArray = bu.bot.guilds.get(bu.bot.channelGuildMap[bu.config.discord.channel]).members.filter(m => m.status != 'offline').map(m => m.user.username);
+            userArray.sort();
+            sendIrcCommandMessage(channel, 'Users online on discord: ' + userArray.join(', '));
             break;
         case 'reload':
             reloadConfig();

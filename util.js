@@ -336,13 +336,16 @@ e.logAction = (guild, user, mod, type, reason) => {
     });
 };
 
-e.isStaff = (m) => {
-    return (m.permission.has('kickMembers')
-        || m.permission.has('banMembers')
-        || m.permission.has('administrator')
-        || m.permission.has('manageChannels')
-        || m.permission.has('manageGuild')
-        || m.permission.has('manageMessages'));
+e.isStaff = (m, perms) => {
+    if (perms) {
+
+    } else
+        return (m.permission.has('kickMembers')
+            || m.permission.has('banMembers')
+            || m.permission.has('administrator')
+            || m.permission.has('manageChannels')
+            || m.permission.has('manageGuild')
+            || m.permission.has('manageMessages'));
 };
 
 e.debug = false;
@@ -446,7 +449,7 @@ e.processSpecial = (contents, final) => {
     if (e.debug)
         console.log('Processing a special tag');
     contents += '';
-    let eek1 = '\uE001'; 
+    let eek1 = '\uE001';
     let eek2 = '\uE002';
     contents.replace(/\uE010|\uE011/g, '');
     while (contents.indexOf(e.specialCharBegin) > -1 && contents.indexOf(e.specialCharEnd) > -1 &&
