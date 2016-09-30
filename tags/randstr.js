@@ -1,0 +1,56 @@
+var e = module.exports = {};
+var bu;
+
+var bot;
+e.init = (Tbot, blargutil) => {
+    bot = Tbot;
+    bu = blargutil;
+
+    e.category = bu.TagType.COMPLEX;
+};
+
+e.requireCtx = require;
+
+e.isTag = true;
+e.name = 'randstr';
+e.args = '&lt;chars&gt; &lt;length&gt;';
+e.usage = '{randstr;chars;length}';
+e.desc = 'Creates a random string with characters from <code>chars</code> that is <code>length</code> characters long.';
+e.exampleIn = '{randstr;1234567890;10}';
+e.exampleOut = '3789327305';
+
+e.execute = (params) => {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = bu.processTagInner(params, i);
+    }
+    let args = params.args;
+        , fallback = params.fallback;
+    var replaceString = '';
+    var replaceContent = false;
+    var parsedFallback = parseInt(fallback);
+    if (params.args[1] && params.args[2]) {
+        let args1 = args[1];
+        let args2 = parseInt(args[2]);
+        if (isNaN(args2)) {
+            if (isNaN(parsedFallback)) {
+                return {
+                    replaceString: bu.tagProcessError(fallback, '`Not a number`'),
+                    replaceContent: replaceContent
+                };
+            } else {
+                args1 = parsedFallback;
+            }
+        } else {
+            for (let i = 0; i < args2) {
+                replaceString += args1[Math.floor(Math.random()*args[1].length)];
+            }
+        }
+    } else {
+        replaceString = bu.tagProcessError(params.fallback, '`Not enough arguments`');
+    }
+
+    return {
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};
