@@ -30,15 +30,15 @@ e.execute = (params) => {
     var replaceString = '';
     var replaceContent = false;
     if (!bu.vars[tagName]) {
-        bu.vars[tagName] = {};
+        bu.vars.tags[tagName] = {};
     }
     if (args.length > 2) {
-        bu.vars[tagName][args[1]] = args[2];
+        bu.vars.tags[tagName][args[1]] = args[2];
         bu.emitter.emit('saveVars');
 
     }
     else if (args.length == 2) {
-        delete bu.vars[tagName][args[1]];
+        delete bu.vars.tags[tagName][args[1]];
         bu.emitter.emit('saveVars');
 
     } else {

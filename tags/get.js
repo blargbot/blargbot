@@ -30,10 +30,10 @@ e.execute = (params) => {
     var replaceString = '';
     var replaceContent = false;
     if (!bu.vars[tagName]) {
-        bu.vars[tagName] = {};
+        bu.vars.tags[tagName] = {};
     }
     if (args.length > 1) {
-        replaceString = bu.vars[tagName][args[1]];
+        replaceString = bu.vars.tags[tagName][args[1]];
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
     }

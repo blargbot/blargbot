@@ -27,10 +27,10 @@ e.execute = (params) => {
     var replaceString = '';
     var replaceContent = false;
     if (!bu.vars[params.author]) {
-        bu.vars[params.author] = {};
+        bu.vars.authorTags[params.author] = {};
     }
     if (params.args.length > 1) {
-        replaceString = bu.vars[params.author][params.args[1]];
+        replaceString = bu.vars.authorTags[params.author][params.args[1]];
     } else {
         replaceString = bu.tagProcessError(params.fallback, '`Not enough arguments`');
     }
