@@ -27,9 +27,9 @@ e.execute = (params) => {
     var replaceContent = false;
     if (params.args[1]) {
         if (params.args[2]) {
-            replaceString = params.args[1][0].toUpperCase()+params.args[1].substr(1).toLowerCase();
+            replaceString = params.args[1][0].toUpperCase() + params.args[1].substr(1).toLowerCase();
         } else {
-            replaceString = params.args[1][0].toUpperCase()+params.args[1].substr(1);
+            replaceString = params.args[1][0].toUpperCase() + params.args[1].substr(1);
         }
     } else {
         replaceString = bu.tagProcessError(params.fallback, '`Not enough arguments`');

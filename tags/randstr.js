@@ -23,7 +23,7 @@ e.execute = (params) => {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = bu.processTagInner(params, i);
     }
-    let args = params.args;
+    let args = params.args
         , fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
@@ -41,8 +41,8 @@ e.execute = (params) => {
                 args1 = parsedFallback;
             }
         } else {
-            for (let i = 0; i < args2) {
-                replaceString += args1[Math.floor(Math.random()*args[1].length)];
+            for (let i = 0; i < args2; i++) {
+                replaceString += args1[Math.floor(Math.random() * args[1].length)];
             }
         }
     } else {
