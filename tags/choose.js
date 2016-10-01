@@ -23,8 +23,11 @@ e.exampleOut = `I feel like eating pie today.`;
 
 
 e.execute = (params) => {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = bu.processTagInner(params, i);
+    // for (let i = 1; i < params.args.length; i++) {
+    //     params.args[i] = bu.processTagInner(params, i);
+    // }
+    if (params.args[1]) {
+        params.args[1] = bu.processTagInner(params, 1);
     }
     let args = params.args
         , fallback = params.fallback;
@@ -36,6 +39,12 @@ e.execute = (params) => {
         if (!replaceString) {
             replaceString = args[2];
         }
+        replaceString = bu.processTag(params.msg
+            , params.words
+            , replaceString
+            , params.fallback
+            , params.author
+            , params.tagName);
     } else
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
 

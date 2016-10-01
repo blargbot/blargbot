@@ -262,7 +262,7 @@ e.sendFile = (channelid, message, url) => {
             });
         });
     }
-}
+};
 
 /**
  * Creates an uptime string
@@ -425,7 +425,7 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
             fallback = replaceObj.fallback;
         }
         if (replaceObj == '') {
-            contents = '';
+            return e.specialCharBegin + 'BREAK' + e.specialCharEnd;
         }
         else if (replaceObj.replaceContent) {
             if (replaceObj.replace == undefined) {
@@ -487,6 +487,9 @@ e.processSpecial = (contents, final) => {
                     replaceString = ';';
                 else
                     replaceString = '\uE010semi\uE011';
+                    case 'break':
+                    replaceString = '';
+                    break;
         }
         console.log(tagBrackets, replaceString);
         if (replace)
