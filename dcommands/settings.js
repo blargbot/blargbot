@@ -89,7 +89,10 @@ e.execute = (msg, words) => {
                     parsedAntiMention = 'Disabled';
                 }
                 var antiMention = parsedAntiMention;
-
+                let permOverride = settings.permoverride && settings.permoverride != 0 ? true : false;
+                let dmHelp = settings.dmhelp && settings.dmhelp != 0 ? true : false;
+                
+                let staffPerms = settings.staffperms || bu.defaultStaff;
                 var message = `\`\`\`prolog
 Settings For ${msg.channel.guild.name}
          Prefix : ${prefix}
@@ -103,6 +106,9 @@ Settings For ${msg.channel.guild.name}
     CAH is NSFW : ${cahNsfw}
      Tableflips : ${tableFlip}
    Anti-Mention : ${antiMention}
+        DM Help : ${dmHelp}
+  Perm Override : ${permOverride}
+    Staff Perms : ${staffPerms}
 \`\`\``;
                 bu.sendMessageToDiscord(msg.channel.id, message);
             });
@@ -125,11 +131,10 @@ Settings For ${msg.channel.guild.name}
                 }
                 break;
             case 'help':
-                var message = '```fix\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
+                var message = '\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
                 for (key in settings) {
-                    message += key.toUpperCase() + ' - ' + settings[key] + '\n';
+                    message += '**__' + key.toUpperCase() + '__**' + ' - ' + settings[key] + '\n';
                 }
-                message += '```';
                 bu.sendMessageToDiscord(msg.channel.id, message);
                 break;
         }
@@ -145,5 +150,8 @@ var settings = {
     modlog: `the id of the modlog channel. You can also use the \`modlog\` command`,
     mutedrole: `the id of the muted role.`,
     tableflip: `whether the bot should respond to tableflips/unflips. Set to '0' to disable.`,
-    antimention: `the number of unique mentions required to warrant a ban (for anti-mention spam). Set to '0' to disable. Recommended: 25`
+    antimention: `the number of unique mentions required to warrant a ban (for anti-mention spam). Set to '0' to disable. Recommended: 25`,
+    dmhelp: `whether or not to dm help messages or output them in channels`,
+    permoverride: `whether or not specific permissions override role requirement`,
+    staffperms: `the numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <https://discordapi.com/permissions.html> for a permission calculator.`
 };

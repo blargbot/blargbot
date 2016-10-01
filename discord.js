@@ -1,6 +1,6 @@
 var fs = require('fs');
 var util = require('util');
-var Eris = require('eris');
+const Eris = require('eris');
 var moment = require('moment-timezone');
 var path = require('path');
 var https = require('https');
@@ -764,36 +764,15 @@ function handleDiscordCommand(channel, user, text, msg) {
                         config.discord.commands[words[0]]
                             .replace(/%REPLY/, `<@${user.id}>`)}`);
                     fulfill(true);
-
                 } else {
-
-                    //  if (words[0].toLowerCase() == 'help') {
-                    //      
-                    //      fulfill(true)
-                    //  } else {
                     if (bu.commandList.hasOwnProperty(words[0].toLowerCase())) {
-                        console.log(words[0]);
-                        if (bu.CommandType.properties[bu.commandList[words[0].toLowerCase()].category].perm) {
-                            if (!bu.isStaff(msg.member) && !bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[words[0].toLowerCase()].category].perm)) {
-                                fulfill(false);
-                                return;
+                        let commandName = bu.commandList[words[0].toLowerCase()].name;
+                        bu.canExecuteCommand(msg, commandName).then(val => {
+                            if (val[0]) {
+                                executeCommand(commandName, msg, words, text, fulfill, reject);
                             }
-                        }
-                        var commandName = bu.commandList[words[0].toLowerCase()].name;
-                        db.query(`insert into stats (commandname, uses, lastused) values (?, 1, NOW())
-            on duplicate key update uses = uses + 1 , lastused=NOW()`, [commandName]);
-                        if (bu.commandStats.hasOwnProperty(commandName)) {
-                            bu.commandStats[commandName]++;
-                        } else {
-                            bu.commandStats[commandName] = 1;
-                        }
-                        bu.commandUses++;
-                        try {
-                            bu.commands[commandName].execute(msg, words, text);
-                        } catch (err) {
-                            reject(err);
-                        }
-                        fulfill(true);
+                            fulfill(val);
+                        });
                     } else {
                         fulfill(false);
                     }
@@ -809,6 +788,23 @@ function handleDiscordCommand(channel, user, text, msg) {
 
 
     //return false;
+}
+
+function executeCommand(commandName, msg, words, text, fulfill, reject) {
+    db.query(`insert into stats (commandname, uses, lastused) values (?, 1, NOW())
+            on duplicate key update uses = uses + 1 , lastused=NOW()`, [commandName]);
+    if (bu.commandStats.hasOwnProperty(commandName)) {
+        bu.commandStats[commandName]++;
+    } else {
+        bu.commandStats[commandName] = 1;
+    }
+    bu.commandUses++;
+    try {
+        bu.commands[commandName].execute(msg, words, text);
+    } catch (err) {
+        reject(err);
+    }
+    fulfill(true);
 }
 
 var messageLogs = [];

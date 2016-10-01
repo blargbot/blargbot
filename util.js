@@ -1,6 +1,7 @@
 var moment = require('moment-timezone');
 var Promise = require('promise');
 var request = require('request');
+const Eris = require('eris');
 var e = module.exports = {};
 e.CAT_ID = '103347843934212096';
 e.catOverrides = true;
@@ -30,6 +31,13 @@ e.commandUses = 0;
 e.cleverbotStats = 0;
 // How many messages the bot has made
 e.messageStats = 0;
+
+e.defaultStaff = Eris.Constants.Permissions.kickMembers
+    + Eris.Constants.Permissions.banMembers
+    + Eris.Constants.Permissions.administrator
+    + Eris.Constants.Permissions.manageChannels
+    + Eris.Constants.Permissions.manageGuild
+    + Eris.Constants.Permissions.manageMessages;
 
 e.tags = {};
 e.tagList = {};
@@ -72,12 +80,12 @@ e.CommandType = {
         },
         5: {
             name: 'Bot Commander',
-            requirement: msg => !msg.channel.guild ? true : e.isStaff(msg.member) || e.hasPerm(msg, 'Bot Commander', true),
+            requirement: () => true,
             perm: 'Bot Commander'
         },
         6: {
             name: 'Admin',
-            requirement: msg => !msg.channel.guild ? true : e.isStaff(msg.member) || e.hasPerm(msg, 'Admin', true),
+            requirement: () => true,
             perm: 'Admin'
         }
     }
@@ -108,7 +116,7 @@ e.hasPerm = (msg, perm, quiet) => {
         || msg.member.permission.administraton) {
         return true;
     }
-    var roles = msg.channel.guild.roles.filter(m => m.name == perm);
+    var roles = msg.channel.guild.roles.filter(m => m.name.toLowerCase() == perm.toLowerCase());
     for (var i = 0; i < roles.length; i++) {
         if (msg.member.roles.indexOf(roles[i].id) > -1) {
             return true;
@@ -336,16 +344,15 @@ e.logAction = (guild, user, mod, type, reason) => {
     });
 };
 
-e.isStaff = (m, perms) => {
-    if (perms) {
 
-    } else
-        return (m.permission.has('kickMembers')
-            || m.permission.has('banMembers')
-            || m.permission.has('administrator')
-            || m.permission.has('manageChannels')
-            || m.permission.has('manageGuild')
-            || m.permission.has('manageMessages'));
+e.comparePerms = (m, allow) => {
+    if (!allow) allow = e.defaultStaff;
+    let newPerm = new Eris.Permission(allow);
+    for (let key in newPerm.json) {
+        if (m.permission.has(key)) {
+            return true;
+        }
+    } return false;
 };
 
 e.debug = false;
@@ -584,7 +591,66 @@ e.isBlacklistedChannel = (channelid) => {
     });
 };
 
+e.canExecuteCommand = (msg, commandName, quiet) => {
+    return new Promise((fulfill, reject) => {
+        e.guildSettings.get(msg.channel.guild.id, 'permoverride').then(val => {
+            e.guildSettings.get(msg.channel.guild.id, 'staffperms').then(val1 => {
+                if (val && val != 0)
+                    if (val1) {
+                        let allow = parseInt(val1);
+                        if (!isNaN(allow)) {
+                            if (e.comparePerms(msg.member, allow)) {
+                                fulfill([true, commandName]);
+                                return;
+                            }
+                        }
+                    } else {
+                        if (e.comparePerms(msg.member)) {
+                            fulfill([true, commandName]);
+                            return;
+                        }
+                    }
 
+                let commandQuery = `select permission, rolename
+                        from commandperm where guildid = ? and commandname = ?`;
+                e.db.query(commandQuery, [msg.channel.guild.id, commandName], (err, rows) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    if (rows && rows[0]) {
+                        if (rows[0].permission && e.comparePerms(msg.member, rows[0].permission)) {
+                            fulfill([true, commandName]);
+                            return;
+                        } else if (rows[0].rolename && e.hasPerm(msg, rows[0].rolename, quiet)) {
+                            fulfill([true, commandName]);
+                            return;
+                        } else if (!rows[0].rolename) {
+                            if (e.CommandType.properties[e.commandList[commandName].category].perm) {
+                                if (!e.hasPerm(msg, e.CommandType.properties[e.commandList[commandName].category].perm, quiet)) {
+                                    fulfill([false, commandName]);
+                                    return;
+                                }
+                            }
+                            fulfill([true, commandName]);
+                        }
+                        fulfill([false, commandName]);
+                        return;
+                    } else {
+                        if (e.CommandType.properties[e.commandList[commandName].category].perm) {
+                            if (!e.hasPerm(msg, e.CommandType.properties[e.commandList[commandName].category].perm, quiet)) {
+                                fulfill([false, commandName]);
+                                return;
+                            }
+                        }
+                        fulfill([true, commandName]);
+                    }
+                });
+                return val1;
+            }).catch(reject);
+            return val;
+        }).catch(reject);
+    });
+};
 
 e.shuffle = (array) => {
     let counter = array.length;
@@ -604,7 +670,7 @@ e.shuffle = (array) => {
     }
 
     return array;
-}
+};
 
 e.getUser = (msg, args, index) => {
     var obtainedUser;

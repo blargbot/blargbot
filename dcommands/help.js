@@ -21,8 +21,7 @@ e.longinfo = `<p>Returns a list of commands and custom commands. If a command na
 e.execute = (msg, words) => {
     if (words.length > 1) {
         var message = '';
-        if (bu.commandList.hasOwnProperty(words[1]) && !bu.commandList[words[1]].hidden
-            && bu.CommandType.properties[bu.commandList[words[1]].category].requirement(msg)) {
+        if (bu.commandList.hasOwnProperty(words[1]) && !bu.commandList[words[1]].hidden) {
             message = `Command Name: ${bu.commandList[words[1]].name}
 Usage: \`${bu.commandList[words[1]].usage}\`
 ${bu.commandList[words[1]].info}`;
@@ -34,49 +33,113 @@ ${bu.commandList[words[1]].info}`;
         var commandsString = '```prolog\nGeneral Commands:\n  ';
         var generalCommands = [];
         var otherCommands = {};
-        for (var command in bu.commandList) {
-            if (!bu.commandList[command].hidden) {
-                if (bu.commandList[command].category == bu.CommandType.GENERAL) {
-                    generalCommands.push(command);
+        var modifiedCommands = [];
+        bu.db.query(`select commandname, rolename from commandperm where guildid = ? and rolename is not null`, [msg.channel.guild.id], (err, rows) => {
+            for (let i = 0; i < rows.length; i++) {
+                if (!otherCommands[rows[i].rolename.toLowerCase()]) {
+                    otherCommands[rows[i].rolename.toLowerCase()] = [];
                 }
-                else {
-                    if (!otherCommands[bu.commandList[command].category])
-                        otherCommands[bu.commandList[command].category] = [];
-                    otherCommands[bu.commandList[command].category].push(command);
-                }
+                otherCommands[rows[i].rolename.toLowerCase()].push(rows[i].commandname);
+                modifiedCommands.push(rows[i].commandname);
             }
-        }
-        generalCommands.sort();
-        commandsString += generalCommands.join(', ');
-        for (var category in otherCommands) {
-            if (bu.CommandType.properties[category].requirement(msg)) {
-                otherCommands[category].sort();
-                var otherCommandList = otherCommands[category];
-                commandsString += `\n${bu.CommandType.properties[category].name} Commands:\n  `;
-                commandsString += otherCommandList.join(', ');
-            }
-        }
-        bu.db.query(`select commandname from ccommand where guildid = ?`,
-            [msg.channel.guild ? msg.channel.guild.id : ''], (err, rows) => {
-                if (rows.length > 0) {
-                    var ccommandsString = 'Custom Commands:\n  ';
-                    var helpCommandList = [];
-                    var i = 0;
-                    for (var key in rows) {
-                        helpCommandList[i] = rows[key].commandname;
-                        i++;
+            console.dir(modifiedCommands);
+            console.dir(otherCommands);
+            for (var command in bu.commandList) {
+                if (modifiedCommands.indexOf(command) == -1)
+                    if (!bu.commandList[command].hidden) {
+                        if (bu.commandList[command].category == bu.CommandType.GENERAL) {
+                            generalCommands.push(command);
+                        }
+                        else {
+                            if (!otherCommands[bu.commandList[command].category])
+                                otherCommands[bu.commandList[command].category] = [];
+                            otherCommands[bu.commandList[command].category].push(command);
+                        }
                     }
-                    helpCommandList.sort();
-                    ccommandsString += helpCommandList.join(', ');
-                    commandsString += `\n${ccommandsString}`;
+            }
+            generalCommands.sort();
+            commandsString += generalCommands.join(', ');
+            function onComplete() {
+                bu.db.query(`select commandname from ccommand where guildid = ?`,
+                    [msg.channel.guild ? msg.channel.guild.id : ''], (err, rows) => {
+                        if (rows.length > 0) {
+                            var ccommandsString = 'Custom Commands:\n  ';
+                            var helpCommandList = [];
+                            var i = 0;
+                            for (var key in rows) {
+                                helpCommandList[i] = rows[key].commandname;
+                                i++;
+                            }
+                            helpCommandList.sort();
+                            ccommandsString += helpCommandList.join(', ');
+                            commandsString += `\n${ccommandsString}`;
+                        }
+
+                        commandsString += '```';
+                        bu.guildSettings.get(msg.channel.guild.id, 'dmhelp').then(dmhelp => {
+                            let doDM = dmhelp && dmhelp != 0;
+                            let sendString = `${doDM ? `Here are your commands for ${msg.channel.guild.name}.\n` : ''}${commandsString}\n${!msg.channel.guild
+                                ? 'Not all of these bu.commands work in DMs.\n'
+                                : ''
+                                }For more information about bu.commands, do \`help <commandname>\` or visit https://blargbot.xyz/commands`
+                            
+                            if (doDM) {
+                                bot.getDMChannel(msg.author.id).then(pc => {
+                                    bu.send(msg.channel.id, '📧 DMing you a list of commands 📧');
+                                    bu.send(pc.id, sendString);
+                                });
+                            } else {
+                                bu.send(msg.channel.id, sendString);
+                            }
+                        });
+
+
+                    });
+            }
+            function nextCommand(category, completeCommandList) {
+                if (!bu.CommandType.properties.hasOwnProperty(category)
+                    || bu.CommandType.properties[category].requirement(msg)) {
+                    if (completeCommandList.length > 0) {
+                        completeCommandList.sort();
+                        commandsString += `\n${bu.CommandType.properties.hasOwnProperty(category)
+                            ? bu.CommandType.properties[category].name
+                            : category.charAt(0).toUpperCase() + category.slice(1)} Commands:\n  `;
+                        commandsString += completeCommandList.join(', ');
+                    }
                 }
+                i++;
+                completeCommandList.length = 0;
+                processCategory(i);
+            }
+            let completeCommandList = []
+                , category
+                , counter
+                , i = 0
+                , ii;
 
-                commandsString += '```';
-
-                bu.sendMessageToDiscord(msg.channel.id, `${commandsString}\n${!msg.channel.guild
-                    ? 'Not all of these bu.commands work in DMs.\n'
-                    : ''
-                    }For more information about bu.commands, do \`help <commandname>\` or visit https://blargbot.xyz/commands`);
-            });
+            function doThing(val) {
+                if (val[0]) {
+                    completeCommandList.push(val[1]);
+                }
+                if (--counter == 0) {
+                    nextCommand(category, completeCommandList);
+                }
+            }
+            function processCategory() {
+                if (i == Object.keys(otherCommands).length) {
+                    onComplete();
+                } else {
+                    category = Object.keys(otherCommands)[i];
+                    //    if (!bu.CommandType.properties.hasOwnProperty(category) || bu.CommandType.properties[category].requirement(msg)) {
+                    //otherCommands[category].sort();
+                    counter = otherCommands[category].length;
+                    for (ii = 0; ii < otherCommands[category].length; ii++) {
+                        bu.canExecuteCommand(msg, otherCommands[category][ii], true).then(doThing);
+                    }
+                    //    }
+                }
+            }
+            processCategory(i);
+        });
     }
 };
