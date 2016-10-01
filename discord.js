@@ -395,9 +395,9 @@ If you are the owner of this server, here are a few things to know.
             bu.bans[guild.id].mass.newUsers.push(user);
             bu.bans[guild.id].mass.users.splice(bu.bans[guild.id].mass.users.indexOf(user.id), 1);
             if (bu.bans[guild.id].mass.users.length == 0) {
-                mod = bu.bans[guild.id][user.id].mod;
-                type = bu.bans[guild.id][user.id].type;
-                reason = bu.bans[guild.id][user.id].reason;
+                mod = bu.bans[guild.id].mass.mod;
+                type = bu.bans[guild.id].mass.type;
+                reason = bu.bans[guild.id].mass.reason;
                 bu.logAction(guild, bu.bans[guild.id].mass.newUsers, mod, type, reason);
             }
             return;
