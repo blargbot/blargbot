@@ -9,6 +9,11 @@ e.init = (b, blargutil) => {
     bot = b;
     bu = blargutil;
     app = express();
+    app.get('/gitlog', (req, res) => {
+        console.log(req.get('X-Hub-Signature'));
+        res.end('no u');
+    });
+
     app.get('/user/:id', (req, res) => {
         //console.log()
         //   console.dir(req.params)
