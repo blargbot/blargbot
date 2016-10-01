@@ -121,7 +121,7 @@ e.hasPerm = (msg, perm, quiet) => {
         if (msg.member.roles.indexOf(roles[i].id) > -1) {
             return true;
         }
-    }
+    } 
     if (!quiet)
         e.sendMessageToDiscord(msg.channel.id, `You need the role '${perm}' in order to use this command!`);
     return false;
