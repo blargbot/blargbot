@@ -11,9 +11,9 @@ e.isCommand = true;
 e.requireCtx = require;
 
 e.hidden = false;
-e.usage = 'hackban <user> [days]';
-e.info = 'Bans a user who isn\'t currently on your guild, where `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.';
-e.longinfo = `<p>Bans a user who isn't currently on your guild, where <code>days</code> is the number of days to delete messages for. Defaults to 1.</p>
+e.usage = 'hackban <user...> [days]';
+e.info = 'Bans a user who isn\'t currently on your guild, where `<user...>` is a list of user IDs or mentions (separated by spaces) and `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.';
+e.longinfo = `<p>Bans a user who isn't currently on your guild, where <code>user...</code> is alist of user IDs or mentions (separated by spaces) and <code>days</code> is the number of days to delete messages for. Defaults to 1.</p>
 <p>If mod-logging is enabled, the ban will be logged.</p>`;
 
 
@@ -27,38 +27,42 @@ e.execute = (msg, words, text) => {
         bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to ban users!`);
         return;
     }
+    let parsedList = words.splice(1).join(' ').split(/ +/);
+    let userList = [];
+    let days = 1;
+    for (let i = 0; i < parsedList.length; i++) {
 
 
+        if (parsedList[i]) {
 
-    if (words[1]) {
-        var user = bu.getUserFromName(msg, words[1], true);
-        if (user) {
-            bu.send(msg.channel.id, 'That user is here! Please do `ban` instead.');
-            return;
+            var userId;
+            if (/[0-9]{17,21}/.test(text)) {
+                userList.push(text.match(/([0-9]{17,21})/)[1]);
+            } else if (i == parsedList.length - 1) {
+                days = parseInt(parsedList[i]);
+                if (isNaN(days)) {
+                    days = 1;
+                }
+            }
         }
-        var userId;
-        if (/[0-9]{17,21}/.test(text)) {
-            userId = text.match(/([0-9]{17,21})/)[1];
-        } else {
-            bu.send(msg.channel.id, `That wasn't an ID or a mention. Please try again.`);
-            return;
-        }
-        console.log(userId);
-
-        if (!bu.bans[msg.channel.guild.id])
-            bu.bans[msg.channel.guild.id] = {};
-        bu.bans[msg.channel.guild.id][userId] = { mod: msg.author, type: 'Hack-Ban' };
-        var deletedays = 1;
-        if (words[2])
-            deletedays = parseInt(words[2]);
-        bot.banGuildMember(msg.channel.guild.id, userId, deletedays).then(() => {
-            bu.db.query('select usernamme, discriminator from user where userid = ?', [msg.channel.guild.id], (err, rows) => {
-                bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
-                return;
-            });
-        }).catch(console.log);
-
     }
+
+    if (!bu.bans[msg.channel.guild.id])
+        bu.bans[msg.channel.guild.id] = {};
+    if (userList.length == 1)
+        bu.bans[msg.channel.guild.id][userList[0]] = { mod: msg.author, type: 'Hack-Ban' };
+    else
+        bu.bans[msg.channel.guild.id].mass = { mod: msg.author, type: 'Mass Hack-Ban', users: userList, newUsers: [] };
+
+    userList.forEach(m => {
+        bot.banGuildMember(msg.channel.guild.id, m, days).then(() => {
+            return;
+        }).catch(console.log);
+    });
+
+    bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+
+
     //bot.ban
 
 };

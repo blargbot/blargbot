@@ -387,7 +387,19 @@ If you are the owner of this server, here are a few things to know.
         var mod;
         var type = 'Ban';
         var reason;
-        if (bu.bans[guild.id] && bu.bans[guild.id][user.id]) {
+        if (!bu.bans[guild.id])
+            bu.bans[guild.id] = {};
+
+        if (bu.bans[guild.id].mass && bu.bans[guild.id].mass.users && bu.bans[guild.id].mass.users.indexOf(user.id) > -1) {
+            bu.bans[guild.id].mass.newUsers.push(user);
+            bu.bans[guild.id].mass.users.splice(bu.bans[guild.id].mass.users.indexOf(user.id), 1);
+            if (bu.bans[guild.id].mass.users.length == 0) {
+                mod = bu.bans[guild.id][user.id].mod;
+                type = bu.bans[guild.id][user.id].type;
+                reason = bu.bans[guild.id][user.id].reason;
+                bu.logAction(guild, bu.bans[guild.id].mass.newUsers, mod, type, reason);
+            }
+        } else if (bu.bans[guild.id][user.id]) {
             mod = bu.bans[guild.id][user.id].mod;
             type = bu.bans[guild.id][user.id].type;
             reason = bu.bans[guild.id][user.id].reason;

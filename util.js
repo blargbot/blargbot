@@ -121,7 +121,7 @@ e.hasPerm = (msg, perm, quiet) => {
         if (msg.member.roles.indexOf(roles[i].id) > -1) {
             return true;
         }
-    } 
+    }
     if (!quiet)
         e.sendMessageToDiscord(msg.channel.id, `You need the role '${perm}' in order to use this command!`);
     return false;
@@ -310,6 +310,7 @@ e.getPosition = (member) => {
 };
 
 e.logAction = (guild, user, mod, type, reason) => {
+    let isArray = Array.isArray(user);
     console.log('type', user.username);
     e.guildSettings.get(guild.id, 'modlog').then(val => {
         if (val) {
@@ -324,15 +325,18 @@ e.logAction = (guild, user, mod, type, reason) => {
                     if (row[0] && row[0].caseid >= 0) {
                         caseid = row[0].caseid + 1;
                     }
+                    let users = isArray 
+                    ? user.map(u => `${u.username}#${u.discriminator} (${user.id})`).join(', ') 
+                    : `${user.username}#${user.discriminator} (${user.id})`;
                     var message = `**Case ${caseid}**
 **Type:** ${type}
-**User:** ${user.username}#${user.discriminator} (${user.id})
+**User:** ${users}
 **Reason:** ${reason || `Responsible moderator, please do \`reason ${caseid}\` to set.`}
 **Moderator:** ${mod ? `${mod.username}#${mod.discriminator}` : 'Unknown'}`;
 
                     e.sendMessageToDiscord(val, message).then(msg => {
                         e.db.query(`insert into modlog (guildid, caseid, userid, modid, type, msgid) 
-                    values (?, ?, ?, ?, ?, ?)`, [guild.id, caseid, user.id, mod ? mod.id : null, type, msg.id], err => {
+                    values (?, ?, ?, ?, ?, ?)`, [guild.id, caseid, isArray ? 'multiple' : user.id, mod ? mod.id : null, type, msg.id], err => {
                                 console.log(err);
                             });
                         return msg;
@@ -439,6 +443,9 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
             if (!replaceString) {
                 replaceString = '';
             }
+            if (replaceString == e.specialCharBegin + 'BREAK' + e.specialCharEnd) {
+                return e.specialCharBegin + 'BREAK' + e.specialCharEnd;
+            }
             replaceString = replaceString.toString();
             replaceString = replaceString.replace(/\}/gi, `${e.specialCharBegin}RB${e.specialCharEnd}`)
                 .replace(/\{/gi, `${e.specialCharBegin}LB${e.specialCharEnd}`)
@@ -487,9 +494,9 @@ e.processSpecial = (contents, final) => {
                     replaceString = ';';
                 else
                     replaceString = '\uE010semi\uE011';
-                    case 'break':
-                    replaceString = '';
-                    break;
+            case 'break':
+                replaceString = '';
+                break;
         }
         console.log(tagBrackets, replaceString);
         if (replace)
