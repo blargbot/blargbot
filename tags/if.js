@@ -41,6 +41,12 @@ e.execute = (params) => {
     if (args.length > 4) {
         var arg1 = bu.processTagInner(params, 2);
         var arg2 = bu.processTagInner(params, 3);
+        if (!isNaN(parseFloat(arg1))) {
+            arg1 = parseFloat(arg1);
+        }
+        if (!isNaN(parseFloat(arg2))) {
+            arg2 = parseFloat(arg2);
+        }
         switch (args[1]) {
             case '==':
                 if (arg1 == arg2)
