@@ -54,7 +54,7 @@ e.execute = (msg, words) => {
         //     var deletedays = 0
         //    if (words[2])
         //       deletedays = parseInt(words[2])
-        bot.deleteGuildMember(msg.channel.guild.id, user.id);
+        bot.kickGuildMember(msg.channel.guild.id, user.id);
         bu.logAction(msg.channel.guild, user, msg.author, 'Kick');
         bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
 

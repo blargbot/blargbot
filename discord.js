@@ -391,7 +391,6 @@ If you are the owner of this server, here are a few things to know.
             bu.bans[guild.id] = {};
 
         if (bu.bans[guild.id].mass && bu.bans[guild.id].mass.users && bu.bans[guild.id].mass.users.indexOf(user.id) > -1) {
-            
             bu.bans[guild.id].mass.newUsers.push(user);
             bu.bans[guild.id].mass.users.splice(bu.bans[guild.id].mass.users.indexOf(user.id), 1);
             if (bu.bans[guild.id].mass.users.length == 0) {
