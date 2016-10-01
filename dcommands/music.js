@@ -819,7 +819,7 @@ function nextSong(msg) {
                         }, 60000);
                     });
 
-                voiceConnections.get(msg.channel.guild.id).playResource(cache[nextSong.id].path, { inlineVolume: voiceSettings[msg.channel.guild.id].volume / 100 });
+                voiceConnections.get(msg.channel.guild.id).play(cache[nextSong.id].path, { inlineVolume: voiceSettings[msg.channel.guild.id].volume / 100 });
                 voiceConnections.get(msg.channel.guild.id).setVolume(voiceSettings[msg.channel.guild.id].volume / 100);
                 currectNext.start = moment();
                 var membersInChannel = bot.getChannel(bot.voiceConnections.get(msg.channel.guild.id).channelID)
