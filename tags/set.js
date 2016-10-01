@@ -29,7 +29,7 @@ e.execute = (params) => {
         , tagName = params.tagName;
     var replaceString = '';
     var replaceContent = false;
-    if (!bu.vars[tagName]) {
+    if (!bu.vars.tags[tagName]) {
         bu.vars.tags[tagName] = {};
     }
     if (args.length > 2) {

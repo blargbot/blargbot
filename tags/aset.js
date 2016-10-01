@@ -29,7 +29,7 @@ e.execute = (params) => {
         , author = params.author;
     var replaceString = '';
     var replaceContent = false;
-    if (!bu.vars[author]) {
+    if (!bu.vars.authorTags[author]) {
         bu.vars.authorTags[author] = {};
     }
     if (args.length > 2) {
