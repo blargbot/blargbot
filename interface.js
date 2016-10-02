@@ -13,6 +13,17 @@ e.init = (b, blargutil) => {
     bu = blargutil;
     app = express();
 
+    app.configure(() => {
+        app.use(express.bodyParser());
+        app.use(app.router);
+    });
+
+    server = app.listen(8081, function () {
+        var host = server.address().address;
+        var port = server.address().port;
+        console.log('Interface listening at http://%s:%s', host, port);
+    });
+
     app.post('/gitlog/push', (req, res) => {
         var responseObj = {
             err: 401,
@@ -53,7 +64,7 @@ e.init = (b, blargutil) => {
             }
             console.log(`Sending a POST request to webhook`);
             request({
-                url: bu.config.general.gitlogWebhook, 
+                url: bu.config.general.gitlogWebhook,
                 method: 'POST',
                 json: true,
                 headers: {
@@ -128,12 +139,6 @@ e.init = (b, blargutil) => {
             objectToSend = notFound;
         }
         res.end(checkAuth(objectToSend, req));
-    });
-
-    server = app.listen(8081, function () {
-        var host = server.address().address;
-        var port = server.address().port;
-        console.log('Interface listening at http://%s:%s', host, port);
     });
 };
 
