@@ -20,7 +20,7 @@ e.init = (b, blargutil) => {
         };
         console.log(req.get('X-Hub-Signature'), bu.config.general.gitlogHash);
         if (req.get('X-Hub-Signature') == bu.config.general.gitlogHash) {
-            console.log(req.body);
+            console.dir(req);
             let body = JSON.parse(req.body);
             responseObj = {
                 err: 418,
