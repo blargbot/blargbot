@@ -60,15 +60,11 @@ e.init = (b, blargutil) => {
                 commit.value = moment(body.commits[i].timestamp).format('LLLL');
                 toSend.attachments[0].fields.push(commit);
             }
-            console.log(`Sending a POST request to webhook`);
-            request({
-                url: bu.config.general.gitlogWebhook,
-                method: 'POST',
-                json: true,
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify(toSend)
+            console.log(`Executing webhook...`);
+            bot.executeSlackWebhook(bu.config.general.gitlogWebhookID, bu.config.general.gitlogWebhookToken, toSend).then(() => {
+              console.log('Webhook executed.');  
+            }).catch(err => {
+              console.log(err.stack);  
             });
         }
         console.log(`Ending POST request to /gitlog/push with ${JSON.stringify(responseObj, null, 4)}`);
