@@ -6,6 +6,7 @@ var bu;
 var app;
 var e = module.exports;
 var bot;
+var server;
 
 e.init = (b, blargutil) => {
     bot = b;
@@ -48,6 +49,7 @@ e.init = (b, blargutil) => {
                 commit.value = moment(body.commits[i].timestamp).format('LLLL');
                 toSend.attachments[0].fields.push(commit);
             }
+            console.log(`Sending a POST request to webhook`);
             request({
                 url: bu.config.general.gitlogWebhook, 
                 method: 'POST',
@@ -58,7 +60,7 @@ e.init = (b, blargutil) => {
                 body: JSON.stringify(toSend)
             });
         }
-        console.log();
+        console.log(`Ending POST request to /gitlog/push with ${JSON.stringify(responseObj, null, 4)}`);
         res.end(JSON.stringify(responseObj, null, 4));
     });
 
@@ -126,11 +128,15 @@ e.init = (b, blargutil) => {
         res.end(checkAuth(objectToSend, req));
     });
 
-    var server = app.listen(8081, function () {
+    server = app.listen(8081, function () {
         var host = server.address().address;
         var port = server.address().port;
         console.log('Interface listening at http://%s:%s', host, port);
     });
+};
+
+e.kill = () => {
+    server.close();
 };
 
 function checkAuth(object, req, res) {

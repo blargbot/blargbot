@@ -195,6 +195,9 @@ e.init = (blargutil, v, em, database) => {
     /**
      * EventEmitter stuff
      */
+    emitter.on('reloadInterface', () => {
+        reloadInterface();
+    });
     emitter.on('discordMessage', (message, attachment) => {
         if (attachment)
             bu.sendMessageToDiscord(config.discord.channel
@@ -615,12 +618,12 @@ If you are the owner of this server, here are a few things to know.
                                     if ((row[0] && row[0].content != msg.content) || msg.content == '') {
                                         var content = msg.content;
                                         try {
-                                        while (/<@!?[0-9]{17,21}>/.test(content)) {
-                                            content = content.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true).username);
-                                        }
+                                            while (/<@!?[0-9]{17,21}>/.test(content)) {
+                                                content = content.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true).username);
+                                            }
                                         } catch (err) {
                                             console.log(err.stack);
-                                        }
+                                        } e
                                         var statement = `insert into catchat (content, attachment, msgid, channelid, guildid, msgtime, nsfw) values (?, ?, ?, ?, ?, NOW(), ?)`;
                                         var nsfw = 0;
                                         db.query(`select channelid from channel where channelid = ?`, [msg.channel.id], (err, row) => {
@@ -1108,4 +1111,10 @@ function flipTables(msg, unflip) {
         }
     });
 
+}
+
+function reloadInterface() {
+    webInterface.kill();
+    webInterface = reload('./interface.js');
+    webInterface.init(bot, bu);
 }
