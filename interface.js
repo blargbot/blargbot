@@ -1,4 +1,6 @@
-var express = require('express');
+const express = require('express');
+const request = require('request');
+const moment = require('moment');
 var bu;
 
 var app;
@@ -10,9 +12,54 @@ e.init = (b, blargutil) => {
     bu = blargutil;
     app = express();
 
-    app.post('/gitlog', (req, res) => {
-        console.log(req.get('X-Hub-Signature'));
-        res.end('no u');
+    app.post('/gitlog/push', (req, res) => {
+        var responseObj = {
+            err: 401,
+            desc: 'no u'
+        };
+        if (req.get('X-Hub-Signature') == bu.config.general.gitlogHash) {
+            let body = JSON.parse(req.body);
+            responseObj = {
+                err: 418,
+                desc: 'whew such a professional interface'
+            };
+            let toSend = {
+                username: 'Gumdrop',
+                text: '**__New Commit__**',
+                attachments: [
+                    {
+                        author_icon: body.sender.avatar_url,
+                        author_name: body.sender.login,
+                        text: `From \`${body.before}\` to \`${body.after}\``,
+                        color: '#36a64f',
+                        mrkdwn_in: ['text', 'fields'],
+                        fields: []
+                    }
+                ],
+                mrkdwn: true
+            };
+            for (let i = 0; i < body.commits.length; i++) {
+                let commit = {
+                    title: '',
+                    value: '',
+                    short: true
+                };
+                commit.title = body.commits[i].message;
+                commit.value = moment(body.commits[i].timestamp).format('LLLL');
+                toSend.attachments[0].fields.push(commit);
+            }
+            request({
+                url: bu.config.general.gitlogWebhook, 
+                method: 'POST',
+                json: true,
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(toSend)
+            });
+        }
+        console.log();
+        res.end(JSON.stringify(responseObj, null, 4));
     });
 
     app.get('/user/:id', (req, res) => {
@@ -90,7 +137,7 @@ function checkAuth(object, req, res) {
     //  console.dir(req.get('key'), bu.config.general.interface_key);
     if (bu.config.general.interface_key != req.get('key'))
         object = {
-            error: 403,
+            error: 401,
             desc: 'who the fuck are you get off my lawn'
         };
     return JSON.stringify(object, null, 4);
