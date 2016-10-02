@@ -325,9 +325,9 @@ e.logAction = (guild, user, mod, type, reason) => {
                     if (row[0] && row[0].caseid >= 0) {
                         caseid = row[0].caseid + 1;
                     }
-                    let users = isArray 
-                    ? user.map(u => `${u.username}#${u.discriminator} (${user.id})`).join(', ') 
-                    : `${user.username}#${user.discriminator} (${user.id})`;
+                    let users = isArray
+                        ? user.map(u => `${u.username}#${u.discriminator} (${user.id})`).join(', ')
+                        : `${user.username}#${user.discriminator} (${user.id})`;
                     var message = `**Case ${caseid}**
 **Type:** ${type}
 **User:** ${users}
@@ -431,14 +431,7 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
         if (replaceObj == '') {
             return e.specialCharBegin + 'BREAK' + e.specialCharEnd;
         }
-        else if (replaceObj.replaceContent) {
-            if (replaceObj.replace == undefined) {
-                contents = replaceObj.replaceString;
-            } else {
-                contents.replace(tagBrackets, '');
-                contents = contents.replace(replaceObj.replace, replaceObj.replaceString);
-            }
-        } else {
+        else {
             replaceString = replaceObj.replaceString;
             if (!replaceString) {
                 replaceString = '';
@@ -453,6 +446,14 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
             if (e.debug)
                 console.log('Contents:', contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
             contents = contents.replace(tagBrackets, replaceString);
+            if (replaceObj.replaceContent) {
+                if (replaceObj.replace == undefined) {
+                    contents = replaceObj.replaceString;
+                } else {
+                    contents.replace(tagBrackets, '');
+                    contents = contents.replace(replaceObj.replace, replaceObj.replaceString);
+                }
+            }
         }
         // console.log(contents.substring(coords[i][0], coords[i][1]));
     }

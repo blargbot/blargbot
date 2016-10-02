@@ -43,6 +43,8 @@ e.execute = (msg, words) => {
 
                 return;
             }
+
+            
         var query = '';
         for (var tag in tagList) {
             query += tagList[tag] + '%20';
