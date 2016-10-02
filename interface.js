@@ -15,7 +15,7 @@ e.init = (b, blargutil) => {
     bu = blargutil;
     app = express();
     app.use(bodyParser.json());
-    
+
     server = app.listen(8081, function () {
         var host = server.address().address;
         var port = server.address().port;
@@ -30,7 +30,7 @@ e.init = (b, blargutil) => {
         console.log(req.get('X-Hub-Signature'), bu.config.general.gitlogHash);
         if (req.get('X-Hub-Signature') == bu.config.general.gitlogHash) {
             console.dir(req);
-            let body = JSON.parse(req.body);
+            let body = req.body;
             responseObj = {
                 err: 418,
                 desc: 'whew such a professional interface'
