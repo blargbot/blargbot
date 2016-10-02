@@ -18,6 +18,7 @@ e.init = (b, blargutil) => {
             err: 401,
             desc: 'no u'
         };
+        console.log(req.get('X-Hub-Signature'), bu.config.general.gitlogHash);
         if (req.get('X-Hub-Signature') == bu.config.general.gitlogHash) {
             let body = JSON.parse(req.body);
             responseObj = {
