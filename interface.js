@@ -1,6 +1,8 @@
 const express = require('express');
 const request = require('request');
 const moment = require('moment');
+const bodyParser = require('body-parser');
+
 var bu;
 
 var app;
@@ -12,12 +14,8 @@ e.init = (b, blargutil) => {
     bot = b;
     bu = blargutil;
     app = express();
-
-    app.configure(() => {
-        app.use(express.bodyParser());
-        app.use(app.router);
-    });
-
+    app.use(bodyParser.json());
+    
     server = app.listen(8081, function () {
         var host = server.address().address;
         var port = server.address().port;
