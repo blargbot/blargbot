@@ -75,9 +75,8 @@ e.execute = (msg, words) => {
                         var urlList = [];
                         //   console.log(util.inspect(doc.posts.post[0]))
                         if (doc.posts.post != null)
-                            for (i = 0; i < doc.posts.post.length; i++) {
+                            for (let i = 0; i < doc.posts.post.length; i++) {
                                 var imgUrl = doc.posts.post[i].$.file_url;
-                                console.log(imgUrl);
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                                     urlList.push('http:' + doc.posts.post[i].$.file_url);
                             }
@@ -90,11 +89,10 @@ e.execute = (msg, words) => {
                         }
                         //   parsedUrlList = JSON.parse(JSON.stringify(urlList));
 
-                        for (i = 0; i < 3; i++) {
+                        for (let i = 0; i < 3; i++) {
                             if (urlList.length > 0) {
                                 var choice = bu.getRandomInt(0, urlList.length - 1);
                                 message += urlList[choice] + '\n';
-                                console.log(`${choice} / ${urlList.length} - ${urlList[choice]}`);
                                 urlList.splice(choice, 1);
                             }
                         }
