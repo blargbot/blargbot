@@ -98,7 +98,6 @@ e.execute = (msg, words) => {
                         }
                         bu.sendMessageToDiscord(msg.channel.id, message);
                     });
-                    // });
                 } catch (err) {
                     console.log(err.stack);
                 }
