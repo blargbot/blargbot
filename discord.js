@@ -614,8 +614,12 @@ If you are the owner of this server, here are a few things to know.
                                         console.log(err.stack);
                                     if ((row[0] && row[0].content != msg.content) || msg.content == '') {
                                         var content = msg.content;
+                                        try {
                                         while (/<@!?[0-9]{17,21}>/.test(content)) {
                                             content = content.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true).username);
+                                        }
+                                        } catch (err) {
+                                            console.log(err.stack);
                                         }
                                         var statement = `insert into catchat (content, attachment, msgid, channelid, guildid, msgtime, nsfw) values (?, ?, ?, ?, ?, NOW(), ?)`;
                                         var nsfw = 0;
