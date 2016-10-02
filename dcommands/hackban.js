@@ -31,13 +31,9 @@ e.execute = (msg, words, text) => {
     let userList = [];
     let days = 1;
     for (let i = 0; i < parsedList.length; i++) {
-
-
         if (parsedList[i]) {
-
-            var userId;
-            if (/[0-9]{17,21}/.test(text)) {
-                userList.push(text.match(/([0-9]{17,21})/)[1]);
+            if (/[0-9]{17,21}/.test(parsedList[i])) {
+                userList.push(parsedList[i].match(/([0-9]{17,21})/)[1]);
             } else if (i == parsedList.length - 1) {
                 days = parseInt(parsedList[i]);
                 if (isNaN(days)) {

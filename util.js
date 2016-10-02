@@ -311,10 +311,8 @@ e.getPosition = (member) => {
 
 e.logAction = (guild, user, mod, type, reason) => {
     let isArray = Array.isArray(user);
-    console.log('type', user.username);
     e.guildSettings.get(guild.id, 'modlog').then(val => {
         if (val) {
-
             e.db.query(`select caseid from modlog where guildid = ? order by caseid desc limit 1`,
                 [guild.id], (err, row) => {
                     if (err) {
@@ -326,7 +324,7 @@ e.logAction = (guild, user, mod, type, reason) => {
                         caseid = row[0].caseid + 1;
                     }
                     let users = isArray
-                        ? user.map(u => `${u.username}#${u.discriminator} (${user.id})`).join(', ')
+                        ? user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join(', ')
                         : `${user.username}#${user.discriminator} (${user.id})`;
                     var message = `**Case ${caseid}**
 **Type:** ${type}
