@@ -84,6 +84,18 @@ e.execute = (params) => {
                 else
                     replaceString = args[5] || '';
                 break;
+            case 'startswith':
+                if (arg1.startsWith(arg2))
+                    replaceString = args[4];
+                else
+                    replaceString = args[5] || '';
+                break;
+            case 'endswith':
+                if (arg1.endsWith(arg2))
+                    replaceString = args[4];
+                else
+                    replaceString = args[5] || '';
+                break;
             default:
                 replaceString = bu.tagProcessError(fallback, '`Invalid Operator`');
                 break;
