@@ -32,11 +32,11 @@ e.execute = (params) => {
         let args3 = args[3];
         switch (args1.toLowerCase()) {
             case 'left': {
-                replaceString = args2.substr(args1.length) + args1;
+                replaceString = args2.substr(args3.length) + args3;
                 break;
             }
             case 'right': {
-                replaceString = args1 + args2.substr(args1.length);
+                replaceString = args3 + args2.substr(args3.length);
                 break;
             }
             default: {
