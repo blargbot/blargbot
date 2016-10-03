@@ -2,6 +2,7 @@ var moment = require('moment-timezone');
 var Promise = require('promise');
 var request = require('request');
 const Eris = require('eris');
+const emoji = require('node-emoji');
 var e = module.exports = {};
 e.CAT_ID = '103347843934212096';
 e.catOverrides = true;
@@ -136,6 +137,7 @@ e.hasPerm = (msg, perm, quiet) => {
  */
 e.sendMessageToDiscord = function (channelId, message, file) {
     e.messageStats++;
+    message = emoji.emojify(message);
     try {
         if (!file)
             return e.bot.createMessage(channelId, message).catch(err => console.log(err.stack));
