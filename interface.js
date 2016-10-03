@@ -69,7 +69,7 @@ e.init = (b, blargutil) => {
         } 
         console.log(`Ending POST request to /gitlog/push with ${JSON.stringify(responseObj, null, 4)}`);
         
-        res.status(responseObj.status).end(JSON.stringify(responseObj, null, 4));
+        res.status(responseObj.status).send(JSON.stringify(responseObj, null, 4));
     });
 
     app.get('/user/:id', (req, res) => {
