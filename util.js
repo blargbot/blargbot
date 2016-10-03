@@ -495,6 +495,7 @@ e.processSpecial = (contents, final) => {
                     replaceString = ';';
                 else
                     replaceString = '\uE010semi\uE011';
+                break;
             case 'break':
                 replaceString = '';
                 break;
