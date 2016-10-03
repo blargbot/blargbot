@@ -23,7 +23,7 @@ e.desc = `Evaluates <code>arg1</code> and <code>arg2</code> using the <code>eval
                                 evaluators are
                                 <code>==</code>
                                 <code>!=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>
-                                    &gt;=</code>
+                                    &gt;=</code> <code>startswith</code> <code>endswith</code>
                             `;
 e.exampleIn = `{if;&lt;=;5;10;5 is less than or equal to 10;5 is greater than 10}`;
 e.exampleOut = `5 is less than or equal to 10`;
@@ -47,7 +47,7 @@ e.execute = (params) => {
         if (!isNaN(parseFloat(arg2))) {
             arg2 = parseFloat(arg2);
         }
-        switch (args[1]) {
+        switch (args[1].toLowerCase()) {
             case '==':
                 if (arg1 == arg2)
                     replaceString = args[4];
