@@ -24,7 +24,7 @@ e.init = (b, blargutil) => {
 
     app.post('/gitlog/push', (req, res) => {
         var responseObj = {
-            err: 401,
+            status: 401,
             desc: 'no u'
         };
         console.log(req.get('X-Hub-Signature'), bu.config.general.gitlogHash);
@@ -32,7 +32,7 @@ e.init = (b, blargutil) => {
             console.dir(req);
             let body = req.body;
             responseObj = {
-                err: 418,
+                status: 200,
                 desc: 'whew such a professional interface'
             };
             let toSend = {
@@ -68,7 +68,8 @@ e.init = (b, blargutil) => {
             });
         } 
         console.log(`Ending POST request to /gitlog/push with ${JSON.stringify(responseObj, null, 4)}`);
-        res.end(JSON.stringify(responseObj, null, 4));
+        
+        res.status(responseObj.status).end(JSON.stringify(responseObj, null, 4));
     });
 
     app.get('/user/:id', (req, res) => {
