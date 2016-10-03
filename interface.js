@@ -20,8 +20,8 @@ e.init = (b, blargutil) => {
         var host = server.address().address;
         var port = server.address().port;
         console.log('Interface listening at http://%s:%s', host, port);
-    });
-
+    });  
+ 
     
 
     app.get('/user/:id', (req, res) => {
