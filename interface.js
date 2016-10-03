@@ -22,55 +22,7 @@ e.init = (b, blargutil) => {
         console.log('Interface listening at http://%s:%s', host, port);
     });
 
-    app.post('/gitlog/push', (req, res) => {
-        var responseObj = {
-            status: 401,
-            desc: 'no u'
-        };
-        console.log(req.get('X-Hub-Signature'), bu.config.general.gitlogHash);
-        if (req.get('X-Hub-Signature') == bu.config.general.gitlogHash) {
-            console.dir(req);
-            let body = req.body;
-            responseObj = {
-                status: 200,
-                desc: 'whew such a professional interface'
-            };
-            let toSend = {
-                username: 'Gumdrop',
-                text: '**__New Commit__**',
-                attachments: [
-                    {
-                        author_icon: body.sender.avatar_url,
-                        author_name: body.sender.login,
-                        text: `From \`${body.before}\` to \`${body.after}\``,
-                        color: '#36a64f',
-                        mrkdwn_in: ['text', 'fields'],
-                        fields: []
-                    }
-                ],
-                mrkdwn: true
-            };
-            for (let i = 0; i < body.commits.length; i++) {
-                let commit = {
-                    title: '',
-                    value: '',
-                    short: true
-                };
-                commit.title = body.commits[i].message;
-                commit.value = moment(body.commits[i].timestamp).format('LLLL');
-                toSend.attachments[0].fields.push(commit);
-            }
-            console.log(`Executing webhook...`);
-            bot.executeSlackWebhook(bu.config.general.gitlogWebhookID, bu.config.general.gitlogWebhookToken, toSend).then(() => {
-              console.log('Webhook executed.');  
-            }).catch(err => {
-              console.log(err.stack);  
-            });
-        } 
-        console.log(`Ending POST request to /gitlog/push with ${JSON.stringify(responseObj, null, 4)}`);
-         
-        res.status(responseObj.status).send(JSON.stringify(responseObj, null, 4));
-    });
+    
 
     app.get('/user/:id', (req, res) => {
         //console.log()
