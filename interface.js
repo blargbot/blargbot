@@ -66,7 +66,7 @@ e.init = (b, blargutil) => {
             }).catch(err => {
               console.log(err.stack);  
             });
-        }
+        } 
         console.log(`Ending POST request to /gitlog/push with ${JSON.stringify(responseObj, null, 4)}`);
         res.end(JSON.stringify(responseObj, null, 4));
     });
