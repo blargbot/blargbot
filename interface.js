@@ -15,18 +15,13 @@ e.init = (b, blargutil) => {
     bu = blargutil;
     app = express();
     app.use(bodyParser.json());
-
     server = app.listen(8081, function () {
         var host = server.address().address;
         var port = server.address().port;
         console.log('Interface listening at http://%s:%s', host, port);
     });  
- 
-    
 
     app.get('/user/:id', (req, res) => {
-        //console.log()
-        //   console.dir(req.params)
         var user = bot.users.get(req.params.id);
         var objectToSend;
         if (user) {
