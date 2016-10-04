@@ -83,6 +83,11 @@ e.execute = (params) => {
                     result %= args[i];
                 }
                 break;
+            case '^':
+                for (i = 3; i < args.length; i++) {
+                    result = Math.pow(result, args[i]);
+                }
+                break;
         }
         replaceString = result;
     } else {
