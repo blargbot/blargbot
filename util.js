@@ -137,8 +137,9 @@ e.hasPerm = (msg, perm, quiet) => {
  */
 e.sendMessageToDiscord = function (channelId, message, file) {
     e.messageStats++;
-    message = emoji.emojify(message);
+
     try {
+        message = emoji.emojify(message);
         if (!file)
             return e.bot.createMessage(channelId, message).catch(err => console.log(err.stack));
         else
