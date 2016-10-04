@@ -17,7 +17,7 @@ e.args = `&lt;operator&gt; &lt;operands...&gt;`;
 e.usage = `{math;operator;operands...}`;
 e.desc = `Returns a number based on the operator and operands. Valid operators are <code>+</code>
                                 <code>-</code>
-                                <code>*</code> <code>/</code> <code>%</code>
+                                <code>*</code> <code>/</code> <code>%</code> <code>^</code>
                             `;
 e.exampleIn = `2 + 3 + 6 - 2 = {math;-;{math;+;2;3;6};2}`;
 e.exampleOut = `2 + 3 + 6 - 2 = 9`;
