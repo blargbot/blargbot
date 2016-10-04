@@ -36,7 +36,7 @@ e.execute = (params) => {
         replaceString: '`Invalid arguments!`',
         replaceContent: replaceContent
     };
-    for (let i = 0; i < args.length - 1; i++) {
+    for (let i = 0; i < args.length; i++) {
         if (i != args.length - 1) {
             cases[args[i]] = args[i+1];
             i++;
