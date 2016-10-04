@@ -15,7 +15,7 @@ e.isTag = true;
 e.name = 'pad';
 e.args = '&lt;direction&gt; &lt;text&gt; &lt;back&gt;';
 e.usage = '{pad;direction;text;back}';
-e.desc = 'Pads <code>back</text> to the <code>direction</code> of <code>text</code>';
+e.desc = 'Pads <code>back</code> to the <code>direction</code> of <code>text</code>';
 e.exampleIn = '{pad;left;ABC;000000}';
 e.exampleOut = '000ABC';
 
