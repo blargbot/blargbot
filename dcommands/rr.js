@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var bu;
 var http = require('http');
-
+const emoji = require('node-emoji');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -66,12 +66,12 @@ e.execute = (msg, words) => {
         bu.send(msg.channel.id, `${words[2] || mojiList[bu.getRandomInt(0, mojiList.length - 1)]}:gun:`).then(msg3 => {
             setTimeout(() => {
                 if (dead) {
-                    bot.editMessage(msg2.channel.id, msg2.id, message + `\n***BOOM!*** ${deathMsg[bu.getRandomInt(0, deathMsg.length - 1)]}`);
-                    bot.editMessage(msg3.channel.id, msg3.id, `:boom::gun:`);
+                    bot.editMessage(msg2.channel.id, msg2.id, emoji.emojify(message + `\n***BOOM!*** ${deathMsg[bu.getRandomInt(0, deathMsg.length - 1)]}`));
+                    bot.editMessage(msg3.channel.id, msg3.id, emoji.emojify(`:boom::gun:`));
 
                 } else {
-                    bot.editMessage(msg2.channel.id, msg2.id, msg2.content + `\n*Click!* ${liveMsg[bu.getRandomInt(0, liveMsg.length - 1)]}`);
-                    bot.editMessage(msg3.channel.id, msg3.id, `:relieved::gun:`);
+                    bot.editMessage(msg2.channel.id, msg2.id, emoji.emojify(msg2.content + `\n*Click!* ${liveMsg[bu.getRandomInt(0, liveMsg.length - 1)]}`));
+                    bot.editMessage(msg3.channel.id, msg3.id, emoji.emojify(`:relieved::gun:`));
                 }
             }, 4000);
         });
