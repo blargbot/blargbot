@@ -118,8 +118,8 @@ e.executeTag = (msg, tagName, command) => {
                 if (!nsfw)
                     bu.sendMessageToDiscord(msg.channel.id, message);
                 else {
-                    bu.db.query('select channelid from nsfwchan where channelid = ?', [msg.channel.id], (err, rows) => {
-                        if (rows && rows[0]) {
+                    bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
+                        if (nsfwChannel) {
                             bu.sendMessageToDiscord(msg.channel.id, message);
 
                         } else {
@@ -127,7 +127,6 @@ e.executeTag = (msg, tagName, command) => {
                         }
                     });
                 }
-
         }
     });
 };
