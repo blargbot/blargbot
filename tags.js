@@ -72,7 +72,7 @@ e.processTag = (msg, contents, command, tagName, author) => {
     try {
         tagName = tagName || msg.channel.guild.id;
         author = author || msg.channel.guild.id;
-        var words = command.replace(/ +/g, ' ').split(' ');
+        var words = bu.splitInput(command);
 
         if (contents.split(' ')[0].indexOf('help') > -1) {
             contents = '\u200B' + contents;
@@ -88,7 +88,7 @@ e.processTag = (msg, contents, command, tagName, author) => {
     } catch (err) {
         console.log(err);
     }
-    
+
 
 };
 
@@ -119,7 +119,7 @@ e.executeTag = (msg, tagName, command) => {
                     bu.sendMessageToDiscord(msg.channel.id, message);
                 else {
                     bu.db.query('select channelid from nsfwchan where channelid = ?', [msg.channel.id], (err, rows) => {
-                        if (rows[0]) {
+                        if (rows && rows[0]) {
                             bu.sendMessageToDiscord(msg.channel.id, message);
 
                         } else {

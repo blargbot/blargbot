@@ -508,6 +508,46 @@ e.processSpecial = (contents, final) => {
     return contents.replace(/\uE010/g, e.specialCharBegin).replace(/\uE011/g, e.specialCharEnd);
 };
 
+e.splitInput = (content) => {
+    let input = content.replace(/ +/g, ' ').split(' ');
+    let words = [];
+    let inQuote = false;
+    let quoted = '';
+    for (let i in input) {
+        if (!inQuote) {
+            if (input[i].startsWith('"') && !input[i].startsWith('\\"')) {
+                inQuote = true;
+                if (input[i].endsWith('"') && !input[i].endsWith('\\"')) {
+                    inQuote = false;
+                    words.push(input[i].substring(1, input[i].length - 1));
+                } else
+                    quoted = input[i].substring(1, input[i].length) + ' ';
+            } else {
+                let tempWords = input[i].split('\n');
+                for (let ii in tempWords) {
+                    if (ii != tempWords.length - 1) words.push(tempWords[ii] + '\n');
+                    else words.push(tempWords[ii]);
+                }
+            }
+        } else if (inQuote) {
+            if (input[i].endsWith('"') && !input[i].endsWith('\\"')) {
+                inQuote = false;
+                quoted += input[i].substring(0, input[i].length - 1);
+                words.push(quoted);
+            } else {
+                quoted += input[i] + ' ';
+            }
+        }
+    }
+    if (inQuote) {
+        words = input;
+    }
+    for (let i in words) {
+        words[i] = words[i].replace(/\\"/g, '"');
+    }
+    return words;
+};
+
 /* SQL STUFF */
 
 e.guildSettings = {

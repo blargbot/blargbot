@@ -759,7 +759,9 @@ var commandMessages = {};
 
 function handleDiscordCommand(channel, user, text, msg) {
     return new Promise((fulfill, reject) => {
-        var words = text.replace(/ +/g, ' ').split(' ');
+        let words = bu.splitInput(text);
+       // console.dir(words);
+        //var words = text.replace(/ +/g, ' ').split(' ');
 
         if (msg.channel.guild)
             console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
