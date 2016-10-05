@@ -31,7 +31,7 @@ e.execute = (msg) => {
         res.on('end', function () {
             console.log(body);
             output = JSON.parse(body);
-            bu.sendMessageToDiscord(msg.channel.id, output.file);
+            bu.sendFile(msg.channel.id, '', output.file);
         });
     });
 };
