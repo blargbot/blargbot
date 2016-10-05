@@ -70,8 +70,8 @@ e.execute = (msg, words) => {
                     let channel = bot.getChannel(settings.modlog);
                     if (channel)
                         modlogChannel = `${channel.name} (${settings.modlog})`;
-                    else 
-                    modlogChannel = `Channel Not Found (${settings.modlog})` ;
+                    else
+                        modlogChannel = `Channel Not Found (${settings.modlog})`;
                 } else {
                     modlogChannel = 'Not Set';
                 }
@@ -91,7 +91,7 @@ e.execute = (msg, words) => {
                 var antiMention = parsedAntiMention;
                 let permOverride = settings.permoverride && settings.permoverride != 0 ? true : false;
                 let dmHelp = settings.dmhelp && settings.dmhelp != 0 ? true : false;
-                
+
                 let staffPerms = settings.staffperms || bu.defaultStaff;
                 var message = `\`\`\`prolog
 Settings For ${msg.channel.guild.name}
@@ -116,11 +116,12 @@ Settings For ${msg.channel.guild.name}
     } else {
         words.shift();
         var key;
-        switch (words.shift().toLowerCase()) {
+        switch (words[0].toLowerCase()) {
             case 'set':
+                words.shift();
                 if (words.length > 0) {
                     key = words.shift();
-                    var value = words.join(' ');
+                    let value = words.join(' ');
                     if (settings[key]) {
                         bu.guildSettings.set(msg.channel.guild.id, key, value).then(() => {
                             bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
@@ -136,6 +137,19 @@ Settings For ${msg.channel.guild.name}
                     message += '**__' + key.toUpperCase() + '__**' + ' - ' + settings[key] + '\n';
                 }
                 bu.sendMessageToDiscord(msg.channel.id, message);
+                break;
+            default:
+                if (words.length > 0) {
+                    key = words.shift();
+                    let value = words.join(' ');
+                    if (settings[key]) {
+                        bu.guildSettings.set(msg.channel.guild.id, key, value).then(() => {
+                            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+                        });
+                    } else {
+                        bu.sendMessageToDiscord(msg.channel.id, 'Invalid key!');
+                    }
+                }
                 break;
         }
     }
