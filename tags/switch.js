@@ -13,16 +13,17 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = 'switch';
-e.args = '&lt;arg&gt; &lt;case1&gt; &lt;then1&gt; [case2] [then2].. [else]';
-e.usage = '{switch;arg;case1;then1[;case2;then2..][;else]}';
+e.args = '&lt;arg&gt; &lt;case1&gt; &lt;then1&gt; [case2] [then2].. [default]';
+e.usage = '{switch;arg;case1;then1[;case2;then2..][;default]}';
 e.desc = 'Finds the <code>case</code> that matches <code>arg</code> and returns the following <code>then</code>.'
-        +'If there is no matching <code>case</code> and <code>else</code> is specified,'
-        +'<code>else</code> is returned. If not, it returns blank.';
+    + 'If there is no matching <code>case</code> and <code>default</code> is specified,'
+    + '<code>default</code> is returned. If not, it returns blank.';
 e.exampleIn = '{switch;{args;0};yes;Correct!;no;Incorrect!;That is not yes or no}';
 e.exampleOut = 'Correct!';
 
 e.execute = (params) => {
-    for (let i = 1; i < params.args.length; i++) {
+    params.args[1] = bu.processTagInner(params, 1);
+    for (let i = 2; i < params.args.length; i += 2) {
         params.args[i] = bu.processTagInner(params, i);
     }
     let args = params.args;
@@ -35,7 +36,7 @@ e.execute = (params) => {
     args.shift();
     for (let i = 0; i < args.length; i++) {
         if (i != args.length - 1) {
-            cases[args[i]] = args[i+1];
+            cases[args[i]] = args[i + 1];
             i++;
         } else {
             elseDo = args[i];
@@ -43,6 +44,12 @@ e.execute = (params) => {
     }
     if (args.length % 2 != 1) replaceString = cases[arg] || elseDo;
     else replaceString = cases[arg] || '';
+    replaceString = bu.processTag(params.msg
+        , params.words
+        , replaceString
+        , params.fallback
+        , params.author
+        , params.tagName);
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
