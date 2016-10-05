@@ -51,9 +51,9 @@ e.execute = (msg, words, text) => {
         //       console.log(words[1]);
         //        console.log(words.length);
         switch (words[1].toLowerCase()) {
-           // case 'test':
-         //       bu.sendMessageToDiscord(msg.channel.id, 'Test output:\n' + tags.processTag(msg, text.replace(words[0], '').trim().replace(words[1], '').trim(), '', 'testTag'));
-           //     break;
+            // case 'test':
+            //       bu.sendMessageToDiscord(msg.channel.id, 'Test output:\n' + tags.processTag(msg, text.replace(words[0], '').trim().replace(words[1], '').trim(), '', 'testTag'));
+            //     break;
             case 'create':
                 if (words.length > 3) {
 
@@ -67,8 +67,8 @@ e.execute = (msg, words, text) => {
                                     [msg.author.id, title,
                                         text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()]);
                                 bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${title}\` created. ✅`);
-                        bu.send('230810364164440065', `**__Create__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()}\`\`\``);
-                                
+                                bu.send('230810364164440065', `**__Create__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()}\`\`\``);
+
                             } else
                                 bu.sendMessageToDiscord(msg.channel.id, `❌ That tag already exists! ❌`);
                         });
@@ -115,7 +115,7 @@ e.execute = (msg, words, text) => {
                                                     });
                                                 });
                                                 bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` has been renamed to \`${words[3]}\`. ✅`);
-                        bu.send('230810364164440065', `**__Rename__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Old Tag:** ${words[2]}\n  **New Tag**: ${words[3]}`);
+                                                bu.send('230810364164440065', `**__Rename__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Old Tag:** ${words[2]}\n  **New Tag**: ${words[3]}`);
 
                                             } else {
                                                 bu.sendMessageToDiscord(msg.channel.id, `❌ The tag \`${words[3]}\` already exist! ❌`);
@@ -151,8 +151,8 @@ e.execute = (msg, words, text) => {
                                 [text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim(),
                                     words[2]]);
                             bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` edited. ✅`);
-                        bu.send('230810364164440065', `**__Edit__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()}\`\`\``);
-                            
+                            bu.send('230810364164440065', `**__Edit__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()}\`\`\``);
+
                         }
                     });
                 break;
@@ -188,7 +188,9 @@ ${row[0].contents}
                     if (!row[0])
                         bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
                     else {
-                        bu.sendMessageToDiscord(msg.channel.id, `The tag \`${words[2]}\` was made by **${bot.users.get(row[0].author).username}#${bot.users.get(row[0].author).discriminator}**`);
+                        bu.db.query(`select username, discriminator from user where userid = ?`, [row[0].author], (err, row2) => {
+                            bu.sendMessageToDiscord(msg.channel.id, `The tag \`${words[2]}\` was made by **${row2[0].username}#${row2[0].discriminator}**`);
+                        });
                     }
                 });
                 break;
