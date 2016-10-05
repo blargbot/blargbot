@@ -24,7 +24,8 @@ e.exampleOut = 'Correct!';
 e.execute = (params) => {
     params.args[1] = bu.processTagInner(params, 1);
     for (let i = 2; i < params.args.length; i += 2) {
-        params.args[i] = bu.processTagInner(params, i);
+        if (i != params.args.length - 1)
+            params.args[i] = bu.processTagInner(params, i);
     }
     let args = params.args;
     var replaceString = '';
