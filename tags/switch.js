@@ -42,7 +42,7 @@ e.execute = (params) => {
             elseDo = args[i];
         }
     }
-    if (args.length % 2 != 1) replaceString = cases[arg] || elseDo;
+    if (args.length % 2 != 0) replaceString = cases[arg] || elseDo;
     else replaceString = cases[arg] || '';
     replaceString = bu.processTag(params.msg
         , params.words
