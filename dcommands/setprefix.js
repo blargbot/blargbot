@@ -19,7 +19,7 @@ e.longinfo = `<p>Sets the custom command prefix for the guild. You can set it to
 
 e.execute = (msg, words, text) => {
     if (words.length > 1) {
-        var prefix = text.replace(words[0], '').trim();
+        var prefix = words.slice(1).join(' ');
         bu.guildSettings.set(msg.channel.guild.id, 'prefix', prefix).then(() => {
             bu.sendMessageToDiscord(msg.channel.id, `Set the custom command prefix to '${prefix}'`);
         });

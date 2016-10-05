@@ -48,26 +48,18 @@ e.alias = ['t'];
 e.execute = (msg, words, text) => {
     if (words[1]) {
         var tagList;
-        //       console.log(words[1]);
-        //        console.log(words.length);
         switch (words[1].toLowerCase()) {
-            // case 'test':
-            //       bu.sendMessageToDiscord(msg.channel.id, 'Test output:\n' + tags.processTag(msg, text.replace(words[0], '').trim().replace(words[1], '').trim(), '', 'testTag'));
-            //     break;
             case 'create':
                 if (words.length > 3) {
-
-                    //  console.log('checking if tag exists');
+var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027\u0028\u0029\u002a\u002b\u002c\u002d\u002e\u002f\u0030\u0031\u0032\u0033\u0034\u0035\u0036\u0037\u0038\u0039\u003a\u003b\u003c\u003d\u003e\u003f\u0040\u0041\u0042\u0043\u0044\u0045\u0046\u0047\u0048\u0049\u004a\u004b\u004c\u004d\u004e\u004f\u0050\u0051\u0052\u0053\u0054\u0055\u0056\u0057\u0058\u0059\u005a\u005b\u005d\u005e\u005f\u0060\u0061\u0062\u0063\u0064\u0065\u0066\u0067\u0068\u0069\u006a\u006b\u006c\u006d\u006e\u006f\u0070\u0071\u0072\u0073\u0074\u0075\u0076\u0077\u0078\u0079\u007a\u007b\u007c\u007d\u007e]/ig, '');
                     bu.db.query(`select exists(select 1 from tag where title=?) as kek`,
-                        [words[2]], (err, row) => {
-                            //   console.log('now were cooking with gas');
+                        [title], (err, row) => {
                             if (row[0].kek == 0) {
-                                var title = words[2].replace(/[^\u0021\u0022\u0023\u0024\u0025\u0026\u0027\u0028\u0029\u002a\u002b\u002c\u002d\u002e\u002f\u0030\u0031\u0032\u0033\u0034\u0035\u0036\u0037\u0038\u0039\u003a\u003b\u003c\u003d\u003e\u003f\u0040\u0041\u0042\u0043\u0044\u0045\u0046\u0047\u0048\u0049\u004a\u004b\u004c\u004d\u004e\u004f\u0050\u0051\u0052\u0053\u0054\u0055\u0056\u0057\u0058\u0059\u005a\u005b\u005d\u005e\u005f\u0060\u0061\u0062\u0063\u0064\u0065\u0066\u0067\u0068\u0069\u006a\u006b\u006c\u006d\u006e\u006f\u0070\u0071\u0072\u0073\u0074\u0075\u0076\u0077\u0078\u0079\u007a\u007b\u007c\u007d\u007e]/ig, '');
                                 bu.db.query(`insert into tag (author, title, contents, lastmodified) values (?, ?, ?, NOW())`,
                                     [msg.author.id, title,
-                                        text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()]);
+                                        words.slice(3).join(' ')]);
                                 bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${title}\` created. ✅`);
-                                bu.send('230810364164440065', `**__Create__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()}\`\`\``);
+                                bu.send('230810364164440065', `**__Create__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${words.splice(3)}\`\`\``);
 
                             } else
                                 bu.sendMessageToDiscord(msg.channel.id, `❌ That tag already exists! ❌`);
@@ -148,10 +140,10 @@ e.execute = (msg, words, text) => {
                             bu.sendMessageToDiscord(msg.channel.id, `❌ You don't own this tag! ❌`);
                         else {
                             bu.db.query('update tag set contents=? where title=?',
-                                [text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim(),
+                                [words.slice(3).join(' '),
                                     words[2]]);
                             bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` edited. ✅`);
-                            bu.send('230810364164440065', `**__Edit__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim()}\`\`\``);
+                            bu.send('230810364164440065', `**__Edit__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${words.slice(3).join(' ')}\`\`\``);
 
                         }
                     });
@@ -225,7 +217,7 @@ ${row[0].contents}
                     });
                 } else {
                     tagList = [];
-                    var userToSearch = text.replace(words[0], '').trim().replace(words[1], '').trim();
+                    var userToSearch = words.slice(2).join(' ');
                     console.log(userToSearch);
                     var obtainedUser = bu.getUserFromName(msg, userToSearch);
                     if (!obtainedUser) {
@@ -249,7 +241,7 @@ ${row[0].contents}
                 }
                 break;
             default:
-                var command = text.replace(words[0], '').trim().replace(words[1], '').trim();
+                var command = words.slice(2).join(' ');
                 //    console.log('FUCK FUCK FUCK ' + command);
                 tags.executeTag(msg, words[1], command);
                 break;

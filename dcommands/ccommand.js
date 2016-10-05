@@ -66,7 +66,7 @@ See http://ratismal.github.io/blargbot/commands.html#ccommand for usage instruct
 
         });
     } else {
-        bu.ccommand.set(msg.channel.guild.id, words[1], text.replace(`${words[0]} ${words[1]} `, '')).then(() => {
+        bu.ccommand.set(msg.channel.guild.id, words[1], words.slice(2).join(' ')).then(() => {
             bu.sendMessageToDiscord(msg.channel.id, `Set command ${words[1]}`);
         });
     }

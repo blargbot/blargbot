@@ -33,7 +33,7 @@ e.execute = (msg, words, text) => {
         });
         return;
     }
-    var farewell = text.replace(`${words[0]} `, '');
+    var farewell = words.slice(1).join(' ');
     bu.guildSettings.set(msg.channel.guild.id, 'farewell', farewell).then(() => {
         bu.sendMessageToDiscord(msg.channel.id, `Farewell set. Simulation:
 ${tags.processTag(msg, farewell, '')}`);

@@ -24,7 +24,7 @@ e.execute = (msg, words, text) => {
 + Author: ${msg.author.username} (${msg.author.id})${msg.channel.guild
                 ? `\n+ Guild: ${msg.channel.guild.name} (${msg.channel.guild.id})
 + Channel: ${msg.channel.name} (${msg.channel.id})` : ''}
-- Message: ${text.replace(`${words[0]} `, '').replace(/`/g, '`\u200b').replace(/\n/g, '\n- ')}
+- Message: ${words.slice(1).join(' ').replace(/`/g, '`\u200b').replace(/\n/g, '\n- ')}
 \`\`\``);
         bu.sendMessageToDiscord(msg.channel.id, 'Suggestion sent! :ok_hand:');
     }

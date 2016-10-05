@@ -32,7 +32,7 @@ e.execute = (msg, words, text) => {
         });
         return;
     }
-    var greeting = text.replace(`${words[0]} `, '');
+    var greeting = words.slice(1).join(' ');
     bu.guildSettings.set(msg.channel.guild.id, 'greeting', greeting).then(() => {
         bu.sendMessageToDiscord(msg.channel.id, `Greeting set. Simulation:
 ${tags.processTag(msg, greeting, '')}`);

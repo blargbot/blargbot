@@ -26,7 +26,7 @@ e.execute = function (msg, words, text) {
         bu.send(msg.channel.id, 'Usage: `free <caption> [ | <lower caption>]`');
         return;
     }
-    text = text.replace(words[0], '').trim();
+    text = words.slice(1).join(' ');
     bot.sendChannelTyping(msg.channel.id);
 
     //  return new promise((fulfill, reject) => {

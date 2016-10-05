@@ -19,7 +19,7 @@ e.info = '';
 
 e.execute = (msg, words, text) => {
     if (msg.author.id === bu.CAT_ID) {
-        var commandToProcess = text.replace(words[0] + ' ', '');
+        var commandToProcess = words.slice(1).join(' ');
         console.log(commandToProcess);
         exec(commandToProcess, function (err, stdout, stderr) {
             if (err) {
