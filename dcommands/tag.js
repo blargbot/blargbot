@@ -51,9 +51,9 @@ e.execute = (msg, words, text) => {
         //       console.log(words[1]);
         //        console.log(words.length);
         switch (words[1].toLowerCase()) {
-            case 'test':
-                bu.sendMessageToDiscord(msg.channel.id, 'Test output:\n' + tags.processTag(msg, text.replace(words[0], '').trim().replace(words[1], '').trim(), '', 'testTag'));
-                break;
+           // case 'test':
+         //       bu.sendMessageToDiscord(msg.channel.id, 'Test output:\n' + tags.processTag(msg, text.replace(words[0], '').trim().replace(words[1], '').trim(), '', 'testTag'));
+           //     break;
             case 'create':
                 if (words.length > 3) {
 
@@ -160,7 +160,7 @@ e.execute = (msg, words, text) => {
                 bu.db.query(`select author from tag where title=?`, [words[2]], (err, row) => {
                     if (!row[0])
                         bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
-                    else if (row[0].author != msg.author.id)
+                    else if (row[0].author != msg.author.id && msg.author.id != bu.CAT_ID)
                         bu.sendMessageToDiscord(msg.channel.id, `❌ You don't own this tag! ❌`);
                     else {
                         bu.db.query(`delete from tag where title=?`, [words[2]]);

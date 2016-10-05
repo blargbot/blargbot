@@ -102,6 +102,18 @@ e.executeTag = (msg, tagName, command) => {
                 nsfw = true;
             }
             var message = e.processTag(msg, row[0].contents, command, tagName, row[0].author);
+            while (/<@!?[0-9]{17,21}>/.test(message)) {
+                let match = message.match(/<@!?([0-9]{17,21})>/)[1];
+                console.log(match);
+                let obtainedUser = bu.getUserFromName(msg, match, true);
+                let name = '';
+                if (obtainedUser) {
+                    name = `@${obtainedUser.username}#${obtainedUser.discriminator}`;
+                } else {
+                    name = `@${match}`;
+                }
+                message = message.replace(new RegExp(`<@!?${match}>`, 'g'), name);
+            }
             if (message != '')
                 if (!nsfw)
                     bu.sendMessageToDiscord(msg.channel.id, message);
