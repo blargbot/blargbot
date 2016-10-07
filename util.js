@@ -1,18 +1,42 @@
-var moment = require('moment-timezone');
-var Promise = require('promise');
-var request = require('request');
+const moment = require('moment-timezone');
+const Promise = require('promise');
+const request = require('request');
 const Eris = require('eris');
 const emoji = require('node-emoji');
 var e = module.exports = {};
+var winston = e.winston = require('winston');
 e.CAT_ID = '103347843934212096';
 e.catOverrides = true;
-
 e.db = null;
 e.config = null;
 e.emitter = null;
 e.VERSION = null;
 e.startTime = null;
 e.vars = null;
+var customLevels = {
+    levels: { error: 0, warn: 1, info: 2, command: 3, init: 4, output: 5, irc: 6, verbose: 7, debug: 8, silly: 9 },
+    colors: {
+        error: 'red',
+        warn: 'yellow',
+        info: 'green',
+        verbose: 'cyan',
+        debug: 'blue',
+        silly: 'magenta',
+        command: 'blue',
+        init: 'green',
+        output: 'magenta',
+        irc: 'yellow',
+    }
+};
+
+var logger = e.logger = new (winston.Logger)({
+    levels: customLevels.levels,
+    level: 'debug',
+    transports: [new winston.transports.Console()]
+});
+logger.command('meow');
+//winston.level = 'debug';
+winston.addColors(customLevels.colors);
 
 // A special character for tag injections
 e.specialCharBegin = '\uE001';
@@ -141,12 +165,12 @@ e.sendMessageToDiscord = function (channelId, message, file) {
     try {
         message = emoji.emojify(message);
         if (!file)
-            return e.bot.createMessage(channelId, message).catch(err => console.log(err.stack));
+            return e.bot.createMessage(channelId, message).catch(err => winston.error(err.stack));
         else
-            return e.bot.createMessage(channelId, message, file).catch(err => console.log(err.stack));
+            return e.bot.createMessage(channelId, message, file).catch(err => winston.error(err.stack));
 
     } catch (err) {
-        console.log(err.stack);
+        winston.error(err.stack);
     }
 };
 
@@ -274,11 +298,8 @@ e.sendFile = (channelid, message, url) => {
  * @returns {string}
  */
 e.createTimeDiffString = (moment1, moment2) => {
-
     var ms = moment1.diff(moment2);
-
     var diff = moment.duration(ms);
-    //  console.log(diff.humanize());
     var days = diff.days();
     diff.subtract(days, 'd');
     var hours = diff.hours();
@@ -319,7 +340,7 @@ e.logAction = (guild, user, mod, type, reason) => {
             e.db.query(`select caseid from modlog where guildid = ? order by caseid desc limit 1`,
                 [guild.id], (err, row) => {
                     if (err) {
-                        console.log(err);
+                        winston.error(err);
                         return;
                     }
                     var caseid = 0;
@@ -338,11 +359,11 @@ e.logAction = (guild, user, mod, type, reason) => {
                     e.sendMessageToDiscord(val, message).then(msg => {
                         e.db.query(`insert into modlog (guildid, caseid, userid, modid, type, msgid) 
                     values (?, ?, ?, ?, ?, ?)`, [guild.id, caseid, isArray ? 'multiple' : user.id, mod ? mod.id : null, type, msg.id], err => {
-                                console.log(err);
+                                if (err) winston.error(err);
                             });
                         return msg;
                     }).catch(err => {
-                        console.log(err);
+                        if (err) winston.error(err);
                     });
                 });
         }
@@ -377,7 +398,6 @@ e.processTagInner = (params, i) => {
 };
 
 e.processTag = (msg, words, contents, fallback, author, tagName) => {
-    //   console.log('Contents:', contents);
     let level = 0;
     let lastIndex = 0;
     let coords = [];
@@ -444,8 +464,7 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
             replaceString = replaceString.replace(/\}/gi, `${e.specialCharBegin}RB${e.specialCharEnd}`)
                 .replace(/\{/gi, `${e.specialCharBegin}LB${e.specialCharEnd}`)
                 .replace(/\;/g, `${e.specialCharBegin}SEMI${e.specialCharEnd}`);
-            if (e.debug)
-                console.log('Contents:', contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
+            winston.debug('Contents:', contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
             contents = contents.replace(tagBrackets, replaceString);
             if (replaceObj.replaceContent) {
                 if (replaceObj.replace == undefined) {
@@ -456,14 +475,12 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
                 }
             }
         }
-        // console.log(contents.substring(coords[i][0], coords[i][1]));
     }
     return contents;
 };
 
 e.processSpecial = (contents, final) => {
-    if (e.debug)
-        console.log('Processing a special tag');
+    winston.debug('Processing special tags');
     contents += '';
     let eek1 = '\uE001';
     let eek2 = '\uE002';
@@ -501,7 +518,7 @@ e.processSpecial = (contents, final) => {
                 replaceString = '';
                 break;
         }
-        console.log(tagBrackets, replaceString);
+        winston.debug(tagBrackets, replaceString);
         if (replace)
             contents = contents.replace(tagBrackets, replaceString);
     }
