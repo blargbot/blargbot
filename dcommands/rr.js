@@ -68,7 +68,6 @@ e.execute = (msg, words) => {
                 if (dead) {
                     bot.editMessage(msg2.channel.id, msg2.id, emoji.emojify(message + `\n***BOOM!*** ${deathMsg[bu.getRandomInt(0, deathMsg.length - 1)]}`));
                     bot.editMessage(msg3.channel.id, msg3.id, emoji.emojify(`:boom::gun:`));
-
                 } else {
                     bot.editMessage(msg2.channel.id, msg2.id, emoji.emojify(msg2.content + `\n*Click!* ${liveMsg[bu.getRandomInt(0, liveMsg.length - 1)]}`));
                     bot.editMessage(msg3.channel.id, msg3.id, emoji.emojify(`:relieved::gun:`));
