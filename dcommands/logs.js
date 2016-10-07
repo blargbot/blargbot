@@ -150,6 +150,10 @@ e.execute = (msg, words) => {
 
             insertQuery(msg, statement).then(key => {
                 bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
+                return key;
+            }).catch(err => {
+                bu.send(msg.channel.id, 'Something went wrong! Please report this error with the `suggest` command:\n```\n' + err.stack + '\n```');
+                console.log(err.stack);
             });
         } else {
             bu.send(msg.channel.id, 'No results found.');
@@ -159,15 +163,24 @@ e.execute = (msg, words) => {
 };
 
 function insertQuery(msg, statement) {
-    return new Promise((fulfill) => {
+    return new Promise((fulfill, reject) => {
         function attemptInsert() {
             var key = randomString(6);
             console.log(key);
-            bu.db.query('select keycode from logs where keycode = ?', [key], (rows) => {
+            bu.db.query('select keycode from logs where keycode = ?', [key], (err, rows) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
                 if (rows && rows[0]) {
                     attemptInsert();
+                    return;
                 } else {
-                    bu.db.query(`insert into logs (keycode, statement, channelid) values (?, ?, ?)`, [key, statement, msg.channel.id], () => {
+                    bu.db.query(`insert into logs (keycode, statement, channelid) values (?, ?, ?)`, [key, statement, msg.channel.id], (err) => {
+                        if (err) {
+                            reject(err);
+                            return;
+                        }
                         fulfill(key);
                     });
                 }
