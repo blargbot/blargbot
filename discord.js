@@ -737,7 +737,7 @@ function switchAvatar(forced) {
     if (!forced)
         setTimeout(function () {
             switchAvatar();
-        }, 60000);
+        }, 300000);
 }
 
 var commandMessages = {};
