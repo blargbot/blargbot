@@ -506,6 +506,14 @@ If you are the owner of this server, here are a few things to know.
                 }
             });
 
+            if (bu.awaitMessages.hasOwnProperty(msg.channel.id)
+                && bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
+                let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
+                if (moment.duration(moment() - firstTime).asMinutes() <= 5) {
+                    bu.emitter.emit(bu.awaitMessages[msg.channel.id][msg.author.id].event, msg);
+                }
+            }
+
             bu.guildSettings.get(msg.channel.guild ? msg.channel.guild.id : '', 'prefix').then(val => {
                 var prefix;
                 if (msg.channel.guild) {

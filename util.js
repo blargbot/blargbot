@@ -35,6 +35,8 @@ e.commandUses = 0;
 e.cleverbotStats = 0;
 // How many messages the bot has made
 e.messageStats = 0;
+// A map of messages to await for
+e.awaitMessages = {};
 
 e.defaultStaff = Eris.Constants.Permissions.kickMembers
     + Eris.Constants.Permissions.banMembers
@@ -105,7 +107,27 @@ e.compareStats = (a, b) => {
     if (a.uses > b.uses)
         return 1;
     return 0;
-}
+};
+
+e.awaitMessage = (channelid, message, msg, callback) => {
+    e.send(channelid, message).then(() => {
+        if (!e.awaitMessages.hasOwnProperty(msg.channel.id))
+            e.awaitMessages[msg.channel.id] = {};
+        let event = 'await' + msg.id;
+        e.awaitMessages[msg.channel.id][msg.author.id] = {
+            event: event,
+            time: moment(msg.timestamp)
+        };
+        e.emitter.removeAllListeners(event);
+        e.emitter.on(event, (msg2) => {
+            let response = callback(msg2);
+            e.logger.debug(response);
+            if (response) {
+                e.emitter.removeAllListeners(event);
+            }
+        });
+    });
+};
 
 /**
  * Checks if a user has a role with a specific name
@@ -461,8 +483,6 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
 e.processSpecial = (contents, final) => {
     logger.debug('Processing special tags');
     contents += '';
-    let eek1 = '\uE001';
-    let eek2 = '\uE002';
     contents.replace(/\uE010|\uE011/g, '');
     while (contents.indexOf(e.specialCharBegin) > -1 && contents.indexOf(e.specialCharEnd) > -1 &&
         contents.indexOf(e.specialCharBegin) < contents.indexOf(e.specialCharEnd)) {

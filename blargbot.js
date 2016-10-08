@@ -43,17 +43,17 @@ botEmitter.on('reloadIrc', () => {
 
 
 /** File Stuff */
-mkdirp(path.join(__dirname, 'logs'), function () {
-    var logFile = fs.createWriteStream(path.join(__dirname, 'logs/' + moment().format().replace(/:/gi, '_') + '.log'), { flags: 'w' });
+//mkdirp(path.join(__dirname, 'logs'), function () {
+  //  var logFile = fs.createWriteStream(path.join(__dirname, 'logs/' + moment().format().replace(/:/gi, '_') + '.log'), { flags: 'w' });
 
-    var logStdout = process.stdout;
+//    var logStdout = process.stdout;
 
     console.log = function () {
-        logFile.write(`[${moment().format(`MM/DD HH:mm:ss`)}] ${util.format.apply(null, arguments)}\n`);
-        logStdout.write(`[${moment().format(`MM/DD HH:mm:ss`)}] ${util.format.apply(null, arguments)}\n`);
+        bu.logger.debug(arguments);
+      //  logFile.write(`[${moment().format(`MM/DD HH:mm:ss`)}] ${util.format.apply(null, arguments)}\n`);
+    //    logStdout.write(`[${moment().format(`MM/DD HH:mm:ss`)}] ${util.format.apply(null, arguments)}\n`);
     };
-    console.error = console.log;
-});
+//});
 
 
 /** CONFIG STUFF **/
