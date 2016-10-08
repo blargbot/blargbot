@@ -14,11 +14,12 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'stats';
+e.usage = 'stats [full]';
 e.info = 'Gives you some information about me';
 e.longinfo = `<p>Gives you information about the bot.</p>`;
 
-e.execute = (msg) => {
+e.execute = (msg, words) => {
+    let full = words[1] && words[1].toLowerCase() == 'full';
     bu.db.query('select sum(uses) as total from stats', (err, rows) => {
         bu.db.query('select commandname, uses from stats where commandname <> \'music\' order by uses desc limit 5', (err, rows1) => {
             let topCommands = '';
@@ -44,7 +45,7 @@ ${pad('Version:', 13)} ${bu.VERSION}
 ${pad('Messages:', 13)} ${bu.messageStats}
 ${pad('Per Minute:', 13)} ${Math.floor(bu.messageStats / moment.duration(moment() - bu.startTime).asMinutes() * 100) / 100}
 
-!== { Command Stats } ==!
+${full ? `!== { Command Stats } ==!
        -- Total --
 ${pad('Uses:', 13)} ${rows[0].total}
 ${pad('Most Used:', 13)}
@@ -54,7 +55,7 @@ ${pad('Uses:', 13)} ${bu.commandUses}
 ${pad('Per Minute:', 13)} ${Math.floor(bu.commandUses / moment.duration(moment() - bu.startTime).asMinutes() * 100) / 100}
 ${pad('Cleverbot:', 13)} ${bu.cleverbotStats}
 ${pad('Most Used:', 13)}
-${topCommandsSession}
+${topCommandsSession}` : ''}
 \`\`\`
 `);
         });
