@@ -67,18 +67,17 @@ var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027
                 }
                 break;
             case 'rename':
-                //          console.log('ohh la la')
                 if (words.length > 3) {
                     bu.db.beginTransaction((err) => {
                         if (err) {
                             bu.db.rollback(() => {
-                                console.log(err);
+                                bu.logger.error(err);
                                 return;
                             });
                         }
                         bu.db.query(`select author, id from tag where title=?`,
                             [words[2]], (err, row) => {
-                                //   console.log('now were cooking with gas');
+                                //   bu.logger.('now were cooking with gas');
 
                                 if (row) {
                                     if (row[0].author != msg.author.id) {
@@ -86,7 +85,7 @@ var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027
                                         //     bu.db.query(`END`);
                                         bu.db.commit((err) => {
                                             if (err) bu.db.rollback(() => {
-                                                console.log(err);
+                                                bu.logger.error(err);
                                             });
                                         });
                                         return;
@@ -103,7 +102,7 @@ var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027
                                                 // stmt = bu.db.prepare(`update `)
                                                 bu.db.commit((err) => {
                                                     if (err) bu.db.rollback(() => {
-                                                        console.log(err);
+                                                        bu.logger.error(err);
                                                     });
                                                 });
                                                 bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` has been renamed to \`${words[3]}\`. ✅`);
@@ -113,7 +112,7 @@ var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027
                                                 bu.sendMessageToDiscord(msg.channel.id, `❌ The tag \`${words[3]}\` already exist! ❌`);
                                                 bu.db.commit((err) => {
                                                     if (err) bu.db.rollback(() => {
-                                                        console.log(err);
+                                                        bu.logger.error(err);
                                                     });
                                                 });
 
@@ -123,7 +122,7 @@ var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027
                                     bu.sendMessageToDiscord(msg.channel.id, `❌ The tag \`${words[2]}\` doesn't exist! ❌`);
                                     bu.db.commit((err) => {
                                         if (err) bu.db.rollback(() => {
-                                            console.log(err);
+                                            bu.logger.error(err);
                                         });
                                     });
                                 }
@@ -190,13 +189,13 @@ ${row[0].contents}
                 //    var tagList = 'Found these tags:\n';
                 tagList = [];
                 bu.db.query(`select title from tag where title like ?`, [`%${words[2]}%`], (err, row) => {
-                    //     console.log('err');
+                    //     bu.logger.('err');
                     //  if (!err)
                     for (i = 0; i < row.length; i++) {
                         tagList.push(row[i].title);
                     }
                     tagList.sort();
-                    console.log('all done');
+                    bu.logger.debug('all done');
                     var message = `Found ${tagList.length} tags matching '${words[2]}'.\n\`\`\`${tagList.join(', ').trim()}\n\`\`\``;
                     bu.sendMessageToDiscord(msg.channel.id, message);
                 });
@@ -211,21 +210,21 @@ ${row[0].contents}
                             tagList.push(row[i].title);
                         }
                         tagList.sort();
-                        console.log('all done');
+                        bu.logger.debug('all done');
                         var message = `Found ${tagList.length} tags.\n\`\`\`${tagList.join(', ').trim()}\n\`\`\``;
                         bu.sendMessageToDiscord(msg.channel.id, message);
                     });
                 } else {
                     tagList = [];
                     var userToSearch = words.slice(2).join(' ');
-                    console.log(userToSearch);
+                    bu.logger.debug(userToSearch);
                     var obtainedUser = bu.getUserFromName(msg, userToSearch);
                     if (!obtainedUser) {
                         break;
                     }
 
                     bu.db.query(`select title from tag where author=?`, obtainedUser.id, (err, row) => {
-                        //     console.log('err');
+                        //     bu.logger.('err');
                         //  if (!err)
                         for (var i = 0; i < row.length; i++) {
                             tagList.push(row[i].title);
@@ -234,7 +233,7 @@ ${row[0].contents}
 
                         //   }
                         tagList.sort();
-                        console.log('all done');
+                        bu.logger.debug('all done');
                         var message = `Found ${tagList.length} tags made by **${obtainedUser.username}#${obtainedUser.discriminator}**.\n\`\`\`${tagList.join(', ').trim()}\n\`\`\``;
                         bu.sendMessageToDiscord(msg.channel.id, message);
                     });
@@ -242,7 +241,6 @@ ${row[0].contents}
                 break;
             default:
                 var command = words.slice(2).join(' ');
-                //    console.log('FUCK FUCK FUCK ' + command);
                 tags.executeTag(msg, words[1], command);
                 break;
         }

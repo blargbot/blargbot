@@ -42,8 +42,8 @@ ${bu.commandList[words[1]].info}`;
                 otherCommands[rows[i].rolename.toLowerCase()].push(rows[i].commandname);
                 modifiedCommands.push(rows[i].commandname);
             }
-            console.dir(modifiedCommands);
-            console.dir(otherCommands);
+            bu.logger.debug(modifiedCommands);
+            bu.logger.debug(otherCommands);
             for (var command in bu.commandList) {
                 if (modifiedCommands.indexOf(command) == -1)
                     if (!bu.commandList[command].hidden) {

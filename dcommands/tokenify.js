@@ -19,13 +19,13 @@ e.info = 'Converts the given input into a token.';
 e.longinfo = '<p>Converts the given input into a token.</p>';
 
 e.execute = (msg, words, text) => {
-    console.log(words.length);
+    bu.logger.debug(words.length);
     if (words.length > 1) {
         var pasta = words.splice(1, words.length).join(' ').replace(/[^0-9a-z]/gi, '').toLowerCase();
-        console.log(pasta);
+        bu.logger.debug(pasta);
         var newPasta = [];
         for (var i = 0; i < pasta.length; i++) {
-            console.log(pasta[i]);
+            bu.logger.debug(pasta[i]);
             var seed = bu.getRandomInt(1, 4);
             if (seed >= 3) {
                 newPasta.push(pasta[i].toUpperCase());
@@ -41,7 +41,7 @@ e.execute = (msg, words, text) => {
                     newPasta.push('\\_');
                 }
         }
-        console.log(newPasta.join(''));
+        bu.logger.debug(newPasta.join(''));
         bu.send(msg.channel.id, newPasta.join(''));
     } else {
         bu.send(msg.channel.id, 'Not enough arguments given');

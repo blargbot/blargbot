@@ -52,8 +52,11 @@ e.execute = (msg, words) => {
     if (isNaN(bullets)) {
         bullets = 1;
     }
-    console.log(bullets);
-    if (bullets >= 6) {
+    bu.logger.debug(bullets);
+    if (bullets == 6) {
+        bu.send(msg.channel.id, 'Do you have a deathwish or something? Your revolver can only hold 6 bullets, that\'s guaranteed death!');
+        return;
+    } else if (bullets > 6) {
         bu.send(msg.channel.id, 'That\'s gutsy, but your revolver can only hold 6 bullets!');
         return;
     } else if (bullets <= 0) {

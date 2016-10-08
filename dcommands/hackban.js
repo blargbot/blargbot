@@ -53,7 +53,7 @@ e.execute = (msg, words, text) => {
     userList.forEach(m => {
         bot.banGuildMember(msg.channel.guild.id, m, days).then(() => {
             return;
-        }).catch(console.log);
+        }).catch(bu.logger.error);
     });
 
     bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');

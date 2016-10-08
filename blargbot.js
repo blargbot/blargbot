@@ -68,7 +68,7 @@ var VERSION = bu.config.version;
 
 
 function reloadConfig() {
-    console.log('Attempting to reload config');
+    bu.logger.info('Attempting to reload config');
     fs.readFile(path.join(__dirname, 'config.json'), 'utf8', function (err, data) {
         if (err) throw err;
         bu.config = JSON.parse(data);
@@ -78,8 +78,6 @@ function reloadConfig() {
 function saveConfig() {
     fs.writeFile(path.join(__dirname, 'config.json'), JSON.stringify(bu.config, null, 4));
 }
-
-
 
 
 /** Database Stuff */
@@ -100,9 +98,9 @@ var db = mysql.createConnection({
 });
 
 db.connect(err => {
-    if (err) console.log(err);
+    if (err) bu.logger.error(err);
     else {
-        console.log('Connected to MySQL Database');
+        bu.logger.init('Connected to MySQL Database');
         init();
     }
 });

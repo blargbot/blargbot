@@ -48,7 +48,6 @@ e.execute = (msg, words) => {
     }
     config.general.wordapis.uses++;
     bu.saveConfig();
-    console.log('whew');
     request({
         url: `https://wordsapiv1.p.mashape.com/words/${args}`,
         headers: {
@@ -63,13 +62,11 @@ e.execute = (msg, words) => {
             if (res.results) {
                 message += `\`\`\`xl\n`;
 
-                for (i = 0; i < res.results.length; i++) {
+                for (let i = 0; i < res.results.length; i++) {
                     var type = res.results[i].partOfSpeech;
                     message += `${res.results.length >= 10 ? (i + 1 < 10 ? ` ${i + 1}` : i + 1) : i + 1}: (${part[type] ? part[type] : type}) ${res.results[i].definition}\n`;
                 }
                 message += `\`\`\``;
-
-                //message.edit("```xl\nDefinitions for " + args + ":\n" + final + "\n```");
             } else {
                 message += 'No results found!';
             }
@@ -79,61 +76,4 @@ e.execute = (msg, words) => {
 
         }
     });
-    //  var url = `http://www.google.com/dictionary/json?callback=a&sl=en&tl=en&q=${words}`
-    //  request(url, (err, response, body) => {
-    //      console.log(body, util.inspect(body.match(/a\((.+)\)/)))
-    //     var definitions = JSON.parse(body.match(/a\((.+)\)/)[0])
-    //      console.log(definitions)
-    //  })
-    /*
-    request.post("http://services.aonaware.com/DictService/DictService.asmx/Define", {
-        form: {
-            word: args
-        }
-    }, (err, response, body) => {
-        if (err) console.log(err)
-        xml2js.parseString(body, (err, res) => {
-            //console.log(util.inspect(res))
-            //console.log(util.inspect(res['WordDefinition']['Definitions']))
-            var word = res['WordDefinition'].Word
-            var defs = res['WordDefinition'].Definitions[0].Definition
-            var message = `Here's the definition${defs.length > 1 ? 's' : ''} for ${word}:\n\`\`\`xl\n`
-            console.log(util.inspect(defs, false, null))
-            var ii = 1
-
-            for (var i = 0; i < defs.length; i++) {
-                //   console.log(util.inspect(defs[i], false, null))
-                //   console.log(defs[i]['WordDefinition'])
-                //  console.log(defs[i]['Word'])
-                console.log(defs[i].Dictionary[0].Id[0])
-                if (defs[i].Dictionary[0].Id[0] == 'wn') {
-                    var line = `${ii}. ${defs[i]['WordDefinition']}\n`
-                    var oddApo = (line.match(/"/g) || []).length % 2
-                    message += oddApo == 0 ? line : line.replace(/"/, '\u2019')
-                    ii++
-                }
-            }
-            message += `\`\`\``
-            bu.sendMessageToDiscord(msg.channel.id, message)
-
-        })
-
-        //console.log(err, response, body)
-        // })
-    })
-    /*
-    request.post({
-        "url": "http://services.aonaware.com/DictService/DictService.asmx/Define",
-        "headers": {
-            "content-type": "application/x-www-form-urlencoded",
-            "content-length": args.length
-        },
-        body: {
-            "word": args
-        }
-    }, (err, response, body) => {
-        console.log(err, response, body)
-    })
-    */
-
 };

@@ -41,7 +41,6 @@ e.execute = (msg) => {
     var count = files.length;
     var lines = 0;
     function addLines(err, res) {
-        //     console.log(res)
         lines += parseInt(res.split(' ')[0]);
         count--;
         if (count == 0) {

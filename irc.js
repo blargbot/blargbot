@@ -40,7 +40,7 @@ e.init = (blargutil, v, em) => {
     e.bot = bot = ircbot;
 
     notifInterval = setInterval(function () {
-        console.log('[NOT] Doing notifications');
+        bu.logger.irc('[NOT] Doing notifications');
         for (var user in ircUserList) {
             if (user !== bot.nick) {
                 var tempFile = getUserFile(user);
@@ -71,14 +71,14 @@ e.init = (blargutil, v, em) => {
             ircUserList[key] = '';
         }
         ///  ircUserList = nicks;
-        console.log(message);
+        bu.logger.irc(message);
         changeDiscordTopic(message);
     });
 
     bot.addListener('message', function (from, to, text) {
         var userMessage = `\<${from}\> ${text}`;
-        console.log(`[IRC] ${from}> ${to}> ${text}`);
-        // console.log(userMessage);
+        bu.logger.irc(`[IRC] ${from}> ${to}> ${text}`);
+        // bu.logger.irc(userMessage);
         if (to === config.irc.channel) {
             sendMessageToDiscord(userMessage);
 
@@ -86,16 +86,16 @@ e.init = (blargutil, v, em) => {
                 try {
                     handleIrcCommand(to, from, text.replace('!', ''));
                 } catch (err) {
-                    console.log(err.stack);
+                    bu.logger.irc(err.stack);
                 }
             } else if (text.startsWith('blargbot, ')) {
-                //console.log(message);
-                console.log(text);
+                //bu.logger.irc(message);
+                bu.logger.irc(text);
                 var messageForCleverbot = text.replace('blargbot, ');
                 Cleverbot.prepare(function () {
                     cleverbot.write(messageForCleverbot, function (response) {
-                        console.log(messageForCleverbot);
-                        console.log(response);
+                        bu.logger.irc(messageForCleverbot);
+                        bu.logger.irc(response);
                         /// bot.sendChannelTyping(msg.channel.id);
                         setTimeout(function () {
                             sendIrcCommandMessage(to, response.message);
@@ -109,15 +109,15 @@ e.init = (blargutil, v, em) => {
 
     bot.addListener('join', function (channel, nick, message) {
         var joinMessage = `${nick} (${message.user}@${message.host}) has joined ${channel}`;
-        console.log(`[IRC] ${joinMessage}`);
+        bu.logger.irc(`[IRC] ${joinMessage}`);
         if (channel === config.irc.channel) {
             sendMessageToDiscord(joinMessage);
         }
         if (nick !== bot.nick) {
-            //console.log(getUserFilePath(nick));
-            //console.log(fs.existsSync(getUserFilePath(nick)));
+            //bu.logger.irc(getUserFilePath(nick));
+            //bu.logger.irc(fs.existsSync(getUserFilePath(nick)));
             if (!fs.existsSync(getUserFilePath(nick))) {
-                console.log(`[IRC] Generating userfile for ${nick}`);
+                bu.logger.irc(`[IRC] Generating userfile for ${nick}`);
                 sendIrcCommandMessage(config.irc.channel, `Welcome ${nick}. I hope you enjoy your stay.`);
                 createDefaultUserFile(nick);
             } else {
@@ -136,7 +136,7 @@ e.init = (blargutil, v, em) => {
 
     bot.addListener('quit', function (nick, reason, channels, message) {
         var quitMessage = `${nick} (${message.host}) has quit (Reason: ${reason})`;
-        console.log(`[IRC] ${quitMessage}`);
+        bu.logger.irc(`[IRC] ${quitMessage}`);
         sendMessageToDiscord(quitMessage);
         var userFile = getUserFile(nick);
         userFile.seen = moment().format();
@@ -146,7 +146,7 @@ e.init = (blargutil, v, em) => {
 
     bot.addListener('part', function (channel, nick, reason, message) {
         var quitMessage = `${nick} (${message.host}) has parted (Reason: ${reason})`;
-        console.log(`[IRC] ${quitMessage}`);
+        bu.logger.irc(`[IRC] ${quitMessage}`);
         sendMessageToDiscord(quitMessage);
         var userFile = getUserFile(nick);
         userFile.seen = moment().format();
@@ -159,14 +159,14 @@ e.init = (blargutil, v, em) => {
             return;
         }
         var nickMessage = `${oldnick} (${message.host}) is now known as ${newnick}`;
-        console.log(nickMessage);
+        bu.logger.irc(nickMessage);
 
-        //   console.log(`[IRC] ${nickMessage}`);
+        //   bu.logger.irc(`[IRC] ${nickMessage}`);
         var userFile = getUserFile(oldnick);
         userFile.seen = moment().format();
         saveUserFile(oldnick, userFile);
         if (!fs.existsSync(getUserFilePath(newnick))) {
-            console.log(`[IRC] Generating userfile for ${newnick}`);
+            bu.logger.irc(`[IRC] Generating userfile for ${newnick}`);
             sendIrcCommandMessage(config.irc.channel, `Welcome ${newnick}. I hope you enjoy your stay.`);
             createDefaultUserFile(newnick);
         } else {
@@ -181,7 +181,7 @@ e.init = (blargutil, v, em) => {
     });
 
     // bot.addListener('motd', function (motd) {
-    //     console.log(motd);
+    //     bu.logger.irc(motd);
     //  });
 
     bot.addListener('action', (sender, channel, text) => {
@@ -189,13 +189,13 @@ e.init = (blargutil, v, em) => {
     });
 
     bot.addListener('error', function (message) {
-        console.log('An IRC error occured: ', message);
+        bu.logger.irc('An IRC error occured: ', message);
     });
 };
 
 function handleIrcCommand(channel, user, text) {
     var words = text.split(' ');
-    console.log(`[IRC] User ${user} executed command ${words[0]}`);
+    bu.logger.irc(`[IRC] User ${user} executed command ${words[0]}`);
     var time
         , userFile;
     switch (words[0].toLowerCase()) {
@@ -329,7 +329,7 @@ function handleIrcCommand(channel, user, text) {
                 } else {
                     userFile = getUserFile(words[1], true);
                     time = createTimeDiffString(moment(), moment(userFile.seen));
-                    console.log(time, moment(), moment(userFile.seen), userFile.seen);
+                    bu.logger.irc(time, moment(), moment(userFile.seen), userFile.seen);
                     sendIrcCommandMessage(channel, `I haven't seen ${words[1]} in ${time}`);
                 }
             } catch (err) {
@@ -354,7 +354,7 @@ function handleIrcCommand(channel, user, text) {
             sendIrcCommandMessage(channel, `I am running blargbot version ${VERSION}`);
             break;
         case 'cat':
-            console.log('meow');
+            bu.logger.irc('meow');
             getCat(channel);
             break;
         case 'roll':
@@ -378,7 +378,7 @@ function reloadUserList() {
 
 
 function sendNoticeToIrc(channel, notice) {
-    console.log(`[IRC] blargbot -> ${channel} -> ${notice}`);
+    bu.logger.irc(`[IRC] blargbot -> ${channel} -> ${notice}`);
     bot.notice(channel, notice);
 }
 
@@ -390,7 +390,7 @@ function sendIrcCommandMessage(channel, message) {
 }
 
 function sendMessageToIrc(channel, message) {
-    console.log(`[IRC] blargbot> ${channel}> ${message}`);
+    bu.logger.irc(`[IRC] blargbot> ${channel}> ${message}`);
     bot.say(channel, message);
 }
 
@@ -411,7 +411,7 @@ function createDefaultUserFile(name) {
         `mail': {}` +
         `}`;
 
-    console.log(defaultContents);
+    bu.logger.irc(defaultContents);
     var jsonFile = JSON.parse(defaultContents);
     saveUserFile(name, jsonFile);
 }
@@ -427,10 +427,10 @@ function getUserFile(name, dontCreate) {
     try {
         return getJsonFile(getUserFilePath(name));
     } catch (err) {
-        console.log(err);
+        bu.logger.irc(err);
         sendIrcCommandMessage(config.irc.channel, `The userfile for ${name} is broken or corrupt! Generating a new one.`);
         createDefaultUserFile(name);
-        console.log('why');
+        bu.logger.irc('why');
         return getJsonFile(getUserFilePath(name));
     }
 }
@@ -440,7 +440,7 @@ function getJsonFile(path) {
 }
 
 function sendMessageToDiscord(msg) {
-    // console.log(msg);
+    // bu.logger.irc(msg);
     emitter.emit('discordMessage', '\u200B' + msg);
 }
 
@@ -469,7 +469,7 @@ function getCat(channel) {
         });
 
         res.on('end', function () {
-            console.log(body);
+            bu.logger.irc(body);
             output = JSON.parse(body);
             sendMessageToIrc(channel, output.file);
         });
@@ -485,7 +485,7 @@ function getXkcd(channel, words) {
                 body += chunk;
             });
             res.on('end', function () {
-                console.log(body);
+                bu.logger.irc(body);
                 var output = JSON.parse(body);
                 xkcdMax = output.num;
                 getXkcd(channel, words);
@@ -516,7 +516,7 @@ function getXkcd(channel, words) {
             body += chunk;
         });
         res.on('end', function () {
-            console.log(body);
+            bu.logger.irc(body);
             var output = JSON.parse(body);
             var message = '';
             if (bot === BotEnum.DISCORD) {
@@ -542,7 +542,7 @@ Comic #${output.num}
 
 function getTime(channel, user, words) {
     var message = 'meow';
-    console.log(util.inspect(words));
+    bu.logger.irc(util.inspect(words));
     if (words.length > 1) {
         var location = words[1].split('/');
         if (location.length == 2)
@@ -560,7 +560,7 @@ function createTimeDiffString(moment1, moment2) {
     var ms = moment1.diff(moment2);
 
     var diff = moment.duration(ms);
-    //  console.log(diff.humanize());
+    //  bu.logger.irc(diff.humanize());
     var days = diff.days();
     diff.subtract(days, 'd');
     var hours = diff.hours();
@@ -588,7 +588,7 @@ function getRoll(channel, user, words) {
         if (words[1].indexOf('cat') > -1) {
             var catUrl;
             var seed = getRandomInt(0, 3);
-            console.log(`The cat chosen is ${seed} `);
+            bu.logger.irc(`The cat chosen is ${seed} `);
             switch (seed) {
                 case 0:
                     catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';
@@ -628,7 +628,7 @@ function getRoll(channel, user, words) {
                 }
                 var newtotal = total - rolls[0];
                 message = `${message.substring(0, message.length - 2)}] > ${total < 10 && total > -10 ? ` ${total}` : total} - ${rolls[0]} > ${newtotal < 10 && newtotal > -10 ? ` ${newtotal}` : newtotal}\n`;
-                console.log(message);
+                bu.logger.irc(message);
             }
             sendMessageToIrc(channel, `${message}\n\`\`\``);
 

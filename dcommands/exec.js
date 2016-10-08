@@ -20,7 +20,7 @@ e.info = '';
 e.execute = (msg, words, text) => {
     if (msg.author.id === bu.CAT_ID) {
         var commandToProcess = words.slice(1).join(' ');
-        console.log(commandToProcess);
+        bu.logger.debug(commandToProcess);
         exec(commandToProcess, function (err, stdout, stderr) {
             if (err) {
                 bu.sendMessageToDiscord(msg.channel.id, `Error!

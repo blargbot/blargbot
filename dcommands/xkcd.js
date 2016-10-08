@@ -32,7 +32,7 @@ function getXkcd(channel, words) {
                 body += chunk;
             });
             res.on('end', function () {
-                console.log(body);
+                bu.logger.debug(body);
                 var output = JSON.parse(body);
                 xkcdMax = output.num;
                 getXkcd(channel, words);

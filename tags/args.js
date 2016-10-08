@@ -42,7 +42,6 @@ e.execute = (params) => {
     if (args.length > 2) {
         var min = parseInt(args[1]);
         var max = args[2] == 'n' ? words.length : parseInt(args[2]);
-        //console.log(max);
         if (min < max) {
             for (var i = min; i < max; i++) {
                 if (words[i])
@@ -58,8 +57,6 @@ e.execute = (params) => {
             replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
         }
     } else {
-        //console.log(words.length, util.inspect(words));
-
         if (!(words[0] == '' && words.length == 1)) {
             replaceString = words.join(' ');
         }

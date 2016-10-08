@@ -25,39 +25,31 @@ e.execute = (msg, words) => {
                 if (words[1].toLowerCase() == 'latest') {
                     latest = true;
                 }
-                //  console.log('whew')
                 words.shift();
                 var caseid = parseInt(words.shift());
-                console.log(caseid);
+                bu.logger.debug(caseid);
                 bu.db.query(`select msgid, modid, guildsetting.value as channelid from modlog 
         inner join guildsetting 
             on modlog.guildid = guildsetting.guildid and guildsetting.name = "modlog"
         where modlog.guildid = ? ${latest ? 'order by caseid desc limit 1' : 'and caseid = ' + bu.db.escape(caseid)}`,
                     [msg.channel.guild.id], (err, row) => {
                         if (err) {
-                            console.log(err);
+                            bu.logger.error(err);
                             return;
                         }
-                        // console.log('whew2')
-                        //   console.log(util.inspect(row))
                         if (row[0]) {
-                            //   console.log('whew3')
-
                             bot.getMessage(row[0].channelid, row[0].msgid).then(msg2 => {
-                                //     console.log('whew4')
-
                                 var content = msg2.content;
-
                                 content = content.replace(/\*\*Reason:\*\*.+?\n/, `**Reason:** ${words.join(' ')}\n`);
                                 bu.db.query('update modlog set reason = ? where guildid = ? and caseid = ?',
                                     [words.join(' '), msg.channel.guild.id, caseid], err => {
-                                        console.log(err);
+                                        bu.logger.error(err);
                                     });
                                 if (!row[0].modid) {
                                     content = content.replace(/\*\*Moderator:\*\*.+/, `**Moderator:** ${msg.author.username}#${msg.author.discriminator}`);
                                     bu.db.query('update modlog set modid = ? where guildid = ? and caseid = ?',
                                         [msg.author.id, msg.channel.guild.id, caseid], err => {
-                                            console.log(err);
+                                            bu.logger.error(err);
                                         });
                                 }
 
@@ -69,28 +61,4 @@ e.execute = (msg, words) => {
             }
         }
     });
-
-
-    /* if (msg.channel.guild.members.get(bot.user.id).permission.json['banMembers']) {
-         if (msg.member.permission.json['banMembers']) {
-             if (words[1]) {
-                 var user = bu.getUserFromName(msg, words[1])
-                 if (!user)
-                     return;
- 
-                 if (!bu.bans[msg.channel.guild.id])
-                     bu.bans[msg.channel.guild.id] = {}
-                 bu.bans[msg.channel.guild.id][user.id] = msg.author.id
-                 var deletedays = 0
-                 if (words[2])
-                     deletedays = parseInt(words[2])
-                 bot.banGuildMember(msg.channel.guild.id, user.id, deletedays)
-             }
-             //bot.ban
-         } else {
-             bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to ban users!`)
-         }
-     } else {
-         bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to ban users!`)
-     }*/
 };

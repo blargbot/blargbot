@@ -27,16 +27,16 @@ e.execute = (msg, words) => {
         delete tagList[0];
         bu.send('230801689551175681', `**__danbooru__:** \n  **tags:** \`${tagList.join(' ')}\` \n  **user:** ${msg.author.username} (${msg.author.id}) \n  **channel:** ${msg.channel.name} (${msg.channel.id}) \n  **guild:** ${msg.channel.guild.name} (${msg.channel.guild.id}) \n  **NSFW Channel:** ${nsfwChannel}`);
         if (words.length > 1)
-            for (i = 1; i < tagList.length; i++) {
-                console.log(`${i}: ${tagList[i]}`);
+            for (let i = 1; i < tagList.length; i++) {
+                bu.logger.debug(`${i}: ${tagList[i]}`);
 
                 tagList[i] = tagList[i].toLowerCase();
             }
         //  listylist = tagList;
-        //    console.log(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+        //    bu.logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
-                //        console.log(kek); 
+                //        bu.logger.(kek); 
                 bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage);
 
                 return;
@@ -49,7 +49,7 @@ e.execute = (msg, words) => {
         var url = '/posts.json?limit=' + 50 + '&tags=' + query;
         var message = '';
 
-        console.log('url: ' + url);
+        bu.logger.debug('url: ' + url);
         var options = {
             hostname: 'danbooru.donmai.us',
             method: 'GET',
@@ -82,7 +82,7 @@ e.execute = (msg, words) => {
                                 }
                             }
                         }
-                    console.log(urlList.length);
+                    bu.logger.debug(urlList.length);
                     if (urlList.length == 0) {
                         bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
                         return;
@@ -92,13 +92,13 @@ e.execute = (msg, words) => {
                         if (urlList.length > 0) {
                             var choice = bu.getRandomInt(0, urlList.length - 1);
                             message += urlList[choice] + '\n';
-                            console.log(`${choice} / ${urlList.length} - ${urlList[choice]}`);
+                            bu.logger.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
                             urlList.splice(choice, 1);
                         }
                     }
                     bu.sendMessageToDiscord(msg.channel.id, message);
                 } catch (err) {
-                    console.log(err.stack);
+                    bu.logger.error(err.stack);
                 }
             });
         });

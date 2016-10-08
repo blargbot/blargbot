@@ -33,7 +33,7 @@ e.execute = (msg, words) => {
     if (words[1]) {
         var user = bu.getUserFromName(msg, words[1]);
         if (!user) {
-            console.log('There was no user.');
+            bu.logger.debug('There was no user.');
             return;
         }
         var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));

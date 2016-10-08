@@ -38,10 +38,10 @@ function initCommands() {
         if (/.+\.js$/.test(commandFile)) {
             var commandName = commandFile.match(/(.+)\.js$/)[1];
             loadCommand(commandName);
-            console.log(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module '
+            bu.logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module '
                 , commandName);
         } else {
-            console.log('     Skipping non-command ', commandFile);
+            bu.logger.init('     Skipping non-command ', commandFile);
 
         }
     }
@@ -54,7 +54,7 @@ function initCommands() {
  */
 function reloadCommand(commandName) {
     if (bu.commands[commandName]) {
-        console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module '
+        bu.logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module '
             , commandName);
         if (bu.commands[commandName].shutdown)
             bu.commands[commandName].shutdown();
@@ -69,12 +69,12 @@ function reloadCommand(commandName) {
  */
 function unloadCommand(commandName) {
     if (bu.commands[commandName]) {
-        console.log(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module '
+        bu.logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module '
             , commandName);
 
         if (bu.commands[commandName].sub) {
             for (var subCommand in bu.commands[commandName].sub) {
-                console.log(`    Unloading ${commandName}'s subcommand`
+                bu.logger.init(`    Unloading ${commandName}'s subcommand`
                     , subCommand);
                 delete bu.commandList[subCommand];
             }
@@ -82,7 +82,7 @@ function unloadCommand(commandName) {
         delete bu.commandList[commandName];
         if (bu.commands[commandName].alias) {
             for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
-                console.log(`    Unloading ${commandName}'s alias`
+                bu.logger.init(`    Unloading ${commandName}'s alias`
                     , bu.commands[commandName].alias[ii]);
                 delete bu.commandList[bu.commands[commandName].alias[ii]];
             }
@@ -100,7 +100,7 @@ function loadCommand(commandName) {
     if (bu.commands[commandName].isCommand) {
         buildCommand(commandName);
     } else {
-        console.log('     Skipping non-command ', commandName + '.js');
+        bu.logger.init('     Skipping non-command ', commandName + '.js');
     }
 }
 
@@ -121,7 +121,7 @@ function buildCommand(commandName) {
     }
     if (bu.commands[commandName].sub) {
         for (var subCommand in bu.commands[commandName].sub) {
-            console.log(`    Loading ${commandName}'s subcommand`, subCommand);
+            bu.logger.init(`    Loading ${commandName}'s subcommand`, subCommand);
 
             bu.commandList[subCommand] = {
                 name: commandName,
@@ -135,7 +135,7 @@ function buildCommand(commandName) {
     bu.commandList[commandName] = command;
     if (bu.commands[commandName].alias) {
         for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
-            console.log(`    Loading ${commandName}'s alias`
+            bu.logger.init(`    Loading ${commandName}'s alias`
                 , bu.commands[commandName].alias[ii]);
             bu.commandList[bu.commands[commandName].alias[ii]] = command;
         }
@@ -240,24 +240,24 @@ e.init = (blargutil, v, em, database) => {
 
     bot.on('debug', function (message, id) {
         if (debug)
-            console.log(`[${moment()
+            bu.logger.debug(`[${moment()
                 .format(`MM/DD HH:mm:ss`)}][DEBUG][${id}] ${message}`);
     });
 
     bot.on('warn', function (message, id) {
         if (warn)
-            console.log(`[${moment()
+            bu.logger.warn(`[${moment()
                 .format(`MM/DD HH:mm:ss`)}][WARN][${id}] ${message}`);
     });
 
     bot.on('error', function (err, id) {
         if (error)
-            console.log(`[${moment()
+            bu.logger.error(`[${moment()
                 .format(`MM/DD HH:mm:ss`)}][ERROR][${id}] ${err.stack}`);
     });
 
     bot.on('ready', function () {
-        console.log('Ready!');
+        bu.logger.init('Ready!');
 
         gameId = bu.getRandomInt(0, 4);
         if (config.general.isbeta)
@@ -301,7 +301,7 @@ e.init = (blargutil, v, em, database) => {
         try {
             if (member.id === bot.user.id) {
                 postStats();
-                console.log('removed from guild');
+                bu.logger.debug('removed from guild');
                 bu.sendMessageToDiscord(`205153826162868225`
                     , `I was removed from the guild \`${guild
                         .name}\` (\`${guild.id}\`)!`);
@@ -316,7 +316,7 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
                 });
             }
         } catch (err) {
-            console.log(err.stack);
+            bu.logger.error(err.stack);
         }
     });
 
@@ -346,7 +346,7 @@ If you are the owner of this server, here are a few things to know.
             on duplicate key update active=1`, [guild.id, guild.name]);
         }
 
-        console.log('added to guild');
+        bu.logger.debug('added to guild');
         db.query(`select active from guild where guildid = ?`, [guild.id]
             , (err, rows) => {
                 if (!rows[0]) {
@@ -365,7 +365,7 @@ If you are the owner of this server, here are a few things to know.
                 return;
             }
             if (msg.author.id == bot.user.id) {
-                console.log(`Message ${msg.id} was updated to '${msg.content}''`);
+                bu.logger.output(`Message ${msg.id} was updated to '${msg.content}''`);
             }
             if (msg.channel.id != '204404225914961920') {
                 var statement = `insert into chatlogs (content, attachment, userid, msgid, channelid, guildid, msgtime, nsfw, mentions, type) 
@@ -457,10 +457,10 @@ If you are the owner of this server, here are a few things to know.
         if (msg.channel.id != '194950328393793536')
             if (msg.author.id == bot.user.id) {
                 if (msg.channel.guild)
-                    console.log(`[DIS] ${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} `
+                    bu.logger.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} `
                         + `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
                 else
-                    console.log(`[DIS] PM> ${msg.channel.name} (${msg.channel.id})> `
+                    bu.logger.output(`PM> ${msg.channel.name} (${msg.channel.id})> `
                         + `${msg.author.username}> ${msg.content} (${msg.id})`);
             }
         if (msg.channel.id === config.discord.channel) {
@@ -476,10 +476,10 @@ If you are the owner of this server, here are a few things to know.
                         message = `\<${msg.member.nick ? msg.member.nick : msg.author.username}\> ${msg.cleanContent}`;
                     }
                 }
-                console.log(`[DIS] ${message}`);
+                bu.logger.output(message);
                 var attachUrl = '';
                 if (msg.attachments.length > 0) {
-                    console.log(util.inspect(msg.attachments[0]));
+                    bu.logger.debug(util.inspect(msg.attachments[0]));
                     attachUrl += ` ${msg.attachments[0].url}`;
                 }
                 sendMessageToIrc(message + attachUrl);
@@ -492,7 +492,7 @@ If you are the owner of this server, here are a few things to know.
                     var parsedAntiMention = parseInt(val);
                     if (!(parsedAntiMention == 0 || isNaN(parsedAntiMention))) {
                         if (msg.mentions.length >= parsedAntiMention) {
-                            console.log('BANN TIME');
+                            bu.logger.info('BANN TIME');
                             if (!bu.bans[msg.channel.guild.id])
                                 bu.bans[msg.channel.guild.id] = {};
                             bu.bans[msg.channel.guild.id][msg.author.id] = { mod: bot.user, type: 'Auto-Ban', reason: 'Mention spam' };
@@ -516,14 +516,9 @@ If you are the owner of this server, here are a few things to know.
 
                 if (msg.content.toLowerCase().startsWith('blargbot')) {
                     var index = msg.content.toLowerCase().indexOf('t');
-                    //     console.log(index)
                     prefix = msg.content.substring(0, index + 1);
-                    //   console.log(`'${prefix}'`)
                 } else if (msg.content.toLowerCase().startsWith(bu.config.discord.defaultPrefix)) {
-                    //    var index = msg.content.toLowerCase().indexOf('t')
-                    //     console.log(index)
                     prefix = bu.config.discord.defaultPrefix;
-                    //   console.log(`'${prefix}'`)
                 }
 
                 bu.isBlacklistedChannel(msg.channel.id).then(blacklisted => {
@@ -543,26 +538,15 @@ If you are the owner of this server, here are a few things to know.
                     var doCleverbot = false;
                     if (msg.content.startsWith(`<@${bot.user.id}>`) || msg.content.startsWith(`<@!${bot.user.id}>`)) {
                         prefix = msg.content.match(/<@!?[0-9]{17,21}>/)[0];
-                        console.log('Was a mention');
+                        bu.logger.debug('Was a mention');
                         doCleverbot = true;
-                        /*
-                        commandExecuted = handleDiscordCommand(msg.channel, msg.author, cleanContent, msg).then(wasCommand => {
-                            console.log(wasCommand);
-                            if (!wasCommand) {
-                                
-                            }
-                        });
-                        */
-                        //console.log(commandExecuted);
-
                     }
-                    //console.log(prefix);
                     if (msg.content.startsWith(prefix)) {
                         var command = msg.content.replace(prefix, '').trim();
-                        console.log(`${prefix} ${command}`);
+                        bu.logger.command('Incoming Command:', `${prefix} ${command}`);
                         try {
                             commandExecuted = handleDiscordCommand(msg.channel, msg.author, command, msg).then(wasCommand => {
-                                console.log(wasCommand);
+                                bu.logger.command('Was command:', wasCommand);
                                 if (wasCommand) {
                                     bu.guildSettings.get(msg.channel.id, 'deletenotif').then(val => {
                                         if (val != '0') {
@@ -582,7 +566,7 @@ If you are the owner of this server, here are a few things to know.
                                                 ? msg.channel.guild.members.get(bot.user.id).nick
                                                 : bot.user.username;
                                             var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
-                                            console.log(msgToSend);
+                                            bu.logger.debug(msgToSend);
                                             bu.cleverbotStats++;
                                             cleverbot.write(msgToSend
                                                 , function (response) {
@@ -596,10 +580,10 @@ If you are the owner of this server, here are a few things to know.
                                 }
                                 return wasCommand;
                             }).catch(err => {
-                                console.log(err);
+                                bu.logger.error(err);
                             });
                         } catch (err) {
-                            console.log(err.stack);
+                            bu.logger.error(err.stack);
                         }
                     } else {
                         if (msg.author.id == bu.CAT_ID && msg.content.indexOf('discord.gg') == -1) {
@@ -613,8 +597,9 @@ If you are the owner of this server, here are a few things to know.
                                 && msg.channel.guild) {
                                 db.query(`SELECT id, content from catchat order by id desc limit 1`, (err, row) => {
 
-                                    if (err)
-                                        console.log(err.stack);
+                                    if (err) {
+                                        bu.logger.warn(err.stack);
+                                    }
                                     if ((row[0] && row[0].content != msg.content) || msg.content == '') {
                                         var content = msg.content;
                                         try {
@@ -622,7 +607,7 @@ If you are the owner of this server, here are a few things to know.
                                                 content = content.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true).username);
                                             }
                                         } catch (err) {
-                                            console.log(err.stack);
+                                            bu.logger.error(err.stack);
                                         } e
                                         var statement = `insert into catchat (content, attachment, msgid, channelid, guildid, msgtime, nsfw) values (?, ?, ?, ?, ?, NOW(), ?)`;
                                         var nsfw = 0;
@@ -760,13 +745,13 @@ var commandMessages = {};
 function handleDiscordCommand(channel, user, text, msg) {
     return new Promise((fulfill, reject) => {
         let words = bu.splitInput(text);
-       // console.dir(words);
+        // console.dir(words);
         //var words = text.replace(/ +/g, ' ').split(' ');
 
         if (msg.channel.guild)
-            console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
+            bu.logger.command(`Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
         else
-            console.log(`[DIS] Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
+            bu.logger.command(`Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
 
         if (msg.author.bot) {
             fulfill(false);
@@ -841,7 +826,7 @@ var messageI = 0;
 function createLogs(channelid, msgid, times) {
     if (messageI < times)
         bot.getMessages(channelid, 100, msgid).then((kek) => {
-            console.log(`finished ${messageI + 1}/${times}`);
+            bu.logger.info(`finished ${messageI + 1}/${times}`);
             for (var i = 0; i < kek.length; i++) {
                 messageLogs.push(`${kek[i].author.username}> ${kek[i].author.id}> ${kek[i].content}`);
             }
@@ -883,30 +868,30 @@ function postStats() {
             'Content-Length': Buffer.byteLength(stats)
         }
     };
-    console.log('Posting to abal');
+    bu.logger.info('Posting to abal');
     var req = https.request(options, function (res) {
         var body = '';
         res.on('data', function (chunk) {
-            console.log(chunk);
+            bu.logger.debug(chunk);
             body += chunk;
         });
 
         res.on('end', function () {
-            console.log('body: ' + body);
+            bu.logger.debug('body: ' + body);
         });
 
         res.on('error', function (thing) {
-            console.log(`Result error occurred! ${thing}`);
+            bu.logger.warn(`Result error occurred! ${thing}`);
         });
     });
     req.on('error', function (err) {
-        console.log(`Request error occurred! ${err}`);
+        bu.warn(`Request error occurred! ${err}`);
     });
     req.write(stats);
     req.end();
 
     if (!config.general.isbeta) {
-        console.log('Posting to matt');
+        bu.logger.info('Posting to matt');
 
         request.post({
             'url': 'https://www.carbonitex.net/discord/data/botdata.php',
@@ -941,22 +926,22 @@ function fml(id) {
     var req = https.request(options, function (res) {
         var body = '';
         res.on('data', function (chunk) {
-            console.log(chunk);
+            bu.logger.debug(chunk);
             body += chunk;
         });
 
         res.on('end', function () {
-            console.log('body: ' + body);
+            bu.logger.debug('body: ' + body);
             lastUserStatsKek = JSON.parse(body);
-            console.dir(lastUserStatsKek);
+            bu.logger.debug(lastUserStatsKek);
         });
 
         res.on('error', function (thing) {
-            console.log(`Result Error: ${thing}`);
+            bu.logger.warn(`Result Error: ${thing}`);
         });
     });
     req.on('error', function (err) {
-        console.log(`Request Error: ${err}`);
+        bu.logger.warn(`Request Error: ${err}`);
     });
     req.end();
 
@@ -970,7 +955,7 @@ function fml(id) {
 function eval2(msg, text) {
     if (msg.author.id === bu.CAT_ID) {
         var commandToProcess = text.replace('eval2 ', '');
-        console.log(commandToProcess);
+        bu.logger.debug(commandToProcess);
         try {
             bu.sendMessageToDiscord(msg.channel.id, `\`\`\`js
 ${eval(`${commandToProcess}.toString()`)}
@@ -1028,7 +1013,7 @@ function processUser(msg) {
         try {
             db.query('SELECT userid as id, username from user where userid=?', [msg.author.id], (err, row) => {
                 if (!row || !row[0]) {
-                    console.log(`inserting user ${msg.author.id} (${msg.author.username})`);
+                    bu.logger.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
                     db.query(`insert into user (userid, username, discriminator, lastspoke, isbot, lastchannel, messagecount)`
                         + `values (?, ?, ?, NOW(), ?, ?, 1)`,
                         [msg.author.id, msg.author.username, msg.author.discriminator, msg.author.bot ? 1 : 0, msg.channel.id]);

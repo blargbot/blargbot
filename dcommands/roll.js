@@ -36,7 +36,7 @@ e.execute = (msg, words) => {
         if (words[1].indexOf('cat') > -1) {
             var catUrl;
             var seed = bu.getRandomInt(0, 3);
-            console.log(`The cat chosen is ${seed} `);
+            bu.logger.debug(`The cat chosen is ${seed} `);
             switch (seed) {
                 case 0:
                     catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';
@@ -76,7 +76,6 @@ e.execute = (msg, words) => {
                 }
                 var newtotal = total - rolls[0];
                 message = `${message.substring(0, message.length - 2)}] > ${total < 10 && total > -10 ? ` ${total}` : total} - ${rolls[0]} > ${newtotal < 10 && newtotal > -10 ? ` ${newtotal}` : newtotal}\n`;
-                console.log(message);
             }
             bu.sendMessageToDiscord(msg.channel.id, `${message}\n\`\`\``);
 

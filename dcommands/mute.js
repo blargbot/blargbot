@@ -29,7 +29,7 @@ e.execute = (msg, words, text) => {
         if (!mutedrole) {
             if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
                 bot.createRole(msg.channel.guild.id).then(role => {
-                    console.log(role.id);
+                    bu.logger.debug(role.id);
                     bot.editRole(msg.channel.guild.id, role.id, {
                         color: 16711680,
                         name: 'Muted',
@@ -38,9 +38,9 @@ e.execute = (msg, words, text) => {
                     bu.guildSettings.set(msg.channel.guild.id, 'mutedrole', role.id).then(() => {
                         if (msg.channel.guild.members.get(bot.user.id).permission.json.manageChannels) {
                             var channels = msg.channel.guild.channels.map(m => m);
-                            console.log(channels.length);
+                            bu.logger.debug(channels.length);
                             for (var i = 0; i < channels.length; i++) {
-                                console.log(`Modifying ${channels[i].name}`);
+                                bu.logger.debug(`Modifying ${channels[i].name}`);
                                 bot.editChannelPermission(channels[i].id, role.id, 0, 2048, 'role').catch(logError);
                             }
                             e.execute(msg, words, text);
@@ -116,5 +116,5 @@ e.execute = (msg, words, text) => {
 };
 
 function logError(err) {
-    console.log(err);
+    bu.logger.error(err);
 }

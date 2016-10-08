@@ -4,9 +4,10 @@ var Eris = require('eris');
 var e = module.exports = {};
 var db;
 var config;
+var bu;
 var CAT_ID = '103347843934212096';
-e.init = (bu, database) => {
-
+e.init = (blargutil, database) => {
+    bu = blargutil
     db = database;
     config = bu.config;
 
@@ -20,22 +21,22 @@ e.init = (bu, database) => {
     });
 
     e.bot.on('ready', () => {
-        console.log('stupid cat> YO SHIT WADDUP ITS DA CAT HERE');
+        bu.logger.init('stupid cat> YO SHIT WADDUP ITS DA CAT HERE');
     });
 
     e.bot.on('messageCreate', (msg) => {
         var prefix = config.general.isbeta ? 'catbeta' : 'cat';
         if (msg.content.startsWith(prefix)) {
             var command = msg.content.replace(prefix, '').trim();
-            console.log('stupid cat>', msg.author.username, msg.author.id, prefix, command);
+            bu.logger.info('stupid cat>', msg.author.username, msg.author.id, prefix, command);
             var words = command.split(' ');
             switch (words.shift().toLowerCase()) {
                 case 'eval':
-                    console.log('evaling');
+                    bu.logger.debug('evaling');
                     eval1(msg, words.join(' '));
                     break;
                 case 'eval2':
-                    console.log('eval2ing');
+                    bu.logger.debug('eval2ing');
                     eval2(msg, words.join(' '));
                     break;
                 case 'avatar':
@@ -52,7 +53,7 @@ e.init = (bu, database) => {
                         request.get(avatarUrl, function (error, response, body) {
                             if (!error && response.statusCode == 200) {
                                 let data = 'data:' + response.headers['content-type'] + ';base64,' + new Buffer(body).toString('base64');
-                                console.log(data);
+                                bu.logger.debug(data);
                                 var p1 = e.bot.editSelf({ avatar: data });
                                 p1.then(function () {
                                     e.bot.createMessage(msg.channel.id, ':ok_hand: Avatar set!');
@@ -66,17 +67,17 @@ e.init = (bu, database) => {
                     statement += ` where nsfw <> 1`;
                     db.query(`select count(*) as count` + statement, (err, row) => {
                         if (err)
-                            console.log(err);
+                            bu.logger.error(err);
                         db.query(`select varvalue as pos from vars where varname = ?`,
                             ['markovpos'], (err2, row2) => {
-                                if (err2) console.log(err2);
+                                if (err2) bu.logger.error(err2);
                                 if (!row2[0]) {
                                     db.query(`insert into vars (varname, varvalue) values ('markovpos', 0)`);
                                     e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`);
                                 } else {
 
                                     var max = row[0].count;
-                                    console.log(max);
+                                    bu.logger.error(max);
                                     if (max >= 100) {
                                         var diff = getRandomInt(0, 100) - 50;
                                         var pos = parseInt(row2[0].pos) + diff;
@@ -86,10 +87,10 @@ e.init = (bu, database) => {
                                         if (pos > max) {
                                             pos -= max;
                                         }
-                                        console.log('Getting message at pos', pos);
+                                        bu.logger.error('Getting message at pos', pos);
                                         db.query(`select id, content, attachment` + statement + ` limit 1 offset ?`,
                                             [pos], (err3, row3) => {
-                                                if (err3) console.log(err3);
+                                                if (err3) bu.logger.error(err3);
                                                 if (row3[0]) {
                                                     var messageToSend = `${row3[0].content} ${row3[0].attachment == 'none' ? '' :
                                                         row3[0].attachment}`;
@@ -122,7 +123,7 @@ function getRandomInt(min, max) {
 function eval2(msg, text) {
     if (msg.author.id == CAT_ID) {
         var commandToProcess = text.replace('eval2 ', '');
-        console.log(commandToProcess);
+        bu.logger.debug(commandToProcess);
         try {
             e.bot.createMessage(msg.channel.id, `\`\`\`js
 ${eval(`${commandToProcess}.toString()`)}
@@ -137,13 +138,12 @@ ${eval(`${commandToProcess}.toString()`)}
 
 function eval1(msg, text) {
     if (msg.author.id == CAT_ID) {
-        console.log('fucking fuck', text);
+        bu.logger.debug('fucking fuck', text);
         var commandToProcess = text.replace('eval ', '');
         if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
             commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
         else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
             commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
-        //  console.log(commandToProcess);
         try {
             e.bot.createMessage(msg.channel.id, `Input:
 \`\`\`js

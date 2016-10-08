@@ -25,7 +25,6 @@ e.execute = (msg, words) => {
             'User-Agent': 'blargbot/1.0 (ratismal)'
         }
     };
-    console.log(options.uri);
     request(options, (err, res, body) => {
         if (!err && res.statusCode == 200) {
             var emojis = JSON.parse(body);

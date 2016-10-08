@@ -54,7 +54,7 @@ e.execute = (msg, words) => {
         });
 
     } catch (err) {
-        console.log(err);
+        bu.logger.error(err);
     }
 };
 function getName(member) {

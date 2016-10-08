@@ -21,15 +21,11 @@ e.exampleOut = `I feel like eating pudding today.`;
 
 
 e.execute = (params) => {
-  //  for (let i = 1; i < params.args.length; i++) {
- //       params.args[i] = bu.processTagInner(params, i);
-   // }
     let args = params.args
         , fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
     if (args.length > 1) {
-        //    console.log(util.inspect(args))
         let seed = bu.getRandomInt(1, args.length - 1);
         replaceString = bu.processTagInner(params, seed);
     } else {

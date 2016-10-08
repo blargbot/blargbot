@@ -25,11 +25,10 @@ function initTags() {
         if (/.+\.js$/.test(tagFile)) {
             var tagName = tagFile.match(/(.+)\.js$/)[1];
             loadTag(tagName);
-            console.log(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module '
+            bu.logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module '
                 , tagName);
         } else {
-            console.log('     Skipping non-tag ', tagFile);
-
+            bu.logger.init('     Skipping non-tag ', tagFile);
         }
     }
 }
@@ -44,7 +43,7 @@ function loadTag(tagName) {
     if (bu.tags[tagName].isTag) {
         buildTag(tagName);
     } else {
-        console.log('     Skipping non-tag ', tagName + '.js');
+        bu.logger.init('     Skipping non-tag ', tagName + '.js');
     }
 }
 
@@ -86,7 +85,7 @@ e.processTag = (msg, contents, command, tagName, author) => {
 
         return contents;
     } catch (err) {
-        console.log(err);
+        bu.logger.error(err);
     }
 
 
@@ -104,7 +103,7 @@ e.executeTag = (msg, tagName, command) => {
             var message = e.processTag(msg, row[0].contents, command, tagName, row[0].author);
             while (/<@!?[0-9]{17,21}>/.test(message)) {
                 let match = message.match(/<@!?([0-9]{17,21})>/)[1];
-                console.log(match);
+                bu.logger.debug(match);
                 let obtainedUser = bu.getUserFromName(msg, match, true);
                 let name = '';
                 if (obtainedUser) {

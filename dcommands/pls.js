@@ -21,16 +21,16 @@ e.execute = (msg) => {
         statement += ` where nsfw <> 1`;
         bu.db.query(`select count(*) as count` + statement, (err, row) => {
             if (err)
-                console.log(err);
+                bu.logger.error(err);
             bu.db.query(`select varvalue as pos from vars where varname = ?`,
                 ['markovpos'], (err2, row2) => {
-                    if (err2) console.log(err2);
+                    if (err2) bu.logger.error(err2);
                     if (!row2[0]) {
                         bu.db.query(`insert into vars (varname, varvalue) values ("markovpos", 0)`);
                         e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`);
                     } else {
                         var max = row[0].count;
-                        console.log(max);
+                        bu.logger.debug(max);
                         if (max >= 100) {
                             var diff = bu.getRandomInt(0, 100) - 50;
                             var pos = parseInt(row2[0].pos) + diff;
@@ -40,10 +40,10 @@ e.execute = (msg) => {
                             if (pos > max) {
                                 pos -= max;
                             }
-                            console.log('Getting message at pos', pos);
+                            bu.logger.debug('Getting message at pos', pos);
                             bu.db.query(`select id, content, attachment` + statement + ` limit 1 offset ?`,
                                 [pos], (err3, row3) => {
-                                    if (err3) console.log(err3);
+                                    if (err3) bu.logger.error(err3);
                                     if (row3[0]) {
                                         var messageToSend = `${row3[0].content} ${row3[0].attachment == 'none' ? '' :
                                             row3[0].attachment}`;

@@ -30,15 +30,15 @@ e.execute = (msg, words) => {
 
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
-                console.log(`${i}: ${tagList[i]}`);
+                bu.logger.debug(`${i}: ${tagList[i]}`);
 
                 tagList[i] = tagList[i].toLowerCase();
             }
         // listylist = tagList;
-        //    console.log(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+        //    bu.logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
-                //        console.log(kek);
+                //        bu.logger.(kek);
                 bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage);
 
                 return;
@@ -53,7 +53,7 @@ e.execute = (msg, words) => {
         var url = '/post/index.xml?limit=' + 50 + '&tags=' + query;
 
         var message = '';
-        console.log('url: ' + url);
+        bu.logger.debug('url: ' + url);
         var options = {
             hostname: 'e621.net',
             method: 'GET',
@@ -66,29 +66,29 @@ e.execute = (msg, words) => {
         var req = https.request(options, function (res) {
             var body = '';
             res.on('data', function (chunk) {
-                //console.log(chunk);
+                //bu.logger.(chunk);
                 body += chunk;
             });
 
             res.on('end', function () {
-                //  console.log('body: ' + body);
+                //  bu.logger.('body: ' + body);
                 //   var xml = JSON.parse(body);
                 try {
                     xml2js.parseString(body, function (err, doc) {
                         if (err != null) {
-                            console.log('error: ' + err.message);
+                            bu.logger.error(err.stack);
                         }
                         //    parsedXml = doc;
-                        //console.log('result: ' + result);
+                        //bu.logger.('result: ' + result);
                         var urlList = [];
                         if (doc.posts.post != null)
                             for (let i = 0; i < doc.posts.post.length; i++) {
                                 var imgUrl = doc.posts.post[i].file_url[0];
-                                //    console.log(imgUrl);
+                                //    bu.logger.(imgUrl);
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                                     urlList.push(doc.posts.post[i].file_url);
                             }
-                        //    console.log(util.inspect(urlList));
+                        //    bu.logger.(util.inspect(urlList));
                         if (urlList.length == 0) {
                             bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
                             return;
@@ -101,7 +101,7 @@ e.execute = (msg, words) => {
                             if (urlList.length > 0) {
                                 var choice = bu.getRandomInt(0, urlList.length - 1);
                                 message += urlList[choice] + '\n';
-                                console.log(`${choice} / ${urlList.length} - ${urlList[choice]}`);
+                                bu.logger.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
                                 urlList.splice(choice, 1);
                             }
                         }
@@ -109,7 +109,7 @@ e.execute = (msg, words) => {
                     });
                     // });
                 } catch (err) {
-                    console.log(err.stack);
+                    bu.logger.debug(err.stack);
                 }
             });
         });

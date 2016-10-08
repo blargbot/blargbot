@@ -37,5 +37,5 @@ e.execute = (msg) => {
     bot.createMessage(msg.channel.id, message).then((msg2) => {
         bot.editMessage(msg2.channel.id, msg2.id, `Pong! (${msg2.timestamp - msg.timestamp}ms)\u202e`);
         return msg2;
-    }).catch(err => console.log(err.stack));
+    }).catch(err => bu.logger.error(err.stack));
 };

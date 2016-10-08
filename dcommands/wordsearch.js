@@ -125,7 +125,7 @@ function initWordSearch(msg, words, size) {
             line1 += ` ${i}`;
     }
     output += line1 + (size[0] > 10 ? '\n' + line2 : '') + '\n';
-    console.log(line1, '\n', line2);
+    bu.logger.debug(line1, '\n', line2);
     for (i = 0; i < search.grid[0].length; i++) {
         output += '--';
     }

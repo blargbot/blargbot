@@ -30,15 +30,15 @@ e.execute = (msg, words) => {
         var p2 = bu.sendMessageToDiscord(msg.channel.id, `Deleted ${num} messages.`);
         p2.then(function (val) {
             setTimeout(function () {
-                //   bot.deleteMessage(msg.channel.id, msg.id).catch(err => console.log(err));
-                bot.deleteMessage(msg.channel.id, val.id).catch(err => console.log(err));
+                //   bot.deleteMessage(msg.channel.id, msg.id).catch(err => bu.logger.(err));
+                bot.deleteMessage(msg.channel.id, val.id).catch(err => bu.logger.error(err));
             }, 5000);
         });
         return num;
     }).catch((err) => {
         if (err) {
             bu.sendMessageToDiscord(msg.channel.id, 'I need to be able to Manage Messages to do that!');
-            console.log(err);
+            bu.logger.error(err);
         }
     });
 };

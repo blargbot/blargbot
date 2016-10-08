@@ -33,7 +33,7 @@ ${pad('Version:', 10)} ${bu.VERSION}
 \`\`\`
 For commands, do \`help\`. For information about supporting me, do \`donate\``);
     } catch (err) {
-        console.log(err);
+        bu.logger.error(err);
     }
 };
 

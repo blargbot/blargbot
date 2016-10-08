@@ -87,7 +87,7 @@ e.execute = (msg, words) => {
                         }
                         break;
                     default:
-                        console.log('wut');
+                        bu.logger.debug('wut');
                         break;
                 }
             }
@@ -142,7 +142,7 @@ e.execute = (msg, words) => {
                 return key;
             }).catch(err => {
                 bu.send(msg.channel.id, 'Something went wrong! Please report this error with the `suggest` command:\n```\n' + err.stack + '\n```');
-                console.error(err.stack);
+                bu.logger.error(err.stack);
             });
         } else {
             bu.send(msg.channel.id, 'No results found.');
@@ -155,7 +155,7 @@ function insertQuery(msg, statement) {
     return new Promise((fulfill, reject) => {
         function attemptInsert() {
             var key = randomString(6);
-            console.log(key);
+            bu.logger.debug(key);
             bu.db.query('select keycode from logs where keycode = ?', [key], (err, rows) => {
                 if (err) {
                     reject(err);

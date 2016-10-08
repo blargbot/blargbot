@@ -101,7 +101,7 @@ e.execute = (msg, words) => {
             };
         }
         voiceSettings[msg.channel.guild.id].currentChannel = msg.channel.id;
-        console.log(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} (${msg.channel.id}> ${msg.author.username} (${msg.author.id})> ${msg.content}`);
+        bu.logger.music(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} (${msg.channel.id}> ${msg.author.username} (${msg.author.id})> ${msg.content}`);
         //var command = msg.content.replace('=3', '').trim();
         //var words = command.split(' ');
         //  words.shift()
@@ -173,7 +173,7 @@ Commands:
                 }
                 break;
             case 'skip':
-                console.log('skipping');
+                bu.logger.music('skipping');
                 if (voiceConnections.get(msg.channel.guild.id).ready) {
                     //     if (queue.hasOwnProperty(msg.channel.guild.id)) {
                     if (words[0] == 'force' && bu.hasPerm(msg, 'Bot Commander')) {
@@ -214,7 +214,7 @@ Commands:
                 if (words[0]) {
                     var message = '';
                     var newVolume = parseInt(words[0]);
-                    console.log(newVolume);
+                    bu.logger.music(newVolume);
 
                     if (newVolume > 100) {
                         newVolume = 100;
@@ -261,30 +261,30 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
                                 });
                                 voice.on('connect', () => {
                                     try {
-                                        console.log(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                        bu.logger.music(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
                                     } catch (err) {
-                                        console.log(err);
+                                        bu.logger.error(err);
                                     }
                                 });
                                 voice.on('ready', () => {
                                     try {
-                                        console.log(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                        bu.logger.music(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
                                     } catch (err) {
-                                        console.log(err);
+                                        bu.logger.error(err);
                                     }
                                 });
                                 voice.on('error', (err) => {
-                                    console.log('Error: ', err);
+                                    bu.logger.error('Error: ', err);
                                 });
                                 voice.on('debug', (debug) => {
-                                    console.log('Debug: ', debug);
+                                    bu.logger.music('Debug: ', debug);
                                 });
                                 voice.on('warn', (warn) => {
-                                    console.log('Warning: ', warn);
+                                    bu.logger.warn('Warning: ', warn);
                                 });
                                 voice.on('end', function () {
                                     try {
-                                        console.log(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
+                                        bu.logger.music(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
                                         if (!bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID)) {
                                             //  sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, `An error has occured!`)
                                         } else if (queue[msg.channel.guild.id] && queue[msg.channel.guild.id].length > 0) {
@@ -304,16 +304,16 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
 
                                         }
                                     } catch (err) {
-                                        console.log(err);
+                                        bu.logger.error(err);
                                     }
                                 });
                                 voice.on('disconnect', function () {
-                                    console.log(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
+                                    bu.logger.music(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
                                     sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, 'Bye!');
                                 });
                             });
                         }).catch((err) => {
-                            console.log(err);
+                            bu.logger.error(err);
                         });
 
                     } else {
@@ -347,14 +347,14 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
                     switch (words[0]) {
                         case 'shuffle':
                             for (i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                                //     console.log(cache[queue[msg.channel.guild.id][i].id].name);
+                                //     bu.logger.(cache[queue[msg.channel.guild.id][i].id].name);
                             }
-                            //   console.log('------------------------------------------------------');
+                            //   bu.logger.('------------------------------------------------------');
                             shuffle(queue[msg.channel.guild.id]);
                             for (i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                                //        console.log(cache[queue[msg.channel.guild.id][i].id].name);
+                                //        bu.logger.(cache[queue[msg.channel.guild.id][i].id].name);
                             }
-                            //    console.log(util.inspect(queue[msg.channel.guild.id]))
+                            //    bu.logger.(util.inspect(queue[msg.channel.guild.id]))
                             var suits = [':diamonds:', ':spades:', ':clubs:', ':hearts:'];
                             shuffle(suits);
                             sendMessage(msg.channel.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
@@ -392,7 +392,7 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
                                         var removed = queue[msg.channel.guild.id].splice(index, 1);
 
                                         var removedSong = cache[removed[0].id].name;
-                                        //        console.log(util.inspect(removed))
+                                        //        bu.logger.(util.inspect(removed))
                                         bu.sendMessageToDiscord(msg.channel.id, `:umbrella: Removed the song **${removedSong}** :umbrella:`);
 
                                     }
@@ -402,7 +402,7 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
                             }
                             break;
                     }
-                    // console.log(util.inspect(queue[msg.channel.guild.id]))
+                    // bu.logger.(util.inspect(queue[msg.channel.guild.id]))
 
                 } else {
                     sendQueue(msg);
@@ -423,7 +423,7 @@ function sendQueue(msg) {
         var currentSong = current[msg.channel.guild.id];
         var timeDiff = moment.duration(moment().diff(moment(currentSong.start)));
         var timeLength = moment.duration(cache[currentSong.id].duration);
-        console.log(currentSong.requester);
+        bu.logger.music(currentSong.requester);
         requesterMember = msg.channel.guild.members.get(currentSong.requester);
         requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username;
         line = `Right Now: ${cache[currentSong.id].name} [${
@@ -463,7 +463,7 @@ function createTimeString(d) {
 }
 
 function sendMessage(channel, message) {
-    //console.log(message);
+    //bu.logger.(message);
     return bu.sendMessageToDiscord(channel, message);
 }
 
@@ -493,7 +493,7 @@ ${err.stack}
 function eval2(msg, text) {
     if (msg.author.id === CAT_ID) {
         var commandToProcess = text.replace('eval2 ', '');
-        console.log(commandToProcess);
+        bu.logger.music(commandToProcess);
         try {
             sendMessage(msg.channel.id, `\`\`\`js
 ${eval(`${commandToProcess}.toString()`)}
@@ -566,7 +566,7 @@ function init() {
     } else {
         saveCache();
     }
-    //  console.log(util.inspect(keys))
+    //  bu.logger.(util.inspect(keys))
 }
 
 function saveCache() {
@@ -595,7 +595,7 @@ function handleMusicCommand(msg, words, text, connections) {
                         part: 'snippet,contentDetails'
                     }, (err, res) => {
                         if (err) {
-                            console.log(err);
+                            bu.logger.music(err);
                             bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                             return;
                         }
@@ -610,14 +610,14 @@ function handleMusicCommand(msg, words, text, connections) {
                     addToQueue(msg, id, cache[id].name, cache[id].duration);
             } else if (/list=(.+?)(&|$)/.test(query)) {
                 id = query.match(/list=(.+?)(&|$)/)[1];
-                console.log(id);
+                bu.logger.music(id);
                 youtube.playlists.list({
                     key: getKey(),
                     id: id,
                     part: 'snippet,contentDetails'
                 }, (err, res) => {
                     if (err) {
-                        console.log(err);
+                        bu.logger.error(err);
                         bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                         return;
                     }
@@ -625,7 +625,7 @@ function handleMusicCommand(msg, words, text, connections) {
                         bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
                         return;
                     }
-                    console.log(util.inspect(res));
+                    bu.logger.music(util.inspect(res));
                     addPlaylistToQueue(msg, id, res);
                 });
             }
@@ -638,7 +638,7 @@ function handleMusicCommand(msg, words, text, connections) {
                     part: 'snippet,contentDetails'
                 }, (err, res) => {
                     if (err) {
-                        console.log(err);
+                        bu.logger.error(err);
                         bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                         return;
                     }
@@ -663,7 +663,7 @@ function handleMusicCommand(msg, words, text, connections) {
                         part: 'contentDetails'
                     }, (err, res2) => {
                         if (err) {
-                            console.log(err);
+                            bu.logger.music(err);
                             bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                             return;
                         }
@@ -699,8 +699,8 @@ function saveSoundcloud(msg, id, callback) {
                     body += chunk;
                 });
                 res.on('end', () => {
-                    console.log('done');
-                    //     console.log(body)
+                    bu.logger.music('done');
+                    //     bu.logger.(body)
                     writeStream.end();
                     callback();
                 });
@@ -712,33 +712,32 @@ function saveSoundcloud(msg, id, callback) {
 }
 
 function handleSoundcloud(msg, query) {
-    //   console.log(uriquery)
+    //   bu.logger.(uriquery)
     SC.get(`/resolve?url=${encodeURIComponent(query)}`, (err, track) => {
         if (err) {
-            console.log(err);
+            bu.logger.music(err);
             bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
             return;
         }
         var type = track.location.match(/\.com\/(.+?)\//)[1];
         var id = track.location.match(/([0-9]+)\.json/)[1];
-        console.log(type, id);
+        bu.logger.music(type, id);
 
         switch (type) {
             case 'playlists':
                 SC.get(`/playlists/${id}`, (err, track) => {
                     if (err) {
-                        console.log(err);
-                        console.log('Nothing found');
+                        bu.logger.error(err);
                         bu.sendMessageToDiscord(msg.channel.id, `No results found.`);
                         return;
                     }
-                    //     console.log(track)
+                    //     bu.logger.(track)
                     var added = 0;
                     bu.sendMessageToDiscord(msg.channel.id, 'Processing playlist...').then((msg2) => {
 
                         for (var i = 0; i < track.tracks.length; i++) {
                             var curTrack = track.tracks[i];
-                            console.log(curTrack.id);
+                            bu.logger.music(curTrack.id);
                             if (curTrack.streamable) {
                                 if (!cache[curTrack.id]) {
                                     cache[curTrack.id] = {
@@ -762,7 +761,7 @@ function handleSoundcloud(msg, query) {
                         setTimeout(() => {
                             bot.deleteMessage(msg2.channel.id, msg2.id);
                         }, 15000);
-                        console.log('done');
+                        bu.logger.music('done');
                         saveCache();
                         if (!current[msg.channel.guild.id]) {
                             nextSong(msg);
@@ -781,11 +780,11 @@ function handleSoundcloud(msg, query) {
             case 'tracks': //msg, id, name, duration, sc
                 SC.get(`/tracks/${id}`, (err, track) => {
                     if (err) {
-                        console.log('Nothing found');
+                        bu.logger.music('Nothing found');
                         bu.sendMessageToDiscord(msg.channel.id, `No results found.`);
                         return;
                     }
-                    console.log(track);
+                    bu.logger.music(track);
                     if (!track.streamable) {
                         bu.sendMessageToDiscord(msg.channel.id, `I can't play that song!`);
                         return;
@@ -831,7 +830,7 @@ function nextSong(msg) {
                     saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
                 }
             } catch (err) {
-                console.log(err);
+                bu.logger.music(err);
             }
 
         });
@@ -840,7 +839,7 @@ function nextSong(msg) {
 
 function saveVideo(msg, channel, id, name, duration, callback) {
 
-    console.log(id);
+    bu.logger.music(id);
     if (!id) {
         bot.createMessage(channel, `:cry: Error finding song! :cry:`);
         return;
@@ -849,17 +848,16 @@ function saveVideo(msg, channel, id, name, duration, callback) {
     if (!cache[id].sc) {
         url = `https://www.youtube.com/watch?v=${id}`;
 
-        console.log(url);
+        bu.logger.music(url);
         var filepath = path.join(__dirname, '..', 'cache', 'yt', `${id}.mp3`);
         if (!fs.existsSync(filepath)) {
             bot.createMessage(channel, `:cd: Downloading song \`${name}\`... :cd: `).then((newmessage) => {
                 var stream = getStreamFromURL(url);
-                //  console.log(util.inspect(stream));
+                //  bu.logger.(util.inspect(stream));
                 var writeStream = fs.createWriteStream(filepath);
                 stream.pipe(writeStream);
                 stream.on('end', () => {
-                    console.log('done');
-                    //    addToQueue(msg, filepath, name, duration);
+                    bu.logger.music('done');
                     bot.editMessage(channel, newmessage.id, `:dvd: Finished downloading \`${name}\`! :dvd:`);
                     setTimeout(() => {
                         bot.deleteMessage(channel, newmessage.id);
@@ -869,7 +867,7 @@ function saveVideo(msg, channel, id, name, duration, callback) {
                     }
                 });
                 writeStream.on('error', (err) => {
-                    console.log(err);
+                    bu.logger.error(err);
                 });
             });
 
@@ -900,7 +898,7 @@ function saveVideo(msg, channel, id, name, duration, callback) {
 
 function addToQueue(msg, id, name, duration, sc) {
 
-    //   console.log(util.inspect(connections))
+    //   bu.logger.(util.inspect(connections))
     //  connections[msg.channel.guild.id].playResource(filepath, { inlineVolume: 0.3 })
     //   connections[msg.channel.guild.id].setVolume(0.3);
     if (!queue.hasOwnProperty(msg.channel.guild.id)) {
@@ -908,19 +906,16 @@ function addToQueue(msg, id, name, duration, sc) {
     }
     var subqueue = queue[msg.channel.guild.id];
     var init = moment.duration(0);
-    //  console.log(init.hours(), init.minutes(), init.seconds())
+    //  bu.logger.(init.hours(), init.minutes(), init.seconds())
 
     for (var i = 0; i < subqueue.length; i++) {
         init.add(moment.duration(cache[subqueue[i].id].duration));
-        console.log(i, ':', init.hours(), init.minutes(), init.seconds());
+        bu.logger.music(i, ':', init.hours(), init.minutes(), init.seconds());
     }
-    //   console.log(init.hours(), init.minutes(), init.seconds())
     if (current[msg.channel.guild.id]) {
         init.add(moment.duration(cache[current[msg.channel.guild.id].id].duration));
         init.subtract(moment.duration(moment().diff(current[msg.channel.guild.id].start)));
     }
-
-    //  console.log(init.hours(), init.minutes(), init.seconds())
 
     var lengthUntilString = `${init.hours() > 0 ? `${init.hours()} hours, ` : ''}${init
         .minutes() > 0 ? `${init.minutes()} minutes, and ` : ''}${init.seconds()} seconds`;
@@ -941,7 +936,6 @@ function addToQueue(msg, id, name, duration, sc) {
                 bot.deleteMessage(msg.channel.id, newmessage.id);
             }, 15000);
         });
-    // console.log(duration);
     if (!current[msg.channel.guild.id]) {
         nextSong(msg);
     } else {
@@ -968,20 +962,20 @@ function findVideo(msg, text, callback) {
             type: 'video'
         }, (err, res) => {
             if (err) {
-                console.log(err);
+                bu.logger.error(err);
                 bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                 return;
             }
-            //     console.log(util.inspect(res))
-            //      console.log(util.inspect(res.items[0].id))
-            //    console.log(util.inspect(res.items[0].snippet))
+            //     bu.logger.(util.inspect(res))
+            //      bu.logger.(util.inspect(res.items[0].id))
+            //    bu.logger.(util.inspect(res.items[0].snippet))
             if (res.items.length == 0) {
                 bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
             } else
                 callback(res);
         });
     } catch (err) {
-        console.log(err);
+        bu.logger.error(err);
         bu.sendMessageToDiscord(msg.channel.id, 'Something went wrong!');
     }
 }
@@ -990,7 +984,7 @@ function getStreamFromURL(url) {
     try {
         return youtubeStream(url);
     } catch (err) {
-        console.log(err);
+        bu.logger.error(err);
     }
 }
 
@@ -998,12 +992,12 @@ function addPlaylistToQueue(msg, id, res) {
     var playlist = res.items[0];
 
     bu.sendMessageToDiscord(msg.channel.id, `Processing playlist \`${playlist.snippet.title}\` with ${playlist.contentDetails.itemCount} items.`).then((msg2) => {
-        console.log('starting processplaylist');
+        bu.logger.music('starting processplaylist');
 
         processPlaylist([], msg.author.id, id, playlist, null, (newQueue) => {
-            console.log('processplaylist done');
+            bu.logger.music('processplaylist done');
             saveCache();
-            //  console.log(util.inspect(newQueue))
+            //  bu.logger.(util.inspect(newQueue))
             for (var i = 0; i < newQueue.length; i++) {
                 if (!queue[msg.channel.guild.id])
                     queue[msg.channel.guild.id] = [];
@@ -1034,7 +1028,7 @@ function addPlaylistToQueue(msg, id, res) {
 
 function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, callback) {
     var onComplete = function (newsubqueue, newpagetoken) {
-        console.log('done a batch', newsubqueue.length, '/', playlist.contentDetails.itemCount);
+        bu.logger.music('done a batch', newsubqueue.length, '/', playlist.contentDetails.itemCount);
         if (newsubqueue.length == playlist.contentDetails.itemCount) {
             callback(newsubqueue);
         } else {
@@ -1043,7 +1037,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
     };
     function doThing(err, res2) {
         if (err) {
-            console.log(err);
+            bu.logger.music(err);
             bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
             return;
         }
@@ -1074,21 +1068,14 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
             }
 
             if (err) {
-                console.log(err);
+                bu.logger.music(err);
                 bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                 return;
-
             }
-            //     }
             if (--tasksToGo === 0) {
                 onComplete(subqueue, res.nextPageToken);
             }
-            //  console.log(tasksToGo, res.nextPageToken)
-            // //  pause = false
             for (var i = 0; i < res.items.length; i++) {
-                // var pause = true
-                //    var ii = i;
-                //    console.log(i, res.items.length)
                 if (!cache[res.items[i].contentDetails.videoId]) {
                     youtube.videos.list({
                         key: getKey(),
@@ -1101,13 +1088,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
                         onComplete(subqueue, res.nextPageToken);
                     }
                 }
-                //  while (pause) {
-
-                //   }
-            }//
-            //  if (i >= res.items.length) {
-            //           processPlaylist(subqueue, requesterid, id, playlist, res.nextPageToken, callback)
-            //          }
+            }
         });
     } else {
         if (callback) {

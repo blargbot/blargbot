@@ -57,7 +57,7 @@ e.execute = (msg, words) => {
                     commandName = bu.commandList[words[2].toLowerCase()].name;
                     if (bu.commands[commandName].category == bu.CommandType.CAT
                         || bu.commands[commandName].category == bu.CommandType.MUSIC) {
-                        console.log('no ur not allowed');
+                        bu.logger.debug('no ur not allowed');
                         bu.send(msg.channel.id, `That's not a command!`);
                         return;
                     }
@@ -65,13 +65,13 @@ e.execute = (msg, words) => {
                     if (words.length == 3) {
                         bu.db.query(`insert into commandperm (guildid, commandname, rolename) values (?, ?, null)
                 on duplicate key update rolename = values(rolename)`, [msg.channel.guild.id, words[2].toLowerCase()], (err) => {
-                                if (err) console.log(err);
+                                if (err) bu.logger.error(err);
                                 bu.send(msg.channel.id, `Removed the custom role requirement from command \`${words[2].toLowerCase()}\``);
                             });
                     } else if (words.length >= 4) {
                         bu.db.query(`insert into commandperm (guildid, commandname, rolename) values (?, ?, ?)
                 on duplicate key update rolename = values(rolename)`, [msg.channel.guild.id, words[2].toLowerCase(), words.splice(3, words.length).join(' ')], (err) => {
-                                if (err) console.log(err);
+                                if (err) bu.logger.error(err);
                                 bu.send(msg.channel.id, `Added custom role requirement to command \`${words[2].toLowerCase()}\``);
                             });
                     }
@@ -87,14 +87,14 @@ e.execute = (msg, words) => {
                     commandName = bu.commandList[words[2].toLowerCase()].name;
                     if (bu.commands[commandName].category == bu.CommandType.CAT
                         || bu.commands[commandName].category == bu.CommandType.MUSIC) {
-                        console.log('no ur not allowed');
+                        bu.logger.debug('no ur not allowed');
                         bu.send(msg.channel.id, `That's not a command!`);
                         return;
                     }
                     if (words.length == 3) {
                         bu.db.query(`insert into commandperm (guildid, commandname, permission) values (?, ?, null)
                 on duplicate key update rolename = values(rolename)`, [msg.channel.guild.id, words[2].toLowerCase()], (err) => {
-                                if (err) console.log(err);
+                                if (err) bu.logger.error(err);
                                 bu.send(msg.channel.id, `Removed the custom permission options from command \`${words[2].toLowerCase()}\``);
                             });
                     } else if (words.length >= 4) {
@@ -102,7 +102,7 @@ e.execute = (msg, words) => {
                         if (!isNaN(allow))
                             bu.db.query(`insert into commandperm (guildid, commandname, permission) values (?, ?, ?)
                 on duplicate key update permission = values(permission)`, [msg.channel.guild.id, words[2].toLowerCase(), allow], (err) => {
-                                    if (err) console.log(err);
+                                    if (err) bu.logger.error(err);
                                     bu.send(msg.channel.id, `Added custom permission options to command \`${words[2].toLowerCase()}\``);
                                 });
                         else

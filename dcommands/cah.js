@@ -47,11 +47,8 @@ e.execute = (msg) => {
 };
 
 function doit(msg) {
-    //   console.log(util.inspect(cah))
     var blackphrase = cah.black[bu.getRandomInt(0, cah.black.length)];
-    //   console.log(blackphrase)
     var blankCount = /.\_\_[^\_]/g.test(blackphrase) ? blackphrase.match(/.\_\_[^\_]/g).length : 1;
-    //   console.log(blankCount)
     var canvas = new Canvas(185 * (1 + blankCount), 254);
     var ctx = canvas.getContext('2d');
 
@@ -81,7 +78,7 @@ function doit(msg) {
         name: 'cards.png',
         file: data
     }).catch(err => {
-        console.log(err);
+        bu.logger.error(err);
     });
 
 }
@@ -111,78 +108,3 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
     }
     context.fillText(line, x, y);
 }
-
-/*
-function generateCards(msg, timestamp, blackphrase, blankCount, iteration, usedCards) {
-    console.log(iteration)
-    if (iteration > blankCount) {
-        //finished
-        var image = gm(path.join(__dirname, '..', `img/generated/cah/card-0-${timestamp}.png`))
-        for (var i = 1; i < blankCount + 1; i++) {
-            console.log('appending')
-            image.append(path.join(__dirname, '..', `img/generated/cah/card-${i}-${timestamp}.png`), true)
-        }
-        image.write(path.join(__dirname, '..', `img/generated/cah/cards-${timestamp}.png`), function (err) {
-            if (err) throw err
-            //  callback()
-            fs.readFile(path.join(__dirname, '..', `img/generated/cah/cards-${timestamp}.png`), (err, data) => {
-                bu.sendMessageToDiscord(msg.channel.id, ``, {
-                    name: 'cards.png',
-                    file: data
-                })
-            })
-        });
-
-    } else if (iteration == 0) {
-        generateCard(timestamp, blackphrase, iteration, true, () => {
-            iteration++;
-            generateCards(msg, timestamp, blackphrase, blankCount, iteration, usedCards)
-        })
-    } else {
-        //   console.log(util.inspect(usedCards))
-        var text = cah.white[bu.getRandomInt(0, cah.white.length)]
-        //   console.log(text, usedCards.indexOf(text))
-        while (usedCards.indexOf(text) > -1) {
-            //    console.log(text)
-            text = cah.white[bu.getRandomInt(0, cah.white.length)]
-        }
-        //   console.log(text)
-        usedCards.push(text)
-
-        generateCard(timestamp, text, iteration, false, () => {
-            iteration++;
-
-            generateCards(msg, timestamp, blackphrase, blankCount, iteration, usedCards)
-        })
-    }
-}
-
-
-function generateCard(timestamp, text, thing, black, callback) {
-    gm()
-        .command('convert')
-        //   .fontSize(40)
-        .font(path.join(__dirname, '..', 'img/fonts/arialdb.ttf'))
-        .rawSize(144, 187)
-        .out('-background')
-        .out('transparent')
-        //   .stroke('#000000')
-        //    .strokeWidth(text.length > 50 ? 1 : 2)
-        .fill(black ? '#ffffff' : '#000000')
-        .gravity('Left')
-        .out(`caption:${text}`)
-        .options({
-            imageMagick: true
-        })
-        .write(path.join(__dirname, '..', `img/generated/cah/caption-${thing}-${timestamp}.png`), function (err) {
-            if (err) throw err;
-            gm(path.join(__dirname, '..', `img/${black ? 'black' : 'white'}card.png`))
-                .composite(path.join(__dirname, '..', `img/generated/cah/caption-${thing}-${timestamp}.png`))
-                .geometry('+19+21')
-                .write(path.join(__dirname, '..', `img/generated/cah/card-${thing}-${timestamp}.png`), function (err) {
-                    if (err) throw err
-                    callback()
-                });
-        });
-}
-*/

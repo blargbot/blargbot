@@ -29,7 +29,7 @@ e.execute = (msg) => {
         });
 
         res.on('end', function () {
-            console.log(body);
+            bu.logger.debug(body);
             output = JSON.parse(body);
             bu.sendFile(msg.channel.id, '', output.file);
         });

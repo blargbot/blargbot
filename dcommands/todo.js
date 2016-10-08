@@ -26,7 +26,7 @@ e.execute = (msg, words) => {
         var itemid;
         switch (words[1].toLowerCase()) {
             case 'add':
-                console.log('adding');
+                bu.logger.debug('adding');
                 if (words.length < 3) {
                     bu.send(msg.channel.id, 'Not enough arguments given!');
                     return;
@@ -37,7 +37,7 @@ e.execute = (msg, words) => {
                 bu.send(msg.channel.id, 'Done');
                 break;
             case 'remove':
-                console.log('removing');
+                bu.logger.debug('removing');
                 if (words.length < 3) {
                     bu.send(msg.channel.id, 'Not enough arguments given!');
                     return;
@@ -46,7 +46,7 @@ e.execute = (msg, words) => {
                     if (!rows && !rows[0]) {
                         bu.send(msg.channel.id, 'There was nothing to delete.');
                     }
-                    console.log(rows[0]);
+                    bu.logger.debug(rows[0]);
                     db.query(`update todo set active = false where itemid = ?`, [rows[0].itemid]);
                     bu.send(msg.channel.id, 'Done');
                 });
