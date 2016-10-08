@@ -21,6 +21,6 @@ e.execute = (msg) => {
     bu.sendMessageToDiscord(msg.channel.id, 'Invite me to your guild!\n'
         + 'http://invite.blargbot.xyz/\n'
         + 'Don\'t need the moderation functions? Use this link instead:\n'
-        + 'http://invitemin.blargbot.xyz/\n'
+        + 'http://minvite.blargbot.xyz/\n'
         + 'Join my guild!\nhttps://discord.gg/015GVxZxI8rtlJgXF');
 };
