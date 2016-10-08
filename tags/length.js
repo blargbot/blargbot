@@ -21,10 +21,15 @@ e.exampleOut = `What you said is 5 chars long.`;
 
 
 e.execute = (params) => {
-    params.args[1] = bu.processTagInner(params, 1);
-    let args1 = params.args[1];
     let replaceContent = false;
-    let replaceString = args1.length.toString();
+    let replaceString;
+    if (params.args.length >= 2) {
+        params.args[1] = bu.processTagInner(params, 1);
+        let args1 = params.args[1];
+        replaceString = args1.length;
+    } else {
+        replaceString = bu.tagProcessError(params.fallback, '`Not enough arguments`')
+    }
 
     return {
         replaceString: replaceString,
