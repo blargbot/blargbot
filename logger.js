@@ -45,6 +45,7 @@ e.init = () => {
                 name: 'general',
                 silent: false,
                 handleExceptions: true,
+                stderrLevels: ['error', 'warn'],
                 timestamp: () => {
                     return `[${moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
                 },
