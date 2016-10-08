@@ -29,10 +29,13 @@ e.execute = (msg, words) => {
                 return;
             } else {
                 if (rows && rows[0]) {
-                    bu.logger.debug(fields)
+                    bu.logger.debug(fields);
                     let columns = Object.keys(rows[0]);
+             //       for (let i = 0; i < columns.length; i++) {
+             //           columns[i] = columns[i].toUpperCase();
+             //       }
                     let table = new Table({
-                        head: columns,
+                        head: columns.map(m => m.toUpperCase()),
                         chars: {
                             'top': '', 'top-mid': '', 'top-left': '', 'top-right': ''
                             , 'bottom': '', 'bottom-mid': '', 'bottom-left': '', 'bottom-right': ''
