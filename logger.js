@@ -26,7 +26,7 @@ e.init = () => {
             warn: 'yellow',
             info: 'green',
             verbose: 'cyan',
-            debug: 'blue',
+            debug: 'grey',
             silly: 'magenta',
             command: 'blue',
             music: 'cyan',
