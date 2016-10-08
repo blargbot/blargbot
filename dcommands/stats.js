@@ -42,7 +42,7 @@ ${pad('RAM:', 13)} ${bu.getMemoryUsage()}MiB
 ${pad('Uptime:', 13)} ${bu.createTimeDiffString(moment(), bu.startTime)}
 ${pad('Version:', 13)} ${bu.VERSION}
 ${pad('Messages:', 13)} ${bu.messageStats}
-${pad('Per Minute:', 13)} ${Math.floor(moment.duration(moment() - bu.startTime).asMinutes() / bu.messageStats * 100) / 100}
+${pad('Per Minute:', 13)} ${Math.floor(bu.messageStats / moment.duration(moment() - bu.startTime).asMinutes() * 100) / 100}
 
 !== { Command Stats } ==!
        -- Total --
@@ -51,7 +51,7 @@ ${pad('Most Used:', 13)}
 ${topCommands}
    -- This Session --
 ${pad('Uses:', 13)} ${bu.commandUses}
-${pad('Per Minute:', 13)} ${Math.floor(moment.duration(moment() - bu.startTime).asMinutes() / bu.commandUses * 100) / 100}
+${pad('Per Minute:', 13)} ${Math.floor(bu.commandUses / moment.duration(moment() - bu.startTime).asMinutes() * 100) / 100}
 ${pad('Cleverbot:', 13)} ${bu.cleverbotStats}
 ${pad('Most Used:', 13)}
 ${topCommandsSession}
