@@ -15,7 +15,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'logs <number> [<type> <parameters...>]';
 e.info = 'DMs you a file with chat logs from the current channel, '
-    + 'where `number` is the amount of lines to get. '
+    + 'where `number` is the amount of lines to get. You can retrieve a maximum of 1000 logs.'
     + 'For more specific logs, you can specify a (case insensitive) '
     + 'type and parameter as follows:\n'
     + 'Types: \n'
@@ -60,6 +60,12 @@ e.execute = (msg, words) => {
     if (words.length > 1) {
         numberOfMessages = parseInt(words[1]);
     }
+    if (isNaN(numberOfMessages) || numberOfMessages > 1000)
+        numberOfMessages = 1000;
+    if (numberOfMessages <= 0) {
+        numberOfMessages = 1;
+    }
+
 
     for (var i = 0; i < words.length; i++) {
         if (i >= 1) {
@@ -137,6 +143,7 @@ e.execute = (msg, words) => {
 
             statementWhere += 'and id >= ' + bu.db.escape(rows[0].id);
             var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd.replace('desc', 'asc')}`;
+            bu.logger.debug(statement);
             insertQuery(msg, statement).then(key => {
                 bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
                 return key;
