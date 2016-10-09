@@ -59,7 +59,7 @@ var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027
                                     [msg.author.id, title,
                                         words.slice(3).join(' ')]);
                                 bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${title}\` created. ✅`);
-                                bu.send('230810364164440065', `**__Create__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${words.splice(3)}\`\`\``);
+                                bu.send('230810364164440065', `**__Create__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${words.splice(3).join(' ')}\`\`\``);
 
                             } else
                                 bu.sendMessageToDiscord(msg.channel.id, `❌ That tag already exists! ❌`);

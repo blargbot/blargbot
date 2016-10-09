@@ -12,10 +12,7 @@ var bu = require('./util.js');
 
 class BotEmitter extends EventEmitter { }
 const botEmitter = new BotEmitter();
-/*
-TODO: fix the fucking tags
-TODO: modlog
-*/
+
 var irc = require('./irc.js');
 var discord = require('./discord.js');
 var catbot = require('./catbot.js');
@@ -42,18 +39,9 @@ botEmitter.on('reloadIrc', () => {
 /** LOGGING STUFF **/
 
 
-/** File Stuff */
-//mkdirp(path.join(__dirname, 'logs'), function () {
-  //  var logFile = fs.createWriteStream(path.join(__dirname, 'logs/' + moment().format().replace(/:/gi, '_') + '.log'), { flags: 'w' });
-
-//    var logStdout = process.stdout;
-
     console.log = function () {
         bu.logger.debug(arguments);
-      //  logFile.write(`[${moment().format(`MM/DD HH:mm:ss`)}] ${util.format.apply(null, arguments)}\n`);
-    //    logStdout.write(`[${moment().format(`MM/DD HH:mm:ss`)}] ${util.format.apply(null, arguments)}\n`);
     };
-//});
 
 
 /** CONFIG STUFF **/
