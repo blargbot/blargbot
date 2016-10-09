@@ -3,8 +3,10 @@ var path = require('path');
 var fs = require('fs');
 var bot;
 var cah = {};
+var cad = {};
 var Canvas = require('canvas');
 var Image = Canvas.Image;
+var request = require('request');
 var bu;
 
 var bot;
@@ -14,6 +16,16 @@ e.init = (Tbot, blargutil) => {
     if (fs.existsSync(path.join(__dirname, '..', 'cah.json'))) {
         cah = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'cah.json'), 'utf8'));
     }
+    request('https://api.cardcastgame.com/v1/decks/JJDFG/cards', (err, res, body) => {
+        let tempCad = JSON.parse(body);
+        cad.black = tempCad.calls.map(m => {
+            return m.text.join('______');
+        });
+        cad.white = tempCad.responses.map(m => {
+            return m.text.join('______');
+        });
+        bu.logger.debug(cad);
+    });
 
     e.category = bu.CommandType.GENERAL;
 };
@@ -26,8 +38,7 @@ e.hidden = false;
 e.usage = 'cah';
 e.info = 'Generates a set of CAH cards.';
 e.longinfo = '<p>Generates a random set of Cards Against Humanity cards.</p>';
-
-e.execute = (msg) => {
+e.execute = (msg, words) => {
     new Promise((fulfill) => {
         bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw').then(val => {
             if (val && val != 0) {
@@ -40,14 +51,19 @@ e.execute = (msg) => {
         });
     }).then(cont => {
         if (cont)
-            doit(msg);
+            doit(msg, words);
         else
             bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage);
     });
 };
 
-function doit(msg) {
-    var blackphrase = cah.black[bu.getRandomInt(0, cah.black.length)];
+function doit(msg, words) {
+    let doCad = words[1] && words[1].toLowerCase() == 'cad';
+    let cardObj = doCad ? cad : cah;
+    bu.logger.debug('docad', doCad);
+    bu.logger.debug(cardObj);
+
+    var blackphrase = cardObj.black[bu.getRandomInt(0, cardObj.black.length)];
     var blankCount = /.\_\_[^\_]/g.test(blackphrase) ? blackphrase.match(/.\_\_[^\_]/g).length : 1;
     var canvas = new Canvas(185 * (1 + blankCount), 254);
     var ctx = canvas.getContext('2d');
@@ -62,12 +78,13 @@ function doit(msg) {
     wrapText(ctx, blackphrase, 19, 38, 144, 20);
     ctx.fillStyle = 'black';
     var usedCards = [];
+
     for (var i = 0; i < blankCount; i++) {
         ctx.drawImage(whitecard, ((i + 1) * (184 + 1)), 0);
 
-        var whitephrase = cah.white[bu.getRandomInt(0, cah.black.length)];
+        var whitephrase = cardObj.white[bu.getRandomInt(0, cardObj.black.length)];
         while (usedCards.indexOf(whitephrase) > -1) {
-            whitephrase = cah.white[bu.getRandomInt(0, cah.black.length)];
+            whitephrase = cardObj.white[bu.getRandomInt(0, cardObj.black.length)];
         }
         usedCards.push(whitephrase);
         wrapText(ctx, whitephrase, 19 + ((i + 1) * (184 + 1)), 38, 144, 20);
