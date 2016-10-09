@@ -60,11 +60,9 @@ e.execute = (msg, words) => {
 function doit(msg, words) {
     let doCad = words[1] && words[1].toLowerCase() == 'cad';
     let cardObj = doCad ? cad : cah;
-    bu.logger.debug('docad', doCad);
-    bu.logger.debug(cardObj);
 
     var blackphrase = cardObj.black[bu.getRandomInt(0, cardObj.black.length)];
-    var blankCount = /.\_\_[^\_]/g.test(blackphrase) ? blackphrase.match(/.\_\_[^\_]/g).length : 1;
+    var blankCount = /.\_[^\_]/g.test(blackphrase) ? blackphrase.match(/.\_[^\_]/g).length : 1;
     var canvas = new Canvas(185 * (1 + blankCount), 254);
     var ctx = canvas.getContext('2d');
 
