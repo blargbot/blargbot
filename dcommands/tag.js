@@ -187,7 +187,7 @@ ${row[0].contents}
                     }
                 }
                 tagList = [];
-                bu.db.query(`select title from tag where title like ?`, [`%${words[index]}%`], (err, row) => {
+                bu.db.query(`select title from tag where title like ? order by title asc`, [`%${words[index]}%`], (err, row) => {
                     for (let i = (page - 1) * 100; i < row.length && i < page * 100; i++) {
                         tagList.push(row[i].title);
                     }
@@ -210,7 +210,7 @@ ${row[0].contents}
                 }
                 if (!words[index]) {
                     tagList = [];
-                    bu.db.query(`select title from tag`, (err, row) => {
+                    bu.db.query(`select title from tag order by title asc`, (err, row) => {
                         for (let i = (page - 1) * 100; i < row.length && i < page * 100; i++) {
                             tagList.push(row[i].title);
                         }
@@ -228,7 +228,7 @@ ${row[0].contents}
                         break;
                     }
 
-                    bu.db.query(`select title from tag where author=?`, obtainedUser.id, (err, row) => {
+                    bu.db.query(`select title from tag where author=? order by title asc`, obtainedUser.id, (err, row) => {
                         for (var i = (page - 1) * 100; i < row.length && i < page * 100; i++) {
                             tagList.push(row[i].title);
                         }
