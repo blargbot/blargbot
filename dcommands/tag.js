@@ -46,12 +46,14 @@ e.longinfo = `<p>
 e.alias = ['t'];
 
 e.execute = (msg, words, text) => {
+    let page = 0;
+    let index = 3;
     if (words[1]) {
         var tagList;
         switch (words[1].toLowerCase()) {
             case 'create':
                 if (words.length > 3) {
-var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027\u0028\u0029\u002a\u002b\u002c\u002d\u002e\u002f\u0030\u0031\u0032\u0033\u0034\u0035\u0036\u0037\u0038\u0039\u003a\u003b\u003c\u003d\u003e\u003f\u0040\u0041\u0042\u0043\u0044\u0045\u0046\u0047\u0048\u0049\u004a\u004b\u004c\u004d\u004e\u004f\u0050\u0051\u0052\u0053\u0054\u0055\u0056\u0057\u0058\u0059\u005a\u005b\u005d\u005e\u005f\u0060\u0061\u0062\u0063\u0064\u0065\u0066\u0067\u0068\u0069\u006a\u006b\u006c\u006d\u006e\u006f\u0070\u0071\u0072\u0073\u0074\u0075\u0076\u0077\u0078\u0079\u007a\u007b\u007c\u007d\u007e]/ig, '');
+                    var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027\u0028\u0029\u002a\u002b\u002c\u002d\u002e\u002f\u0030\u0031\u0032\u0033\u0034\u0035\u0036\u0037\u0038\u0039\u003a\u003b\u003c\u003d\u003e\u003f\u0040\u0041\u0042\u0043\u0044\u0045\u0046\u0047\u0048\u0049\u004a\u004b\u004c\u004d\u004e\u004f\u0050\u0051\u0052\u0053\u0054\u0055\u0056\u0057\u0058\u0059\u005a\u005b\u005d\u005e\u005f\u0061\u0062\u0063\u0064\u0065\u0066\u0067\u0068\u0069\u006a\u006b\u006c\u006d\u006e\u006f\u0070\u0071\u0072\u0073\u0074\u0075\u0076\u0077\u0078\u0079\u007a\u007b\u007c\u007d\u007e]/ig, '');
                     bu.db.query(`select exists(select 1 from tag where title=?) as kek`,
                         [title], (err, row) => {
                             if (row[0].kek == 0) {
@@ -77,12 +79,9 @@ var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027
                         }
                         bu.db.query(`select author, id from tag where title=?`,
                             [words[2]], (err, row) => {
-                                //   bu.logger.('now were cooking with gas');
-
                                 if (row) {
                                     if (row[0].author != msg.author.id) {
                                         bu.sendMessageToDiscord(msg.channel.id, `❌ You don't own this tag! ❌`);
-                                        //     bu.db.query(`END`);
                                         bu.db.commit((err) => {
                                             if (err) bu.db.rollback(() => {
                                                 bu.logger.error(err);
@@ -95,11 +94,6 @@ var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027
                                             if (row2[0].kek == 0) {
                                                 bu.db.query('update tag set title=? where id=?',
                                                     [words[3], row[0].id]);
-
-                                                //  stmt = bu.db.prepare(`insert into tag (author, title, contents, lastmodified) values (?, ?, ?, datetime('now'))`)
-                                                //    stmt.run(row.author, words[3], row.contents);
-                                                //    stmt = bu.db.prepare(`delete from tag where title=?`)
-                                                // stmt = bu.db.prepare(`update `)
                                                 bu.db.commit((err) => {
                                                     if (err) bu.db.rollback(() => {
                                                         bu.logger.error(err);
@@ -107,7 +101,6 @@ var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027
                                                 });
                                                 bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` has been renamed to \`${words[3]}\`. ✅`);
                                                 bu.send('230810364164440065', `**__Rename__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Old Tag:** ${words[2]}\n  **New Tag**: ${words[3]}`);
-
                                             } else {
                                                 bu.sendMessageToDiscord(msg.channel.id, `❌ The tag \`${words[3]}\` already exist! ❌`);
                                                 bu.db.commit((err) => {
@@ -143,7 +136,6 @@ var title = words[2].replace(/[^\u0020\u0021\u0022\u0023\u0024\u0025\u0026\u0027
                                     words[2]]);
                             bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` edited. ✅`);
                             bu.send('230810364164440065', `**__Edit__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${words.slice(3).join(' ')}\`\`\``);
-
                         }
                     });
                 break;
@@ -186,37 +178,50 @@ ${row[0].contents}
                 });
                 break;
             case 'search':
-                //    var tagList = 'Found these tags:\n';
+                page = 1;
+                if (words[2]) {
+                    if (/^[\d]+$/.test(words[2])) {
+                        page = parseInt(words[2]);
+                    } else {
+                        index = 2;
+                    }
+                }
                 tagList = [];
-                bu.db.query(`select title from tag where title like ?`, [`%${words[2]}%`], (err, row) => {
-                    //     bu.logger.('err');
-                    //  if (!err)
-                    for (i = 0; i < row.length; i++) {
+                bu.db.query(`select title from tag where title like ?`, [`%${words[index]}%`], (err, row) => {
+                    for (let i = (page - 1) * 100; i < row.length && i < 100; i++) {
                         tagList.push(row[i].title);
                     }
                     tagList.sort();
                     bu.logger.debug('all done');
-                    var message = `Found ${tagList.length} tags matching '${words[2]}'.\n\`\`\`${tagList.join(', ').trim()}\n\`\`\``;
+                    var message = `Returned ${tagList.length}/${row.length} tags matching '${words[index]}'.\nPage **#${page}/${Math.floor(tagList.length / 100) + 1}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\``;
                     bu.sendMessageToDiscord(msg.channel.id, message);
                 });
 
                 break;
 
             case 'list':
-                if (!words[2]) {
+                page = 1;
+                if (words[2]) {
+                    if (/^[\d]+$/.test(words[2])) {
+                        page = parseInt(words[2]);
+                    } else {
+                        index = 2;
+                    }
+                }
+                if (!words[index]) {
                     tagList = [];
                     bu.db.query(`select title from tag`, (err, row) => {
-                        for (var i = 0; i < row.length; i++) {
+                        for (let i = (page - 1) * 100; i < row.length && i < 100; i++) {
                             tagList.push(row[i].title);
                         }
                         tagList.sort();
                         bu.logger.debug('all done');
-                        var message = `Found ${tagList.length} tags.\n\`\`\`${tagList.join(', ').trim()}\n\`\`\``;
+                        var message = `Returned ${tagList.length}/${row.length} tags.\nPage **#${page}/${Math.floor(tagList.length / 100) + 1}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\``;
                         bu.sendMessageToDiscord(msg.channel.id, message);
                     });
                 } else {
                     tagList = [];
-                    var userToSearch = words.slice(2).join(' ');
+                    var userToSearch = words.slice(index).join(' ');
                     bu.logger.debug(userToSearch);
                     var obtainedUser = bu.getUserFromName(msg, userToSearch);
                     if (!obtainedUser) {
@@ -224,17 +229,12 @@ ${row[0].contents}
                     }
 
                     bu.db.query(`select title from tag where author=?`, obtainedUser.id, (err, row) => {
-                        //     bu.logger.('err');
-                        //  if (!err)
-                        for (var i = 0; i < row.length; i++) {
+                        for (var i = (page - 1) * 100; i < row.length && i < 100; i++) {
                             tagList.push(row[i].title);
                         }
-                        //   else {
-
-                        //   }
                         tagList.sort();
                         bu.logger.debug('all done');
-                        var message = `Found ${tagList.length} tags made by **${obtainedUser.username}#${obtainedUser.discriminator}**.\n\`\`\`${tagList.join(', ').trim()}\n\`\`\``;
+                        var message = `Returned ${tagList.length}/${row.length} tags made by **${obtainedUser.username}#${obtainedUser.discriminator}**.\nPage **#${page}/${Math.floor(tagList.length / 100) + 1}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\``;
                         bu.sendMessageToDiscord(msg.channel.id, message);
                     });
                 }
@@ -250,7 +250,7 @@ ${row[0].contents}
 };
 
 
-var tagHelp = `\`\`\`fix
+var tagHelp = `\`\`\`prolog
 Tag Usage
   Tag <name> - executes tag with given name
   Tag Create <name> <content> - creates a new tag with given name and content
@@ -259,8 +259,8 @@ Tag Usage
   Tag Delete <name> - deletes the tag with given name, provided that you own it
   Tag Raw <name> - displays the raw code of a tag
   Tag Author <tag> - displays the name of who made the tag
-  Tag Search <name> - searches for a tag based on the provided name
-  Tag List - lists all tags 
+  Tag Search [page] <name> - searches for a tag based on the provided name
+  Tag List [page] [author] - lists all tags, or tags made by a specific author
   Tag Help - shows this message
 NOTE: Any NSFW tags must contain '{nsfw}' somewhere in their body, or they will be deleted and you will be blacklisted.
 \`\`\`
