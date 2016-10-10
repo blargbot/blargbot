@@ -211,7 +211,6 @@ ${row[0].contents}
                 if (!words[index]) {
                     tagList = [];
                     bu.db.query(`select title from tag`, (err, row) => {
-                        console.log((page - 1) * 100);
                         for (let i = (page - 1) * 100; i < row.length && i < page * 100; i++) {
                             tagList.push(row[i].title);
                         }
