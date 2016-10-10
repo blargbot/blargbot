@@ -20,9 +20,9 @@ e.exampleIn = '{repeat;e;10}';
 e.exampleOut = 'eeeeeeeeee';
 
 e.execute = (params) => {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = bu.processTagInner(params, i);
-    }
+ //   for (let i = 1; i < params.args.length; i++) {
+ //       params.args[i] = bu.processTagInner(params, i);
+ //   }
     let args = params.args
         , fallback = params.fallback;
     var replaceString = '';
@@ -30,7 +30,7 @@ e.execute = (params) => {
     var parsedFallback = parseInt(fallback);
     if (params.args[1] && params.args[2]) {
         let args1 = args[1];
-        let args2 = parseInt(args[2]);
+        let args2 = parseInt(bu.processTagInner(params, 2));
         if (isNaN(args2)) {
             if (isNaN(parsedFallback)) {
                 return {
@@ -41,7 +41,16 @@ e.execute = (params) => {
                 args2 = parsedFallback;
             }
         }
-        replaceString = args1.repeat(args2);
+        if (args2 < 0) {
+            return {
+                replaceString: bu.tagProcessError(fallback, '`Can\'t be negative`'),
+                replaceContent: replaceContent
+            };
+        }
+        replaceString = '';
+        for (let i = 0; i < args2; i++) {
+            replaceString += bu.processTagInner(params, 1);
+        }
     } else {
         replaceString = bu.tagProcessError(params.fallback, '`Not enough arguments`');
     }
