@@ -568,7 +568,7 @@ If you are the owner of this server, here are a few things to know.
                                         }
                                     });
                                 } else {
-                                    if (doCleverbot) {
+                                    if (doCleverbot && !msg.author.bot) {
                                         Cleverbot.prepare(function () {
                                             var username = msg.channel.guild.members.get(bot.user.id).nick
                                                 ? msg.channel.guild.members.get(bot.user.id).nick
