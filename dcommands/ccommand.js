@@ -49,7 +49,7 @@ e.execute = (msg, words, text) => {
 
     if (words.length == 1) {
         bu.sendMessageToDiscord(msg.channel.id, `Do \`help\` for a list of commands.
-See http://ratismal.github.io/blargbot/commands.html#ccommand for usage instructions.`);
+See https://blargbot.xyz/commands/#ccommand for usage instructions.`);
         return;
     }
 
