@@ -188,12 +188,12 @@ ${row[0].contents}
                 }
                 tagList = [];
                 bu.db.query(`select title from tag where title like ?`, [`%${words[index]}%`], (err, row) => {
-                    for (let i = (page - 1) * 100; i < row.length && i < 100; i++) {
+                    for (let i = (page - 1) * 100; i < row.length && i < page * 100; i++) {
                         tagList.push(row[i].title);
                     }
                     tagList.sort();
                     bu.logger.debug('all done');
-                    var message = `Returned ${tagList.length}/${row.length} tags matching '${words[index]}'.\nPage **#${page}/${Math.floor(tagList.length / 100) + 1}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\``;
+                    var message = `Returned ${tagList.length}/${row.length} tags matching '${words[index]}'.\nPage **#${page}/${Math.floor(row / 100) + 1}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\``;
                     bu.sendMessageToDiscord(msg.channel.id, message);
                 });
 
@@ -211,12 +211,13 @@ ${row[0].contents}
                 if (!words[index]) {
                     tagList = [];
                     bu.db.query(`select title from tag`, (err, row) => {
-                        for (let i = (page - 1) * 100; i < row.length && i < 100; i++) {
+                        console.log((page - 1) * 100);
+                        for (let i = (page - 1) * 100; i < row.length && i < page * 100; i++) {
                             tagList.push(row[i].title);
                         }
                         tagList.sort();
                         bu.logger.debug('all done');
-                        var message = `Returned ${tagList.length}/${row.length} tags.\nPage **#${page}/${Math.floor(tagList.length / 100) + 1}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\``;
+                        var message = `Returned ${tagList.length}/${row.length} tags.\nPage **#${page}/${Math.floor(row.length / 100) + 1}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\``;
                         bu.sendMessageToDiscord(msg.channel.id, message);
                     });
                 } else {
@@ -229,12 +230,12 @@ ${row[0].contents}
                     }
 
                     bu.db.query(`select title from tag where author=?`, obtainedUser.id, (err, row) => {
-                        for (var i = (page - 1) * 100; i < row.length && i < 100; i++) {
+                        for (var i = (page - 1) * 100; i < row.length && i < page * 100; i++) {
                             tagList.push(row[i].title);
                         }
                         tagList.sort();
                         bu.logger.debug('all done');
-                        var message = `Returned ${tagList.length}/${row.length} tags made by **${obtainedUser.username}#${obtainedUser.discriminator}**.\nPage **#${page}/${Math.floor(tagList.length / 100) + 1}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\``;
+                        var message = `Returned ${tagList.length}/${row.length} tags made by **${obtainedUser.username}#${obtainedUser.discriminator}**.\nPage **#${page}/${Math.floor(row.length / 100) + 1}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\``;
                         bu.sendMessageToDiscord(msg.channel.id, message);
                     });
                 }
