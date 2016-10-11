@@ -1,5 +1,7 @@
 var e = module.exports = {};
 var bu;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -17,22 +19,19 @@ e.info = 'Designates the current channel as NSFW, allowing you to use NSFW comma
 e.longinfo = '<p>Designates the current channel as NSFW, allowing you to use NSFW commands.</p>';
 
 
-e.execute = (msg) => {
-    // if (!bu.hasPerm(msg, 'Bot Commander')) {
-    //     return;
-    //  }
-    bu.isNsfwChannel(msg.channel.id).then(nsfw => {
-        if (nsfw) {
-            bu.db.query(`update channel set nsfw = false where channelid = ?`, [msg.channel.id], () => {
-                bu.sendMessageToDiscord(msg.channel.id, `Channel **${msg.channel.name}** is no longer NSFW.`);
-            });
-
-        } else {
-            bu.db.query(`insert into channel (channelid, guildid, nsfw) values (?, ?, true)
-            on duplicate key update nsfw=true`, [msg.channel.id, msg.channel.guild.id], () => {
-                    bu.sendMessageToDiscord(msg.channel.id, `Channel **${msg.channel.name}** is now NSFW.`);
-                });
-
-        }
+e.execute = async((msg) => {
+    let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+    let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id)
+        ? storedGuild.channels[msg.channel.id] : {
+            blacklisted: false
+        };
+    if (channel.nsfw) {
+        channel.nsfw = false;
+    } else {
+        channel.nsfw = true;
+    }
+    storedGuild.channels[msg.channel.id] = channel;
+    bu.r.table('guild').get(msg.channel.guild.id).update({
+        channels: storedGuild.channels
     });
-};
+});

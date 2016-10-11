@@ -21,9 +21,11 @@ e.info = '';
 
 e.execute = (msg, words) => {
     if (msg.author.id === bu.CAT_ID) {
+        bu.send(msg.channel.id, 'no');
+        /*
         let query = words.slice(1).join(' ');
         bu.logger.debug(query);
-        bu.db.query(query, (err, rows, fields) => {
+        bu.db.quer//y(query, (err, rows, fields) => {
             if (err) {
                 bu.send(msg.channel.id, `Error!\n\`\`\`js\n${err.stack}\n\`\`\``);
                 return;
@@ -65,5 +67,6 @@ e.execute = (msg, words) => {
                 }
             }
         });
+        */
     }
 };

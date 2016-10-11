@@ -19,7 +19,7 @@ e.init = (b, blargutil) => {
         var host = server.address().address;
         var port = server.address().port;
         bu.logger.init('Interface listening at http://%s:%s', host, port);
-    });  
+    });
 
     app.get('/user/:id', (req, res) => {
         var user = bot.users.get(req.params.id);
@@ -35,20 +35,19 @@ e.init = (b, blargutil) => {
             res.end(checkAuth(objectToSend, req, res));
 
         } else {
-            bu.db.query(`select username, isbot, discriminator from user where userid = ?`, [req.params.id], (err, rows) => {
-                if (rows && rows[0]) {
+            bu.r.table('user').get(req.params.id).run().then(user => {
+                if (user) {
                     objectToSend = {
                         id: req.param.id,
-                        username: rows[0].username,
-                        discriminator: rows[0].discriminator || '????',
+                        username: user.username,
+                        discriminator: user.discriminator || '????',
                         avatarURL: 'not found',
-                        bot: rows[0].isbot
+                        bot: user.isbot
                     };
                 } else {
                     objectToSend = notFound;
                 }
                 res.end(checkAuth(objectToSend, req, res));
-
             });
         }
     });

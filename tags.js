@@ -4,6 +4,8 @@ var moment = require('moment-timezone');
 var fs = require('fs');
 var path = require('path');
 var util = require('util');
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -19,18 +21,20 @@ e.init = (Tbot, blargutil) => {
  */
 function initTags() {
     var fileArray = fs.readdirSync(path.join(__dirname, 'tags'));
-    for (var i = 0; i < fileArray.length; i++) {
+    bu.r.table('rawtag').delete().run().then(() => {
+        for (var i = 0; i < fileArray.length; i++) {
 
-        var tagFile = fileArray[i];
-        if (/.+\.js$/.test(tagFile)) {
-            var tagName = tagFile.match(/(.+)\.js$/)[1];
-            loadTag(tagName);
-            bu.logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module '
-                , tagName);
-        } else {
-            bu.logger.init('     Skipping non-tag ', tagFile);
+            var tagFile = fileArray[i];
+            if (/.+\.js$/.test(tagFile)) {
+                var tagName = tagFile.match(/(.+)\.js$/)[1];
+                loadTag(tagName);
+                bu.logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module '
+                    , tagName);
+            } else {
+                bu.logger.init('     Skipping non-tag ', tagFile);
+            }
         }
-    }
+    });
 }
 
 /**
@@ -59,12 +63,15 @@ function buildTag(tagName) {
         exampleOut: bu.tags[tagName].exampleOut
     };
     bu.tagList[bu.tags[tagName].name] = tag;
-    bu.db.query('delete from rawtag', () => {
-        bu.db.query(`insert into rawtag (tagname, tusage, args, description, examplein, exampleout, type) values (?, ?, ?, ?, ?, ?, ?)
-           `,
-            [tagName, tag.usage, tag.args, tag.desc, tag.exampleIn, tag.exampleOut, bu.tags[tagName].category]);
-    });
-
+    bu.r.table('rawtag').insert({
+        name: tagName,
+        tusage: tag.usage,
+        args: tag.args,
+        description: tag.desc,
+        examplein: tag.exampleIn,
+        exampleout: tag.exampleOut,
+        type: bu.tags[tagName].category
+    }).run();
 }
 
 e.processTag = (msg, contents, command, tagName, author) => {
@@ -91,42 +98,36 @@ e.processTag = (msg, contents, command, tagName, author) => {
 
 };
 
-e.executeTag = (msg, tagName, command) => {
-    bu.db.query(`select contents, author from tag where title=?`, [tagName], (err, row) => {
-        if (!row[0])
-            bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
-        else {
-            var nsfw = false;
-            if (row[0].contents.indexOf('{nsfw}') > -1) {
-                nsfw = true;
+e.executeTag = async((msg, tagName, command) => {
+    let tag = await(bu.r.table('tag').get(tagName).run());
+    if (!tag)
+        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
+    else {
+        if (tag.contents.toLowerCase().indexOf('{nsfw}') > -1) {
+            let nsfwChan = await(bu.isNsfwChannel(msg.channel.id));
+            if (!nsfwChan) {
+                bu.sendMessageToDiscord(msg.channel.id, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
+                return;
             }
-            var message = e.processTag(msg, row[0].contents, command, tagName, row[0].author);
-            while (/<@!?[0-9]{17,21}>/.test(message)) {
-                let match = message.match(/<@!?([0-9]{17,21})>/)[1];
-                bu.logger.debug(match);
-                let obtainedUser = bu.getUserFromName(msg, match, true);
-                let name = '';
-                if (obtainedUser) {
-                    name = `@${obtainedUser.username}#${obtainedUser.discriminator}`;
-                } else {
-                    name = `@${match}`;
-                }
-                message = message.replace(new RegExp(`<@!?${match}>`, 'g'), name);
-            }
-            if (message != '')
-                if (!nsfw)
-                    bu.sendMessageToDiscord(msg.channel.id, message);
-                else {
-                    bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
-                        if (nsfwChannel) {
-                            bu.sendMessageToDiscord(msg.channel.id, message);
-
-                        } else {
-                            bu.sendMessageToDiscord(msg.channel.id, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
-                        }
-                    });
-                }
         }
-    });
-};
+        bu.r.table('tag').get(tagName).update({
+            uses: tag.uses + 1
+        });
+        var message = e.processTag(msg, tag.contents, command, tagName, tag.author);
+        while (/<@!?[0-9]{17,21}>/.test(message)) {
+            let match = message.match(/<@!?([0-9]{17,21})>/)[1];
+            bu.logger.debug(match);
+            let obtainedUser = bu.getUserFromName(msg, match, true);
+            let name = '';
+            if (obtainedUser) {
+                name = `@${obtainedUser.username}#${obtainedUser.discriminator}`;
+            } else {
+                name = `@${match}`;
+            }
+            message = message.replace(new RegExp(`<@!?${match}>`, 'g'), name);
+        }
+        if (message != '')
+            bu.sendMessageToDiscord(msg.channel.id, message);
+    }
+});
 

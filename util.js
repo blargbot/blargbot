@@ -4,50 +4,54 @@ const request = require('request');
 const Eris = require('eris');
 const emoji = require('node-emoji');
 const loggerModule = require('./logger.js');
-var e = module.exports = {};
-e.CAT_ID = '103347843934212096';
-e.catOverrides = true;
-e.db = null;
-e.config = null;
-e.emitter = null;
-e.VERSION = null;
-e.startTime = null;
-e.vars = null;
-var logger = e.logger = loggerModule.init();
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
+
+var bu = module.exports = {};
+
+bu.CAT_ID = '103347843934212096';
+bu.catOverrides = true;
+bu.db = null;
+bu.config = null;
+bu.emitter = null;
+bu.VERSION = null;
+bu.startTime = null;
+bu.vars = null;
+var logger = bu.logger = loggerModule.init();
 logger.command('meow');
 //logger.level = 'debug';
 
 // A special character for tag injections
-e.specialCharBegin = '\uE001';
-e.specialCharDiv = '\uE002';
-e.specialCharEnd = '\uE003';
-e.tagDiv = '\uE004';
+bu.specialCharBegin = '\uE001';
+bu.specialCharDiv = '\uE002';
+bu.specialCharEnd = '\uE003';
+bu.tagDiv = '\uE004';
 
 
 // A list of command modules
-e.commands = {};
+bu.commands = {};
 // A list of command names/descriptions for each alias or subcommand
-e.commandList = {};
+bu.commandList = {};
 // A list of command usage for the current session
-e.commandStats = {};
-e.commandUses = 0;
+bu.commandStats = {};
+bu.commandUses = 0;
 // How many times cleverbot has been used
-e.cleverbotStats = 0;
+bu.cleverbotStats = 0;
 // How many messages the bot has made
-e.messageStats = 0;
+bu.messageStats = 0;
 // A map of messages to await for
-e.awaitMessages = {};
+bu.awaitMessages = {};
 
-e.defaultStaff = Eris.Constants.Permissions.kickMembers
+bu.defaultStaff = Eris.Constants.Permissions.kickMembers
     + Eris.Constants.Permissions.banMembers
     + Eris.Constants.Permissions.administrator
     + Eris.Constants.Permissions.manageChannels
     + Eris.Constants.Permissions.manageGuild
     + Eris.Constants.Permissions.manageMessages;
 
-e.tags = {};
-e.tagList = {};
-e.TagType = {
+bu.tags = {};
+bu.tagList = {};
+bu.TagType = {
     SIMPLE: 1,
     COMPLEX: 2,
     properties: {
@@ -60,7 +64,7 @@ e.TagType = {
     }
 }
 
-e.CommandType = {
+bu.CommandType = {
     GENERAL: 1,
     CAT: 2,
     NSFW: 3,
@@ -74,7 +78,7 @@ e.CommandType = {
         },
         2: {
             name: 'CATZ MEOW MEOW',
-            requirement: msg => msg.author.id == e.CAT_ID
+            requirement: msg => msg.author.id == bu.CAT_ID
         },
         3: {
             name: 'NSFW',
@@ -82,7 +86,7 @@ e.CommandType = {
         },
         4: {
             name: 'Music',
-            requirement: msg => !msg.channel.guild ? false : e.config.discord.musicGuilds[msg.channel.guild.id]
+            requirement: msg => !msg.channel.guild ? false : bu.config.discord.musicGuilds[msg.channel.guild.id]
         },
         5: {
             name: 'Bot Commander',
@@ -97,11 +101,18 @@ e.CommandType = {
     }
 };
 
-e.init = (Tbot) => {
-    e.bot = Tbot;
+bu.init = (Tbot) => {
+    bu.bot = Tbot;
+    bu.r = require('rethinkdbdash')({
+        host: bu.config.db.host,
+        db: bu.config.db.database,
+        password: bu.config.db.password,
+        user: bu.config.db.user,
+        port: bu.config.db.port
+    });
 };
 
-e.compareStats = (a, b) => {
+bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
         return -1;
     if (a.uses > b.uses)
@@ -109,21 +120,21 @@ e.compareStats = (a, b) => {
     return 0;
 };
 
-e.awaitMessage = (channelid, message, msg, callback) => {
-    e.send(channelid, message).then(() => {
-        if (!e.awaitMessages.hasOwnProperty(msg.channel.id))
-            e.awaitMessages[msg.channel.id] = {};
+bu.awaitMessage = (channelid, message, msg, callback) => {
+    bu.send(channelid, message).then(() => {
+        if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
+            bu.awaitMessages[msg.channel.id] = {};
         let event = 'await' + msg.id;
-        e.awaitMessages[msg.channel.id][msg.author.id] = {
+        bu.awaitMessages[msg.channel.id][msg.author.id] = {
             event: event,
             time: moment(msg.timestamp)
         };
-        e.emitter.removeAllListeners(event);
-        e.emitter.on(event, (msg2) => {
+        bu.emitter.removeAllListeners(event);
+        bu.emitter.on(event, (msg2) => {
             let response = callback(msg2);
-            e.logger.debug(response);
+            bu.logger.debug(response);
             if (response) {
-                e.emitter.removeAllListeners(event);
+                bu.emitter.removeAllListeners(event);
             }
         });
     });
@@ -136,8 +147,8 @@ e.awaitMessage = (channelid, message, msg, callback) => {
  * @param quiet - if true, won't output an error (Boolean)
  * @returns {boolean}
  */
-e.hasPerm = (msg, perm, quiet) => {
-    if ((msg.member.id === e.CAT_ID && e.catOverrides)
+bu.hasPerm = (msg, perm, quiet) => {
+    if ((msg.member.id === bu.CAT_ID && bu.catOverrides)
         || msg.channel.guild.ownerID == msg.member.id
         || msg.member.permission.administraton) {
         return true;
@@ -149,7 +160,7 @@ e.hasPerm = (msg, perm, quiet) => {
         }
     }
     if (!quiet)
-        e.sendMessageToDiscord(msg.channel.id, `You need the role '${perm}' in order to use this command!`);
+        bu.sendMessageToDiscord(msg.channel.id, `You need the role '${perm}' in order to use this command!`);
     return false;
 };
 
@@ -160,15 +171,15 @@ e.hasPerm = (msg, perm, quiet) => {
  * @param file - the file to send (Object|null)
  * @returns {Promise.<Message>}
  */
-e.sendMessageToDiscord = function (channelId, message, file) {
-    e.messageStats++;
+bu.sendMessageToDiscord = function (channelId, message, file) {
+    bu.messageStats++;
 
     try {
         message = emoji.emojify(message);
         if (!file)
-            return e.bot.createMessage(channelId, message).catch(err => logger.error(err.stack));
+            return bu.bot.createMessage(channelId, message).catch(err => logger.error(err.stack));
         else
-            return e.bot.createMessage(channelId, message, file).catch(err => logger.error(err.stack));
+            return bu.bot.createMessage(channelId, message, file).catch(err => logger.error(err.stack));
 
     } catch (err) {
         logger.error(err.stack);
@@ -176,8 +187,8 @@ e.sendMessageToDiscord = function (channelId, message, file) {
 };
 
 //Alias of sendMessageToDiscord
-e.send = (channelId, message, file) => {
-    return e.sendMessageToDiscord(channelId, message, file);
+bu.send = (channelId, message, file) => {
+    return bu.sendMessageToDiscord(channelId, message, file);
 };
 
 /**
@@ -187,7 +198,7 @@ e.send = (channelId, message, file) => {
  * @param quiet - if true, won't respond with multiple users found(Boolean)
  * @returns {User|null}
  */
-e.getUserFromName = (msg, name, quiet) => {
+bu.getUserFromName = (msg, name, quiet) => {
     var userList;
     var userId;
     var discrim;
@@ -236,7 +247,7 @@ e.getUserFromName = (msg, name, quiet) => {
         return userList[0].user;
     } else if (userList.length == 0) {
         if (!quiet)
-            e.sendMessageToDiscord(msg.channel.id, `No users found.`);
+            bu.sendMessageToDiscord(msg.channel.id, `No users found.`);
         return null;
     } else {
         var userListString = '';
@@ -244,7 +255,7 @@ e.getUserFromName = (msg, name, quiet) => {
             userListString += `- ${userList[i].user.username}#${userList[i].user.discriminator}\n`;
         }
         if (!quiet)
-            e.sendMessageToDiscord(msg.channel.id, `Multiple users found!\`\`\`
+            bu.sendMessageToDiscord(msg.channel.id, `Multiple users found!\`\`\`
 ${userListString}
 \`\`\``);
         return null;
@@ -254,15 +265,15 @@ ${userListString}
 /**
  * Saves the config file
  */
-e.saveConfig = () => {
-    e.emitter.emit('saveConfig');
+bu.saveConfig = () => {
+    bu.emitter.emit('saveConfig');
 };
 
 /**
  * Reloads the user list (only for irc)
  */
-e.reloadUserList = () => {
-    e.emitter.emit('ircUserList');
+bu.reloadUserList = () => {
+    bu.emitter.emit('ircUserList');
 };
 
 /**
@@ -271,12 +282,12 @@ e.reloadUserList = () => {
  * @param max - maximum value (int)
  * @returns {int}
  */
-e.getRandomInt = (min, max) => {
+bu.getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 
-e.sendFile = (channelid, message, url) => {
+bu.sendFile = (channelid, message, url) => {
     var i = url.lastIndexOf('/');
     if (i != -1) {
         var filename = url.substring(i + 1, url.length);
@@ -284,7 +295,7 @@ e.sendFile = (channelid, message, url) => {
             uri: url,
             encoding: null
         }, function (err, res, body) {
-            e.bot.createMessage(channelid, message, {
+            bu.bot.createMessage(channelid, message, {
                 name: filename,
                 file: body
             });
@@ -298,7 +309,7 @@ e.sendFile = (channelid, message, url) => {
  * @param moment2 - end time
  * @returns {string}
  */
-e.createTimeDiffString = (moment1, moment2) => {
+bu.createTimeDiffString = (moment1, moment2) => {
     var ms = moment1.diff(moment2);
     var diff = moment.duration(ms);
     var days = diff.days();
@@ -315,16 +326,16 @@ e.createTimeDiffString = (moment1, moment2) => {
  * Gets how much memory the bot is currently using
  * @returns {number}
  */
-e.getMemoryUsage = () => {
+bu.getMemoryUsage = () => {
     var memory = process.memoryUsage();
     return memory.rss / 1024 / 1024;
 };
 
-e.bans = {};
+bu.bans = {};
 
-e.unbans = {};
+bu.unbans = {};
 
-e.getPosition = (member) => {
+bu.getPosition = (member) => {
     var roles = member.roles;
     var rolepos = 0;
     for (var i = 0; i < roles.length; i++) {
@@ -334,46 +345,43 @@ e.getPosition = (member) => {
     return rolepos;
 };
 
-e.logAction = (guild, user, mod, type, reason) => {
+bu.logAction = async((guild, user, mod, type, reason) => {
     let isArray = Array.isArray(user);
-    e.guildSettings.get(guild.id, 'modlog').then(val => {
-        if (val) {
-            e.db.query(`select caseid from modlog where guildid = ? order by caseid desc limit 1`,
-                [guild.id], (err, row) => {
-                    if (err) {
-                        logger.error(err);
-                        return;
-                    }
-                    var caseid = 0;
-                    if (row[0] && row[0].caseid >= 0) {
-                        caseid = row[0].caseid + 1;
-                    }
-                    let users = isArray
-                        ? user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join(', ')
-                        : `${user.username}#${user.discriminator} (${user.id})`;
-                    var message = `**Case ${caseid}**
+    let val = await(bu.guildSettings.get(guild.id, 'modlog'));
+    if (val) {
+        let storedGuild = await(bu.r.table('guild').get(guild.id).run());
+        let caseid = 0;
+        if (storedGuild.modlog.length > 0) {
+            caseid = storedGuild.modlog.length;
+        }
+        let users = isArray
+            ? user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join(', ')
+            : `${user.username}#${user.discriminator} (${user.id})`;
+        var message = `**Case ${caseid}**
 **Type:** ${type}
 **User:** ${users}
 **Reason:** ${reason || `Responsible moderator, please do \`reason ${caseid}\` to set.`}
 **Moderator:** ${mod ? `${mod.username}#${mod.discriminator}` : 'Unknown'}`;
 
-                    e.sendMessageToDiscord(val, message).then(msg => {
-                        e.db.query(`insert into modlog (guildid, caseid, userid, modid, type, msgid) 
-                    values (?, ?, ?, ?, ?, ?)`, [guild.id, caseid, isArray ? 'multiple' : user.id, mod ? mod.id : null, type, msg.id], err => {
-                                if (err) logger.error(err);
-                            });
-                        return msg;
-                    }).catch(err => {
-                        if (err) logger.error(err);
-                    });
-                });
-        }
-    });
-};
+        let msg = await(bu.sendMessageToDiscord(val, message));
+        let cases = storedGuild.modlog;
+        cases.push({
+            caseid: caseid,
+            modid: mod ? mod.id : null,
+            msgid: msg.id,
+            reason: reason || null,
+            type: type || 'Generic',
+            userid: isArray ? user.map(u => u.id).join(',') : user.id
+        });
+        bu.r.table('guild').get(guild.id).update({
+            modlog: cases
+        }).run();
+    }
+});
 
 
-e.comparePerms = (m, allow) => {
-    if (!allow) allow = e.defaultStaff;
+bu.comparePerms = (m, allow) => {
+    if (!allow) allow = bu.defaultStaff;
     let newPerm = new Eris.Permission(allow);
     for (let key in newPerm.json) {
         if (m.permission.has(key)) {
@@ -382,15 +390,15 @@ e.comparePerms = (m, allow) => {
     } return false;
 };
 
-e.debug = false;
+bu.debug = false;
 
 function setCharAt(str, index, chr) {
     if (index > str.length - 1) return str;
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
-e.processTagInner = (params, i) => {
-    return e.processTag(params.msg
+bu.processTagInner = (params, i) => {
+    return bu.processTag(params.msg
         , params.words
         , params.args[i]
         , params.fallback
@@ -398,7 +406,7 @@ e.processTagInner = (params, i) => {
         , params.tagName);
 };
 
-e.processTag = (msg, words, contents, fallback, author, tagName) => {
+bu.processTag = (msg, words, contents, fallback, author, tagName) => {
     let level = 0;
     let lastIndex = 0;
     let coords = [];
@@ -415,7 +423,7 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
             }
         } else if (contents[i] == ';') {
             if (level == 1) {
-                contents = setCharAt(contents, i, e.tagDiv);
+                contents = setCharAt(contents, i, bu.tagDiv);
             }
         }
     }
@@ -426,7 +434,7 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
     for (let i = 0; i < subtags.length; i++) {
         let tagBrackets = subtags[i]
             , tag = tagBrackets.substring(1, tagBrackets.length - 1)
-            , args = tag.split(e.tagDiv)
+            , args = tag.split(bu.tagDiv)
             , replaceString
             , replaceObj = {
                 replaceString: '',
@@ -435,8 +443,8 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
         for (let ii = 0; ii < args.length; ii++) {
             args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
-        if (e.tagList.hasOwnProperty(args[0].toLowerCase())) {
-            replaceObj = e.tags[e.tagList[args[0].toLowerCase()].tagName].execute({
+        if (bu.tagList.hasOwnProperty(args[0].toLowerCase())) {
+            replaceObj = bu.tags[bu.tagList[args[0].toLowerCase()].tagName].execute({
                 msg: msg,
                 args: args,
                 fallback: fallback,
@@ -445,26 +453,26 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
                 tagName: tagName
             });
         } else {
-            replaceObj.replaceString = e.tagProcessError(fallback, '`Tag doesn\'t exist`');
+            replaceObj.replaceString = bu.tagProcessError(fallback, '`Tag doesn\'t exist`');
         }
         if (replaceObj.fallback) {
             fallback = replaceObj.fallback;
         }
         if (replaceObj == '') {
-            return e.specialCharBegin + 'BREAK' + e.specialCharEnd;
+            return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
         }
         else {
             replaceString = replaceObj.replaceString;
             if (!replaceString) {
                 replaceString = '';
             }
-            if (replaceString == e.specialCharBegin + 'BREAK' + e.specialCharEnd) {
-                return e.specialCharBegin + 'BREAK' + e.specialCharEnd;
+            if (replaceString == bu.specialCharBegin + 'BREAK' + bu.specialCharEnd) {
+                return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
             }
             replaceString = replaceString.toString();
-            replaceString = replaceString.replace(/\}/gi, `${e.specialCharBegin}RB${e.specialCharEnd}`)
-                .replace(/\{/gi, `${e.specialCharBegin}LB${e.specialCharEnd}`)
-                .replace(/\;/g, `${e.specialCharBegin}SEMI${e.specialCharEnd}`);
+            replaceString = replaceString.replace(/\}/gi, `${bu.specialCharBegin}RB${bu.specialCharEnd}`)
+                .replace(/\{/gi, `${bu.specialCharBegin}LB${bu.specialCharEnd}`)
+                .replace(/\;/g, `${bu.specialCharBegin}SEMI${bu.specialCharEnd}`);
             logger.debug('Contents:', contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
             contents = contents.replace(tagBrackets, replaceString);
             if (replaceObj.replaceContent) {
@@ -480,17 +488,17 @@ e.processTag = (msg, words, contents, fallback, author, tagName) => {
     return contents;
 };
 
-e.processSpecial = (contents, final) => {
+bu.processSpecial = (contents, final) => {
     logger.debug('Processing special tags');
     contents += '';
     contents.replace(/\uE010|\uE011/g, '');
-    while (contents.indexOf(e.specialCharBegin) > -1 && contents.indexOf(e.specialCharEnd) > -1 &&
-        contents.indexOf(e.specialCharBegin) < contents.indexOf(e.specialCharEnd)) {
-        var tagEnds = contents.indexOf(e.specialCharEnd),
-            tagBegins = tagEnds == -1 ? -1 : contents.lastIndexOf(e.specialCharBegin, tagEnds),
+    while (contents.indexOf(bu.specialCharBegin) > -1 && contents.indexOf(bu.specialCharEnd) > -1 &&
+        contents.indexOf(bu.specialCharBegin) < contents.indexOf(bu.specialCharEnd)) {
+        var tagEnds = contents.indexOf(bu.specialCharEnd),
+            tagBegins = tagEnds == -1 ? -1 : contents.lastIndexOf(bu.specialCharBegin, tagEnds),
             tagBrackets = contents.substring(tagBegins, tagEnds + 1),
             tag = contents.substring(tagBegins + 1, tagEnds),
-            args = tag.split(e.specialCharDiv),
+            args = tag.split(bu.specialCharDiv),
             replaceString = '',
             replace = true;
 
@@ -521,10 +529,10 @@ e.processSpecial = (contents, final) => {
         if (replace)
             contents = contents.replace(tagBrackets, replaceString);
     }
-    return contents.replace(/\uE010/g, e.specialCharBegin).replace(/\uE011/g, e.specialCharEnd);
+    return contents.replace(/\uE010/g, bu.specialCharBegin).replace(/\uE011/g, bu.specialCharEnd);
 };
 
-e.splitInput = (content) => {
+bu.splitInput = (content) => {
     let input = content.replace(/ +/g, ' ').split(' ');
     let words = [];
     let inQuote = false;
@@ -566,162 +574,102 @@ e.splitInput = (content) => {
 
 /* SQL STUFF */
 
-e.guildSettings = {
-    set: (guildid, key, value) => {
-        return new Promise((fulfill, reject) => {
-            e.db.query(`insert into guildsetting (guildid, name, value) values (?, ?, ?)
-            on duplicate key update value=values(value)`,
-                [guildid, key, value], (err) => {
-                    if (err) reject(err);
-                    fulfill();
-                });
-        });
-    },
-    get: (guildid, key) => {
-        return new Promise((fulfill, reject) => {
-            e.db.query(`select value from guildsetting where guildid = ? and name = ?`,
-                [guildid, key], (err, rows) => {
-                    if (err) reject(err);
-                    if (rows[0])
-                        fulfill(rows[0].value);
-                    else
-                        fulfill(null);
-
-                });
-        });
-    },
-    remove: (guildid, key) => {
-        return new Promise((fulfill, reject) => {
-            e.db.query(`delete from guildsetting where guildid = ? and name = ?`,
-                [guildid, key], (err) => {
-                    if (err) reject(err);
-                    fulfill();
-                });
-        });
-    }
+bu.guildSettings = {
+    set: async((guildid, key, value, type) => {
+        let storedGuild = await(bu.r.table('guild').get(guildid).run());
+        storedGuild.settings[key] = value;
+        bu.r.table('guild').get(guildid).update({
+            settings: storedGuild.settings
+        }).run();
+    }),
+    get: async((guildid, key) => {
+        let storedGuild = await(bu.r.table('guild').get(guildid).run());
+        return storedGuild.settings[key];
+    }),
+    remove: async((guildid, key) => {
+        let storedGuild = await(bu.r.table('guild').get(guildid).run());
+        delete storedGuild.settings[key];
+        bu.r.table('guild').get(guildid).update({
+            settings: storedGuild.settings
+        }).run();
+    })
 };
-e.ccommand = {
-    set: (guildid, commandname, value) => {
-        return new Promise((fulfill, reject) => {
-            e.db.query(`insert into ccommand (commandname, guildid, content) values (?, ?, ?)
-            on duplicate key update content=values(content)`,
-                [commandname, guildid, value], (err) => {
-                    if (err) reject(err);
-                    fulfill();
-                });
-        });
-    },
-    get: (guildid, commandname) => {
-        return new Promise((fulfill, reject) => {
-            e.db.query(`select content from ccommand where commandname = ? and guildid = ?`,
-                [commandname, guildid], (err, rows) => {
-                    if (err) reject(err);
-                    if (rows[0])
-                        fulfill(rows[0].content);
-                    else
-                        fulfill(null);
-                });
-        });
-    },
-    remove: (guildid, commandname) => {
-        return new Promise((fulfill, reject) => {
-            e.db.query(`delete from ccommand where commandname = ? and guildid = ?`,
-                [commandname, guildid], (err, fields) => {
-                    if (err) reject(err);
-                    fulfill(fields);
-                });
-        });
-    }
+bu.ccommand = {
+    set: async((guildid, key, value, type) => {
+        let storedGuild = await(bu.r.table('guild').get(guildid).run());
+        storedGuild.ccommands[key] = value;
+        bu.r.table('guild').get(guildid).update({
+            settings: storedGuild.ccommands
+        }).run();
+    }),
+    get: async((guildid, key) => {
+        let storedGuild = await(bu.r.table('guild').get(guildid).run());
+        return storedGuild.ccommands[key];
+    }),
+    remove: async((guildid, key) => {
+        let storedGuild = await(bu.r.table('guild').get(guildid).run());
+        delete storedGuild.ccommands[key];
+        bu.r.table('guild').get(guildid).update({
+            settings: storedGuild.ccommands
+        }).run();
+    })
 };
 
-e.isNsfwChannel = (channelid) => {
-    return new Promise((fulfill, reject) => {
-        e.db.query(`select channelid from channel where channelid = ? and nsfw = true`, [channelid], (err, rows) => {
-            if (err) reject(err);
-            if (rows[0]) {
-                fulfill(true);
-            } else {
-                fulfill(false);
+bu.isNsfwChannel = async((channelid) => {
+    let guildid = bu.bot.channelGuildMap[channelid];
+    let guild = await(bu.r.table('guild').get(guildid).run());
+    return guild.channels[channelid] ? guild.channels[channelid].nsfw : false;
+});
+
+bu.isBlacklistedChannel = async((channelid) => {
+    let guildid = bu.bot.channelGuildMap[channelid];
+    let guild = await(bu.r.table('guild').get(guildid).run());
+    return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
+});
+
+bu.canExecuteCommand = async((msg, commandName, quiet) => {
+    let val = await(bu.guildSettings.get(msg.channel.guild.id, 'permoverride'));
+    let val1 = await(bu.guildSettings.get(msg.channel.guild.id, 'staffperms'));
+    if (val && val != 0)
+        if (val1) {
+            let allow = parseInt(val1);
+            if (!isNaN(allow)) {
+                if (bu.comparePerms(msg.member, allow)) {
+                    return [true, commandName];
+                }
             }
-        });
-    });
-};
-
-e.isBlacklistedChannel = (channelid) => {
-    return new Promise((fulfill, reject) => {
-        e.db.query(`select channelid from channel where channelid = ? and blacklisted = true`, [channelid], (err, rows) => {
-            if (err) reject(err);
-            if (rows[0]) {
-                fulfill(true);
-            } else {
-                fulfill(false);
+        } else {
+            if (bu.comparePerms(msg.member)) {
+                return [true, commandName];
             }
-        });
-    });
-};
-
-e.canExecuteCommand = (msg, commandName, quiet) => {
-    return new Promise((fulfill, reject) => {
-        e.guildSettings.get(msg.channel.guild.id, 'permoverride').then(val => {
-            e.guildSettings.get(msg.channel.guild.id, 'staffperms').then(val1 => {
-                if (val && val != 0)
-                    if (val1) {
-                        let allow = parseInt(val1);
-                        if (!isNaN(allow)) {
-                            if (e.comparePerms(msg.member, allow)) {
-                                fulfill([true, commandName]);
-                                return;
-                            }
-                        }
-                    } else {
-                        if (e.comparePerms(msg.member)) {
-                            fulfill([true, commandName]);
-                            return;
-                        }
+        }
+    let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+    if (storedGuild) {
+        let command = storedGuild.commandperms[commandName];
+        if (command) {
+            if (command.permission && bu.comparePerms(msg.member, command.permission)) {
+                return [true, commandName];
+            } else if (command.rolename && bu.hasPerm(msg, command.rolename, quiet)) {
+                return [true, commandName];
+            } else if (!command.rolename) {
+                if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
+                    if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
+                        return [false, commandName, 1];
                     }
+                }
+                return [true, commandName];
+            }
+        }
+    }
+    if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
+        if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
+            return [false, commandName, 3];
+        }
+    }
+    return [true, commandName];
+});
 
-                let commandQuery = `select permission, rolename
-                        from commandperm where guildid = ? and commandname = ?`;
-                e.db.query(commandQuery, [msg.channel.guild.id, commandName], (err, rows) => {
-                    if (err) {
-                        reject(err);
-                    }
-                    if (rows && rows[0]) {
-                        if (rows[0].permission && e.comparePerms(msg.member, rows[0].permission)) {
-                            fulfill([true, commandName]);
-                            return;
-                        } else if (rows[0].rolename && e.hasPerm(msg, rows[0].rolename, quiet)) {
-                            fulfill([true, commandName]);
-                            return;
-                        } else if (!rows[0].rolename) {
-                            if (e.CommandType.properties[e.commandList[commandName].category].perm) {
-                                if (!e.hasPerm(msg, e.CommandType.properties[e.commandList[commandName].category].perm, quiet)) {
-                                    fulfill([false, commandName]);
-                                    return;
-                                }
-                            }
-                            fulfill([true, commandName]);
-                        }
-                        fulfill([false, commandName]);
-                        return;
-                    } else {
-                        if (e.CommandType.properties[e.commandList[commandName].category].perm) {
-                            if (!e.hasPerm(msg, e.CommandType.properties[e.commandList[commandName].category].perm, quiet)) {
-                                fulfill([false, commandName]);
-                                return;
-                            }
-                        }
-                        fulfill([true, commandName]);
-                    }
-                });
-                return val1;
-            }).catch(reject);
-            return val;
-        }).catch(reject);
-    });
-};
-
-e.shuffle = (array) => {
+bu.shuffle = (array) => {
     let counter = array.length;
 
     // While there are elements in the array
@@ -741,28 +689,28 @@ e.shuffle = (array) => {
     return array;
 };
 
-e.getUser = (msg, args, index) => {
+bu.getUser = (msg, args, index) => {
     var obtainedUser;
     if (!index) index = 1;
 
-    msg.content = e.processSpecial(msg.content);
+    msg.content = bu.processSpecial(msg.content);
     if (args.length == index) {
         obtainedUser = msg.author;
     } else {
         if (args[index + 1]) {
-            obtainedUser = e.getUserFromName(msg, args[index], true);
+            obtainedUser = bu.getUserFromName(msg, args[index], true);
         } else {
-            obtainedUser = e.getUserFromName(msg, args[index]);
+            obtainedUser = bu.getUserFromName(msg, args[index]);
         }
     }
     return obtainedUser;
 };
 
 
-e.tagGetFloat = (arg) => {
+bu.tagGetFloat = (arg) => {
     return parseFloat(arg) ? parseFloat(arg) : NaN;
 };
 
-e.tagProcessError = (fallback, errormessage) => {
+bu.tagProcessError = (fallback, errormessage) => {
     return fallback == '' ? errormessage : fallback;
 };

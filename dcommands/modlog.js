@@ -1,5 +1,7 @@
 var e = module.exports = {};
 var bu;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -27,13 +29,12 @@ e.longinfo = `<p>Enables the modlog and sets it to the current channel. Doing <c
     <p>Bans and unbans are logged regardless of whether the <code>ban</code> or <code>unban</code> commands are used.
     </p>`;
 
-e.execute = (msg, words) => {
+e.execute = async((msg, words) => {
     if (words[1]) {
         switch (words[1].toLowerCase()) {
             case 'disable':
-                bu.guildSettings.remove(msg.channel.guild.id, 'modlog').then(() => {
-                    bu.sendMessageToDiscord(msg.channel.id, 'Modlog disabled!');
-                });
+                await(bu.guildSettings.remove(msg.channel.guild.id, 'modlog'))
+                bu.sendMessageToDiscord(msg.channel.id, 'Modlog disabled!');
                 break;
             case 'clear':
                 var limit = 0;
@@ -44,30 +45,25 @@ e.execute = (msg, words) => {
                         return;
                     }
                 }
-                bu.db.query('select * from modlog where guildid = '
-                    + bu.db.escape(msg.channel.guild.id) +
-                    (limit > 0 ? ' order by caseid desc limit ' + bu.db.escape(limit) : '')
-                    , (err, rows) => {
-                        if (rows && rows.length > 0) {
-                            var messages = [];
-                            for (var i = 0; i < rows.length; i++) {
-                                messages.push(rows[i].msgid);
-                            }
-                            bu.guildSettings.get(msg.channel.guild.id, 'modlog').then(channelid => {
-                                bot.deleteMessages(channelid, messages);
-                            });
-                            bu.db.query('delete from modlog where guildid = '
-                                + bu.db.escape(msg.channel.guild.id) +
-                                (limit > 0 ? ' order by caseid desc limit ' + bu.db.escape(limit) : ''), () => {
-                                    bu.send(msg.channel.id, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
-                                });
-                        }
-                    });
+                let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+                if (storedGuild && storedGuild.modlog.length > 0) {
+                    let index = storedGuild.modlog.length - limit;
+                    if (index < 0) {
+                        index = 0;
+                    }
+                    let cases = storedGuild.modlog.splice(index);
+                    let messages = cases.map(m => m.msgid);
+                    let modlogChannel = await(bu.guildSettings.get(msg.channel.guild.id, 'modlog'));
+                    bot.deleteMessages(modlogChannel, messages);
+                    await(bu.r.table('guild').get(msg.channel.guild.id).update({
+                        modlog: storedGuild.modlog
+                    }).run());
+                    bu.send(msg.channel.id, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
+                }
                 break;
         }
     } else {
-        bu.guildSettings.set(msg.channel.guild.id, 'modlog', msg.channel.id).then(() => {
-            bu.sendMessageToDiscord(msg.channel.id, 'Modlog channel set!');
-        });
+        await(bu.guildSettings.set(msg.channel.guild.id, 'modlog', msg.channel.id));
+        bu.sendMessageToDiscord(msg.channel.id, 'Modlog channel set!');
     }
-};
+});

@@ -1,5 +1,7 @@
 var e = module.exports = {};
 var bu;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -15,20 +17,19 @@ e.usage = 'blacklist';
 e.info = 'Blacklists the current channel. The bot will not respond until you do `blacklist` again.';
 e.longinfo = `<p>Blacklists the current channel. The bot will not respond until you do the command again.</p>`;
 
-e.execute = (msg) => {
-    //  if (bu.hasPerm(msg, 'Bot Commander')) {
-    bu.isBlacklistedChannel(msg.channel.id).then(blacklisted => {
-        if (blacklisted) {
-            bu.db.query(`update channel set blacklisted = false where channelid = ?`, [msg.channel.id], () => {
-                bu.sendMessageToDiscord(msg.channel.id, `Channel **${msg.channel.name}** is no longer blacklisted.`);
-            });
-
-        } else {
-            bu.db.query(`insert into channel (channelid, guildid, blacklisted) values (?, ?, true)
-            on duplicate key update blacklisted=true`, [msg.channel.id, msg.channel.guild.id], () => {
-                    bu.sendMessageToDiscord(msg.channel.id, `Channel **${msg.channel.name}** is now blacklisted.`);
-                });
-
-        }
+e.execute = async((msg) => {
+    let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+    let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id) 
+    ? storedGuild.channels[msg.channel.id] : {
+        nsfw: false
+    };
+    if (channel.blacklisted) {
+        channel.blacklisted = false;
+    } else {
+        channel.blacklisted = true;
+    }
+    storedGuild.channels[msg.channel.id] = channel;
+    bu.r.table('guild').get(msg.channel.guild.id).update({
+        channels: storedGuild.channels
     });
-};
+});

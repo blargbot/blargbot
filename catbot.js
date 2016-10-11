@@ -1,6 +1,7 @@
 var Eris = require('eris');
 
-
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var e = module.exports = {};
 var db;
 var config;
@@ -31,6 +32,9 @@ e.init = (blargutil, database) => {
             bu.logger.info('stupid cat>', msg.author.username, msg.author.id, prefix, command);
             var words = command.split(' ');
             switch (words.shift().toLowerCase()) {
+                case 'ping':
+                    e.bot.createMessage('What is that supposed to mean?');
+                    break;
                 case 'eval':
                     bu.logger.debug('evaling');
                     eval1(msg, words.join(' '));
@@ -63,51 +67,30 @@ e.init = (blargutil, database) => {
                     }
                     break;
                 case 'pls': // yay markovs
-                    var statement = ` from catchat `;
-                    statement += ` where nsfw <> 1`;
-                    db.query(`select count(*) as count` + statement, (err, row) => {
-                        if (err)
-                            bu.logger.error(err);
-                        db.query(`select varvalue as pos from vars where varname = ?`,
-                            ['markovpos'], (err2, row2) => {
-                                if (err2) bu.logger.error(err2);
-                                if (!row2[0]) {
-                                    db.query(`insert into vars (varname, varvalue) values ('markovpos', 0)`);
-                                    e.bot.createMessage(msg.channel.id, `Markov initiated! Please try again.`);
-                                } else {
-
-                                    var max = row[0].count;
-                                    bu.logger.error(max);
-                                    if (max >= 100) {
-                                        var diff = getRandomInt(0, 100) - 50;
-                                        var pos = parseInt(row2[0].pos) + diff;
-                                        if (pos < 0) {
-                                            pos += max;
-                                        }
-                                        if (pos > max) {
-                                            pos -= max;
-                                        }
-                                        bu.logger.error('Getting message at pos', pos);
-                                        db.query(`select id, content, attachment` + statement + ` limit 1 offset ?`,
-                                            [pos], (err3, row3) => {
-                                                if (err3) bu.logger.error(err3);
-                                                if (row3[0]) {
-                                                    var messageToSend = `${row3[0].content} ${row3[0].attachment == 'none' ? '' :
-                                                        row3[0].attachment}`;
-                                                    e.bot.createMessage(msg.channel.id, `\u200B` + messageToSend);
-                                                    db.query(`update vars set varvalue = ? where varname='markovpos'`,
-                                                        [pos]);
-                                                }
-                                            });
-                                    } else {
-                                        e.bot.createMessage(msg.channel.id, `I don't have a big enough sample size.`);
-                                    }
-
-                                }
-                            });
-
-
-                    });
+                    let max = await(bu.r.table('catchat').count().run());
+                    let position = await(bu.r.table('vars').get('markovpos').run()).varvalue;
+                    if (!position) {
+                        position = 0;
+                    }
+                    bu.logger.error(max);
+                    if (max >= 300) {
+                        var diff = getRandomInt(0, 300) - 150;
+                        var pos = parseInt(position) + diff;
+                        if (pos < 0) {
+                            pos += max;
+                        }
+                        if (pos > max) {
+                            pos -= max;
+                        }
+                        bu.logger.error('Getting message at pos', pos);
+                        let message = await(bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(pos));
+                        var messageToSend = `${message.content} ${message.attachment == 'none' ? '' :
+                            message.attachment}`;
+                        e.bot.createMessage(msg.channel.id, `\u200B` + messageToSend);
+                        bu.r.table('vars').get('markovpos').update({ varvalue: message.id }).run();
+                    } else {
+                        e.bot.createMessage(msg.channel.id, `I don't have a big enough sample size.`);
+                    }
                     break;
             }
         }

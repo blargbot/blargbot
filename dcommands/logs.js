@@ -2,6 +2,9 @@ var e = module.exports = {};
 var bu;
 var Promise = require('promise');
 var bot;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
+
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
     bu = blargutil;
@@ -51,7 +54,7 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + '<p>If you want to use multiple of the same type, separate parameters with commas. For example:</p>'
     + '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
 
-e.execute = (msg, words) => {
+e.execute = async((msg, words) => {
     var numberOfMessages = NaN
         , type = ''
         , user = ''
@@ -156,7 +159,7 @@ e.execute = (msg, words) => {
 
         }
     });
-};
+});
 
 function insertQuery(msg, statement) {
     return new Promise((fulfill, reject) => {
