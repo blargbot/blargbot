@@ -595,7 +595,7 @@ bu.guildSettings = {
     })
 };
 bu.ccommand = {
-    set: async((guildid, key, value, type) => {
+    set: async((guildid, key, value) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
         storedGuild.ccommands[key] = value;
         bu.r.table('guild').get(guildid).update({
