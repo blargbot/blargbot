@@ -55,6 +55,8 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
 
 e.execute = async((msg, words) => {
+    bu.send(msg.channel.id, 'WIP');
+    return;
     var numberOfMessages = NaN
         , type = ''
         , user = ''

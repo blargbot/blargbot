@@ -1,6 +1,9 @@
 var e = module.exports = {};
 var bu;
 var moment = require('moment-timezone');
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
+
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -18,23 +21,23 @@ e.usage = 'stats [full]';
 e.info = 'Gives you some information about me';
 e.longinfo = `<p>Gives you information about the bot.</p>`;
 
-e.execute = (msg, words) => {
+e.execute = async((msg, words) => {
     let full = words[1] && words[1].toLowerCase() == 'full';
-    bu.db.query('select sum(uses) as total from stats', (err, rows) => {
-        bu.db.query('select commandname, uses from stats where commandname <> \'music\' order by uses desc limit 5', (err, rows1) => {
-            let topCommands = '';
-            for (let i = 0; i < rows1.length; i++) {
-                topCommands += pad(rows1[i].commandname + ':', 13) + ' ' + rows1[i].uses + '\n';
-            }
-            let topCommandsSession = '';
-            var sortable = [];
-            for (let name in bu.commandStats)
-                sortable.push([name, bu.commandStats[name]]);
-            sortable.sort(compareStats);
-            for (let i = 0; i < sortable.length && i < 5; i++) {
-                topCommandsSession += pad(sortable[i][0] + ':', 13) + ' ' + sortable[i][1] + '\n';
-            }
-            bu.send(msg.channel.id, `\`\`\`prolog
+    let sum = await(bu.r.table('stats').sum('uses').run());
+    let stats = await(bu.r.table('stats').orderBy({index: bu.r.desc('uses')}).limit(5).run());
+    let topCommands = '';
+    for (let i = 0; i < stats.length; i++) {
+        topCommands += pad(stats[i].name + ':', 13) + ' ' + stats[i].uses + '\n';
+    }
+    let topCommandsSession = '';
+    var sortable = [];
+    for (let name in bu.commandStats)
+        sortable.push([name, bu.commandStats[name]]);
+    sortable.sort(compareStats);
+    for (let i = 0; i < sortable.length && i < 5; i++) {
+        topCommandsSession += pad(sortable[i][0] + ':', 13) + ' ' + sortable[i][1] + '\n';
+    }
+    bu.send(msg.channel.id, `\`\`\`prolog
 !== { General Stats } ==!
 ${pad('Guilds:', 13)} ${bot.guilds.size}
 ${pad('Channels:', 13)} ${Object.keys(bot.channelGuildMap).length}
@@ -47,7 +50,7 @@ ${pad('Per Minute:', 13)} ${Math.floor(bu.messageStats / moment.duration(moment(
 
 ${full ? `!== { Command Stats } ==!
        -- Total --
-${pad('Uses:', 13)} ${rows[0].total}
+${pad('Uses:', 13)} ${sum}
 ${pad('Most Used:', 13)}
 ${topCommands}
    -- This Session --
@@ -58,9 +61,7 @@ ${pad('Most Used:', 13)}
 ${topCommandsSession}` : ''}
 \`\`\`
 `);
-        });
-    });
-};
+});
 
 
 function pad(value, length) {

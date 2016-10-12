@@ -103,7 +103,7 @@ e.executeTag = async((msg, tagName, command) => {
     if (!tag)
         bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
     else {
-        if (tag.contents.toLowerCase().indexOf('{nsfw}') > -1) {
+        if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
             let nsfwChan = await(bu.isNsfwChannel(msg.channel.id));
             if (!nsfwChan) {
                 bu.sendMessageToDiscord(msg.channel.id, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
@@ -112,8 +112,8 @@ e.executeTag = async((msg, tagName, command) => {
         }
         bu.r.table('tag').get(tagName).update({
             uses: tag.uses + 1
-        });
-        var message = e.processTag(msg, tag.contents, command, tagName, tag.author);
+        }).run();
+        var message = e.processTag(msg, tag.content, command, tagName, tag.author);
         while (/<@!?[0-9]{17,21}>/.test(message)) {
             let match = message.match(/<@!?([0-9]{17,21})>/)[1];
             bu.logger.debug(match);

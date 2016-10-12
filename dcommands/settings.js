@@ -1,5 +1,7 @@
 var e = module.exports = {};
 var bu;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -18,82 +20,75 @@ e.usage = 'settings [help|set <key>]';
 e.info = 'Gets or sets the settings for the current guild.';
 e.longinfo = '<p>Gets or sets the settigns for the current guild.</p>';
 
-e.execute = (msg, words) => {
+e.execute = async((msg, words) => {
     if (words.length == 1) {
         //do settings shit
-        bu.db.query(`select name, value from guildsetting where guildid=?`, [msg.channel.guild.id], (err, rows) => {
-            bu.db.query(`select channelid, nsfw, blacklisted from channel where guildid=?`, [msg.channel.guild.id], (err, rows2) => {
-                var nsfw = [];
-                var blacklisted = [];
-                var i;
-                for (i = 0; i < rows2.length; i++) {
-                    if (rows2[i].nsfw) {
-                        nsfw.push(rows2[i].channelid);
-                    }
-                    if (rows2[i].blacklisted) {
-                        blacklisted.push(rows2[i].channelid);
-                    }
-                }
-                var settings = {};
-                for (i = 0; i < rows.length; i++) {
-                    settings[rows[i].name] = rows[i].value;
-                }
+        let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+        let settings = storedGuild.settings;
+        let channels = storedGuild.channels;
 
-                var prefix = settings.prefix
-                    ? settings.prefix : 'Not Set';
-                var nsfwMessage = 'None Set';
-                if (nsfw.length > 0) {
-                    nsfwMessage = '';
-                    for (i = 0; i < nsfw.length; i++) {
-                        let channel = bot.getChannel(nsfw[i]);
-                        if (channel)
-                            nsfwMessage += `${channel.name} (${nsfw[i]})\n                - `;
-                    }
-                    nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 19);
-                }
-                var blacklistMessage = 'None Set';
-                if (blacklisted.length > 0) {
-                    blacklistMessage = '';
-                    for (i = 0; i < blacklisted.length; i++) {
-                        let channel = bot.getChannel(blacklisted[i]);
-                        if (channel)
-                            blacklistMessage += `${channel.name} (${blacklisted[i]}\n                - `;
-                    }
-                    blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19);
-                }
-                var greeting = settings.greeting
-                    ? settings.greeting : 'Not Set';
-                var farewell = settings.farewell
-                    ? settings.farewell : 'Not Set';
-                var modlogChannel;
-                if (settings.modlog) {
-                    let channel = bot.getChannel(settings.modlog);
-                    if (channel)
-                        modlogChannel = `${channel.name} (${settings.modlog})`;
-                    else
-                        modlogChannel = `Channel Not Found (${settings.modlog})`;
-                } else {
-                    modlogChannel = 'Not Set';
-                }
-                var deleteNotif = settings.deletenotif != 0 ? true : false;
-                var cahNsfw = settings.cahnsfw && settings.cahnsfw != 0 ? true : false;
-                var mutedRole = settings.mutedrole ? settings.mutedrole : 'Not Set';
-                var tableFlip = settings.tableflip && settings.tableflip != 0 ? true : false;
-                var parsedAntiMention;
-                if (settings.antimention) {
-                    parsedAntiMention = parseInt(settings.antimention);
-                    if (parsedAntiMention == 0 || isNaN(parsedAntiMention)) {
-                        parsedAntiMention = 'Disabled';
-                    }
-                } else {
-                    parsedAntiMention = 'Disabled';
-                }
-                var antiMention = parsedAntiMention;
-                let permOverride = settings.permoverride && settings.permoverride != 0 ? true : false;
-                let dmHelp = settings.dmhelp && settings.dmhelp != 0 ? true : false;
+        var nsfw = [];
+        var blacklisted = [];
+        var i;
+        for (let channel in channels) {
+            if (channels[channel].nsfw) nsfw.push(channel);
+            if (channels[channel].blacklisted) blacklisted.push(channel);
+        }
+        var prefix = settings.prefix
+            ? settings.prefix : 'Not Set';
+        var nsfwMessage = 'None Set';
+        if (nsfw.length > 0) {
+            nsfwMessage = '';
+            for (i = 0; i < nsfw.length; i++) {
+                let channel = bot.getChannel(nsfw[i]);
+                if (channel)
+                    nsfwMessage += `${channel.name} (${nsfw[i]})\n                - `;
+            }
+            nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 19);
+        }
+        var blacklistMessage = 'None Set';
+        if (blacklisted.length > 0) {
+            blacklistMessage = '';
+            for (i = 0; i < blacklisted.length; i++) {
+                let channel = bot.getChannel(blacklisted[i]);
+                if (channel)
+                    blacklistMessage += `${channel.name} (${blacklisted[i]}\n                - `;
+            }
+            blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19);
+        }
+        var greeting = settings.greeting
+            ? settings.greeting : 'Not Set';
+        var farewell = settings.farewell
+            ? settings.farewell : 'Not Set';
+        var modlogChannel;
+        if (settings.modlog) {
+            let channel = bot.getChannel(settings.modlog);
+            if (channel)
+                modlogChannel = `${channel.name} (${settings.modlog})`;
+            else
+                modlogChannel = `Channel Not Found (${settings.modlog})`;
+        } else {
+            modlogChannel = 'Not Set';
+        }
+        var deleteNotif = settings.deletenotif != 0 ? true : false;
+        var cahNsfw = settings.cahnsfw && settings.cahnsfw != 0 ? true : false;
+        var mutedRole = settings.mutedrole ? settings.mutedrole : 'Not Set';
+        var tableFlip = settings.tableflip && settings.tableflip != 0 ? true : false;
+        var parsedAntiMention;
+        if (settings.antimention) {
+            parsedAntiMention = parseInt(settings.antimention);
+            if (parsedAntiMention == 0 || isNaN(parsedAntiMention)) {
+                parsedAntiMention = 'Disabled';
+            }
+        } else {
+            parsedAntiMention = 'Disabled';
+        }
+        var antiMention = parsedAntiMention;
+        let permOverride = settings.permoverride && settings.permoverride != 0 ? true : false;
+        let dmHelp = settings.dmhelp && settings.dmhelp != 0 ? true : false;
 
-                let staffPerms = settings.staffperms || bu.defaultStaff;
-                var message = `\`\`\`prolog
+        let staffPerms = settings.staffperms || bu.defaultStaff;
+        var message = `\`\`\`prolog
 Settings For ${msg.channel.guild.name}
          Prefix : ${prefix}
   NSFW Channels : ${nsfwMessage}
@@ -110,9 +105,7 @@ Settings For ${msg.channel.guild.name}
   Perm Override : ${permOverride}
     Staff Perms : ${staffPerms}
 \`\`\``;
-                bu.sendMessageToDiscord(msg.channel.id, message);
-            });
-        });
+        bu.sendMessageToDiscord(msg.channel.id, message);
     } else {
         words.shift();
         var key;
@@ -123,16 +116,15 @@ Settings For ${msg.channel.guild.name}
                     key = words.shift();
                     let value = words.join(' ');
                     if (settings[key]) {
-                        bu.guildSettings.set(msg.channel.guild.id, key, value).then(() => {
-                            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
-                        });
+                        await(bu.guildSettings.set(msg.channel.guild.id, key, value))
+                        bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
                     } else {
                         bu.sendMessageToDiscord(msg.channel.id, 'Invalid key!');
                     }
                 }
                 break;
             case 'help':
-                var message = '\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
+                let message = '\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
                 for (key in settings) {
                     message += '**__' + key.toUpperCase() + '__**' + ' - ' + settings[key] + '\n';
                 }
@@ -143,9 +135,8 @@ Settings For ${msg.channel.guild.name}
                     key = words.shift();
                     let value = words.join(' ');
                     if (settings[key]) {
-                        bu.guildSettings.set(msg.channel.guild.id, key, value).then(() => {
-                            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
-                        });
+                        await(bu.guildSettings.set(msg.channel.guild.id, key, value))
+                        bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
                     } else {
                         bu.sendMessageToDiscord(msg.channel.id, 'Invalid key!');
                     }
@@ -153,7 +144,7 @@ Settings For ${msg.channel.guild.name}
                 break;
         }
     }
-};
+});
 
 var settings = {
     cahnsfw: `whether 'cah' can only be done in nsfw channels or not. Set to '0' to disable.`,
