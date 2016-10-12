@@ -50,20 +50,20 @@ e.execute = async((params) => {
                     replaceString += ` ${words[i]}`;
             }
         } else {
-            replaceString = bu.tagProcessError(fallback, '`MIN is greater than MAX`');
+            replaceString = await(bu.tagProcessError(params, fallback, '`MIN is greater than MAX`'));
         }
     } else if (args.length == 2) {
         if (words[parseInt(args[1])]) {
             replaceString = words[parseInt(args[1])];
         } else {
-            replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
+            replaceString = await(bu.tagProcessError(params, fallback, '`Not enough arguments`'));
         }
     } else {
         if (!(words[0] == '' && words.length == 1)) {
             replaceString = words.join(' ');
         }
         else
-            replaceString = bu.tagProcessError(fallback, '`User gave no args`');
+            replaceString = await(bu.tagProcessError(params, fallback, '`User gave no args`'));
     }
     replaceString = replaceString + '';
 

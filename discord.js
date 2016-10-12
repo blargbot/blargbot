@@ -271,32 +271,29 @@ e.init = (blargutil, v, em) => {
 	});
 
 
-	bot.on('guildMemberAdd', function (guild, member) {
-		bu.guildSettings.get(guild.id, 'greeting').then(val => {
-			if (val) {
-				var message = tags.processTag({
-					channel: guild.defaultChannel,
-					author: member.user,
-					member: member
-				}, val, '');
-				bu.sendMessageToDiscord(guild.defaultChannel.id, message);
-			}
-		});
+	bot.on('guildMemberAdd', async((guild, member) => {
+		let val = await(bu.guildSettings.get(guild.id, 'greeting'))
+		if (val) {
+			var message = await(tags.processTag({
+				channel: guild.defaultChannel,
+				author: member.user,
+				member: member
+			}, val, ''));
+			bu.sendMessageToDiscord(guild.defaultChannel.id, message);
+		}
+	}));
 
-	});
-
-	bot.on('guildMemberRemove', function (guild, member) {
-		bu.guildSettings.get(guild.id, 'farewell').then(val => {
-			if (val) {
-				var message = tags.processTag({
-					channel: guild.defaultChannel,
-					author: member.user,
-					member: member
-				}, val, '');
-				bu.sendMessageToDiscord(guild.defaultChannel.id, message);
-			}
-		});
-	});
+	bot.on('guildMemberRemove', async((guild, member) => {
+		let val = await(bu.guildSettings.get(guild.id, 'farewell'))
+		if (val) {
+			var message = await(tags.processTag({
+				channel: guild.defaultChannel,
+				author: member.user,
+				member: member
+			}, val, ''));
+			bu.sendMessageToDiscord(guild.defaultChannel.id, message);
+		}
+	}));
 
 	bot.on('guildMemberRemove', async((guild, member) => {
 		if (member.id === bot.user.id) {
@@ -725,62 +722,47 @@ function switchAvatar(forced) {
 
 var commandMessages = {};
 
-function handleDiscordCommand(channel, user, text, msg) {
-	return new Promise((fulfill, reject) => {
-		let words = bu.splitInput(text);
-		// console.dir(words);
-		//var words = text.replace(/ +/g, ' ').split(' ');
+var handleDiscordCommand = async((channel, user, text, msg) => {
+	let words = bu.splitInput(text);
+	if (msg.channel.guild)
+		bu.logger.command(`Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
+	else
+		bu.logger.command(`Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
 
-		if (msg.channel.guild)
-			bu.logger.command(`Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
-		else
-			bu.logger.command(`Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
+	if (msg.author.bot) {
+		return false;
+	}
+	let val = await(bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]));
+	if (val) {
+		var command = text.replace(words[0], '').trim();
 
-		if (msg.author.bot) {
-			fulfill(false);
+		var response = await(tags.processTag(msg, val, command));
+		if (response !== 'null') {
+			bu.sendMessageToDiscord(channel.id, response);
 		}
-		bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]).then(val => {
-			if (val) {
-				var command = text.replace(words[0], '').trim();
-
-				var response = tags.processTag(msg, val, command);
-				if (response !== 'null') {
-					bu.sendMessageToDiscord(channel.id, response);
+		return true;
+	} else {
+		if (config.discord.commands[words[0]] != null) {
+			bu.sendMessageToDiscord(channel.id, `${
+				config.discord.commands[words[0]]
+					.replace(/%REPLY/, `<@${user.id}>`)}`);
+			return true;
+		} else {
+			if (bu.commandList.hasOwnProperty(words[0].toLowerCase())) {
+				let commandName = bu.commandList[words[0].toLowerCase()].name;
+				let val2 = await(bu.canExecuteCommand(msg, commandName));
+				if (val2[0]) {
+					executeCommand(commandName, msg, words, text);
 				}
-				fulfill(true);
+				return val2[0];
 			} else {
-				if (config.discord.commands[words[0]] != null) {
-					bu.sendMessageToDiscord(channel.id, `${
-						config.discord.commands[words[0]]
-							.replace(/%REPLY/, `<@${user.id}>`)}`);
-					fulfill(true);
-				} else {
-					if (bu.commandList.hasOwnProperty(words[0].toLowerCase())) {
-						let commandName = bu.commandList[words[0].toLowerCase()].name;
-						bu.canExecuteCommand(msg, commandName).then(val => {
-							if (val[0]) {
-								executeCommand(commandName, msg, words, text, fulfill, reject);
-							}
-							fulfill(val);
-						});
-					} else {
-						fulfill(false);
-					}
-					//    }
-				}
+				return false;
 			}
-		});
+		}
+	}
+});
 
-		//}
-
-
-	});
-
-
-	//return false;
-}
-
-var executeCommand = async(function (commandName, msg, words, text, fulfill, reject) {
+var executeCommand = async(function (commandName, msg, words, text) {
 	bu.r.table('stats').get(commandName).update({
 		uses: bu.r.row('uses').add(1),
 		lastused: moment().valueOf()
@@ -791,12 +773,8 @@ var executeCommand = async(function (commandName, msg, words, text, fulfill, rej
 		bu.commandStats[commandName] = 1;
 	}
 	bu.commandUses++;
-	try {
-		bu.commands[commandName].execute(msg, words, text);
-	} catch (err) {
-		reject(err);
-	}
-	fulfill(true);
+	bu.commands[commandName].execute(msg, words, text);
+	return true;
 });
 
 var messageLogs = [];

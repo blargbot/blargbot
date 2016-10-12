@@ -44,7 +44,7 @@ e.execute = async((params) => {
             regexList = args[2].match(/^\/?(.*)\/(.*)/);
             returnObj.replaceString = args[1].replace(new RegExp(regexList[1], regexList[2]), args[3]);
         } else {
-            returnObj.replaceString = bu.tagProcessError(fallback, '`Invalid regex string`');
+            returnObj.replaceString = await(bu.tagProcessError(params, fallback, '`Invalid regex string`'));
         }
     } else if (args.length == 3) {
         if (/^\/?.*\/.*/.test(args[1])) {
@@ -54,13 +54,13 @@ e.execute = async((params) => {
                 returnObj.replaceString = args[2];
                 returnObj.replaceContent = true;
             } catch (err) {
-                returnObj.replaceString = bu.tagProcessError(fallback, err.message);
+                returnObj.replaceString = await(bu.tagProcessError(params, fallback, err.message));
             }
         } else {
-            returnObj.replaceString = bu.tagProcessError(fallback, '`Invalid regex string`');
+            returnObj.replaceString = await(bu.tagProcessError(params, fallback, '`Invalid regex string`'));
         }
     } else {
-        returnObj.replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
+        returnObj.replaceString = await(bu.tagProcessError(params, fallback, '`Not enough arguments`'));
     }
 
     return returnObj;

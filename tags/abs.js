@@ -39,10 +39,10 @@ e.execute = async((params) => {
         if (!isNaN(asNumber)) {
             replaceString = Math.abs(asNumber);
         } else {
-            replaceString = bu.tagProcessError(fallback, '`Not a number`');
+            replaceString = await(bu.tagProcessError(params, fallback, '`Not a number`'));
         }
     } else {
-        replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
+        replaceString = await(bu.tagProcessError(params, fallback, '`Not enough arguments`'));
     }
     return {
         replaceString: replaceString,

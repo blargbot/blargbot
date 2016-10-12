@@ -100,7 +100,7 @@ e.execute = async((params) => {
                     replaceString = args[5] || '';
                 break;
             default:
-                replaceString = bu.tagProcessError(fallback, '`Invalid Operator`');
+                replaceString = await(bu.tagProcessError(params, fallback, '`Invalid Operator`'));
                 break;
         }
         replaceString = await(bu.processTag(params.msg
@@ -110,7 +110,7 @@ e.execute = async((params) => {
             , params.author
             , params.tagName));
     } else {
-        replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
+        replaceString = await(bu.tagProcessError(params, fallback, '`Not enough arguments`'));
     }
 
     return {

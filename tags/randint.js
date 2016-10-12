@@ -40,7 +40,7 @@ e.execute = async((params) => {
         if (isNaN(args1)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    replaceString: bu.tagProcessError(fallback, '`Not a number`'),
+                    replaceString: await(bu.tagProcessError(params, fallback, '`Not a number`')),
                     replaceContent: replaceContent
                 };
             } else {
@@ -53,7 +53,7 @@ e.execute = async((params) => {
         if (isNaN(args1)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    replaceString: bu.tagProcessError(fallback, '`Not a number`'),
+                    replaceString: await(bu.tagProcessError(params, fallback, '`Not a number`')),
                     replaceContent: replaceContent
                 };
             } else {
@@ -64,7 +64,7 @@ e.execute = async((params) => {
         if (isNaN(args2)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    replaceString: bu.tagProcessError(fallback, '`Not a number`'),
+                    replaceString: await(bu.tagProcessError(params, fallback, '`Not a number`')),
                     replaceContent: replaceContent
                 };
             } else {
@@ -73,7 +73,7 @@ e.execute = async((params) => {
         }
         replaceString = bu.getRandomInt(args1, args2);
     } else {
-        replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
+        replaceString = await(bu.tagProcessError(params, fallback, '`Not enough arguments`'));
     }
 
     return {

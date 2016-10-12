@@ -52,7 +52,7 @@ e.execute = async((params) => {
     if (params.args[1]) {
         
     } else {
-        replaceString = bu.tagProcessError(params.fallback, '`Not enough arguments`');
+        replaceString = await(bu.tagProcessError(params, params.fallback, '`Not enough arguments`'));
     }
 
     return {

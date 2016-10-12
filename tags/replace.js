@@ -42,7 +42,7 @@ e.execute = async((params) => {
         returnObj.replaceContent = true;
         returnObj.replace = args[1];
     } else {
-        returnObj.replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
+        returnObj.replaceString = await(bu.tagProcessError(params, fallback, '`Not enough arguments`'));
     }
     return returnObj;
 });

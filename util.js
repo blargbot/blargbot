@@ -715,6 +715,14 @@ bu.tagGetFloat = (arg) => {
     return parseFloat(arg) ? parseFloat(arg) : NaN;
 };
 
-bu.tagProcessError = (fallback, errormessage) => {
-    return fallback == '' ? errormessage : fallback;
-};
+bu.tagProcessError = async((params, fallback, errormessage) => {
+    let returnMessage = '';
+    if (fallback == '') returnMessage = errormessage;
+    else returnMessage = await(bu.processTag(params.msg
+        , params.words
+        , params.fallback
+        , params.fallback
+        , params.author
+        , params.tagName));
+    return returnMessage;
+});

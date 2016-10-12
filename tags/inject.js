@@ -51,14 +51,14 @@ e.execute = async((params) => {
     var replaceContent = false;
     if (params.args[1]) {
         let newStuff = bu.processSpecial(params.args[1], true);
-         replaceString = bu.processTag(params.msg
+         replaceString = await(bu.processTag(params.msg
             , params.words
             , newStuff
             , params.fallback
             , params.author
-            , params.tagName);
+            , params.tagName));
     } else {
-        replaceString = bu.tagProcessError(params.fallback, '`Not enough arguments`');
+        replaceString = await(bu.tagProcessError(params, params.fallback, '`Not enough arguments`'));
     }
 
     return {
