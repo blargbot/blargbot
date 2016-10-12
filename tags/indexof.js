@@ -1,6 +1,8 @@
 var e = module.exports = {};
 var bu;
 
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -19,9 +21,9 @@ e.desc = 'Finds the index of <code>searchfor</code> in <code>text</code>, after 
 e.exampleIn = 'The index of \'o\' in \'hello world\' is {indexof;hello world;o}';
 e.exampleOut = 'The index of \'o\' in \'hello world\' is 4';
 
-e.execute = (params) => {
+e.execute = async((params) => {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = bu.processTagInner(params, i);
+        params.args[i] = await(bu.processTagInner(params, i));
     }
     var replaceString = '';
     var replaceContent = false;

@@ -1,6 +1,8 @@
 var e = module.exports = {};
 var bu;
 
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -19,9 +21,9 @@ e.desc = 'Capitalizes the first letter of <code>text</code>. If <code>lower</cod
 e.exampleIn = '{capitalize;hello world!}';
 e.exampleOut = 'Hello world!';
 
-e.execute = (params) => {
+e.execute = async((params) => {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = bu.processTagInner(params, i);
+        params.args[i] = await(bu.processTagInner(params, i));
     }
     var replaceString = '';
     var replaceContent = false;
@@ -39,4 +41,4 @@ e.execute = (params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

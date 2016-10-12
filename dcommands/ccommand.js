@@ -72,21 +72,78 @@ e.execute = async((msg, words, text) => {
                         bu.send(msg.channel.id, 'That ccommand already exists!');
                         break;
                     }
-                    await(bu.ccommand.set(msg.channel.guild.id, words.slice(3).join(' ')));
-                    bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${title}\` created. ✅`);
+                    await(bu.ccommand.set(msg.channel.guild.id, words[2], words.slice(3).join(' ')));
+                    bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` created. ✅`);
                 } else {
                     bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
                 break;
             case 'edit':
+                if (words.length > 3) {
+                    storedTag = await(bu.ccommand.get(msg.channel.guild.id, words[2]));
+                    if (!storedTag) {
+                        bu.send(msg.channel.id, 'That ccommand doesn\'t exist!');
+                        break;
+                    }
+                    await(bu.ccommand.set(msg.channel.guild.id, words[2], words.slice(3).join(' ')));
+                    bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` edited. ✅`);
+                } else {
+                    bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
+                }
                 break;
             case 'set':
+                if (words.length > 3) {
+                    await(bu.ccommand.set(msg.channel.guild.id, words[2], words.slice(3).join(' ')));
+                    bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` set. ✅`);
+                } else {
+                    bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
+                }
                 break;
             case 'delete':
+                if (words.length > 2) {
+                    storedTag = await(bu.ccommand.get(msg.channel.guild.id, words[2]));
+                    if (!storedTag) {
+                        bu.send(msg.channel.id, 'That ccommand doesn\'t exist!');
+                        break;
+                    }
+                    await(bu.ccommand.remove(msg.channel.guild.id, words[2]));
+                    bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` deleted. ✅`);
+                } else {
+                    bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
+                }
                 break;
             case 'rename':
+                if (words.length > 3) {
+                    storedTag = await(bu.ccommand.get(msg.channel.guild.id, words[2]));
+                    if (!storedTag) {
+                        bu.send(msg.channel.id, `The ccommand ${words[2]} doesn\'t exist!`);
+                        break;
+                    }
+                    let newTag = await(bu.ccommand.get(msg.channel.guild.id, words[3]));
+                    if (newTag) {
+                        bu.send(msg.channel.id, `The ccommand ${words[3]} already exists!`);
+                    }
+                    await(bu.ccommand.rename(msg.channel.guild.id, words[2], words[3]));
+                    bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` edited. ✅`);
+                } else {
+                    bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
+                }
                 break;
             case 'raw':
+                if (words.length > 2) {
+                    storedTag = await(bu.ccommand.get(msg.channel.guild.id, words[2]));
+                    if (!storedTag) {
+                        bu.send(msg.channel.id, 'That ccommand doesn\'t exist!');
+                        break;
+                    }
+                    let lang = '';
+                    if (/\{lang;.*?}/i.test(storedTag)) {
+                        lang = storedTag.match(/\{lang;(.*?)}/i)[1];
+                    }
+                    bu.sendMessageToDiscord(msg.channel.id, `The raw code for ${words[2]} is\`\`\`${lang}\n${storedTag}\n\`\`\``);
+                } else {
+                    bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
+                }
                 break;
             case 'help':
                 bu.send(msg.channel.id, e.info);
@@ -94,34 +151,8 @@ e.execute = async((msg, words, text) => {
             default:
                 bu.send(msg.channel.id, 'Improper usage. Do \`help ccommand\` for more details.');
                 break;
-
         }
     } else {
         bu.send(msg.channel.id, 'Improper usage. Do \`help ccommand\` for more details.');
     }
-
-    if (words.length == 1) {
-        bu.sendMessageToDiscord(msg.channel.id, `Do \`help\` for a list of commands.
-See https://blargbot.xyz/commands/#ccommand for usage instructions.`);
-        return;
-    }
-
-    if (words[1].toLowerCase() === 'ccommand') {
-        bu.sendMessageToDiscord(msg.channel.id, `You cannot overwrite \`ccommand\``);
-        return;
-    }
-    if (words.length == 2) {
-        bu.ccommand.remove(msg.channel.guild.id, words[1]).then(fields => {
-            if (fields.affectedRows > 0)
-                bu.sendMessageToDiscord(msg.channel.id, `Deleted command ${words[1]}`);
-            else
-                bu.sendMessageToDiscord(msg.channel.id, `Command ${words[1]} does not exist.`);
-
-        });
-    } else {
-        bu.ccommand.set(msg.channel.guild.id, words[1], words.slice(2).join(' ')).then(() => {
-            bu.sendMessageToDiscord(msg.channel.id, `Set command ${words[1]}`);
-        });
-    }
-    // bu.saveConfig();
 });

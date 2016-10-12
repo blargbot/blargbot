@@ -1,6 +1,8 @@
 var e = module.exports = {};
 var bu;
 
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -20,7 +22,7 @@ e.exampleIn = `This is a semicolon! {semi}`;
 e.exampleOut = `This is a semicolon! ;`;
 
 
-e.execute = () => {
+e.execute = async(() => {
     var replaceString = bu.specialCharBegin + 'SEMI' + bu.specialCharEnd;
     var replaceContent = false;
 
@@ -29,4 +31,4 @@ e.execute = () => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

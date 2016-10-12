@@ -1,5 +1,7 @@
 var e = module.exports = {};
 var bu;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -29,9 +31,9 @@ e.exampleIn = `{if;&lt;=;5;10;5 is less than or equal to 10;5 is greater than 10
 e.exampleOut = `5 is less than or equal to 10`;
 
 
-e.execute = (params) => {
+e.execute = async((params) => {
     // for (let i = 1; i < params.args.length; i++) {
-    //      params.args[i] = bu.processTagInner(params, i);
+    //      params.args[i] =await(bu.processTagInner(params, i);
     // }
     let args = params.args
         , fallback = params.fallback;
@@ -39,8 +41,9 @@ e.execute = (params) => {
     var replaceContent = false;
 
     if (args.length > 4) {
-        var arg1 = bu.processTagInner(params, 2);
-        var arg2 = bu.processTagInner(params, 3);
+        args[1] = await(bu.processTagInner(params, 2));
+        var arg1 = await(bu.processTagInner(params, 2));
+        var arg2 = await(bu.processTagInner(params, 3));
         if (!isNaN(parseFloat(arg1))) {
             arg1 = parseFloat(arg1);
         }
@@ -100,12 +103,12 @@ e.execute = (params) => {
                 replaceString = bu.tagProcessError(fallback, '`Invalid Operator`');
                 break;
         }
-        replaceString = bu.processTag(params.msg
+        replaceString = await(bu.processTag(params.msg
             , params.words
             , replaceString
             , params.fallback
             , params.author
-            , params.tagName);
+            , params.tagName));
     } else {
         replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
     }
@@ -114,4 +117,4 @@ e.execute = (params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

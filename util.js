@@ -397,16 +397,16 @@ function setCharAt(str, index, chr) {
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
-bu.processTagInner = (params, i) => {
-    return bu.processTag(params.msg
+bu.processTagInner = async((params, i) => {
+    return await(bu.processTag(params.msg
         , params.words
         , params.args[i]
         , params.fallback
         , params.author
-        , params.tagName);
-};
+        , params.tagName));
+});
 
-bu.processTag = (msg, words, contents, fallback, author, tagName) => {
+bu.processTag = async((msg, words, contents, fallback, author, tagName) => {
     let level = 0;
     let lastIndex = 0;
     let coords = [];
@@ -444,14 +444,14 @@ bu.processTag = (msg, words, contents, fallback, author, tagName) => {
             args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
         if (bu.tagList.hasOwnProperty(args[0].toLowerCase())) {
-            replaceObj = bu.tags[bu.tagList[args[0].toLowerCase()].tagName].execute({
+            replaceObj = await(bu.tags[bu.tagList[args[0].toLowerCase()].tagName].execute({
                 msg: msg,
                 args: args,
                 fallback: fallback,
                 words: words,
                 author: author,
                 tagName: tagName
-            });
+            }));
         } else {
             replaceObj.replaceString = bu.tagProcessError(fallback, '`Tag doesn\'t exist`');
         }
@@ -486,7 +486,7 @@ bu.processTag = (msg, words, contents, fallback, author, tagName) => {
         }
     }
     return contents;
-};
+});
 
 bu.processSpecial = (contents, final) => {
     logger.debug('Processing special tags');
@@ -599,19 +599,23 @@ bu.ccommand = {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
         storedGuild.ccommands[key] = value;
         bu.r.table('guild').get(guildid).update({
-            settings: storedGuild.ccommands
+            ccommands: storedGuild.ccommands
         }).run();
     }),
     get: async((guildid, key) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
         return storedGuild.ccommands[key];
     }),
+    rename: async((guildid, key1, key2) => {
+        let storedGuild = await(bu.r.table('guild').get(guildid).run());
+        storedGuild.ccommands[key2] = storedGuild.ccommands[key1];
+        delete storedGuild.ccommands[key1];
+        bu.r.table('guild').get(guildid)('ccommands').replace(storedGuild.ccommands).run();
+    }),
     remove: async((guildid, key) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
         delete storedGuild.ccommands[key];
-        bu.r.table('guild').get(guildid).update({
-            settings: storedGuild.ccommands
-        }).run();
+        bu.r.table('guild').get(guildid)('ccommands').replace(storedGuild.ccommands).run();
     })
 };
 

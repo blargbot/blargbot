@@ -1,6 +1,8 @@
 // START: Do not touch
 var e = module.exports = {};
 var bu;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -40,10 +42,10 @@ e.exampleOut = 'Let me do a tag for you. User#1111 has paid their respects. Tota
  * @return.replaceContent Boolean - if true, will replace the entire content rather than just the tag (within scope)
  * @return.fallback? String - if provided, will change the fallback
  */
-e.execute = (params) => {
+e.execute = async((params) => {
     // processes any nested tags in the `args` array. if your tag uses advanced logic, you may wish to reimplement this
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = bu.processTagInner(params, i);
+        params.args[i] = await(bu.processTagInner(params, i));
     }
     var replaceString = '';
     var replaceContent = false;
@@ -57,4 +59,4 @@ e.execute = (params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

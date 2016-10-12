@@ -1,6 +1,8 @@
 var e = module.exports = {};
 var bu;
 
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -20,7 +22,7 @@ e.exampleIn = `{username;{randuser}} is a lovely person! {username;{randuser}} i
 e.exampleOut = `abalabahaha is a lovely person! stupid cat isn't as good.`;
 
 
-e.execute = (params) => {
+e.execute = async((params) => {
     
     let msg = params.msg;
     var replaceString = msg.channel.guild.members.map(m => m)[bu.getRandomInt(0, msg.channel.guild.members.map(m => m).length - 1)].user.id;
@@ -31,4 +33,4 @@ e.execute = (params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

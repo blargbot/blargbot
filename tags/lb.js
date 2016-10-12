@@ -1,5 +1,7 @@
 var e = module.exports = {};
 var bu;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -20,7 +22,7 @@ e.exampleIn = `This is a bracket! {lb}`;
 e.exampleOut = `This is a bracket! {`;
 
 
-e.execute = () => {
+e.execute = async(() => {
     
     var replaceString = bu.specialCharBegin + 'LB' + bu.specialCharEnd;
     var replaceContent = false;
@@ -30,4 +32,4 @@ e.execute = () => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

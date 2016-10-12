@@ -74,7 +74,7 @@ function buildTag(tagName) {
     }).run();
 }
 
-e.processTag = (msg, contents, command, tagName, author) => {
+e.processTag = async((msg, contents, command, tagName, author) => {
     try {
         tagName = tagName || msg.channel.guild.id;
         author = author || msg.channel.guild.id;
@@ -87,16 +87,13 @@ e.processTag = (msg, contents, command, tagName, author) => {
 
         var fallback = '';
 
-        contents = bu.processTag(msg, words, contents, fallback, author, tagName);
+        contents = await(bu.processTag(msg, words, contents, fallback, author, tagName));
         contents = bu.processSpecial(contents, true);
-
-        return contents;
     } catch (err) {
         bu.logger.error(err);
     }
-
-
-};
+    return contents;
+});
 
 e.executeTag = async((msg, tagName, command) => {
     let tag = await(bu.r.table('tag').get(tagName).run());

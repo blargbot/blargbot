@@ -24,7 +24,6 @@ e.init = (Tbot, blargutil) => {
         cad.white = tempCad.responses.map(m => {
             return m.text.join('______');
         });
-        bu.logger.debug(cad);
     });
 
     e.category = bu.CommandType.GENERAL;

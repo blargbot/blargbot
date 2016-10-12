@@ -1,6 +1,8 @@
 var e = module.exports = {};
 var bu;
 
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -20,7 +22,7 @@ e.exampleIn = `This command is not safe! {nsfw}`;
 e.exampleOut = `This command is not safe!`;
 
 
-e.execute = () => {
+e.execute = async(() => {
     
     var replaceString = '';
     var replaceContent = false;
@@ -30,4 +32,4 @@ e.execute = () => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

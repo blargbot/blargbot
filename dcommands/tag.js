@@ -94,6 +94,7 @@ e.execute = async((msg, words, text) => {
                             lastmodified: moment().valueOf(),
                             uses: 0
                         }).run());
+                        bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${title}\` created. ✅`);
                         bu.send('230810364164440065', `**__Create__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${words.splice(3).join(' ')}\`\`\``);
                     } else {
                         bu.sendMessageToDiscord(msg.channel.id, `❌ That tag already exists! ❌`);
@@ -117,6 +118,7 @@ e.execute = async((msg, words, text) => {
                         }
                         oldTag.name = words[3];
                         await(bu.r.table('tag').get(words[2]).replace(oldTag).run());
+
                         bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` has been renamed to \`${words[3]}\`. ✅`);
                         bu.send('230810364164440065', `**__Rename__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Old Tag:** ${words[2]}\n  **New Tag**: ${words[3]}`);
                     }
@@ -204,9 +206,13 @@ e.execute = async((msg, words, text) => {
                         bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
                         return;
                     }
+                    let lang = '';
+                    if (/\{lang;.*?}/i.test(storedTag.content)) {
+                        lang = storedTag.content.match(/\{lang;(.*?)}/i)[1];
+                    }
                     bu.send(msg.channel.id, `The code for ${words[2]} is:
-\`\`\`
-${storedTag.contents}
+\`\`\`${lang}
+${storedTag.content}
 \`\`\``);
                 } else {
                     bu.send(msg.channel.id, 'Not enough arguments! Do `help tag` for more information.');
