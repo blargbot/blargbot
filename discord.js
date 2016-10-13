@@ -464,7 +464,7 @@ If you are the owner of this server, here are a few things to know.
 		}
 	}));
 
-
+/*
 	bot.on('messageCreate', async(function (msg) {
 		processUser(msg);
 		if (msg.channel.id != '194950328393793536')
@@ -657,6 +657,7 @@ If you are the owner of this server, here are a few things to know.
 			}).run();
 		}
 	}));
+	*/
 	initCommands();
 	bot.connect();
 };
