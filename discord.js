@@ -261,10 +261,11 @@ e.init = (blargutil, v, em) => {
 		bu.logger.init('Ready!');
 
 		let guilds = await(bu.r.table('guild').withFields('guildid').run()).map(g => g.guildid);
-		console.dir(guilds);
+		//console.dir(guilds);
 		bot.guilds.forEach((g) => 
 		{
 			if (guilds.indexOf(g.id) == -1) {
+				console.log('Inserting a missing guild');
 				bu.r.table('guild').insert({
 					guildid: g.id,
 					active: true,
