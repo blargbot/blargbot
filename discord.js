@@ -257,8 +257,26 @@ e.init = (blargutil, v, em) => {
 				.format(`MM/DD HH:mm:ss`)}][ERROR][${id}] ${err.stack}`);
 	});
 
-	bot.on('ready', function () {
+	bot.on('ready', async(() => {
 		bu.logger.init('Ready!');
+
+		let guilds = await(bu.r.table('guild').withFields('guildid').run()).map(g => g.guildid);
+		console.dir(guilds);
+		bot.guilds.forEach((g) => 
+		{
+			if (guilds.indexOf(g.id) == -1) {
+				bu.r.table('guild').insert({
+					guildid: g.id,
+					active: true,
+					name: g.name,
+					settings: {},
+					channels: {},
+					commandperms: {},
+					ccommands: {},
+					modlog: {}
+				}).run();
+			}
+		});
 
 		gameId = bu.getRandomInt(0, 4);
 		if (config.general.isbeta)
@@ -268,7 +286,7 @@ e.init = (blargutil, v, em) => {
 		switchGame();
 		switchAvatar();
 		postStats();
-	});
+	}));
 
 
 	bot.on('guildMemberAdd', async((guild, member) => {
@@ -445,26 +463,9 @@ If you are the owner of this server, here are a few things to know.
 		}
 	}));
 
-	let guilds = [];
 
 	bot.on('messageCreate', async(function (msg) {
 		processUser(msg);
-		if (guilds.indexOf(msg.channel.guild.id) == -1 && msg.author.id != bot.user.id) {
-			let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
-			if (!storedGuild) {
-				await(bu.r.table('guild').insert({
-					guildid: msg.channel.guild.id,
-					active: true,
-					name: msg.channel.guild.name,
-					settings: {},
-					channels: {},
-					commandperms: {},
-					ccommands: {},
-					modlog: {}
-				}).run());
-			}
-			guilds.push(msg.channel.guild.id);
-		}
 		if (msg.channel.id != '194950328393793536')
 			if (msg.author.id == bot.user.id) {
 				if (msg.channel.guild)
