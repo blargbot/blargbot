@@ -65,9 +65,9 @@ function buildTag(tagName) {
     bu.tagList[bu.tags[tagName].name] = tag;
     bu.r.table('rawtag').insert({
         name: tagName,
-        tusage: tag.usage,
+        usage: tag.usage,
         args: tag.args,
-        description: tag.desc,
+        info: tag.desc,
         examplein: tag.exampleIn,
         exampleout: tag.exampleOut,
         type: bu.tags[tagName].category

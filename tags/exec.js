@@ -10,7 +10,7 @@ e.init = (Tbot, blargutil) => {
     e.category = bu.TagType.COMPLEX;
 };
 e.requireCtx = require;
-e.isTag = false;
+e.isTag = true;
 // END: Do not touch
 
 // name of the tag (used to execute it)
@@ -50,7 +50,28 @@ e.execute = async((params) => {
     var replaceString = '';
     var replaceContent = false;
     if (params.args[1]) {
-        
+        let tag = await(bu.r.table('tag').get(params.args[1]).run());
+        if (!tag) {
+            replaceString = await(bu.tagProcessError(params, params.fallback, '`Tag not found`'));
+        } else {
+            if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
+                let nsfwChan = await(bu.isNsfwChannel(params.msg.channel.id));
+                if (!nsfwChan) {
+                    replaceString = await(bu.tagProcessError(params, params.fallback, '`NSFW tag'));
+                    return;
+                }
+            }
+            bu.r.table('tag').get(tag.name).update({
+                uses: tag.uses + 1
+            }).run();
+            replaceString = await(bu.processTag(params.msg
+                , params.words
+                , tag.content
+                , params.fallback
+                , params.author
+                , params.tagName));;
+
+        }
     } else {
         replaceString = await(bu.tagProcessError(params, params.fallback, '`Not enough arguments`'));
     }

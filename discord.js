@@ -118,7 +118,7 @@ function buildCommand(commandName) {
 	if (bu.commands[commandName].longinfo) {
 		bu.r.table('command').insert({
 			name: commandName,
-			cusage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+			usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
 			info: bu.commands[commandName].longinfo,
 			type: command.category
 		}).run();

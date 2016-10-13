@@ -41,7 +41,7 @@ e.execute = async((params) => {
     var replaceContent = false;
 
     if (args.length > 4) {
-        args[1] = await(bu.processTagInner(params, 2));
+        args[1] = await(bu.processTagInner(params, 1));
         var arg1 = await(bu.processTagInner(params, 2));
         var arg2 = await(bu.processTagInner(params, 3));
         if (!isNaN(parseFloat(arg1))) {
