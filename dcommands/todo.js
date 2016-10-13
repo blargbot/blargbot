@@ -1,5 +1,7 @@
 var e = module.exports = {};
 var bu;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -20,8 +22,10 @@ e.info = 'Access your todo list.\n'
     + 'To remove items, do `todo remove <item id>`, where item id is the number shown when you do `todo` by itself.';
 e.longinfo = `<p>Access your todo list.</p><p>To add items, do <code>todo add &lt;item&gt;</code>.</p><p>To remove items, do <code>todo remove &lt;item id&gt;</code>, where item id is the number shown when you do <code>&lt;todo&gt;</code> by itself.</p>`;
 
-e.execute = (msg, words) => {
-    var db = bu.db;
+e.execute = async((msg, words) => {
+    let storedUser = await(bu.r.table('user').get(msg.author.id).run());
+    let todo = storedUser.todo;
+    let modified = false;
     if (words.length > 1) {
         var itemid;
         switch (words[1].toLowerCase()) {
@@ -31,10 +35,12 @@ e.execute = (msg, words) => {
                     bu.send(msg.channel.id, 'Not enough arguments given!');
                     return;
                 }
-
-                db.query(`insert into todo (userid, content) values (?, ?)`,
-                    [msg.author.id, words.slice(2, words.length).join(' ')]);
-                bu.send(msg.channel.id, 'Done');
+                todo.push({
+                    active: 1,
+                    content: words.slice(2)
+                });
+                modified = true;
+                bu.send(msg.channel.id, 'Done! :ok_hand:');
                 break;
             case 'remove':
                 bu.logger.debug('removing');
@@ -42,33 +48,42 @@ e.execute = (msg, words) => {
                     bu.send(msg.channel.id, 'Not enough arguments given!');
                     return;
                 }
-                db.query(`select itemid from todo where userid = ? and active = true order by itemid asc limit ?, 1`, [msg.author.id, parseInt(words[2])], (err, rows) => {
-                    if (!rows && !rows[0]) {
-                        bu.send(msg.channel.id, 'There was nothing to delete.');
+                if (todo.length == 0) {
+                    bu.send(msg.channel.id, 'There was nothing to delete.');
+                } else {
+                    let entry = todo.filter(m => m.active)[parseInt(words[2])];
+                    let index = todo.indexOf(entry);
+                    if (index < 0) {
+                        bu.send(msg.channel.id, 'That entry could not be found!');
+                    } else {
+                        todo[index].active = false;
+                        modified = true;
+                        bu.send(msg.channel.id, 'Done! :ok_hand:');
                     }
-                    bu.logger.debug(rows[0]);
-                    db.query(`update todo set active = false where itemid = ?`, [rows[0].itemid]);
-                    bu.send(msg.channel.id, 'Done');
-                });
+                }
                 break;
             default:
-                defaultOption(msg, db);
+                defaultOption(msg, storedUser);
         }
     } else {
-        defaultOption(msg, db);
+        defaultOption(msg, storedUser);
     }
-};
+    if (modified) {
+        bu.r.table('user').get(msg.author.id).update({
+            todo: todo
+        }).run();
+    }
+});
 
-function defaultOption(msg, db) {
-    db.query(`select content from todo where userid = ? and active = true`, [msg.author.id], (err, rows) => {
-        if (rows.length > 0) {
-            var list = 'Here\'s your to-do list!\n';
-            for (i = 0; i < rows.length; i++) {
-                list += i + '. ' + rows[i].content + '\n';
-            }
-            bu.send(msg.channel.id, list);
-        } else {
-            bu.send(msg.channel.id, 'You have nothing on your list!');
+var defaultOption = async((msg, storedUser) => {
+    let todo = storedUser.todo.filter(m => m.active == 1);
+    if (todo.length > 0) {
+        var list = 'Here\'s your to-do list!\n';
+        for (let i = 0; i < todo.length; i++) {
+            list += `__**${i}.**__ ${todo[i].content}\n`;
         }
-    });
-} 
+        bu.send(msg.channel.id, list);
+    } else {
+        bu.send(msg.channel.id, 'You have nothing on your list!');
+    }
+});

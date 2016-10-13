@@ -39,9 +39,9 @@ botEmitter.on('reloadIrc', () => {
 /** LOGGING STUFF **/
 
 
-    console.log = function () {
-        bu.logger.debug(arguments);
-    };
+console.log = function () {
+    bu.logger.debug(arguments);
+};
 
 
 /** CONFIG STUFF **/
@@ -67,32 +67,6 @@ function saveConfig() {
     fs.writeFile(path.join(__dirname, 'config.json'), JSON.stringify(bu.config, null, 4));
 }
 
-
-/** Database Stuff */
-var databaseFile;
-if (bu.config.general.databasedir) {
-    if (bu.config.general.databasedir.startsWith('/'))
-        databaseFile = bu.config.general.databasedir;
-    else
-        databaseFile = path.join(__dirname, bu.config.general.databasedir);
-} else
-    databaseFile = path.join(__dirname, 'data.db');
-var db = mysql.createConnection({
-    host: bu.config.sql.host,
-    user: bu.config.sql.user,
-    password: bu.config.sql.pass,
-    database: bu.config.sql.database,
-    charset: 'utf8mb4'
-});
-
-db.connect(err => {
-    if (err) bu.logger.error(err);
-    else {
-        bu.logger.init('Connected to MySQL Database');
-        init();
-    }
-});
-
 //db.serialize(function () {
 
 
@@ -103,9 +77,11 @@ db.connect(err => {
  */
 function init() {
     irc.init(bu, VERSION, botEmitter);
-    discord.init(bu, VERSION, botEmitter, db);
-    catbot.init(bu, db);
+    discord.init(bu, VERSION, botEmitter);
+    catbot.init(bu);
 }
+
+init();
 
 
 

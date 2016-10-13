@@ -1,6 +1,8 @@
 var e = module.exports = {};
 var bu;
 
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -19,9 +21,9 @@ e.desc = 'Returns a chunk of text between the start and end indexes. If end is n
 e.exampleIn = 'Hello {substring;world;2;3}!';
 e.exampleOut = 'Hello r!';
 
-e.execute = (params) => {
+e.execute = async((params) => {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = bu.processTagInner(params, i);
+        params.args[i] = await(bu.processTagInner(params, i));
     }
     var replaceString = '';
     var replaceContent = false;
@@ -34,7 +36,7 @@ e.execute = (params) => {
         if (isNaN(start)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    replaceString: bu.tagProcessError(params.fallback, '`Not a number`'),
+                    replaceString: await(bu.tagProcessError(params, params.fallback, '`Not a number`')),
                     replaceContent: replaceContent
                 };
             } else {
@@ -45,7 +47,7 @@ e.execute = (params) => {
         if (isNaN(end)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    replaceString: bu.tagProcessError(params.fallback, '`Not a number`'),
+                    replaceString: await(bu.tagProcessError(params, params.fallback, '`Not a number`')),
                     replaceContent: replaceContent
                 };
             } else {
@@ -54,11 +56,11 @@ e.execute = (params) => {
         }
         replaceString = params.args[1].substring(start, end);
     } else {
-        replaceString = bu.tagProcessError(params.fallback, '`Not enough arguments`');
+        replaceString = await(bu.tagProcessError(params, params.fallback, '`Not enough arguments`'));
     }
 
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

@@ -1,6 +1,8 @@
 var e = module.exports = {};
 var bu;
 
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -20,9 +22,9 @@ e.exampleIn = `This channel is in position {channelpos}`;
 e.exampleOut = `This channel is in position 1`;
 
 
-e.execute = (params) => {
+e.execute = async((params) => {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = bu.processTagInner(params, i);
+        params.args[i] = await(bu.processTagInner(params, i));
     }
     var replaceString = params.msg.channel.position;
     var replaceContent = false;
@@ -31,4 +33,4 @@ e.execute = (params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

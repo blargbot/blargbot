@@ -1,5 +1,7 @@
 var e = module.exports = {};
 var bu;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -21,11 +23,11 @@ e.desc = 'Finds the <code>case</code> that matches <code>arg</code> and returns 
 e.exampleIn = '{switch;{args;0};yes;Correct!;no;Incorrect!;That is not yes or no}';
 e.exampleOut = 'Correct!';
 
-e.execute = (params) => {
-    params.args[1] = bu.processTagInner(params, 1);
+e.execute = async((params) => {
+    params.args[1] = await(bu.processTagInner(params, 1));
     for (let i = 2; i < params.args.length; i += 2) {
         if (i != params.args.length - 1)
-            params.args[i] = bu.processTagInner(params, i);
+            params.args[i] = await(bu.processTagInner(params, i));
     }
     let args = params.args;
     var replaceString = '';
@@ -45,14 +47,14 @@ e.execute = (params) => {
     }
     if (args.length % 2 != 0) replaceString = cases[arg] || elseDo;
     else replaceString = cases[arg] || '';
-    replaceString = bu.processTag(params.msg
+    replaceString = await(bu.processTag(params.msg
         , params.words
         , replaceString
         , params.fallback
         , params.author
-        , params.tagName);
+        , params.tagName));
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

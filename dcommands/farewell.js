@@ -2,6 +2,8 @@ var e = module.exports = {};
 var bu;
 var tags = require('./../tags');
 
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -25,7 +27,7 @@ e.longinfo = `<p>Sets a farewell message for any user who leaves your guild. You
 blargbot&gt; Greeting set. Simulation: **User has left. Bye!
 </code></pre>`;
 
-e.execute = (msg, words, text) => {
+e.execute = async((msg, words) => {
 
     if (words.length == 1) {
         bu.guildSettings.remove(msg.channel.guild.id, 'farewell').then(() => {
@@ -36,6 +38,6 @@ e.execute = (msg, words, text) => {
     var farewell = words.slice(1).join(' ');
     bu.guildSettings.set(msg.channel.guild.id, 'farewell', farewell).then(() => {
         bu.sendMessageToDiscord(msg.channel.id, `Farewell set. Simulation:
-${tags.processTag(msg, farewell, '')}`);
+${await(tags.processTag(msg, farewell, ''))}`);
     });
-};
+});

@@ -2,6 +2,9 @@ var e = module.exports = {};
 var bu;
 var Promise = require('promise');
 var bot;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
+
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
     bu = blargutil;
@@ -37,10 +40,12 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + 'For more specific logs, you can specify a (case insensitive) '
     + 'type and parameter as follows:</p><p>'
     + '<pre><code>Types: \n'
-    + '     -MESSAGE (-M)\n'
+    + '     -TYPE (-T)\n'
     + '        CREATE - Gets original messages.\n'
     + '        UPDATE - Gets message edits.\n'
     + '        DELETE - Gets message deletes.\n'
+    + '     -CHANNEL (-C)\n'
+    + '        <id> - The channel to get logs from. Must be on the current guild!'
     + '     -USER (-U)\n'
     + '        <name or id> - Gets messages made by specific user.\n'
     + '     -ORDER (-O)\n'
@@ -51,12 +56,15 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + '<p>If you want to use multiple of the same type, separate parameters with commas. For example:</p>'
     + '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
 
-e.execute = (msg, words) => {
-    var numberOfMessages = NaN
+e.execute = async((msg, words) => {
+    //bu.send(msg.channel.id, 'WIP');
+    // return;
+    let numberOfMessages = NaN
         , type = ''
         , user = ''
         , current
-        , order;
+        , order
+        , channel = msg.channel.id;
     if (words.length > 1) {
         numberOfMessages = parseInt(words[1]);
     }
@@ -69,7 +77,7 @@ e.execute = (msg, words) => {
 
     for (var i = 0; i < words.length; i++) {
         if (i >= 1) {
-            if (words[i].toLowerCase() == '-m' || words[i].toLowerCase() == '-message') {
+            if (words[i].toLowerCase() == '-t' || words[i].toLowerCase() == '-type') {
                 current = 0;
                 type += ',';
             } else if (words[i].toLowerCase() == '-u' || words[i].toLowerCase() == '-user') {
@@ -77,6 +85,8 @@ e.execute = (msg, words) => {
                 user += ',';
             } else if (words[i].toLowerCase() == '-o' || words[i].toLowerCase() == '-order') {
                 current = 2;
+            } else if (words[i].toLowerCase() == '-c' || words[i].toLowerCase() == '-channel') {
+                current = 3;
             } else {
                 switch (current) {
                     case 0: //message
@@ -92,12 +102,21 @@ e.execute = (msg, words) => {
                             order = false;
                         }
                         break;
+                    case 3:
+                        if (/^\d*$/.test(words[i]))
+                            channel = words[i];
+                        break;
                     default:
                         bu.logger.debug('wut');
                         break;
                 }
             }
         }
+    }
+    let guild = bot.channelGuildMap[channel];
+    if (!guild || guild != msg.channel.guild.id) {
+        bu.send(msg.channel.id, 'The channel must be on this guild!');
+        return;
     }
     if (order == null) {
         order = false;
@@ -108,7 +127,7 @@ e.execute = (msg, words) => {
         , users = [];
     for (i = 0; i < typesRaw.length; i++) {
         if (typesRaw[i] != '') {
-            types.push(typesRaw[i].toUpperCase().trim());
+            types.push(typeRef[typesRaw[i].toUpperCase().trim()]);
         }
     }
 
@@ -125,66 +144,44 @@ e.execute = (msg, words) => {
             }
         }
     }
-    var statementPrefix = 'select type, content, attachment, chatlogs.userid, mentions, msgid, msgtime, username from ';
-    var statementFrom = 'chatlogs inner join user on chatlogs.userid = user.userid ';
-    var statementWhere = `where channelid = ${bu.db.escape(msg.channel.id)} `;
-    var statementEnd = 'order by id ' + (order ? 'asc' : 'desc')
-        + (!isNaN(numberOfMessages) && numberOfMessages > 0
-            ? ' limit ' + bu.db.escape(numberOfMessages) : '');
-    for (i = 0; i < types.length; i++) {
-        statementWhere += ` ${i == 0 ? ' and (' : ' or '}type = ${bu.db.escape(typeRef[types[i]])} ${i < types.length - 1 ? ' ' : ') '}`;
-    }
-    for (i = 0; i < users.length; i++) {
-        statementWhere += ` ${i == 0 ? ' and (' : ' or '}chatlogs.userid = ${bu.db.escape(users[i])} ${i < users.length - 1 ? ' ' : ') '}`;
-    }
-    var IDStatement = `select id from (select id from chatlogs ${statementWhere} ${statementEnd}) as lastid order by id asc limit 1`;
-    bu.db.query(IDStatement, (err, rows) => {
-        if (rows && rows[0]) {
+    bu.logger.debug(channel, users, types);
+    let thing = await(bu.r.table('chatlogs').filter(function (q) {
+        return q('channelid').eq(channel).and(
+            bu.r.expr(users).count().eq(0).or(bu.r.expr(users).contains(q('userid'))))
+            .and(bu.r.expr(types).count().eq(0).or(bu.r.expr(types).contains(q('type')))
+            );
+    }).orderBy(order ? bu.r.asc('id') : bu.r.desc('id')).limit(numberOfMessages).nth(-1).run());
+    let firstId = thing.id;
 
-            statementWhere += 'and id >= ' + bu.db.escape(rows[0].id);
-            var statement = `${statementPrefix} ${statementFrom} ${statementWhere} ${statementEnd.replace('desc', 'asc')}`;
-            bu.logger.debug(statement);
-            insertQuery(msg, statement).then(key => {
-                bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
-                return key;
-            }).catch(err => {
-                bu.send(msg.channel.id, 'Something went wrong! Please report this error with the `suggest` command:\n```\n' + err.stack + '\n```');
-                bu.logger.error(err.stack);
-            });
-        } else {
-            bu.send(msg.channel.id, 'No results found.');
-
-        }
+    insertQuery(msg, channel, users, types, firstId, numberOfMessages).then(key => {
+        bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
+        return key;
+    }).catch(err => {
+        bu.send(msg.channel.id, 'Something went wrong! Please report this error with the `suggest` command:\n```\n' + err.stack + '\n```');
+        bu.logger.error(err.stack);
     });
-};
+});
 
-function insertQuery(msg, statement) {
-    return new Promise((fulfill, reject) => {
-        function attemptInsert() {
-            var key = randomString(6);
-            bu.logger.debug(key);
-            bu.db.query('select keycode from logs where keycode = ?', [key], (err, rows) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                if (rows && rows[0]) {
-                    attemptInsert();
-                    return;
-                } else {
-                    bu.db.query(`insert into logs (keycode, statement, channelid) values (?, ?, ?)`, [key, statement, msg.channel.id], (err) => {
-                        if (err) {
-                            reject(err);
-                            return;
-                        }
-                        fulfill(key);
-                    });
-                }
-            });
+var insertQuery = async((msg, channel, users, types, firstId, numberOfMessages) => {
+    function attemptInsert() {
+        var key = randomString(6);
+        bu.logger.debug(key);
+        let exists = await(bu.r.table('logs').get('key'));
+        if (exists) {
+            return attemptInsert;
         }
-        attemptInsert();
-    });
-}
+        await(bu.r.table('logs').insert({
+            keycode: key,
+            channel: channel,
+            users: users,
+            types: types,
+            firstid: firstId,
+            limit: numberOfMessages
+        }).run());
+        return key;
+    }
+    return attemptInsert();
+});
 
 function randomString(length) {
     return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);

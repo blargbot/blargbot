@@ -14,18 +14,18 @@ e.isTag = true;
 // END: Do not touch
 
 // name of the tag (used to execute it)
-e.name = 'inject';
+e.name = 'lang';
 // Note: the following information will be parsed with HTML. Keep this in mind (ex. &lt;&gt; instead of <>)
 // the arguments it takes. <> for required, [] for optional
-e.args = '&lt;code&gt;';
+e.args = '&lt;language&gt;';
 // an example of usage (for docs). ex: {template;arg 1[;optional arg]}
-e.usage = '{inject;code}';
+e.usage = '{lang;language}';
 // A brief description of the tag
-e.desc = 'Injects code into the tag. For example, doing {inject;{args}} will let any user execute any code. Use with caution.';
+e.desc = 'Specifies the language used to display the raw contents of this tag.';
 // An example of tag input
-e.exampleIn = 'Random Number: {inject;{lb}randint{semi}1{semi}4{lb}}';
+e.exampleIn = 'This will be displayed with js! {lang;js}';
 // An example of the previous tag's output
-e.exampleOut = 'Random Number: 3';
+e.exampleOut = 'This will be displayed with js!';
 
 /**
  * The execution function of the tag.
@@ -42,25 +42,9 @@ e.exampleOut = 'Random Number: 3';
  * @return.replaceContent Boolean - if true, will replace the entire content rather than just the tag (within scope)
  * @return.fallback? String - if provided, will change the fallback
  */
-e.execute = async((params) => {
-    // processes any nested tags in the `args` array. if your tag uses advanced logic, you may wish to reimplement this
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await(bu.processTagInner(params, i));
-    }
+e.execute = async(() => {
     var replaceString = '';
     var replaceContent = false;
-    if (params.args[1]) {
-        let newStuff = bu.processSpecial(params.args[1], true);
-         replaceString = await(bu.processTag(params.msg
-            , params.words
-            , newStuff
-            , params.fallback
-            , params.author
-            , params.tagName));
-    } else {
-        replaceString = await(bu.tagProcessError(params, params.fallback, '`Not enough arguments`'));
-    }
-
     return {
         replaceString: replaceString,
         replaceContent: replaceContent

@@ -1,6 +1,7 @@
 var e = module.exports = {};
 var bu;
-
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -26,9 +27,9 @@ e.exampleIn = `I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e
 e.exampleOut = `I likn ta cansumn chnnsn.`;
 
 
-e.execute = (params) => {
+e.execute = async((params) => {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = bu.processTagInner(params, i);
+        params.args[i] = await(bu.processTagInner(params, i));
     }
     let args = params.args
         , fallback = params.fallback;
@@ -43,7 +44,7 @@ e.execute = (params) => {
             regexList = args[2].match(/^\/?(.*)\/(.*)/);
             returnObj.replaceString = args[1].replace(new RegExp(regexList[1], regexList[2]), args[3]);
         } else {
-            returnObj.replaceString = bu.tagProcessError(fallback, '`Invalid regex string`');
+            returnObj.replaceString = await(bu.tagProcessError(params, fallback, '`Invalid regex string`'));
         }
     } else if (args.length == 3) {
         if (/^\/?.*\/.*/.test(args[1])) {
@@ -53,14 +54,14 @@ e.execute = (params) => {
                 returnObj.replaceString = args[2];
                 returnObj.replaceContent = true;
             } catch (err) {
-                returnObj.replaceString = bu.tagProcessError(fallback, err.message);
+                returnObj.replaceString = await(bu.tagProcessError(params, fallback, err.message));
             }
         } else {
-            returnObj.replaceString = bu.tagProcessError(fallback, '`Invalid regex string`');
+            returnObj.replaceString = await(bu.tagProcessError(params, fallback, '`Invalid regex string`'));
         }
     } else {
-        returnObj.replaceString = bu.tagProcessError(fallback, '`Not enough arguments`');
+        returnObj.replaceString = await(bu.tagProcessError(params, fallback, '`Not enough arguments`'));
     }
 
     return returnObj;
-};
+});

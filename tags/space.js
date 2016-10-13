@@ -1,6 +1,8 @@
 var e = module.exports = {};
 var bu;
 
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -20,15 +22,15 @@ e.exampleIn = `{space;4}Hello, world!`;
 e.exampleOut = `    Hello, world!`;
 
 
-e.execute = (params) => {
+e.execute = async((params) => {
     let length = 1;
     var parsedFallback = parseInt(params.fallback);
     if (params.args[1]) {
-        length = parseInt(params.args[1]);
+        length = parseInt(await(bu.processTagInner(params, 1)));
         if (isNaN(length)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    replaceString: bu.tagProcessError(params.fallback, '`Not a number`'),
+                    replaceString: await(bu.tagProcessError(params, params.fallback, '`Not a number`')),
                     replaceContent: replaceContent
                 };
             } else {
@@ -49,4 +51,4 @@ e.execute = (params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

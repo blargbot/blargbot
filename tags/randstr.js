@@ -1,5 +1,7 @@
 var e = module.exports = {};
 var bu;
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -19,9 +21,9 @@ e.desc = 'Creates a random string with characters from <code>chars</code> that i
 e.exampleIn = '{randstr;1234567890;10}';
 e.exampleOut = '3789327305';
 
-e.execute = (params) => {
+e.execute = async((params) => {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = bu.processTagInner(params, i);
+        params.args[i] = await(bu.processTagInner(params, i));
     }
     let args = params.args
         , fallback = params.fallback;
@@ -34,7 +36,7 @@ e.execute = (params) => {
         if (isNaN(args2)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    replaceString: bu.tagProcessError(fallback, '`Not a number`'),
+                    replaceString: await(bu.tagProcessError(params, fallback, '`Not a number`')),
                     replaceContent: replaceContent
                 };
             } else {
@@ -46,11 +48,11 @@ e.execute = (params) => {
             }
         }
     } else {
-        replaceString = bu.tagProcessError(params.fallback, '`Not enough arguments`');
+        replaceString = await(bu.tagProcessError(params, params.fallback, '`Not enough arguments`'));
     }
 
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});
