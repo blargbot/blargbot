@@ -610,12 +610,12 @@ bu.ccommand = {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
         storedGuild.ccommands[key2] = storedGuild.ccommands[key1];
         delete storedGuild.ccommands[key1];
-        bu.r.table('guild').get(guildid)('ccommands').replace(storedGuild.ccommands).run();
+        bu.r.table('guild').get(guildid).replace(storedGuild).run();
     }),
     remove: async((guildid, key) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
         delete storedGuild.ccommands[key];
-        bu.r.table('guild').get(guildid)('ccommands').replace(storedGuild.ccommands).run();
+        bu.r.table('guild').get(guildid).replace(storedGuild).run();
     })
 };
 

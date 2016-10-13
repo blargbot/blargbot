@@ -122,9 +122,9 @@ e.execute = async((msg, words, text) => {
                     let newTag = await(bu.ccommand.get(msg.channel.guild.id, words[3]));
                     if (newTag) {
                         bu.send(msg.channel.id, `The ccommand ${words[3]} already exists!`);
-                    }
+                    }   
                     await(bu.ccommand.rename(msg.channel.guild.id, words[2], words[3]));
-                    bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` edited. ✅`);
+                    bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` renamed. ✅`);
                 } else {
                     bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
