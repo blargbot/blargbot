@@ -445,9 +445,26 @@ If you are the owner of this server, here are a few things to know.
 		}
 	}));
 
+	let guilds = [];
+
 	bot.on('messageCreate', async(function (msg) {
 		processUser(msg);
-
+		if (guilds.indexOf(msg.channel.guild.id) == -1 && msg.author.id != bot.user.id) {
+			let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+			if (!storedGuild) {
+				await(bu.r.table('guild').insert({
+					guildid: msg.channel.guild.id,
+					active: true,
+					name: msg.channel.guild.name,
+					settings: {},
+					channels: {},
+					commandperms: {},
+					ccommands: {},
+					modlog: {}
+				}).run());
+			}
+			guilds.push(msg.channel.guild.id);
+		}
 		if (msg.channel.id != '194950328393793536')
 			if (msg.author.id == bot.user.id) {
 				if (msg.channel.guild)
@@ -640,7 +657,6 @@ If you are the owner of this server, here are a few things to know.
 	}));
 	initCommands();
 	bot.connect();
-
 };
 
 

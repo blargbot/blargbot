@@ -587,6 +587,7 @@ bu.guildSettings = {
     }),
     get: async((guildid, key) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
+        if (!storedGuild) return {};
         return storedGuild.settings[key];
     }),
     remove: async((guildid, key) => {
@@ -607,6 +608,7 @@ bu.ccommand = {
     }),
     get: async((guildid, key) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
+        if (!storedGuild) return null;
         return storedGuild.ccommands[key];
     }),
     rename: async((guildid, key1, key2) => {
