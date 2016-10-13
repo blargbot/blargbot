@@ -148,19 +148,22 @@ bu.awaitMessage = (channelid, message, msg, callback) => {
  * @returns {boolean}
  */
 bu.hasPerm = (msg, perm, quiet) => {
+    bu.logger.debug(perm);
     if ((msg.member.id === bu.CAT_ID && bu.catOverrides)
         || msg.channel.guild.ownerID == msg.member.id
         || msg.member.permission.administraton) {
         return true;
     }
-    var roles = msg.channel.guild.roles.filter(m => m.name.toLowerCase() == perm.toLowerCase());
+    var roles = msg.channel.guild.roles.filter(m => Array.isArray(perm)
+        ? perm.map(q => q.toLowerCase()).indexOf(m.name.toLowerCase()) > -1
+        : m.name.toLowerCase() == perm.toLowerCase());
     for (var i = 0; i < roles.length; i++) {
         if (msg.member.roles.indexOf(roles[i].id) > -1) {
             return true;
         }
     }
     if (!quiet)
-        bu.sendMessageToDiscord(msg.channel.id, `You need the role '${perm}' in order to use this command!`);
+        bu.sendMessageToDiscord(msg.channel.id, `You need the role ${Array.isArray(perm) ? perm.map(m => `\`${m}\``).join(', or ') : `\`${perm}\``} in order to use this command!`);
     return false;
 };
 
@@ -653,8 +656,10 @@ bu.canExecuteCommand = async((msg, commandName, quiet) => {
         if (command) {
             if (command.permission && bu.comparePerms(msg.member, command.permission)) {
                 return [true, commandName];
-            } else if (command.rolename && bu.hasPerm(msg, command.rolename, quiet)) {
-                return [true, commandName];
+            } else if (command.rolename) {
+                if (bu.hasPerm(msg, command.rolename, quiet))
+                    return [true, commandName];
+                else return [false, commandName];
             } else if (!command.rolename) {
                 if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
                     if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {

@@ -40,7 +40,8 @@ e.execute = async((msg, words) => {
         let commandName;
         let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id));
         let commandperms = storedGuild.commandperms;
-        let commands, toSend;
+        if (!commandperms) commandperms = {};
+        let commands, toSend, changedCommands = [];
         switch (words[1].toLowerCase()) {
             case 'list':
                 let message = '__Modified Commands:__\n';
@@ -68,8 +69,8 @@ e.execute = async((msg, words) => {
                     toSend += `Added custom role requirement to command(s)\n\`\`\`fix\n`;
                 }
                 for (let i = 0; i < commands.length; i++) {
-                    if (bu.commandList.hasOwnProperty(words[2].toLowerCase())) {
-                        commandName = bu.commandList[words[2].toLowerCase()].name;
+                    if (bu.commandList.hasOwnProperty(commands[i].toLowerCase())) {
+                        commandName = bu.commandList[commands[i].toLowerCase()].name;
                         if (bu.commands[commandName].category == bu.CommandType.CAT
                             || bu.commands[commandName].category == bu.CommandType.MUSIC) {
                             bu.logger.debug('no ur not allowed');
@@ -79,14 +80,19 @@ e.execute = async((msg, words) => {
                                     commandperms[commandName].rolename = null;
                                 }
                             } else if (words.length >= 4) {
+                                if (!commandperms.hasOwnProperty(commandName)) commandperms[commandName] = {};
                                 commandperms[commandName].rolename = words.slice(3);
+                                changedCommands.push(commandName);
                             }
                         }
                     } else {
-                        bu.send(msg.channel.id, `That's not a command!`);
+                        if (commands.length == 0) bu.send(msg.channel.id, `That's not a command!`);
                     }
                 }
-                bu.send(msg.channel.id, toSend + '\n```');
+                await(bu.r.table('guild').get(msg.channel.guild.id).update({
+                    commandperms: commandperms
+                }).run());
+                bu.send(msg.channel.id, toSend + changedCommands.join(', ') + '\n```');
                 break;
             case 'setperm':
                 if (!words[2]) {
@@ -100,8 +106,8 @@ e.execute = async((msg, words) => {
                     toSend += `Added custom role requirement to command(s)\n\`\`\`fix\n`;
                 }
                 for (let i = 0; i < commands.length; i++) {
-                    if (bu.commandList.hasOwnProperty(words[2].toLowerCase())) {
-                        commandName = bu.commandList[words[2].toLowerCase()].name;
+                    if (bu.commandList.hasOwnProperty(commands[i].toLowerCase())) {
+                        commandName = bu.commandList[commands[i].toLowerCase()].name;
                         if (bu.commands[commandName].category == bu.CommandType.CAT
                             || bu.commands[commandName].category == bu.CommandType.MUSIC) {
                             bu.logger.debug('no ur not allowed');
@@ -111,51 +117,25 @@ e.execute = async((msg, words) => {
                                     commandperms[commandName].permission = null;
                                 }
                             } else if (words.length >= 4) {
+                                if (!commandperms.hasOwnProperty(commandName)) commandperms[commandName] = {};
                                 let allow = parseInt(words[3]);
-                                if (!isNaN(allow))
+                                if (!isNaN(allow)) {
                                     commandperms[commandName].permission = allow;
-                                else {
+                                    changedCommands.push(commandName);
+                                } else {
                                     bu.send(msg.channel.id, `The permissions must be in a numeric format. See <https://discordapi.com/permissions.html> for more details.`);
                                     return;
                                 }
                             }
                         }
                     } else {
-                        bu.send(msg.channel.id, `That's not a command!`);
+                        if (commands.length == 0) bu.send(msg.channel.id, `That's not a command!`);
                     }
                 }
-                bu.send(msg.channel.id, toSend + '\n```');
-                /*
-                                if (!words[2]) {
-                                    bu.send(msg.channel.id, 'Not enough arguments provided!');
-                                }
-                                if (bu.commandList.hasOwnProperty(words[2].toLowerCase())) {
-                                    commandName = bu.commandList[words[2].toLowerCase()].name;
-                                    if (bu.commands[commandName].category == bu.CommandType.CAT
-                                        || bu.commands[commandName].category == bu.CommandType.MUSIC) {
-                                        bu.logger.debug('no ur not allowed');
-                                        bu.send(msg.channel.id, `That's not a command!`);
-                                        return;
-                                    }
-                                    if (words.length == 3) {
-                                        bu.db//.query(`insert into commandperm (guildid, commandname, permission) values (?, ?, null)
-                                on duplicate key update rolename = values(rolename)`, [msg.channel.guild.id, words[2].toLowerCase()], (err) => {
-                                                if (err) bu.logger.error(err);
-                                                bu.send(msg.channel.id, `Removed the custom permission options from command \`${words[2].toLowerCase()}\``);
-                                            });
-                                    } else if (words.length >= 4) {
-                                        let allow = parseInt(words[3]);
-                                        if (!isNaN(allow))
-                                            bu.db//.query(`insert into commandperm (guildid, commandname, permission) values (?, ?, ?)
-                                on duplicate key update permission = values(permission)`, [msg.channel.guild.id, words[2].toLowerCase(), allow], (err) => {
-                                                    if (err) bu.logger.error(err);
-                                                    bu.send(msg.channel.id, `Added custom permission options to command \`${words[2].toLowerCase()}\``);
-                                                });
-                                        else
-                                            bu.send(msg.channel.id, `The permissions must be in a numeric format. See <https://discordapi.com/permissions.html> for more details.`);
-                                    }
-                                }
-                                */
+                await(bu.r.table('guild').get(msg.channel.guild.id).update({
+                    commandperms: commandperms
+                }).run());
+                bu.send(msg.channel.id, toSend + changedCommands.join(', ') + '\n```');
                 break;
             default:
                 bu.send(msg.channel.id, `Unrecognized arguments provided. Please do \`b!help commandperm\` for more details.`);
