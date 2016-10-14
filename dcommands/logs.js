@@ -61,6 +61,10 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
 e.execute = async((msg, words) => {
     //  bu.send(msg.channel.id, 'WIP');
     //  return;
+    if (words[0].toLowerCase() == 'help') {
+        bu.send(msg.channel.id, e.info);
+        return;
+    }
     let numberOfMessages = NaN
         , type = ''
         , user = ''
@@ -152,7 +156,7 @@ e.execute = async((msg, words) => {
     bu.logger.debug(channel, users, types);
     let msg2 = await(bu.send(msg.channel.id, 'Generating your logs...'));
     let thing = await(bu.r.table('chatlogs')
-        .orderBy({ index: !order ? bu.r.asc('msgtime') : bu.r.desc('msgtime') })
+        .orderBy({ index: bu.r.desc('msgtime') })
         .filter(function (q) {
             return q('channelid').eq(channel).and(
                 bu.r.expr(users).count().eq(0).or(bu.r.expr(users).contains(q('userid'))))
@@ -161,7 +165,7 @@ e.execute = async((msg, words) => {
         })
         .limit(numberOfMessages).run());
     bu.logger.debug(thing);
-
+    bu.logger.debug(thing);
     let key = await(insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages))
     bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
 });
