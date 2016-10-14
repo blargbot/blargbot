@@ -391,7 +391,7 @@ If you are the owner of this server, here are a few things to know.
 					msgid: msg.id,
 					channelid: msg.channel.id,
 					guildid: msg.channel.guild.id,
-					msgtime: bu.r.epochTime(moment(msg.editedTimestamp).unix()),
+					msgtime: bu.r.epochTime(moment(msg.editedTimestamp) / 1000),
 					nsfw: nsfw,
 					mentions: msg.mentions.map(u => u.username).join(','),
 					type: 1
@@ -452,7 +452,7 @@ If you are the owner of this server, here are a few things to know.
 				msgid: msg.id,
 				channelid: msg.channel.id,
 				guildid: msg.channel.guild.id,
-				msgtime: bu.r.epochTime(moment().unix()),
+				msgtime: bu.r.epochTime(moment() / 1000),
 				nsfw: nsfw,
 				mentions: msg.mentions.map(u => u.username).join(','),
 				type: 2
@@ -573,7 +573,7 @@ If you are the owner of this server, here are a few things to know.
 						if (msg.channel.guild) {
 							bu.r.table('user').get(msg.author.id).update({
 								lastcommand: msg.cleanContent,
-								lastcommanddate: bu.r.epochTime(moment().unix())
+								lastcommanddate: bu.r.epochTime(moment() / 1000)
 							}).run();
 						}
 					} else {
@@ -627,7 +627,7 @@ If you are the owner of this server, here are a few things to know.
 								msgid: msg.id,
 								channelid: msg.channel.id,
 								guildid: msg.channel.guild.id,
-								msgtime: bu.r.epochTime(moment(msg.timestamp).unix()),
+								msgtime: bu.r.epochTime(moment(msg.timestamp) / 1000),
 								nsfw: nsfw,
 								mentions: msg.mentions.map(u => u.username).join(','),
 							}).run();
@@ -645,7 +645,7 @@ If you are the owner of this server, here are a few things to know.
 				msgid: msg.id,
 				channelid: msg.channel.id,
 				guildid: msg.channel.guild.id,
-				msgtime: bu.r.epochTime(moment(msg.timestamp).unix()),
+				msgtime: bu.r.epochTime(moment(msg.timestamp) / 1000),
 				nsfw: nsfw,
 				mentions: msg.mentions.map(u => u.username).join(','),
 				type: 0
@@ -779,7 +779,7 @@ var handleDiscordCommand = async((channel, user, text, msg) => {
 var executeCommand = async(function (commandName, msg, words, text) {
 	bu.r.table('stats').get(commandName).update({
 		uses: bu.r.row('uses').add(1),
-		lastused: bu.r.epochTime(moment().unix())
+		lastused: bu.r.epochTime(moment() / 1000)
 	}).run();
 	if (bu.commandStats.hasOwnProperty(commandName)) {
 		bu.commandStats[commandName]++;
@@ -994,10 +994,10 @@ var processUser = async(function (msg) {
 			username: msg.author.username,
 			usernames: [{
 				name: msg.author.username,
-				date: bu.r.epochTime(moment().unix())
+				date: bu.r.epochTime(moment() / 1000)
 			}],
 			isbot: msg.author.bot,
-			lastspoke: bu.r.epochTime(moment().unix()),
+			lastspoke: bu.r.epochTime(moment() / 1000),
 			lastcommand: null,
 			lastcommanddate: null,
 			messagecount: 1,
@@ -1006,7 +1006,7 @@ var processUser = async(function (msg) {
 		}).run();
 	} else {
 		let newUser = {
-			lastspoke: bu.r.epochTime(moment().unix()),
+			lastspoke: bu.r.epochTime(moment() / 1000),
 			lastchannel: msg.channel.id,
 			messagecount: storedUser.messagecount + 1
 		};
@@ -1015,7 +1015,7 @@ var processUser = async(function (msg) {
 			newUser.usernames = storedUser.usernames;
 			newUser.usernames.push({
 				name: msg.author.username,
-				date: bu.r.epochTime(moment().unix())
+				date: bu.r.epochTime(moment() / 1000)
 			});
 		}
 		if (storedUser.discriminator != msg.author.discriminator) {

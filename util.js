@@ -586,9 +586,10 @@ bu.guildSettings = {
     set: async((guildid, key, value, type) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
         storedGuild.settings[key] = value;
-        bu.r.table('guild').get(guildid).update({
+        await(bu.r.table('guild').get(guildid).update({
             settings: storedGuild.settings
-        }).run();
+        }).run());
+        return;
     }),
     get: async((guildid, key) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
@@ -598,9 +599,9 @@ bu.guildSettings = {
     remove: async((guildid, key) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
         delete storedGuild.settings[key];
-        bu.r.table('guild').get(guildid).update({
-            settings: storedGuild.settings
-        }).run();
+        await(bu.r.table('guild').get(guildid).replace(storedGuild).run());
+        bu.logger.debug(':thonkang:');
+        return;
     })
 };
 bu.ccommand = {
@@ -610,6 +611,7 @@ bu.ccommand = {
         bu.r.table('guild').get(guildid).update({
             ccommands: storedGuild.ccommands
         }).run();
+        return;
     }),
     get: async((guildid, key) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
@@ -621,11 +623,13 @@ bu.ccommand = {
         storedGuild.ccommands[key2] = storedGuild.ccommands[key1];
         delete storedGuild.ccommands[key1];
         bu.r.table('guild').get(guildid).replace(storedGuild).run();
+        return;
     }),
     remove: async((guildid, key) => {
         let storedGuild = await(bu.r.table('guild').get(guildid).run());
         delete storedGuild.ccommands[key];
         bu.r.table('guild').get(guildid).replace(storedGuild).run();
+        return;
     })
 };
 
