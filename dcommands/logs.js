@@ -152,11 +152,10 @@ e.execute = async((msg, words) => {
             bu.r.expr(users).count().eq(0).or(bu.r.expr(users).contains(q('userid'))))
             .and(bu.r.expr(types).count().eq(0).or(bu.r.expr(types).contains(q('type')))
             );
-    }).orderBy(order ? bu.r.asc('id') : bu.r.desc('id')).limit(numberOfMessages).nth(-1).run());
-    let firstId = thing.id;
+    }).orderBy(order ? bu.r.asc('id') : bu.r.desc('id')).limit(numberOfMessages).nth(-1).pluck('msgtime').run());
 
-    insertQuery(msg, channel, users, types, firstId, numberOfMessages).then(key => {
-        bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + key);
+    insertQuery(msg, channel, users, types, thing, numberOfMessages).then(key => {
+        bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
         return key;
     }).catch(err => {
         bu.send(msg.channel.id, 'Something went wrong! Please report this error with the `suggest` command:\n```\n' + err.stack + '\n```');
@@ -164,7 +163,7 @@ e.execute = async((msg, words) => {
     });
 });
 
-var insertQuery = async((msg, channel, users, types, firstId, numberOfMessages) => {
+var insertQuery = async((msg, channel, users, types, firstTime, numberOfMessages) => {
     function attemptInsert() {
         var key = randomString(6);
         bu.logger.debug(key);
@@ -177,7 +176,7 @@ var insertQuery = async((msg, channel, users, types, firstId, numberOfMessages) 
             channel: channel,
             users: users,
             types: types,
-            firstid: firstId,
+            firsttime: firstTime,
             limit: numberOfMessages
         }).run());
         return key;

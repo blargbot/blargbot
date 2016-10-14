@@ -626,12 +626,20 @@ bu.ccommand = {
 
 bu.isNsfwChannel = async((channelid) => {
     let guildid = bu.bot.channelGuildMap[channelid];
+    if (!guildid) {
+        bu.logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isNsfwChannel');
+        return false;
+    }
     let guild = await(bu.r.table('guild').get(guildid).run());
     return guild.channels[channelid] ? guild.channels[channelid].nsfw : false;
 });
 
 bu.isBlacklistedChannel = async((channelid) => {
     let guildid = bu.bot.channelGuildMap[channelid];
+    if (!guildid) {
+        bu.logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
+        return false;
+    }
     let guild = await(bu.r.table('guild').get(guildid).run());
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 });
