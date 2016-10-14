@@ -59,8 +59,8 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
 
 e.execute = async((msg, words) => {
-    //bu.send(msg.channel.id, 'WIP');
-    // return;
+    bu.send(msg.channel.id, 'WIP');
+    return;
     let numberOfMessages = NaN
         , type = ''
         , user = ''
@@ -147,20 +147,16 @@ e.execute = async((msg, words) => {
         }
     }
     bu.logger.debug(channel, users, types);
-    let thing = await(bu.r.table('chatlogs').filter(function (q) {
+    let msg2 = await(bu.send(msg.channel.id, 'Generating your logs...'));
+    let thing = await(bu.r.table('chatlogs').getAll().filter(function (q) {
         return q('channelid').eq(channel).and(
             bu.r.expr(users).count().eq(0).or(bu.r.expr(users).contains(q('userid'))))
             .and(bu.r.expr(types).count().eq(0).or(bu.r.expr(types).contains(q('type')))
             );
-    }).orderBy(order ? bu.r.asc('id') : bu.r.desc('id')).limit(numberOfMessages).nth(-1).pluck('msgtime').run());
+    }).orderBy({index: order ? bu.r.asc('msgtime') : bu.r.desc('msgtime')}).limit(numberOfMessages).nth(-1).pluck('msgtime').run());
 
-    insertQuery(msg, channel, users, types, thing.msgtime, numberOfMessages).then(key => {
-        bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
-        return key;
-    }).catch(err => {
-        bu.send(msg.channel.id, 'Something went wrong! Please report this error with the `suggest` command:\n```\n' + err.stack + '\n```');
-        bu.logger.error(err.stack);
-    });
+    let key = await(insertQuery(msg, channel, users, types, thing.msgtime, numberOfMessages))
+    bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
 });
 
 var insertQuery = async((msg, channel, users, types, firstTime, numberOfMessages) => {
