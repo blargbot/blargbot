@@ -289,7 +289,6 @@ e.init = (blargutil, v, em) => {
 		postStats();
 	}));
 
-
 	bot.on('guildMemberAdd', async((guild, member) => {
 		let val = await(bu.guildSettings.get(guild.id, 'greeting'))
 		if (val) {
@@ -387,7 +386,6 @@ If you are the owner of this server, here are a few things to know.
 			if (msg.channel.id != '204404225914961920') {
 				var nsfw = await(bu.isNsfwChannel(msg.channel.id));
 				bu.r.table('chatlogs').insert({
-					id: await(bu.r.table('chatlogs').count().run()),
 					content: msg.content,
 					attachment: msg.attachments[0] ? msg.attachments[0].url : null,
 					userid: msg.author.id,
@@ -449,7 +447,6 @@ If you are the owner of this server, here are a few things to know.
 		if (msg.channel.id != '204404225914961920') {
 			var nsfw = await(bu.isNsfwChannel(msg.channel.id));
 			bu.r.table('chatlogs').insert({
-				id: await(bu.r.table('chatlogs').count().run()),
 				content: msg.content,
 				attachment: msg.attachments[0] ? msg.attachments[0].url : null,
 				userid: msg.author.id,
@@ -464,7 +461,7 @@ If you are the owner of this server, here are a few things to know.
 		}
 	}));
 
-/*
+
 	bot.on('messageCreate', async(function (msg) {
 		processUser(msg);
 		if (msg.channel.id != '194950328393793536')
@@ -643,7 +640,6 @@ If you are the owner of this server, here are a few things to know.
 		if (msg.channel.id != '204404225914961920') {
 			let nsfw = await(bu.isNsfwChannel(msg.channel.id));
 			bu.r.table('chatlogs').insert({
-				id: await(bu.r.table('chatlogs').count().run()),
 				content: msg.content,
 				attachment: msg.attachments[0] ? msg.attachments[0].url : null,
 				userid: msg.author.id,
@@ -657,7 +653,7 @@ If you are the owner of this server, here are a few things to know.
 			}).run();
 		}
 	}));
-	*/
+	
 	initCommands();
 	bot.connect();
 };
