@@ -154,7 +154,7 @@ e.execute = async((msg, words) => {
             );
     }).orderBy(order ? bu.r.asc('id') : bu.r.desc('id')).limit(numberOfMessages).nth(-1).pluck('msgtime').run());
 
-    insertQuery(msg, channel, users, types, thing, numberOfMessages).then(key => {
+    insertQuery(msg, channel, users, types, thing.msgtime, numberOfMessages).then(key => {
         bu.send(msg.channel.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
         return key;
     }).catch(err => {
