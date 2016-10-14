@@ -33,7 +33,7 @@ e.execute = async((params) => {
     var replaceString = '';
     var replaceContent = false;
 
-    var obtainedUser = bu.getUser(msg, args);
+    var obtainedUser = await(bu.getUser(msg, args));
 
     if (obtainedUser)
         replaceString = obtainedUser.game ? obtainedUser.game.name : 'nothing';

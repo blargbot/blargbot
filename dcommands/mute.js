@@ -1,6 +1,7 @@
 var e = module.exports = {};
 var bu
-
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -24,7 +25,7 @@ e.longinfo = `<p>Gives the user a special muted role. On first run, this role wi
         Deleting the muted role causes it to be regenerated.</p>
     <p>If mod-logging is enabled, the mute will be logged.</p>`;
 
-e.execute = (msg, words, text) => {
+e.execute = async((msg, words, text) => {
     bu.guildSettings.get(msg.channel.guild.id, 'mutedrole').then(mutedrole => {
         if (!mutedrole) {
             if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
@@ -66,7 +67,7 @@ e.execute = (msg, words, text) => {
             if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
                 if (msg.member.permission.json.manageRoles) {
                     if (words[1]) {
-                        var user = bu.getUserFromName(msg, words[1]);
+                        var user = await(bu.getUserFromName(msg, words[1]));
                         var member = msg.channel.guild.members.get(user.id);
                         if (!user)
                             return;
@@ -113,7 +114,7 @@ e.execute = (msg, words, text) => {
             }
         }
     });
-};
+});
 
 function logError(err) {
     bu.logger.error(err);

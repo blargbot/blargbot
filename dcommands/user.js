@@ -1,6 +1,8 @@
 var e = module.exports = {};
 var bu;
 var moment = require('moment');
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -18,12 +20,12 @@ e.usage = 'user [id/name/mention]';
 e.info = 'Gets information about specified user';
 e.longinfo = `<p>Gets information about the specified user.</p>`;
 
-e.execute = (msg, words) => {
+e.execute = async((msg, words) => {
     var userToGet;
     if (!words[1]) {
         userToGet = msg.member;
     } else {
-        userToGet = bu.getUserFromName(msg, words[1]);
+        userToGet = await(bu.getUserFromName(msg, words[1]));
         userToGet = bot.guilds.get(msg.channel.guild.id).members.get(userToGet.id);
     }
     if (!userToGet) {
@@ -46,4 +48,4 @@ Denied permissions: ${userToGet.permission.deny}
 \`\`\`
 ${userToGet.user.avatarURL}`;
     bu.sendMessageToDiscord(msg.channel.id, message);
-};
+});

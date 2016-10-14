@@ -140,7 +140,7 @@ e.execute = async((msg, words) => {
     for (i = 0; i < usersRaw.length; i++) {
         if (usersRaw[i] != '') {
             var name = usersRaw[i].trim();
-            var u = bu.getUserFromName(msg, name, false);
+            var u = await(bu.getUserFromName(msg, name, false));
             if (!u) {
                 if (/[0-9]{17,21}/.test(usersRaw[i])) {
                     users.push(usersRaw[i].match(/([0-9]{17,21})/)[1]);
@@ -166,7 +166,7 @@ e.execute = async((msg, words) => {
         .limit(numberOfMessages).run());
     bu.logger.debug(thing);
     bu.logger.debug(thing);
-    let key = await(insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages))
+    let key = await(insertQuery(msg, channel, users, types, thing[0].msgtime, numberOfMessages))
     bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
 });
 

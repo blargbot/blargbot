@@ -1,6 +1,7 @@
 var e = module.exports = {};
 var bu;
-
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -19,7 +20,7 @@ e.info = 'Unmutes a user.\nIf mod-logging is enabled, the unmute will be logged.
 e.longinfo = `<p>Unmutes a user.</p>
     <p>If mod-logging is enabled, the unmute will be logged.</p>`;
 
-e.execute = (msg, words) => {
+e.execute = async((msg, words) => {
     bu.guildSettings.get(msg.channel.guild.id, 'mutedrole').then(mutedrole => {
 
         if (!mutedrole) {
@@ -30,7 +31,7 @@ e.execute = (msg, words) => {
             if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
                 if (msg.member.permission.json.manageRoles) {
                     if (words[1]) {
-                        var user = bu.getUserFromName(msg, words[1]);
+                        var user = await(bu.getUserFromName(msg, words[1]));
                         var member = msg.channel.guild.members.get(user.id);
                         if (!user)
                             return;
@@ -65,4 +66,4 @@ e.execute = (msg, words) => {
             }
         }
     });
-};
+});

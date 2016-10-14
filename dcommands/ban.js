@@ -1,6 +1,7 @@
 var e = module.exports = {};
 var bu;
-
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -18,7 +19,7 @@ e.longinfo = `<p>Bans a user, where <code>days</code> is the number of days to d
 
 
 
-e.execute = (msg, words) => {
+e.execute = async((msg, words) => {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
         bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to ban users!`);
         return;
@@ -31,7 +32,7 @@ e.execute = (msg, words) => {
 
 
     if (words[1]) {
-        var user = bu.getUserFromName(msg, words[1]);
+        var user = await(bu.getUserFromName(msg, words[1]));
         if (!user) {
             bu.send(msg.channel.id, `I couldn't find that user. Try using \`hackban\` with their ID or a mention instead.`);
             return;
@@ -59,4 +60,4 @@ e.execute = (msg, words) => {
     }
     //bot.ban
 
-};
+});

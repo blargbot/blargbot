@@ -613,7 +613,7 @@ If you are the owner of this server, here are a few things to know.
 							var content = msg.content;
 							try {
 								while (/<@!?[0-9]{17,21}>/.test(content)) {
-									content = content.replace(/<@!?[0-9]{17,21}>/, '@' + bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true).username);
+									content = content.replace(/<@!?[0-9]{17,21}>/, '@' + await(bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true)).username);
 								}
 							} catch (err) {
 								bu.logger.error(err.stack);

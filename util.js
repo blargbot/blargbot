@@ -120,25 +120,30 @@ bu.compareStats = (a, b) => {
     return 0;
 };
 
-bu.awaitMessage = (channelid, message, msg, callback) => {
-    bu.send(channelid, message).then(() => {
-        if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
-            bu.awaitMessages[msg.channel.id] = {};
-        let event = 'await' + msg.id;
-        bu.awaitMessages[msg.channel.id][msg.author.id] = {
-            event: event,
-            time: moment(msg.timestamp)
-        };
-        bu.emitter.removeAllListeners(event);
-        bu.emitter.on(event, (msg2) => {
-            let response = callback(msg2);
-            bu.logger.debug(response);
-            if (response) {
-                bu.emitter.removeAllListeners(event);
-            }
+bu.awaitMessage = async((msg, message, callback) => {
+    await(bu.send(msg.channel.id, message));
+    if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
+        bu.awaitMessages[msg.channel.id] = {};
+    let event = 'await' + msg.channel.id + '-' + msg.author.id;
+    bu.awaitMessages[msg.channel.id][msg.author.id] = {
+        event: event,
+        time: moment(msg.timestamp)
+    };
+    bu.emitter.removeAllListeners(event);
+    function registerEvent() {
+        return new Promise((fulfill) => {
+            bu.emitter.on(event, async((msg2) => {
+                let response = await(async(callback(msg2)));
+                bu.logger.debug(response);
+                if (response) {
+                    bu.emitter.removeAllListeners(event);
+                    fulfill(msg2);
+                }
+            }));
         });
-    });
-};
+    }
+    return await(registerEvent());
+});
 
 /**
  * Checks if a user has a role with a specific name
@@ -201,7 +206,7 @@ bu.send = (channelId, message, file) => {
  * @param quiet - if true, won't respond with multiple users found(Boolean)
  * @returns {User|null}
  */
-bu.getUserFromName = (msg, name, quiet) => {
+bu.getUserFromName = async((msg, name, quiet) => {
     var userList;
     var userId;
     var discrim;
@@ -263,7 +268,7 @@ ${userListString}
 \`\`\``);
         return null;
     }
-};
+});
 
 /**
  * Saves the config file
@@ -466,7 +471,7 @@ bu.processTag = async((msg, words, contents, fallback, author, tagName) => {
         }
         else {
             replaceString = replaceObj.replaceString;
-            if (!replaceString) {
+            if (replaceString == undefined) {
                 replaceString = '';
             }
             if (replaceString == bu.specialCharBegin + 'BREAK' + bu.specialCharEnd) {
@@ -708,7 +713,7 @@ bu.shuffle = (array) => {
     return array;
 };
 
-bu.getUser = (msg, args, index) => {
+bu.getUser = async((msg, args, index) => {
     var obtainedUser;
     if (!index) index = 1;
 
@@ -717,13 +722,13 @@ bu.getUser = (msg, args, index) => {
         obtainedUser = msg.author;
     } else {
         if (args[index + 1]) {
-            obtainedUser = bu.getUserFromName(msg, args[index], true);
+            obtainedUser = await(bu.getUserFromName(msg, args[index], true));
         } else {
-            obtainedUser = bu.getUserFromName(msg, args[index]);
+            obtainedUser = await(bu.getUserFromName(msg, args[index]));
         }
     }
     return obtainedUser;
-};
+});
 
 
 bu.tagGetFloat = (arg) => {

@@ -317,7 +317,7 @@ It has been used a total of **${storedTag.uses} time${storedTag.uses == 1 ? '' :
                     tagList = [];
                     var userToSearch = words.slice(index).join(' ');
                     bu.logger.debug(userToSearch);
-                    var obtainedUser = bu.getUserFromName(msg, userToSearch);
+                    var obtainedUser = await(bu.getUserFromName(msg, userToSearch));
                     if (!obtainedUser) {
                         break;
                     }
