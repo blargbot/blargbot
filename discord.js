@@ -237,7 +237,6 @@ e.init = (blargutil, v, em) => {
 		, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
 	e.bot = bot;
 
-
 	bot.on('debug', function (message, id) {
 		if (debug)
 			bu.logger.debug(`[${moment()
@@ -621,7 +620,7 @@ If you are the owner of this server, here are a few things to know.
 							}
 							var nsfw = await(bu.isNsfwChannel(msg.channel.id));
 							bu.r.table('catchat').insert({
-								id: await(bu.r.table('chatlogs').count().run()),
+							//	id: await(bu.r.table('chatlogs').count().run()),
 								content: msg.content,
 								attachment: msg.attachments[0] ? msg.attachments[0].url : null,
 								userid: msg.author.id,
