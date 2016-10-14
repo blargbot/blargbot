@@ -153,20 +153,20 @@ e.execute = async((msg, words) => {
     //if (types.length == 0) {
     //    types = [0, 1, 2];
    // }
-    bu.logger.debug(channel, users, types);
+    bu.logger.debug(channel, users, types, order);
     let msg2 = await(bu.send(msg.channel.id, 'Generating your logs...'));
+    let msgids = [msg.id, msg2.id];
     let thing = await(bu.r.table('chatlogs')
-        .orderBy({ index: bu.r.desc('msgtime') })
+        .orderBy({ index: order ? bu.r.asc('msgtime') : bu.r.desc('msgtime') })
         .filter(function (q) {
             return q('channelid').eq(channel).and(
                 bu.r.expr(users).count().eq(0).or(bu.r.expr(users).contains(q('userid'))))
                 .and(bu.r.expr(types).count().eq(0).or(bu.r.expr(types).contains(q('type')))
+                .and(bu.r.expr(msgids).contains(q('msgid')).not())
                 );
         })
         .limit(numberOfMessages).run());
-    bu.logger.debug(thing);
-    bu.logger.debug(thing);
-    let key = await(insertQuery(msg, channel, users, types, thing[0].msgtime, numberOfMessages))
+    let key = await(insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages))
     bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
 });
 
@@ -183,7 +183,7 @@ var insertQuery = async((msg, channel, users, types, firstTime, numberOfMessages
             channel: channel,
             users: users,
             types: types,
-            firsttime: firstTime,
+            firsttime: bu.r.expr(firstTime).toEpochTime(),
             limit: numberOfMessages
         }).run());
         return key;
