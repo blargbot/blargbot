@@ -25,6 +25,7 @@ e.execute = (msg, words) => {
     var message = words.join(' ');
     var args = message.split('|');
     message = `**Version ${bu.VERSION}**
+    
 ${args[0] ?
 `**New Features:**
 ${args[0]}
