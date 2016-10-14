@@ -21,7 +21,7 @@ e.longinfo = `<p>Unmutes a user.</p>
     <p>If mod-logging is enabled, the unmute will be logged.</p>`;
 
 e.execute = async((msg, words) => {
-    let mutedrole = await(guildSettings.get(msg.channel.guild.id, 'mutedrole'))
+    let mutedrole = await(bu.guildSettings.get(msg.channel.guild.id, 'mutedrole'))
 
     if (!mutedrole) {
         bu.sendMessageToDiscord(msg.channel.id, `No muted users were found. You can only unmute users muted with \`mute\`.`);
