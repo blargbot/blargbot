@@ -91,7 +91,7 @@ e.execute = async((msg, words, text) => {
                             name: title,
                             author: msg.author.id,
                             content: words.slice(3).join(' '),
-                            lastmodified: moment().valueOf(),
+                            lastmodified: bu.r.epochTime(moment().valueOf()),
                             uses: 0
                         }).run());
                         bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${title}\` created. ✅`);
@@ -136,7 +136,8 @@ e.execute = async((msg, words, text) => {
                     if (storedTag.author == msg.author.id) {
                         let content = words.splice(3).join(' ');
                         await(bu.r.table('tag').get(words[2]).update({
-                            content: content
+                            content: content,
+                            lastmodified: bu.r.epochTime(moment().valueOf())
                         }).run());
                         bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` edited. ✅`);
                         bu.send('230810364164440065', `**__Edit__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${content}\`\`\``);
@@ -156,7 +157,7 @@ e.execute = async((msg, words, text) => {
                             name: title,
                             author: msg.author.id,
                             content: words.slice(3).join(' '),
-                            lastmodified: moment().valueOf(),
+                            lastmodified: bu.r.epochTime(moment().valueOf()),
                             uses: 0
                         }).run());
                         bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${title}\` created. ✅`);
@@ -166,7 +167,8 @@ e.execute = async((msg, words, text) => {
                     if (storedTag.author == msg.author.id) {
                         let content = words.splice(3).join(' ');
                         await(bu.r.table('tag').get(words[2]).update({
-                            content: content
+                            content: content,
+                            lastmodified: bu.r.epochTime(moment().valueOf())
                         }).run());
                         bu.sendMessageToDiscord(msg.channel.id, `✅ Tag \`${words[2]}\` edited. ✅`);
                         bu.send('230810364164440065', `**__Edit__**:\n  **User:** ${msg.author.username} (${msg.author.id})\n  **Tag:** ${words[2]}\n  **Contents**: \`\`\`${content}\`\`\``);

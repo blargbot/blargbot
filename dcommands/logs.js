@@ -59,8 +59,8 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
 
 e.execute = async((msg, words) => {
-    bu.send(msg.channel.id, 'WIP');
-    return;
+    //  bu.send(msg.channel.id, 'WIP');
+    //  return;
     let numberOfMessages = NaN
         , type = ''
         , user = ''
@@ -146,16 +146,23 @@ e.execute = async((msg, words) => {
             }
         }
     }
+    //if (types.length == 0) {
+    //    types = [0, 1, 2];
+   // }
     bu.logger.debug(channel, users, types);
     let msg2 = await(bu.send(msg.channel.id, 'Generating your logs...'));
-    let thing = await(bu.r.table('chatlogs').getAll().filter(function (q) {
-        return q('channelid').eq(channel).and(
-            bu.r.expr(users).count().eq(0).or(bu.r.expr(users).contains(q('userid'))))
-            .and(bu.r.expr(types).count().eq(0).or(bu.r.expr(types).contains(q('type')))
-            );
-    }).orderBy({index: order ? bu.r.asc('msgtime') : bu.r.desc('msgtime')}).limit(numberOfMessages).nth(-1).pluck('msgtime').run());
+    let thing = await(bu.r.table('chatlogs')
+        .orderBy({ index: !order ? bu.r.asc('msgtime') : bu.r.desc('msgtime') })
+        .filter(function (q) {
+            return q('channelid').eq(channel).and(
+                bu.r.expr(users).count().eq(0).or(bu.r.expr(users).contains(q('userid'))))
+                .and(bu.r.expr(types).count().eq(0).or(bu.r.expr(types).contains(q('type')))
+                );
+        })
+        .limit(numberOfMessages).run());
+    bu.logger.debug(thing);
 
-    let key = await(insertQuery(msg, channel, users, types, thing.msgtime, numberOfMessages))
+    let key = await(insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages))
     bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
 });
 
