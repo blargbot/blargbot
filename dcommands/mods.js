@@ -44,7 +44,7 @@ e.execute = (msg, words) => {
                 message += `<:vpAway:212789859071426561> **${getName(m)}** (${m.user.id})\n`;
             });
             mods.filter(m => m.status == 'dnd').forEach(m => {
-                message += `<:vpAway:212789859071426561> **${getName(m)}** (${m.user.id}) - DO NOT DISTURB\n`;
+                message += `<:vpDnD:236744731088912384> **${getName(m)}** (${m.user.id})\n`;
             });
             mods.filter(m => m.status == 'offline').forEach(m => {
                 message += `<:vpOffline:212790005943369728> **${getName(m)}** (${m.user.id})\n`;
