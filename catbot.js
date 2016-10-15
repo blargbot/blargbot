@@ -25,7 +25,7 @@ e.init = (blargutil, database) => {
         bu.logger.init('stupid cat> YO SHIT WADDUP ITS DA CAT HERE');
     });
 
-    e.bot.on('messageCreate', (msg) => {
+    e.bot.on('messageCreate', async((msg) => {
         var prefix = config.general.isbeta ? 'catbeta' : 'cat';
         if (msg.content.startsWith(prefix)) {
             var command = msg.content.replace(prefix, '').trim();
@@ -94,7 +94,7 @@ e.init = (blargutil, database) => {
                     break;
             }
         }
-    });
+    }));
 
     e.bot.connect();
 };
