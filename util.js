@@ -435,7 +435,7 @@ bu.logAction = async((guild, user, mod, type, reason) => {
 
         let msg = await(bu.sendMessageToDiscord(val, message));
         let cases = storedGuild.modlog;
-        if (cases instanceof Object){
+        if (!isArray(cases)){
             cases = [];
         }
         cases.push({
