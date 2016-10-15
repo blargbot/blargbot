@@ -37,7 +37,7 @@ e.execute = async((msg, words) => {
                 }
                 todo.push({
                     active: 1,
-                    content: words.slice(2)
+                    content: words.slice(2).join(' ')
                 });
                 modified = true;
                 bu.send(msg.channel.id, 'Done! :ok_hand:');
