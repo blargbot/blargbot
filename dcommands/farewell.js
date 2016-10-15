@@ -36,8 +36,7 @@ e.execute = async((msg, words) => {
         return;
     }
     var farewell = words.slice(1).join(' ');
-    bu.guildSettings.set(msg.channel.guild.id, 'farewell', farewell).then(() => {
-        bu.sendMessageToDiscord(msg.channel.id, `Farewell set. Simulation:
+    await(bu.guildSettings.set(msg.channel.guild.id, 'farewell', farewell));
+    bu.sendMessageToDiscord(msg.channel.id, `Farewell set. Simulation:
 ${await(tags.processTag(msg, farewell, ''))}`);
-    });
 });

@@ -35,8 +35,7 @@ e.execute = async((msg, words) => {
         return;
     }
     var greeting = words.slice(1).join(' ');
-    bu.guildSettings.set(msg.channel.guild.id, 'greeting', greeting).then(() => {
-        bu.sendMessageToDiscord(msg.channel.id, `Greeting set. Simulation:
+    await(bu.guildSettings.set(msg.channel.guild.id, 'greeting', greeting))
+    bu.sendMessageToDiscord(msg.channel.id, `Greeting set. Simulation:
 ${await(tags.processTag(msg, greeting, ''))}`);
-    });
 });
