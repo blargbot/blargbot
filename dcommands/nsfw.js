@@ -35,5 +35,5 @@ e.execute = async((msg) => {
     storedGuild.channels[msg.channel.id] = channel;
     bu.r.table('guild').get(msg.channel.guild.id).update({
         channels: storedGuild.channels
-    });
+    }).run();
 });
