@@ -166,7 +166,6 @@ bu.awaitMessage = async((msg, message, callback) => {
  * @returns {boolean}
  */
 bu.hasPerm = (msg, perm, quiet) => {
-    bu.logger.debug(perm);
     if ((msg.member.id === bu.CAT_ID && bu.catOverrides)
         || msg.channel.guild.ownerID == msg.member.id
         || msg.member.permission.administraton) {

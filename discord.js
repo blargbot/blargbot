@@ -462,7 +462,7 @@ If you are the owner of this server, here are a few things to know.
 
 	bot.on('messageCreate', async(function (msg) {
 		processUser(msg);
-
+		let isDm = msg.channel.guild == undefined;
 		if (bu.awaitMessages.hasOwnProperty(msg.channel.id)
 			&& bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
 			let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
@@ -473,7 +473,7 @@ If you are the owner of this server, here are a few things to know.
 
 		if (msg.channel.id != '194950328393793536')
 			if (msg.author.id == bot.user.id) {
-				if (msg.channel.guild)
+				if (!isDm)
 					bu.logger.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} `
 						+ `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
 				else
@@ -504,26 +504,25 @@ If you are the owner of this server, here are a few things to know.
 		}
 
 		if (msg.author.id !== bot.user.id) {
-			let antimention = await(bu.guildSettings.get(msg.channel.guild ? msg.channel.guild.id : '', 'antimention'));
-			if (antimention) {
-				var parsedAntiMention = parseInt(antimention);
-				if (!(parsedAntiMention == 0 || isNaN(parsedAntiMention))) {
-					if (msg.mentions.length >= parsedAntiMention) {
-						bu.logger.info('BANN TIME');
-						if (!bu.bans[msg.channel.guild.id])
-							bu.bans[msg.channel.guild.id] = {};
-						bu.bans[msg.channel.guild.id][msg.author.id] = { mod: bot.user, type: 'Auto-Ban', reason: 'Mention spam' };
-						bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1).then(() => {
-						}).catch(() => {
-							delete bu.bans[msg.channel.guild.id][msg.author.id];
-							bu.send(msg.channel.id, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
-						});
-					}
+			let antimention;
+			if (!isDm) antimention = await(bu.guildSettings.get(msg.channel.guild ? msg.channel.guild.id : '', 'antimention'));
+			var parsedAntiMention = parseInt(antimention);
+			if (!(parsedAntiMention == 0 || isNaN(parsedAntiMention))) {
+				if (msg.mentions.length >= parsedAntiMention) {
+					bu.logger.info('BANN TIME');
+					if (!bu.bans[msg.channel.guild.id])
+						bu.bans[msg.channel.guild.id] = {};
+					bu.bans[msg.channel.guild.id][msg.author.id] = { mod: bot.user, type: 'Auto-Ban', reason: 'Mention spam' };
+					bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1).then(() => {
+					}).catch(() => {
+						delete bu.bans[msg.channel.guild.id][msg.author.id];
+						bu.send(msg.channel.id, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
+					});
 				}
 			}
 
-			let prefix = await(bu.guildSettings.get(msg.channel.guild ? msg.channel.guild.id : '', 'prefix'));
-			if (!msg.channel.guild) {
+			let prefix = await(bu.guildSettings.get(!isDm ? msg.channel.guild.id : '', 'prefix'));
+			if (isDm) {
 				prefix = '';
 			}
 
@@ -534,7 +533,8 @@ If you are the owner of this server, here are a few things to know.
 				prefix = bu.config.discord.defaultPrefix;
 			}
 
-			let blacklisted = await(bu.isBlacklistedChannel(msg.channel.id));
+			let blacklisted;
+			if (!isDm) blacklisted = await(bu.isBlacklistedChannel(msg.channel.id));
 
 			if (blacklisted &&
 				msg.content.replace(prefix, '').split(' ')[0].toLowerCase() != 'blacklist') {
@@ -618,7 +618,8 @@ If you are the owner of this server, here are a few things to know.
 							} catch (err) {
 								bu.logger.error(err.stack);
 							}
-							var nsfw = await(bu.isNsfwChannel(msg.channel.id));
+							let nsfw = true;
+							if (!isDm) nsfw = await(bu.isNsfwChannel(msg.channel.id));
 							bu.r.table('catchat').insert({
 								//	id: await(bu.r.table('chatlogs').count().run()),
 								content: msg.content,
@@ -626,7 +627,7 @@ If you are the owner of this server, here are a few things to know.
 								userid: msg.author.id,
 								msgid: msg.id,
 								channelid: msg.channel.id,
-								guildid: msg.channel.guild.id,
+								guildid: isDm ? 'DM' : msg.channel.guild.id,
 								msgtime: bu.r.epochTime(moment(msg.timestamp) / 1000),
 								nsfw: nsfw,
 								mentions: msg.mentions.map(u => u.username).join(','),
@@ -637,14 +638,15 @@ If you are the owner of this server, here are a few things to know.
 			}
 		}
 		if (msg.channel.id != '204404225914961920') {
-			let nsfw = await(bu.isNsfwChannel(msg.channel.id));
+			let nsfw = true;
+			if (!isDm) nsfw = await(bu.isNsfwChannel(msg.channel.id));
 			bu.r.table('chatlogs').insert({
 				content: msg.content,
 				attachment: msg.attachments[0] ? msg.attachments[0].url : null,
 				userid: msg.author.id,
 				msgid: msg.id,
 				channelid: msg.channel.id,
-				guildid: msg.channel.guild.id,
+				guildid: isDm ? 'DM' : msg.channel.guild.id,
 				msgtime: bu.r.epochTime(moment(msg.timestamp) / 1000),
 				nsfw: nsfw,
 				mentions: msg.mentions.map(u => u.username).join(','),
@@ -1068,7 +1070,7 @@ var tables = {
 };
 
 var flipTables = async((msg, unflip) => {
-	let tableflip = await(bu.guildSettings.get(msg.channel.guild.id, 'tableflip'))
+	let tableflip = await(bu.guildSettings.get(msg.channel.guild.id, 'tableflip'));
 	if (tableflip && tableflip != 0) {
 		var seed = bu.getRandomInt(0, 3);
 		bu.sendMessageToDiscord(msg.channel.id,
