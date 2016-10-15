@@ -61,7 +61,7 @@ blargbot&gt; Hello, User. This is a test command.
     <pre><code>cc help</code></pre>
     <p>Gets basic ccommand help.</p>`;
 e.alias = ['cc'];
-e.execute = async((msg, words, text) => {
+e.execute = async((msg, words) => {
     if (words[1]) {
         let storedTag;
         switch (words[1].toLowerCase()) {

@@ -26,26 +26,28 @@ e.execute = async((msg, words) => {
         userToGet = msg.member;
     } else {
         userToGet = await(bu.getUserFromName(msg, words[1]));
-        userToGet = bot.guilds.get(msg.channel.guild.id).members.get(userToGet.id);
+        if (userToGet)
+            userToGet = bot.guilds.get(msg.channel.guild.id).members.get(userToGet.id);
+        else return;
     }
     if (!userToGet) {
         //   sendMessageToDiscord(msg.channel.id, 'Unable to find that user on this guild!');
         return;
     }
     //  var avatarUrl = `https://cdn.discordapp.com/avatars/${userToGet.user.id}/${userToGet.user.avatar}.jpg`;
-    var message = `\`\`\`xl
+    var message = `\`\`\`prolog
 User: ${userToGet.user.username}#${userToGet.user.discriminator}
 Username: ${userToGet.user.username}
 Nickname: ${userToGet.nick}
 Discriminator: ${userToGet.user.discriminator}
 ${!userToGet.user.bot ? 'Account Type: User' : 'Account Type: Bot'}
 ID: ${userToGet.user.id}
-Account created on ${moment(userToGet.user.createdAt).format('dddd, MMMM Do YYYY, h:mm:ss a')}
-Account joined guild '${msg.channel.guild.name}' on ${moment(userToGet.joinedAt).format('dddd, MMMM Do YYYY, h:mm:ss a')}
+Account created on ${moment(userToGet.user.createdAt).format('llll')}
+Account joined guild '${msg.channel.guild.name}' on ${moment(userToGet.joinedAt).format('llll')}
 ${userToGet.game == null ? `Not playing anything` : `Currently ${userToGet.game.type != null && userToGet.game.type > 0 ? 'streaming' : 'playing'} ${userToGet.game.name}`}
 Allowed permissions: ${userToGet.permission.allow}
 Denied permissions: ${userToGet.permission.deny}
-\`\`\`
-${userToGet.user.avatarURL}`;
-    bu.sendMessageToDiscord(msg.channel.id, message);
+Avatar URL: ${userToGet.user.avatarURL}
+\`\`\``;
+    bu.sendFile(msg.channel.id, message, userToGet.user.avatarURL);
 });

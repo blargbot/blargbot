@@ -261,8 +261,7 @@ e.init = (blargutil, v, em) => {
 
 		let guilds = await(bu.r.table('guild').withFields('guildid').run()).map(g => g.guildid);
 		//console.dir(guilds);
-		bot.guilds.forEach((g) => 
-		{
+		bot.guilds.forEach((g) => {
 			if (guilds.indexOf(g.id) == -1) {
 				console.log('Inserting a missing guild');
 				bu.r.table('guild').insert({
@@ -273,7 +272,7 @@ e.init = (blargutil, v, em) => {
 					channels: {},
 					commandperms: {},
 					ccommands: {},
-					modlog: {}
+					modlog: []
 				}).run();
 			}
 		});
@@ -365,7 +364,7 @@ If you are the owner of this server, here are a few things to know.
 					channels: {},
 					commandperms: {},
 					ccommands: {},
-					modlog: {}
+					modlog: []
 				}).run();
 			else
 				bu.r.table('guild').get(guild.id).update({
@@ -463,6 +462,15 @@ If you are the owner of this server, here are a few things to know.
 
 	bot.on('messageCreate', async(function (msg) {
 		processUser(msg);
+
+		if (bu.awaitMessages.hasOwnProperty(msg.channel.id)
+			&& bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
+			let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
+			if (moment.duration(moment() - firstTime).asMinutes() <= 5) {
+				bu.emitter.emit(bu.awaitMessages[msg.channel.id][msg.author.id].event, msg);
+			}
+		}
+
 		if (msg.channel.id != '194950328393793536')
 			if (msg.author.id == bot.user.id) {
 				if (msg.channel.guild)
@@ -511,14 +519,6 @@ If you are the owner of this server, here are a few things to know.
 							bu.send(msg.channel.id, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
 						});
 					}
-				}
-			}
-
-			if (bu.awaitMessages.hasOwnProperty(msg.channel.id)
-				&& bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
-				let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
-				if (moment.duration(moment() - firstTime).asMinutes() <= 5) {
-					bu.emitter.emit(bu.awaitMessages[msg.channel.id][msg.author.id].event, msg);
 				}
 			}
 
@@ -620,7 +620,7 @@ If you are the owner of this server, here are a few things to know.
 							}
 							var nsfw = await(bu.isNsfwChannel(msg.channel.id));
 							bu.r.table('catchat').insert({
-							//	id: await(bu.r.table('chatlogs').count().run()),
+								//	id: await(bu.r.table('chatlogs').count().run()),
 								content: msg.content,
 								attachment: msg.attachments[0] ? msg.attachments[0].url : null,
 								userid: msg.author.id,
@@ -652,7 +652,7 @@ If you are the owner of this server, here are a few things to know.
 			}).run();
 		}
 	}));
-	
+
 	initCommands();
 	bot.connect();
 };

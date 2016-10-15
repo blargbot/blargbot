@@ -121,25 +121,38 @@ bu.compareStats = (a, b) => {
 };
 
 bu.awaitMessage = async((msg, message, callback) => {
-    await(bu.send(msg.channel.id, message));
+    let returnMsg = await(bu.send(msg.channel.id, message));
     if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
         bu.awaitMessages[msg.channel.id] = {};
     let event = 'await' + msg.channel.id + '-' + msg.author.id;
+    if (bu.awaitMessages[msg.channel.id][msg.author.id]) {
+        clearTimeout(bu.awaitMessages[msg.channel.id][msg.author.id].timer);
+    }
     bu.awaitMessages[msg.channel.id][msg.author.id] = {
         event: event,
-        time: moment(msg.timestamp)
+        time: moment(msg.timestamp),
+        botmsg: returnMsg
     };
     bu.emitter.removeAllListeners(event);
     function registerEvent() {
-        return new Promise((fulfill) => {
+        return new Promise((fulfill, reject) => {
             bu.emitter.on(event, async((msg2) => {
-                let response = await(async(callback(msg2)));
-                bu.logger.debug(response);
+                let response;
+                if (callback)
+                    response = await(callback(msg2));
+                else
+                    response = true;
                 if (response) {
                     bu.emitter.removeAllListeners(event);
+                    clearTimeout(bu.awaitMessages[msg.channel.id][msg.author.id].timer);
                     fulfill(msg2);
                 }
             }));
+            bu.awaitMessages[msg.channel.id][msg.author.id].timer = setTimeout(() => {
+                bu.emitter.removeAllListeners(event);
+                bu.send(msg.channel.id, 'Query canceled after 60 seconds.');
+                reject('Request timed out.');
+            }, 60000);
         });
     }
     return await(registerEvent());
@@ -226,30 +239,59 @@ bu.getUserFromName = async((msg, name, quiet) => {
         discrim = name.match(/^.*#(\d{4}$)/)[1];
         name = name.substring(0, name.length - 5);
     }
-    if (!discrim) {
-        userList = msg.channel.guild.members.filter(m => m.user.username && m.user.username == name);
-        if (userList.length == 0) {
-            userList = msg.channel.guild.members.filter(m => m.user.username && m.user.username.toLowerCase() == name);
+    //userList =
+    userList = msg.channel.guild.members.filter(m => (m.user.username
+        && m.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1
+        && (discrim != undefined ? m.user.discriminator == discrim : true))
+        || ((m.nick)
+            && m.nick.toLowerCase().indexOf(name) > -1
+            && (discrim != undefined ? m.user.discriminator == discrim : true)));
+
+    userList.sort(function (a, b) {
+        let thingy = 0;
+        if (a.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.user.username.startsWith(name)) {
+            thingy += 100;
         }
-        if (userList.length == 0) {
-            userList = msg.channel.guild.members.filter(m => m.user.username && m.user.username.startsWith(name));
+        if (a.nick && a.nick.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.nick.startsWith(name)) {
+            thingy += 100;
         }
-        if (userList.length == 0) {
-            userList = msg.channel.guild.members.filter(m => m.user.username && m.user.username.toLowerCase().startsWith(name));
+        if (b.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 && b.user.username.startsWith(name)) {
+            thingy -= 100;
         }
-    } else {
-        userList = msg.channel.guild.members.filter(m => m.user.username && m.user.discriminator && m.user.username == name && m.user.discriminator == discrim);
-        if (userList.length == 0) {
-            userList = msg.channel.guild.members.filter(m => m.user.username && m.user.discriminator && m.user.username.toLowerCase() == name && m.user.discriminator == discrim);
+        if (b.nick && b.nick.toLowerCase().indexOf(name.toLowerCase()) > -1 && b.nick.startsWith(name)) {
+            thingy -= 100;
         }
-        if (userList.length == 0) {
-            userList = msg.channel.guild.members.filter(m => m.user.username && m.user.discriminator && m.user.username.startsWith(name) && m.user.discriminator == discrim);
+        if (a.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1
+            && a.user.username.toLowerCase().startsWith(name.toLowerCase())) {
+            thingy += 10;
         }
-        if (userList.length == 0) {
-            userList = msg.channel.guild.members.filter(m => m.user.username && m.user.discriminator && m.user.username.toLowerCase().startsWith(name) && m.user.discriminator == discrim);
+        if (a.nick && a.nick.toLowerCase().indexOf(name.toLowerCase()) > -1
+            && a.nick.toLowerCase().startsWith(name.toLowerCase())) {
+            thingy += 10;
         }
-    }
-    userList.sort();
+        if (b.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1
+            && b.user.username.toLowerCase().startsWith(name.toLowerCase())) {
+            thingy -= 10;
+        }
+        if (b.nick && b.nick.toLowerCase().indexOf(name.toLowerCase()) > -1
+            && b.nick.toLowerCase().startsWith(name.toLowerCase())) {
+            thingy -= 10;
+        }
+        if (a.user.username.indexOf(name) > -1) {
+            thingy++;
+        }
+        if (a.nick && a.nick.indexOf(name)) {
+            thingy++;
+        }
+        if (b.user.username.indexOf(name) > -1) {
+            thingy--;
+        }
+        if (b.nick && b.nick.indexOf(name)) {
+            thingy--;
+        }
+        return -thingy;
+    });
+    //  bu.logger.debug(userList.map(m => m.user.username));
 
     if (userList.length == 1) {
         return userList[0].user;
@@ -258,15 +300,35 @@ bu.getUserFromName = async((msg, name, quiet) => {
             bu.sendMessageToDiscord(msg.channel.id, `No users found.`);
         return null;
     } else {
-        var userListString = '';
-        for (var i = 0; i < userList.length; i++) {
-            userListString += `- ${userList[i].user.username}#${userList[i].user.discriminator}\n`;
+        if (!quiet) {
+            var userListString = '';
+            let newUserList = [];
+            for (let i = 0; i < userList.length && i < 20; i++) {
+                newUserList.push(userList[i]);
+            }
+            for (let i = 0; i < newUserList.length; i++) {
+                userListString += `${i + 1 < 10 ? ` ${i + 1}` : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator}\n`;
+            }
+
+            let resMsg = await(bu.awaitMessage(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
+${userListString}${newUserList.length < userList.length ? `...and ${userList.length - newUserList.length} more.\n` : ''}--------------------
+ C. cancel query
+\`\`\``, (msg2) => {
+                    if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newUserList.length + 1 && parseInt(msg2.content) >= 1)) {
+                        return true;
+                    } else return false;
+                }));
+            if (resMsg.content.toLowerCase() == 'c') {
+                bu.send(msg.channel.id, 'Query canceled.');
+                return null;
+            } else {
+                let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
+                await(bu.bot.deleteMessage(delmsg.channel.id, delmsg.id));
+                return newUserList[parseInt(resMsg.content) - 1].user;
+            }
+        } else {
+            return null;
         }
-        if (!quiet)
-            bu.sendMessageToDiscord(msg.channel.id, `Multiple users found!\`\`\`
-${userListString}
-\`\`\``);
-        return null;
     }
 });
 
@@ -373,6 +435,9 @@ bu.logAction = async((guild, user, mod, type, reason) => {
 
         let msg = await(bu.sendMessageToDiscord(val, message));
         let cases = storedGuild.modlog;
+        if (cases instanceof Object){
+            cases = [];
+        }
         cases.push({
             caseid: caseid,
             modid: mod ? mod.id : null,
