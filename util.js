@@ -435,7 +435,7 @@ bu.logAction = async((guild, user, mod, type, reason) => {
 
         let msg = await(bu.sendMessageToDiscord(val, message));
         let cases = storedGuild.modlog;
-        if (!isArray(cases)){
+        if (!Array.isArray(cases)){
             cases = [];
         }
         cases.push({
@@ -446,9 +446,10 @@ bu.logAction = async((guild, user, mod, type, reason) => {
             type: type || 'Generic',
             userid: isArray ? user.map(u => u.id).join(',') : user.id
         });
-        bu.r.table('guild').get(guild.id).update({
+        bu.logger
+        await(bu.r.table('guild').get(guild.id).update({
             modlog: cases
-        }).run();
+        }).run());
     }
 });
 

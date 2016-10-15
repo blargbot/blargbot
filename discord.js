@@ -862,7 +862,7 @@ function postStats() {
 		});
 	});
 	req.on('error', function (err) {
-		bu.warn(`Request error occurred! ${err}`);
+		bu.logger.warn(`Request error occurred! ${err}`);
 	});
 	req.write(stats);
 	req.end();
