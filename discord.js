@@ -299,6 +299,23 @@ e.init = (blargutil, v, em) => {
 		}
 	}));
 
+	bot.on('guildDelete', async((guild) => {
+		postStats();
+		bu.logger.debug('removed from guild');
+		bu.sendMessageToDiscord(`205153826162868225`
+			, `I was removed from the guild \`${guild
+				.name}\` (\`${guild.id}\`)!`);
+
+		bu.r.table('guild').get(guild.id).update({
+			active: false
+		}).run();
+		let channel = await(bot.getDMChannel(guild.ownerID));
+		bu.sendMessageToDiscord(channel.id, `Hi!
+I see I was removed from your guild **${guild.name}**, and I'm sorry I wasn't able to live up to your expectations.
+If it's not too much trouble, could you please tell me why you decided to remove me, what you didn't like about me, or what you think could be improved? It would be very helpful.
+You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you for your time!`);
+	}));
+
 	bot.on('guildMemberRemove', async((guild, member) => {
 		let val = await(bu.guildSettings.get(guild.id, 'farewell'))
 		if (val) {
@@ -308,26 +325,6 @@ e.init = (blargutil, v, em) => {
 				member: member
 			}, val, ''));
 			bu.sendMessageToDiscord(guild.defaultChannel.id, message);
-		}
-	}));
-
-	bot.on('guildMemberRemove', async((guild, member) => {
-		if (member.id === bot.user.id) {
-			postStats();
-			bu.logger.debug('removed from guild');
-			bu.sendMessageToDiscord(`205153826162868225`
-				, `I was removed from the guild \`${guild
-					.name}\` (\`${guild.id}\`)!`);
-
-			bu.r.table('guild').get(guild.id).update({
-				active: false
-			}).run();
-
-			let channel = await(bot.getDMChannel(guild.ownerID));
-			bu.sendMessageToDiscord(channel.id, `Hi!
-I see I was removed from your guild **${guild.name}**, and I'm sorry I wasn't able to live up to your expectations.
-If it's too much trouble, could you please tell me why you decided to remove me, what you didn't like about me, or what you think could be improved? It would be very helpful.
-You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you for your time!`);
 		}
 	}));
 
