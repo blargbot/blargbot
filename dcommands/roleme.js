@@ -39,12 +39,13 @@ e.execute = async((msg, words) => {
                     resList = res.split('\n');
                     for (let i = 0; i < resList.length; i++) {
                         let role = await(bu.getRole(msg, resList[i]));
+                       // bu.logger.debug(role);
                         if (role)
                             addList.push(role.id);
                     }
                 }
                 let removeList = [];
-                res = await(bu.awaitMessage(msg, 'List all the roles that this will add, each on a new line. If you do not wish any roles, type `0`.')).content;
+                res = await(bu.awaitMessage(msg, 'List all the roles that this will remove, each on a new line. If you do not wish any roles, type `0`.')).content;
                 if (res != 0) {
                     resList = res.split('\n');
                     for (let i = 0; i < resList.length; i++) {

@@ -366,7 +366,7 @@ bu.getRole = async((msg, name, quiet) => {
     //  bu.logger.debug(userList.map(m => m.user.username));
 
     if (roleList.length == 1) {
-        return roleList[0].user;
+        return roleList[0];
     } else if (roleList.length == 0) {
         if (!quiet)
             bu.sendMessageToDiscord(msg.channel.id, `No roles found.`);
