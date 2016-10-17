@@ -140,7 +140,7 @@ e.execute = async((msg, words) => {
     for (i = 0; i < usersRaw.length; i++) {
         if (usersRaw[i] != '') {
             var name = usersRaw[i].trim();
-            var u = await(bu.getUserFromName(msg, name, false));
+            var u = await(bu.getUser(msg, name, false));
             if (!u) {
                 if (/[0-9]{17,21}/.test(usersRaw[i])) {
                     users.push(usersRaw[i].match(/([0-9]{17,21})/)[1]);

@@ -218,7 +218,7 @@ bu.send = (channelId, message, file) => {
  * @param quiet - if true, won't respond with multiple users found(Boolean)
  * @returns {User|null}
  */
-bu.getUserFromName = async((msg, name, quiet) => {
+bu.getUser = async((msg, name, quiet) => {
     var userList;
     var userId;
     var discrim;
@@ -331,6 +331,79 @@ ${userListString}${newUserList.length < userList.length ? `...and ${userList.len
     }
 });
 
+bu.getRole = async((msg, name, quiet) => {
+    if (msg.channel.guild.roles.get(name)) {
+        return msg.channel.guild.roles.get(name);
+    }
+    //userList =
+    let roleList = msg.channel.guild.roles.filter(m => (m.name
+        && m.name.toLowerCase().indexOf(name.toLowerCase()) > -1));
+
+    roleList.sort(function (a, b) {
+        let thingy = 0;
+        if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.name.startsWith(name)) {
+            thingy += 100;
+        }
+        if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && b.name.startsWith(name)) {
+            thingy -= 100;
+        }
+        if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1
+            && a.name.toLowerCase().startsWith(name.toLowerCase())) {
+            thingy += 10;
+        }
+        if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1
+            && b.name.toLowerCase().startsWith(name.toLowerCase())) {
+            thingy -= 10;
+        }
+        if (a.name.indexOf(name) > -1) {
+            thingy++;
+        }
+        if (b.name.indexOf(name) > -1) {
+            thingy--;
+        }
+        return -thingy;
+    });
+    //  bu.logger.debug(userList.map(m => m.user.username));
+
+    if (roleList.length == 1) {
+        return roleList[0].user;
+    } else if (roleList.length == 0) {
+        if (!quiet)
+            bu.sendMessageToDiscord(msg.channel.id, `No roles found.`);
+        return null;
+    } else {
+        if (!quiet) {
+            var roleListString = '';
+            let newRoleList = [];
+            for (let i = 0; i < roleList.length && i < 20; i++) {
+                newRoleList.push(roleList[i]);
+            }
+            for (let i = 0; i < newRoleList.length; i++) {
+                roleListString += `${i + 1 < 10 ? ` ${i + 1}` : i + 1}. ${newRoleList[i].name} - ${newRoleList[i].color.toString(16)} (${newRoleList[i].id})\n`;
+            }
+
+            let resMsg = await(bu.awaitMessage(msg, `Multiple roles found! Please select one from the list.\`\`\`prolog
+${roleListString}${newRoleList.length < roleList.length ? `...and ${roleList.length - newRoleList.length} more.\n` : ''}--------------------
+ C. cancel query
+\`\`\``, (msg2) => {
+                    if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
+                        return true;
+                    } else return false;
+                }));
+            if (resMsg.content.toLowerCase() == 'c') {
+                bu.send(msg.channel.id, 'Query canceled.');
+                return null;
+            } else {
+                let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
+                await(bu.bot.deleteMessage(delmsg.channel.id, delmsg.id));
+                return newRoleList[parseInt(resMsg.content) - 1];
+            }
+        } else {
+            return null;
+        }
+    }
+});
+
 /**
  * Saves the config file
  */
@@ -434,7 +507,7 @@ bu.logAction = async((guild, user, mod, type, reason) => {
 
         let msg = await(bu.sendMessageToDiscord(val, message));
         let cases = storedGuild.modlog;
-        if (!Array.isArray(cases)){
+        if (!Array.isArray(cases)) {
             cases = [];
         }
         cases.push({
@@ -791,9 +864,9 @@ bu.getUser = async((msg, args, index) => {
         obtainedUser = msg.author;
     } else {
         if (args[index + 1]) {
-            obtainedUser = await(bu.getUserFromName(msg, args[index], true));
+            obtainedUser = await(bu.getUser(msg, args[index], true));
         } else {
-            obtainedUser = await(bu.getUserFromName(msg, args[index]));
+            obtainedUser = await(bu.getUser(msg, args[index]));
         }
     }
     return obtainedUser;

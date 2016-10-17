@@ -114,7 +114,7 @@ e.executeTag = async((msg, tagName, command) => {
         while (/<@!?[0-9]{17,21}>/.test(message)) {
             let match = message.match(/<@!?([0-9]{17,21})>/)[1];
             bu.logger.debug(match);
-            let obtainedUser = await(bu.getUserFromName(msg, match, true));
+            let obtainedUser = await(bu.getUser(msg, match, true));
             let name = '';
             if (obtainedUser) {
                 name = `@${obtainedUser.username}#${obtainedUser.discriminator}`;

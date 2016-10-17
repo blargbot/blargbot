@@ -2,6 +2,9 @@
 var e = module.exports = {};
 var bu;
 var bot;
+
+const async = require('asyncawait/async');
+const await = require('asyncawait/await');
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
     bu = blargutil;
@@ -40,10 +43,10 @@ e.exampleOut = '';
  * @return.replaceContent Boolean - if true, will replace the entire content rather than just the tag (within scope)
  * @return.fallback? String - if provided, will change the fallback
  */
-e.execute = (params) => {
+e.execute = async((params) => {
     // processes any nested tags in the `args` array. if your tag uses advanced logic, you may wish to reimplement this
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = bu.processTagInner(params, i);
+        params.args[i] = await(bu.processTagInner(params, i));
     }
     var replaceString = '';
     var replaceContent = false;
@@ -53,4 +56,4 @@ e.execute = (params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-};
+});

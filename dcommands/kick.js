@@ -32,7 +32,7 @@ e.execute = async((msg, words) => {
 
 
     if (words[1]) {
-        var user = await(bu.getUserFromName(msg, words[1]));
+        var user = await(bu.getUser(msg, words[1]));
         if (!user) {
             bu.logger.debug('There was no user.');
             return;

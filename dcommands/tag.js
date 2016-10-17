@@ -140,7 +140,7 @@ var listTags = async((msg, originalTagList, page, author, deleteMsg) => {
         if (!isNaN(choice) && choice >= 1 && choice <= maxPages) {
             return listTags(msg, originalTagList, choice, author, deleteMsg);
         } else {
-            author = await(bu.getUserFromName(msg, newPage));
+            author = await(bu.getUser(msg, newPage));
             if (author)
                 originalTagList = await(bu.r.table('tag').getAll(author.id, { index: 'author' }).run());
             else
@@ -399,7 +399,7 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
             case 'list':
                 let user;
                 if (words[2]) {
-                    user = await(bu.getUserFromName(msg, words[2]));
+                    user = await(bu.getUser(msg, words[2]));
 
                 }
                 if (user)

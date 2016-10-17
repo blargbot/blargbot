@@ -32,7 +32,7 @@ e.execute = async((msg, words) => {
 
 
     if (words[1]) {
-        var user = await(bu.getUserFromName(msg, words[1]));
+        var user = await(bu.getUser(msg, words[1]));
         if (!user) {
             bu.send(msg.channel.id, `I couldn't find that user. Try using \`hackban\` with their ID or a mention instead.`);
             return;

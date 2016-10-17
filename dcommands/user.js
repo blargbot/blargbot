@@ -25,7 +25,7 @@ e.execute = async((msg, words) => {
     if (!words[1]) {
         userToGet = msg.member;
     } else {
-        userToGet = await(bu.getUserFromName(msg, words[1]));
+        userToGet = await(bu.getUser(msg, words[1]));
         if (userToGet)
             userToGet = bot.guilds.get(msg.channel.guild.id).members.get(userToGet.id);
         else return;

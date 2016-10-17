@@ -64,7 +64,7 @@ e.execute = async((msg, words, text) => {
         if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
             if (msg.member.permission.json.manageRoles) {
                 if (words[1]) {
-                    var user = await(bu.getUserFromName(msg, words[1]));
+                    var user = await(bu.getUser(msg, words[1]));
                     var member = msg.channel.guild.members.get(user.id);
                     if (!user)
                         return;

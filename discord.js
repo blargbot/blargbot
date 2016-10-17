@@ -460,6 +460,8 @@ If you are the owner of this server, here are a few things to know.
 	bot.on('messageCreate', async(function (msg) {
 		processUser(msg);
 		let isDm = msg.channel.guild == undefined;
+		let storedGuild;
+		if (!isDm) storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
 		if (bu.awaitMessages.hasOwnProperty(msg.channel.id)
 			&& bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
 			let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
@@ -502,7 +504,7 @@ If you are the owner of this server, here are a few things to know.
 
 		if (msg.author.id !== bot.user.id) {
 			let antimention;
-			if (!isDm) antimention = await(bu.guildSettings.get(msg.channel.guild ? msg.channel.guild.id : '', 'antimention'));
+			if (!isDm) antimention = storedGuild.settings.antimention;
 			var parsedAntiMention = parseInt(antimention);
 			if (!(parsedAntiMention == 0 || isNaN(parsedAntiMention))) {
 				if (msg.mentions.length >= parsedAntiMention) {
@@ -510,15 +512,51 @@ If you are the owner of this server, here are a few things to know.
 					if (!bu.bans[msg.channel.guild.id])
 						bu.bans[msg.channel.guild.id] = {};
 					bu.bans[msg.channel.guild.id][msg.author.id] = { mod: bot.user, type: 'Auto-Ban', reason: 'Mention spam' };
-					bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1).then(() => {
-					}).catch(() => {
+					try {
+						await(bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1))
+					} catch (err) {
 						delete bu.bans[msg.channel.guild.id][msg.author.id];
 						bu.send(msg.channel.id, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
-					});
+					}
+					return;
 				}
 			}
 
-			let prefix = await(bu.guildSettings.get(!isDm ? msg.channel.guild.id : '', 'prefix'));
+			if (storedGuild && storedGuild.roleme) {
+				let roleme = storedGuild.roleme.filter(m => m.channels.indexOf(msg.channel.id) > -1);
+				if (roleme.length > 0) {
+					for (let i = 0; i < roleme.length; i++) {
+						let caseSensitive = roleme[i].casesensitive;
+						let message = roleme[i].message;
+						let content = msg.content;
+						if (!caseSensitive) {
+							message = message.toLowerCase();
+							content = content.toLowerCase();
+						}
+						if (message == content) {
+							let roleList = msg.member.roles;
+							let add = roleme[i].add;
+							let del = roleme[i].remove;
+							for (let ii = 0; ii < add.length; ii++) {
+								if (roleList.indexOf(add[ii]) == -1) roleList.push(add[ii]);
+							}
+							for (let ii = 0; ii < del.length; ii++) {
+								if (roleList.indexOf(del[ii]) > -1) roleList.splice(roleList.indexOf(del[ii]), 1);
+							}
+							try {
+								await(msg.member.edit({
+									roles: roleList
+								}));
+								bu.send(msg.channel.id, 'Your roles have been edited!');
+							} catch (err) {
+								bu.send(msg.channel.id, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
+							}
+						}
+					}
+				}
+			}
+
+			let prefix = storedGuild.settings.prefix;
 			if (isDm) {
 				prefix = '';
 			}
@@ -531,7 +569,7 @@ If you are the owner of this server, here are a few things to know.
 			}
 
 			let blacklisted;
-			if (!isDm) blacklisted = await(bu.isBlacklistedChannel(msg.channel.id));
+			if (!isDm && storedGuild.channels[msg.channel.id]) blacklisted = storedGuild.channels[msg.channel.id].blacklisted;
 
 			if (blacklisted &&
 				msg.content.replace(prefix, '').split(' ')[0].toLowerCase() != 'blacklist') {
@@ -557,7 +595,7 @@ If you are the owner of this server, here are a few things to know.
 					let wasCommand = await(handleDiscordCommand(msg.channel, msg.author, command, msg));
 					bu.logger.command('Was command:', wasCommand);
 					if (wasCommand) {
-						let deletenotif = await(bu.guildSettings.get(msg.channel.guild.id, 'deletenotif'));
+						let deletenotif = storedGuild.settings.deletenotif;
 						if (deletenotif != '0') {
 							if (!commandMessages[msg.channel.guild.id]) {
 								commandMessages[msg.channel.guild.id] = [];
@@ -610,15 +648,14 @@ If you are the owner of this server, here are a few things to know.
 							var content = msg.content;
 							try {
 								while (/<@!?[0-9]{17,21}>/.test(content)) {
-									content = content.replace(/<@!?[0-9]{17,21}>/, '@' + await(bu.getUserFromName(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true)).username);
+									content = content.replace(/<@!?[0-9]{17,21}>/, '@' + await(bu.getUser(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true)).username);
 								}
 							} catch (err) {
 								bu.logger.error(err.stack);
 							}
 							let nsfw = true;
-							if (!isDm) nsfw = await(bu.isNsfwChannel(msg.channel.id));
+							if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
 							bu.r.table('catchat').insert({
-								//	id: await(bu.r.table('chatlogs').count().run()),
 								content: msg.content,
 								attachment: msg.attachments[0] ? msg.attachments[0].url : null,
 								userid: msg.author.id,
@@ -636,7 +673,7 @@ If you are the owner of this server, here are a few things to know.
 		}
 		if (msg.channel.id != '204404225914961920') {
 			let nsfw = true;
-			if (!isDm) nsfw = await(bu.isNsfwChannel(msg.channel.id));
+			if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
 			bu.r.table('chatlogs').insert({
 				content: msg.content,
 				attachment: msg.attachments[0] ? msg.attachments[0].url : null,
