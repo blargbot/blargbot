@@ -39,7 +39,7 @@ e.execute = async((msg, words) => {
                     resList = res.split('\n');
                     for (let i = 0; i < resList.length; i++) {
                         let role = await(bu.getRole(msg, resList[i]));
-                       // bu.logger.debug(role);
+                        // bu.logger.debug(role);
                         if (role)
                             addList.push(role.id);
                     }
@@ -94,6 +94,7 @@ e.execute = async((msg, words) => {
                 for (let i = 0; i < rolemeList.length; i++) {
                     rolemeString += `${i + 1}:\n${rolemeList[i]}\n`;
                 }
+                if (rolemeString.length > 2000) rolemeString = rolemeString.substring(0, 1934) + '...';
                 rolemeString += '```\nPlease type the number of the roleme you wish to remove.';
                 let resMsg = await(bu.awaitMessage(msg, rolemeString, m => !isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length)).content;
                 roleme.splice(parseInt(resMsg) - 1, 1);
@@ -114,6 +115,7 @@ e.execute = async((msg, words) => {
                 for (let i = 0; i < rolemeList.length; i++) {
                     rolemeString += `${i + 1}:\n${rolemeList[i]}\n`;
                 }
+                if (rolemeString.length > 2000) rolemeString = rolemeString.substring(0, 1994) + '...';
                 rolemeString += '```';
                 bu.send(msg.channel.id, rolemeString);
                 break;
