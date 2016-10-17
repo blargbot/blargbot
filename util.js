@@ -855,7 +855,7 @@ bu.shuffle = (array) => {
     return array;
 };
 
-bu.getUser = async((msg, args, index) => {
+bu.getTagUser = async((msg, args, index) => {
     var obtainedUser;
     if (!index) index = 1;
 

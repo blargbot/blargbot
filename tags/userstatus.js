@@ -36,7 +36,7 @@ e.execute = async((params) => {
     var replaceString = '';
     var replaceContent = false;
 
-    var obtainedUser = await(bu.getUser(msg, args));
+    var obtainedUser = await(bu.getTagUser(msg, args));
 
     if (obtainedUser && msg.channel.guild.members.get(obtainedUser.id)) {
         replaceString = msg.channel.guild.members.get(obtainedUser.id).status;
