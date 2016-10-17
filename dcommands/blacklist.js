@@ -19,17 +19,20 @@ e.longinfo = `<p>Blacklists the current channel. The bot will not respond until 
 
 e.execute = async((msg) => {
     let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
-    let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id) 
-    ? storedGuild.channels[msg.channel.id] : {
-        nsfw: false
-    };
+    let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id)
+        ? storedGuild.channels[msg.channel.id] : {
+            nsfw: false
+        };
     if (channel.blacklisted) {
         channel.blacklisted = false;
+        bu.send(msg.channel.id, 'This channel is no longer blacklisted.');
     } else {
         channel.blacklisted = true;
+        bu.send(msg.channel.id, 'This channel is now blacklisted.');
+
     }
     storedGuild.channels[msg.channel.id] = channel;
     bu.r.table('guild').get(msg.channel.guild.id).update({
         channels: storedGuild.channels
-    });
+    }).run();
 });
