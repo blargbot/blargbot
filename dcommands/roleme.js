@@ -15,7 +15,14 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'roleme <list | add | remove>';
-e.info = '';
+e.info = 'A roleme is a system to automatically give/remove roles to a user when they say a specific catchphrase. You can make these catchphrases anything you want, case sensitive/insensitive, and only activate in specific channels. The roleme command has three subcommands:\n\n**list**: lists all the rolemes active on the guild.\n**add**: adds a roleme to the guild. Just follow the instructions.\n**remove**: returns a list of rolemes so you can choose one to remove.';
+e.long = `<p>A roleme is a system to automatically give/remove roles to a 
+user when they say a specific catchphrase. You can make these catchphrases 
+anything you want, case sensitive/insensitive, and only activate in 
+specific channels. The roleme command has three subcommands:</p>
+<ul><li>list: lists all the rolemes active on the guild.</li>
+<li>add: adds a roleme to the guild. Just follow the instructions.</li>
+<li>remove: returns a list of rolemes so you can choose one to remove.<\li><\\ul>`;
 
 e.execute = async((msg, words) => {
     if (words[1]) {
@@ -115,6 +122,11 @@ e.execute = async((msg, words) => {
                 rolemeString += '```';
                 bu.send(msg.channel.id, rolemeString);
                 break;
+            default:
+                bu.send(msg.channel.id, e.info);
+                break;
         }
+    } else {
+        bu.send(msg.channel.id, e.info);
     }
 });
