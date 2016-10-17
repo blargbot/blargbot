@@ -89,9 +89,6 @@ e.execute = async((msg, words) => {
                 rolemeString = 'Here are the rolemes on your guild:\n```prolog\n';
                 rolemeList = roleme.map(m => {
                     return `  Message: ${m.message}
-  Case Sensitive: ${m.casesensitive}
-  Add: ${m.add.join(' ')}
-  Del: ${m.remove.join(' ')}
   Channel(s): ${m.channels.join(' ')}`;
                 });
                 for (let i = 0; i < rolemeList.length; i++) {
@@ -112,9 +109,6 @@ e.execute = async((msg, words) => {
                 rolemeString = 'Here are the rolemes on your guild:\n```prolog\n';
                 rolemeList = roleme.map(m => {
                     return `  Message: ${m.message}
-  Case Sensitive: ${m.casesensitive}
-  Add: ${m.add.join(' ')}
-  Del: ${m.remove.join(' ')}
   Channel(s): ${m.channels.join(' ')}`;
                 });
                 for (let i = 0; i < rolemeList.length; i++) {
