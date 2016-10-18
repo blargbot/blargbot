@@ -724,7 +724,7 @@ bu.splitInput = (content) => {
     }
    // bu.logger.debug(words);
     return words;
-};
+};  
 
 /* SQL STUFF */
 

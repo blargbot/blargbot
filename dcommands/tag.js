@@ -339,9 +339,10 @@ e.execute = async((msg, words) => {
                 if (/\{lang;.*?}/i.test(tag.content)) {
                     lang = tag.content.match(/\{lang;(.*?)}/i)[1];
                 }
+                content = tag.content.replace(/`/g, '`\u200B');
                 bu.send(msg.channel.id, `The code for ${words[2]} is:
 \`\`\`${lang}
-${tag.content}
+${content}
 \`\`\``);
                 break;
             case 'author':
