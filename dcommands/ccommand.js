@@ -64,6 +64,7 @@ e.alias = ['cc'];
 e.execute = async((msg, words) => {
     if (words[1]) {
         let storedTag;
+        let content;
         switch (words[1].toLowerCase()) {
             case 'create':
                 if (words.length > 3) {
@@ -72,7 +73,8 @@ e.execute = async((msg, words) => {
                         bu.send(msg.channel.id, 'That ccommand already exists!');
                         break;
                     }
-                    await(bu.ccommand.set(msg.channel.guild.id, words[2], words.slice(3).join(' ')));
+                    content = fixContent(words.slice(3).join(' '));
+                    await(bu.ccommand.set(msg.channel.guild.id, words[2], content));
                     bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` created. ✅`);
                 } else {
                     bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
@@ -85,7 +87,8 @@ e.execute = async((msg, words) => {
                         bu.send(msg.channel.id, 'That ccommand doesn\'t exist!');
                         break;
                     }
-                    await(bu.ccommand.set(msg.channel.guild.id, words[2], words.slice(3).join(' ')));
+                    content = fixContent(words.slice(3).join(' '));
+                    await(bu.ccommand.set(msg.channel.guild.id, words[2], content));
                     bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` edited. ✅`);
                 } else {
                     bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
@@ -93,7 +96,8 @@ e.execute = async((msg, words) => {
                 break;
             case 'set':
                 if (words.length > 3) {
-                    await(bu.ccommand.set(msg.channel.guild.id, words[2], words.slice(3).join(' ')));
+                    content = fixContent(words.slice(3).join(' '));
+                    await(bu.ccommand.set(msg.channel.guild.id, words[2], content));
                     bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` set. ✅`);
                 } else {
                     bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
@@ -122,7 +126,7 @@ e.execute = async((msg, words) => {
                     let newTag = await(bu.ccommand.get(msg.channel.guild.id, words[3]));
                     if (newTag) {
                         bu.send(msg.channel.id, `The ccommand ${words[3]} already exists!`);
-                    }   
+                    }
                     await(bu.ccommand.rename(msg.channel.guild.id, words[2], words[3]));
                     bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` renamed. ✅`);
                 } else {
@@ -140,7 +144,9 @@ e.execute = async((msg, words) => {
                     if (/\{lang;.*?}/i.test(storedTag)) {
                         lang = storedTag.match(/\{lang;(.*?)}/i)[1];
                     }
-                    bu.sendMessageToDiscord(msg.channel.id, `The raw code for ${words[2]} is\`\`\`${lang}\n${storedTag}\n\`\`\``);
+                    content = storedTag.replace(/`/g, '`\u200B');
+
+                    bu.sendMessageToDiscord(msg.channel.id, `The raw code for ${words[2]} is\`\`\`${lang}\n${content}\n\`\`\``);
                 } else {
                     bu.send(msg.channel.id, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
@@ -156,3 +162,12 @@ e.execute = async((msg, words) => {
         bu.send(msg.channel.id, 'Improper usage. Do \`help ccommand\` for more details.');
     }
 });
+
+
+function fixContent(content) {
+    let tempContent = content.split('\n');
+    for (let i = 0; i < tempContent.length; i++) {
+        tempContent[i] = tempContent[i].replace(/^\s+/g, '');
+    }
+    return tempContent.join('\n');
+}

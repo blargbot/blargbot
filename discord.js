@@ -785,7 +785,7 @@ var handleDiscordCommand = async((channel, user, text, msg) => {
 	let val = await(bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]));
 	if (val) {
 		var command = text.replace(words[0], '').trim();
-
+		command = fixContent(command);
 		var response = await(tags.processTag(msg, val, command));
 		if (response !== 'null') {
 			bu.sendMessageToDiscord(channel.id, response);
@@ -811,6 +811,15 @@ var handleDiscordCommand = async((channel, user, text, msg) => {
 		}
 	}
 });
+
+
+function fixContent(content) {
+    let tempContent = content.split('\n');
+    for (let i = 0; i < tempContent.length; i++) {
+        tempContent[i] = tempContent[i].replace(/^\s+/g, '');
+    }
+    return tempContent.join('\n');
+}
 
 var executeCommand = async(function (commandName, msg, words, text) {
 	bu.r.table('stats').get(commandName).update({
