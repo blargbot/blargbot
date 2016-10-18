@@ -24,7 +24,7 @@ e.exampleOut = ``;
 
 e.execute = async((params) => {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] =await(bu.processTagInner(params, i));
+        params.args[i] = await(bu.processTagInner(params, i));
     }
     let args = params.args
         , fallback = params.fallback

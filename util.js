@@ -599,7 +599,14 @@ bu.processTag = async((msg, words, contents, fallback, author, tagName) => {
                 tagName: tagName
             }));
         } else {
-            replaceObj.replaceString = bu.tagProcessError(fallback, '`Tag doesn\'t exist`');
+            replaceObj.replaceString = await(bu.tagProcessError({
+                msg: msg,
+                contents: fallback,
+                fallback: fallback,
+                words: words,
+                author: author,
+                tagName: tagName
+            }, fallback, '`Tag doesn\'t exist`'));
         }
         if (replaceObj.fallback) {
             fallback = replaceObj.fallback;
