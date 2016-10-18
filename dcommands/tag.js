@@ -318,7 +318,7 @@ e.execute = async((msg, words) => {
                 logChange('Delete', {
                     user: `${msg.author.username} (${msg.author.id})`,
                     tag: title,
-                    content: content
+                    content: tag.content
                 });
                 break;
             case 'help':
