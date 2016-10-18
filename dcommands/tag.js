@@ -309,7 +309,7 @@ e.execute = async((msg, words) => {
                     bu.send(msg.channel.id, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
-                if (tag.author != msg.author.id) {
+                if (tag.author != msg.author.id && msg.author.id != bu.CAT_ID) {
                     bu.send(msg.channel.id, `❌ You don't own this tag! ❌`);
                     break;
                 }
