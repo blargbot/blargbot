@@ -317,6 +317,7 @@ e.execute = async((msg, words) => {
                 bu.send(msg.channel.id, `✅ Tag \`${title}\` is gone forever! ✅`);
                 logChange('Delete', {
                     user: `${msg.author.username} (${msg.author.id})`,
+                    author: `${tag.author == msg.author.id ? msg.author.username : await(bu.r.table('user').get(tag.author)).username} (${tag.author})`,
                     tag: title,
                     content: tag.content
                 });
