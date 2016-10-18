@@ -78,6 +78,7 @@ e.processTag = async((msg, contents, command, tagName, author) => {
     try {
         tagName = tagName || msg.channel.guild.id;
         author = author || msg.channel.guild.id;
+        bu.logger.debug(command);
         var words = bu.splitInput(command);
 
         if (contents.split(' ')[0].indexOf('help') > -1) {

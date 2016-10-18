@@ -123,10 +123,8 @@ var listTags = async((msg, originalTagList, page, author, deleteMsg) => {
     let maxPages = Math.floor(originalTagList.length / 100) + 1;
     tagList = originalTagList.map(m => m.name);
     tagList.sort();
-    bu.logger.debug(tagList.length, tagList);
 
     tagList = tagList.slice((page - 1) * 100);
-    bu.logger.debug((page - 1) * 100, tagList.length, tagList);
     if (tagList.length != 0) {
         if (deleteMsg) await(bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id));
         let message = `Found ${originalTagList.length} tags${author ? ` made by **${author.username}#${author.discriminator}**` : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to look up tags made by a specific user.`;
@@ -160,7 +158,7 @@ var listTags = async((msg, originalTagList, page, author, deleteMsg) => {
 e.execute = async((msg, words) => {
     let page = 0;
     let index = 3;
-    let title, content, tag, author, originalTagList;
+    let title, content, tag, author, originalTagList, tempContent;
 
     if (words[1]) {
         var tagList;
@@ -168,7 +166,6 @@ e.execute = async((msg, words) => {
             case 'create':
                 if (words[2]) title = words[2];
                 if (words[3]) content = words.slice(3).join(' ');
-
                 if (!title)
                     title = await(bu.awaitMessage(msg, tagNameMsg)).content;
 
@@ -181,6 +178,8 @@ e.execute = async((msg, words) => {
 
                 if (!content)
                     content = await(bu.awaitMessage(msg, tagContentsMsg)).content;
+
+                content = fixContent(content);
 
                 await(bu.r.table('tag').insert({
                     name: title,
@@ -222,7 +221,6 @@ e.execute = async((msg, words) => {
                 }
 
                 oldTag.name = newTagName;
-                bu.logger.debug(oldTag);
                 await(bu.r.table('tag').get(oldTagName).delete().run());
                 await(bu.r.table('tag').insert(oldTag).run());
 
@@ -254,7 +252,7 @@ e.execute = async((msg, words) => {
                 if (!content)
                     content = await(bu.awaitMessage(msg, tagContentsMsg)).content;
 
-
+                content = fixContent(content);
 
                 await(bu.r.table('tag').get(title).update({
                     content: content,
@@ -285,10 +283,12 @@ e.execute = async((msg, words) => {
                 if (!content)
                     content = await(bu.awaitMessage(msg, tagContentsMsg)).content;
 
+                //    content = content.replace(/(?:^)(\s+)|(?:\n)(\s+)/g, '');
+                content = fixContent(content);
                 await(bu.r.table('tag').get(title).replace({
                     name: title,
                     author: msg.author.id,
-                    content: words.slice(3).join(' '),
+                    content: content,
                     lastmodified: bu.r.epochTime(moment() / 1000),
                     uses: tag ? tag.uses : 0
                 }).run());
@@ -411,6 +411,8 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
                 break;
             default:
                 var command = words.slice(2).join(' ');
+                command = fixContent(command);
+
                 tags.executeTag(msg, words[1], command);
                 break;
         }
@@ -448,4 +450,13 @@ function logChange(action, actionObj) {
         actionArray.push(`  **${key}**: ${actionObj[key]}`);
     }
     bu.send('230810364164440065', output + actionArray.join('\n'));
+}
+
+
+function fixContent(content) {
+    let tempContent = content.split('\n');
+    for (let i = 0; i < tempContent.length; i++) {
+        tempContent[i] = tempContent[i].replace(/^\s+/g, '');
+    }
+    return tempContent.join('\n');
 }

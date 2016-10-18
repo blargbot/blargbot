@@ -518,7 +518,6 @@ bu.logAction = async((guild, user, mod, type, reason) => {
             type: type || 'Generic',
             userid: isArray ? user.map(u => u.id).join(',') : user.id
         });
-        bu.logger
         await(bu.r.table('guild').get(guild.id).update({
             modlog: cases
         }).run());
@@ -687,6 +686,7 @@ bu.processSpecial = (contents, final) => {
 
 bu.splitInput = (content) => {
     let input = content.replace(/ +/g, ' ').split(' ');
+    
     let words = [];
     let inQuote = false;
     let quoted = '';
@@ -720,8 +720,9 @@ bu.splitInput = (content) => {
         words = input;
     }
     for (let i in words) {
-        words[i] = words[i].replace(/\\"/g, '"');
+        words[i] = words[i].replace(/\\"/g, '"').replace(/^[\s]+/g, '');
     }
+   // bu.logger.debug(words);
     return words;
 };
 

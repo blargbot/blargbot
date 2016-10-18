@@ -66,7 +66,7 @@ e.execute = async((params) => {
             replaceString = await(bu.tagProcessError(params, fallback, '`User gave no args`'));
     }
     replaceString = replaceString + '';
-
+    replaceString = fixContent(replaceString);
     replaceString = replaceString.replace(new RegExp(bu.specialCharBegin, 'g'), '').replace(new RegExp(bu.specialCharDiv, 'g'), '').replace(new RegExp(bu.specialCharEnd, 'g'), '');
 
     return {
@@ -74,3 +74,12 @@ e.execute = async((params) => {
         replaceContent: replaceContent
     };
 });
+
+
+function fixContent(content) {
+    let tempContent = content.split('\n');
+    for (let i = 0; i < tempContent.length; i++) {
+        tempContent[i] = tempContent[i].replace(/^\s+/g, '');
+    }
+    return tempContent.join('\n');
+}

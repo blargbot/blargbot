@@ -51,7 +51,8 @@ e.execute = async((params) => {
     var replaceContent = false;
     if (params.args[1]) {
         let newStuff = bu.processSpecial(params.args[1], true);
-         replaceString = await(bu.processTag(params.msg
+        bu.logger.debug('Thonkang', params.args, newStuff);
+        replaceString = await(bu.processTag(params.msg
             , params.words
             , newStuff
             , params.fallback
