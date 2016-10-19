@@ -46,7 +46,12 @@ ${suggestion.message}
 ${words.slice(2).join(' ')}
 
 If you have any further questions or concerns, please join my support guild so that they can talk to you directly. You can get a link by doing \`b!invite\`. Thanks for your time!`;
-            bu.send(suggestion.channel, message);
+            try {
+            await(bu.send(suggestion.channel, message));
+            bu.send(msg.channel.id, 'Response successfully send.');
+            } catch (err) {
+                bu.send(msg.channel.id, 'An error has occured.')l
+            }
         }
     }
 });
