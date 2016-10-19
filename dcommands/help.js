@@ -38,7 +38,7 @@ ${bu.commandList[words[1]].info}`;
         var modifiedCommands = [];
         let storedGuild;
         if (msg.channel.guild) {
-            let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+            storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
             let customizedCommands = storedGuild.commandperms;
             //    bu.logger.debug(customizedCommands);
             for (let key in customizedCommands) {
