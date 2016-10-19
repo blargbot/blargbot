@@ -462,13 +462,7 @@ If you are the owner of this server, here are a few things to know.
 		let isDm = msg.channel.guild == undefined;
 		let storedGuild;
 		if (!isDm) storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
-		if (bu.awaitMessages.hasOwnProperty(msg.channel.id)
-			&& bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
-			let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
-			if (moment.duration(moment() - firstTime).asMinutes() <= 5) {
-				bu.emitter.emit(bu.awaitMessages[msg.channel.id][msg.author.id].event, msg);
-			}
-		}
+
 
 		if (msg.channel.id != '194950328393793536')
 			if (msg.author.id == bot.user.id) {
@@ -631,6 +625,14 @@ If you are the owner of this server, here are a few things to know.
 										}, 1500);
 									});
 							});
+						} else {
+							if (bu.awaitMessages.hasOwnProperty(msg.channel.id)
+								&& bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
+								let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
+								if (moment.duration(moment() - firstTime).asMinutes() <= 5) {
+									bu.emitter.emit(bu.awaitMessages[msg.channel.id][msg.author.id].event, msg);
+								}
+							}
 						}
 					}
 				} catch (err) {
