@@ -2,7 +2,7 @@ var e = module.exports = {};
 var bu;
 const Trello = require('node-trello');
 var t;
-
+const moment = require('moment');
 const async = require('asyncawait/async');
 const await = require('asyncawait/await');
 var bot;
@@ -24,14 +24,20 @@ e.longinfo = `<p>Sends a suggestion to my guild. Thank you for the feedback! It'
 
 e.execute = async((msg, words) => {
     if (words.length > 1) {
-        await(bu.send('195716879237644292', `\`\`\`diff
-!== { Suggestion Received } ==!
-+ Author: ${msg.author.username} (${msg.author.id})${msg.channel.guild
-                ? `\n+ Guild: ${msg.channel.guild.name} (${msg.channel.guild.id})
-+ Channel: ${msg.channel.name} (${msg.channel.id})` : ''}
-- Message: ${words.slice(1).join(' ').replace(/`/g, '`\u200b').replace(/\n/g, '\n- ')}
-\`\`\``));
-        await(bu.send(msg.channel.id, 'Suggestion sent! :ok_hand:'));
+        let i = 0;
+        let lastSuggestion = await(bu.r.table('suggestion').orderBy({ index: bu.r.desc('id') }).limit(1).run());
+        if (lastSuggestion != null) i = lastSuggestion[0].id + 1;
+        bu.logger.debug(i, lastSuggestion);
+        if (isNaN(i)) i = 0;
+
+        await(bu.send('195716879237644292', `
+**__${i} | Suggestion__**
+**Author**: ${msg.author.username} (${msg.author.id})${msg.channel.guild
+                ? `\n**Guild**: ${msg.channel.guild.name} (${msg.channel.guild.id})
+**Channel**: ${msg.channel.name} (${msg.channel.id})` : ''}
+**Message**: ${msg.id}
+${words.slice(1).join(' ')} 
+`));
         t.post('1/cards', {
             name: words.slice(1).join(' '),
             desc: `Automated suggestion added by blargbot.\n\nAuthor: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`,
@@ -41,5 +47,14 @@ e.execute = async((msg, words) => {
         }, (err) => {
             if (err) throw err;
         });
+        await(bu.r.table('suggestion').insert({
+            id: i,
+            author: msg.author.id,
+            channel: msg.channel.id,
+            message: words.slice(1).join(' '),
+            messageid: msg.id,
+            date: bu.r.epochTime(moment().unix())
+        }).run());
+        await(bu.send(msg.channel.id, 'Suggestion sent! :ok_hand:'));
     }
 });
