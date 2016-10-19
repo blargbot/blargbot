@@ -50,7 +50,7 @@ If you have any further questions or concerns, please join my support guild so t
             await(bu.send(suggestion.channel, message));
             bu.send(msg.channel.id, 'Response successfully send.');
             } catch (err) {
-                bu.send(msg.channel.id, 'An error has occured.')l
+                bu.send(msg.channel.id, 'An error has occured.');
             }
         }
     }
