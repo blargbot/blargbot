@@ -685,9 +685,10 @@ bu.processSpecial = (contents, final) => {
     return contents.replace(/\uE010/g, bu.specialCharBegin).replace(/\uE011/g, bu.specialCharEnd);
 };
 
-bu.splitInput = (content) => {
-    let input = content.replace(/ +/g, ' ').split(' ');
-
+bu.splitInput = (content, noTrim) => {
+    let input;
+    if (!noTrim) input = content.replace(/ +/g, ' ').split(' ');
+    else input = content.split(' ');
     let words = [];
     let inQuote = false;
     let quoted = '';
@@ -702,11 +703,11 @@ bu.splitInput = (content) => {
                     quoted = input[i].substring(1, input[i].length) + ' ';
             } else {
                 words.push(input[i]);
-             //   let tempWords = input[i].split('\n');
-            //    bu.logger.debug('Temp', tempWords);
-           //     for (let ii = 0; ii < tempWords.length; ii++) {
-            //        words.push(tempWords[ii] + (ii == tempWords.length - 1 ? '' : '\n'));
-           //     }
+                //   let tempWords = input[i].split('\n');
+                //    bu.logger.debug('Temp', tempWords);
+                //     for (let ii = 0; ii < tempWords.length; ii++) {
+                //        words.push(tempWords[ii] + (ii == tempWords.length - 1 ? '' : '\n'));
+                //     }
                 //  for (let ii in tempWords) {
                 //       if (ii != tempWords.length - 1) words.push(tempWords[ii] + '\n');
                 //       else words.push(tempWords[ii]);

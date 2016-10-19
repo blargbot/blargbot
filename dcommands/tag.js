@@ -157,15 +157,12 @@ var listTags = async((msg, originalTagList, page, author, deleteMsg) => {
 
 e.execute = async((msg, words) => {
     let page = 0;
-    let index = 3;
-    let title, content, tag, author, originalTagList, tempContent;
-
+    let title, content, tag, author, originalTagList;
     if (words[1]) {
-        var tagList;
         switch (words[1].toLowerCase()) {
             case 'create':
                 if (words[2]) title = words[2];
-                if (words[3]) content = words.slice(3).join(' ');
+                if (words[3]) content = bu.splitInput(msg.content, true).slice(3).join(' ');
                 if (!title)
                     title = await(bu.awaitMessage(msg, tagNameMsg)).content;
 
@@ -233,7 +230,7 @@ e.execute = async((msg, words) => {
                 break;
             case 'edit':
                 if (words[2]) title = words[2];
-                if (words[3]) content = words.slice(3).join(' ');
+                if (words[3]) content = bu.splitInput(msg.content, true).slice(3).join(' ');
 
                 if (!title)
                     title = await(bu.awaitMessage(msg, tagNameMsg)).content;
@@ -268,7 +265,8 @@ e.execute = async((msg, words) => {
             case 'set':
 
                 if (words[2]) title = words[2];
-                if (words[3]) content = words.slice(3).join(' ');
+                if (words[3]) content = bu.splitInput(msg.content, true).slice(3).join(' ');
+                //                if (words[3]) content = text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim();
 
                 if (!title)
                     title = await(bu.awaitMessage(msg, tagNameMsg)).content;
@@ -285,7 +283,7 @@ e.execute = async((msg, words) => {
 
                 //    content = content.replace(/(?:^)(\s+)|(?:\n)(\s+)/g, '');
                 bu.logger.debug('First:', content, words);
-                content = bu.fixContent(content);
+                //  content = bu.fixContent(content);
                 bu.logger.debug('Second:', content);
                 await(bu.r.table('tag').get(title).replace({
                     name: title,
