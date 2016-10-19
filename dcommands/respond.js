@@ -48,7 +48,7 @@ ${words.slice(2).join(' ')}
 If you have any further questions or concerns, please join my support guild so that they can talk to you directly. You can get a link by doing \`b!invite\`. Thanks for your time!`;
             try {
             await(bu.send(suggestion.channel, message));
-            bu.send(msg.channel.id, 'Response successfully send.');
+            bu.send(msg.channel.id, 'Response successfully sent.');
             } catch (err) {
                 bu.send(msg.channel.id, 'An error has occured.');
             }
