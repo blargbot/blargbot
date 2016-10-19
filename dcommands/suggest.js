@@ -26,7 +26,7 @@ e.execute = async((msg, words) => {
     if (words.length > 1) {
         let i = 0;
         let lastSuggestion = await(bu.r.table('suggestion').orderBy({ index: bu.r.desc('id') }).limit(1).run());
-        if (lastSuggestion != null) i = lastSuggestion[0].id + 1;
+        if (lastSuggestion.length > 0) i = lastSuggestion[0].id + 1;
         bu.logger.debug(i, lastSuggestion);
         if (isNaN(i)) i = 0;
 
