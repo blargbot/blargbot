@@ -639,6 +639,14 @@ If you are the owner of this server, here are a few things to know.
 					bu.logger.error(err.stack);
 				}
 			} else {
+
+				if (bu.awaitMessages.hasOwnProperty(msg.channel.id)
+					&& bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
+					let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
+					if (moment.duration(moment() - firstTime).asMinutes() <= 5) {
+						bu.emitter.emit(bu.awaitMessages[msg.channel.id][msg.author.id].event, msg);
+					}
+				}
 				if (msg.author.id == bu.CAT_ID && msg.content.indexOf('discord.gg') == -1) {
 					var prefixes = ['!', '@', '#', '$', '%', '^', '&'
 						, '*', ')', '-', '_', '=', '+', '}', ']', '|'
@@ -790,7 +798,7 @@ var handleDiscordCommand = async((channel, user, text, msg) => {
 	let val = await(bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]));
 	if (val) {
 		var command = text.replace(words[0], '').trim();
-		command = fixContent(command);
+		command = bu.fixContent(command);
 		var response = await(tags.processTag(msg, val, command));
 		if (response !== 'null') {
 			bu.sendMessageToDiscord(channel.id, response);
@@ -816,15 +824,6 @@ var handleDiscordCommand = async((channel, user, text, msg) => {
 		}
 	}
 });
-
-
-function fixContent(content) {
-	let tempContent = content.split('\n');
-	for (let i = 0; i < tempContent.length; i++) {
-		tempContent[i] = tempContent[i].replace(/^\s+/g, '');
-	}
-	return tempContent.join('\n');
-}
 
 var executeCommand = async(function (commandName, msg, words, text) {
 	bu.r.table('stats').get(commandName).update({

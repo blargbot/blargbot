@@ -701,11 +701,16 @@ bu.splitInput = (content) => {
                 } else
                     quoted = input[i].substring(1, input[i].length) + ' ';
             } else {
-                let tempWords = input[i].split('\n');
-                for (let ii in tempWords) {
-                    if (ii != tempWords.length - 1) words.push(tempWords[ii] + '\n');
-                    else words.push(tempWords[ii]);
-                }
+                words.push(input[i]);
+             //   let tempWords = input[i].split('\n');
+            //    bu.logger.debug('Temp', tempWords);
+           //     for (let ii = 0; ii < tempWords.length; ii++) {
+            //        words.push(tempWords[ii] + (ii == tempWords.length - 1 ? '' : '\n'));
+           //     }
+                //  for (let ii in tempWords) {
+                //       if (ii != tempWords.length - 1) words.push(tempWords[ii] + '\n');
+                //       else words.push(tempWords[ii]);
+                //    }
             }
         } else if (inQuote) {
             if (input[i].endsWith('"') && !input[i].endsWith('\\"')) {
@@ -723,7 +728,7 @@ bu.splitInput = (content) => {
     for (let i in words) {
         words[i] = words[i].replace(/\\"/g, '"').replace(/^[\s]+/g, '');
     }
-    // bu.logger.debug(words);
+    bu.logger.debug(words);
     return words;
 };
 
@@ -906,3 +911,12 @@ bu.tagProcessError = async((params, fallback, errormessage) => {
         , params.tagName));
     return returnMessage;
 });
+
+
+bu.fixContent = (content) => {
+    let tempContent = content.split('\n');
+    for (let i = 0; i < tempContent.length; i++) {
+        tempContent[i] = tempContent[i].trim();
+    }
+    return tempContent.join('\n');
+}

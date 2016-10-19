@@ -179,7 +179,7 @@ e.execute = async((msg, words) => {
                 if (!content)
                     content = await(bu.awaitMessage(msg, tagContentsMsg)).content;
 
-                content = fixContent(content);
+                content = bu.fixContent(content);
 
                 await(bu.r.table('tag').insert({
                     name: title,
@@ -252,7 +252,7 @@ e.execute = async((msg, words) => {
                 if (!content)
                     content = await(bu.awaitMessage(msg, tagContentsMsg)).content;
 
-                content = fixContent(content);
+                content = bu.fixContent(content);
 
                 await(bu.r.table('tag').get(title).update({
                     content: content,
@@ -284,7 +284,9 @@ e.execute = async((msg, words) => {
                     content = await(bu.awaitMessage(msg, tagContentsMsg)).content;
 
                 //    content = content.replace(/(?:^)(\s+)|(?:\n)(\s+)/g, '');
-                content = fixContent(content);
+                bu.logger.debug('First:', content, words);
+                content = bu.fixContent(content);
+                bu.logger.debug('Second:', content);
                 await(bu.r.table('tag').get(title).replace({
                     name: title,
                     author: msg.author.id,
@@ -412,7 +414,7 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
                 break;
             default:
                 var command = words.slice(2).join(' ');
-                command = fixContent(command);
+                command = bu.fixContent(command);
 
                 tags.executeTag(msg, words[1], command);
                 break;
@@ -453,11 +455,3 @@ function logChange(action, actionObj) {
     bu.send('230810364164440065', output + actionArray.join('\n'));
 }
 
-
-function fixContent(content) {
-    let tempContent = content.split('\n');
-    for (let i = 0; i < tempContent.length; i++) {
-        tempContent[i] = tempContent[i].replace(/^\s+/g, '');
-    }
-    return tempContent.join('\n');
-}
