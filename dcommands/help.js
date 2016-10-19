@@ -36,22 +36,25 @@ ${bu.commandList[words[1]].info}`;
         var generalCommands = [];
         var otherCommands = {};
         var modifiedCommands = [];
-        let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
-        let customizedCommands = storedGuild.commandperms;
-    //    bu.logger.debug(customizedCommands);
-        for (let key in customizedCommands) {
-            if (customizedCommands[key].rolename != null)
-                for (let i = 0; i < customizedCommands[key].rolename.length; i++) {
-                    if (!otherCommands[customizedCommands[key].rolename[i].toLowerCase()]) {
-                        otherCommands[customizedCommands[key].rolename[i].toLowerCase()] = [];
+        let storedGuild;
+        if (msg.channel.guild) {
+            let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+            let customizedCommands = storedGuild.commandperms;
+            //    bu.logger.debug(customizedCommands);
+            for (let key in customizedCommands) {
+                if (customizedCommands[key].rolename != null)
+                    for (let i = 0; i < customizedCommands[key].rolename.length; i++) {
+                        if (!otherCommands[customizedCommands[key].rolename[i].toLowerCase()]) {
+                            otherCommands[customizedCommands[key].rolename[i].toLowerCase()] = [];
+                        }
+                        otherCommands[customizedCommands[key].rolename[i].toLowerCase()]
+                            .push(key);
+                        modifiedCommands.push(key);
                     }
-                    otherCommands[customizedCommands[key].rolename[i].toLowerCase()]
-                        .push(key);
-                    modifiedCommands.push(key);
-                }
+            }
         }
-    //    bu.logger.debug(modifiedCommands);
-     //   bu.logger.debug(otherCommands);
+        //    bu.logger.debug(modifiedCommands);
+        //   bu.logger.debug(otherCommands);
         for (var command in bu.commandList) {
             if (modifiedCommands.indexOf(command) == -1)
                 if (!bu.commandList[command].hidden) {
@@ -69,23 +72,25 @@ ${bu.commandList[words[1]].info}`;
         commandsString += generalCommands.join(', ');
 
         var onComplete = async(function () {
-            let ccommands = storedGuild.ccommands;
-      //      bu.logger.debug(ccommands);
-            if (ccommands && Object.keys(ccommands).length > 0) {
-                var ccommandsString = 'Custom Commands:\n  ';
-                var helpCommandList = [];
-                for (var key in ccommands) {
-                    helpCommandList.push(key);
+            if (msg.channel.guild) {
+                let ccommands = storedGuild.ccommands;
+                //      bu.logger.debug(ccommands);
+                if (ccommands && Object.keys(ccommands).length > 0) {
+                    var ccommandsString = 'Custom Commands:\n  ';
+                    var helpCommandList = [];
+                    for (var key in ccommands) {
+                        helpCommandList.push(key);
+                    }
+                    helpCommandList.sort();
+                    ccommandsString += helpCommandList.join(', ');
+                    commandsString += `\n${ccommandsString}`;
                 }
-                helpCommandList.sort();
-                ccommandsString += helpCommandList.join(', ');
-                commandsString += `\n${ccommandsString}`;
             }
 
             commandsString += '```';
-            let dmhelp = await(bu.guildSettings.get(msg.channel.guild.id, 'dmhelp'));
+            let dmhelp = msg.channel.guild ? await(bu.guildSettings.get(msg.channel.guild.id, 'dmhelp')) : true;
             let doDM = dmhelp && dmhelp != 0;
-            let sendString = `${doDM ? `Here are your commands for ${msg.channel.guild.name}.\n` : ''}${commandsString}\n${!msg.channel.guild
+            let sendString = `${doDM ? `Here are your commands ${msg.channel.guild ?'for '+ msg.channel.guild.name : ''}.\n` : ''}${commandsString}\n${!msg.channel.guild
                 ? 'Not all of these bu.commands work in DMs.\n'
                 : ''
                 }For more information about bu.commands, do \`help <commandname>\` or visit https://blargbot.xyz/commands`

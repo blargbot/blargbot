@@ -386,7 +386,7 @@ If you are the owner of this server, here are a few things to know.
 					userid: msg.author.id,
 					msgid: msg.id,
 					channelid: msg.channel.id,
-					guildid: msg.channel.guild.id,
+					guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
 					msgtime: bu.r.epochTime(moment(msg.editedTimestamp) / 1000),
 					nsfw: nsfw,
 					mentions: msg.mentions.map(u => u.username).join(','),
@@ -555,9 +555,10 @@ If you are the owner of this server, here are a few things to know.
 					}
 				}
 			}
-
-			let prefix = storedGuild.settings.prefix;
-			if (isDm) {
+			let prefix;
+			if (!isDm)
+				prefix = storedGuild.settings.prefix;
+			else {
 				prefix = '';
 			}
 
@@ -595,21 +596,23 @@ If you are the owner of this server, here are a few things to know.
 					let wasCommand = await(handleDiscordCommand(msg.channel, msg.author, command, msg));
 					bu.logger.command('Was command:', wasCommand);
 					if (wasCommand) {
-						let deletenotif = storedGuild.settings.deletenotif;
-						if (deletenotif != '0') {
-							if (!commandMessages[msg.channel.guild.id]) {
-								commandMessages[msg.channel.guild.id] = [];
+						if (!isDm) {
+							let deletenotif = storedGuild.settings.deletenotif;
+							if (deletenotif != '0') {
+								if (!commandMessages[msg.channel.guild.id]) {
+									commandMessages[msg.channel.guild.id] = [];
+								}
+								commandMessages[msg.channel.guild.id].push(msg.id);
+								if (commandMessages[msg.channel.guild.id].length > 100) {
+									commandMessages[msg.channel.guild.id].shift();
+								}
 							}
-							commandMessages[msg.channel.guild.id].push(msg.id);
-							if (commandMessages[msg.channel.guild.id].length > 100) {
-								commandMessages[msg.channel.guild.id].shift();
+							if (msg.channel.guild) {
+								bu.r.table('user').get(msg.author.id).update({
+									lastcommand: msg.cleanContent,
+									lastcommanddate: bu.r.epochTime(moment() / 1000)
+								}).run();
 							}
-						}
-						if (msg.channel.guild) {
-							bu.r.table('user').get(msg.author.id).update({
-								lastcommand: msg.cleanContent,
-								lastcommanddate: bu.r.epochTime(moment() / 1000)
-							}).run();
 						}
 					} else {
 						if (doCleverbot && !msg.author.bot) {
@@ -814,11 +817,11 @@ var handleDiscordCommand = async((channel, user, text, msg) => {
 
 
 function fixContent(content) {
-    let tempContent = content.split('\n');
-    for (let i = 0; i < tempContent.length; i++) {
-        tempContent[i] = tempContent[i].replace(/^\s+/g, '');
-    }
-    return tempContent.join('\n');
+	let tempContent = content.split('\n');
+	for (let i = 0; i < tempContent.length; i++) {
+		tempContent[i] = tempContent[i].replace(/^\s+/g, '');
+	}
+	return tempContent.join('\n');
 }
 
 var executeCommand = async(function (commandName, msg, words, text) {

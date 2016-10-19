@@ -166,6 +166,7 @@ bu.awaitMessage = async((msg, message, callback) => {
  * @returns {boolean}
  */
 bu.hasPerm = (msg, perm, quiet) => {
+    if (!msg.channel.guild) return true;
     if ((msg.member.id === bu.CAT_ID && bu.catOverrides)
         || msg.channel.guild.ownerID == msg.member.id
         || msg.member.permission.administraton) {
@@ -686,7 +687,7 @@ bu.processSpecial = (contents, final) => {
 
 bu.splitInput = (content) => {
     let input = content.replace(/ +/g, ' ').split(' ');
-    
+
     let words = [];
     let inQuote = false;
     let quoted = '';
@@ -722,9 +723,9 @@ bu.splitInput = (content) => {
     for (let i in words) {
         words[i] = words[i].replace(/\\"/g, '"').replace(/^[\s]+/g, '');
     }
-   // bu.logger.debug(words);
+    // bu.logger.debug(words);
     return words;
-};  
+};
 
 /* SQL STUFF */
 
@@ -782,8 +783,8 @@ bu.ccommand = {
 bu.isNsfwChannel = async((channelid) => {
     let guildid = bu.bot.channelGuildMap[channelid];
     if (!guildid) {
-        bu.logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isNsfwChannel');
-        return false;
+        //   bu.logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isNsfwChannel');
+        return true;
     }
     let guild = await(bu.r.table('guild').get(guildid).run());
     return guild.channels[channelid] ? guild.channels[channelid].nsfw : false;
@@ -800,47 +801,56 @@ bu.isBlacklistedChannel = async((channelid) => {
 });
 
 bu.canExecuteCommand = async((msg, commandName, quiet) => {
-    let val = await(bu.guildSettings.get(msg.channel.guild.id, 'permoverride'));
-    let val1 = await(bu.guildSettings.get(msg.channel.guild.id, 'staffperms'));
-    if (val && val != 0)
-        if (val1) {
-            let allow = parseInt(val1);
-            if (!isNaN(allow)) {
-                if (bu.comparePerms(msg.member, allow)) {
-                    return [true, commandName];
-                }
-            }
-        } else {
-            if (bu.comparePerms(msg.member)) {
-                return [true, commandName];
-            }
-        }
-    let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
-    if (storedGuild) {
-        let command = storedGuild.commandperms[commandName];
-        if (command) {
-            if (command.permission && bu.comparePerms(msg.member, command.permission)) {
-                return [true, commandName];
-            } else if (command.rolename) {
-                if (bu.hasPerm(msg, command.rolename, quiet))
-                    return [true, commandName];
-                else return [false, commandName];
-            } else if (!command.rolename) {
-                if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
-                    if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
-                        return [false, commandName, 1];
+    if (msg.channel.guild) {
+        let val = await(bu.guildSettings.get(msg.channel.guild.id, 'permoverride'));
+        let val1 = await(bu.guildSettings.get(msg.channel.guild.id, 'staffperms'));
+        if (val && val != 0)
+            if (val1) {
+                let allow = parseInt(val1);
+                if (!isNaN(allow)) {
+                    if (bu.comparePerms(msg.member, allow)) {
+                        return [true, commandName];
                     }
                 }
-                return [true, commandName];
+            } else {
+                if (bu.comparePerms(msg.member)) {
+                    return [true, commandName];
+                }
+            }
+        let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+        if (storedGuild) {
+            let command = storedGuild.commandperms[commandName];
+            if (command) {
+                if (command.permission && bu.comparePerms(msg.member, command.permission)) {
+                    return [true, commandName];
+                } else if (command.rolename) {
+                    if (bu.hasPerm(msg, command.rolename, quiet))
+                        return [true, commandName];
+                    else return [false, commandName];
+                } else if (!command.rolename) {
+                    if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
+                        if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
+                            return [false, commandName, 1];
+                        }
+                    }
+                    return [true, commandName];
+                }
             }
         }
-    }
-    if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
-        if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
-            return [false, commandName, 3];
+        if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
+            if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
+                return [false, commandName, 3];
+            }
         }
+        return [true, commandName];
+    } else {
+        if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
+            if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
+                return [false, commandName, 3];
+            }
+        }
+        return [true, commandName];
     }
-    return [true, commandName];
 });
 
 bu.shuffle = (array) => {

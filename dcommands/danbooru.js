@@ -25,7 +25,7 @@ e.execute = (msg, words) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
         var tagList = JSON.parse(JSON.stringify(words));
         delete tagList[0];
-        bu.send('230801689551175681', `**__danbooru__:** \n  **tags:** \`${tagList.join(' ')}\` \n  **user:** ${msg.author.username} (${msg.author.id}) \n  **channel:** ${msg.channel.name} (${msg.channel.id}) \n  **guild:** ${msg.channel.guild.name} (${msg.channel.guild.id}) \n  **NSFW Channel:** ${nsfwChannel}`);
+        bu.send('230801689551175681', `**__danbooru__:** \n  **tags:** \`${tagList.join(' ')}\` \n  **user:** ${msg.author.username} (${msg.author.id}) \n  **channel:** ${msg.channel.name} (${msg.channel.id}) \n  ${msg.channel.guild ? `**guild:** ${msg.channel.guild.name} (${msg.channel.guild.id})` : ''}\n  **NSFW Channel:** ${nsfwChannel}`);
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
                 bu.logger.debug(`${i}: ${tagList[i]}`);
