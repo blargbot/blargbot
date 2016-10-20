@@ -61,7 +61,8 @@ blargbot&gt; Hello, User. This is a test command.
     <pre><code>cc help</code></pre>
     <p>Gets basic ccommand help.</p>`;
 e.alias = ['cc'];
-e.execute = async((msg, words) => {
+e.execute = async((msg, words, text) => {
+    bu.logger.debug('Text:', text);
     if (words[1]) {
         let storedTag;
         let content;
@@ -73,7 +74,7 @@ e.execute = async((msg, words) => {
                         bu.send(msg.channel.id, 'That ccommand already exists!');
                         break;
                     }
-                    content = bu.splitInput(msg.content, true).slice(3).join(' ');
+                    content = bu.splitInput(text, true).slice(3).join(' ');
                     await(bu.ccommand.set(msg.channel.guild.id, words[2], content));
                     bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` created. ✅`);
                 } else {
@@ -87,7 +88,7 @@ e.execute = async((msg, words) => {
                         bu.send(msg.channel.id, 'That ccommand doesn\'t exist!');
                         break;
                     }
-                    content = bu.splitInput(msg.content, true).slice(3).join(' ');
+                    content = bu.splitInput(text, true).slice(3).join(' ');
                     await(bu.ccommand.set(msg.channel.guild.id, words[2], content));
                     bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` edited. ✅`);
                 } else {
@@ -96,7 +97,7 @@ e.execute = async((msg, words) => {
                 break;
             case 'set':
                 if (words.length > 3) {
-                    content = bu.splitInput(msg.content, true).slice(3).join(' ');
+                    content = bu.splitInput(text, true).slice(3).join(' ');
                     await(bu.ccommand.set(msg.channel.guild.id, words[2], content));
                     bu.sendMessageToDiscord(msg.channel.id, `✅ Custom command \`${words[2]}\` set. ✅`);
                 } else {

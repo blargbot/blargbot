@@ -155,14 +155,14 @@ var listTags = async((msg, originalTagList, page, author, deleteMsg) => {
     }
 });
 
-e.execute = async((msg, words) => {
+e.execute = async((msg, words, text) => {
     let page = 0;
     let title, content, tag, author, originalTagList;
     if (words[1]) {
         switch (words[1].toLowerCase()) {
             case 'create':
                 if (words[2]) title = words[2];
-                if (words[3]) content = bu.splitInput(msg.content, true).slice(3).join(' ');
+                if (words[3]) content = bu.splitInput(text, true).slice(3).join(' ');
                 if (!title)
                     title = await(bu.awaitMessage(msg, tagNameMsg)).content;
 
@@ -230,7 +230,7 @@ e.execute = async((msg, words) => {
                 break;
             case 'edit':
                 if (words[2]) title = words[2];
-                if (words[3]) content = bu.splitInput(msg.content, true).slice(3).join(' ');
+                if (words[3]) content = bu.splitInput(text, true).slice(3).join(' ');
 
                 if (!title)
                     title = await(bu.awaitMessage(msg, tagNameMsg)).content;
@@ -265,7 +265,7 @@ e.execute = async((msg, words) => {
             case 'set':
 
                 if (words[2]) title = words[2];
-                if (words[3]) content = bu.splitInput(msg.content, true).slice(3).join(' ');
+                if (words[3]) content = bu.splitInput(text, true).slice(3).join(' ');
                 //                if (words[3]) content = text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim();
 
                 if (!title)
