@@ -176,7 +176,7 @@ e.execute = async((msg, words) => {
                 if (!content)
                     content = await(bu.awaitMessage(msg, tagContentsMsg)).content;
 
-                content = bu.fixContent(content);
+            //    content = bu.fixContent(content);
 
                 await(bu.r.table('tag').insert({
                     name: title,
@@ -249,7 +249,7 @@ e.execute = async((msg, words) => {
                 if (!content)
                     content = await(bu.awaitMessage(msg, tagContentsMsg)).content;
 
-                content = bu.fixContent(content);
+              //  content = bu.fixContent(content);
 
                 await(bu.r.table('tag').get(title).update({
                     content: content,
