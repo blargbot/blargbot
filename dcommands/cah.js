@@ -16,7 +16,9 @@ e.init = (Tbot, blargutil) => {
     if (fs.existsSync(path.join(__dirname, '..', 'cah.json'))) {
         cah = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'cah.json'), 'utf8'));
     }
+
     request('https://api.cardcastgame.com/v1/decks/JJDFG/cards', (err, res, body) => {
+        try {
         let tempCad = JSON.parse(body);
         cad.black = tempCad.calls.map(m => {
             return m.text.join('______');
@@ -24,6 +26,9 @@ e.init = (Tbot, blargutil) => {
         cad.white = tempCad.responses.map(m => {
             return m.text.join('______');
         });
+        } catch (err) {
+            console.log(err.stack);
+        }
     });
 
     e.category = bu.CommandType.GENERAL;
