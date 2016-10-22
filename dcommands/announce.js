@@ -1,6 +1,6 @@
 var e = module.exports = {};
 var bu;
-
+const moment = require('moment');
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -14,29 +14,22 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'patch <features> [ | <fixes> ]';
-e.info = 'Makes a patch note';
-var changeChannel = '222199986123833344';
-var roleId = '239399475263700992';
+e.usage = 'announce <stuff>';
+e.info = 'Makes an annoucement';
+var changeChannel = '229135592720433152';
+var roleId = '239396821645000704';
 e.execute = async function (msg, words) {
     if (msg.author.id != bu.CAT_ID) {
         return;
     }
     words.shift();
     var message = words.join(' ');
-    var args = message.split('|');
     let channel = await bot.getChannel(changeChannel);
     let role = channel.guild.roles.get(roleId);
-    message = `${role.mention}\n**Version ${bu.VERSION}**
-    
-${args[0] ?
-            `**New Features:**
-${args[0]}
-` : ''}
-${args[1] ?
-            `**Bug Fixes:**
-${args[1]}
-` : ''}`;
+    message = `**:information_source: Announcement [${moment().format('MM/DD/YYYY')}] ${role.mention} :information_source:**
+**${msg.author.username}#${msg.author.discriminator}** has made the following announcement:
+
+${message}`;
     await role.edit({
         mentionable: true
     });
