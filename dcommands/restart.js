@@ -20,6 +20,6 @@ e.info = '';
 e.execute = (msg) => {
     if (msg.author.id === bu.CAT_ID) {
         bu.send(msg.channel.id, 'Ah! You\'ve killed me! D:');
-        exec('pm2 restart 0 --node-args="--harmony"');
+        exec('pm2 restart 0');
     }
 };
