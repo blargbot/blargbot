@@ -12,7 +12,7 @@ e.init = (Tbot, blargutil) => {
 };
 e.requireCtx = require;
 
-e.isCommand = true;
+e.isCommand = false;
 e.hidden = false;
 e.usage = '';
 e.info = '';
