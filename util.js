@@ -193,7 +193,9 @@ bu.hasPerm = (msg, perm, quiet) => {
  */
 bu.sendMessageToDiscord = function (channelId, message, file) {
     bu.messageStats++;
-
+    if (message.length > 2000) {
+        message = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+    }
     try {
         message = emoji.emojify(message);
         if (!file)
