@@ -1,14 +1,14 @@
 var Eris = require('eris');
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var e = module.exports = {};
 var db;
 var config;
 var bu;
 var CAT_ID = '103347843934212096';
 e.init = (blargutil, database) => {
-    bu = blargutil
+    bu = blargutil;
     db = database;
     config = bu.config;
 
@@ -25,7 +25,7 @@ e.init = (blargutil, database) => {
         bu.logger.init('stupid cat> YO SHIT WADDUP ITS DA CAT HERE');
     });
 
-    e.bot.on('messageCreate', async((msg) => {
+    e.bot.on('messageCreate', async function(msg) {
         var prefix = config.general.isbeta ? 'catbeta' : 'cat';
         if (msg.content.startsWith(prefix)) {
             var command = msg.content.replace(prefix, '').trim();
@@ -67,8 +67,8 @@ e.init = (blargutil, database) => {
                     }
                     break;
                 case 'pls': // yay markovs
-                    let max = await(bu.r.table('catchat').count().run());
-                    let position = await(bu.r.table('vars').get('markovpos').run()).varvalue;
+                    let max = await bu.r.table('catchat').count().run();
+                    let position = (await bu.r.table('vars').get('markovpos').run()).varvalue;
                     if (!position) {
                         position = 0;
                     }
@@ -83,7 +83,7 @@ e.init = (blargutil, database) => {
                             pos -= max;
                         }
                         bu.logger.error('Getting message at pos', pos);
-                        let message = await(bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(pos));
+                        let message = await bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(pos);
                         var messageToSend = `${message.content} ${message.attachment == 'none' ? '' :
                             message.attachment}`;
                         e.bot.createMessage(msg.channel.id, `\u200B` + messageToSend);
@@ -94,7 +94,7 @@ e.init = (blargutil, database) => {
                     break;
             }
         }
-    }));
+    });
 
     e.bot.connect();
 };

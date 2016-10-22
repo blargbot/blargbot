@@ -15,10 +15,10 @@ e.hidden = true;
 e.usage = 'pls';
 e.info = 'Gets messages made by the stupid cat on your guild';
 
-e.execute = (msg) => {
+e.execute = async function (msg) {
     if (msg.channel.guild.members.get('103347843934212096')) {
-        let max = await(bu.r.table('catchat').count().run());
-        let position = await(bu.r.table('vars').get('markovpos').run()).varvalue;
+        let max = await bu.r.table('catchat').count().run();
+        let position = (await bu.r.table('vars').get('markovpos').run()).varvalue;
         if (!position) {
             position = 0;
         }
@@ -33,7 +33,7 @@ e.execute = (msg) => {
                 pos -= max;
             }
             bu.logger.error('Getting message at pos', pos);
-            let message = await(bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(pos));
+            let message = await bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(pos).run();
             var messageToSend = `${message.content} ${message.attachment == 'none' ? '' :
                 message.attachment}`;
             e.bot.createMessage(msg.channel.id, `\u200B` + messageToSend);

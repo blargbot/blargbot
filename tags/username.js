@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -24,16 +24,16 @@ e.exampleIn = `Your username is {username;stupid;this can be anything}`;
 e.exampleOut = `Your username is stupid cat`;
 
 
-e.execute = async((params) => {
+e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] =await(bu.processTagInner(params, i));
+        params.args[i] =await bu.processTagInner(params, i);
     }
     let args = params.args
         , msg = params.msg;
     var replaceString = '';
     var replaceContent = false;
 
-    var obtainedUser = await(bu.getTagUser(msg, args));
+    var obtainedUser = await bu.getTagUser(msg, args);
 
     if (obtainedUser)
         replaceString = obtainedUser.username;
@@ -48,4 +48,4 @@ e.execute = async((params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

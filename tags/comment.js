@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -22,7 +22,7 @@ e.exampleIn = 'This is a sentence. {//;This is a comment.}';
 e.exampleOut = 'This is a sentence.';
 
 
-e.execute = async(() => {
+e.execute = async function() {
     var replaceString = '';
     var replaceContent = false;
 
@@ -31,4 +31,4 @@ e.execute = async(() => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -22,9 +22,9 @@ e.exampleIn = 'You said {argslength} words.';
 e.exampleOut = 'Input: <code>I am saying things.</code><br>Output: <code>You said 4 words.</code>';
 
 
-e.execute = async((params) => {
+e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await(bu.processTagInner(params, i));
+        params.args[i] = await bu.processTagInner(params, i);
     }
     let words = params.words;
     var replaceString = '';
@@ -39,4 +39,4 @@ e.execute = async((params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

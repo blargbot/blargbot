@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -23,9 +23,9 @@ e.exampleIn = `{aget;testvar}`;
 e.exampleOut = `This is a test var`;
 
 
-e.execute = async((params) => {
+e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await(bu.processTagInner(params, i));
+        params.args[i] = await bu.processTagInner(params, i);
     }
     var replaceString = '';
     var replaceContent = false;
@@ -35,10 +35,10 @@ e.execute = async((params) => {
     if (params.args.length > 1) {
         replaceString = bu.vars.authorTags[params.author][params.args[1]];
     } else {
-        replaceString = await(bu.tagProcessError(params, params.fallback, '`Not enough arguments`'));
+        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
     }
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

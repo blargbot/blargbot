@@ -1,8 +1,8 @@
 // START: Do not touch
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -42,42 +42,42 @@ e.exampleOut = 'Let me do a tag for you. User#1111 has paid their respects. Tota
  * @return.replaceContent Boolean - if true, will replace the entire content rather than just the tag (within scope)
  * @return.fallback? String - if provided, will change the fallback
  */
-e.execute = async((params) => {
+e.execute = async function(params) {
     // processes any nested tags in the `args` array. if your tag uses advanced logic, you may wish to reimplement this
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await(bu.processTagInner(params, i));
+        params.args[i] = await bu.processTagInner(params, i);
     }
     var replaceString = '';
     var replaceContent = false;
     if (params.args[1]) {
-        let tag = await(bu.r.table('tag').get(params.args[1]).run());
+        let tag = await bu.r.table('tag').get(params.args[1]).run();
         if (!tag) {
-            replaceString = await(bu.tagProcessError(params, params.fallback, '`Tag not found`'));
+            replaceString = await bu.tagProcessError(params, params.fallback, '`Tag not found`');
         } else {
             if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
-                let nsfwChan = await(bu.isNsfwChannel(params.msg.channel.id));
+                let nsfwChan = await bu.isNsfwChannel(params.msg.channel.id);
                 if (!nsfwChan) {
-                    replaceString = await(bu.tagProcessError(params, params.fallback, '`NSFW tag'));
+                    replaceString = await bu.tagProcessError(params, params.fallback, '`NSFW tag');
                     return;
                 }
             }
             bu.r.table('tag').get(tag.name).update({
                 uses: tag.uses + 1
             }).run();
-            replaceString = await(bu.processTag(params.msg
+            replaceString = await bu.processTag(params.msg
                 , params.words
                 , tag.content
                 , params.fallback
                 , params.author
-                , params.tagName));;
+                , params.tagName);
 
         }
     } else {
-        replaceString = await(bu.tagProcessError(params, params.fallback, '`Not enough arguments`'));
+        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
     }
 
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

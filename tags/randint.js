@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -26,9 +26,9 @@ e.exampleIn = `You rolled a {randint;1;6}`;
 e.exampleOut = `You rolled a 5`;
 
 
-e.execute = async((params) => {
+e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] =await(bu.processTagInner(params, i));
+        params.args[i] =await bu.processTagInner(params, i);
     }
     let args = params.args
         , fallback = params.fallback;
@@ -40,7 +40,7 @@ e.execute = async((params) => {
         if (isNaN(args1)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    replaceString: await(bu.tagProcessError(params, fallback, '`Not a number`')),
+                    replaceString: await bu.tagProcessError(params, fallback, '`Not a number`'),
                     replaceContent: replaceContent
                 };
             } else {
@@ -53,7 +53,7 @@ e.execute = async((params) => {
         if (isNaN(args1)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    replaceString: await(bu.tagProcessError(params, fallback, '`Not a number`')),
+                    replaceString: await bu.tagProcessError(params, fallback, '`Not a number`'),
                     replaceContent: replaceContent
                 };
             } else {
@@ -64,7 +64,7 @@ e.execute = async((params) => {
         if (isNaN(args2)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    replaceString: await(bu.tagProcessError(params, fallback, '`Not a number`')),
+                    replaceString: await bu.tagProcessError(params, fallback, '`Not a number`'),
                     replaceContent: replaceContent
                 };
             } else {
@@ -73,11 +73,11 @@ e.execute = async((params) => {
         }
         replaceString = bu.getRandomInt(args1, args2);
     } else {
-        replaceString = await(bu.tagProcessError(params, fallback, '`Not enough arguments`'));
+        replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
     }
 
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

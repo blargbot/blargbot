@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -20,7 +20,7 @@ e.info = 'Gets a list of command or specific command help.';
 e.longinfo = `<p>Returns a list of commands and custom commands. If a command name is specified, it will return a description
         of that command instead.</p>`;
 
-e.execute = async((msg, words) => {
+e.execute = async function(msg, words) {
     if (words.length > 1) {
         var message = '';
         if (bu.commandList.hasOwnProperty(words[1]) && !bu.commandList[words[1]].hidden) {
@@ -38,7 +38,7 @@ ${bu.commandList[words[1]].info}`;
         var modifiedCommands = [];
         let storedGuild;
         if (msg.channel.guild) {
-            storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+            storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
             let customizedCommands = storedGuild.commandperms;
             //    bu.logger.debug(customizedCommands);
             for (let key in customizedCommands) {
@@ -71,7 +71,7 @@ ${bu.commandList[words[1]].info}`;
         generalCommands.sort();
         commandsString += generalCommands.join(', ');
 
-        var onComplete = async(function () {
+        var onComplete = async function() {
             if (msg.channel.guild) {
                 let ccommands = storedGuild.ccommands;
                 //      bu.logger.debug(ccommands);
@@ -88,12 +88,12 @@ ${bu.commandList[words[1]].info}`;
             }
 
             commandsString += '```';
-            let dmhelp = msg.channel.guild ? await(bu.guildSettings.get(msg.channel.guild.id, 'dmhelp')) : true;
+            let dmhelp = msg.channel.guild ? await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp') : true;
             let doDM = dmhelp && dmhelp != 0;
-            let sendString = `${doDM ? `Here are your commands ${msg.channel.guild ?'for '+ msg.channel.guild.name : ''}.\n` : ''}${commandsString}\n${!msg.channel.guild
+            let sendString = `${doDM ? `Here are your commands ${msg.channel.guild ? 'for ' + msg.channel.guild.name : ''}.\n` : ''}${commandsString}\n${!msg.channel.guild
                 ? 'Not all of these bu.commands work in DMs.\n'
                 : ''
-                }For more information about bu.commands, do \`help <commandname>\` or visit https://blargbot.xyz/commands`
+                }For more information about bu.commands, do \`help <commandname>\` or visit https://blargbot.xyz/commands`;
 
             if (doDM) {
                 bot.getDMChannel(msg.author.id).then(pc => {
@@ -103,7 +103,7 @@ ${bu.commandList[words[1]].info}`;
             } else {
                 bu.send(msg.channel.id, sendString);
             }
-        });
+        };
 
         function nextCommand(category, completeCommandList) {
             if (!bu.CommandType.properties.hasOwnProperty(category)
@@ -150,4 +150,4 @@ ${bu.commandList[words[1]].info}`;
         }
         processCategory(i);
     }
-});
+};

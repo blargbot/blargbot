@@ -2,8 +2,8 @@ var e = module.exports = {};
 var bu;
 var moment = require('moment');
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -34,16 +34,16 @@ e.exampleIn = `Your account joined this guild on {userjoinedat;YYYY/MM/DD HH:mm:
 e.exampleOut = `Your account joined this guild on 2016/01/01 01:00:00`;
 
 
-e.execute = async((params) => {
+e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] =await(bu.processTagInner(params, i));
+        params.args[i] =await bu.processTagInner(params, i);
     }
     let args = params.args
         , msg = params.msg;
     var replaceString = '';
     var replaceContent = false;
 
-    var obtainedUser = await(bu.getTagUser(msg, args, 2));
+    var obtainedUser = await bu.getTagUser(msg, args, 2);
 
     if (obtainedUser) {
         var createdDate = msg.channel.guild.members.get(obtainedUser.id).joinedAt;
@@ -61,4 +61,4 @@ e.execute = async((params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

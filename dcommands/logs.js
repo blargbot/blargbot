@@ -1,9 +1,8 @@
 var e = module.exports = {};
 var bu;
-var Promise = require('promise');
 var bot;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -58,7 +57,15 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + '<p>If you want to use multiple of the same type, separate parameters with commas. For example:</p>'
     + '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
 
-e.execute = async((msg, words) => {
+
+var typeRef = {
+    CREATE: 0,
+    UPDATE: 1,
+    DELETE: 2
+};
+
+
+e.execute = async function (msg, words) {
     //  bu.send(msg.channel.id, 'WIP');
     //  return;
     if (words[0].toLowerCase() == 'help') {
@@ -140,7 +147,7 @@ e.execute = async((msg, words) => {
     for (i = 0; i < usersRaw.length; i++) {
         if (usersRaw[i] != '') {
             var name = usersRaw[i].trim();
-            var u = await(bu.getUser(msg, name, false));
+            var u = await bu.getUser(msg, name, false);
             if (!u) {
                 if (/[0-9]{17,21}/.test(usersRaw[i])) {
                     users.push(usersRaw[i].match(/([0-9]{17,21})/)[1]);
@@ -154,9 +161,9 @@ e.execute = async((msg, words) => {
     //    types = [0, 1, 2];
     // }
     bu.logger.debug(channel, users, types, order);
-    let msg2 = await(bu.send(msg.channel.id, 'Generating your logs...'));
+    let msg2 = await bu.send(msg.channel.id, 'Generating your logs...');
     let msgids = [msg.id, msg2.id];
-    let thing = await(bu.r.table('chatlogs')
+    let thing = await bu.r.table('chatlogs')
         .between([channel, bu.r.epochTime(0)], [channel, bu.r.now()], { index: 'channel_time' })
         .orderBy({ index: order ? bu.r.asc('channel_time') : bu.r.desc('channel_time') })
         .filter(function (q) {
@@ -165,38 +172,32 @@ e.execute = async((msg, words) => {
                     .and(bu.r.expr(msgids).contains(q('msgid')).not())
                 );
         })
-        .limit(numberOfMessages).run());
-    let key = await(insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages));
+        .limit(numberOfMessages).run();
+    let key = await insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages);
     bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
-});
+};
 
-var insertQuery = async((msg, channel, users, types, firstTime, numberOfMessages) => {
-    function attemptInsert() {
+var insertQuery = async function (msg, channel, users, types, firstTime, numberOfMessages) {
+    async function attemptInsert() {
         var key = randomString(6);
         bu.logger.debug(key);
-        let exists = await(bu.r.table('logs').get('key'));
+        let exists = await bu.r.table('logs').get('key');
         if (exists) {
             return attemptInsert;
         }
-        await(bu.r.table('logs').insert({
+        await bu.r.table('logs').insert({
             keycode: key,
             channel: channel,
             users: users,
             types: types,
             firsttime: bu.r.expr(firstTime).toEpochTime(),
             limit: numberOfMessages
-        }).run());
+        }).run();
         return key;
     }
     return attemptInsert();
-});
+};
 
 function randomString(length) {
     return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
 }
-
-var typeRef = {
-    CREATE: 0,
-    UPDATE: 1,
-    DELETE: 2
-};

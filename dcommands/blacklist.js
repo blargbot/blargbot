@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -17,8 +17,8 @@ e.usage = 'blacklist';
 e.info = 'Blacklists the current channel. The bot will not respond until you do `blacklist` again.';
 e.longinfo = `<p>Blacklists the current channel. The bot will not respond until you do the command again.</p>`;
 
-e.execute = async((msg) => {
-    let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+e.execute = async function(msg) {
+    let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
     let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id)
         ? storedGuild.channels[msg.channel.id] : {
             nsfw: false
@@ -35,4 +35,4 @@ e.execute = async((msg) => {
     bu.r.table('guild').get(msg.channel.guild.id).update({
         channels: storedGuild.channels
     }).run();
-});
+};

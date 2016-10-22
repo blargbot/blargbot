@@ -1,11 +1,9 @@
 var e = module.exports = {};
 var bu;
-var moment = require('moment-timezone');
 var fs = require('fs');
 var path = require('path');
-var util = require('util');
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -74,7 +72,7 @@ function buildTag(tagName) {
     }).run();
 }
 
-e.processTag = async((msg, contents, command, tagName, author) => {
+e.processTag = async function(msg, contents, command, tagName, author)  {
     try {
         tagName = tagName || msg.channel.guild.id;
         author = author || msg.channel.guild.id;
@@ -88,21 +86,21 @@ e.processTag = async((msg, contents, command, tagName, author) => {
 
         var fallback = '';
 
-        contents = await(bu.processTag(msg, words, contents, fallback, author, tagName));
+        contents = await bu.processTag(msg, words, contents, fallback, author, tagName);
         contents = bu.processSpecial(contents, true);
     } catch (err) {
         bu.logger.error(err);
     }
     return contents;
-});
+};
 
-e.executeTag = async((msg, tagName, command) => {
-    let tag = await(bu.r.table('tag').get(tagName).run());
+e.executeTag = async function(msg, tagName, command)  {
+    let tag = await bu.r.table('tag').get(tagName).run();
     if (!tag)
         bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
     else {
         if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
-            let nsfwChan = await(bu.isNsfwChannel(msg.channel.id));
+            let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
             if (!nsfwChan) {
                 bu.sendMessageToDiscord(msg.channel.id, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
                 return;
@@ -111,11 +109,11 @@ e.executeTag = async((msg, tagName, command) => {
         bu.r.table('tag').get(tagName).update({
             uses: tag.uses + 1
         }).run();
-        var message = await(e.processTag(msg, tag.content, command, tagName, tag.author));
+        var message = await e.processTag(msg, tag.content, command, tagName, tag.author);
         while (/<@!?[0-9]{17,21}>/.test(message)) {
             let match = message.match(/<@!?([0-9]{17,21})>/)[1];
             bu.logger.debug(match);
-            let obtainedUser = await(bu.getUser(msg, match, true));
+            let obtainedUser = await bu.getUser(msg, match, true);
             let name = '';
             if (obtainedUser) {
                 name = `@${obtainedUser.username}#${obtainedUser.discriminator}`;
@@ -127,5 +125,4 @@ e.executeTag = async((msg, tagName, command) => {
         if (message != '')
             bu.sendMessageToDiscord(msg.channel.id, message);
     }
-});
-
+};

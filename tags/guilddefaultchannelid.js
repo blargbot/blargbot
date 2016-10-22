@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -22,9 +22,9 @@ e.exampleIn = `Default channel is {guilddefaultchannelid}`;
 e.exampleOut = `Default channel is 1234567890123455`;
 
 
-e.execute = async((params) => {
+e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await(bu.processTagInner(params, i));
+        params.args[i] = await bu.processTagInner(params, i);
     }
     let msg = params.msg;
     var replaceString = msg.channel.guild.defaultChannel.id;
@@ -35,4 +35,4 @@ e.execute = async((params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

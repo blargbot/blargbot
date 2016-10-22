@@ -2,8 +2,8 @@ var e = module.exports = {};
 var bu;
 var tags = require('./../tags');
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -26,7 +26,7 @@ e.longinfo = `<p>Sets a greeting for any new user who joins your guild. You can 
 blargbot&gt; Greeting set. Simulation: Welcome, **User**. Please read #rules.
 </code></pre>`;
 
-e.execute = async((msg, words) => {
+e.execute = async function(msg, words) {
 
     if (words.length == 1) {
         bu.guildSettings.remove(msg.channel.guild.id, 'greeting').then(() => {
@@ -35,7 +35,7 @@ e.execute = async((msg, words) => {
         return;
     }
     var greeting = words.slice(1).join(' ');
-    await(bu.guildSettings.set(msg.channel.guild.id, 'greeting', greeting))
+    await bu.guildSettings.set(msg.channel.guild.id, 'greeting', greeting);
     bu.sendMessageToDiscord(msg.channel.id, `Greeting set. Simulation:
-${await(tags.processTag(msg, greeting, ''))}`);
-});
+${await tags.processTag(msg, greeting, '')}`);
+};

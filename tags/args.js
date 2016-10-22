@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -31,9 +31,9 @@ e.exampleOut = `
                             `;
 
 
-e.execute = async((params) => {
+e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await(bu.processTagInner(params, i));
+        params.args[i] = await bu.processTagInner(params, i);
     }
     let words = params.words
         , args = params.args
@@ -50,20 +50,20 @@ e.execute = async((params) => {
                     replaceString += ` ${words[i]}`;
             }
         } else {
-            replaceString = await(bu.tagProcessError(params, fallback, '`MIN is greater than MAX`'));
+            replaceString = await bu.tagProcessError(params, fallback, '`MIN is greater than MAX`');
         }
     } else if (args.length == 2) {
         if (words[parseInt(args[1])]) {
             replaceString = words[parseInt(args[1])];
         } else {
-            replaceString = await(bu.tagProcessError(params, fallback, '`Not enough arguments`'));
+            replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
         }
     } else {
         if (!(words[0] == '' && words.length == 1)) {
             replaceString = words.join(' ');
         }
         else
-            replaceString = await(bu.tagProcessError(params, fallback, '`User gave no args`'));
+            replaceString = await bu.tagProcessError(params, fallback, '`User gave no args`');
     }
     replaceString = replaceString + '';
     replaceString = bu.fixContent(replaceString);
@@ -73,4 +73,4 @@ e.execute = async((params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

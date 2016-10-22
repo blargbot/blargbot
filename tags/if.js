@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -31,9 +31,9 @@ e.exampleIn = `{if;&lt;=;5;10;5 is less than or equal to 10;5 is greater than 10
 e.exampleOut = `5 is less than or equal to 10`;
 
 
-e.execute = async((params) => {
+e.execute = async function (params) {
     // for (let i = 1; i < params.args.length; i++) {
-    //      params.args[i] =await(bu.processTagInner(params, i);
+    //      params.args[i] =await bu.processTagInner(params, i);
     // }
     let args = params.args
         , fallback = params.fallback;
@@ -41,9 +41,9 @@ e.execute = async((params) => {
     var replaceContent = false;
 
     if (args.length > 4) {
-        args[1] = await(bu.processTagInner(params, 1));
-        var arg1 = await(bu.processTagInner(params, 2));
-        var arg2 = await(bu.processTagInner(params, 3));
+        args[1] = await bu.processTagInner(params, 1);
+        var arg1 = await bu.processTagInner(params, 2);
+        var arg2 = await bu.processTagInner(params, 3);
         if (!isNaN(parseFloat(arg1))) {
             arg1 = parseFloat(arg1);
         }
@@ -100,21 +100,21 @@ e.execute = async((params) => {
                     replaceString = args[5] || '';
                 break;
             default:
-                replaceString = await(bu.tagProcessError(params, fallback, '`Invalid Operator`'));
+                replaceString = await bu.tagProcessError(params, fallback, '`Invalid Operator`');
                 break;
         }
-        replaceString = await(bu.processTag(params.msg
+        replaceString = await bu.processTag(params.msg
             , params.words
             , replaceString
             , params.fallback
             , params.author
-            , params.tagName));
+            , params.tagName);
     } else {
-        replaceString = await(bu.tagProcessError(params, fallback, '`Not enough arguments`'));
+        replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
     }
 
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

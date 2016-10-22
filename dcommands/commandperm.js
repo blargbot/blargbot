@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -35,10 +35,10 @@ e.longinfo = `<p>Changes command-specific usage permissions.</p>
 </tbody>
 </table>`;
 
-e.execute = async((msg, words) => {
+e.execute = async function(msg, words) {
     if (words.length >= 2) {
         let commandName;
-        let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id));
+        let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id);
         let commandperms = storedGuild.commandperms;
         if (!commandperms) commandperms = {};
         let commands, toSend, changedCommands = [];
@@ -89,9 +89,9 @@ e.execute = async((msg, words) => {
                         if (commands.length == 0) bu.send(msg.channel.id, `That's not a command!`);
                     }
                 }
-                await(bu.r.table('guild').get(msg.channel.guild.id).update({
+                await bu.r.table('guild').get(msg.channel.guild.id).update({
                     commandperms: commandperms
-                }).run());
+                }).run();
                 bu.send(msg.channel.id, toSend + changedCommands.join(', ') + '\n```');
                 break;
             case 'setperm':
@@ -132,9 +132,9 @@ e.execute = async((msg, words) => {
                         if (commands.length == 0) bu.send(msg.channel.id, `That's not a command!`);
                     }
                 }
-                await(bu.r.table('guild').get(msg.channel.guild.id).update({
+                await bu.r.table('guild').get(msg.channel.guild.id).update({
                     commandperms: commandperms
-                }).run());
+                }).run();
                 bu.send(msg.channel.id, toSend + changedCommands.join(', ') + '\n```');
                 break;
             default:
@@ -145,4 +145,4 @@ e.execute = async((msg, words) => {
         bu.send(msg.channel.id, 'Not enough arguments provided!');
     }
 
-});
+};

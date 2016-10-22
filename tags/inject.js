@@ -1,8 +1,8 @@
 // START: Do not touch
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -42,28 +42,28 @@ e.exampleOut = 'Random Number: 3';
  * @return.replaceContent Boolean - if true, will replace the entire content rather than just the tag (within scope)
  * @return.fallback? String - if provided, will change the fallback
  */
-e.execute = async((params) => {
+e.execute = async function(params) {
     // processes any nested tags in the `args` array. if your tag uses advanced logic, you may wish to reimplement this
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await(bu.processTagInner(params, i));
+        params.args[i] = await bu.processTagInner(params, i);
     }
     var replaceString = '';
     var replaceContent = false;
     if (params.args[1]) {
         let newStuff = bu.processSpecial(params.args[1], true);
         bu.logger.debug('Thonkang', params.args, newStuff);
-        replaceString = await(bu.processTag(params.msg
+        replaceString = await bu.processTag(params.msg
             , params.words
             , newStuff
             , params.fallback
             , params.author
-            , params.tagName));
+            , params.tagName);
     } else {
-        replaceString = await(bu.tagProcessError(params, params.fallback, '`Not enough arguments`'));
+        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
     }
 
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -29,11 +29,11 @@ e.longinfo = `<p>Enables the modlog and sets it to the current channel. Doing <c
     <p>Bans and unbans are logged regardless of whether the <code>ban</code> or <code>unban</code> commands are used.
     </p>`;
 
-e.execute = async((msg, words) => {
+e.execute = async function(msg, words) {
     if (words[1]) {
         switch (words[1].toLowerCase()) {
             case 'disable':
-                await(bu.guildSettings.remove(msg.channel.guild.id, 'modlog'))
+                await bu.guildSettings.remove(msg.channel.guild.id, 'modlog');
                 bu.sendMessageToDiscord(msg.channel.id, 'Modlog disabled!');
                 break;
             case 'clear':
@@ -45,7 +45,7 @@ e.execute = async((msg, words) => {
                         return;
                     }
                 }
-                let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+                let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
                 if (storedGuild && storedGuild.modlog.length > 0) {
                     let index = storedGuild.modlog.length - limit;
                     if (index < 0) {
@@ -53,17 +53,17 @@ e.execute = async((msg, words) => {
                     }
                     let cases = storedGuild.modlog.splice(index);
                     let messages = cases.map(m => m.msgid);
-                    let modlogChannel = await(bu.guildSettings.get(msg.channel.guild.id, 'modlog'));
+                    let modlogChannel = await bu.guildSettings.get(msg.channel.guild.id, 'modlog');
                     bot.deleteMessages(modlogChannel, messages);
-                    await(bu.r.table('guild').get(msg.channel.guild.id).update({
+                    await bu.r.table('guild').get(msg.channel.guild.id).update({
                         modlog: storedGuild.modlog
-                    }).run());
+                    }).run();
                     bu.send(msg.channel.id, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
                 }
                 break;
         }
     } else {
-        await(bu.guildSettings.set(msg.channel.guild.id, 'modlog', msg.channel.id));
+        await bu.guildSettings.set(msg.channel.guild.id, 'modlog', msg.channel.id);
         bu.sendMessageToDiscord(msg.channel.id, 'Modlog channel set!');
     }
-});
+};

@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -20,7 +20,7 @@ e.usage = 'kick <user>';
 e.info = 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.';
 e.longinfo = `<p>Kicks a user from the guild.</p>
     <p>If mod-logging is enabled, the kick will be logged.</p>`;
-e.execute = async((msg, words) => {
+e.execute = async function(msg, words) {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.kickMembers) {
         bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to kick users!`);
         return;
@@ -32,7 +32,7 @@ e.execute = async((msg, words) => {
 
 
     if (words[1]) {
-        var user = await(bu.getUser(msg, words[1]));
+        var user = await bu.getUser(msg, words[1]);
         if (!user) {
             bu.logger.debug('There was no user.');
             return;
@@ -64,4 +64,4 @@ e.execute = async((msg, words) => {
     }
     //bot.ban
 
-});
+};

@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 var moment = require('moment-timezone');
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 
 var bot;
@@ -21,10 +21,10 @@ e.usage = 'stats [full]';
 e.info = 'Gives you some information about me';
 e.longinfo = `<p>Gives you information about the bot.</p>`;
 
-e.execute = async((msg, words) => {
+e.execute = async function(msg, words) {
     let full = words[1] && words[1].toLowerCase() == 'full';
-    let sum = await(bu.r.table('stats').sum('uses').run());
-    let stats = await(bu.r.table('stats').orderBy({index: bu.r.desc('uses')}).limit(5).run());
+    let sum = await bu.r.table('stats').sum('uses').run();
+    let stats = await bu.r.table('stats').orderBy({index: bu.r.desc('uses')}).limit(5).run();
     let topCommands = '';
     for (let i = 0; i < stats.length; i++) {
         topCommands += pad(stats[i].name + ':', 13) + ' ' + stats[i].uses + '\n';
@@ -61,7 +61,7 @@ ${pad('Most Used:', 13)}
 ${topCommandsSession}` : ''}
 \`\`\`
 `);
-});
+};
 
 
 function pad(value, length) {

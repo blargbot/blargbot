@@ -1,7 +1,7 @@
 var e = module.exports = {};
-var bu
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+var bu;
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -25,18 +25,18 @@ e.longinfo = `<p>Gives the user a special muted role. On first run, this role wi
         Deleting the muted role causes it to be regenerated.</p>
     <p>If mod-logging is enabled, the mute will be logged.</p>`;
 
-e.execute = async((msg, words, text) => {
-    let mutedrole = await(bu.guildSettings.get(msg.channel.guild.id, 'mutedrole'));
+e.execute = async function(msg, words, text) {
+    let mutedrole = await bu.guildSettings.get(msg.channel.guild.id, 'mutedrole');
     if (!mutedrole) {
         if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
-            let role = await(bot.createRole(msg.channel.guild.id));
+            let role = await bot.createRole(msg.channel.guild.id);
             bu.logger.debug(role.id);
             bot.editRole(msg.channel.guild.id, role.id, {
                 color: 16711680,
                 name: 'Muted',
                 permissions: 0
             });
-            await(bu.guildSettings.set(msg.channel.guild.id, 'mutedrole', role.id))
+            await bu.guildSettings.set(msg.channel.guild.id, 'mutedrole', role.id);
             if (msg.channel.guild.members.get(bot.user.id).permission.json.manageChannels) {
                 var channels = msg.channel.guild.channels.map(m => m);
                 bu.logger.debug(channels.length);
@@ -54,9 +54,9 @@ e.execute = async((msg, words, text) => {
         return;
     } else {
         if (!msg.channel.guild.roles.get(mutedrole)) {
-            await(bu.send(msg.channel.id, `Couldn't find the muted role! Attempting to regenerate it...`));
-            await(bu.guildSettings.remove(msg.channel.guild.id, 'mutedrole'));
-            await(e.execute(msg, words, text));
+            await bu.send(msg.channel.id, `Couldn't find the muted role! Attempting to regenerate it...`);
+            await bu.guildSettings.remove(msg.channel.guild.id, 'mutedrole');
+            await e.execute(msg, words, text);
             return;
         }
     }
@@ -64,7 +64,7 @@ e.execute = async((msg, words, text) => {
         if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
             if (msg.member.permission.json.manageRoles) {
                 if (words[1]) {
-                    var user = await(bu.getUser(msg, words[1]));
+                    var user = await bu.getUser(msg, words[1]);
                     var member = msg.channel.guild.members.get(user.id);
                     if (!user)
                         return;
@@ -86,9 +86,9 @@ e.execute = async((msg, words, text) => {
                     } else {
                         var roles = member.roles;
                         roles.push(mutedrole);
-                        await(bot.editGuildMember(msg.channel.guild.id, user.id, {
+                        await bot.editGuildMember(msg.channel.guild.id, user.id, {
                             roles: roles
-                        }));
+                        });
                         bu.logAction(msg.channel.guild, user, msg.author, 'Mute');
                         bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
                     }
@@ -100,7 +100,7 @@ e.execute = async((msg, words, text) => {
             bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
         }
     }
-});
+};
 
 function logError(err) {
     bu.logger.error(err);

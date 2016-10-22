@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -22,10 +22,11 @@ e.info = 'Access your todo list.\n'
     + 'To remove items, do `todo remove <item id>`, where item id is the number shown when you do `todo` by itself.';
 e.longinfo = `<p>Access your todo list.</p><p>To add items, do <code>todo add &lt;item&gt;</code>.</p><p>To remove items, do <code>todo remove &lt;item id&gt;</code>, where item id is the number shown when you do <code>&lt;todo&gt;</code> by itself.</p>`;
 
-e.execute = async((msg, words) => {
-    let storedUser = await(bu.r.table('user').get(msg.author.id).run());
+e.execute = async function(msg, words) {
+    let storedUser = await bu.r.table('user').get(msg.author.id).run();
     let todo = storedUser.todo;
     let modified = false;
+    
     if (words.length > 1) {
         var itemid;
         switch (words[1].toLowerCase()) {
@@ -73,9 +74,9 @@ e.execute = async((msg, words) => {
             todo: todo
         }).run();
     }
-});
+};
 
-var defaultOption = async((msg, storedUser) => {
+var defaultOption = async function(msg, storedUser) {
     let todo = storedUser.todo.filter(m => m.active == 1);
     if (todo.length > 0) {
         var list = 'Here\'s your to-do list!\n';
@@ -86,4 +87,4 @@ var defaultOption = async((msg, storedUser) => {
     } else {
         bu.send(msg.channel.id, 'You have nothing on your list!');
     }
-});
+};

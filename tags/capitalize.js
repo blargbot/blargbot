@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -21,9 +21,9 @@ e.desc = 'Capitalizes the first letter of <code>text</code>. If <code>lower</cod
 e.exampleIn = '{capitalize;hello world!}';
 e.exampleOut = 'Hello world!';
 
-e.execute = async((params) => {
+e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await(bu.processTagInner(params, i));
+        params.args[i] = await bu.processTagInner(params, i);
     }
     var replaceString = '';
     var replaceContent = false;
@@ -34,11 +34,11 @@ e.execute = async((params) => {
             replaceString = params.args[1][0].toUpperCase() + params.args[1].substr(1);
         }
     } else {
-        replaceString = await(bu.tagProcessError(params, params.fallback, '`Not enough arguments`'));
+        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
     }
 
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

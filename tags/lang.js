@@ -1,8 +1,8 @@
 // START: Do not touch
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -42,11 +42,11 @@ e.exampleOut = 'This will be displayed with js!';
  * @return.replaceContent Boolean - if true, will replace the entire content rather than just the tag (within scope)
  * @return.fallback? String - if provided, will change the fallback
  */
-e.execute = async(() => {
+e.execute = async function() {
     var replaceString = '';
     var replaceContent = false;
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

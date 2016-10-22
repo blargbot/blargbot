@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -22,7 +22,7 @@ e.exampleIn = `{shuffle} {args;0} {args;1} {args;2}`;
 e.exampleOut = `Input: <code>one two three</code><br>Output: <code>three one two</code>`;
 
 
-e.execute = async((params) => {
+e.execute = async function(params) {
     let words = params.words;
     var replaceString = '';
     var replaceContent = false;
@@ -32,4 +32,4 @@ e.execute = async((params) => {
         replaceString: replaceString,
         replaceContent: replaceContent
     };
-});
+};

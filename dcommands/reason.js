@@ -1,8 +1,8 @@
 var e = module.exports = {};
 var bu;
 var bot;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -20,8 +20,8 @@ e.usage = 'reason <caseid | latest> <reason>';
 e.info = 'Sets the reason for an action on the modlog.';
 e.longinfo = `<p>Sets the reason for an action on the modlog.</p>`;
 
-e.execute = async((msg, words) => {
-    let val = await(bu.guildSettings.get(msg.channel.guild.id, 'modlog'));
+e.execute = async function(msg, words) {
+    let val = await bu.guildSettings.get(msg.channel.guild.id, 'modlog');
     if (val) {
         if (words.length >= 3) {
             var latest = false;
@@ -31,12 +31,12 @@ e.execute = async((msg, words) => {
             words.shift();
             var caseid = parseInt(words.shift());
             bu.logger.debug(caseid);
-            let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+            let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
             let modlog = storedGuild.modlog;
             let index = latest ? modlog.length - 1 : caseid;
             if (modlog.length > 0 && modlog[index]) {
 
-                let msg2 = await(bot.getMessage(val, modlog[index].msgid))
+                let msg2 = await bot.getMessage(val, modlog[index].msgid);
                 var content = msg2.content;
                 content = content.replace(/\*\*Reason:\*\*.+?\n/, `**Reason:** ${words.join(' ')}\n`);
                 modlog[index].reason = words.join(' ');
@@ -55,4 +55,4 @@ e.execute = async((msg, words) => {
             }
         }
     }
-});
+};

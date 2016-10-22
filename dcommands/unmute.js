@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 var bot;
 e.init = (Tbot, blargutil) => {
     bot = Tbot;
@@ -20,8 +20,8 @@ e.info = 'Unmutes a user.\nIf mod-logging is enabled, the unmute will be logged.
 e.longinfo = `<p>Unmutes a user.</p>
     <p>If mod-logging is enabled, the unmute will be logged.</p>`;
 
-e.execute = async((msg, words) => {
-    let mutedrole = await(bu.guildSettings.get(msg.channel.guild.id, 'mutedrole'))
+e.execute = async function(msg, words) {
+    let mutedrole = await bu.guildSettings.get(msg.channel.guild.id, 'mutedrole');
 
     if (!mutedrole) {
         bu.sendMessageToDiscord(msg.channel.id, `No muted users were found. You can only unmute users muted with \`mute\`.`);
@@ -31,7 +31,7 @@ e.execute = async((msg, words) => {
         if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
             if (msg.member.permission.json.manageRoles) {
                 if (words[1]) {
-                    var user = await(bu.getUser(msg, words[1]));
+                    var user = await bu.getUser(msg, words[1]);
                     var member = msg.channel.guild.members.get(user.id);
                     if (!user)
                         return;
@@ -65,4 +65,4 @@ e.execute = async((msg, words) => {
             bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
         }
     }
-});
+};

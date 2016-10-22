@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var bu;
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
+
+
 
 var bot;
 e.init = (Tbot, blargutil) => {
@@ -20,10 +20,10 @@ e.usage = 'settings [help|set <key>]';
 e.info = 'Gets or sets the settings for the current guild.';
 e.longinfo = '<p>Gets or sets the settigns for the current guild.</p>';
 
-e.execute = async((msg, words) => {
+e.execute = async function(msg, words) {
     if (words.length == 1) {
         //do settings shit
-        let storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+        let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
         let settings = storedGuild.settings;
         let channels = storedGuild.channels;
 
@@ -116,7 +116,7 @@ Settings For ${msg.channel.guild.name}
                     key = words.shift();
                     let value = words.join(' ');
                     if (settings[key]) {
-                        await(bu.guildSettings.set(msg.channel.guild.id, key, value))
+                        await bu.guildSettings.set(msg.channel.guild.id, key, value);
                         bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
                     } else {
                         bu.sendMessageToDiscord(msg.channel.id, 'Invalid key!');
@@ -135,7 +135,7 @@ Settings For ${msg.channel.guild.name}
                     key = words.shift();
                     let value = words.join(' ');
                     if (settings[key]) {
-                        await(bu.guildSettings.set(msg.channel.guild.id, key, value))
+                        await bu.guildSettings.set(msg.channel.guild.id, key, value);
                         bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
                     } else {
                         bu.sendMessageToDiscord(msg.channel.id, 'Invalid key!');
@@ -144,7 +144,7 @@ Settings For ${msg.channel.guild.name}
                 break;
         }
     }
-});
+};
 
 var settings = {
     cahnsfw: `whether 'cah' can only be done in nsfw channels or not. Set to '0' to disable.`,

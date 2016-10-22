@@ -10,8 +10,6 @@ const reload = require('require-reload')(require);
 const request = require('request');
 const Promise = require('promise');
 var webInterface = require('./interface.js');
-const async = require('asyncawait/async');
-const await = require('asyncawait/await');
 
 const Cleverbot = require('cleverbot-node');
 var cleverbot = new Cleverbot();
@@ -32,6 +30,7 @@ e.requireCtx = require;
  * - hooray for modules!
  */
 function initCommands() {
+
 	var fileArray = fs.readdirSync(path.join(__dirname, 'dcommands'));
 	for (var i = 0; i < fileArray.length; i++) {
 
@@ -256,10 +255,10 @@ e.init = (blargutil, v, em) => {
 				.format(`MM/DD HH:mm:ss`)}][ERROR][${id}] ${err.stack}`);
 	});
 
-	bot.on('ready', async(() => {
+	bot.on('ready', async function () {
 		bu.logger.init('Ready!');
 
-		let guilds = await(bu.r.table('guild').withFields('guildid').run()).map(g => g.guildid);
+		let guilds = (await bu.r.table('guild').withFields('guildid').run()).map(g => g.guildid);
 		//console.dir(guilds);
 		bot.guilds.forEach((g) => {
 			if (guilds.indexOf(g.id) == -1) {
@@ -285,21 +284,21 @@ e.init = (blargutil, v, em) => {
 		switchGame();
 		switchAvatar();
 		postStats();
-	}));
+	});
 
-	bot.on('guildMemberAdd', async((guild, member) => {
-		let val = await(bu.guildSettings.get(guild.id, 'greeting'))
+	bot.on('guildMemberAdd', async function (guild, member) {
+		let val = await bu.guildSettings.get(guild.id, 'greeting');
 		if (val) {
-			var message = await(tags.processTag({
+			var message = await tags.processTag({
 				channel: guild.defaultChannel,
 				author: member.user,
 				member: member
-			}, val, ''));
+			}, val, '');
 			bu.sendMessageToDiscord(guild.defaultChannel.id, message);
 		}
-	}));
+	});
 
-	bot.on('guildDelete', async((guild) => {
+	bot.on('guildDelete', async function (guild) {
 		postStats();
 		bu.logger.debug('removed from guild');
 		bu.sendMessageToDiscord(`205153826162868225`
@@ -309,29 +308,29 @@ e.init = (blargutil, v, em) => {
 		bu.r.table('guild').get(guild.id).update({
 			active: false
 		}).run();
-		let channel = await(bot.getDMChannel(guild.ownerID));
+		let channel = await bot.getDMChannel(guild.ownerID);
 		bu.sendMessageToDiscord(channel.id, `Hi!
 I see I was removed from your guild **${guild.name}**, and I'm sorry I wasn't able to live up to your expectations.
 If it's not too much trouble, could you please tell me why you decided to remove me, what you didn't like about me, or what you think could be improved? It would be very helpful.
 You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you for your time!`);
-	}));
+	});
 
-	bot.on('guildMemberRemove', async((guild, member) => {
-		let val = await(bu.guildSettings.get(guild.id, 'farewell'))
+	bot.on('guildMemberRemove', async function (guild, member) {
+		let val = await bu.guildSettings.get(guild.id, 'farewell');
 		if (val) {
-			var message = await(tags.processTag({
+			var message = await tags.processTag({
 				channel: guild.defaultChannel,
 				author: member.user,
 				member: member
-			}, val, ''));
+			}, val, '');
 			bu.sendMessageToDiscord(guild.defaultChannel.id, message);
 		}
-	}));
+	});
 
-	bot.on('guildCreate', async((guild) => {
+	bot.on('guildCreate', async function (guild) {
 		postStats();
 		bu.logger.debug('added to guild');
-		let storedGuild = await(bu.r.table('guild').get(guild.id).run());
+		let storedGuild = await bu.r.table('guild').get(guild.id).run();
 		if (!storedGuild || !storedGuild.active) {
 			var message = `I was added to the guild \`${guild.name}\``
 				+ ` (\`${guild.id}\`)!`;
@@ -368,9 +367,9 @@ If you are the owner of this server, here are a few things to know.
 					active: true
 				}).run();
 		}
-	}));
+	});
 
-	bot.on('messageUpdate', async((msg, oldmsg) => {
+	bot.on('messageUpdate', async function (msg, oldmsg) {
 		if (oldmsg) {
 			if (msg.content == oldmsg.content) {
 				return;
@@ -379,7 +378,7 @@ If you are the owner of this server, here are a few things to know.
 				bu.logger.output(`Message ${msg.id} was updated to '${msg.content}''`);
 			}
 			if (msg.channel.id != '204404225914961920') {
-				var nsfw = await(bu.isNsfwChannel(msg.channel.id));
+				var nsfw = await bu.isNsfwChannel(msg.channel.id);
 				bu.r.table('chatlogs').insert({
 					content: msg.content,
 					attachment: msg.attachments[0] ? msg.attachments[0].url : null,
@@ -394,7 +393,7 @@ If you are the owner of this server, here are a few things to know.
 				}).run();
 			}
 		}
-	}));
+	});
 
 	bot.on('guildBanAdd', (guild, user) => {
 		var mod;
@@ -431,16 +430,16 @@ If you are the owner of this server, here are a few things to know.
 		bu.logAction(guild, user, mod, 'Unban');
 	});
 
-	bot.on('messageDelete', async((msg) => {
+	bot.on('messageDelete', async function (msg) {
 		if (commandMessages[msg.channel.guild.id] && commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
-			let val = await(bu.guildSettings.get(msg.channel.guild.id, 'deletenotif'));
+			let val = await bu.guildSettings.get(msg.channel.guild.id, 'deletenotif');
 			if (val && val != 0)
 				bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick
 					|| msg.author.username}** deleted their command message.`);
 			commandMessages[msg.channel.guild.id].splice(commandMessages[msg.channel.guild.id].indexOf(msg.id), 1);
 		}
 		if (msg.channel.id != '204404225914961920') {
-			var nsfw = await(bu.isNsfwChannel(msg.channel.id));
+			var nsfw = await bu.isNsfwChannel(msg.channel.id);
 			bu.r.table('chatlogs').insert({
 				content: msg.content,
 				attachment: msg.attachments[0] ? msg.attachments[0].url : null,
@@ -454,14 +453,14 @@ If you are the owner of this server, here are a few things to know.
 				type: 2
 			}).run();
 		}
-	}));
+	});
 
 
-	bot.on('messageCreate', async(function (msg) {
+	bot.on('messageCreate', async function (msg) {
 		processUser(msg);
 		let isDm = msg.channel.guild == undefined;
 		let storedGuild;
-		if (!isDm) storedGuild = await(bu.r.table('guild').get(msg.channel.guild.id).run());
+		if (!isDm) storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
 
 
 		if (msg.channel.id != '194950328393793536')
@@ -507,7 +506,7 @@ If you are the owner of this server, here are a few things to know.
 						bu.bans[msg.channel.guild.id] = {};
 					bu.bans[msg.channel.guild.id][msg.author.id] = { mod: bot.user, type: 'Auto-Ban', reason: 'Mention spam' };
 					try {
-						await(bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1))
+						await bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1);
 					} catch (err) {
 						delete bu.bans[msg.channel.guild.id][msg.author.id];
 						bu.send(msg.channel.id, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
@@ -538,9 +537,9 @@ If you are the owner of this server, here are a few things to know.
 								if (roleList.indexOf(del[ii]) > -1) roleList.splice(roleList.indexOf(del[ii]), 1);
 							}
 							try {
-								await(msg.member.edit({
+								await msg.member.edit({
 									roles: roleList
-								}));
+								});
 								bu.send(msg.channel.id, 'Your roles have been edited!');
 							} catch (err) {
 								bu.send(msg.channel.id, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
@@ -587,7 +586,7 @@ If you are the owner of this server, here are a few things to know.
 				var command = msg.content.replace(prefix, '').trim();
 				bu.logger.command('Incoming Command:', `${prefix} ${command}`);
 				try {
-					let wasCommand = await(handleDiscordCommand(msg.channel, msg.author, command, msg));
+					let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
 					bu.logger.command('Was command:', wasCommand);
 					if (wasCommand) {
 						if (!isDm) {
@@ -656,12 +655,12 @@ If you are the owner of this server, here are a few things to know.
 						&& !msg.content.startsWith('k!')
 						&& !msg.content.startsWith('b!')
 						&& msg.channel.guild) {
-						let last = await(bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(1).run());
+						let last = await bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(1).run();
 						if ((last && last.content != msg.content) || msg.content == '') {
 							var content = msg.content;
 							try {
 								while (/<@!?[0-9]{17,21}>/.test(content)) {
-									content = content.replace(/<@!?[0-9]{17,21}>/, '@' + await(bu.getUser(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true)).username);
+									content = content.replace(/<@!?[0-9]{17,21}>/, '@' + (await bu.getUser(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true)).username);
 								}
 							} catch (err) {
 								bu.logger.error(err.stack);
@@ -700,7 +699,7 @@ If you are the owner of this server, here are a few things to know.
 				type: 0
 			}).run();
 		}
-	}));
+	});
 
 	initCommands();
 	bot.connect();
@@ -785,7 +784,7 @@ function switchAvatar(forced) {
 
 var commandMessages = {};
 
-var handleDiscordCommand = async((channel, user, text, msg) => {
+var handleDiscordCommand = async function (channel, user, text, msg) {
 	let words = bu.splitInput(text);
 	if (msg.channel.guild)
 		bu.logger.command(`Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
@@ -795,11 +794,11 @@ var handleDiscordCommand = async((channel, user, text, msg) => {
 	if (msg.author.bot) {
 		return false;
 	}
-	let val = await(bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]));
+	let val = await bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]);
 	if (val) {
 		var command = text.replace(words[0], '').trim();
 		command = bu.fixContent(command);
-		var response = await(tags.processTag(msg, val, command));
+		var response = await tags.processTag(msg, val, command);
 		if (response !== 'null') {
 			bu.sendMessageToDiscord(channel.id, response);
 		}
@@ -813,7 +812,7 @@ var handleDiscordCommand = async((channel, user, text, msg) => {
 		} else {
 			if (bu.commandList.hasOwnProperty(words[0].toLowerCase())) {
 				let commandName = bu.commandList[words[0].toLowerCase()].name;
-				let val2 = await(bu.canExecuteCommand(msg, commandName));
+				let val2 = await bu.canExecuteCommand(msg, commandName);
 				if (val2[0]) {
 					executeCommand(commandName, msg, words, text);
 				}
@@ -823,9 +822,9 @@ var handleDiscordCommand = async((channel, user, text, msg) => {
 			}
 		}
 	}
-});
+};
 
-var executeCommand = async(function (commandName, msg, words, text) {
+var executeCommand = async function (commandName, msg, words, text) {
 	bu.r.table('stats').get(commandName).update({
 		uses: bu.r.row('uses').add(1),
 		lastused: bu.r.epochTime(moment() / 1000)
@@ -838,7 +837,7 @@ var executeCommand = async(function (commandName, msg, words, text) {
 	bu.commandUses++;
 	bu.commands[commandName].execute(msg, words, text);
 	return true;
-});
+};
 
 var messageLogs = [];
 var messageI = 0;
@@ -999,43 +998,48 @@ ${eval(`${commandToProcess}.toString()`)}
  * @param msg - message (Message)
  * @param text - command text (String)
  */
-var eval1 = async((msg, text) => {
+async function eval1(msg, text) {
 	if (msg.author.id === bu.CAT_ID) {
+
 		var commandToProcess = text.replace('eval ', '');
 		if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
 			commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
 		else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
 			commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
-		try {
+		function finish(res) {
 			bu.sendMessageToDiscord(msg.channel.id, `Input:
 \`\`\`js
 ${commandToProcess}
 \`\`\`
 Output:
 \`\`\`js
-${commandToProcess == '1/0' ? 1 : eval(commandToProcess)}
+${commandToProcess == '1/0' ? 1 : res}
 \`\`\``);
 			if (commandToProcess.indexOf('vars') > -1) {
 				saveVars();
 			}
-
+		}
+		toEval = `async function letsEval() {
+        ${commandToProcess}
+    }
+    letsEval().then(finish)`;
+		try {
+			eval(toEval);
 		} catch (err) {
 			bu.sendMessageToDiscord(msg.channel.id, `An error occured!
 \`\`\`js
 ${err.stack}
 \`\`\``);
 		}
-	} else {
-		bu.sendMessageToDiscord(msg.channel.id, `You don't own me!`);
 	}
-});
+};
 
 /**
  * Processes a user into the database
  * @param msg - message (Message)
  */
-var processUser = async(function (msg) {
-	let storedUser = await(bu.r.table('user').get(msg.author.id).run());
+var processUser = async function (msg) {
+	let storedUser = await bu.r.table('user').get(msg.author.id).run();
 	if (!storedUser) {
 		bu.logger.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
 		bu.r.table('user').insert({
@@ -1072,7 +1076,7 @@ var processUser = async(function (msg) {
 		}
 		bu.r.table('user').get(msg.author.id).update(newUser).run();
 	}
-});
+};
 
 
 var startTime = moment();
@@ -1116,14 +1120,14 @@ var tables = {
 	}
 };
 
-var flipTables = async((msg, unflip) => {
-	let tableflip = await(bu.guildSettings.get(msg.channel.guild.id, 'tableflip'));
+var flipTables = async function (msg, unflip) {
+	let tableflip = await bu.guildSettings.get(msg.channel.guild.id, 'tableflip');
 	if (tableflip && tableflip != 0) {
 		var seed = bu.getRandomInt(0, 3);
 		bu.sendMessageToDiscord(msg.channel.id,
 			tables[unflip ? 'unflip' : 'flip'][bu.config.general.isbeta ? 'beta' : 'prod'][seed]);
 	}
-});
+};
 
 function reloadInterface() {
 	webInterface.kill();
