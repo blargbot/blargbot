@@ -17,9 +17,13 @@ e.hidden = false;
 e.usage = '';
 e.info = '';
 
-e.execute = (msg) => {
+e.execute = async function (msg) {
     if (msg.author.id === bu.CAT_ID) {
-        bu.send(msg.channel.id, 'Ah! You\'ve killed me! D:');
+        await bu.r.table('vars').get('restart').replace({
+          varname: 'restart',
+          varvalue: msg.channel.id  
+        }).run();
+        await bu.send(msg.channel.id, 'Ah! You\'ve killed me! D:');
         exec('pm2 restart 0');
     }
 };

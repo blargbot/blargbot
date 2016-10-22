@@ -257,6 +257,11 @@ e.init = (blargutil, v, em) => {
 
 	bot.on('ready', async function () {
 		bu.logger.init('Ready!');
+		let restart = await bu.r.table('vars').get('restart').run();
+		if (restart && restart.varvalue) {
+			bu.send(restart.varvalue, 'Ok I\'m back.');
+			bu.r.table('vars').get('restart').delete().run();
+		}
 
 		let guilds = (await bu.r.table('guild').withFields('guildid').run()).map(g => g.guildid);
 		//console.dir(guilds);
