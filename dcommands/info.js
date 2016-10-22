@@ -31,6 +31,9 @@ ${pad('RAM:', 10)} ${bu.getMemoryUsage()}MiB
 ${pad('Uptime:', 10)} ${bu.createTimeDiffString(moment(), bu.startTime)}
 ${pad('Version:', 10)} ${bu.VERSION}
 \`\`\`
+
+Special thanks to my patron, Nex! :thumbsup:
+
 For commands, do \`help\`. For information about supporting me, do \`donate\``);
     } catch (err) {
         bu.logger.error(err);
