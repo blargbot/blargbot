@@ -402,18 +402,17 @@ function getUserFilePath(name) {
 }
 
 function createDefaultUserFile(name) {
-    var defaultContents = '{' +
-        `'name': '${name}', ` +
-        `'read': ${true}, ` +
-        `'number': 0, ` +
-        `'notify': ${true}, ` +
-        `'seen': '${moment().format()}', ` +
-        `mail': {}` +
-        `}`;
+    var defaultContents = {
+        name: name,
+        read: true,
+        number: 0,
+        notify: true,
+        seen: moment().format(),
+        mail: {}
+    };
 
     bu.logger.irc(defaultContents);
-    var jsonFile = JSON.parse(defaultContents);
-    saveUserFile(name, jsonFile);
+    saveUserFile(name, defaultContents);
 }
 
 function saveUserFile(name, file) {
