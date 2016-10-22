@@ -1007,6 +1007,7 @@ async function eval1(msg, text) {
 		else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
 			commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
 		function finish(res) {
+			bu.logger.debug(res);
 			bu.sendMessageToDiscord(msg.channel.id, `Input:
 \`\`\`js
 ${commandToProcess}
@@ -1020,9 +1021,10 @@ ${commandToProcess == '1/0' ? 1 : res}
 			}
 		}
 		toEval = `async function letsEval() {
-        ${commandToProcess}
+		${commandToProcess}
     }
     letsEval().then(finish)`;
+		bu.logger.debug(toEval);
 		try {
 			eval(toEval);
 		} catch (err) {
