@@ -12,7 +12,7 @@ e.init = (Tbot, blargutil) => {
 };
 e.requireCtx = require;
 
-e.isCommand = false;
+e.isCommand = true;
 e.hidden = false;
 e.usage = '';
 e.info = '';
@@ -24,6 +24,6 @@ e.execute = async function (msg) {
           varvalue: msg.channel.id  
         }).run();
         await bu.send(msg.channel.id, 'Ah! You\'ve killed me! D:');
-        exec('pm2 restart 0');
+        process.exit();
     }
 };
