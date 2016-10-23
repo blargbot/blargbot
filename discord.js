@@ -1011,24 +1011,27 @@ async function eval1(msg, text) {
 			commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
 		else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
 			commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
-		function finish(res) {
-			bu.logger.debug(res);
-			bu.sendMessageToDiscord(msg.channel.id, `Input:
-\`\`\`js
-${commandToProcess}
-\`\`\`
-Output:
-\`\`\`js
-${commandToProcess == '1/0' ? 1 : res}
-\`\`\``);
-			if (commandToProcess.indexOf('vars') > -1) {
-				saveVars();
-			}
-		}
+		
+//		let splitCom = commandToProcess.split('\n');
+	//	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
+//		commandToProcess = splitCom.join('\n');
 		toEval = `async function letsEval() {
 		${commandToProcess}
     }
-    letsEval().then(finish)`;
+    letsEval().then(m => {
+		bu.logger.debug(util.inspect(m, {depth: 1}));
+		bu.sendMessageToDiscord(msg.channel.id, \`Input:
+\\\`\\\`\\\`js
+\${commandToProcess}
+\\\`\\\`\\\`
+Output:
+\\\`\\\`\\\`js
+\${commandToProcess == '1/0' ? 1 : m}
+\\\`\\\`\\\`\`);
+			if (commandToProcess.indexOf('vars') > -1) {
+				saveVars();
+			}
+	})`;
 		bu.logger.debug(toEval);
 		try {
 			eval(toEval);

@@ -18,7 +18,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'farewell [message]';
 e.info = 'Sets a farewell message for when users leave.';
-e.longinfo = `<p>Sets a farewell message for any user who leaves your guild. You can use the <a href="tags.html">tagging
+e.longinfo = `<p>Sets a farewell message for any user who leaves your guild. You can use the <a href="/tags/">tagging
         system</a>
         for more customization. For
         example:</p>

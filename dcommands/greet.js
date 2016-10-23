@@ -18,7 +18,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'greet [message]';
 e.info = 'Sets a greeting for when users join.';
-e.longinfo = `<p>Sets a greeting for any new user who joins your guild. You can use the <a href="tags.html">tagging system</a>
+e.longinfo = `<p>Sets a greeting for any new user who joins your guild. You can use the <a href="/tags/">tagging system</a>
         for more customization. For
         example:</p>
 
