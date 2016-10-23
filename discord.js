@@ -29,8 +29,8 @@ e.requireCtx = require;
  * Initializes every command found in the dcommands directory
  * - hooray for modules!
  */
-function initCommands() {
-
+async function initCommands() {
+	await bu.r.table('command').delete().run();
 	var fileArray = fs.readdirSync(path.join(__dirname, 'dcommands'));
 	for (var i = 0; i < fileArray.length; i++) {
 
