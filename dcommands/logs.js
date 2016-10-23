@@ -173,15 +173,19 @@ e.execute = async function (msg, words) {
                 );
         })
         .limit(numberOfMessages).run();
-    let key = await insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages);
-    bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
+    if (thing.length == 0) {
+        bot.editMessage(msg2.channel.id, msg2.id, 'No results found!');
+    } else {
+        let key = await insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages);
+        bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
+    }
 };
 
 var insertQuery = async function (msg, channel, users, types, firstTime, numberOfMessages) {
     async function attemptInsert() {
         var key = randomString(6);
         bu.logger.debug(key);
-        let exists = await bu.r.table('logs').get('key');
+        let exists = await bu.r.table('logs').get(key);
         if (exists) {
             return attemptInsert;
         }
