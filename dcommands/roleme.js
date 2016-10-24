@@ -24,7 +24,7 @@ specific channels. The roleme command has three subcommands:</p>
 <li>add: adds a roleme to the guild. Just follow the instructions.</li>
 <li>remove: returns a list of rolemes so you can choose one to remove.<\li><\\ul>`;
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (words[1]) {
         let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
         let roleme = storedGuild.roleme;
@@ -59,12 +59,8 @@ e.execute = async function(msg, words) {
                     break;
                 }
                 let channelList = [];
-                res = (await bu.awaitMessage(msg, 'Mention all the channels that this will apply to (in #<channelname> format)'));
+                res = (await bu.awaitMessage(msg, 'Mention all the channels that this will apply to (in #<channelname> format). Alternatively, don\'t mention any channels to make it apply everywhere.'));
                 channelList = res.channelMentions;
-                if (channelList.length == 0) {
-                    await bu.send(msg.channel.id, 'You must have at least one channel!');
-                    break;
-                }
                 let activationMessage = (await bu.awaitMessage(msg, 'Type the sentence that users should type in order for this action to happen.')).content;
                 let caseSensitive = (await bu.awaitMessage(msg, 'Type `1` if the previous sentence should be case-sensitive. Type anything else to make it match regardless of capitalization.'));
                 caseSensitive = caseSensitive.content == '1' ? true : false;
@@ -95,11 +91,17 @@ e.execute = async function(msg, words) {
                     rolemeString += `${i + 1}:\n${rolemeList[i]}\n`;
                 }
                 if (rolemeString.length > 2000) rolemeString = rolemeString.substring(0, 1934) + '...';
-                rolemeString += '```\nPlease type the number of the roleme you wish to remove.';
-                let resMsg = (await bu.awaitMessage(msg, rolemeString, m => !isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length)).content;
-                roleme.splice(parseInt(resMsg) - 1, 1);
+                rolemeString += '```\nPlease type the number of the roleme you wish to remove, or `c` to cancel.';
+                let resMsg = (await bu.awaitMessage(msg, rolemeString, m => (!isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length)  || m.content.toLowerCase() == 'c'));
+                if (resMsg.content.toLowerCase() == 'c') {
+                    await bu.send(msg.channel.id, 'Remove canceled!');
+                    break;
+                }
+                roleme.splice(parseInt(resMsg.content) - 1, 1);
                 storedGuild.roleme = roleme;
                 await bu.r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
+                let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
+                await bot.deleteMessage(delmsg.channel.id, delmsg.id);
                 await bu.send(msg.channel.id, 'Done! :ok_hand:');
                 break;
             case 'list':

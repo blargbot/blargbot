@@ -521,7 +521,7 @@ If you are the owner of this server, here are a few things to know.
 			}
 
 			if (storedGuild && storedGuild.roleme) {
-				let roleme = storedGuild.roleme.filter(m => m.channels.indexOf(msg.channel.id) > -1);
+				let roleme = storedGuild.roleme.filter(m => m.channels.indexOf(msg.channel.id) > -1 || m.channels.length == 0);
 				if (roleme.length > 0) {
 					for (let i = 0; i < roleme.length; i++) {
 						let caseSensitive = roleme[i].casesensitive;
@@ -1011,10 +1011,10 @@ async function eval1(msg, text) {
 			commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
 		else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
 			commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
-		
-//		let splitCom = commandToProcess.split('\n');
-	//	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
-//		commandToProcess = splitCom.join('\n');
+
+		//		let splitCom = commandToProcess.split('\n');
+		//	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
+		//		commandToProcess = splitCom.join('\n');
 		toEval = `async function letsEval() {
 		${commandToProcess}
     }
