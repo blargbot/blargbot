@@ -70,7 +70,7 @@ function getXkcd(channel, words) {
 *Comic #${output.num}*
 ${output.alt}`;
             bu.sendFile(channel, message, output.img);
-            xkcdMax = output.num;
+            //xkcdMax = output.num;
             //getXkcd(channel, words, bot);
             //sendMessageToDiscord(channel, output.file, bot);
         });
