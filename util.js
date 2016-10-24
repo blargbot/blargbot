@@ -149,9 +149,9 @@ bu.awaitMessage = async function(msg, message, callback) {
             });
             bu.awaitMessages[msg.channel.id][msg.author.id].timer = setTimeout(() => {
                 bu.emitter.removeAllListeners(event);
-                bu.send(msg.channel.id, 'Query canceled after 60 seconds.');
+                bu.send(msg.channel.id, 'Query canceled after 5 minutes.');
                 reject('Request timed out.');
-            }, 60000);
+            }, 300000);
         });
     }
     return await registerEvent();
