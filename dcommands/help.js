@@ -93,7 +93,7 @@ ${bu.commandList[words[1]].info}`;
             let sendString = `${doDM ? `Here are your commands ${msg.channel.guild ? 'for ' + msg.channel.guild.name : ''}.\n` : ''}${commandsString}\n${!msg.channel.guild
                 ? 'Not all of these bu.commands work in DMs.\n'
                 : ''
-                }For more information about bu.commands, do \`help <commandname>\` or visit https://blargbot.xyz/commands`;
+                }For more information about commands, do \`help <commandname>\` or visit https://blargbot.xyz/commands`;
 
             if (doDM) {
                 bot.getDMChannel(msg.author.id).then(pc => {
