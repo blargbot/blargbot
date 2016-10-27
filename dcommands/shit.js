@@ -1,13 +1,13 @@
 var e = module.exports = {};
-var bu;
+
 var gm = require('gm');
 var path = require('path');
 var moment = require('moment');
 var util = require('util');
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
 
@@ -23,7 +23,7 @@ e.longinfo = `<p>Tells everyone what's shit. Use <code>-p</code> as the first ar
 
 e.execute = (msg, words) => {
     var shitText = 'Your favourite anime';
-    bu.logger.debug(util.inspect(words));
+    logger.debug(util.inspect(words));
     var plural = false;
     if (words.length > 1) {
         words.shift();
@@ -36,7 +36,7 @@ e.execute = (msg, words) => {
     var timestamp = moment().format().replace(/:/gi, '_');
     //  gm(path.join(__dirname, '..', 'img', 'SHIT.png'))
     ///      .write(path.join(__dirname, '..', 'img', 'generated', 'SHIT.png'), (err) => {
-    //          bu.logger.(err)
+    //          logger.(err)
     //      })
     bot.sendChannelTyping(msg.channel.id);
     gm()
@@ -56,7 +56,7 @@ e.execute = (msg, words) => {
         })
         .write(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`), function (err) {
             if (err) throw err;
-            bu.logger.debug(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`));
+            logger.debug(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`));
             gm(path.join(__dirname, '..', 'img', `SHIT${plural ? 'S' : ''}.png`))
                 .composite(path.join(__dirname, '..', `img/generated/shitCaption-${timestamp}.png`))
                 .geometry('+810+31')

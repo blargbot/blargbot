@@ -1,12 +1,12 @@
 // START: Do not touch
 var e = module.exports = {};
-var bu;
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
     e.category = bu.TagType.COMPLEX;
 };
 e.requireCtx = require;
@@ -51,7 +51,7 @@ e.execute = async function(params) {
     var replaceContent = false;
     if (params.args[1]) {
         let newStuff = bu.processSpecial(params.args[1], true);
-        bu.logger.debug('Thonkang', params.args, newStuff);
+        logger.debug('Thonkang', params.args, newStuff);
         replaceString = await bu.processTag(params.msg
             , params.words
             , newStuff

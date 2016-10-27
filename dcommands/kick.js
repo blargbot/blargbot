@@ -1,11 +1,11 @@
 var e = module.exports = {};
-var bu;
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
 
 
     e.category = bu.CommandType.ADMIN;
@@ -34,7 +34,7 @@ e.execute = async function(msg, words) {
     if (words[1]) {
         var user = await bu.getUser(msg, words[1]);
         if (!user) {
-            bu.logger.debug('There was no user.');
+            logger.debug('There was no user.');
             return;
         }
         var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));

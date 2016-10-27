@@ -1,13 +1,13 @@
 var e = module.exports = {};
-var bu;
+
 var tags = require('./../tags');
 
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
 
     e.category = bu.CommandType.COMMANDER;

@@ -1,13 +1,13 @@
 var e = module.exports = {};
-var bu;
 
 
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
 
     e.category = bu.TagType.COMPLEX;
 };

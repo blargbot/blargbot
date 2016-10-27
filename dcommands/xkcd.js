@@ -1,11 +1,11 @@
 var e = module.exports = {};
-var bu;
+
 var http = require('http');
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
 
@@ -32,7 +32,7 @@ function getXkcd(channel, words) {
                 body += chunk;
             });
             res.on('end', function () {
-                bu.logger.debug(body);
+                logger.debug(body);
                 var output = JSON.parse(body);
                 xkcdMax = output.num;
                 getXkcd(channel, words);

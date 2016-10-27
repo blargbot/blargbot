@@ -1,12 +1,12 @@
-var bu;
+
 var moment = require('moment');
 
 var e = module.exports = {};
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
 
@@ -37,5 +37,5 @@ e.execute = (msg) => {
     bot.createMessage(msg.channel.id, message).then((msg2) => {
         bot.editMessage(msg2.channel.id, msg2.id, `Pong! (${msg2.timestamp - msg.timestamp}ms)\u202e`);
         return msg2;
-    }).catch(err => bu.logger.error(err.stack));
+    }).catch(err => logger.error(err.stack));
 };

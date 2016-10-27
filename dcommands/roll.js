@@ -1,10 +1,10 @@
 var e = module.exports = {};
-var bu;
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
 
@@ -36,7 +36,7 @@ e.execute = (msg, words) => {
         if (words[1].indexOf('cat') > -1) {
             var catUrl;
             var seed = bu.getRandomInt(0, 3);
-            bu.logger.debug(`The cat chosen is ${seed} `);
+            logger.debug(`The cat chosen is ${seed} `);
             switch (seed) {
                 case 0:
                     catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';

@@ -1,5 +1,5 @@
 var e = module.exports = {};
-var bu;
+
 var fs = require('fs');
 var util = require('util');
 var path = require('path');
@@ -15,11 +15,11 @@ var SC = require('node-soundcloud');
 var queue = {};
 var current = {};
 var cache = {};
-var bot;
 
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
     voiceConnections = bot.voiceConnections;
     init(bot, voiceConnections, voiceSettings);
     e.category = bu.CommandType.MUSIC;
@@ -101,7 +101,7 @@ e.execute = (msg, words) => {
             };
         }
         voiceSettings[msg.channel.guild.id].currentChannel = msg.channel.id;
-        bu.logger.music(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} (${msg.channel.id}> ${msg.author.username} (${msg.author.id})> ${msg.content}`);
+        logger.music(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} (${msg.channel.id}> ${msg.author.username} (${msg.author.id})> ${msg.content}`);
         //var command = msg.content.replace('=3', '').trim();
         //var words = command.split(' ');
         //  words.shift()
@@ -173,7 +173,7 @@ Commands:
                 }
                 break;
             case 'skip':
-                bu.logger.music('skipping');
+                logger.music('skipping');
                 if (voiceConnections.get(msg.channel.guild.id).ready) {
                     //     if (queue.hasOwnProperty(msg.channel.guild.id)) {
                     if (words[0] == 'force' && bu.hasPerm(msg, 'Bot Commander')) {
@@ -214,7 +214,7 @@ Commands:
                 if (words[0]) {
                     var message = '';
                     var newVolume = parseInt(words[0]);
-                    bu.logger.music(newVolume);
+                    logger.music(newVolume);
 
                     if (newVolume > 100) {
                         newVolume = 100;
@@ -261,30 +261,30 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
                                 });
                                 voice.on('connect', () => {
                                     try {
-                                        bu.logger.music(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                        logger.music(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
                                     } catch (err) {
-                                        bu.logger.error(err);
+                                        logger.error(err);
                                     }
                                 });
                                 voice.on('ready', () => {
                                     try {
-                                        bu.logger.music(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                        logger.music(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
                                     } catch (err) {
-                                        bu.logger.error(err);
+                                        logger.error(err);
                                     }
                                 });
                                 voice.on('error', (err) => {
-                                    bu.logger.error('Error: ', err);
+                                    logger.error('Error: ', err);
                                 });
                                 voice.on('debug', (debug) => {
-                                    bu.logger.music('Debug: ', debug);
+                                    logger.music('Debug: ', debug);
                                 });
                                 voice.on('warn', (warn) => {
-                                    bu.logger.warn('Warning: ', warn);
+                                    logger.warn('Warning: ', warn);
                                 });
                                 voice.on('end', function () {
                                     try {
-                                        bu.logger.music(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
+                                        logger.music(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
                                         if (!bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID)) {
                                             //  sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, `An error has occured!`)
                                         } else if (queue[msg.channel.guild.id] && queue[msg.channel.guild.id].length > 0) {
@@ -304,16 +304,16 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
 
                                         }
                                     } catch (err) {
-                                        bu.logger.error(err);
+                                        logger.error(err);
                                     }
                                 });
                                 voice.on('disconnect', function () {
-                                    bu.logger.music(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
+                                    logger.music(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
                                     sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, 'Bye!');
                                 });
                             });
                         }).catch((err) => {
-                            bu.logger.error(err);
+                            logger.error(err);
                         });
 
                     } else {
@@ -347,14 +347,14 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
                     switch (words[0]) {
                         case 'shuffle':
                             for (i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                                //     bu.logger.(cache[queue[msg.channel.guild.id][i].id].name);
+                                //     logger.(cache[queue[msg.channel.guild.id][i].id].name);
                             }
-                            //   bu.logger.('------------------------------------------------------');
+                            //   logger.('------------------------------------------------------');
                             shuffle(queue[msg.channel.guild.id]);
                             for (i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                                //        bu.logger.(cache[queue[msg.channel.guild.id][i].id].name);
+                                //        logger.(cache[queue[msg.channel.guild.id][i].id].name);
                             }
-                            //    bu.logger.(util.inspect(queue[msg.channel.guild.id]))
+                            //    logger.(util.inspect(queue[msg.channel.guild.id]))
                             var suits = [':diamonds:', ':spades:', ':clubs:', ':hearts:'];
                             shuffle(suits);
                             sendMessage(msg.channel.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
@@ -392,7 +392,7 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
                                         var removed = queue[msg.channel.guild.id].splice(index, 1);
 
                                         var removedSong = cache[removed[0].id].name;
-                                        //        bu.logger.(util.inspect(removed))
+                                        //        logger.(util.inspect(removed))
                                         bu.sendMessageToDiscord(msg.channel.id, `:umbrella: Removed the song **${removedSong}** :umbrella:`);
 
                                     }
@@ -402,7 +402,7 @@ Type ${prefix ? prefix : bu.config.discord.defaultPrefix}music for music command
                             }
                             break;
                     }
-                    // bu.logger.(util.inspect(queue[msg.channel.guild.id]))
+                    // logger.(util.inspect(queue[msg.channel.guild.id]))
 
                 } else {
                     sendQueue(msg);
@@ -423,7 +423,7 @@ function sendQueue(msg) {
         var currentSong = current[msg.channel.guild.id];
         var timeDiff = moment.duration(moment().diff(moment(currentSong.start)));
         var timeLength = moment.duration(cache[currentSong.id].duration);
-        bu.logger.music(currentSong.requester);
+        logger.music(currentSong.requester);
         requesterMember = msg.channel.guild.members.get(currentSong.requester);
         requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username;
         line = `Right Now: ${cache[currentSong.id].name} [${
@@ -463,7 +463,7 @@ function createTimeString(d) {
 }
 
 function sendMessage(channel, message) {
-    //bu.logger.(message);
+    //logger.(message);
     return bu.sendMessageToDiscord(channel, message);
 }
 
@@ -493,7 +493,7 @@ ${err.stack}
 function eval2(msg, text) {
     if (msg.author.id === CAT_ID) {
         var commandToProcess = text.replace('eval2 ', '');
-        bu.logger.music(commandToProcess);
+        logger.music(commandToProcess);
         try {
             sendMessage(msg.channel.id, `\`\`\`js
 ${eval(`${commandToProcess}.toString()`)}
@@ -566,7 +566,7 @@ function init() {
     } else {
         saveCache();
     }
-    //  bu.logger.(util.inspect(keys))
+    //  logger.(util.inspect(keys))
 }
 
 function saveCache() {
@@ -595,7 +595,7 @@ function handleMusicCommand(msg, words, text, connections) {
                         part: 'snippet,contentDetails'
                     }, (err, res) => {
                         if (err) {
-                            bu.logger.music(err);
+                            logger.music(err);
                             bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                             return;
                         }
@@ -610,14 +610,14 @@ function handleMusicCommand(msg, words, text, connections) {
                     addToQueue(msg, id, cache[id].name, cache[id].duration);
             } else if (/list=(.+?)(&|$)/.test(query)) {
                 id = query.match(/list=(.+?)(&|$)/)[1];
-                bu.logger.music(id);
+                logger.music(id);
                 youtube.playlists.list({
                     key: getKey(),
                     id: id,
                     part: 'snippet,contentDetails'
                 }, (err, res) => {
                     if (err) {
-                        bu.logger.error(err);
+                        logger.error(err);
                         bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                         return;
                     }
@@ -625,7 +625,7 @@ function handleMusicCommand(msg, words, text, connections) {
                         bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
                         return;
                     }
-                    bu.logger.music(util.inspect(res));
+                    logger.music(util.inspect(res));
                     addPlaylistToQueue(msg, id, res);
                 });
             }
@@ -638,7 +638,7 @@ function handleMusicCommand(msg, words, text, connections) {
                     part: 'snippet,contentDetails'
                 }, (err, res) => {
                     if (err) {
-                        bu.logger.error(err);
+                        logger.error(err);
                         bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                         return;
                     }
@@ -663,7 +663,7 @@ function handleMusicCommand(msg, words, text, connections) {
                         part: 'contentDetails'
                     }, (err, res2) => {
                         if (err) {
-                            bu.logger.music(err);
+                            logger.music(err);
                             bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                             return;
                         }
@@ -699,8 +699,8 @@ function saveSoundcloud(msg, id, callback) {
                     body += chunk;
                 });
                 res.on('end', () => {
-                    bu.logger.music('done');
-                    //     bu.logger.(body)
+                    logger.music('done');
+                    //     logger.(body)
                     writeStream.end();
                     callback();
                 });
@@ -712,32 +712,32 @@ function saveSoundcloud(msg, id, callback) {
 }
 
 function handleSoundcloud(msg, query) {
-    //   bu.logger.(uriquery)
+    //   logger.(uriquery)
     SC.get(`/resolve?url=${encodeURIComponent(query)}`, (err, track) => {
         if (err) {
-            bu.logger.music(err);
+            logger.music(err);
             bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
             return;
         }
         var type = track.location.match(/\.com\/(.+?)\//)[1];
         var id = track.location.match(/([0-9]+)\.json/)[1];
-        bu.logger.music(type, id);
+        logger.music(type, id);
 
         switch (type) {
             case 'playlists':
                 SC.get(`/playlists/${id}`, (err, track) => {
                     if (err) {
-                        bu.logger.error(err);
+                        logger.error(err);
                         bu.sendMessageToDiscord(msg.channel.id, `No results found.`);
                         return;
                     }
-                    //     bu.logger.(track)
+                    //     logger.(track)
                     var added = 0;
                     bu.sendMessageToDiscord(msg.channel.id, 'Processing playlist...').then((msg2) => {
 
                         for (var i = 0; i < track.tracks.length; i++) {
                             var curTrack = track.tracks[i];
-                            bu.logger.music(curTrack.id);
+                            logger.music(curTrack.id);
                             if (curTrack.streamable) {
                                 if (!cache[curTrack.id]) {
                                     cache[curTrack.id] = {
@@ -761,7 +761,7 @@ function handleSoundcloud(msg, query) {
                         setTimeout(() => {
                             bot.deleteMessage(msg2.channel.id, msg2.id);
                         }, 15000);
-                        bu.logger.music('done');
+                        logger.music('done');
                         saveCache();
                         if (!current[msg.channel.guild.id]) {
                             nextSong(msg);
@@ -780,11 +780,11 @@ function handleSoundcloud(msg, query) {
             case 'tracks': //msg, id, name, duration, sc
                 SC.get(`/tracks/${id}`, (err, track) => {
                     if (err) {
-                        bu.logger.music('Nothing found');
+                        logger.music('Nothing found');
                         bu.sendMessageToDiscord(msg.channel.id, `No results found.`);
                         return;
                     }
-                    bu.logger.music(track);
+                    logger.music(track);
                     if (!track.streamable) {
                         bu.sendMessageToDiscord(msg.channel.id, `I can't play that song!`);
                         return;
@@ -830,7 +830,7 @@ function nextSong(msg) {
                     saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
                 }
             } catch (err) {
-                bu.logger.music(err);
+                logger.music(err);
             }
 
         });
@@ -839,7 +839,7 @@ function nextSong(msg) {
 
 function saveVideo(msg, channel, id, name, duration, callback) {
 
-    bu.logger.music(id);
+    logger.music(id);
     if (!id) {
         bot.createMessage(channel, `:cry: Error finding song! :cry:`);
         return;
@@ -848,16 +848,16 @@ function saveVideo(msg, channel, id, name, duration, callback) {
     if (!cache[id].sc) {
         url = `https://www.youtube.com/watch?v=${id}`;
 
-        bu.logger.music(url);
+        logger.music(url);
         var filepath = path.join(__dirname, '..', 'cache', 'yt', `${id}.mp3`);
         if (!fs.existsSync(filepath)) {
             bot.createMessage(channel, `:cd: Downloading song \`${name}\`... :cd: `).then((newmessage) => {
                 var stream = getStreamFromURL(url);
-                //  bu.logger.(util.inspect(stream));
+                //  logger.(util.inspect(stream));
                 var writeStream = fs.createWriteStream(filepath);
                 stream.pipe(writeStream);
                 stream.on('end', () => {
-                    bu.logger.music('done');
+                    logger.music('done');
                     bot.editMessage(channel, newmessage.id, `:dvd: Finished downloading \`${name}\`! :dvd:`);
                     setTimeout(() => {
                         bot.deleteMessage(channel, newmessage.id);
@@ -867,7 +867,7 @@ function saveVideo(msg, channel, id, name, duration, callback) {
                     }
                 });
                 writeStream.on('error', (err) => {
-                    bu.logger.error(err);
+                    logger.error(err);
                 });
             });
 
@@ -898,7 +898,7 @@ function saveVideo(msg, channel, id, name, duration, callback) {
 
 function addToQueue(msg, id, name, duration, sc) {
 
-    //   bu.logger.(util.inspect(connections))
+    //   logger.(util.inspect(connections))
     //  connections[msg.channel.guild.id].playResource(filepath, { inlineVolume: 0.3 })
     //   connections[msg.channel.guild.id].setVolume(0.3);
     if (!queue.hasOwnProperty(msg.channel.guild.id)) {
@@ -906,11 +906,11 @@ function addToQueue(msg, id, name, duration, sc) {
     }
     var subqueue = queue[msg.channel.guild.id];
     var init = moment.duration(0);
-    //  bu.logger.(init.hours(), init.minutes(), init.seconds())
+    //  logger.(init.hours(), init.minutes(), init.seconds())
 
     for (var i = 0; i < subqueue.length; i++) {
         init.add(moment.duration(cache[subqueue[i].id].duration));
-        bu.logger.music(i, ':', init.hours(), init.minutes(), init.seconds());
+        logger.music(i, ':', init.hours(), init.minutes(), init.seconds());
     }
     if (current[msg.channel.guild.id]) {
         init.add(moment.duration(cache[current[msg.channel.guild.id].id].duration));
@@ -962,20 +962,20 @@ function findVideo(msg, text, callback) {
             type: 'video'
         }, (err, res) => {
             if (err) {
-                bu.logger.error(err);
+                logger.error(err);
                 bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                 return;
             }
-            //     bu.logger.(util.inspect(res))
-            //      bu.logger.(util.inspect(res.items[0].id))
-            //    bu.logger.(util.inspect(res.items[0].snippet))
+            //     logger.(util.inspect(res))
+            //      logger.(util.inspect(res.items[0].id))
+            //    logger.(util.inspect(res.items[0].snippet))
             if (res.items.length == 0) {
                 bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
             } else
                 callback(res);
         });
     } catch (err) {
-        bu.logger.error(err);
+        logger.error(err);
         bu.sendMessageToDiscord(msg.channel.id, 'Something went wrong!');
     }
 }
@@ -984,7 +984,7 @@ function getStreamFromURL(url) {
     try {
         return youtubeStream(url);
     } catch (err) {
-        bu.logger.error(err);
+        logger.error(err);
     }
 }
 
@@ -992,12 +992,12 @@ function addPlaylistToQueue(msg, id, res) {
     var playlist = res.items[0];
 
     bu.sendMessageToDiscord(msg.channel.id, `Processing playlist \`${playlist.snippet.title}\` with ${playlist.contentDetails.itemCount} items.`).then((msg2) => {
-        bu.logger.music('starting processplaylist');
+        logger.music('starting processplaylist');
 
         processPlaylist([], msg.author.id, id, playlist, null, (newQueue) => {
-            bu.logger.music('processplaylist done');
+            logger.music('processplaylist done');
             saveCache();
-            //  bu.logger.(util.inspect(newQueue))
+            //  logger.(util.inspect(newQueue))
             for (var i = 0; i < newQueue.length; i++) {
                 if (!queue[msg.channel.guild.id])
                     queue[msg.channel.guild.id] = [];
@@ -1028,7 +1028,7 @@ function addPlaylistToQueue(msg, id, res) {
 
 function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, callback) {
     var onComplete = function (newsubqueue, newpagetoken) {
-        bu.logger.music('done a batch', newsubqueue.length, '/', playlist.contentDetails.itemCount);
+        logger.music('done a batch', newsubqueue.length, '/', playlist.contentDetails.itemCount);
         if (newsubqueue.length == playlist.contentDetails.itemCount) {
             callback(newsubqueue);
         } else {
@@ -1037,7 +1037,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
     };
     function doThing(err, res2) {
         if (err) {
-            bu.logger.music(err);
+            logger.music(err);
             bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
             return;
         }
@@ -1068,7 +1068,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
             }
 
             if (err) {
-                bu.logger.music(err);
+                logger.music(err);
                 bu.sendMessageToDiscord(msg.channel.id, 'An internal API error occurred.');
                 return;
             }

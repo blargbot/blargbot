@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
 
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
     e.category = bu.CommandType.ADMIN;
 };
 
@@ -39,7 +39,7 @@ e.execute = async function (msg, words) {
                     resList = res.split('\n');
                     for (let i = 0; i < resList.length; i++) {
                         let role = await bu.getRole(msg, resList[i]);
-                        // bu.logger.debug(role);
+                        // logger.debug(role);
                         if (role)
                             addList.push(role.id);
                     }
@@ -64,7 +64,7 @@ e.execute = async function (msg, words) {
                 let activationMessage = (await bu.awaitMessage(msg, 'Type the sentence that users should type in order for this action to happen.')).content;
                 let caseSensitive = (await bu.awaitMessage(msg, 'Type `1` if the previous sentence should be case-sensitive. Type anything else to make it match regardless of capitalization.'));
                 caseSensitive = caseSensitive.content == '1' ? true : false;
-                bu.logger.debug(addList, removeList);
+                logger.debug(addList, removeList);
                 roleme.push({
                     add: addList,
                     remove: removeList,

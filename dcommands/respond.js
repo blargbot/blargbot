@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
 
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
     e.category = bu.CommandType.CAT;
 };
 
@@ -36,7 +36,7 @@ e.execute = async function(msg, words) {
                 }
                 
             }
-            bu.logger.debug(suggestion);
+            logger.debug(suggestion);
             let message = `**Hi, ${bot.users.get(suggestion.author).mention}!** You recently made this suggestion:
 
 ${suggestion.message}

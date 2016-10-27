@@ -4,15 +4,15 @@ const Eris = require('eris');
 const moment = require('moment-timezone');
 const path = require('path');
 const https = require('https');
-var bu;
-var tags = require('./tags.js');
+const tags = require('./tags.js');
 const reload = require('require-reload')(require);
 const request = require('request');
 const Promise = require('promise');
-var webInterface = require('./interface.js');
-
+const webInterface = require('./interface.js');
+var bot;
 const Cleverbot = require('cleverbot-node');
-var cleverbot = new Cleverbot();
+const website = require('./backend/main');
+const cleverbot = new Cleverbot();
 
 var e = module.exports = {}
 	, avatars
@@ -33,15 +33,14 @@ async function initCommands() {
 	await bu.r.table('command').delete().run();
 	var fileArray = fs.readdirSync(path.join(__dirname, 'dcommands'));
 	for (var i = 0; i < fileArray.length; i++) {
-
 		var commandFile = fileArray[i];
 		if (/.+\.js$/.test(commandFile)) {
 			var commandName = commandFile.match(/(.+)\.js$/)[1];
 			loadCommand(commandName);
-			bu.logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module '
+			logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module '
 				, commandName);
 		} else {
-			bu.logger.init('     Skipping non-command ', commandFile);
+			logger.init('     Skipping non-command ', commandFile);
 
 		}
 	}
@@ -54,7 +53,7 @@ async function initCommands() {
  */
 function reloadCommand(commandName) {
 	if (bu.commands[commandName]) {
-		bu.logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module '
+		logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module '
 			, commandName);
 		if (bu.commands[commandName].shutdown)
 			bu.commands[commandName].shutdown();
@@ -69,12 +68,12 @@ function reloadCommand(commandName) {
  */
 function unloadCommand(commandName) {
 	if (bu.commands[commandName]) {
-		bu.logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module '
+		logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module '
 			, commandName);
 
 		if (bu.commands[commandName].sub) {
 			for (var subCommand in bu.commands[commandName].sub) {
-				bu.logger.init(`    Unloading ${commandName}'s subcommand`
+				logger.init(`    Unloading ${commandName}'s subcommand`
 					, subCommand);
 				delete bu.commandList[subCommand];
 			}
@@ -82,7 +81,7 @@ function unloadCommand(commandName) {
 		delete bu.commandList[commandName];
 		if (bu.commands[commandName].alias) {
 			for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
-				bu.logger.init(`    Unloading ${commandName}'s alias`
+				logger.init(`    Unloading ${commandName}'s alias`
 					, bu.commands[commandName].alias[ii]);
 				delete bu.commandList[bu.commands[commandName].alias[ii]];
 			}
@@ -100,48 +99,52 @@ function loadCommand(commandName) {
 	if (bu.commands[commandName].isCommand) {
 		buildCommand(commandName);
 	} else {
-		bu.logger.init('     Skipping non-command ', commandName + '.js');
+		logger.init('     Skipping non-command ', commandName + '.js');
 	}
 }
 
 // Refactored a major part of loadCommand and reloadCommand into this
 function buildCommand(commandName) {
-	bu.commands[commandName].init(bot, bu);
-	var command = {
-		name: commandName,
-		usage: bu.commands[commandName].usage,
-		info: bu.commands[commandName].info,
-		hidden: bu.commands[commandName].hidden,
-		category: bu.commands[commandName].category
-	};
-	if (bu.commands[commandName].longinfo) {
-		bu.r.table('command').insert({
+	try {
+		bu.commands[commandName].init();
+		var command = {
 			name: commandName,
-			usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
-			info: bu.commands[commandName].longinfo,
-			type: command.category
-		}).run();
-	}
-	if (bu.commands[commandName].sub) {
-		for (var subCommand in bu.commands[commandName].sub) {
-			bu.logger.init(`    Loading ${commandName}'s subcommand`, subCommand);
-
-			bu.commandList[subCommand] = {
+			usage: bu.commands[commandName].usage,
+			info: bu.commands[commandName].info,
+			hidden: bu.commands[commandName].hidden,
+			category: bu.commands[commandName].category
+		};
+		if (bu.commands[commandName].longinfo) {
+			bu.r.table('command').insert({
 				name: commandName,
-				usage: bu.commands[commandName].sub[subCommand].usage,
-				info: bu.commands[commandName].sub[subCommand].info,
-				hidden: bu.commands[commandName].hidden,
-				category: bu.commands[commandName].category
-			};
+				usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+				info: bu.commands[commandName].longinfo,
+				type: command.category
+			}).run();
 		}
-	}
-	bu.commandList[commandName] = command;
-	if (bu.commands[commandName].alias) {
-		for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
-			bu.logger.init(`    Loading ${commandName}'s alias`
-				, bu.commands[commandName].alias[ii]);
-			bu.commandList[bu.commands[commandName].alias[ii]] = command;
+		if (bu.commands[commandName].sub) {
+			for (var subCommand in bu.commands[commandName].sub) {
+				logger.init(`    Loading ${commandName}'s subcommand`, subCommand);
+
+				bu.commandList[subCommand] = {
+					name: commandName,
+					usage: bu.commands[commandName].sub[subCommand].usage,
+					info: bu.commands[commandName].sub[subCommand].info,
+					hidden: bu.commands[commandName].hidden,
+					category: bu.commands[commandName].category
+				};
+			}
 		}
+		bu.commandList[commandName] = command;
+		if (bu.commands[commandName].alias) {
+			for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
+				logger.init(`    Loading ${commandName}'s alias`
+					, bu.commands[commandName].alias[ii]);
+				bu.commandList[bu.commands[commandName].alias[ii]] = command;
+			}
+		}
+	} catch (err) {
+		logger.error(err);
 	}
 }
 
@@ -155,12 +158,11 @@ var error = true;
  * @param topConfig - the config file (Object)
  * @param em - the event emitter (EventEmitter)
  */
-e.init = (blargutil, v, em) => {
-	bu = blargutil;
+e.init = (v, em) => {
 	VERSION = v;
 	emitter = em;
 	config = bu.config;
-	bu.logger.debug('HELLOOOOO?');
+	logger.debug('HELLOOOOO?');
 	if (fs.existsSync(path.join(__dirname, 'vars.json'))) {
 		var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json')
 			, 'utf8');
@@ -170,7 +172,7 @@ e.init = (blargutil, v, em) => {
 		saveVars();
 	}
 
-	e.bot = bot = new Eris.Client(config.discord.token, {
+	bot = new Eris.Client(config.discord.token, {
 		autoReconnect: true,
 		disableEveryone: true,
 		disableEvents: {
@@ -180,15 +182,15 @@ e.init = (blargutil, v, em) => {
 		},
 		getAllUsers: true
 	});
+	global.bot = bot;
 
-	bu.init(bot);
-	bu.bot = bot;
+	bu.init();
 	bu.config = config;
 	bu.emitter = em;
 	bu.VERSION = v;
 	bu.startTime = startTime;
 	bu.vars = vars;
-	tags.init(bot, bu);
+	tags.init();
 	webInterface.init(bot, bu);
 
 	/**
@@ -234,29 +236,28 @@ e.init = (blargutil, v, em) => {
 
 	avatars = JSON.parse(fs.readFileSync(path.join(__dirname
 		, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
-	e.bot = bot;
 
 	bot.on('debug', function (message, id) {
 		if (debug)
-			bu.logger.debug(`[${moment()
+			logger.debug(`[${moment()
 				.format(`MM/DD HH:mm:ss`)}][DEBUG][${id}] ${message}`);
 		return 'no';
 	});
 
 	bot.on('warn', function (message, id) {
 		if (warn)
-			bu.logger.warn(`[${moment()
+			logger.warn(`[${moment()
 				.format(`MM/DD HH:mm:ss`)}][WARN][${id}] ${message}`);
 	});
 
 	bot.on('error', function (err, id) {
 		if (error)
-			bu.logger.error(`[${moment()
+			logger.error(`[${moment()
 				.format(`MM/DD HH:mm:ss`)}][ERROR][${id}] ${err.stack}`);
 	});
 
 	bot.on('ready', async function () {
-		bu.logger.init('Ready!');
+		logger.init('Ready!');
 		let restart = await bu.r.table('vars').get('restart').run();
 		if (restart && restart.varvalue) {
 			bu.send(restart.varvalue, 'Ok I\'m back.');
@@ -305,7 +306,7 @@ e.init = (blargutil, v, em) => {
 
 	bot.on('guildDelete', async function (guild) {
 		postStats();
-		bu.logger.debug('removed from guild');
+		logger.debug('removed from guild');
 		bu.sendMessageToDiscord(`205153826162868225`
 			, `I was removed from the guild \`${guild
 				.name}\` (\`${guild.id}\`)!`);
@@ -334,7 +335,7 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
 
 	bot.on('guildCreate', async function (guild) {
 		postStats();
-		bu.logger.debug('added to guild');
+		logger.debug('added to guild');
 		let storedGuild = await bu.r.table('guild').get(guild.id).run();
 		if (!storedGuild || !storedGuild.active) {
 			var message = `I was added to the guild \`${guild.name}\``
@@ -380,7 +381,7 @@ If you are the owner of this server, here are a few things to know.
 				return;
 			}
 			if (msg.author.id == bot.user.id) {
-				bu.logger.output(`Message ${msg.id} was updated to '${msg.content}''`);
+				logger.output(`Message ${msg.id} was updated to '${msg.content}''`);
 			}
 			if (msg.channel.id != '204404225914961920') {
 				var nsfw = await bu.isNsfwChannel(msg.channel.id);
@@ -471,10 +472,10 @@ If you are the owner of this server, here are a few things to know.
 		if (msg.channel.id != '194950328393793536')
 			if (msg.author.id == bot.user.id) {
 				if (!isDm)
-					bu.logger.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} `
+					logger.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} `
 						+ `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
 				else
-					bu.logger.output(`PM> ${msg.channel.name} (${msg.channel.id})> `
+					logger.output(`PM> ${msg.channel.name} (${msg.channel.id})> `
 						+ `${msg.author.username}> ${msg.content} (${msg.id})`);
 			}
 		if (msg.channel.id === config.discord.channel) {
@@ -490,10 +491,10 @@ If you are the owner of this server, here are a few things to know.
 						message = `\<${msg.member.nick ? msg.member.nick : msg.author.username}\> ${msg.cleanContent}`;
 					}
 				}
-				bu.logger.output(message);
+				logger.output(message);
 				var attachUrl = '';
 				if (msg.attachments.length > 0) {
-					bu.logger.debug(util.inspect(msg.attachments[0]));
+					logger.debug(util.inspect(msg.attachments[0]));
 					attachUrl += ` ${msg.attachments[0].url}`;
 				}
 				sendMessageToIrc(message + attachUrl);
@@ -506,7 +507,7 @@ If you are the owner of this server, here are a few things to know.
 			var parsedAntiMention = parseInt(antimention);
 			if (!(parsedAntiMention == 0 || isNaN(parsedAntiMention))) {
 				if (msg.mentions.length >= parsedAntiMention) {
-					bu.logger.info('BANN TIME');
+					logger.info('BANN TIME');
 					if (!bu.bans[msg.channel.guild.id])
 						bu.bans[msg.channel.guild.id] = {};
 					bu.bans[msg.channel.guild.id][msg.author.id] = { mod: bot.user, type: 'Auto-Ban', reason: 'Mention spam' };
@@ -584,15 +585,15 @@ If you are the owner of this server, here are a few things to know.
 			var doCleverbot = false;
 			if (msg.content.startsWith(`<@${bot.user.id}>`) || msg.content.startsWith(`<@!${bot.user.id}>`)) {
 				prefix = msg.content.match(/<@!?[0-9]{17,21}>/)[0];
-				bu.logger.debug('Was a mention');
+				logger.debug('Was a mention');
 				doCleverbot = true;
 			}
 			if (msg.content.startsWith(prefix)) {
 				var command = msg.content.replace(prefix, '').trim();
-				bu.logger.command('Incoming Command:', `${prefix} ${command}`);
+				logger.command('Incoming Command:', `${prefix} ${command}`);
 				try {
 					let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
-					bu.logger.command('Was command:', wasCommand);
+					logger.command('Was command:', wasCommand);
 					if (wasCommand) {
 						if (!isDm) {
 							let deletenotif = storedGuild.settings.deletenotif;
@@ -619,7 +620,7 @@ If you are the owner of this server, here are a few things to know.
 									? msg.channel.guild.members.get(bot.user.id).nick
 									: bot.user.username;
 								var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
-								bu.logger.debug(msgToSend);
+								logger.debug(msgToSend);
 								bu.cleverbotStats++;
 								cleverbot.write(msgToSend
 									, function (response) {
@@ -640,7 +641,7 @@ If you are the owner of this server, here are a few things to know.
 						}
 					}
 				} catch (err) {
-					bu.logger.error(err.stack);
+					logger.error(err.stack);
 				}
 			} else {
 
@@ -668,7 +669,7 @@ If you are the owner of this server, here are a few things to know.
 									content = content.replace(/<@!?[0-9]{17,21}>/, '@' + (await bu.getUser(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true)).username);
 								}
 							} catch (err) {
-								bu.logger.error(err.stack);
+								logger.error(err.stack);
 							}
 							let nsfw = true;
 							if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
@@ -707,6 +708,7 @@ If you are the owner of this server, here are a few things to know.
 	});
 
 	initCommands();
+	website.init();
 	bot.connect();
 };
 
@@ -792,9 +794,9 @@ var commandMessages = {};
 var handleDiscordCommand = async function (channel, user, text, msg) {
 	let words = bu.splitInput(text);
 	if (msg.channel.guild)
-		bu.logger.command(`Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
+		logger.command(`Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
 	else
-		bu.logger.command(`Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
+		logger.command(`Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
 
 	if (msg.author.bot) {
 		return false;
@@ -856,7 +858,7 @@ var messageI = 0;
 function createLogs(channelid, msgid, times) {
 	if (messageI < times)
 		bot.getMessages(channelid, 100, msgid).then((kek) => {
-			bu.logger.info(`finished ${messageI + 1}/${times}`);
+			logger.info(`finished ${messageI + 1}/${times}`);
 			for (var i = 0; i < kek.length; i++) {
 				messageLogs.push(`${kek[i].author.username}> ${kek[i].author.id}> ${kek[i].content}`);
 			}
@@ -898,30 +900,30 @@ function postStats() {
 			'Content-Length': Buffer.byteLength(stats)
 		}
 	};
-	bu.logger.info('Posting to abal');
+	logger.info('Posting to abal');
 	var req = https.request(options, function (res) {
 		var body = '';
 		res.on('data', function (chunk) {
-			bu.logger.debug(chunk);
+			logger.debug(chunk);
 			body += chunk;
 		});
 
 		res.on('end', function () {
-			bu.logger.debug('body: ' + body);
+			logger.debug('body: ' + body);
 		});
 
 		res.on('error', function (thing) {
-			bu.logger.warn(`Result error occurred! ${thing}`);
+			logger.warn(`Result error occurred! ${thing}`);
 		});
 	});
 	req.on('error', function (err) {
-		bu.logger.warn(`Request error occurred! ${err}`);
+		logger.warn(`Request error occurred! ${err}`);
 	});
 	req.write(stats);
 	req.end();
 
 	if (!config.general.isbeta) {
-		bu.logger.info('Posting to matt');
+		logger.info('Posting to matt');
 
 		request.post({
 			'url': 'https://www.carbonitex.net/discord/data/botdata.php',
@@ -956,22 +958,22 @@ function fml(id) {
 	var req = https.request(options, function (res) {
 		var body = '';
 		res.on('data', function (chunk) {
-			bu.logger.debug(chunk);
+			logger.debug(chunk);
 			body += chunk;
 		});
 
 		res.on('end', function () {
-			bu.logger.debug('body: ' + body);
+			logger.debug('body: ' + body);
 			lastUserStatsKek = JSON.parse(body);
-			bu.logger.debug(lastUserStatsKek);
+			logger.debug(lastUserStatsKek);
 		});
 
 		res.on('error', function (thing) {
-			bu.logger.warn(`Result Error: ${thing}`);
+			logger.warn(`Result Error: ${thing}`);
 		});
 	});
 	req.on('error', function (err) {
-		bu.logger.warn(`Request Error: ${err}`);
+		logger.warn(`Request Error: ${err}`);
 	});
 	req.end();
 
@@ -985,7 +987,7 @@ function fml(id) {
 function eval2(msg, text) {
 	if (msg.author.id === bu.CAT_ID) {
 		var commandToProcess = text.replace('eval2 ', '');
-		bu.logger.debug(commandToProcess);
+		logger.debug(commandToProcess);
 		try {
 			bu.sendMessageToDiscord(msg.channel.id, `\`\`\`js
 ${eval(`${commandToProcess}.toString()`)}
@@ -1019,7 +1021,7 @@ async function eval1(msg, text) {
 		${commandToProcess}
     }
     letsEval().then(m => {
-		bu.logger.debug(util.inspect(m, {depth: 1}));
+		logger.debug(util.inspect(m, {depth: 1}));
 		bu.sendMessageToDiscord(msg.channel.id, \`Input:
 \\\`\\\`\\\`js
 \${commandToProcess}
@@ -1032,7 +1034,7 @@ Output:
 				saveVars();
 			}
 	})`;
-		bu.logger.debug(toEval);
+		logger.debug(toEval);
 		try {
 			eval(toEval);
 		} catch (err) {
@@ -1051,7 +1053,7 @@ ${err.stack}
 var processUser = async function (msg) {
 	let storedUser = await bu.r.table('user').get(msg.author.id).run();
 	if (!storedUser) {
-		bu.logger.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
+		logger.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
 		bu.r.table('user').insert({
 			userid: msg.author.id,
 			username: msg.author.username,

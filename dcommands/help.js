@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
 
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
 
 
     e.category = bu.CommandType.GENERAL;
@@ -40,7 +40,7 @@ ${bu.commandList[words[1]].info}`;
         if (msg.channel.guild) {
             storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
             let customizedCommands = storedGuild.commandperms;
-            //    bu.logger.debug(customizedCommands);
+            //    logger.debug(customizedCommands);
             for (let key in customizedCommands) {
                 if (customizedCommands[key].rolename != null)
                     for (let i = 0; i < customizedCommands[key].rolename.length; i++) {
@@ -53,8 +53,8 @@ ${bu.commandList[words[1]].info}`;
                     }
             }
         }
-        //    bu.logger.debug(modifiedCommands);
-        //   bu.logger.debug(otherCommands);
+        //    logger.debug(modifiedCommands);
+        //   logger.debug(otherCommands);
         for (var command in bu.commandList) {
             if (modifiedCommands.indexOf(command) == -1)
                 if (!bu.commandList[command].hidden) {
@@ -74,7 +74,7 @@ ${bu.commandList[words[1]].info}`;
         var onComplete = async function() {
             if (msg.channel.guild) {
                 let ccommands = storedGuild.ccommands;
-                //      bu.logger.debug(ccommands);
+                //      logger.debug(ccommands);
                 if (ccommands && Object.keys(ccommands).length > 0) {
                     var ccommandsString = 'Custom Commands:\n  ';
                     var helpCommandList = [];

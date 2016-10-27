@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
-var bot;
 
 
 
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.ADMIN;
 
@@ -30,7 +30,7 @@ e.execute = async function(msg, words) {
             }
             words.shift();
             var caseid = parseInt(words.shift());
-            bu.logger.debug(caseid);
+            logger.debug(caseid);
             let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
             let modlog = storedGuild.modlog;
             let index = latest ? modlog.length - 1 : caseid;

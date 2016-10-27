@@ -1,11 +1,11 @@
 var e = module.exports = {};
-var bu;
+
 var exec = require('child_process').exec;
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.CAT;
 };
@@ -20,7 +20,7 @@ e.info = '';
 e.execute = (msg, words, text) => {
     if (msg.author.id === bu.CAT_ID) {
         var commandToProcess = words.slice(1).join(' ');
-        bu.logger.debug(commandToProcess);
+        logger.debug(commandToProcess);
         if (commandToProcess.trim().toLowerCase() == 'pm2 restart 0'
             || commandToProcess.trim().toLowerCase() == 'pm2 reload 0'
             || commandToProcess.trim().toLowerCase() == 'pm2 start 0') {

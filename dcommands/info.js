@@ -1,11 +1,11 @@
 var e = module.exports = {};
-var bu;
+
 var moment = require('moment');
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
 };
@@ -36,7 +36,7 @@ Special thanks to my patron, Nex! :thumbsup:
 
 For commands, do \`help\`. For information about supporting me, do \`donate\``);
     } catch (err) {
-        bu.logger.error(err);
+        logger.error(err);
     }
 };
 

@@ -16,7 +16,7 @@ bu.emitter = null;
 bu.VERSION = null;
 bu.startTime = null;
 bu.vars = null;
-var logger = bu.logger = loggerModule.init();
+var logger = logger = loggerModule.init();
 logger.command('meow');
 //logger.level = 'debug';
 
@@ -100,8 +100,7 @@ bu.CommandType = {
     }
 };
 
-bu.init = (Tbot) => {
-    bu.bot = Tbot;
+bu.init = () => {
     bu.r = require('rethinkdbdash')({
         host: bu.config.db.host,
         db: bu.config.db.database,
@@ -199,9 +198,9 @@ bu.sendMessageToDiscord = function (channelId, message, file) {
     try {
         message = emoji.emojify(message);
         if (!file)
-            return bu.bot.createMessage(channelId, message).catch(err => logger.error(err.stack));
+            return bot.createMessage(channelId, message).catch(err => logger.error(err.stack));
         else
-            return bu.bot.createMessage(channelId, message, file).catch(err => logger.error(err.stack));
+            return bot.createMessage(channelId, message, file).catch(err => logger.error(err.stack));
 
     } catch (err) {
         logger.error(err.stack);
@@ -292,7 +291,7 @@ bu.getUser = async function(msg, name, quiet) {
         }
         return -thingy;
     });
-    //  bu.logger.debug(userList.map(m => m.user.username));
+    //  logger.debug(userList.map(m => m.user.username));
 
     if (userList.length == 1) {
         return userList[0].user;
@@ -324,7 +323,7 @@ ${userListString}${newUserList.length < userList.length ? `...and ${userList.len
                 return null;
             } else {
                 let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                await bu.bot.deleteMessage(delmsg.channel.id, delmsg.id);
+                await bot.deleteMessage(delmsg.channel.id, delmsg.id);
                 return newUserList[parseInt(resMsg.content) - 1].user;
             }
         } else {
@@ -365,7 +364,7 @@ bu.getRole = async function(msg, name, quiet) {
         }
         return -thingy;
     });
-    //  bu.logger.debug(userList.map(m => m.user.username));
+    //  logger.debug(userList.map(m => m.user.username));
 
     if (roleList.length == 1) {
         return roleList[0];
@@ -397,7 +396,7 @@ ${roleListString}${newRoleList.length < roleList.length ? `...and ${roleList.len
                 return null;
             } else {
                 let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                await bu.bot.deleteMessage(delmsg.channel.id, delmsg.id);
+                await bot.deleteMessage(delmsg.channel.id, delmsg.id);
                 return newRoleList[parseInt(resMsg.content) - 1];
             }
         } else {
@@ -439,7 +438,7 @@ bu.sendFile = (channelid, message, url) => {
             uri: url,
             encoding: null
         }, function (err, res, body) {
-            bu.bot.createMessage(channelid, message, {
+            bot.createMessage(channelid, message, {
                 name: filename,
                 file: body
             });
@@ -705,7 +704,7 @@ bu.splitInput = (content, noTrim) => {
             } else {
                 words.push(input[i]);
                 //   let tempWords = input[i].split('\n');
-                //    bu.logger.debug('Temp', tempWords);
+                //    logger.debug('Temp', tempWords);
                 //     for (let ii = 0; ii < tempWords.length; ii++) {
                 //        words.push(tempWords[ii] + (ii == tempWords.length - 1 ? '' : '\n'));
                 //     }
@@ -730,7 +729,7 @@ bu.splitInput = (content, noTrim) => {
     for (let i in words) {
         words[i] = words[i].replace(/\\"/g, '"').replace(/^[\s]+/g, '');
     }
-    bu.logger.debug(words);
+    logger.debug(words);
     return words;
 };
 
@@ -754,7 +753,7 @@ bu.guildSettings = {
         let storedGuild = await bu.r.table('guild').get(guildid).run();
         delete storedGuild.settings[key];
         await bu.r.table('guild').get(guildid).replace(storedGuild).run();
-        bu.logger.debug(':thonkang:');
+        logger.debug(':thonkang:');
         return;
     }
 };
@@ -788,9 +787,9 @@ bu.ccommand = {
 };
 
 bu.isNsfwChannel = async function(channelid) {
-    let guildid = bu.bot.channelGuildMap[channelid];
+    let guildid = bot.channelGuildMap[channelid];
     if (!guildid) {
-        //   bu.logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isNsfwChannel');
+        //   logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isNsfwChannel');
         return true;
     }
     let guild = await bu.r.table('guild').get(guildid).run();
@@ -798,9 +797,9 @@ bu.isNsfwChannel = async function(channelid) {
 };
 
 bu.isBlacklistedChannel = async function(channelid) {
-    let guildid = bu.bot.channelGuildMap[channelid];
+    let guildid = bot.channelGuildMap[channelid];
     if (!guildid) {
-        bu.logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
+        logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
         return false;
     }
     let guild = await bu.r.table('guild').get(guildid).run();

@@ -5,7 +5,7 @@ const path = require('path');
 const config = require('winston/lib/winston/config');
 
 e.init = () => {
-    var logger = e.logger = new (winston.Logger)({
+    var logger = e.logger = new (winston.Logger)({  
         levels: {
             uncaughterror: 0,
             error: 1,
@@ -15,10 +15,11 @@ e.init = () => {
             output: 5,
             irc: 6,
             info: 7,
-            music: 8,
-            verbose: 9,
-            debug: 10,
-            silly: 11
+            website: 8,
+            music: 9,
+            verbose: 10,
+            debug: 12,
+            silly: 12
         },
         colors: {
             error: 'red',
@@ -29,6 +30,7 @@ e.init = () => {
             debug: 'grey',
             silly: 'magenta',
             command: 'blue',
+            website: 'cyan',
             music: 'cyan',
             init: 'green',
             output: 'magenta',
@@ -102,6 +104,6 @@ e.init = () => {
             })
         ]
     });
-
+    global.logger = logger;
     return logger;
 };

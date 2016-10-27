@@ -1,11 +1,11 @@
 var e = module.exports = {};
-var bu;
+
 var wordsearch = require('wordsearch');
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
 
@@ -125,7 +125,7 @@ function initWordSearch(msg, words, size) {
             line1 += ` ${i}`;
     }
     output += line1 + (size[0] > 10 ? '\n' + line2 : '') + '\n';
-    bu.logger.debug(line1, '\n', line2);
+    logger.debug(line1, '\n', line2);
     for (i = 0; i < search.grid[0].length; i++) {
         output += '--';
     }

@@ -5,10 +5,10 @@ var Eris = require('eris');
 var e = module.exports = {};
 var db;
 var config;
-var bu;
+
 var CAT_ID = '103347843934212096';
-e.init = (blargutil, database) => {
-    bu = blargutil;
+e.init = (database) => {
+    
     db = database;
     config = bu.config;
 
@@ -22,25 +22,25 @@ e.init = (blargutil, database) => {
     });
 
     e.bot.on('ready', () => {
-        bu.logger.init('stupid cat> YO SHIT WADDUP ITS DA CAT HERE');
+        logger.init('stupid cat> YO SHIT WADDUP ITS DA CAT HERE');
     });
 
     e.bot.on('messageCreate', async function(msg) {
         var prefix = config.general.isbeta ? 'catbeta' : 'cat';
         if (msg.content.startsWith(prefix)) {
             var command = msg.content.replace(prefix, '').trim();
-            bu.logger.info('stupid cat>', msg.author.username, msg.author.id, prefix, command);
+            logger.info('stupid cat>', msg.author.username, msg.author.id, prefix, command);
             var words = command.split(' ');
             switch (words.shift().toLowerCase()) {
                 case 'ping':
                     e.bot.createMessage('What is that supposed to mean?');
                     break;
                 case 'eval':
-                    bu.logger.debug('evaling');
+                    logger.debug('evaling');
                     eval1(msg, words.join(' '));
                     break;
                 case 'eval2':
-                    bu.logger.debug('eval2ing');
+                    logger.debug('eval2ing');
                     eval2(msg, words.join(' '));
                     break;
                 case 'avatar':
@@ -57,7 +57,7 @@ e.init = (blargutil, database) => {
                         request.get(avatarUrl, function (error, response, body) {
                             if (!error && response.statusCode == 200) {
                                 let data = 'data:' + response.headers['content-type'] + ';base64,' + new Buffer(body).toString('base64');
-                                bu.logger.debug(data);
+                                logger.debug(data);
                                 var p1 = e.bot.editSelf({ avatar: data });
                                 p1.then(function () {
                                     e.bot.createMessage(msg.channel.id, ':ok_hand: Avatar set!');
@@ -72,7 +72,7 @@ e.init = (blargutil, database) => {
                     if (!position) {
                         position = 0;
                     }
-                    bu.logger.error(max);
+                    logger.error(max);
                     if (max >= 300) {
                         var diff = getRandomInt(0, 300) - 150;
                         var pos = parseInt(position) + diff;
@@ -82,7 +82,7 @@ e.init = (blargutil, database) => {
                         if (pos > max) {
                             pos -= max;
                         }
-                        bu.logger.error('Getting message at pos', pos);
+                        logger.error('Getting message at pos', pos);
                         let message = await bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(pos);
                         var messageToSend = `${message.content} ${message.attachment == 'none' ? '' :
                             message.attachment}`;
@@ -106,7 +106,7 @@ function getRandomInt(min, max) {
 function eval2(msg, text) {
     if (msg.author.id == CAT_ID) {
         var commandToProcess = text.replace('eval2 ', '');
-        bu.logger.debug(commandToProcess);
+        logger.debug(commandToProcess);
         try {
             e.bot.createMessage(msg.channel.id, `\`\`\`js
 ${eval(`${commandToProcess}.toString()`)}
@@ -121,7 +121,7 @@ ${eval(`${commandToProcess}.toString()`)}
 
 function eval1(msg, text) {
     if (msg.author.id == CAT_ID) {
-        bu.logger.debug('fucking fuck', text);
+        logger.debug('fucking fuck', text);
         var commandToProcess = text.replace('eval ', '');
         if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
             commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);

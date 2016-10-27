@@ -1,10 +1,10 @@
 var e = module.exports = {};
-var bu;
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.CAT;
 
@@ -30,7 +30,7 @@ e.execute = (msg, words) => {
         request.get(avatarUrl, function (error, response, body) {
             if (!error && response.statusCode == 200) {
                 let data = 'data:' + response.headers['content-type'] + ';base64,' + new Buffer(body).toString('base64');
-                bu.logger.debug(data);
+                logger.debug(data);
                 var p1 = bot.editSelf({ avatar: data });
                 p1.then(function () {
                     bu.sendMessageToDiscord(msg.channel.id, ':ok_hand: Avatar set!');

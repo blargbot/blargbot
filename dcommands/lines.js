@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
+
 var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
 };

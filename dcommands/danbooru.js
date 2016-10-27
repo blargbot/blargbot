@@ -1,11 +1,11 @@
 var e = module.exports = {};
-var bu;
+
 var https = require('https');
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
 
     e.category = bu.CommandType.NSFW;
@@ -28,15 +28,15 @@ e.execute = (msg, words) => {
         bu.send('230801689551175681', `**__danbooru__:** \n  **tags:** \`${tagList.join(' ')}\` \n  **user:** ${msg.author.username} (${msg.author.id}) \n  **channel:** ${msg.channel.name} (${msg.channel.id}) \n  ${msg.channel.guild ? `**guild:** ${msg.channel.guild.name} (${msg.channel.guild.id})` : ''}\n  **NSFW Channel:** ${nsfwChannel}`);
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
-                bu.logger.debug(`${i}: ${tagList[i]}`);
+                logger.debug(`${i}: ${tagList[i]}`);
 
                 tagList[i] = tagList[i].toLowerCase();
             }
         //  listylist = tagList;
-        //    bu.logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+        //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
-                //        bu.logger.(kek); 
+                //        logger.(kek); 
                 bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage);
 
                 return;
@@ -49,7 +49,7 @@ e.execute = (msg, words) => {
         var url = '/posts.json?limit=' + 50 + '&tags=' + query;
         var message = '';
 
-        bu.logger.debug('url: ' + url);
+        logger.debug('url: ' + url);
         var options = {
             hostname: 'danbooru.donmai.us',
             method: 'GET',
@@ -82,7 +82,7 @@ e.execute = (msg, words) => {
                                 }
                             }
                         }
-                    bu.logger.debug(urlList.length);
+                    logger.debug(urlList.length);
                     if (urlList.length == 0) {
                         bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
                         return;
@@ -92,13 +92,13 @@ e.execute = (msg, words) => {
                         if (urlList.length > 0) {
                             var choice = bu.getRandomInt(0, urlList.length - 1);
                             message += urlList[choice] + '\n';
-                            bu.logger.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
+                            logger.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
                             urlList.splice(choice, 1);
                         }
                     }
                     bu.sendMessageToDiscord(msg.channel.id, message);
                 } catch (err) {
-                    bu.logger.error(err.stack);
+                    logger.error(err.stack);
                 }
             });
         });

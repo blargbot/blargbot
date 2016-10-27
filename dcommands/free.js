@@ -2,14 +2,9 @@ var gm = require('gm');
 var path = require('path');
 var fs = require('fs');
 var moment = require('moment');
-var bu;
-var bot;
 
 var e = module.exports = {};
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
-
+e.init = () => {
     e.category = bu.CommandType.GENERAL;
 };
 e.requireCtx = require;
@@ -39,7 +34,7 @@ e.execute = function (msg, words, text) {
         cap1 = text;
     }
     var timestamp = moment().format().replace(/:/gi, '_');
-    bu.logger.info(`Generating image for text '${text}'`);
+    logger.info(`Generating image for text '${text}'`);
 
     e.generateCaption(timestamp, cap1, () => {
         e.generateLowerCaption(timestamp, cap2, () => {
@@ -50,7 +45,7 @@ e.execute = function (msg, words, text) {
                             e.generateFrame(timestamp, 4, () => {
                                 e.generateFrame(timestamp, 5, () => {
                                     e.generateFinalImage(timestamp, msg.channel.id);
-                                    // bu.logger.(2, image)
+                                    // logger.(2, image)
                                     // fulfill(image);
                                 });
                             });
@@ -92,7 +87,7 @@ e.generateFinalImage = function (timestamp, channelid) {
                 fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreeCaption-${timestamp}.png`));
                 fs.unlink(path.join(__dirname, '..', `img/generated/freefreefreeLowerCaption-${timestamp}.png`));
             } catch (err) {
-                bu.logger.error(err);
+                logger.error(err);
             }
         });
 };

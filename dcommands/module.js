@@ -1,12 +1,12 @@
-var bu;
+
 var util = require('util');
 
 var e = module.exports = {};
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.CAT;
 
@@ -24,7 +24,7 @@ var confirmDiscord = false;
 e.execute = (msg, words) => {
     if (msg.author.id == bu.CAT_ID) {
         words.shift();
-        bu.logger.debug(util.inspect(words));
+        logger.debug(util.inspect(words));
         if (words.length > 1) {
             switch (words.shift().toLowerCase()) {
                 case 'reload':

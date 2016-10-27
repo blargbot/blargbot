@@ -1,13 +1,13 @@
 var e = module.exports = {};
-var bu;
+
 var util = require('util');
 var Table = require('cli-table');
 var moment = require('moment');
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.CAT;
 };
@@ -24,14 +24,14 @@ e.execute = (msg, words) => {
         bu.send(msg.channel.id, 'no');
         /*
         let query = words.slice(1).join(' ');
-        bu.logger.debug(query);
+        logger.debug(query);
         bu.db.quer//y(query, (err, rows, fields) => {
             if (err) {
                 bu.send(msg.channel.id, `Error!\n\`\`\`js\n${err.stack}\n\`\`\``);
                 return;
             } else {
                 if (rows && rows[0]) {
-                    bu.logger.debug(fields);
+                    logger.debug(fields);
                     let columns = Object.keys(rows[0]);
              //       for (let i = 0; i < columns.length; i++) {
              //           columns[i] = columns[i].toUpperCase();
@@ -54,7 +54,7 @@ e.execute = (msg, words) => {
                             } else
                                 data.push(rows[i][columns[key]]);
                         }
-                        bu.logger.debug(data);
+                        logger.debug(data);
                         table.push(data);
                     }
                     let output = `\`\`\`prolog\n${table.toString()}\n\`\`\``.replace(/\[\d\dm/g, '');

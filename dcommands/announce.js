@@ -1,10 +1,10 @@
 var e = module.exports = {};
-var bu;
+
 const moment = require('moment');
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.CAT;
 

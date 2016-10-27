@@ -1,14 +1,14 @@
 var e = module.exports = {};
-var bu;
+
 const Trello = require('node-trello');
 var t;
 const moment = require('moment');
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
     t = new Trello(bu.config.general.trellokey, bu.config.general.trellotoken);
@@ -27,7 +27,7 @@ e.execute = async function(msg, words) {
         let i = 0;
         let lastSuggestion = await bu.r.table('suggestion').orderBy({ index: bu.r.desc('id') }).limit(1).run();
         if (lastSuggestion.length > 0) i = lastSuggestion[0].id + 1;
-        bu.logger.debug(i, lastSuggestion);
+        logger.debug(i, lastSuggestion);
         if (isNaN(i)) i = 0;
 
         await bu.send('195716879237644292', `

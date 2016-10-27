@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
 
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
 
@@ -31,7 +31,7 @@ e.execute = async function(msg, words) {
         var itemid;
         switch (words[1].toLowerCase()) {
             case 'add':
-                bu.logger.debug('adding');
+                logger.debug('adding');
                 if (words.length < 3) {
                     bu.send(msg.channel.id, 'Not enough arguments given!');
                     return;
@@ -44,7 +44,7 @@ e.execute = async function(msg, words) {
                 bu.send(msg.channel.id, 'Done! :ok_hand:');
                 break;
             case 'remove':
-                bu.logger.debug('removing');
+                logger.debug('removing');
                 if (words.length < 3) {
                     bu.send(msg.channel.id, 'Not enough arguments given!');
                     return;

@@ -1,10 +1,10 @@
 var e = module.exports = {};
-var bu;
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
     e.category = bu.CommandType.ADMIN;
 };
 e.isCommand = true;
@@ -53,7 +53,7 @@ e.execute = (msg, words, text) => {
     userList.forEach(m => {
         bot.banGuildMember(msg.channel.guild.id, m, days).then(() => {
             return;
-        }).catch(bu.logger.error);
+        }).catch(logger.error);
     });
 
     bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');

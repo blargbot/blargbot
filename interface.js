@@ -3,22 +3,18 @@ const request = require('request');
 const moment = require('moment');
 const bodyParser = require('body-parser');
 
-var bu;
-
 var app;
 var e = module.exports;
-var bot;
+
 var server;
 
-e.init = (b, blargutil) => {
-    bot = b;
-    bu = blargutil;
+e.init = () => {
     app = express();
     app.use(bodyParser.json());
     server = app.listen(8081, function () {
         var host = server.address().address;
         var port = server.address().port;
-        bu.logger.init('Interface listening at http://%s:%s', host, port);
+        logger.init('Interface listening at http://%s:%s', host, port);
     });
 
     app.get('/user/:id', (req, res) => {
@@ -33,7 +29,6 @@ e.init = (b, blargutil) => {
                 bot: user.bot
             };
             res.end(checkAuth(objectToSend, req, res));
-
         } else {
             bu.r.table('user').get(req.params.id).run().then(user => {
                 if (user) {

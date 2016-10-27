@@ -1,0 +1,163 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    color: #ffffff;
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 1.50em;
+}
+
+.centre {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.container {
+    width: 600px;
+    margin: 0 auto;
+    padding: 15px 0;
+}
+
+.main-header {
+
+}
+
+/*
+.container-med {
+    width: 600px;
+    margin: 0 auto;
+    padding: 15px 0;
+}
+*/
+.container-fluid a {
+    color: #4DD0E1;
+}
+
+h2 {
+    color: #4DD0E1;
+}
+
+code, pre code {
+    color: #00ACC1;
+}
+
+.panel {
+    background-color: transparent;
+    padding: 5px;
+}
+
+.panel h2 {
+    margin-top: 0;
+}
+
+.sidebarBut {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+}
+
+.btn-primary {
+    background: #4DD0E1;
+    color: #ffffff;
+    box-shadow: none;
+    border: 0 solid transparent;
+
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+    background: #80DEEA;
+    box-shadow: none;
+    outline: none;
+    border: 0 solid transparent;
+
+}
+
+.btn-primary:active, .btn-primary.active {
+    background: #0097A7;
+    outline: none;
+    border: 0 solid transparent;
+    box-shadow: none;
+}
+
+a:hover {
+    cursor: pointer;
+}
+
+.main-btn {
+    width: 300px;
+    margin: 5px;
+}
+
+.parallax-container {
+    height: 300px;
+}
+
+.col {
+    margin-top: 10px;
+}
+
+.full {
+    width: 100%;
+    margin: auto;
+}
+
+.subbody {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+pre {
+    background-color: #CFD8DC;
+    text-wrap: normal;
+    display: block;
+    border-radius: 5px;
+}
+
+code {
+    background-color: #CFD8DC;
+    border-radius: 5px;
+    padding: 1px;
+}
+
+.block {
+    display: block;
+    overflow: auto;
+}
+
+.button-collapse {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+}
+
+#slide-out .main-brand {
+    height: 65px;
+    font-size: 18px;
+    line-height: 60px;
+}
+
+.collapsible .left {
+    width: 200px;
+}
+
+.sub-header {
+
+}
+
+.sidebar-header {
+    border-bottom: 1px solid #CFD8DC;
+}
+
+.side-nav .collapsible-header, .side-nav.fixed .collapsible-header {
+    background-color: transparent;
+    border: none;
+    line-height: inherit;
+    height: inherit;
+
+    /*padding: inherit;*/
+}

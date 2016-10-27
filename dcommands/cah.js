@@ -1,18 +1,18 @@
 var e = module.exports = {};
 var path = require('path');
 var fs = require('fs');
-var bot;
+
 var cah = {};
 var cad = {};
 var Canvas = require('canvas');
 var Image = Canvas.Image;
 var request = require('request');
-var bu;
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
     if (fs.existsSync(path.join(__dirname, '..', 'cah.json'))) {
         cah = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'cah.json'), 'utf8'));
     }
@@ -69,7 +69,7 @@ function doit(msg, words) {
     var blankCount = /.\_([^\_]|$)/g.test(blackphrase) ? blackphrase.match(/.\_([^\_]|$)/g).length : 1;
     var canvas = new Canvas(185 * (1 + blankCount), 254);
     var ctx = canvas.getContext('2d');
-    bu.logger.debug(blackphrase);
+    logger.debug(blackphrase);
     var blackcard = new Image();
     blackcard.src = fs.readFileSync(path.join(__dirname, '..', 'img', 'blackcard.png'));
     var whitecard = new Image();
@@ -88,7 +88,7 @@ function doit(msg, words) {
         while (usedCards.indexOf(whitephrase) > -1) {
             whitephrase = cardObj.white[bu.getRandomInt(0, cardObj.black.length)];
         }
-        bu.logger.debug(blackphrase);
+        logger.debug(blackphrase);
         usedCards.push(whitephrase);
         wrapText(ctx, whitephrase, 19 + ((i + 1) * (184 + 1)), 38, 144, 20);
     }
@@ -98,7 +98,7 @@ function doit(msg, words) {
         name: 'cards.png',
         file: data
     }).catch(err => {
-        bu.logger.error(err);
+        logger.error(err);
     });
 
 }

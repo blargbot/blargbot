@@ -1,20 +1,12 @@
 var e = module.exports = {};
-var blargutil;
-
-var bot;
-e.init = (Tbot, bu) => {
-    bot = Tbot;
-    blargutil = bu;
-
-    e.category = blargutil.CommandType.CAT;
+e.init = () => {
+    e.category = bu.CommandType.CAT;
 };
 e.requireCtx = require;
-
 e.isCommand = true;
-
-    e.hidden = false;
-    e.usage = '';
-    e.info = '';
+e.hidden = false;
+e.usage = '';
+e.info = '';
 
 e.execute = (msg, words) => {
     if (msg.author.id === blargutil.CAT_ID) {
@@ -44,8 +36,7 @@ e.execute = (msg, words) => {
         });
         for (i = 0; i < messages.length; i++) {
             blargutil.sendMessageToDiscord(msg.channel.id, messages[i]);
-        }
+        }   
         blargutil.sendMessageToDiscord(msg.channel.id, `${gArray.length} guilds total.`);
-
     }
 };

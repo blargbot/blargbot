@@ -1,11 +1,11 @@
 var e = module.exports = {};
-var bu;
+
 var http = require('http');
 const emoji = require('node-emoji');
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
 
@@ -52,7 +52,7 @@ e.execute = (msg, words) => {
     if (isNaN(bullets)) {
         bullets = 1;
     }
-    bu.logger.debug(bullets);
+    logger.debug(bullets);
     if (bullets == 6) {
         bu.send(msg.channel.id, 'Do you have a deathwish or something? Your revolver can only hold 6 bullets, that\'s guaranteed death!');
         return;

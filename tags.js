@@ -1,14 +1,12 @@
 var e = module.exports = {};
-var bu;
+
 var fs = require('fs');
 var path = require('path');
 
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bu = blargutil;
-    bot = Tbot;
+
+e.init = () => {
     initTags();
 };
 
@@ -26,10 +24,10 @@ function initTags() {
             if (/.+\.js$/.test(tagFile)) {
                 var tagName = tagFile.match(/(.+)\.js$/)[1];
                 loadTag(tagName);
-                bu.logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module '
+                logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module '
                     , tagName);
             } else {
-                bu.logger.init('     Skipping non-tag ', tagFile);
+                logger.init('     Skipping non-tag ', tagFile);
             }
         }
     });
@@ -45,13 +43,13 @@ function loadTag(tagName) {
     if (bu.tags[tagName].isTag) {
         buildTag(tagName);
     } else {
-        bu.logger.init('     Skipping non-tag ', tagName + '.js');
+        logger.init('     Skipping non-tag ', tagName + '.js');
     }
 }
 
 // Refactored a major part of loadCommand and reloadCommand into this
 function buildTag(tagName) {
-    bu.tags[tagName].init(bot, bu);
+    bu.tags[tagName].init();
     var tag = {
         tagName: tagName,
         args: bu.tags[tagName].args,
@@ -76,7 +74,7 @@ e.processTag = async function(msg, contents, command, tagName, author)  {
     try {
         tagName = tagName || msg.channel.guild.id;
         author = author || msg.channel.guild.id;
-        bu.logger.debug(command);
+        logger.debug(command);
         var words = bu.splitInput(command);
 
         if (contents.split(' ')[0].indexOf('help') > -1) {
@@ -89,7 +87,7 @@ e.processTag = async function(msg, contents, command, tagName, author)  {
         contents = await bu.processTag(msg, words, contents, fallback, author, tagName);
         contents = bu.processSpecial(contents, true);
     } catch (err) {
-        bu.logger.error(err);
+        logger.error(err);
     }
     return contents;
 };
@@ -112,7 +110,7 @@ e.executeTag = async function(msg, tagName, command)  {
         var message = await e.processTag(msg, tag.content, command, tagName, tag.author);
         while (/<@!?[0-9]{17,21}>/.test(message)) {
             let match = message.match(/<@!?([0-9]{17,21})>/)[1];
-            bu.logger.debug(match);
+            logger.debug(match);
             let obtainedUser = await bu.getUser(msg, match, true);
             let name = '';
             if (obtainedUser) {

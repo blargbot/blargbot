@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
-var bot;
 
 
 
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
 
 
     e.category = bu.CommandType.ADMIN;
@@ -120,7 +120,7 @@ e.execute = async function (msg, words) {
                             channel = words[i];
                         break;
                     default:
-                        bu.logger.debug('wut');
+                        logger.debug('wut');
                         break;
                 }
             }
@@ -160,7 +160,7 @@ e.execute = async function (msg, words) {
     //if (types.length == 0) {
     //    types = [0, 1, 2];
     // }
-    bu.logger.debug(channel, users, types, order);
+    logger.debug(channel, users, types, order);
     let msg2 = await bu.send(msg.channel.id, 'Generating your logs...');
     let msgids = [msg.id, msg2.id];
     let thing = await bu.r.table('chatlogs')
@@ -184,7 +184,7 @@ e.execute = async function (msg, words) {
 var insertQuery = async function (msg, channel, users, types, firstTime, numberOfMessages) {
     async function attemptInsert() {
         var key = randomString(6);
-        bu.logger.debug(key);
+        logger.debug(key);
         let exists = await bu.r.table('logs').get(key);
         if (exists) {
             return attemptInsert;

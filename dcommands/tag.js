@@ -1,17 +1,9 @@
 var e = module.exports = {};
-var bu;
 var tags = require('./../tags');
-
-
 const moment = require('moment');
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
-
+e.init = () => {
     e.category = bu.CommandType.GENERAL;
-
 };
 e.requireCtx = require;
 
@@ -271,7 +263,7 @@ e.execute = async function(msg, words, text) {
                 if (!title)
                     title = await bu.awaitMessage(msg, tagNameMsg).content;
 
-                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@]/gi, '');
+                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
                 tag = await bu.r.table('tag').get(title).run();
                 if (tag && tag.author != msg.author.id) {
                     bu.send(msg.channel.id, `❌ You don't own this tag! ❌`);
@@ -282,9 +274,9 @@ e.execute = async function(msg, words, text) {
                     content = (await bu.awaitMessage(msg, tagContentsMsg)).content;
 
                 //    content = content.replace(/(?:^)(\s+)|(?:\n)(\s+)/g, '');
-                bu.logger.debug('First:', content, words);
+                logger.debug('First:', content, words);
                 //  content = bu.fixContent(content);
-                bu.logger.debug('Second:', content);
+                logger.debug('Second:', content);
                 await bu.r.table('tag').get(title).replace({
                     name: title,
                     author: msg.author.id,

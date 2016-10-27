@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
+
 var moment = require('moment-timezone');
 var util = require('util');
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.GENERAL;
 
@@ -25,7 +25,7 @@ e.longinfo = `    <p>Tells you the current time in the specified timezone. If ti
 
 e.execute = (msg, words) => {
     var message = `It is currently ${moment().format('LT')} where I am!`;
-    bu.logger.debug(util.inspect(words));
+    logger.debug(util.inspect(words));
     if (words.length == 2) {
         var location = words[1].split('/');
         if (location.length == 2)

@@ -1,11 +1,11 @@
 var e = module.exports = {};
-var bu;
+
 var request = require('request');
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
     e.category = bu.CommandType.GENERAL;
 };
 
@@ -47,7 +47,7 @@ e.execute = (msg, words, text) => {
             uri: url,
             encoding: null
         }, function (err, res, body) {
-            bu.logger.debug(res.headers['content-type']);
+            logger.debug(res.headers['content-type']);
             if (res.headers['content-type'] == 'text/html') {
                 bu.sendFile(msg.channel.id, '', urlStart + encodeURIComponent(404 + '.jpg'));
             } else

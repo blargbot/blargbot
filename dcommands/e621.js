@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
+
 var xml2js = require('xml2js');
 var https = require('https');
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+e.init = () => {
+    
+    
 
 
     e.category = bu.CommandType.NSFW;
@@ -30,15 +30,15 @@ e.execute = (msg, words) => {
 
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
-                bu.logger.debug(`${i}: ${tagList[i]}`);
+                logger.debug(`${i}: ${tagList[i]}`);
 
                 tagList[i] = tagList[i].toLowerCase();
             }
         // listylist = tagList;
-        //    bu.logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+        //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
-                //        bu.logger.(kek);
+                //        logger.(kek);
                 bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage);
 
                 return;
@@ -53,7 +53,7 @@ e.execute = (msg, words) => {
         var url = '/post/index.xml?limit=' + 50 + '&tags=' + query;
 
         var message = '';
-        bu.logger.debug('url: ' + url);
+        logger.debug('url: ' + url);
         var options = {
             hostname: 'e621.net',
             method: 'GET',
@@ -66,29 +66,29 @@ e.execute = (msg, words) => {
         var req = https.request(options, function (res) {
             var body = '';
             res.on('data', function (chunk) {
-                //bu.logger.(chunk);
+                //logger.(chunk);
                 body += chunk;
             });
 
             res.on('end', function () {
-                //  bu.logger.('body: ' + body);
+                //  logger.('body: ' + body);
                 //   var xml = JSON.parse(body);
                 try {
                     xml2js.parseString(body, function (err, doc) {
                         if (err != null) {
-                            bu.logger.error(err.stack);
+                            logger.error(err.stack);
                         }
                         //    parsedXml = doc;
-                        //bu.logger.('result: ' + result);
+                        //logger.('result: ' + result);
                         var urlList = [];
                         if (doc.posts.post != null)
                             for (let i = 0; i < doc.posts.post.length; i++) {
                                 var imgUrl = doc.posts.post[i].file_url[0];
-                                //    bu.logger.(imgUrl);
+                                //    logger.(imgUrl);
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                                     urlList.push(doc.posts.post[i].file_url);
                             }
-                        //    bu.logger.(util.inspect(urlList));
+                        //    logger.(util.inspect(urlList));
                         if (urlList.length == 0) {
                             bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
                             return;
@@ -101,7 +101,7 @@ e.execute = (msg, words) => {
                             if (urlList.length > 0) {
                                 var choice = bu.getRandomInt(0, urlList.length - 1);
                                 message += urlList[choice] + '\n';
-                                bu.logger.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
+                                logger.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
                                 urlList.splice(choice, 1);
                             }
                         }
@@ -109,7 +109,7 @@ e.execute = (msg, words) => {
                     });
                     // });
                 } catch (err) {
-                    bu.logger.debug(err.stack);
+                    logger.debug(err.stack);
                 }
             });
         });

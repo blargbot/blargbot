@@ -1,10 +1,10 @@
 var e = module.exports = {};
-var bu;
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
     e.category = bu.CommandType.GENERAL;
 
 };
@@ -22,7 +22,7 @@ e.execute = async function (msg) {
         if (!position) {
             position = 0;
         }
-        bu.logger.error(max);
+        logger.error(max);
         if (max >= 300) {
             var diff = bu.getRandomInt(0, 300) - 150;
             var pos = parseInt(position) + diff;
@@ -32,7 +32,7 @@ e.execute = async function (msg) {
             if (pos > max) {
                 pos -= max;
             }
-            bu.logger.error('Getting message at pos', pos);
+            logger.error('Getting message at pos', pos);
             let message = await bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(pos).run();
             var messageToSend = `${message.content} ${message.attachment == 'none' ? '' :
                 message.attachment}`;

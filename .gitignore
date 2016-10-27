@@ -26,6 +26,8 @@ out.png
 music/*
 img/avatars/*
 img/avatars-old/*
+backend/public/codemirror/*
+backend/public/fonts/*
 avatar.js
 ratelimit.js
 command.js

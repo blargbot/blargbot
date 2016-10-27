@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
 
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
     e.category = bu.CommandType.ADMIN;
 };
 
@@ -73,7 +73,7 @@ e.execute = async function(msg, words) {
                         commandName = bu.commandList[commands[i].toLowerCase()].name;
                         if (bu.commands[commandName].category == bu.CommandType.CAT
                             || bu.commands[commandName].category == bu.CommandType.MUSIC) {
-                            bu.logger.debug('no ur not allowed');
+                            logger.debug('no ur not allowed');
                         } else {
                             if (words.length == 3) {
                                 if (commandperms.hasOwnProperty(commandName)) {
@@ -110,7 +110,7 @@ e.execute = async function(msg, words) {
                         commandName = bu.commandList[commands[i].toLowerCase()].name;
                         if (bu.commands[commandName].category == bu.CommandType.CAT
                             || bu.commands[commandName].category == bu.CommandType.MUSIC) {
-                            bu.logger.debug('no ur not allowed');
+                            logger.debug('no ur not allowed');
                         } else {
                             if (words.length == 3) {
                                 if (commandperms.hasOwnProperty(commandName)) {

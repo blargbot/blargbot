@@ -1,12 +1,12 @@
 var e = module.exports = {};
-var bu;
 
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
 
     e.category = bu.CommandType.COMMANDER;
 };
@@ -62,7 +62,7 @@ blargbot&gt; Hello, User. This is a test command.
     <p>Gets basic ccommand help.</p>`;
 e.alias = ['cc'];
 e.execute = async function(msg, words, text) {
-    bu.logger.debug('Text:', text);
+    logger.debug('Text:', text);
     if (words[1]) {
         let storedTag;
         let content;

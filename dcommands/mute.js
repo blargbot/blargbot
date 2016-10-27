@@ -1,11 +1,11 @@
 var e = module.exports = {};
-var bu;
 
 
-var bot;
-e.init = (Tbot, blargutil) => {
-    bot = Tbot;
-    bu = blargutil;
+
+
+e.init = () => {
+    
+    
     e.category = bu.CommandType.ADMIN;
 
 };
@@ -30,7 +30,7 @@ e.execute = async function(msg, words, text) {
     if (!mutedrole) {
         if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
             let role = await bot.createRole(msg.channel.guild.id);
-            bu.logger.debug(role.id);
+            logger.debug(role.id);
             bot.editRole(msg.channel.guild.id, role.id, {
                 color: 16711680,
                 name: 'Muted',
@@ -39,9 +39,9 @@ e.execute = async function(msg, words, text) {
             await bu.guildSettings.set(msg.channel.guild.id, 'mutedrole', role.id);
             if (msg.channel.guild.members.get(bot.user.id).permission.json.manageChannels) {
                 var channels = msg.channel.guild.channels.map(m => m);
-                bu.logger.debug(channels.length);
+                logger.debug(channels.length);
                 for (var i = 0; i < channels.length; i++) {
-                    bu.logger.debug(`Modifying ${channels[i].name}`);
+                    logger.debug(`Modifying ${channels[i].name}`);
                     bot.editChannelPermission(channels[i].id, role.id, 0, 2048, 'role').catch(logError);
                 }
                 e.execute(msg, words, text);
@@ -103,5 +103,5 @@ e.execute = async function(msg, words, text) {
 };
 
 function logError(err) {
-    bu.logger.error(err);
+    logger.error(err);
 }
