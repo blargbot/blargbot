@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
+
 helpers.init();
 
 
@@ -50,7 +51,6 @@ e.init = () => {
             return done(null, profile);
         });
     }));
-
     app.use(session({
         secret: config.website.sessionsecret,
         resave: false,
@@ -86,7 +86,7 @@ e.init = () => {
     app.use('/tags', require('./routes/tags'));
     app.use('/logs', require('./routes/logs'));
     app.use('/dashboard', require('./routes/dashboard'));
-    
+
 
     app.use(router);
     logger.website('Website listening on :8085');
