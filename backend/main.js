@@ -85,6 +85,7 @@ e.init = () => {
     app.use('/commands', require('./routes/commands'));
     app.use('/tags', require('./routes/tags'));
     app.use('/logs', require('./routes/logs'));
+    app.use('/dashboard', require('./routes/dashboard'));
     
 
     app.use(router);

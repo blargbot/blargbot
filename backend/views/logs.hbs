@@ -87,48 +87,56 @@
 		}
 		
 		.collection-item {
-			border-bottom: 1px solid #394a52 !important;
+			/*border-bottom: 1px solid #394a52 !important;*/
+            border-bottom: 0px !important;
 		}
 		
 		.edit {
 			background-color: #593864 !important;
-			border-bottom: 1px solid #37213e !important;
+			/*border-bottom: 1px solid #37213e !important;*/
 		}
 		
 		.delete {
 			background-color: #7e3f3f !important;
-			border-bottom: 1px solid #4b2525 !important;
+		/*	border-bottom: 1px solid #4b2525 !important;*/
 			/* background-color: #753838 !important; */
 		}
+		
+		.bot {
+			border-radius: 4px;
+            height: 18px;
+            line-height: 18px;
+            padding: 0 7px 0 6px;
+            background-color: #738bd7;
+		}
+        .chip {
+            height: 24px;
+            line-height: 24px;
+        }
 	</style>
 
 	<main>
-		<p>{{hash}}</p>
-		<p>meow</p>
 		<div class="section">
-
 			<div class="row">
 				<div class="col s12 m10 offset-m1">
 					<div class="card z-depth-2 blue-grey darken-2">
 						<ul class="collection">
 							{{#each messages}}
 							<li class='collection-item avatar log {{this.type.color}}'>
-								<img src='{{this.avatar}}' alt='' class='circle backavatar'>
+								<img src='{{this.avatar}}' alt='' class='circle backavatar z-depth-1'>
 								<span class='title' style='padding-right: 5px'>{{this.username}}#{{this.userdiscrim}}</span>
-								<span class='badge white-text text-lighten-1 time'>{{this.msgtime}}</span>
-                                {{#if this.bot}}
-                                    <div class='chip'>BOT</div>
-                                {{/if}}
-                                <div class='chip'>ACTION: {{this.type.name}}</div>
-                                <div class='chip'>ID: {{this.userid}}</div>
-                                <div class='chip'>MSG ID: {{this.msgid}}</div>
-                                <blockquote>{{this.content}}</blockquote>
-                                {{#if this.attachment}}
-                                    <a href='{{this.attachment}}'>Attachment</a>
-                                {{/if}}
-                                {{#if this.mentions}}
-                                    <p>Mentions: {{this.mentions}}</p>
-                                {{/if}}
+								<span class='badge white-text text-lighten-1 time'>{{this.msgtime}}</span> {{#if this.bot}}
+								<div class='chip bot white-text z-depth-1'>BOT</div>
+								{{/if}}
+								<br>
+								<div class='chip z-depth-1'>ACTION: {{this.type.name}}</div>
+								<div class='chip z-depth-1'>ID: {{this.userid}}</div>
+								<div class='chip z-depth-1'>MSG ID: {{this.msgid}}</div>
+								<blockquote>{{this.content}}</blockquote>
+								{{#if this.attachment}}
+								<a href='{{this.attachment}}'>Attachment</a> {{/if}} {{#if this.mentions}}
+								<p>Mentions: {{this.mentions}}</p>
+								{{/if}}
 							</li>
 							{{/each}}
 						</ul>
