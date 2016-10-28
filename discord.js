@@ -438,6 +438,13 @@ If you are the owner of this server, here are a few things to know.
 	});
 
 	bot.on('messageDelete', async function (msg) {
+		if (!msg.channel) {
+			logger.info('Somebody deleted an uncached message.');
+			msg.channel = bot.getChannel(msg.channelID);
+			msg.author = {};
+			msg.mentions = [];
+			msg.attachments = [];
+		}
 		if (commandMessages[msg.channel.guild.id] && commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
 			let val = await bu.guildSettings.get(msg.channel.guild.id, 'deletenotif');
 			if (val && val != 0)
