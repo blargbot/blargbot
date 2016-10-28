@@ -163,6 +163,9 @@ e.init = (v, em) => {
 	VERSION = v;
 	emitter = em;
 	logger.debug('HELLOOOOO?');
+	process.on('unhandledRejection', (reason, p) => {
+		logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
+	});
 	if (fs.existsSync(path.join(__dirname, 'vars.json'))) {
 		var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json')
 			, 'utf8');
