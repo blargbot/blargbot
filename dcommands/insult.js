@@ -27,9 +27,9 @@ e.execute = (msg, words) => {
         }
         target = target.substring(0, target.length - 1);
     }
-    var chosenNoun = bu.config.insult.nouns[(bu.getRandomInt(0, bu.config.insult.nouns.length - 1))];
-    var chosenVerb = bu.config.insult.verbs[(bu.getRandomInt(0, bu.config.insult.verbs.length - 1))];
-    var chosenAdje = bu.config.insult.adjectives[(bu.getRandomInt(0, bu.config.insult.adjectives.length - 1))];
+    var chosenNoun = config.insult.nouns[(bu.getRandomInt(0, config.insult.nouns.length - 1))];
+    var chosenVerb = config.insult.verbs[(bu.getRandomInt(0, config.insult.verbs.length - 1))];
+    var chosenAdje = config.insult.adjectives[(bu.getRandomInt(0, config.insult.adjectives.length - 1))];
     var message = `${target}${target == 'Your' ? `` : `'s`} ${chosenNoun} ${chosenVerb} ${chosenAdje}!`;
-    bu.sendMessageToDiscord(msg.channel.id, message);
+    bu.send(msg.channel.id, message);
 };

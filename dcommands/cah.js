@@ -57,7 +57,7 @@ e.execute = (msg, words) => {
         if (cont)
             doit(msg, words);
         else
-            bu.sendMessageToDiscord(msg.channel.id, bu.config.general.nsfwMessage);
+            bu.send(msg.channel.id, config.general.nsfwMessage);
     });
 };
 
@@ -94,7 +94,7 @@ function doit(msg, words) {
     }
 
     var data = canvas.toBuffer();
-    bu.sendMessageToDiscord(msg.channel.id, ``, {
+    bu.send(msg.channel.id, ``, {
         name: 'cards.png',
         file: data
     }).catch(err => {

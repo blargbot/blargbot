@@ -31,15 +31,15 @@ e.execute = (msg, words) => {
                 bu.unbans[msg.channel.guild.id][userid] = msg.author.id;
 
                 bot.unbanGuildMember(msg.channel.guild.id, userid);
-                bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+                bu.send(msg.channel.id, ':ok_hand:');
 
                 //    bu.logAction(msg.channel.guild, user, msg.author, 'Ban')
             }
             //bot.ban
         } else {
-            bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to unban users!`);
+            bu.send(msg.channel.id, `You don't have permission to unban users!`);
         }
     } else {
-        bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to unban users!`);
+        bu.send(msg.channel.id, `I don't have permission to unban users!`);
     }
 };

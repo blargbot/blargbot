@@ -19,7 +19,6 @@ var Cleverbot = require('cleverbot-node');
 // TODO: Refactor this mess
 
 var ircUserList = {};
-var config;
 var emitter;
 
 var notifInterval;
@@ -27,7 +26,6 @@ var VERSION;
 
 e.init = (v, em) => {
     VERSION = v;
-    config = bu.config;
     emitter = em;
     var ircbot = new irc.Client(config.irc.server, config.irc.nick, {
         channels: [config.irc.channel],
@@ -202,7 +200,7 @@ function handleIrcCommand(channel, user, text) {
                 'notify, version, cat, roll, xkcd, insult, econ, reload, time');
             break;
         case 'list':
-            var userArray = bu.bot.guilds.get(bu.bot.channelGuildMap[bu.config.discord.channel]).members.filter(m => m.status != 'offline').map(m => m.user.username);
+            var userArray = bu.bot.guilds.get(bu.bot.channelGuildMap[config.discord.channel]).members.filter(m => m.status != 'offline').map(m => m.user.username);
             userArray.sort();
             sendIrcCommandMessage(channel, 'Users online on discord: ' + userArray.join(', '));
             break;

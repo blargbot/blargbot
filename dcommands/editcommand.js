@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
     e.category = bu.CommandType.ADMIN;
 };
 
@@ -14,11 +14,13 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'commandperm < list | setrole <commandname | "commandname,..."> [role name]... | setperm <commandname | "commandname,..."> [perm number] >';
+e.usage = 'editcommand < list | setrole <commandname | "commandname,..."> [role name]... | setperm <commandname | "commandname,..."> [perm number] | toggle <commandname | "commandname,...">';
 e.info = `Changes command-specific usage permissions.
-**__list__** - shows a list of modified commands (role required/perms required)
-**__setrole__** - sets the role(s) required in order to use the command(s). Set to blank to disable the custom role requirement.
-**__setperm__** - sets the permissions required in order to bypass the role requirement (requires \`permoverride\` in the settings command to be enabled). This has to be a permission number, which can be calculated at <https://discordapi.com/permissions.html>. Set to blank to disable the custom permission options.`;
+**__list__** - Shows a list of modified commands (role required/perms required)
+**__setrole__** - Sets the role(s) required in order to use the command(s). Set to blank to disable the custom role requirement.
+**__setperm__** - Sets the permissions required in order to bypass the role requirement (requires \`permoverride\` in the settings command to be enabled). This has to be a permission number, which can be calculated at <https://discordapi.com/permissions.html>. Set to blank to disable the custom 
+**__toggle__** - Enables/disables the listed commands
+permission options.`;
 e.longinfo = `<p>Changes command-specific usage permissions.</p>
 <table>
 <thead>
@@ -27,15 +29,17 @@ e.longinfo = `<p>Changes command-specific usage permissions.</p>
 </thead>
 <tbody>
 <tr><th>list</th>
-<th>shows a list of modified commands (role required/perms required)</th></tr>
+<th>Shows a list of modified commands (role required/perms required)</th></tr>
 <tr><th>setrole</th>
-<th>sets the role(s) required in order to use the command(s)</th></tr>
+<th>Sets the role(s) required in order to use the command(s)</th></tr>
 <tr><th>setperm</th>
-<th>sets the permissions required in order to bypass the role requirement (requires \`permoverride\` in the settings command to be enabled). This has to be a permission number, which can be calculated <a href="https://discordapi.com/permissions.html">here</a></th></tr>
+<th>Sets the permissions required in order to bypass the role requirement (requires \`permoverride\` in the settings command to be enabled). This has to be a permission number, which can be calculated <a href="https://discordapi.com/permissions.html">here</a></th></tr>
+<tr><th>toggle</th>
+<th>Enables/disables the listed commands</th></tr>
 </tbody>
 </table>`;
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (words.length >= 2) {
         let commandName;
         let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id);
@@ -60,6 +64,7 @@ e.execute = async function(msg, words) {
             case 'setrole':
                 if (!words[2]) {
                     bu.send(msg.channel.id, 'Not enough arguments provided!');
+                    break;
                 }
                 commands = words[2].toLowerCase().split(/\s*,\s*/);
                 toSend = '';
@@ -86,7 +91,7 @@ e.execute = async function(msg, words) {
                             }
                         }
                     } else {
-                        if (commands.length == 0) bu.send(msg.channel.id, `That's not a command!`);
+                        if (commands.length == 1) { bu.send(msg.channel.id, `That's not a command!`); break; }
                     }
                 }
                 await bu.r.table('guild').get(msg.channel.guild.id).update({
@@ -94,9 +99,44 @@ e.execute = async function(msg, words) {
                 }).run();
                 bu.send(msg.channel.id, toSend + changedCommands.join(', ') + '\n```');
                 break;
+            case 'toggle':
+                if (!words[2]) {
+                    bu.send(msg.channel.id, 'Not enough arguments provided!');
+                    break;
+                }
+                commands = words[2].toLowerCase().split(/\s*,\s*/);
+                let disabledList = [];
+                let enabledList = [];
+                for (let i = 0; i < commands.length; i++) {
+                    if (bu.commandList.hasOwnProperty(commands[i].toLowerCase())) {
+                        commandName = bu.commandList[commands[i].toLowerCase()].name;
+                        if (bu.commands[commandName].category == bu.CommandType.CAT
+                            || bu.commands[commandName].category == bu.CommandType.MUSIC) {
+                            logger.debug('no ur not allowed');
+                        } else {
+                            if (!commandperms.hasOwnProperty(commandName)) commandperms[commandName] = {};
+                            if (commandperms[commandName].disabled) {
+                                commandperms[commandName].disabled = true;
+                                disabledList.push(commandName);
+                            } else {
+                                commandperms[commandName].disabled = true;
+                                enabledList.push(commandName);
+                            }
+                        }
+                    } else {
+                        if (commands.length == 1) { bu.send(msg.channel.id, `That's not a command!`); break; }
+                    }
+                }
+                await bu.r.table('guild').get(msg.channel.guild.id).update({
+                    commandperms: commandperms
+                }).run();
+                bu.send(msg.channel.id, util.format('Commands enabled:\n```\n%s\n```\nCommands disabled:\n```\n%s\n```'
+                    , enabledList.join(', '), disabledList(', ')));
+                break;
             case 'setperm':
                 if (!words[2]) {
                     bu.send(msg.channel.id, 'Not enough arguments provided!');
+                    break;
                 }
                 commands = words[2].toLowerCase().split(/\s*,\s*/);
                 toSend = '';
@@ -129,7 +169,7 @@ e.execute = async function(msg, words) {
                             }
                         }
                     } else {
-                        if (commands.length == 0) bu.send(msg.channel.id, `That's not a command!`);
+                        if (commands.length == 1) { bu.send(msg.channel.id, `That's not a command!`); break; }
                     }
                 }
                 await bu.r.table('guild').get(msg.channel.guild.id).update({
@@ -138,7 +178,7 @@ e.execute = async function(msg, words) {
                 bu.send(msg.channel.id, toSend + changedCommands.join(', ') + '\n```');
                 break;
             default:
-                bu.send(msg.channel.id, `Unrecognized arguments provided. Please do \`b!help commandperm\` for more details.`);
+                bu.send(msg.channel.id, e.info);
                 break;
         }
     } else {

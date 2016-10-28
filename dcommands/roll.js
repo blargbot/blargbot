@@ -51,11 +51,11 @@ e.execute = (msg, words) => {
                     catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';
                     break;
             }
-            bu.sendMessageToDiscord(msg.channel.id, catUrl);
+            bu.send(msg.channel.id, catUrl);
             return;
         }
         if (words[1].indexOf('rick') > -1) {
-            bu.sendMessageToDiscord(msg.channel.id, 'http://static.celebuzz.com/uploads/2015/08/rick-roll-82415-1.gif');
+            bu.send(msg.channel.id, 'http://static.celebuzz.com/uploads/2015/08/rick-roll-82415-1.gif');
             return;
         }
         if (words[1] == 'character') {
@@ -77,7 +77,7 @@ e.execute = (msg, words) => {
                 var newtotal = total - rolls[0];
                 message = `${message.substring(0, message.length - 2)}] > ${total < 10 && total > -10 ? ` ${total}` : total} - ${rolls[0]} > ${newtotal < 10 && newtotal > -10 ? ` ${newtotal}` : newtotal}\n`;
             }
-            bu.sendMessageToDiscord(msg.channel.id, `${message}\n\`\`\``);
+            bu.send(msg.channel.id, `${message}\n\`\`\``);
 
             return;
         }
@@ -113,7 +113,7 @@ e.execute = (msg, words) => {
         message += ` + ${parseInt(words[2])} > ${newTotal}`;
     }
 
-    if (msg.channel.id !== bu.config.discord.channel) {
+    if (msg.channel.id !== config.discord.channel) {
         if (rollList.length == 1 && max == 20 && rollList[0] == 20) {
             message += `\`\`\`diff
 + NATURAL 20
@@ -124,5 +124,5 @@ e.execute = (msg, words) => {
 \`\`\``;
         }
     }
-    bu.sendMessageToDiscord(msg.channel.id, message);
+    bu.send(msg.channel.id, message);
 };

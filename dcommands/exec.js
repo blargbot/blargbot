@@ -29,7 +29,7 @@ e.execute = (msg, words, text) => {
         }
         exec(commandToProcess, function (err, stdout, stderr) {
             if (err) {
-                bu.sendMessageToDiscord(msg.channel.id, `Error!
+                bu.send(msg.channel.id, `Error!
 \`\`\`js
 ${err.stack}
 \`\`\``);
@@ -41,7 +41,7 @@ ${err.stack}
                 //  return;
             }
             message += stdout + '\n```';
-            bu.sendMessageToDiscord(msg.channel.id, message);
+            bu.send(msg.channel.id, message);
         });
     }
 };

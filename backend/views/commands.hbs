@@ -60,8 +60,7 @@
 </head>
 
 <body class="blue-grey">
-	{{#sidebar}} {{/sidebar}}
-
+	{{> sidebar}}
 
 	<a class="btn-floating btn-primary button-collapse btn-large waves-effects waves-light" data-activates="slide-out">
 		<i class="large material-icons">menu</i></a>
@@ -69,7 +68,7 @@
 	<header class="page-header">
 		<h1 class="centre">Command List</h1>
 	</header>
-
+<main>
 	<div class="section">
 		<div class="row">
 			<div class="col s12 m10 offset-m1 l8 offset-l2">
@@ -94,7 +93,7 @@
 	<div class="section">
 		{{#commands}}{{/commands}}
 	</div>
-
+</main>
 	<footer class="page-footer blue-grey darken-2">
 		<div class="section">
 			<div class="rows">

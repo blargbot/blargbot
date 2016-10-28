@@ -20,11 +20,11 @@ e.longinfo = `<p>Bans a user who isn't currently on your guild, where <code>user
 
 e.execute = (msg, words, text) => {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
-        bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to ban users!`);
+        bu.send(msg.channel.id, `I don't have permission to ban users!`);
         return;
     }
     if (!msg.member.permission.json.banMembers) {
-        bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to ban users!`);
+        bu.send(msg.channel.id, `You don't have permission to ban users!`);
         return;
     }
     let parsedList = words.splice(1).join(' ').split(/ +/);
@@ -56,7 +56,7 @@ e.execute = (msg, words, text) => {
         }).catch(logger.error);
     });
 
-    bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+    bu.send(msg.channel.id, ':ok_hand:');
 
 
     //bot.ban

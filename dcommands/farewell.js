@@ -31,12 +31,12 @@ e.execute = async function(msg, words) {
 
     if (words.length == 1) {
         bu.guildSettings.remove(msg.channel.guild.id, 'farewell').then(() => {
-            bu.sendMessageToDiscord(msg.channel.id, 'Disabled farewells');
+            bu.send(msg.channel.id, 'Disabled farewells');
         });
         return;
     }
     var farewell = words.slice(1).join(' ');
     await bu.guildSettings.set(msg.channel.guild.id, 'farewell', farewell);
-    bu.sendMessageToDiscord(msg.channel.id, `Farewell set. Simulation:
+    bu.send(msg.channel.id, `Farewell set. Simulation:
 ${await tags.processTag(msg, farewell, '')}`);
 };

@@ -17,20 +17,20 @@ e.init = () => {
  */
 function initTags() {
     var fileArray = fs.readdirSync(path.join(__dirname, 'tags'));
-    bu.r.table('rawtag').delete().run().then(() => {
-        for (var i = 0; i < fileArray.length; i++) {
+    // bu.r.table('rawtag').delete().run().then(() => {
+    for (var i = 0; i < fileArray.length; i++) {
 
-            var tagFile = fileArray[i];
-            if (/.+\.js$/.test(tagFile)) {
-                var tagName = tagFile.match(/(.+)\.js$/)[1];
-                loadTag(tagName);
-                logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module '
-                    , tagName);
-            } else {
-                logger.init('     Skipping non-tag ', tagFile);
-            }
+        var tagFile = fileArray[i];
+        if (/.+\.js$/.test(tagFile)) {
+            var tagName = tagFile.match(/(.+)\.js$/)[1];
+            loadTag(tagName);
+            logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module '
+                , tagName);
+        } else {
+            logger.init('     Skipping non-tag ', tagFile);
         }
-    });
+    }
+    //   });
 }
 
 /**
@@ -59,6 +59,7 @@ function buildTag(tagName) {
         exampleOut: bu.tags[tagName].exampleOut
     };
     bu.tagList[bu.tags[tagName].name] = tag;
+    /*
     bu.r.table('rawtag').insert({
         name: tagName,
         usage: tag.usage,
@@ -68,9 +69,10 @@ function buildTag(tagName) {
         exampleout: tag.exampleOut,
         type: bu.tags[tagName].category
     }).run();
+    */
 }
 
-e.processTag = async function(msg, contents, command, tagName, author)  {
+e.processTag = async function (msg, contents, command, tagName, author) {
     try {
         tagName = tagName || msg.channel.guild.id;
         author = author || msg.channel.guild.id;
@@ -92,15 +94,15 @@ e.processTag = async function(msg, contents, command, tagName, author)  {
     return contents;
 };
 
-e.executeTag = async function(msg, tagName, command)  {
+e.executeTag = async function (msg, tagName, command) {
     let tag = await bu.r.table('tag').get(tagName).run();
     if (!tag)
-        bu.sendMessageToDiscord(msg.channel.id, `❌ That tag doesn't exist! ❌`);
+        bu.send(msg.channel.id, `❌ That tag doesn't exist! ❌`);
     else {
         if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
             let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
             if (!nsfwChan) {
-                bu.sendMessageToDiscord(msg.channel.id, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
+                bu.send(msg.channel.id, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
                 return;
             }
         }
@@ -121,6 +123,6 @@ e.executeTag = async function(msg, tagName, command)  {
             message = message.replace(new RegExp(`<@!?${match}>`, 'g'), name);
         }
         if (message != '')
-            bu.sendMessageToDiscord(msg.channel.id, message);
+            bu.send(msg.channel.id, message);
     }
 };

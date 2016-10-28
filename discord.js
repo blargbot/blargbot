@@ -17,7 +17,6 @@ const cleverbot = new Cleverbot();
 var e = module.exports = {}
 	, avatars
 	, vars
-	, config
 	, emitter
 	, bot
 	, VERSION;
@@ -30,7 +29,7 @@ e.requireCtx = require;
  * - hooray for modules!
  */
 async function initCommands() {
-	await bu.r.table('command').delete().run();
+	//	await bu.r.table('command').delete().run();
 	var fileArray = fs.readdirSync(path.join(__dirname, 'dcommands'));
 	for (var i = 0; i < fileArray.length; i++) {
 		var commandFile = fileArray[i];
@@ -114,6 +113,7 @@ function buildCommand(commandName) {
 			hidden: bu.commands[commandName].hidden,
 			category: bu.commands[commandName].category
 		};
+		/*
 		if (bu.commands[commandName].longinfo) {
 			bu.r.table('command').insert({
 				name: commandName,
@@ -122,6 +122,7 @@ function buildCommand(commandName) {
 				type: command.category
 			}).run();
 		}
+		*/
 		if (bu.commands[commandName].sub) {
 			for (var subCommand in bu.commands[commandName].sub) {
 				logger.init(`    Loading ${commandName}'s subcommand`, subCommand);
@@ -161,7 +162,6 @@ var error = true;
 e.init = (v, em) => {
 	VERSION = v;
 	emitter = em;
-	config = bu.config;
 	logger.debug('HELLOOOOO?');
 	if (fs.existsSync(path.join(__dirname, 'vars.json'))) {
 		var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json')
@@ -171,7 +171,6 @@ e.init = (v, em) => {
 		vars = {};
 		saveVars();
 	}
-
 	bot = new Eris.Client(config.discord.token, {
 		autoReconnect: true,
 		disableEveryone: true,
@@ -185,7 +184,6 @@ e.init = (v, em) => {
 	global.bot = bot;
 
 	bu.init();
-	bu.config = config;
 	bu.emitter = em;
 	bu.VERSION = v;
 	bu.startTime = startTime;
@@ -201,11 +199,11 @@ e.init = (v, em) => {
 	});
 	emitter.on('discordMessage', (message, attachment) => {
 		if (attachment)
-			bu.sendMessageToDiscord(config.discord.channel
+			bu.send(config.discord.channel
 				, message
 				, attachment);
 		else
-			bu.sendMessageToDiscord(config.discord.channel, message);
+			bu.send(config.discord.channel, message);
 	});
 
 	emitter.on('discordTopic', (topic) => {
@@ -300,14 +298,14 @@ e.init = (v, em) => {
 				author: member.user,
 				member: member
 			}, val, '');
-			bu.sendMessageToDiscord(guild.defaultChannel.id, message);
+			bu.send(guild.defaultChannel.id, message);
 		}
 	});
 
 	bot.on('guildDelete', async function (guild) {
 		postStats();
 		logger.debug('removed from guild');
-		bu.sendMessageToDiscord(`205153826162868225`
+		bu.send(`205153826162868225`
 			, `I was removed from the guild \`${guild
 				.name}\` (\`${guild.id}\`)!`);
 
@@ -315,7 +313,7 @@ e.init = (v, em) => {
 			active: false
 		}).run();
 		let channel = await bot.getDMChannel(guild.ownerID);
-		bu.sendMessageToDiscord(channel.id, `Hi!
+		bu.send(channel.id, `Hi!
 I see I was removed from your guild **${guild.name}**, and I'm sorry I wasn't able to live up to your expectations.
 If it's not too much trouble, could you please tell me why you decided to remove me, what you didn't like about me, or what you think could be improved? It would be very helpful.
 You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you for your time!`);
@@ -329,7 +327,7 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
 				author: member.user,
 				member: member
 			}, val, '');
-			bu.sendMessageToDiscord(guild.defaultChannel.id, message);
+			bu.send(guild.defaultChannel.id, message);
 		}
 	});
 
@@ -340,23 +338,23 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
 		if (!storedGuild || !storedGuild.active) {
 			var message = `I was added to the guild \`${guild.name}\``
 				+ ` (\`${guild.id}\`)!`;
-			bu.sendMessageToDiscord(`205153826162868225`, message);
+			bu.send(`205153826162868225`, message);
 			if (bot.guilds.size % 100 == 0) {
-				bu.sendMessageToDiscord(`205153826162868225`, `🎉 I'm now `
+				bu.send(`205153826162868225`, `🎉 I'm now `
 					+ `in ${bot.guilds.size} guilds! 🎉`);
 			}
 			var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you!
-- 💻 For command information, please do \`${bu.config.discord.defaultPrefix}help\`!
+- 💻 For command information, please do \`${config.discord.defaultPrefix}help\`!
 - 📢 For Bot Commander commands, please make sure you have a role titled \`Bot Commander\`.
 - 🛠 For Admin commands, please make sure you have a role titled \`Admin\`.
 If you are the owner of this server, here are a few things to know.
-- 🗨 To enable modlogging, please create a channel for me to log in and do \`${bu.config.discord.defaultPrefix}modlog\`
-- 🙈 To mark channels as NSFW, please go to them and do \`${bu.config.discord.defaultPrefix}nsfw\`.
-- ❗ To change my command prefix, please do \`${bu.config.discord.defaultPrefix}setprefix <anything>\`.
+- 🗨 To enable modlogging, please create a channel for me to log in and do \`${config.discord.defaultPrefix}modlog\`
+- 🙈 To mark channels as NSFW, please go to them and do \`${config.discord.defaultPrefix}nsfw\`.
+- ❗ To change my command prefix, please do \`${config.discord.defaultPrefix}setprefix <anything>\`.
 
-❓ If you have any questions, comments, or concerns, please do \`${bu.config.discord.defaultPrefix}suggest <suggestion>\`. Thanks!
+❓ If you have any questions, comments, or concerns, please do \`${config.discord.defaultPrefix}suggest <suggestion>\`. Thanks!
 👍 I hope you enjoy my services! 👍`;
-			bu.sendMessageToDiscord(guild.id, message2);
+			bu.send(guild.id, message2);
 			if (!storedGuild)
 				bu.r.table('guild').insert({
 					guildid: guild.id,
@@ -440,7 +438,7 @@ If you are the owner of this server, here are a few things to know.
 		if (commandMessages[msg.channel.guild.id] && commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
 			let val = await bu.guildSettings.get(msg.channel.guild.id, 'deletenotif');
 			if (val && val != 0)
-				bu.sendMessageToDiscord(msg.channel.id, `**${msg.member.nick
+				bu.send(msg.channel.id, `**${msg.member.nick
 					|| msg.author.username}** deleted their command message.`);
 			commandMessages[msg.channel.guild.id].splice(commandMessages[msg.channel.guild.id].indexOf(msg.id), 1);
 		}
@@ -564,8 +562,8 @@ If you are the owner of this server, here are a few things to know.
 			if (msg.content.toLowerCase().startsWith('blargbot')) {
 				var index = msg.content.toLowerCase().indexOf('t');
 				prefix = msg.content.substring(0, index + 1);
-			} else if (msg.content.toLowerCase().startsWith(bu.config.discord.defaultPrefix)) {
-				prefix = bu.config.discord.defaultPrefix;
+			} else if (msg.content.toLowerCase().startsWith(config.discord.defaultPrefix)) {
+				prefix = config.discord.defaultPrefix;
 			}
 
 			let blacklisted;
@@ -626,7 +624,7 @@ If you are the owner of this server, here are a few things to know.
 									, function (response) {
 										bot.sendChannelTyping(msg.channel.id);
 										setTimeout(function () {
-											bu.sendMessageToDiscord(msg.channel.id, response.message);
+											bu.send(msg.channel.id, response.message);
 										}, 1500);
 									});
 							});
@@ -807,12 +805,12 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
 		command = bu.fixContent(command);
 		var response = await tags.processTag(msg, val, command);
 		if (response !== 'null') {
-			bu.sendMessageToDiscord(channel.id, response);
+			bu.send(channel.id, response);
 		}
 		return true;
 	} else {
 		if (config.discord.commands[words[0]] != null) {
-			bu.sendMessageToDiscord(channel.id, `${
+			bu.send(channel.id, `${
 				config.discord.commands[words[0]]
 					.replace(/%REPLY/, `<@${user.id}>`)}`);
 			return true;
@@ -989,14 +987,14 @@ function eval2(msg, text) {
 		var commandToProcess = text.replace('eval2 ', '');
 		logger.debug(commandToProcess);
 		try {
-			bu.sendMessageToDiscord(msg.channel.id, `\`\`\`js
+			bu.send(msg.channel.id, `\`\`\`js
 ${eval(`${commandToProcess}.toString()`)}
 \`\`\``);
 		} catch (err) {
-			bu.sendMessageToDiscord(msg.channel.id, err.message);
+			bu.send(msg.channel.id, err.message);
 		}
 	} else {
-		bu.sendMessageToDiscord(msg.channel.id, `You don't own me!`);
+		bu.send(msg.channel.id, `You don't own me!`);
 	}
 }
 
@@ -1018,11 +1016,15 @@ async function eval1(msg, text) {
 		//	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
 		//		commandToProcess = splitCom.join('\n');
 		toEval = `async function letsEval() {
+		try {
 		${commandToProcess}
+		} catch (err) {
+			return err;
+		}
     }
     letsEval().then(m => {
 		logger.debug(util.inspect(m, {depth: 1}));
-		bu.sendMessageToDiscord(msg.channel.id, \`Input:
+		bu.send(msg.channel.id, \`Input:
 \\\`\\\`\\\`js
 \${commandToProcess}
 \\\`\\\`\\\`
@@ -1033,12 +1035,18 @@ Output:
 			if (commandToProcess.indexOf('vars') > -1) {
 				saveVars();
 			}
+			return m;
+	}).catch(err => {
+		bu.send(msg.channel.id, \`An error occured!
+\\\`\\\`\\\`js
+\${err.stack}
+\\\`\\\`\\\`\`);
 	})`;
 		logger.debug(toEval);
 		try {
 			eval(toEval);
 		} catch (err) {
-			bu.sendMessageToDiscord(msg.channel.id, `An error occured!
+			bu.send(msg.channel.id, `An error occured!
 \`\`\`js
 ${err.stack}
 \`\`\``);
@@ -1136,8 +1144,8 @@ var flipTables = async function (msg, unflip) {
 	let tableflip = await bu.guildSettings.get(msg.channel.guild.id, 'tableflip');
 	if (tableflip && tableflip != 0) {
 		var seed = bu.getRandomInt(0, 3);
-		bu.sendMessageToDiscord(msg.channel.id,
-			tables[unflip ? 'unflip' : 'flip'][bu.config.general.isbeta ? 'beta' : 'prod'][seed]);
+		bu.send(msg.channel.id,
+			tables[unflip ? 'unflip' : 'flip'][config.general.isbeta ? 'beta' : 'prod'][seed]);
 	}
 };
 

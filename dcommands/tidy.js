@@ -27,7 +27,7 @@ e.execute = (msg, words) => {
     }
     bot.purgeChannel(msg.channel.id, limit).then((num) => {
         //      (err)
-        var p2 = bu.sendMessageToDiscord(msg.channel.id, `Deleted ${num} messages.`);
+        var p2 = bu.send(msg.channel.id, `Deleted ${num} messages.`);
         p2.then(function (val) {
             setTimeout(function () {
                 //   bot.deleteMessage(msg.channel.id, msg.id).catch(err => logger.(err));
@@ -37,7 +37,7 @@ e.execute = (msg, words) => {
         return num;
     }).catch((err) => {
         if (err) {
-            bu.sendMessageToDiscord(msg.channel.id, 'I need to be able to Manage Messages to do that!');
+            bu.send(msg.channel.id, 'I need to be able to Manage Messages to do that!');
             logger.error(err);
         }
     });

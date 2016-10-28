@@ -19,7 +19,7 @@ e.info = 'Does a git pull';
 e.execute = (msg, words) => {
     if (msg.author.id === bu.CAT_ID) {
 
-        if (!bu.config.general.isbeta) {
+        if (!config.general.isbeta) {
             exec('cd /home/cat/blargjs\ngit pull origin master', (err, stdout, stderr) => {
                 var message = '```xl\n';
                 if (err) {
@@ -45,23 +45,23 @@ e.execute = (msg, words) => {
                                 break;
                         }
                     }
-                    var oldVersion = bu.config.version;
+                    var oldVersion = config.version;
                     var bits = oldVersion.split('.');
                     bits[type] = parseInt(bits[type]) + 1;
                     while (type < 2) {
                         type++;
                         bits[type] = 0;
                     }
-                    bu.config.version = bits.join('.');
-                    bu.VERSION = bu.config.version;
-                    message += `\nNow running on version \`${bu.config.version}\`!`;
+                    config.version = bits.join('.');
+                    bu.VERSION = config.version;
+                    message += `\nNow running on version \`${config.version}\`!`;
                     bu.saveConfig();
                 }
-                bu.sendMessageToDiscord(msg.channel.id, message);
+                bu.send(msg.channel.id, message);
 
             });
         } else {
-            bu.sendMessageToDiscord(msg.channel.id, `Whoa, you can't do that! This is the beta build!`);
+            bu.send(msg.channel.id, `Whoa, you can't do that! This is the beta build!`);
         }
     }
 };

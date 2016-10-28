@@ -4,13 +4,11 @@ var Eris = require('eris');
 
 var e = module.exports = {};
 var db;
-var config;
 
 var CAT_ID = '103347843934212096';
 e.init = (database) => {
     
     db = database;
-    config = bu.config;
 
     e.bot = new Eris.Client(config.catbot.token, {
         autoReconnect: true,

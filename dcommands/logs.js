@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
 
 
     e.category = bu.CommandType.ADMIN;
@@ -46,7 +46,7 @@ e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
     + '        UPDATE - Gets message edits.\n'
     + '        DELETE - Gets message deletes.\n'
     + '     -CHANNEL (-C)\n'
-    + '        <id> - The channel to get logs from. Must be on the current guild!'
+    + '        <id> - The channel to get logs from. Must be on the current guild!\n'
     + '     -USER (-U)\n'
     + '        <name or id> - Gets messages made by specific user.\n'
     + '     -ORDER (-O)\n'
@@ -177,7 +177,7 @@ e.execute = async function (msg, words) {
         bot.editMessage(msg2.channel.id, msg2.id, 'No results found!');
     } else {
         let key = await insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages);
-        bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (bu.config.general.isbeta ? 'beta' : '') + key);
+        bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key);
     }
 };
 
@@ -194,7 +194,8 @@ var insertQuery = async function (msg, channel, users, types, firstTime, numberO
             channel: channel,
             users: users,
             types: types,
-            firsttime: bu.r.expr(firstTime).toEpochTime(),
+            firsttime: bu.r.expr(firstTime),
+            lasttime: bu.r.now(),
             limit: numberOfMessages
         }).run();
         return key;

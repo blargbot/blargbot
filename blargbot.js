@@ -47,24 +47,23 @@ console.log = function () {
 /** CONFIG STUFF **/
 if (fs.existsSync(path.join(__dirname, 'config.json'))) {
     var configFile = fs.readFileSync(path.join(__dirname, 'config.json'), 'utf8');
-    bu.config = JSON.parse(configFile);
+    global.config = JSON.parse(configFile);
 } else {
-    bu.config = {};
+    global.config = {};
     saveConfig();
 }
-var VERSION = bu.config.version;
-
+var VERSION = config.version;
 
 function reloadConfig() {
     logger.info('Attempting to reload config');
     fs.readFile(path.join(__dirname, 'config.json'), 'utf8', function (err, data) {
         if (err) throw err;
-        bu.config = JSON.parse(data);
+        config = JSON.parse(data);
     });
 }
 
 function saveConfig() {
-    fs.writeFile(path.join(__dirname, 'config.json'), JSON.stringify(bu.config, null, 4));
+    fs.writeFile(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 4));
 }
 
 //db.serialize(function () {

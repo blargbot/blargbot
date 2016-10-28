@@ -11,7 +11,7 @@ e.init = () => {
     
 
     e.category = bu.CommandType.GENERAL;
-    t = new Trello(bu.config.general.trellokey, bu.config.general.trellotoken);
+    t = new Trello(config.general.trellokey, config.general.trellotoken);
 
 };
 e.requireCtx = require;

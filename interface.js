@@ -83,7 +83,7 @@ e.kill = () => {
 };
 
 function checkAuth(object, req, res) {
-    if (bu.config.general.interface_key != req.get('key'))
+    if (config.general.interface_key != req.get('key'))
         object = {
             error: 401,
             desc: 'who the fuck are you get off my lawn'

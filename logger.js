@@ -4,40 +4,50 @@ const moment = require('moment-timezone');
 const path = require('path');
 const config = require('winston/lib/winston/config');
 
+const levels = {
+    killme: 0,
+    error: 1,
+    warn: 2,
+    command: 3,
+    init: 4,
+    output: 5,
+    irc: 6,
+    info: 7,
+    website: 8,
+    music: 9,
+    verbose: 10,
+    debug: 12,
+    silly: 12
+};
+
+const colors = {
+    error: 'red',
+    killme: 'red',
+    warn: 'yellow',
+    info: 'green',
+    verbose: 'cyan',
+    debug: 'grey',
+    silly: 'magenta',
+    command: 'blue',
+    website: 'cyan',
+    music: 'cyan',
+    init: 'green',
+    output: 'magenta',
+    irc: 'yellow',
+    timestamp: 'grey',
+    bold: 'bold'
+};
+
 e.init = () => {
-    var logger = e.logger = new (winston.Logger)({  
-        levels: {
-            uncaughterror: 0,
-            error: 1,
-            warn: 2,
-            command: 3,
-            init: 4,
-            output: 5,
-            irc: 6,
-            info: 7,
-            website: 8,
-            music: 9,
-            verbose: 10,
-            debug: 12,
-            silly: 12
-        },
-        colors: {
-            error: 'red',
-            uncaughterror: 'red',
-            warn: 'yellow',
-            info: 'green',
-            verbose: 'cyan',
-            debug: 'grey',
-            silly: 'magenta',
-            command: 'blue',
-            website: 'cyan',
-            music: 'cyan',
-            init: 'green',
-            output: 'magenta',
-            irc: 'yellow',
-            timestamp: 'grey',
-            bold: 'bold'
-        },
+    var maxLength = 0;
+    for (let key in levels) {
+        if (key.length > maxLength) {
+            maxLength = key.length;
+        }
+    }
+    var logger = e.logger = new (winston.Logger)({
+        levels: levels,
+        colors: colors,
         level: 'debug',
         exitOnError: false,
         transports: [
@@ -53,7 +63,7 @@ e.init = () => {
                 },
                 formatter: options => {
                     // Return string will be passed to logger.
-                    return config.colorize('timestamp', options.timestamp()) + config.colorize(options.level, '[' + options.level.toUpperCase() + '] ')
+                    return config.colorize('timestamp', options.timestamp()) + config.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' '
                         + (options.level == 'error' && options.meta && options.meta.stack ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== options.message ? options.message : '') +
                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }
@@ -106,4 +116,9 @@ e.init = () => {
     });
     global.logger = logger;
     return logger;
+};
+
+
+function pad(value, length) {
+    return (value.toString().length < length) ? pad(' ' + value, length) : value;
 };

@@ -27,7 +27,7 @@ blargbot&gt; @User, 1.0 USD is equivalent to X.X CAD
 
 e.execute = (msg, words) => {
     if (words.length < 4) {
-        bu.sendMessageToDiscord(msg.channel.id, 'Incorrect usage!\n`econ \<from> \<to> \<amount>`');
+        bu.send(msg.channel.id, 'Incorrect usage!\n`econ \<from> \<to> \<amount>`');
         return;
     }
     var to = words[2].toUpperCase();
@@ -44,16 +44,16 @@ e.execute = (msg, words) => {
         res.on('end', function () {
             var rates = JSON.parse(body);
             if (rates.error != null && rates.error === 'Invalid base') {
-                bu.sendMessageToDiscord(msg.channel.id, `Invalid currency ${from}\n\`econ \<from\> \<to\> \<amount\>\``);
+                bu.send(msg.channel.id, `Invalid currency ${from}\n\`econ \<from\> \<to\> \<amount\>\``);
                 return;
             }
             if (rates.rates[to] == null) {
-                bu.sendMessageToDiscord(msg.channel.id, `Invalid currency ${to}\n\`econ \<from\> \<to\> \<amount\>\``);
+                bu.send(msg.channel.id, `Invalid currency ${to}\n\`econ \<from\> \<to\> \<amount\>\``);
                 return;
             }
             var converted = Math.round((convert * rates.rates[to]) * 100.0) / 100;
             var message = `${convert} ${from} is equivalent to ${converted} ${to}`;
-            bu.sendMessageToDiscord(msg.channel.id, message);
+            bu.send(msg.channel.id, message);
 
         });
     });

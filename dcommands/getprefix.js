@@ -20,10 +20,10 @@ e.longinfo = `<p>Returns the command prefix for the current guild.</p>`;
 e.execute = (msg) => {
     bu.guildSettings.get(msg.channel.guild.id, 'prefix').then(prefix => {
         if (prefix)
-            bu.sendMessageToDiscord(msg.channel.id, `My prefix on ${msg.channel.guild.name} is \`${prefix}\`.
-You can also use \`${bu.config.discord.defaultPrefix}\`, \`blargbot\`, or mentions.`);
+            bu.send(msg.channel.id, `My prefix on ${msg.channel.guild.name} is \`${prefix}\`.
+You can also use \`${config.discord.defaultPrefix}\`, \`blargbot\`, or mentions.`);
         else
-            bu.sendMessageToDiscord(msg.channel.id, `I have no custom prefix on ${msg.channel.guild.name}.
-You can use \`${bu.config.discord.defaultPrefix}\`, \`blargbot\`, or mentions.`);
+            bu.send(msg.channel.id, `I have no custom prefix on ${msg.channel.guild.name}.
+You can use \`${config.discord.defaultPrefix}\`, \`blargbot\`, or mentions.`);
     });
 };

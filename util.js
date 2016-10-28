@@ -11,7 +11,7 @@ var bu = module.exports = {};
 bu.CAT_ID = '103347843934212096';
 bu.catOverrides = true;
 bu.db = null;
-bu.config = null;
+config = null;
 bu.emitter = null;
 bu.VERSION = null;
 bu.startTime = null;
@@ -85,7 +85,7 @@ bu.CommandType = {
         },
         4: {
             name: 'Music',
-            requirement: msg => !msg.channel.guild ? false : bu.config.discord.musicGuilds[msg.channel.guild.id]
+            requirement: msg => !msg.channel.guild ? false : config.discord.musicGuilds[msg.channel.guild.id]
         },
         5: {
             name: 'Bot Commander',
@@ -102,11 +102,11 @@ bu.CommandType = {
 
 bu.init = () => {
     bu.r = require('rethinkdbdash')({
-        host: bu.config.db.host,
-        db: bu.config.db.database,
-        password: bu.config.db.password,
-        user: bu.config.db.user,
-        port: bu.config.db.port
+        host: config.db.host,
+        db: config.db.database,
+        password: config.db.password,
+        user: config.db.user,
+        port: config.db.port
     });
 };
 
@@ -118,7 +118,7 @@ bu.compareStats = (a, b) => {
     return 0;
 };
 
-bu.awaitMessage = async function(msg, message, callback) {
+bu.awaitMessage = async function (msg, message, callback) {
     let returnMsg = await bu.send(msg.channel.id, message);
     if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
         bu.awaitMessages[msg.channel.id] = {};
@@ -134,7 +134,7 @@ bu.awaitMessage = async function(msg, message, callback) {
     bu.emitter.removeAllListeners(event);
     function registerEvent() {
         return new Promise((fulfill, reject) => {
-            bu.emitter.on(event, async function(msg2) {
+            bu.emitter.on(event, async function (msg2) {
                 let response;
                 if (callback) {
                     response = await callback(msg2);
@@ -179,38 +179,73 @@ bu.hasPerm = (msg, perm, quiet) => {
         }
     }
     if (!quiet)
-        bu.sendMessageToDiscord(msg.channel.id, `You need the role ${Array.isArray(perm) ? perm.map(m => `\`${m}\``).join(', or ') : `\`${perm}\``} in order to use this command!`);
+        bu.send(msg.channel.id, `You need the role ${Array.isArray(perm) ? perm.map(m => `\`${m}\``).join(', or ') : `\`${perm}\``} in order to use this command!`);
     return false;
 };
 
 /**
  * Sends a message to discord.
- * @param channelId - the channel id (String)
+ * @param channel - the channel id (String) or message object (Object)
  * @param message - the message to send (String)
  * @param file - the file to send (Object|null)
- * @returns {Promise.<Message>}
+ * @returns {Message}
  */
-bu.sendMessageToDiscord = function (channelId, message, file) {
+bu.send = async function (channel, message, file) {
+    let channelid = channel;
+    if (channel instanceof Eris.Message) {
+        channelid = channel.channel.id;
+    }
+    if (message.length <= 0) {
+        logger.info('Tried to send a message with no content.');
+        return Error('No content');
+    }
     bu.messageStats++;
+    message = emoji.emojify(message);
+
     if (message.length > 2000) {
         message = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
     }
     try {
-        message = emoji.emojify(message);
-        if (!file)
-            return bot.createMessage(channelId, message).catch(err => logger.error(err.stack));
-        else
-            return bot.createMessage(channelId, message, file).catch(err => logger.error(err.stack));
-
+        if (!file) return await bot.createMessage(channelid, message);
+        else return await bot.createMessage(channelid, message, file);
     } catch (err) {
         logger.error(err.stack);
+        return null;
     }
 };
 
-//Alias of sendMessageToDiscord
-bu.send = (channelId, message, file) => {
-    return bu.sendMessageToDiscord(channelId, message, file);
+/**
+ * Sends a message to a DM.
+ * @param user - the user id (String) or message object (Object)
+ * @param message - the message to send (String)
+ * @param file - the file to send (Object|null)
+ * @returns {Message}
+ */
+bu.sendDM = async function (user, message, file) {
+    let userid = user;
+    if (user instanceof Eris.Message) {
+        userid = user.author.id;
+    }
+    if (message.length >= 0) {
+        logger.info('Tried to send a message with no content.');
+        return Error('No content');
+    }
+    bu.messageStats++;
+    message = emoji.emojify(message);
+
+    if (message.length > 2000) {
+        message = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+    }
+    try {
+        let privateChannel = await bot.getDMChannel(userid);
+        if (!file) return await bot.createMessage(privateChannel.id, message);
+        else return await bot.createMessage(privateChannel.id, message, file);
+    } catch (err) {
+        logger.error(err.stack);
+        return err;
+    }
 };
+
 
 /**
  * Gets a user from a name (smartly)
@@ -219,7 +254,7 @@ bu.send = (channelId, message, file) => {
  * @param quiet - if true, won't respond with multiple users found(Boolean)
  * @returns {User|null}
  */
-bu.getUser = async function(msg, name, quiet) {
+bu.getUser = async function (msg, name, quiet) {
     var userList;
     var userId;
     var discrim;
@@ -297,7 +332,7 @@ bu.getUser = async function(msg, name, quiet) {
         return userList[0].user;
     } else if (userList.length == 0) {
         if (!quiet)
-            bu.sendMessageToDiscord(msg.channel.id, `No users found.`);
+            bu.send(msg.channel.id, `No users found.`);
         return null;
     } else {
         if (!quiet) {
@@ -332,7 +367,7 @@ ${userListString}${newUserList.length < userList.length ? `...and ${userList.len
     }
 };
 
-bu.getRole = async function(msg, name, quiet) {
+bu.getRole = async function (msg, name, quiet) {
     if (msg.channel.guild.roles.get(name)) {
         return msg.channel.guild.roles.get(name);
     }
@@ -370,7 +405,7 @@ bu.getRole = async function(msg, name, quiet) {
         return roleList[0];
     } else if (roleList.length == 0) {
         if (!quiet)
-            bu.sendMessageToDiscord(msg.channel.id, `No roles found.`);
+            bu.send(msg.channel.id, `No roles found.`);
         return null;
     } else {
         if (!quiet) {
@@ -488,7 +523,7 @@ bu.getPosition = (member) => {
     return rolepos;
 };
 
-bu.logAction = async function(guild, user, mod, type, reason) {
+bu.logAction = async function (guild, user, mod, type, reason) {
     let isArray = Array.isArray(user);
     let val = await bu.guildSettings.get(guild.id, 'modlog');
     if (val) {
@@ -506,7 +541,7 @@ bu.logAction = async function(guild, user, mod, type, reason) {
 **Reason:** ${reason || `Responsible moderator, please do \`reason ${caseid}\` to set.`}
 **Moderator:** ${mod ? `${mod.username}#${mod.discriminator}` : 'Unknown'}`;
 
-        let msg = await bu.sendMessageToDiscord(val, message);
+        let msg = await bu.send(val, message);
         let cases = storedGuild.modlog;
         if (!Array.isArray(cases)) {
             cases = [];
@@ -543,7 +578,7 @@ function setCharAt(str, index, chr) {
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
-bu.processTagInner = async function(params, i) {
+bu.processTagInner = async function (params, i) {
     return await bu.processTag(params.msg
         , params.words
         , params.args[i]
@@ -552,7 +587,7 @@ bu.processTagInner = async function(params, i) {
         , params.tagName);
 };
 
-bu.processTag = async function(msg, words, contents, fallback, author, tagName) {
+bu.processTag = async function (msg, words, contents, fallback, author, tagName) {
     let level = 0;
     let lastIndex = 0;
     let coords = [];
@@ -736,7 +771,7 @@ bu.splitInput = (content, noTrim) => {
 /* SQL STUFF */
 
 bu.guildSettings = {
-    set: async function(guildid, key, value, type) {
+    set: async function (guildid, key, value, type) {
         let storedGuild = await bu.r.table('guild').get(guildid).run();
         storedGuild.settings[key] = value;
         await bu.r.table('guild').get(guildid).update({
@@ -744,12 +779,12 @@ bu.guildSettings = {
         }).run();
         return;
     },
-    get: async function(guildid, key) {
+    get: async function (guildid, key) {
         let storedGuild = await bu.r.table('guild').get(guildid).run();
         if (!storedGuild) return {};
         return storedGuild.settings[key];
     },
-    remove: async function(guildid, key) {
+    remove: async function (guildid, key) {
         let storedGuild = await bu.r.table('guild').get(guildid).run();
         delete storedGuild.settings[key];
         await bu.r.table('guild').get(guildid).replace(storedGuild).run();
@@ -758,7 +793,7 @@ bu.guildSettings = {
     }
 };
 bu.ccommand = {
-    set: async function(guildid, key, value) {
+    set: async function (guildid, key, value) {
         let storedGuild = await bu.r.table('guild').get(guildid).run();
         storedGuild.ccommands[key] = value;
         bu.r.table('guild').get(guildid).update({
@@ -766,19 +801,19 @@ bu.ccommand = {
         }).run();
         return;
     },
-    get: async function(guildid, key) {
+    get: async function (guildid, key) {
         let storedGuild = await bu.r.table('guild').get(guildid).run();
         if (!storedGuild) return null;
         return storedGuild.ccommands[key];
     },
-    rename: async function(guildid, key1, key2) {
+    rename: async function (guildid, key1, key2) {
         let storedGuild = await bu.r.table('guild').get(guildid).run();
         storedGuild.ccommands[key2] = storedGuild.ccommands[key1];
         delete storedGuild.ccommands[key1];
         bu.r.table('guild').get(guildid).replace(storedGuild).run();
         return;
     },
-    remove: async function(guildid, key) {
+    remove: async function (guildid, key) {
         let storedGuild = await bu.r.table('guild').get(guildid).run();
         delete storedGuild.ccommands[key];
         bu.r.table('guild').get(guildid).replace(storedGuild).run();
@@ -786,7 +821,7 @@ bu.ccommand = {
     }
 };
 
-bu.isNsfwChannel = async function(channelid) {
+bu.isNsfwChannel = async function (channelid) {
     let guildid = bot.channelGuildMap[channelid];
     if (!guildid) {
         //   logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isNsfwChannel');
@@ -796,7 +831,7 @@ bu.isNsfwChannel = async function(channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].nsfw : false;
 };
 
-bu.isBlacklistedChannel = async function(channelid) {
+bu.isBlacklistedChannel = async function (channelid) {
     let guildid = bot.channelGuildMap[channelid];
     if (!guildid) {
         logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
@@ -806,7 +841,7 @@ bu.isBlacklistedChannel = async function(channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
-bu.canExecuteCommand = async function(msg, commandName, quiet) {
+bu.canExecuteCommand = async function (msg, commandName, quiet) {
     if (msg.channel.guild) {
         let val = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
         let val1 = await bu.guildSettings.get(msg.channel.guild.id, 'staffperms');
@@ -879,7 +914,7 @@ bu.shuffle = (array) => {
     return array;
 };
 
-bu.getTagUser = async function(msg, args, index) {
+bu.getTagUser = async function (msg, args, index) {
     var obtainedUser;
     if (!index) index = 1;
 
@@ -901,7 +936,7 @@ bu.tagGetFloat = (arg) => {
     return parseFloat(arg) ? parseFloat(arg) : NaN;
 };
 
-bu.tagProcessError = async function(params, fallback, errormessage) {
+bu.tagProcessError = async function (params, fallback, errormessage) {
     let returnMessage = '';
     if (fallback == '') returnMessage = errormessage;
     else returnMessage = await bu.processTag(params.msg
@@ -920,4 +955,13 @@ bu.fixContent = (content) => {
         tempContent[i] = tempContent[i].trim();
     }
     return tempContent.join('\n');
+};
+
+
+bu.padLeft = (value, length) => {
+    return (value.toString().length < length) ? pad(' ' + value, length) : value;
+};
+
+bu.padRight = (value, length) => {
+    return (value.toString().length < length) ? pad(value + ' ', length) : value;
 };

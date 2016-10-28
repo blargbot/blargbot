@@ -49,7 +49,7 @@ e.execute = async function(msg, words) {
                 }).run();
 
                 bot.editMessage(val, modlog[index].msgid, content);
-                bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+                bu.send(msg.channel.id, ':ok_hand:');
             } else {
                 bu.send(msg.channel.id, 'That case does not exist!');
             }

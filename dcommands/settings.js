@@ -105,7 +105,7 @@ Settings For ${msg.channel.guild.name}
   Perm Override : ${permOverride}
     Staff Perms : ${staffPerms}
 \`\`\``;
-        bu.sendMessageToDiscord(msg.channel.id, message);
+        bu.send(msg.channel.id, message);
     } else {
         words.shift();
         var key;
@@ -117,9 +117,9 @@ Settings For ${msg.channel.guild.name}
                     let value = words.join(' ');
                     if (settings[key]) {
                         await bu.guildSettings.set(msg.channel.guild.id, key, value);
-                        bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+                        bu.send(msg.channel.id, ':ok_hand:');
                     } else {
-                        bu.sendMessageToDiscord(msg.channel.id, 'Invalid key!');
+                        bu.send(msg.channel.id, 'Invalid key!');
                     }
                 }
                 break;
@@ -128,7 +128,7 @@ Settings For ${msg.channel.guild.name}
                 for (key in settings) {
                     message += '**__' + key.toUpperCase() + '__**' + ' - ' + settings[key] + '\n';
                 }
-                bu.sendMessageToDiscord(msg.channel.id, message);
+                bu.send(msg.channel.id, message);
                 break;
             default:
                 if (words.length > 0) {
@@ -136,9 +136,9 @@ Settings For ${msg.channel.guild.name}
                     let value = words.join(' ');
                     if (settings[key]) {
                         await bu.guildSettings.set(msg.channel.guild.id, key, value);
-                        bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+                        bu.send(msg.channel.id, ':ok_hand:');
                     } else {
-                        bu.sendMessageToDiscord(msg.channel.id, 'Invalid key!');
+                        bu.send(msg.channel.id, 'Invalid key!');
                     }
                 }
                 break;

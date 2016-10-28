@@ -30,7 +30,7 @@ ${bu.commandList[words[1]].info}`;
         } else {
             message = `No description could be found for command \`${words[1]}\`.`;
         }
-        bu.sendMessageToDiscord(msg.channel.id, message);
+        bu.send(msg.channel.id, message);
     } else {
         var commandsString = '```prolog\nGeneral Commands:\n  ';
         var generalCommands = [];

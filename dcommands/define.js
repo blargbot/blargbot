@@ -30,7 +30,7 @@ var part = {
 e.execute = (msg, words) => {
     words.shift();
     var args = words.join(' ');
-    var config = bu.config;
+    var config = config;
     if (!config.general.wordapis)
         config.general.wordapis = {
             day: moment().format('D'),
@@ -43,7 +43,7 @@ e.execute = (msg, words) => {
     }
     var max = config.general.isbeta ? 250 : 1500;
     if (config.general.wordapis.uses > max) {
-        bu.sendMessageToDiscord(msg.channel.id, 'I have used up all of my api queries for today. Sorry!');
+        bu.send(msg.channel.id, 'I have used up all of my api queries for today. Sorry!');
         return;
     }
     config.general.wordapis.uses++;
@@ -51,7 +51,7 @@ e.execute = (msg, words) => {
     request({
         url: `https://wordsapiv1.p.mashape.com/words/${args}`,
         headers: {
-            'X-Mashape-Key': bu.config.general.mashape,
+            'X-Mashape-Key': config.general.mashape,
             'Accept': 'application/json'
         }
     }, function (error, response, body) {
@@ -70,9 +70,9 @@ e.execute = (msg, words) => {
             } else {
                 message += 'No results found!';
             }
-            bu.sendMessageToDiscord(msg.channel.id, message);
+            bu.send(msg.channel.id, message);
         } else {
-            bu.sendMessageToDiscord(msg.channel.id, 'No results found!');
+            bu.send(msg.channel.id, 'No results found!');
 
         }
     });

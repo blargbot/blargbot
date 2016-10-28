@@ -21,11 +21,11 @@ e.longinfo = `<p>Bans a user, where <code>days</code> is the number of days to d
 
 e.execute = async function(msg, words) {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
-        bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to ban users!`);
+        bu.send(msg.channel.id, `I don't have permission to ban users!`);
         return;
     }
     if (!msg.member.permission.json.banMembers) {
-        bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to ban users!`);
+        bu.send(msg.channel.id, `You don't have permission to ban users!`);
         return;
     }
 
@@ -41,11 +41,11 @@ e.execute = async function(msg, words) {
         var userPos = bu.getPosition(msg.member);
         var targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
         if (targetPos >= botPos) {
-            bu.sendMessageToDiscord(msg.channel.id, `I don't have permission to ban ${user.username}!`);
+            bu.send(msg.channel.id, `I don't have permission to ban ${user.username}!`);
             return;
         }
         if (targetPos >= userPos) {
-            bu.sendMessageToDiscord(msg.channel.id, `You don't have permission to ban ${user.username}!`);
+            bu.send(msg.channel.id, `You don't have permission to ban ${user.username}!`);
             return;
         }
         if (!bu.bans[msg.channel.guild.id])
@@ -55,7 +55,7 @@ e.execute = async function(msg, words) {
         if (words[2])
             deletedays = parseInt(words[2]);
         bot.banGuildMember(msg.channel.guild.id, user.id, deletedays).then(() => {
-            bu.sendMessageToDiscord(msg.channel.id, ':ok_hand:');
+            bu.send(msg.channel.id, ':ok_hand:');
         });
     }
     //bot.ban

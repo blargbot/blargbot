@@ -22,7 +22,7 @@ e.info = 'Enables the modlog and sets it to the current channel. Doing \`modlog 
     + 'The admin will then be encouraged to do \`reason <case number> <reason>\` to specify why '
     + 'the action took place.'
     + '\nBans and unbans are logged regardless of whether the \`ban\` or \`unban\` commands are used.';
-e.longinfo = `<p>Enables the modlog and sets it to the current channel. Doing <code>modlog disable</code> will disable it. Doing <code>modlog disable</code> will disable it. Doing <code>modlog clear [number]</code> will clear the specified number of cases from the modlog. Leaving <code>number</code> blank will clear all cases.
+e.longinfo = `<p>Enables the modlog and sets it to the current channel. Doing <code>modlog disable</code> will disable it. Doing <code>modlog clear [number]</code> will clear the specified number of cases from the modlog. Leaving <code>number</code> blank will clear all cases.
         When an admin does a moderation command (ban, unban, mute, unmute, and kick), the incident will be logged.
         The admin will then be encouraged to do <code>reason &lt;case number&gt; &lt;reason&gt;</code> to specify why
         the action took place.</p>
@@ -34,7 +34,7 @@ e.execute = async function(msg, words) {
         switch (words[1].toLowerCase()) {
             case 'disable':
                 await bu.guildSettings.remove(msg.channel.guild.id, 'modlog');
-                bu.sendMessageToDiscord(msg.channel.id, 'Modlog disabled!');
+                bu.send(msg.channel.id, 'Modlog disabled!');
                 break;
             case 'clear':
                 var limit = 0;
@@ -64,6 +64,6 @@ e.execute = async function(msg, words) {
         }
     } else {
         await bu.guildSettings.set(msg.channel.guild.id, 'modlog', msg.channel.id);
-        bu.sendMessageToDiscord(msg.channel.id, 'Modlog channel set!');
+        bu.send(msg.channel.id, 'Modlog channel set!');
     }
 };

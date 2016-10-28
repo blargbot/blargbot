@@ -50,7 +50,7 @@ e.execute = (msg, words) => {
                 message += `<:vpOffline:212790005943369728> **${getName(m)}** (${m.user.id})\n`;
             });
 
-            bu.sendMessageToDiscord(msg.channel.id, message);
+            bu.send(msg.channel.id, message);
         });
 
     } catch (err) {

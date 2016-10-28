@@ -34,15 +34,29 @@ body {
 }
 */
 .container-fluid a {
-    color: #4DD0E1;
+    color: #00e5ff;
+}
+
+a {
+    transition-duration: 0.1s;
+    -webkit-transition-duration: 0.1s;    
+    color: #00e5ff;
+}
+
+
+a:hover {
+    transition-duration: 0.1s;
+    -webkit-transition-duration: 0.1s;    
+    
+    color: #84ffff;
 }
 
 h2 {
-    color: #4DD0E1;
+    color: #00e5ff;
 }
 
 code, pre code {
-    color: #00ACC1;
+    color: #00e5ff;
 }
 
 .panel {
@@ -112,16 +126,17 @@ a:hover {
 }
 
 pre {
-    background-color: #CFD8DC;
+    background-color: #263238;
     text-wrap: normal;
     display: block;
     border-radius: 5px;
+    padding: 3px;
 }
 
 code {
-    background-color: #CFD8DC;
+    background-color: #263238;
     border-radius: 5px;
-    padding: 1px;
+    padding: 3px;
 }
 
 .block {
@@ -160,4 +175,14 @@ code {
     height: inherit;
 
     /*padding: inherit;*/
+}
+
+header, main, footer {
+    padding-left: 300px;
+}
+
+@media only screen and (max-width : 992px) {
+    header, main, footer {
+        padding-left: 0;
+    }
 }

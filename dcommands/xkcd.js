@@ -48,7 +48,7 @@ function getXkcd(channel, words) {
     } else {
         choice = parseInt(words[1]);
         if (choice > xkcdMax || choice < 0) {
-            bu.sendMessageToDiscord(channel, `Comic #${choice} does not exist!`);
+            bu.send(channel, `Comic #${choice} does not exist!`);
         }
     }
     var url = '';
