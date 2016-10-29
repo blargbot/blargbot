@@ -1104,6 +1104,9 @@ var processUser = async function (msg) {
 		if (storedUser.discriminator != msg.author.discriminator) {
 			newUser.discriminator = msg.author.discriminator;
 		}
+		if (storedUser.avatarURL != msg.author.avatarURL) {
+			newUser.avatarURL = msg.author.avatarURL;
+		}
 		bu.r.table('user').get(msg.author.id).update(newUser).run();
 	}
 };

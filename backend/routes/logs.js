@@ -11,7 +11,7 @@ const types = [
 
 router.get('/', (req, res) => {
     res.locals.user = req.user;
-    req.session.returnTo = '/logs'  + req.path;
+    req.session.returnTo = '/logs' + req.path;
 
     res.render('logsfirst');
 });
@@ -28,6 +28,7 @@ router.post('/', async (req, res) => {
         db = 'blargbetadb';
         hash = hash.replace('beta', '');
     }
+    res.locals.hash = hash;
     let logsSpecs = await bu.r.db(db).table('logs').get(hash).run();
     if (!logsSpecs) {
         res.locals.continue = false;
@@ -40,13 +41,22 @@ router.post('/', async (req, res) => {
                     .and(bu.r.expr(logsSpecs.types).count().eq(0).or(bu.r.expr(logsSpecs.types).contains(q('type')))
                     );
             })
-            .limit(logsSpecs.limit).run();
+            .limit(logsSpecs.limit).eqJoin('userid', bu.r.table('user'), { index: 'userid' }).zip().orderBy('msgtime').run();
         if (messages.length > 0) {
-            messages.map(m => {
-                m.username = bot.users.get(m.userid).username;
-                m.userdiscrim = bot.users.get(m.userid).discriminator;
+            messages = messages.map(m => {
+                let user = bot.users.get(m.userid);
+                if (!user) user = {
+                    username: m.username,
+                    discriminator: m.discriminator,
+                    bot: m.bot === 1,
+                    avatarURL: m.avatarURL
+                };
+                m.username = user.username;
+                m.userdiscrim = user.discriminator;
+                m.bot = user.bot;
+                m.avatar = user.avatarURL || '/img/default.png';
+
                 m.msgtime = moment.unix(m.msgtime).unix();
-                m.bot = bot.users.get(m.userid).bot;
                 let text = m.content;
 
                 text = hbs.handlebars.Utils.escapeExpression(text);
@@ -56,7 +66,6 @@ router.post('/', async (req, res) => {
                 logger.website(text);
 
                 m.content = new hbs.handlebars.SafeString(text);
-                m.avatar = bot.users.get(m.userid).avatarURL;
                 m.type = types[m.type];
                 return m;
             });
@@ -70,7 +79,6 @@ router.post('/', async (req, res) => {
             res.locals.lasttime = moment(logsSpecs.lasttime).valueOf();
             res.locals.limit = logsSpecs.limit;
             res.locals.continue = true;
-            logger.debug(messages);
         }
     }
     res.render('logs');

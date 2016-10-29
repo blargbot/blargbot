@@ -44,12 +44,17 @@
 	<!-- OpenGraph -->
 	<title>Logs</title>
 
+	<link rel="icon" type="image/png" href="/img/blargbotmini.png">
 
 </head>
 <script>
      $(document).ready(function () {
          if (window.location.hash) {
+			 setTimeout(function() {
+$('#timeout').html('Loading the logs seems to be taking longer than usual. This could be caused by an invalid or unspecified hash, or by something breaking internally. </p><p>Please make sure that you\'re using a link provided by the bot, and if the problem persists please contact me by using the suggest command.');
+		 }, 20000);
              var hash = window.location.hash.substring(1);
+			 
             var request = $.ajax({
                 url: '/logs',
                 method: 'POST',
@@ -59,8 +64,14 @@
                 $('body').html(msg);
                 loaded = true
             })
-         }
-        });
+         } else {
+			 $('#loadingheader').html('No keycode provided.')
+			 $('#loaders').html('Please use the <code>logs</code> command to retrieve a valid URL.')
+		 }
+			
+			
+	 });
+		 
 </script>
 
 <body class="blue-grey">
@@ -68,12 +79,12 @@
 	<a class="btn-floating btn-primary button-collapse btn-large waves-effects waves-light" data-activates="slide-out">
 		<i class="large material-icons">menu</i></a>
 	<header class="page-header">
-		<h1 class="centre">Attempting to load logs...</h1>
+		<h1 class="centre" id='loadingheader'>Attempting to load logs...</h1>
 		<div class="row">
 			<div class="col s12 m8 offset-m2 l6 offset-l3">
 				<div class="card blue-grey darken-2">
 					<div class="card-content">
-						<div class='centre'>
+						<div class='centre' id='loaders'>
 							<div class="preloader-wrapper big active">
 								<div class="spinner-layer spinner-blue">
 									<div class="circle-clipper left">
@@ -123,7 +134,7 @@
 									</div>
 								</div>
 							</div>
-							<p>If this is taking a long time, the hash is most likely invalid or unspecified.</p>
+							<p id='timeout'></p>
 						</div>
 					</div>
 				</div>
