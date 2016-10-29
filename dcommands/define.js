@@ -30,7 +30,7 @@ var part = {
 e.execute = (msg, words) => {
     words.shift();
     var args = words.join(' ');
-    var config = config;
+    var config = bu.config;
     if (!config.general.wordapis)
         config.general.wordapis = {
             day: moment().format('D'),
