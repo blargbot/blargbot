@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
 
 
     e.category = bu.CommandType.GENERAL;
@@ -20,7 +20,7 @@ e.info = 'Gets a list of command or specific command help.';
 e.longinfo = `<p>Returns a list of commands and custom commands. If a command name is specified, it will return a description
         of that command instead.</p>`;
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (words.length > 1) {
         var message = '';
         if (bu.commandList.hasOwnProperty(words[1]) && !bu.commandList[words[1]].hidden) {
@@ -36,9 +36,11 @@ ${bu.commandList[words[1]].info}`;
         var generalCommands = [];
         var otherCommands = {};
         var modifiedCommands = [];
-        let storedGuild;
+        let storedGuild, permOverride, staffPerms;
         if (msg.channel.guild) {
             storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+            permOverride = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
+            staffPerms = await bu.guildSettings.get(msg.channel.guild.id, 'staffPerms');
             let customizedCommands = storedGuild.commandperms;
             //    logger.debug(customizedCommands);
             for (let key in customizedCommands) {
@@ -59,7 +61,8 @@ ${bu.commandList[words[1]].info}`;
             if (modifiedCommands.indexOf(command) == -1)
                 if (!bu.commandList[command].hidden) {
                     if (bu.commandList[command].category == bu.CommandType.GENERAL) {
-                        generalCommands.push(command);
+                        if ((await bu.canExecuteCommand(msg, command, true, storedGuild, permOverride, staffPerms))[0])
+                            generalCommands.push(command);
                     }
                     else {
                         if (!otherCommands[bu.commandList[command].category])
@@ -71,7 +74,7 @@ ${bu.commandList[words[1]].info}`;
         generalCommands.sort();
         commandsString += generalCommands.join(', ');
 
-        var onComplete = async function() {
+        var onComplete = async function () {
             if (msg.channel.guild) {
                 let ccommands = storedGuild.ccommands;
                 //      logger.debug(ccommands);
@@ -143,7 +146,7 @@ ${bu.commandList[words[1]].info}`;
                 //otherCommands[category].sort();
                 counter = otherCommands[category].length;
                 for (ii = 0; ii < otherCommands[category].length; ii++) {
-                    bu.canExecuteCommand(msg, otherCommands[category][ii], true).then(doThing);
+                    bu.canExecuteCommand(msg, otherCommands[category][ii], true, storedGuild, permOverride, staffPerms).then(doThing);
                 }
                 //    }
             }

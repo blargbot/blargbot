@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
 
-
+const util = require('util');
 
 
 e.init = () => {
@@ -114,12 +114,13 @@ e.execute = async function (msg, words) {
                             || bu.commands[commandName].category == bu.CommandType.MUSIC) {
                             logger.debug('no ur not allowed');
                         } else {
+                            logger.debug(commandperms[commandName]);
                             if (!commandperms.hasOwnProperty(commandName)) commandperms[commandName] = {};
-                            if (commandperms[commandName].disabled) {
+                            if (!commandperms[commandName].disabled) {
                                 commandperms[commandName].disabled = true;
                                 disabledList.push(commandName);
                             } else {
-                                commandperms[commandName].disabled = true;
+                                commandperms[commandName].disabled = false;
                                 enabledList.push(commandName);
                             }
                         }
@@ -130,8 +131,8 @@ e.execute = async function (msg, words) {
                 await bu.r.table('guild').get(msg.channel.guild.id).update({
                     commandperms: commandperms
                 }).run();
-                bu.send(msg.channel.id, util.format('Commands enabled:\n```\n%s\n```\nCommands disabled:\n```\n%s\n```'
-                    , enabledList.join(', '), disabledList(', ')));
+                bu.send(msg.channel.id, util.format('Commands enabled:\n```\n%s \n```\nCommands disabled:\n```\n%s \n```'
+                    , enabledList.join(', '), disabledList.join(', ')));
                 break;
             case 'setperm':
                 if (!words[2]) {

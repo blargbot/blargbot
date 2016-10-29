@@ -841,10 +841,23 @@ bu.isBlacklistedChannel = async function (channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
-bu.canExecuteCommand = async function (msg, commandName, quiet) {
+bu.canExecuteCommand = async function (msg, commandName, quiet, storedGuild, permoverride, staffperms) {
     if (msg.channel.guild) {
-        let val = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
-        let val1 = await bu.guildSettings.get(msg.channel.guild.id, 'staffperms');
+        let val = permoverride, val1 = staffperms;
+        if (permoverride === undefined)
+            val = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
+        if (staffperms === undefined)
+            val1 = await bu.guildSettings.get(msg.channel.guild.id, 'staffperms');
+        if (storedGuild === undefined)
+            storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+
+        let command;
+        if (storedGuild) {
+            command = storedGuild.commandperms[commandName];
+        }
+        if (command && command.disabled) {
+            return [false, commandName];
+        }
         if (val && val != 0)
             if (val1) {
                 let allow = parseInt(val1);
@@ -858,9 +871,7 @@ bu.canExecuteCommand = async function (msg, commandName, quiet) {
                     return [true, commandName];
                 }
             }
-        let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
         if (storedGuild) {
-            let command = storedGuild.commandperms[commandName];
             if (command) {
                 if (command.permission && bu.comparePerms(msg.member, command.permission)) {
                     return [true, commandName];

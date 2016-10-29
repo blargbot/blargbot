@@ -188,7 +188,7 @@ e.init = () => {
                 toReturn += `<div class=\"card blue-grey darken-3\" id='${keys[i]}'>`;
                 toReturn += "<div class='card-content'>";
                 toReturn += `<span class='card-title'>${keys[i]}</span>`;
-                toReturn += `<p>Usage: <pre style="margin: 0"><code>${commands[keys[i]].usage.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></p>`;
+                toReturn += `<p>Usage: <pre style="margin: 0" class="wrap"><code>${commands[keys[i]].usage.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></p>`;
                 toReturn += `<p>Role Needed: ${commandType.perms[commands[keys[i]].category]}</p>`;
                 toReturn += commands[keys[i]].longinfo;
                 toReturn += "</div>";
