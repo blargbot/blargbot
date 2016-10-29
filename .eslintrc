@@ -41,6 +41,12 @@
     ],
     "rules": {
         "strict": 0,
-        "semi": 1
+        "semi": 1,
+        "indent": ["error", 4]
+    },
+    "globals": {
+        "bot": false,
+        "config": false,
+        "bu": false
     }
 }

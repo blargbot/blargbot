@@ -1,3 +1,7 @@
+.gitignore
+.eslintrc
+.eslintrc.json
+.jshintrc
 logs/*
 node_modules/*
 userdata/*

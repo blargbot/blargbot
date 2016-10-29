@@ -162,6 +162,11 @@ e.execute = async function (msg, words) {
     // }
     logger.debug(channel, users, types, order);
     let msg2 = await bu.send(msg.channel.id, 'Generating your logs...');
+    let pingUser = false;
+    let timer = setTimeout(() => {
+        msg2.edit('Generating your logs...\nThis seems to be taking longer than usual. I\'ll ping you when I\'m finished.');
+        pingUser = true;
+    }, 10000);
     let msgids = [msg.id, msg2.id];
     let thing = await bu.r.table('chatlogs')
         .between([channel, bu.r.epochTime(0)], [channel, bu.r.now()], { index: 'channel_time' })
@@ -174,10 +179,17 @@ e.execute = async function (msg, words) {
         })
         .limit(numberOfMessages).run();
     if (thing.length == 0) {
+        clearTimeout(timer);
         bot.editMessage(msg2.channel.id, msg2.id, 'No results found!');
     } else {
+        clearTimeout(timer);
         let key = await insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages);
-        bot.editMessage(msg2.channel.id, msg2.id, 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key);
+        let toSend = 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key
+        if (pingUser) {
+            toSend = `Sorry that took so long, ${msg.author.mention}!\n${toSend}`
+        }
+        await bot.editMessage(msg2.channel.id, msg2.id, toSend);
+
     }
 };
 
