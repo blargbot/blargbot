@@ -77,24 +77,22 @@ code, pre code {
 .btn-primary {
     background: #4DD0E1;
     color: #ffffff;
-    box-shadow: none;
+    outline: none;
     border: 0 solid transparent;
-
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
     background: #80DEEA;
-    box-shadow: none;
     outline: none;
     border: 0 solid transparent;
-
+    color: #fff;
 }
 
 .btn-primary:active, .btn-primary.active {
-    background: #0097A7;
+    background: #80DEEA;
     outline: none;
     border: 0 solid transparent;
-    box-shadow: none;
+    color: #fff;    
 }
 
 a:hover {
@@ -149,6 +147,10 @@ code {
     top: 24px;
     left: 24px;
 }
+.collection-item {
+    outline: none !important;
+    border: none !important;
+}
 
 #slide-out .main-brand {
     height: 65px;
@@ -185,4 +187,19 @@ header, main, footer {
     header, main, footer {
         padding-left: 0;
     }
+}
+
+.username {
+    text-align: center;
+    margin: 10px 0 0 5px;
+}
+
+.useravatar {
+    margin-top: 10px;
+    float: left;
+}
+
+.userbutton {
+    line-height: 20px !important;
+    height: 20px !important;
 }

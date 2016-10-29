@@ -5,32 +5,158 @@ const hbs = require('hbs');
 
 
 router.get('/', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = '/tags'  + req.path;
     res.render('tags');
 });
 
 
 router.get('/editor', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = '/tags' + req.path;
+
     res.locals.startText = `{//;Start by typing an opening brace.
 Documentation is available here: https://blargbot.xyz/tags/ }`;
     renderEditor(req, res);
 });
 
 router.post('/editor', (req, res) => {
-    res.locals.startText = "you suck";
+    res.locals.user = req.user;
+    req.session.returnTo = '/tags' + req.path;
+    res.locals.startText = `{//;Start by typing an opening brace.
+Documentation is available here: https://blargbot.xyz/tags/ }`;
     renderEditor(req, res);
 });
 
 async function renderEditor(req, res) {
-    if (req.body) {
-        logger.debug(req.body);
-        let tagName = req.body.tagName;
-        if (tagName) {
-            let tag = await bu.r.table('tag').get(tagName).run();
-            logger.debug(tag);
-            if (tag) res.locals.startText = tag.content;
+    if (!req.user) {
+        res.locals.message = 'You are not logged in. In order to use the save, rename, and delete features, please log in! \nNote: this will delete any work done in the editor.';
+    }
+    if (req.body && req.body.action) {
+        logger.website('Tag editor:', req.body);
+        let title, storedTag;
+        switch (req.body.action) {
+            case 'load':
+                logger.website(req.body);
+                let tagName = req.body.tagName;
+                if (tagName) {
+                    let tag = await bu.r.table('tag').get(tagName).run();
+                    logger.website(tag);
+                    if (tag) res.locals.startText = tag.content;
+                }
+                res.locals.tagName = req.body.tagName;
+                break;
+            case 'save':
+                res.locals.startText = req.body.content;
+                res.locals.tagName = req.body.tagName;
+                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
+                if (title == '') {
+                    res.locals.error = 'Blank is not a name!';
+                } else {
+                    storedTag = await bu.r.table('tag').get(title).run();
+                    if (storedTag) {
+                        if (storedTag.author != req.user.id)
+                            res.locals.error = 'You do not own this tag!';
+                        else {
+                            await bu.r.table('tag').get(title).update({
+                                content: req.body.content,
+                                lastmodified: bu.r.now()
+                            }).run();
+                            res.locals.message = 'Your tag has been edited!';
+                            logChange('Edit (WI)', {
+                                user: `${req.user.username} (${req.user.id})`,
+                                tag: title,
+                                content: req.body.content
+                            });
+                        }
+                    } else {
+                        await bu.r.table('tag').get(title).replace({
+                            name: title,
+                            author: req.user.id,
+                            content: req.body.content,
+                            lastmodified: bu.r.now(),
+                            uses: 0
+                        }).run();
+                        res.locals.message = 'Your tag has been created!';
+                        logChange('Create (WI)', {
+                            user: `${req.user.username} (${req.user.id})`,
+                            tag: title,
+                            content: req.body.content
+                        });
+                    }
+                }
+                break;
+            case 'rename':
+                res.locals.startText = req.body.content;
+                res.locals.tagName = req.body.tagName;
+                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
+                let newTitle = req.body.newname.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
+                if (newTitle == '') {
+                    res.locals.error = 'Blank is not a name!';
+                } else {
+                    storedTag = await bu.r.table('tag').get(title).run();
+                    if (storedTag) {
+                        if (storedTag.author != req.user.id)
+                            res.locals.error = 'You do not own this tag!';
+                        else {
+                            let otherStoredTag = await bu.r.table('tag').get(newTitle).run();
+                            if (otherStoredTag)
+                                res.locals.error = 'There is already a tag with that name!';
+                            else {
+                                storedTag.name = newTitle;
+                                await bu.r.table('tag').insert(storedTag).run();
+                                await bu.r.table('tag').get(title).delete().run();
+                                res.locals.message = 'Tag successfully renamed. Note: Only the name has changed. You still need to save if you made changes to the contents.';
+                                res.locals.tagName = newTitle;
+                                logChange('Rename (WI)', {
+                                    user: `${req.user.username} (${req.user.id})`,
+                                    oldName: title,
+                                    newName: newTitle
+                                });
+                            }
+                        }
+                    } else {
+                        res.locals.error = 'You cannot rename a tag that doesn\'t exist!';
+                    }
+                }
+                break;
+            case 'delete':
+                res.locals.startText = req.body.content;
+                res.locals.tagName = req.body.tagName;
+                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
+
+                storedTag = await bu.r.table('tag').get(title).run();
+                if (storedTag) {
+                    if (storedTag.author != req.user.id)
+                        res.locals.error = 'You do not own this tag!';
+                    else {
+                        await bu.r.table('tag').get(title).delete().run();
+                        res.locals.startText = '';
+                        res.locals.tagName = '';
+                        res.locals.message = 'Tag successfully deleted! It\'s gone forever!';
+                        logChange('Delete (WI)', {
+                            user: `${req.user.username} (${req.user.id})`,
+                            tag: title,
+                            content: req.body.content
+                        });
+                    }
+                } else {
+                    res.locals.error = 'You cannot delete a tag that doesn\'t exist!';
+                }
+                break;
         }
+
     }
     res.render('editor');
+}
+
+function logChange(action, actionObj) {
+    let output = `**__${action}__**\n`;
+    let actionArray = [];
+    for (let key in actionObj) {
+        actionArray.push(`  **${key}**: ${actionObj[key]}`);
+    }
+    bu.send('230810364164440065', output + actionArray.join('\n'));
 }
 
 module.exports = router;

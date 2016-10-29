@@ -66,11 +66,14 @@ e.init = () => {
     app.use(passport.session());
     app.get('/login', passport.authenticate('discord', { scope: scopes }), function (req, res) { });
     app.get('/callback',
-        passport.authenticate('discord', { failureRedirect: '/' }), function (req, res) { res.redirect('/info'); } // auth success
+        passport.authenticate('discord', { failureRedirect: '/' }), function (req, res) {
+            logger.website('A user has authenticated');
+            res.redirect(req.session.returnTo || '/');
+        } // auth success
     );
     app.get('/logout', function (req, res) {
         req.logout();
-        res.redirect('/');
+        res.redirect(req.session.returnTo || '/');
     });
     app.get('/info', checkAuth, function (req, res) {
         logger.debug(req.user);

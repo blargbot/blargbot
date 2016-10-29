@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const moment = require('moment');
+const hbs = require('hbs');
 
 const types = [
     { name: 'Create', color: 'blue-grey darken-2' },
@@ -9,10 +10,16 @@ const types = [
 ];
 
 router.get('/', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = '/logs'  + req.path;
+
     res.render('logsfirst');
 });
 
 router.post('/', async (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = '/logs' + req.path;
+
     logger.debug(req.body);
     let hash = req.body.hash;
     let db = 'blargdb';
@@ -40,7 +47,15 @@ router.post('/', async (req, res) => {
                 m.userdiscrim = bot.users.get(m.userid).discriminator;
                 m.msgtime = moment.unix(m.msgtime).unix();
                 m.bot = bot.users.get(m.userid).bot;
-                m.content = m.content.replace(/>/g, '&gt;').replace(/</g, '&lt;').replace(/\n/g, '<br>');
+                let text = m.content;
+
+                text = hbs.handlebars.Utils.escapeExpression(text);
+
+
+                text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
+                logger.website(text);
+
+                m.content = new hbs.handlebars.SafeString(text);
                 m.avatar = bot.users.get(m.userid).avatarURL;
                 m.type = types[m.type];
                 return m;

@@ -51,7 +51,7 @@
 	<link rel="stylesheet" href="/codemirror/addon/hint/show-hint.css">
 
 	<!-- OpenGraph -->
-	<title>Tag Editor</title>
+	<title>Tag IDE</title>
 
 	<link rel="icon" type="image/png" href="/img/blargbotmini.png">
 
@@ -75,7 +75,7 @@
 		<i class="large material-icons">menu</i></a>
 
 	<header class="page-header">
-		<h1 class="centre">BBTag Editor (beta)</h1>
+		<h1 class="centre">BBTag IDE (beta)</h1>
 	</header>
 	<main>
 
@@ -143,9 +143,48 @@
 									height: 100%;
 								}
 							</style>
+							{{#if message}}
+							<p>{{message}}</p>
+							{{/if}} {{#if error}}
+							<p class='red-text accent-3'>{{error}}</p>
+							{{/if}}
 							<form style="margin: 0" method="post">
-								<textarea id="yayEditor" style="height: 100%">{{startText}}
-</textarea>
+								<div class='row' style='margin-bottom: 0'>
+									<div class="input-field col s6">
+										<input id='tagname' type="text" name="tagName" {{#if tagName}}value='{{tagName}}' {{/if}}>
+										<label for='tagname'>Tag Name</label>
+									</div>
+									<div class='col s3'>
+										<button type="submit" name="action" value='load' class="cyan accent-3 white-text btn waves-effect waves-light full">
+										Load
+										</button>
+									</div>
+									<div class='col s3'>
+										<button type="submit" name="action" value='save' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
+											{{#if user}}{{else}}disabled{{/if}}>
+										 Save
+										 </button>
+									</div>
+								</div>
+								<div class='row' style='margin-top: 0px'>
+									<div class='input-field col s6'>
+										<input id='newname' type="text" name="newname" {{#if user}}{{else}}disabled{{/if}}>
+										<label for='newname'>New Name</label>
+									</div>
+									<div class='col s3'>
+										<button type="submit" name="action" value='rename' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
+											{{#if user}}{{else}}disabled{{/if}}>
+										Rename
+										</button>
+									</div>
+									<div class='col s3'>
+										<button type="submit" name="action" value='delete' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
+											{{#if user}}{{else}}disabled{{/if}}>
+										<i class="large material-icons">delete</i>Delete
+										</button>
+									</div>
+								</div>
+								<textarea id="yayEditor" style="height: 100%" name='content'>{{startText}}</textarea>
 								<script>
                             var words = {{#tagseditor}}
                                 {{/tagseditor}};
@@ -171,8 +210,9 @@
                                 }
                                 editor.save();
                             });
-                        </script><br> Tag Name: <input type="text" name="tagName" placeholder="Tag Name">
-								<input type="submit" value="Load" class="cyan accent-3 white-text btn waves-effect waves-light">
+                        </script><br>
+								<!--	<input type="submit" value="Load" class="cyan accent-3 white-text btn waves-effect waves-light">-->
+
 							</form>
 
 						</div>
