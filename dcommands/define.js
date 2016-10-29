@@ -3,11 +3,7 @@ var e = module.exports = {};
 var request = require('request');
 var moment = require('moment');
 
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.GENERAL;
 };
 
@@ -30,7 +26,6 @@ var part = {
 e.execute = (msg, words) => {
     words.shift();
     var args = words.join(' ');
-    var config = bu.config;
     if (!config.general.wordapis)
         config.general.wordapis = {
             day: moment().format('D'),
