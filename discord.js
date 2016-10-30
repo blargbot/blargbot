@@ -14,12 +14,8 @@ const Cleverbot = require('cleverbot-node');
 const website = require('./backend/main');
 const cleverbot = new Cleverbot();
 
-var e = module.exports = {}
-    , avatars
-    , vars
-    , emitter
-    , bot
-    , VERSION;
+var e = module.exports = {},
+    avatars, vars, emitter, bot, VERSION;
 
 e.requireCtx = require;
 
@@ -36,8 +32,7 @@ async function initCommands() {
         if (/.+\.js$/.test(commandFile)) {
             var commandName = commandFile.match(/(.+)\.js$/)[1];
             loadCommand(commandName);
-            logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module '
-                , commandName);
+            logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module ', commandName);
         } else {
             logger.init('     Skipping non-command ', commandFile);
 
@@ -52,8 +47,7 @@ async function initCommands() {
  */
 function reloadCommand(commandName) {
     if (bu.commands[commandName]) {
-        logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module '
-            , commandName);
+        logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module ', commandName);
         if (bu.commands[commandName].shutdown)
             bu.commands[commandName].shutdown();
         bu.commands[commandName] = reload(`./dcommands/${commandName}.js`);
@@ -67,21 +61,18 @@ function reloadCommand(commandName) {
  */
 function unloadCommand(commandName) {
     if (bu.commands[commandName]) {
-        logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module '
-            , commandName);
+        logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module ', commandName);
 
         if (bu.commands[commandName].sub) {
             for (var subCommand in bu.commands[commandName].sub) {
-                logger.init(`    Unloading ${commandName}'s subcommand`
-                    , subCommand);
+                logger.init(`    Unloading ${commandName}'s subcommand`, subCommand);
                 delete bu.commandList[subCommand];
             }
         }
         delete bu.commandList[commandName];
         if (bu.commands[commandName].alias) {
             for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
-                logger.init(`    Unloading ${commandName}'s alias`
-                    , bu.commands[commandName].alias[ii]);
+                logger.init(`    Unloading ${commandName}'s alias`, bu.commands[commandName].alias[ii]);
                 delete bu.commandList[bu.commands[commandName].alias[ii]];
             }
         }
@@ -113,16 +104,16 @@ function buildCommand(commandName) {
             hidden: bu.commands[commandName].hidden,
             category: bu.commands[commandName].category
         };
-		/*
-		if (bu.commands[commandName].longinfo) {
-			bu.r.table('command').insert({
-				name: commandName,
-				usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
-				info: bu.commands[commandName].longinfo,
-				type: command.category
-			}).run();
-		}
-		*/
+        /*
+        if (bu.commands[commandName].longinfo) {
+        	bu.r.table('command').insert({
+        		name: commandName,
+        		usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+        		info: bu.commands[commandName].longinfo,
+        		type: command.category
+        	}).run();
+        }
+        */
         if (bu.commands[commandName].sub) {
             for (var subCommand in bu.commands[commandName].sub) {
                 logger.init(`    Loading ${commandName}'s subcommand`, subCommand);
@@ -139,8 +130,7 @@ function buildCommand(commandName) {
         bu.commandList[commandName] = command;
         if (bu.commands[commandName].alias) {
             for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
-                logger.init(`    Loading ${commandName}'s alias`
-                    , bu.commands[commandName].alias[ii]);
+                logger.init(`    Loading ${commandName}'s alias`, bu.commands[commandName].alias[ii]);
                 bu.commandList[bu.commands[commandName].alias[ii]] = command;
             }
         }
@@ -160,87 +150,83 @@ var error = true;
  * @param em - the event emitter (EventEmitter)
  */
 e.init = (v, em) => {
-    VERSION = v;
-    emitter = em;
-    logger.debug('HELLOOOOO?');
-    process.on('unhandledRejection', (reason, p) => {
-        logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
-    });
-    if (fs.existsSync(path.join(__dirname, 'vars.json'))) {
-        var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json')
-            , 'utf8');
-        vars = JSON.parse(varsFile);
-    } else {
-        vars = {};
-        saveVars();
-    }
-    bot = new Eris.Client(config.discord.token, {
-        autoReconnect: true,
-        disableEveryone: true,
-        disableEvents: {
-            //PRESENCE_UPDATE: true,
-            //   VOICE_STATE_UPDATE: true,
-            TYPING_START: true
-        },
-        getAllUsers: true
-    });
-    global.bot = bot;
-
-    bu.init();
-    bu.emitter = em;
-    bu.VERSION = v;
-    bu.startTime = startTime;
-    bu.vars = vars;
-    tags.init();
-    webInterface.init(bot, bu);
-
-	/**
-	 * EventEmitter stuff
-	 */
-    emitter.on('reloadInterface', () => {
-        reloadInterface();
-    });
-    emitter.on('discordMessage', (message, attachment) => {
-        if (attachment)
-            bu.send(config.discord.channel
-                , message
-                , attachment);
-        else
-            bu.send(config.discord.channel, message);
-    });
-
-    emitter.on('discordTopic', (topic) => {
-        bot.editChannel(config.discord.channel, {
-            topic: topic
+        VERSION = v;
+        emitter = em;
+        logger.debug('HELLOOOOO?');
+        process.on('unhandledRejection', (reason, p) => {
+            logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
         });
-    });
+        if (fs.existsSync(path.join(__dirname, 'vars.json'))) {
+            var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json'), 'utf8');
+            vars = JSON.parse(varsFile);
+        } else {
+            vars = {};
+            saveVars();
+        }
+        bot = new Eris.Client(config.discord.token, {
+            autoReconnect: true,
+            disableEveryone: true,
+            disableEvents: {
+                //PRESENCE_UPDATE: true,
+                //   VOICE_STATE_UPDATE: true,
+                TYPING_START: true
+            },
+            getAllUsers: true
+        });
+        global.bot = bot;
 
-    emitter.on('eval', (msg, text) => {
-        eval1(msg, text);
-    });
-    emitter.on('eval2', (msg, text) => {
-        eval2(msg, text);
-    });
+        bu.init();
+        bu.emitter = em;
+        bu.VERSION = v;
+        bu.startTime = startTime;
+        bu.vars = vars;
+        tags.init();
+        webInterface.init(bot, bu);
 
-    emitter.on('reloadCommand', (commandName) => {
-        reloadCommand(commandName);
-    });
-    emitter.on('loadCommand', (commandName) => {
-        loadCommand(commandName);
-    });
-    emitter.on('unloadCommand', (commandName) => {
-        unloadCommand(commandName);
-    });
-    emitter.on('saveVars', () => {
-        saveVars();
-    });
+        /**
+         * EventEmitter stuff
+         */
+        emitter.on('reloadInterface', () => {
+            reloadInterface();
+        });
+        emitter.on('discordMessage', (message, attachment) => {
+            if (attachment)
+                bu.send(config.discord.channel, message, attachment);
+            else
+                bu.send(config.discord.channel, message);
+        });
 
-    avatars = JSON.parse(fs.readFileSync(path.join(__dirname
-        , `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
+        emitter.on('discordTopic', (topic) => {
+            bot.editChannel(config.discord.channel, {
+                topic: topic
+            });
+        });
 
-    bot.on('debug', function (message, id) {
-        if (debug)
-            logger.debug(`[${moment()
+        emitter.on('eval', (msg, text) => {
+            eval1(msg, text);
+        });
+        emitter.on('eval2', (msg, text) => {
+            eval2(msg, text);
+        });
+
+        emitter.on('reloadCommand', (commandName) => {
+            reloadCommand(commandName);
+        });
+        emitter.on('loadCommand', (commandName) => {
+            loadCommand(commandName);
+        });
+        emitter.on('unloadCommand', (commandName) => {
+            unloadCommand(commandName);
+        });
+        emitter.on('saveVars', () => {
+            saveVars();
+        });
+
+        avatars = JSON.parse(fs.readFileSync(path.join(__dirname, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
+
+        bot.on('debug', function (message, id) {
+                    if (debug)
+                        logger.debug(`[${moment()
                 .format(`MM/DD HH:mm:ss`)}][DEBUG][${id}] ${message}`);
         return 'no';
     });
@@ -439,11 +425,30 @@ If you are the owner of this server, here are a few things to know.
 
     bot.on('messageDelete', async function (msg) {
         if (!msg.channel) {
-            logger.info('Somebody deleted an uncached message.');
+            let storedMsg = await bu.r.table('chatlogs')
+            .getAll(msg.id, {index: 'msgid'})
+            .orderBy(bu.r.desc('msgtime')).run();
+            if (storedMsg.length > 0) {
+            logger.info('Somebody deleted an uncached message, but we found it in the DB.');
+                
+                storedMsg = storedMsg[0];
+                msg.content = storedMsg.content;
+                msg.author = {
+                    id: storedMsg.userid
+                };
+            msg.mentions = storedMsg.mentions.split(',').map(m => {
+                return {username: m};
+            });
+            if (storedMsg.attachment) msg.attachment = [storedMsg.attachment];
+            msg.channel = bot.getChannel(msg.channelID);
+            
+            } else {
+            logger.info('Somebody deleted an uncached message and unstored message.');
             msg.channel = bot.getChannel(msg.channelID);
             msg.author = {};
             msg.mentions = [];
             msg.attachments = [];
+            }
         }
         if (commandMessages[msg.channel.guild.id] && commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
             let val = await bu.guildSettings.get(msg.channel.guild.id, 'deletenotif');
