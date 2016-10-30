@@ -195,7 +195,7 @@ bu.send = async function (channel, message, file) {
     if (channel instanceof Eris.Message) {
         channelid = channel.channel.id;
     }
-    if (message.length <= 0) {
+    if (message.length <= 0 && !file) {
         logger.info('Tried to send a message with no content.');
         return Error('No content');
     }
