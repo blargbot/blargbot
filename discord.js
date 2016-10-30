@@ -429,7 +429,8 @@ If you are the owner of this server, here are a few things to know.
             .getAll(msg.id, {index: 'msgid'})
             .orderBy(bu.r.desc('msgtime')).run();
             if (storedMsg.length > 0) {
-            logger.info('Somebody deleted an uncached message, but we found it in the DB.');
+                
+            logger.info('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
                 
                 storedMsg = storedMsg[0];
                 msg.content = storedMsg.content;
@@ -439,7 +440,7 @@ If you are the owner of this server, here are a few things to know.
             msg.mentions = storedMsg.mentions.split(',').map(m => {
                 return {username: m};
             });
-            if (storedMsg.attachment) msg.attachment = [storedMsg.attachment];
+            if (storedMsg.attachment) msg.attachments = [storedMsg.attachment];
             msg.channel = bot.getChannel(msg.channelID);
             
             } else {
