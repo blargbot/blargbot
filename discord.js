@@ -445,7 +445,7 @@ If you are the owner of this server, here are a few things to know.
             msg.channel = bot.getChannel(msg.channelID);
             
             } else {
-            logger.warn('Somebody deleted an uncached message and unstored message.');
+            logger.debug('Somebody deleted an uncached message and unstored message.');
             msg.channel = bot.getChannel(msg.channelID);
             msg.author = {};
             msg.mentions = [];
