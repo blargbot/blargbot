@@ -25,10 +25,10 @@ e.execute = async function(msg) {
         };
     if (channel.blacklisted) {
         channel.blacklisted = false;
-        bu.send(msg.channel.id, 'This channel is no longer blacklisted.');
+        bu.send(msg, 'This channel is no longer blacklisted.');
     } else {
         channel.blacklisted = true;
-        bu.send(msg.channel.id, 'This channel is now blacklisted.');
+        bu.send(msg, 'This channel is now blacklisted.');
 
     }
     storedGuild.channels[msg.channel.id] = channel;

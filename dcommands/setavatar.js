@@ -25,7 +25,7 @@ e.execute = (msg, words) => {
         } else if (words.length > 1) {
             avatarUrl = words[1];
         } else {
-            bu.send(msg.channel.id, 'No URL given.');
+            bu.send(msg, 'No URL given.');
         }
         request.get(avatarUrl, function (error, response, body) {
             if (!error && response.statusCode == 200) {
@@ -33,7 +33,7 @@ e.execute = (msg, words) => {
                 logger.debug(data);
                 var p1 = bot.editSelf({ avatar: data });
                 p1.then(function () {
-                    bu.send(msg.channel.id, ':ok_hand: Avatar set!');
+                    bu.send(msg, ':ok_hand: Avatar set!');
                 });
             }
         });

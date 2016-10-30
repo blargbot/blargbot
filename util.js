@@ -11,12 +11,11 @@ var bu = module.exports = {};
 bu.CAT_ID = '103347843934212096';
 bu.catOverrides = true;
 bu.db = null;
-config = null;
 bu.emitter = null;
 bu.VERSION = null;
 bu.startTime = null;
 bu.vars = null;
-var logger = logger = loggerModule.init();
+loggerModule.init();
 logger.command('meow');
 //logger.level = 'debug';
 
@@ -119,7 +118,7 @@ bu.compareStats = (a, b) => {
 };
 
 bu.awaitMessage = async function (msg, message, callback) {
-    let returnMsg = await bu.send(msg.channel.id, message);
+    let returnMsg = await bu.send(msg, message);
     if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
         bu.awaitMessages[msg.channel.id] = {};
     let event = 'await' + msg.channel.id + '-' + msg.author.id;
@@ -148,7 +147,7 @@ bu.awaitMessage = async function (msg, message, callback) {
             });
             bu.awaitMessages[msg.channel.id][msg.author.id].timer = setTimeout(() => {
                 bu.emitter.removeAllListeners(event);
-                bu.send(msg.channel.id, 'Query canceled after 5 minutes.');
+                bu.send(msg, 'Query canceled after 5 minutes.');
                 reject('Request timed out.');
             }, 300000);
         });
@@ -179,7 +178,7 @@ bu.hasPerm = (msg, perm, quiet) => {
         }
     }
     if (!quiet)
-        bu.send(msg.channel.id, `You need the role ${Array.isArray(perm) ? perm.map(m => `\`${m}\``).join(', or ') : `\`${perm}\``} in order to use this command!`);
+        bu.send(msg, `You need the role ${Array.isArray(perm) ? perm.map(m => `\`${m}\``).join(', or ') : `\`${perm}\``} in order to use this command!`);
     return false;
 };
 
@@ -332,7 +331,7 @@ bu.getUser = async function (msg, name, quiet) {
         return userList[0].user;
     } else if (userList.length == 0) {
         if (!quiet)
-            bu.send(msg.channel.id, `No users found.`);
+            bu.send(msg, `No users found.`);
         return null;
     } else {
         if (!quiet) {
@@ -354,7 +353,7 @@ ${userListString}${newUserList.length < userList.length ? `...and ${userList.len
                     } else return false;
                 });
             if (resMsg.content.toLowerCase() == 'c') {
-                bu.send(msg.channel.id, 'Query canceled.');
+                bu.send(msg, 'Query canceled.');
                 return null;
             } else {
                 let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
@@ -405,7 +404,7 @@ bu.getRole = async function (msg, name, quiet) {
         return roleList[0];
     } else if (roleList.length == 0) {
         if (!quiet)
-            bu.send(msg.channel.id, `No roles found.`);
+            bu.send(msg, `No roles found.`);
         return null;
     } else {
         if (!quiet) {
@@ -427,7 +426,7 @@ ${roleListString}${newRoleList.length < roleList.length ? `...and ${roleList.len
                     } else return false;
                 });
             if (resMsg.content.toLowerCase() == 'c') {
-                bu.send(msg.channel.id, 'Query canceled.');
+                bu.send(msg, 'Query canceled.');
                 return null;
             } else {
                 let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;

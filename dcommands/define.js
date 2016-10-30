@@ -38,7 +38,7 @@ e.execute = (msg, words) => {
     }
     var max = config.general.isbeta ? 250 : 1500;
     if (config.general.wordapis.uses > max) {
-        bu.send(msg.channel.id, 'I have used up all of my api queries for today. Sorry!');
+        bu.send(msg, 'I have used up all of my api queries for today. Sorry!');
         return;
     }
     config.general.wordapis.uses++;
@@ -65,9 +65,9 @@ e.execute = (msg, words) => {
             } else {
                 message += 'No results found!';
             }
-            bu.send(msg.channel.id, message);
+            bu.send(msg, message);
         } else {
-            bu.send(msg.channel.id, 'No results found!');
+            bu.send(msg, 'No results found!');
 
         }
     });

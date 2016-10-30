@@ -24,7 +24,7 @@ e.execute = async function(msg, words) {
     let mutedrole = await bu.guildSettings.get(msg.channel.guild.id, 'mutedrole');
 
     if (!mutedrole) {
-        bu.send(msg.channel.id, `No muted users were found. You can only unmute users muted with \`mute\`.`);
+        bu.send(msg, `No muted users were found. You can only unmute users muted with \`mute\`.`);
     }
     if (words.length > 1) {
 
@@ -37,7 +37,7 @@ e.execute = async function(msg, words) {
                         return;
 
                     if (member.roles.indexOf(mutedrole) == -1) {
-                        bu.send(msg.channel.id, 'That user isn\'t muted!');
+                        bu.send(msg, 'That user isn\'t muted!');
                     } else {
                         var roles = member.roles;
                         roles.splice(roles.indexOf(mutedrole), 1);
@@ -45,7 +45,7 @@ e.execute = async function(msg, words) {
                             roles: roles
                         });
                         bu.logAction(msg.channel.guild, user, msg.author, 'Unmute');
-                        bu.send(msg.channel.id, ':ok_hand:');
+                        bu.send(msg, ':ok_hand:');
                     }
 
 
@@ -59,10 +59,10 @@ e.execute = async function(msg, words) {
                 }
                 //bot.ban
  //           } else {
- //               bu.send(msg.channel.id, `You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`);
+ //               bu.send(msg, `You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`);
  //           }
         } else {
-            bu.send(msg.channel.id, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
+            bu.send(msg, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
         }
     }
 };

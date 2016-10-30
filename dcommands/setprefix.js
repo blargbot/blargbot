@@ -21,11 +21,11 @@ e.execute = (msg, words, text) => {
     if (words.length > 1) {
         var prefix = words.slice(1).join(' ');
         bu.guildSettings.set(msg.channel.guild.id, 'prefix', prefix).then(() => {
-            bu.send(msg.channel.id, `Set the custom command prefix to '${prefix}'`);
+            bu.send(msg, `Set the custom command prefix to '${prefix}'`);
         });
     } else {
         bu.guildSettings.remove(msg.channel.guild.id, 'prefix').then(() => {
-            bu.send(msg.channel.id, `Reset your command prefix!`);
+            bu.send(msg, `Reset your command prefix!`);
         });
 
     }

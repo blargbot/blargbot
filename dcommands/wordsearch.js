@@ -35,7 +35,7 @@ e.execute = (msg, words) => {
                 solveWordSearch(msg);
                 break;
             default:
-                bu.send(msg.channel.id, `\`\`\`xl
+                bu.send(msg, `\`\`\`xl
 wordsearch create <words...> 
     - creates a 10x10 wordsearch with provided words
 wordsearch create-size <x> <y> <words...>
@@ -46,7 +46,7 @@ wordsearch solve
                 break;
         }
     } else {
-        bu.send(msg.channel.id, `\`\`\`xl
+        bu.send(msg, `\`\`\`xl
 wordsearch create <words...> 
     - creates a 10x10 wordsearch with provided words
 wordsearch create-size <x> <y> <words...>
@@ -103,7 +103,7 @@ function initWordSearch(msg, words, size) {
         size = [10, 10];
     }
     if (size[0] > 20 || size[1] > 20) {
-        bu.send(msg.channel.id, 'The maximum size is 20!');
+        bu.send(msg, 'The maximum size is 20!');
         return;
     }
     var search = wordsearch(words, size[0], size[1]);
@@ -138,7 +138,7 @@ function initWordSearch(msg, words, size) {
     }
     output += '\n```';
 
-    bu.send(msg.channel.id, output);
+    bu.send(msg, output);
 }
 
 function solveWordSearch(msg) {
@@ -179,5 +179,5 @@ function solveWordSearch(msg) {
     }
     output += '\n```';
 
-    bu.send(msg.channel.id, output);
+    bu.send(msg, output);
 }

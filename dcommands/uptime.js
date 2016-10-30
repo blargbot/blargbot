@@ -19,5 +19,5 @@ e.info = 'Tells you how long I have been online.';
 e.longinfo = `<p>Tells you how long the bot has been up for.</p>`;
 
 e.execute = (msg) => {
-    bu.send(msg.channel.id, `Bot Uptime: ${bu.createTimeDiffString(moment(), bu.startTime)}`);
+    bu.send(msg, `Bot Uptime: ${bu.createTimeDiffString(moment(), bu.startTime)}`);
 };

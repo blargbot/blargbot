@@ -30,7 +30,7 @@ ${bu.commandList[words[1]].info}`;
         } else {
             message = `No description could be found for command \`${words[1]}\`.`;
         }
-        bu.send(msg.channel.id, message);
+        bu.send(msg, message);
     } else {
         var commandsString = '```prolog\nGeneral Commands:\n  ';
         var generalCommands = [];
@@ -100,11 +100,11 @@ ${bu.commandList[words[1]].info}`;
 
             if (doDM) {
                 bot.getDMChannel(msg.author.id).then(pc => {
-                    bu.send(msg.channel.id, '📧 DMing you a list of commands 📧');
+                    bu.send(msg, '📧 DMing you a list of commands 📧');
                     bu.send(pc.id, sendString);
                 });
             } else {
-                bu.send(msg.channel.id, sendString);
+                bu.send(msg, sendString);
             }
         };
 

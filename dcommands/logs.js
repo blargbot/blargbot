@@ -66,10 +66,10 @@ var typeRef = {
 
 
 e.execute = async function (msg, words) {
-    //  bu.send(msg.channel.id, 'WIP');
+    //  bu.send(msg, 'WIP');
     //  return;
     if (words[0].toLowerCase() == 'help') {
-        bu.send(msg.channel.id, e.info);
+        bu.send(msg, e.info);
         return;
     }
     let numberOfMessages = NaN
@@ -128,7 +128,7 @@ e.execute = async function (msg, words) {
     }
     let guild = bot.channelGuildMap[channel];
     if (!guild || guild != msg.channel.guild.id) {
-        bu.send(msg.channel.id, 'The channel must be on this guild!');
+        bu.send(msg, 'The channel must be on this guild!');
         return;
     }
     if (order == null) {
@@ -161,7 +161,7 @@ e.execute = async function (msg, words) {
     //    types = [0, 1, 2];
     // }
     logger.debug(channel, users, types, order);
-    let msg2 = await bu.send(msg.channel.id, 'Generating your logs...');
+    let msg2 = await bu.send(msg, 'Generating your logs...');
     let pingUser = false;
     let timer = setTimeout(() => {
         msg2.edit('Generating your logs...\nThis seems to be taking longer than usual. I\'ll ping you when I\'m finished.');

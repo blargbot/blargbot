@@ -32,7 +32,7 @@ e.execute = (msg, words) => {
             for (var i = 0; i < emojis.results.length && i < 8; i++) {
                 toSend += emojis.results[i].text;
             }
-            bu.send(msg.channel.id, toSend);
+            bu.send(msg, toSend);
         }
     });
 };

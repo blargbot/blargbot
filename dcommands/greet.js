@@ -30,12 +30,12 @@ e.execute = async function(msg, words) {
 
     if (words.length == 1) {
         bu.guildSettings.remove(msg.channel.guild.id, 'greeting').then(() => {
-            bu.send(msg.channel.id, 'Disabled greetings');
+            bu.send(msg, 'Disabled greetings');
         });
         return;
     }
     var greeting = words.slice(1).join(' ');
     await bu.guildSettings.set(msg.channel.guild.id, 'greeting', greeting);
-    bu.send(msg.channel.id, `Greeting set. Simulation:
+    bu.send(msg, `Greeting set. Simulation:
 ${await tags.processTag(msg, greeting, '')}`);
 };

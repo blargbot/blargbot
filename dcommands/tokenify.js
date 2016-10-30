@@ -42,8 +42,8 @@ e.execute = (msg, words, text) => {
                 }
         }
         logger.debug(newPasta.join(''));
-        bu.send(msg.channel.id, newPasta.join(''));
+        bu.send(msg, newPasta.join(''));
     } else {
-        bu.send(msg.channel.id, 'Not enough arguments given');
+        bu.send(msg, 'Not enough arguments given');
     }
 };

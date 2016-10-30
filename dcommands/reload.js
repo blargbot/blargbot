@@ -19,6 +19,6 @@ e.info = '';
 e.execute = (msg) => {
     if (msg.author.id === bu.CAT_ID) {
         bu.emitter.emit('reloadConfig');
-        bu.send(msg.channel.id, ':ok_hand:');
+        bu.send(msg, ':ok_hand:');
     }
 };

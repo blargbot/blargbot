@@ -97,12 +97,12 @@ e.processTag = async function (msg, contents, command, tagName, author) {
 e.executeTag = async function (msg, tagName, command) {
     let tag = await bu.r.table('tag').get(tagName).run();
     if (!tag)
-        bu.send(msg.channel.id, `❌ That tag doesn't exist! ❌`);
+        bu.send(msg, `❌ That tag doesn't exist! ❌`);
     else {
         if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
             let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
             if (!nsfwChan) {
-                bu.send(msg.channel.id, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
+                bu.send(msg, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
                 return;
             }
         }
@@ -123,6 +123,6 @@ e.executeTag = async function (msg, tagName, command) {
             message = message.replace(new RegExp(`<@!?${match}>`, 'g'), name);
         }
         if (message != '')
-            bu.send(msg.channel.id, message);
+            bu.send(msg, message);
     }
 };

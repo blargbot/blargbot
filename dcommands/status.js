@@ -20,12 +20,12 @@ e.info = '<p>Gets you an image of an HTTP status code.</p>';
 
 e.execute = (msg, words, text) => {
     if (!words[1]) {
-        bu.send(msg.channel.id, `400 BAD REQUEST\nNot enough arguments provided!`);
+        bu.send(msg, `400 BAD REQUEST\nNot enough arguments provided!`);
         return;
     }
     let code = parseInt(words[1]);
     if (isNaN(code)) {
-        bu.send(msg.channel.id, `400 BAD REQUEST\nInvalid code provided!`);
+        bu.send(msg, `400 BAD REQUEST\nInvalid code provided!`);
         return;
     }
     let urlStart;
@@ -51,7 +51,7 @@ e.execute = (msg, words, text) => {
             if (res.headers['content-type'] == 'text/html') {
                 bu.sendFile(msg.channel.id, '', urlStart + encodeURIComponent(404 + '.jpg'));
             } else
-                bu.send(msg.channel.id, '', {
+                bu.send(msg, '', {
                     name: filename,
                     file: body
                 });

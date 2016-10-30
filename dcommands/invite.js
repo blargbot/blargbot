@@ -18,7 +18,7 @@ e.longinfo = `<p>Gives you the bot's invite information.</p>`;
 e.alias = ['join'];
 
 e.execute = (msg) => {
-    bu.send(msg.channel.id, 'Invite me to your guild!\n'
+    bu.send(msg, 'Invite me to your guild!\n'
         + 'http://invite.blargbot.xyz/\n'
         + 'Don\'t need the moderation functions? Use this link instead:\n'
         + 'http://minvite.blargbot.xyz/\n'

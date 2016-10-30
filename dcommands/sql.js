@@ -21,13 +21,13 @@ e.info = '';
 
 e.execute = (msg, words) => {
     if (msg.author.id === bu.CAT_ID) {
-        bu.send(msg.channel.id, 'no');
+        bu.send(msg, 'no');
         /*
         let query = words.slice(1).join(' ');
         logger.debug(query);
         bu.db.quer//y(query, (err, rows, fields) => {
             if (err) {
-                bu.send(msg.channel.id, `Error!\n\`\`\`js\n${err.stack}\n\`\`\``);
+                bu.send(msg, `Error!\n\`\`\`js\n${err.stack}\n\`\`\``);
                 return;
             } else {
                 if (rows && rows[0]) {
@@ -61,9 +61,9 @@ e.execute = (msg, words) => {
                     if (output.length > 2000) {
                         output = output.substring(0, 1992) + '\n...\n```';
                     }
-                    bu.send(msg.channel.id, output);
+                    bu.send(msg, output);
                 } else {
-                    bu.send(msg.channel.id, `No results found!`);
+                    bu.send(msg, `No results found!`);
                 }
             }
         });

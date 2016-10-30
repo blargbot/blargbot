@@ -2,7 +2,7 @@ var e = module.exports = {};
 const winston = require('winston');
 const moment = require('moment-timezone');
 const path = require('path');
-const config = require('winston/lib/winston/config');
+const wconfig = require('winston/lib/winston/config');
 
 const levels = {
     killme: 0,
@@ -12,9 +12,9 @@ const levels = {
     init: 4,
     output: 5,
     irc: 6,
-    info: 7,
-    website: 8,
-    music: 9,
+    website: 7,
+    music: 8,
+    info: 9,
     verbose: 10,
     debug: 12,
     silly: 12
@@ -38,20 +38,23 @@ const colors = {
     bold: 'bold'
 };
 
+var debug;
+
 e.init = () => {
+    debug = config.general.isbeta;
     var maxLength = 0;
     for (let key in levels) {
         if (key.length > maxLength) {
             maxLength = key.length;
         }
     }
-    var logger = e.logger = new (winston.Logger)({
+    var logger = e.logger = new(winston.Logger)({
         levels: levels,
         colors: colors,
         level: 'debug',
         exitOnError: false,
         transports: [
-            new (winston.transports.Console)({
+            new(winston.transports.Console)({
                 prettyPrint: true,
                 colorize: true,
                 name: 'general',
@@ -63,12 +66,12 @@ e.init = () => {
                 },
                 formatter: options => {
                     // Return string will be passed to logger.
-                    return config.colorize('timestamp', options.timestamp()) + config.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' '
-                        + (options.level == 'error' && options.meta && options.meta.stack ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== options.message ? options.message : '') +
+                    return wconfig.colorize('timestamp', options.timestamp()) + wconfig.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' ' +
+                        (options.level == 'error' && options.meta && options.meta.stack ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== options.message ? options.message : '') +
                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }
             }),
-            new (winston.transports.File)({
+            new(winston.transports.File)({
                 name: 'file-general',
                 filename: path.join(__dirname, 'logs', 'generallogs.log'),
                 maxsize: 10000000,
@@ -82,15 +85,15 @@ e.init = () => {
                 },
                 formatter: options => {
                     // Return string will be passed to logger.
-                    return options.timestamp() + '[' + options.level.toUpperCase() + '] '
-                        + (options.level == 'error' && options.meta && options.meta.stack
-                            ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack)
-                            : (undefined !== options.message ? options.message : '') +
-                            (options.meta && Object.keys(options.meta).length
-                                ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
+                    return options.timestamp() + '[' + options.level.toUpperCase() + '] ' +
+                        (options.level == 'error' && options.meta && options.meta.stack ?
+                            (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) :
+                            (undefined !== options.message ? options.message : '') +
+                            (options.meta && Object.keys(options.meta).length ?
+                                '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }
             }),
-            new (winston.transports.File)({
+            new(winston.transports.File)({
                 name: 'file-error',
                 filename: path.join(__dirname, 'logs', 'errorlogs.log'),
                 maxsize: 10000000,
@@ -104,20 +107,26 @@ e.init = () => {
                 },
                 formatter: options => {
                     // Return string will be passed to logger.
-                    return options.timestamp() + '[' + options.level.toUpperCase() + '] '
-                        + (options.level == 'error' && options.meta && options.meta.stack
-                            ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack)
-                            : (undefined !== options.message ? options.message : '') +
-                            (options.meta && Object.keys(options.meta).length
-                                ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
+                    return options.timestamp() + '[' + options.level.toUpperCase() + '] ' +
+                        (options.level == 'error' && options.meta && options.meta.stack ?
+                            (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) :
+                            (undefined !== options.message ? options.message : '') +
+                            (options.meta && Object.keys(options.meta).length ?
+                                '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }
             })
         ]
     });
+    logger.level = debug ? 'debug' : 'info';
+
+    logger.toggleDebug = function () {
+        logger.level = debug ? 'info' : 'debug';
+        debug = !debug;
+        return debug;
+    };
     global.logger = logger;
     return logger;
 };
-
 
 function pad(value, length) {
     return (value.toString().length < length) ? pad(' ' + value, length) : value;

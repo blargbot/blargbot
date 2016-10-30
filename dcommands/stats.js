@@ -37,7 +37,7 @@ e.execute = async function(msg, words) {
     for (let i = 0; i < sortable.length && i < 5; i++) {
         topCommandsSession += pad(sortable[i][0] + ':', 13) + ' ' + sortable[i][1] + '\n';
     }
-    bu.send(msg.channel.id, `\`\`\`prolog
+    bu.send(msg, `\`\`\`prolog
 !== { General Stats } ==!
 ${pad('Guilds:', 13)} ${bot.guilds.size}
 ${pad('Channels:', 13)} ${Object.keys(bot.channelGuildMap).length}

@@ -23,7 +23,7 @@ e.execute = async function (msg) {
           varname: 'restart',
           varvalue: msg.channel.id  
         }).run();
-        await bu.send(msg.channel.id, 'Ah! You\'ve killed me! D:');
+        await bu.send(msg, 'Ah! You\'ve killed me! D:');
         process.exit();
     }
 };

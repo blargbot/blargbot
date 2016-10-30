@@ -55,7 +55,7 @@ e.execute = async function (msg, words) {
                     }
                 }
                 if (addList.length == 0 && removeList.length == 0) {
-                    await bu.send(msg.channel.id, 'You must have some roles!');
+                    await bu.send(msg, 'You must have some roles!');
                     break;
                 }
                 let channelList = [];
@@ -75,11 +75,11 @@ e.execute = async function (msg, words) {
                 await bu.r.table('guild').get(msg.channel.guild.id).update({
                     roleme: roleme
                 }).run();
-                bu.send(msg.channel.id, 'Roleme added!');
+                bu.send(msg, 'Roleme added!');
                 break;
             case 'remove':
                 if (roleme.length == 0) {
-                    await bu.send(msg.channel.id, 'You have no rolemes created!');
+                    await bu.send(msg, 'You have no rolemes created!');
                     break;
                 }
                 rolemeString = 'Here are the rolemes on your guild:\n```prolog\n';
@@ -94,7 +94,7 @@ e.execute = async function (msg, words) {
                 rolemeString += '```\nPlease type the number of the roleme you wish to remove, or `c` to cancel.';
                 let resMsg = (await bu.awaitMessage(msg, rolemeString, m => (!isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length)  || m.content.toLowerCase() == 'c'));
                 if (resMsg.content.toLowerCase() == 'c') {
-                    await bu.send(msg.channel.id, 'Remove canceled!');
+                    await bu.send(msg, 'Remove canceled!');
                     break;
                 }
                 roleme.splice(parseInt(resMsg.content) - 1, 1);
@@ -102,11 +102,11 @@ e.execute = async function (msg, words) {
                 await bu.r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
                 let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
                 await bot.deleteMessage(delmsg.channel.id, delmsg.id);
-                await bu.send(msg.channel.id, 'Done! :ok_hand:');
+                await bu.send(msg, 'Done! :ok_hand:');
                 break;
             case 'list':
                 if (roleme.length == 0) {
-                    await bu.send(msg.channel.id, 'You have no rolemes created!');
+                    await bu.send(msg, 'You have no rolemes created!');
                     break;
                 }
                 rolemeString = 'Here are the rolemes on your guild:\n```prolog\n';
@@ -119,13 +119,13 @@ e.execute = async function (msg, words) {
                 }
                 if (rolemeString.length > 2000) rolemeString = rolemeString.substring(0, 1994) + '...';
                 rolemeString += '```';
-                bu.send(msg.channel.id, rolemeString);
+                bu.send(msg, rolemeString);
                 break;
             default:
-                bu.send(msg.channel.id, e.info);
+                bu.send(msg, e.info);
                 break;
         }
     } else {
-        bu.send(msg.channel.id, e.info);
+        bu.send(msg, e.info);
     }
 };

@@ -36,7 +36,7 @@ e.execute = (msg) => {
     }
     //   var lineCount = 0
     function onComplete(lines) {
-        bu.send(msg.channel.id, 'I am made of ' + lines + ' lines.');
+        bu.send(msg, 'I am made of ' + lines + ' lines.');
     }
     var count = files.length;
     var lines = 0;

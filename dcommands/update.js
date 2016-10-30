@@ -57,11 +57,11 @@ e.execute = (msg, words) => {
                     message += `\nNow running on version \`${config.version}\`!`;
                     bu.saveConfig();
                 }
-                bu.send(msg.channel.id, message);
+                bu.send(msg, message);
 
             });
         } else {
-            bu.send(msg.channel.id, `Whoa, you can't do that! This is the beta build!`);
+            bu.send(msg, `Whoa, you can't do that! This is the beta build!`);
         }
     }
 };

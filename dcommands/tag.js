@@ -82,7 +82,7 @@ var searchTags = async function(msg, originalTagList, query, page, deleteMsg) {
         var message = `Found ${originalTagList.length} tags matching '${query}'.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.join(', ').trim()}\n\`\`\`\nType a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to perform another search.`;
         let newPage = (await bu.awaitMessage(msg, message)).content;
         if (newPage.toLowerCase() == 'c') {
-            bu.send(msg.channel.id, 'I hope you found what you were looking for!');
+            bu.send(msg, 'I hope you found what you were looking for!');
             return;
         }
         let choice = parseInt(newPage);
@@ -94,13 +94,13 @@ var searchTags = async function(msg, originalTagList, query, page, deleteMsg) {
                 bu.r.row('name').match('(?i)' + escapeRegex(newPage))
             ).run();
             if (originalTagList.length == 0) {
-                bu.send(msg.channel.id, 'No results found!');
+                bu.send(msg, 'No results found!');
                 return;
             }
             return searchTags(msg, originalTagList, newPage, 1, deleteMsg);
         }
     } else {
-        bu.send(msg.channel.id, 'No results found!');
+        bu.send(msg, 'No results found!');
         return;
     }
 };
@@ -109,7 +109,7 @@ var listTags = async function(msg, originalTagList, page, author, deleteMsg)  {
 
     let tagList = [];
     if (originalTagList.length == 0) {
-        bu.send(msg.channel.id, 'No results found!');
+        bu.send(msg, 'No results found!');
         return;
     }
     let maxPages = Math.floor(originalTagList.length / 100) + 1;
@@ -122,7 +122,7 @@ var listTags = async function(msg, originalTagList, page, author, deleteMsg)  {
         let message = `Found ${originalTagList.length} tags${author ? ` made by **${author.username}#${author.discriminator}**` : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to look up tags made by a specific user.`;
         let newPage = (await bu.awaitMessage(msg, message)).content;
         if (newPage.toLowerCase() == 'c') {
-            bu.send(msg.channel.id, 'I hope you found what you were looking for!');
+            bu.send(msg, 'I hope you found what you were looking for!');
             return;
         }
         let choice = parseInt(newPage);
@@ -136,13 +136,13 @@ var listTags = async function(msg, originalTagList, page, author, deleteMsg)  {
             else
                 originalTagList = await bu.r.table('tag').run();
             if (originalTagList.length == 0) {
-                bu.send(msg.channel.id, 'No results found!');
+                bu.send(msg, 'No results found!');
                 return;
             }
             return listTags(msg, originalTagList, 1, newPage, deleteMsg);
         }
     } else {
-        bu.send(msg.channel.id, 'No results found!');
+        bu.send(msg, 'No results found!');
         return;
     }
 };
@@ -161,7 +161,7 @@ e.execute = async function(msg, words, text) {
                 title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@]/gi, '');
                 tag = await bu.r.table('tag').get(title).run();
                 if (tag) {
-                    bu.send(msg.channel.id, `❌ That tag already exists! ❌`);
+                    bu.send(msg, `❌ That tag already exists! ❌`);
                     break;
                 }
 
@@ -177,7 +177,7 @@ e.execute = async function(msg, words, text) {
                     lastmodified: bu.r.epochTime(moment() / 1000),
                     uses: 0
                 }).run();
-                bu.send(msg.channel.id, `✅ Tag \`${title}\` created. ✅`);
+                bu.send(msg, `✅ Tag \`${title}\` created. ✅`);
                 logChange('Create', {
                     user: `${msg.author.username} (${msg.author.id})`,
                     tag: title,
@@ -194,18 +194,18 @@ e.execute = async function(msg, words, text) {
 
                 let oldTag = await bu.r.table('tag').get(oldTagName).run();
                 if (!oldTag) {
-                    bu.send(msg.channel.id, `❌ That tag doesn't exist! ❌`);
+                    bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
                 if (oldTag.author != msg.author.id) {
-                    bu.send(msg.channel.id, `❌ You don't own this tag! ❌`);
+                    bu.send(msg, `❌ You don't own this tag! ❌`);
                     break;
                 }
 
                 if (!newTagName) newTagName = (await bu.awaitMessage(msg, `Enter the new name.`)).content;
                 let newTag = await bu.r.table('tag').get(newTagName).run();
                 if (newTag) {
-                    bu.send(msg.channel.id, `❌ The tag \`${words[3]}\` already exist! ❌`);
+                    bu.send(msg, `❌ The tag \`${words[3]}\` already exist! ❌`);
                     break;
                 }
 
@@ -213,7 +213,7 @@ e.execute = async function(msg, words, text) {
                 await bu.r.table('tag').get(oldTagName).delete().run();
                 await bu.r.table('tag').insert(oldTag).run();
 
-                bu.send(msg.channel.id, `✅ Tag \`${oldTagName}\` has been renamed to \`${newTagName}\`. ✅`);
+                bu.send(msg, `✅ Tag \`${oldTagName}\` has been renamed to \`${newTagName}\`. ✅`);
                 logChange('Rename', {
                     user: `${msg.author.username} (${msg.author.id})`,
                     oldName: oldTagName,
@@ -230,11 +230,11 @@ e.execute = async function(msg, words, text) {
                 title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@]/gi, '');
                 tag = await bu.r.table('tag').get(title).run();
                 if (!tag) {
-                    bu.send(msg.channel.id, `❌ That tag doesn't exist! ❌`);
+                    bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
                 if (tag.author != msg.author.id) {
-                    bu.send(msg.channel.id, `❌ You don't own this tag! ❌`);
+                    bu.send(msg, `❌ You don't own this tag! ❌`);
                     break;
                 }
 
@@ -247,7 +247,7 @@ e.execute = async function(msg, words, text) {
                     content: content,
                     lastmodified: bu.r.epochTime(moment() / 1000)
                 }).run();
-                bu.send(msg.channel.id, `✅ Tag \`${title}\` edited. ✅`);
+                bu.send(msg, `✅ Tag \`${title}\` edited. ✅`);
                 logChange('Edit', {
                     user: `${msg.author.username} (${msg.author.id})`,
                     tag: title,
@@ -266,7 +266,7 @@ e.execute = async function(msg, words, text) {
                 title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
                 tag = await bu.r.table('tag').get(title).run();
                 if (tag && tag.author != msg.author.id) {
-                    bu.send(msg.channel.id, `❌ You don't own this tag! ❌`);
+                    bu.send(msg, `❌ You don't own this tag! ❌`);
                     break;
                 }
 
@@ -284,7 +284,7 @@ e.execute = async function(msg, words, text) {
                     lastmodified: bu.r.epochTime(moment() / 1000),
                     uses: tag ? tag.uses : 0
                 }).run();
-                bu.send(msg.channel.id, `✅ Tag \`${title}\` ${tag ? 'edited' : 'created'}. ✅`);
+                bu.send(msg, `✅ Tag \`${title}\` ${tag ? 'edited' : 'created'}. ✅`);
                 logChange(tag ? 'Edit' : 'Create', {
                     user: `${msg.author.username} (${msg.author.id})`,
                     tag: title,
@@ -298,15 +298,15 @@ e.execute = async function(msg, words, text) {
 
                 tag = await bu.r.table('tag').get(title).run();
                 if (!tag) {
-                    bu.send(msg.channel.id, `❌ That tag doesn't exist! ❌`);
+                    bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
                 if (tag.author != msg.author.id && msg.author.id != bu.CAT_ID) {
-                    bu.send(msg.channel.id, `❌ You don't own this tag! ❌`);
+                    bu.send(msg, `❌ You don't own this tag! ❌`);
                     break;
                 }
                 await bu.r.table('tag').get(words[2]).delete();
-                bu.send(msg.channel.id, `✅ Tag \`${title}\` is gone forever! ✅`);
+                bu.send(msg, `✅ Tag \`${title}\` is gone forever! ✅`);
                 logChange('Delete', {
                     user: `${msg.author.username} (${msg.author.id})`,
                     author: `${tag.author == msg.author.id ? msg.author.username : (await bu.r.table('user').get(tag.author)).username} (${tag.author})`,
@@ -315,7 +315,7 @@ e.execute = async function(msg, words, text) {
                 });
                 break;
             case 'help':
-                bu.send(msg.channel.id, e.info);
+                bu.send(msg, e.info);
                 break;
             case 'raw':
                 if (words[2]) title = words[2];
@@ -323,7 +323,7 @@ e.execute = async function(msg, words, text) {
 
                 tag = await bu.r.table('tag').get(words[2]).run();
                 if (!tag) {
-                    bu.send(msg.channel.id, `❌ That tag doesn't exist! ❌`);
+                    bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
 
@@ -332,7 +332,7 @@ e.execute = async function(msg, words, text) {
                     lang = tag.content.match(/\{lang;(.*?)}/i)[1];
                 }
                 content = tag.content.replace(/`/g, '`\u200B');
-                bu.send(msg.channel.id, `The code for ${words[2]} is:
+                bu.send(msg, `The code for ${words[2]} is:
 \`\`\`${lang}
 ${content}
 \`\`\``);
@@ -343,11 +343,11 @@ ${content}
 
                 tag = await bu.r.table('tag').get(words[2]).run();
                 if (!tag) {
-                    bu.send(msg.channel.id, `❌ That tag doesn't exist! ❌`);
+                    bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
                 author = await bu.r.table('user').get(tag.author).run();
-                bu.send(msg.channel.id, `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`);
+                bu.send(msg, `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`);
                 break;
             case 'top':
                 let topTags = await bu.r.table('tag').orderBy(bu.r.desc(bu.r.row('uses'))).limit(5).run();
@@ -356,18 +356,18 @@ ${content}
                     let author = await bu.r.table('user').get(topTags[i].author);
                     returnMsg += `**${i + 1}.** **${topTags[i].name}** (**${author.username}#${author.discriminator}**) - used **${topTags[i].uses} time${topTags[i].uses == 1 ? '' : 's'}**\n`;
                 }
-                bu.send(msg.channel.id, returnMsg);
+                bu.send(msg, returnMsg);
                 break;
             case 'info':
                 if (words[2]) title = words[2];
                 if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
                 tag = await bu.r.table('tag').get(words[2]).run();
                 if (!tag) {
-                    bu.send(msg.channel.id, `❌ That tag doesn't exist! ❌`);
+                    bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
                 author = await bu.r.table('user').get(tag.author).run();
-                bu.send(msg.channel.id, `__**Tag | ${title}** __
+                bu.send(msg, `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
 It was last modified **${moment(tag.lastmodified).format('LLLL')}**.
 It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
@@ -383,7 +383,7 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
                     bu.r.row('name').match('(?i)' + query)
                 ).run();
                 if (originalTagList.length == 0) {
-                    bu.send(msg.channel.id, 'No results found!');
+                    bu.send(msg, 'No results found!');
                     return;
                 }
 
@@ -410,7 +410,7 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
                 break;
         }
     } else {
-        bu.send(msg.channel.id, tagHelp);
+        bu.send(msg, tagHelp);
     }
 };
 

@@ -27,10 +27,10 @@ e.execute = async function(msg) {
         };
     if (channel.nsfw) {
         channel.nsfw = false;
-        bu.send(msg.channel.id, 'This channel is no longer NSFW.');
+        bu.send(msg, 'This channel is no longer NSFW.');
     } else {
         channel.nsfw = true;
-        bu.send(msg.channel.id, 'This channel is now NSFW.');
+        bu.send(msg, 'This channel is now NSFW.');
     }
     storedGuild.channels[msg.channel.id] = channel;
     bu.r.table('guild').get(msg.channel.guild.id).update({

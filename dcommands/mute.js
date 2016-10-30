@@ -46,15 +46,15 @@ e.execute = async function (msg, words, text) {
                 }
                 e.execute(msg, words, text);
             } else {
-                bu.send(msg.channel.id, `I created a \`muted\` role, but don't have permissions to configure it! Either configure it yourself, or make sure I have the \`manage channel\` permission, delete the \`muted\` role, and try again.`);
+                bu.send(msg, `I created a \`muted\` role, but don't have permissions to configure it! Either configure it yourself, or make sure I have the \`manage channel\` permission, delete the \`muted\` role, and try again.`);
             }
         } else {
-            bu.send(msg.channel.id, `I don't have enough permissions to create a \`muted\` role! Make sure I have the \`manage roles\` permission and try again.`);
+            bu.send(msg, `I don't have enough permissions to create a \`muted\` role! Make sure I have the \`manage roles\` permission and try again.`);
         }
         return;
     } else {
         if (!msg.channel.guild.roles.get(mutedrole)) {
-            await bu.send(msg.channel.id, `Couldn't find the muted role! Attempting to regenerate it...`);
+            await bu.send(msg, `Couldn't find the muted role! Attempting to regenerate it...`);
             await bu.guildSettings.remove(msg.channel.guild.id, 'mutedrole');
             await e.execute(msg, words, text);
             return;
@@ -73,16 +73,16 @@ e.execute = async function (msg, words, text) {
                 var userPos = bu.getPosition(msg.member);
                 var targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
                 if (targetPos >= botPos) {
-                    bu.send(msg.channel.id, `I don't have permission to mute ${user.username}!`);
+                    bu.send(msg, `I don't have permission to mute ${user.username}!`);
                     return;
                 }
                 if (targetPos >= userPos) {
-                    bu.send(msg.channel.id, `You don't have permission to mute ${user.username}!`);
+                    bu.send(msg, `You don't have permission to mute ${user.username}!`);
                     return;
                 }
 
                 if (member.roles.indexOf(mutedrole) > -1) {
-                    bu.send(msg.channel.id, 'That user is already muted!');
+                    bu.send(msg, 'That user is already muted!');
                 } else {
                     var roles = member.roles;
                     roles.push(mutedrole);
@@ -90,14 +90,14 @@ e.execute = async function (msg, words, text) {
                         roles: roles
                     });
                     bu.logAction(msg.channel.guild, user, msg.author, 'Mute');
-                    bu.send(msg.channel.id, ':ok_hand:');
+                    bu.send(msg, ':ok_hand:');
                 }
             }
             //          } else {
-            //              bu.send(msg.channel.id, `You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`);
+            //              bu.send(msg, `You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`);
             //          }
         } else {
-            bu.send(msg.channel.id, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
+            bu.send(msg, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
         }
     }
 };

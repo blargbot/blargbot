@@ -47,5 +47,5 @@ e.execute = (msg, words) => {
 
     }
 
-    bu.send(msg.channel.id, message);
+    bu.send(msg, message);
 };

@@ -49,9 +49,9 @@ e.execute = async function(msg, words) {
                 }).run();
 
                 bot.editMessage(val, modlog[index].msgid, content);
-                bu.send(msg.channel.id, ':ok_hand:');
+                bu.send(msg, ':ok_hand:');
             } else {
-                bu.send(msg.channel.id, 'That case does not exist!');
+                bu.send(msg, 'That case does not exist!');
             }
         }
     }

@@ -455,7 +455,7 @@ If you are the owner of this server, here are a few things to know.
         if (commandMessages[msg.channel.guild.id] && commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
             let val = await bu.guildSettings.get(msg.channel.guild.id, 'deletenotif');
             if (val && val != 0)
-                bu.send(msg.channel.id, `**${msg.member.nick
+                bu.send(msg, `**${msg.member.nick
                     || msg.author.username}** deleted their command message.`);
             commandMessages[msg.channel.guild.id].splice(commandMessages[msg.channel.guild.id].indexOf(msg.id), 1);
         }
@@ -530,7 +530,7 @@ If you are the owner of this server, here are a few things to know.
                         await bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1);
                     } catch (err) {
                         delete bu.bans[msg.channel.guild.id][msg.author.id];
-                        bu.send(msg.channel.id, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
+                        bu.send(msg, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
                     }
                     return;
                 }
@@ -561,9 +561,9 @@ If you are the owner of this server, here are a few things to know.
                                 await msg.member.edit({
                                     roles: roleList
                                 });
-                                bu.send(msg.channel.id, 'Your roles have been edited!');
+                                bu.send(msg, 'Your roles have been edited!');
                             } catch (err) {
-                                bu.send(msg.channel.id, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
+                                bu.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
                             }
                         }
                     }
@@ -641,7 +641,7 @@ If you are the owner of this server, here are a few things to know.
                                     , function (response) {
                                         bot.sendChannelTyping(msg.channel.id);
                                         setTimeout(function () {
-                                            bu.send(msg.channel.id, response.message);
+                                            bu.send(msg, response.message);
                                         }, 1500);
                                     });
                             });
@@ -1004,14 +1004,14 @@ function eval2(msg, text) {
         var commandToProcess = text.replace('eval2 ', '');
         logger.debug(commandToProcess);
         try {
-            bu.send(msg.channel.id, `\`\`\`js
+            bu.send(msg, `\`\`\`js
 ${eval(`${commandToProcess}.toString()`)}
 \`\`\``);
         } catch (err) {
-            bu.send(msg.channel.id, err.message);
+            bu.send(msg, err.message);
         }
     } else {
-        bu.send(msg.channel.id, `You don't own me!`);
+        bu.send(msg, `You don't own me!`);
     }
 }
 
@@ -1041,7 +1041,7 @@ async function eval1(msg, text) {
     }
     letsEval().then(m => {
 		logger.debug(util.inspect(m, {depth: 1}));
-		bu.send(msg.channel.id, \`Input:
+		bu.send(msg, \`Input:
 \\\`\\\`\\\`js
 \${commandToProcess}
 \\\`\\\`\\\`
@@ -1054,7 +1054,7 @@ Output:
 			}
 			return m;
 	}).catch(err => {
-		bu.send(msg.channel.id, \`An error occured!
+		bu.send(msg, \`An error occured!
 \\\`\\\`\\\`js
 \${err.stack}
 \\\`\\\`\\\`\`);
@@ -1063,7 +1063,7 @@ Output:
         try {
             eval(toEval);
         } catch (err) {
-            bu.send(msg.channel.id, `An error occured!
+            bu.send(msg, `An error occured!
 \`\`\`js
 ${err.stack}
 \`\`\``);
@@ -1164,7 +1164,7 @@ var flipTables = async function (msg, unflip) {
     let tableflip = await bu.guildSettings.get(msg.channel.guild.id, 'tableflip');
     if (tableflip && tableflip != 0) {
         var seed = bu.getRandomInt(0, 3);
-        bu.send(msg.channel.id,
+        bu.send(msg,
             tables[unflip ? 'unflip' : 'flip'][config.general.isbeta ? 'beta' : 'prod'][seed]);
     }
 };

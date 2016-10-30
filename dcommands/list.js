@@ -19,6 +19,6 @@ e.info = '';
 e.execute = (msg) => {
     if (msg.channel.id === config.discord.channel) {
         bu.reloadUserList();
-        bu.send(msg.channel.id, 'Reloaded the user list! Check the channel topic.');
+        bu.send(msg, 'Reloaded the user list! Check the channel topic.');
     }
 };

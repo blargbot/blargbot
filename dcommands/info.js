@@ -20,7 +20,7 @@ e.longinfo = `<p>Gets information about the specified user.</p>`;
 
 e.execute = (msg) => {
     try {
-        bu.send(msg.channel.id, `blargbot is a multipurpose bot with new features implemented regularly, written in javascript using Eris.
+        bu.send(msg, `blargbot is a multipurpose bot with new features implemented regularly, written in javascript using Eris.
 https://blargbot.xyz
 \`\`\`prolog
 !== { Stats } ==!

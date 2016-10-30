@@ -8,7 +8,6 @@ var reload = require('require-reload')(require);
 var Cleverbot = require('cleverbot-node');
 var mysql = require('mysql');
 cleverbot = new Cleverbot();
-global.bu = require('./util.js');
 
 class BotEmitter extends EventEmitter { }
 const botEmitter = new BotEmitter();
@@ -52,6 +51,8 @@ if (fs.existsSync(path.join(__dirname, 'config.json'))) {
     global.config = {};
     saveConfig();
 }
+global.bu = require('./util.js');
+
 var VERSION = config.version;
 
 function reloadConfig() {

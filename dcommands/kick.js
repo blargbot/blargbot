@@ -22,11 +22,11 @@ e.longinfo = `<p>Kicks a user from the guild.</p>
     <p>If mod-logging is enabled, the kick will be logged.</p>`;
 e.execute = async function(msg, words) {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.kickMembers) {
-        bu.send(msg.channel.id, `I don't have permission to kick users!`);
+        bu.send(msg, `I don't have permission to kick users!`);
         return;
     }
     if (!msg.member.permission.json.kickMembers) {
-        bu.send(msg.channel.id, `You don't have permission to kick users!`);
+        bu.send(msg, `You don't have permission to kick users!`);
         return;
     }
 
@@ -41,11 +41,11 @@ e.execute = async function(msg, words) {
         var userPos = bu.getPosition(msg.member);
         var targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
         if (targetPos >= botPos) {
-            bu.send(msg.channel.id, `I don't have permission to kick ${user.username}!`);
+            bu.send(msg, `I don't have permission to kick ${user.username}!`);
             return;
         }
         if (targetPos >= userPos) {
-            bu.send(msg.channel.id, `You don't have permission to kick ${user.username}!`);
+            bu.send(msg, `You don't have permission to kick ${user.username}!`);
             return;
         }
 
@@ -57,10 +57,10 @@ e.execute = async function(msg, words) {
         //       deletedays = parseInt(words[2])
         bot.kickGuildMember(msg.channel.guild.id, user.id);
         bu.logAction(msg.channel.guild, user, msg.author, 'Kick');
-        bu.send(msg.channel.id, ':ok_hand:');
+        bu.send(msg, ':ok_hand:');
 
     } else {
-        bu.send(msg.channel.id, `You didn't tell me who to kick!`);
+        bu.send(msg, `You didn't tell me who to kick!`);
     }
     //bot.ban
 

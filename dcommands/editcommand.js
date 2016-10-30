@@ -59,11 +59,11 @@ e.execute = async function (msg, words) {
                 }
                 if (commandList.length > 0) message += commandList.join('\n');
                 else message += 'No modified commands found.';
-                bu.send(msg.channel.id, message);
+                bu.send(msg, message);
                 break;
             case 'setrole':
                 if (!words[2]) {
-                    bu.send(msg.channel.id, 'Not enough arguments provided!');
+                    bu.send(msg, 'Not enough arguments provided!');
                     break;
                 }
                 commands = words[2].toLowerCase().split(/\s*,\s*/);
@@ -91,17 +91,17 @@ e.execute = async function (msg, words) {
                             }
                         }
                     } else {
-                        if (commands.length == 1) { bu.send(msg.channel.id, `That's not a command!`); break; }
+                        if (commands.length == 1) { bu.send(msg, `That's not a command!`); break; }
                     }
                 }
                 await bu.r.table('guild').get(msg.channel.guild.id).update({
                     commandperms: commandperms
                 }).run();
-                bu.send(msg.channel.id, toSend + changedCommands.join(', ') + '\n```');
+                bu.send(msg, toSend + changedCommands.join(', ') + '\n```');
                 break;
             case 'toggle':
                 if (!words[2]) {
-                    bu.send(msg.channel.id, 'Not enough arguments provided!');
+                    bu.send(msg, 'Not enough arguments provided!');
                     break;
                 }
                 commands = words[2].toLowerCase().split(/\s*,\s*/);
@@ -125,18 +125,18 @@ e.execute = async function (msg, words) {
                             }
                         }
                     } else {
-                        if (commands.length == 1) { bu.send(msg.channel.id, `That's not a command!`); break; }
+                        if (commands.length == 1) { bu.send(msg, `That's not a command!`); break; }
                     }
                 }
                 await bu.r.table('guild').get(msg.channel.guild.id).update({
                     commandperms: commandperms
                 }).run();
-                bu.send(msg.channel.id, util.format('Commands enabled:\n```\n%s \n```\nCommands disabled:\n```\n%s \n```'
+                bu.send(msg, util.format('Commands enabled:\n```\n%s \n```\nCommands disabled:\n```\n%s \n```'
                     , enabledList.join(', '), disabledList.join(', ')));
                 break;
             case 'setperm':
                 if (!words[2]) {
-                    bu.send(msg.channel.id, 'Not enough arguments provided!');
+                    bu.send(msg, 'Not enough arguments provided!');
                     break;
                 }
                 commands = words[2].toLowerCase().split(/\s*,\s*/);
@@ -164,26 +164,26 @@ e.execute = async function (msg, words) {
                                     commandperms[commandName].permission = allow;
                                     changedCommands.push(commandName);
                                 } else {
-                                    bu.send(msg.channel.id, `The permissions must be in a numeric format. See <https://discordapi.com/permissions.html> for more details.`);
+                                    bu.send(msg, `The permissions must be in a numeric format. See <https://discordapi.com/permissions.html> for more details.`);
                                     return;
                                 }
                             }
                         }
                     } else {
-                        if (commands.length == 1) { bu.send(msg.channel.id, `That's not a command!`); break; }
+                        if (commands.length == 1) { bu.send(msg, `That's not a command!`); break; }
                     }
                 }
                 await bu.r.table('guild').get(msg.channel.guild.id).update({
                     commandperms: commandperms
                 }).run();
-                bu.send(msg.channel.id, toSend + changedCommands.join(', ') + '\n```');
+                bu.send(msg, toSend + changedCommands.join(', ') + '\n```');
                 break;
             default:
-                bu.send(msg.channel.id, e.info);
+                bu.send(msg, e.info);
                 break;
         }
     } else {
-        bu.send(msg.channel.id, 'Not enough arguments provided!');
+        bu.send(msg, 'Not enough arguments provided!');
     }
 
 };

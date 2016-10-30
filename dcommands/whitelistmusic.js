@@ -21,10 +21,10 @@ e.execute = (msg) => {
     if (msg.author.id == bu.CAT_ID) {
         if (config.discord.musicGuilds[msg.channel.guild.id]) {
             config.discord.musicGuilds[msg.channel.guild.id] = false;
-            bu.send(msg.channel.id, `Music disabled for ${msg.channel.guild.name}`);
+            bu.send(msg, `Music disabled for ${msg.channel.guild.name}`);
         } else {
             config.discord.musicGuilds[msg.channel.guild.id] = true;
-            bu.send(msg.channel.id, `Music enabled for ${msg.channel.guild.name}`);
+            bu.send(msg, `Music enabled for ${msg.channel.guild.name}`);
         }
     }
     bu.saveConfig();

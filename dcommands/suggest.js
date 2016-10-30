@@ -55,6 +55,6 @@ ${words.slice(1).join(' ')}
             messageid: msg.id,
             date: bu.r.epochTime(moment().unix())
         }).run();
-        await bu.send(msg.channel.id, 'Suggestion sent! :ok_hand:');
+        await bu.send(msg, 'Suggestion sent! :ok_hand:');
     }
 };

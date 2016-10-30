@@ -18,6 +18,6 @@ e.info = 'Tells you what version I am on';
 e.longinfo = `<p>Tells you what version the bot is currently running on.</p>`;
 
 e.execute = (msg) => {
-    bu.send(msg.channel.id, `I am running blargbot version ${bu.VERSION}!`);
+    bu.send(msg, `I am running blargbot version ${bu.VERSION}!`);
 
 };

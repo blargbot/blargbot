@@ -34,14 +34,14 @@ e.execute = async function(msg, words) {
         switch (words[1].toLowerCase()) {
             case 'disable':
                 await bu.guildSettings.remove(msg.channel.guild.id, 'modlog');
-                bu.send(msg.channel.id, 'Modlog disabled!');
+                bu.send(msg, 'Modlog disabled!');
                 break;
             case 'clear':
                 var limit = 0;
                 if (words[2]) {
                     limit = parseInt(words[2]);
                     if (isNaN(limit)) {
-                        bu.send(msg.channel.id, 'Invalid number of cases to clear');
+                        bu.send(msg, 'Invalid number of cases to clear');
                         return;
                     }
                 }
@@ -58,12 +58,12 @@ e.execute = async function(msg, words) {
                     await bu.r.table('guild').get(msg.channel.guild.id).update({
                         modlog: storedGuild.modlog
                     }).run();
-                    bu.send(msg.channel.id, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
+                    bu.send(msg, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
                 }
                 break;
         }
     } else {
         await bu.guildSettings.set(msg.channel.guild.id, 'modlog', msg.channel.id);
-        bu.send(msg.channel.id, 'Modlog channel set!');
+        bu.send(msg, 'Modlog channel set!');
     }
 };

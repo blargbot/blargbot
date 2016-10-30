@@ -33,7 +33,7 @@ e.execute = async function(msg, words) {
             case 'add':
                 logger.debug('adding');
                 if (words.length < 3) {
-                    bu.send(msg.channel.id, 'Not enough arguments given!');
+                    bu.send(msg, 'Not enough arguments given!');
                     return;
                 }
                 todo.push({
@@ -41,25 +41,25 @@ e.execute = async function(msg, words) {
                     content: words.slice(2).join(' ')
                 });
                 modified = true;
-                bu.send(msg.channel.id, 'Done! :ok_hand:');
+                bu.send(msg, 'Done! :ok_hand:');
                 break;
             case 'remove':
                 logger.debug('removing');
                 if (words.length < 3) {
-                    bu.send(msg.channel.id, 'Not enough arguments given!');
+                    bu.send(msg, 'Not enough arguments given!');
                     return;
                 }
                 if (todo.length == 0) {
-                    bu.send(msg.channel.id, 'There was nothing to delete.');
+                    bu.send(msg, 'There was nothing to delete.');
                 } else {
                     let entry = todo.filter(m => m.active)[parseInt(words[2])];
                     let index = todo.indexOf(entry);
                     if (index < 0) {
-                        bu.send(msg.channel.id, 'That entry could not be found!');
+                        bu.send(msg, 'That entry could not be found!');
                     } else {
                         todo[index].active = false;
                         modified = true;
-                        bu.send(msg.channel.id, 'Done! :ok_hand:');
+                        bu.send(msg, 'Done! :ok_hand:');
                     }
                 }
                 break;
@@ -83,8 +83,8 @@ var defaultOption = async function(msg, storedUser) {
         for (let i = 0; i < todo.length; i++) {
             list += `__**${i}.**__ ${todo[i].content}\n`;
         }
-        bu.send(msg.channel.id, list);
+        bu.send(msg, list);
     } else {
-        bu.send(msg.channel.id, 'You have nothing on your list!');
+        bu.send(msg, 'You have nothing on your list!');
     }
 };

@@ -45,7 +45,7 @@ e.execute = (msg) => {
                 }
             }
         });
-    bu.send(msg.channel.id, 'Purging!')
+    bu.send(msg, 'Purging!')
         .then(function (message) {
             setTimeout(function () {
                 bot.deleteMessage(msg.channel.id, message.id);

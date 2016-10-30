@@ -37,7 +37,7 @@ e.execute = (msg, words) => {
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
                 //        logger.(kek); 
-                bu.send(msg.channel.id, config.general.nsfwMessage);
+                bu.send(msg, config.general.nsfwMessage);
 
                 return;
             }
@@ -84,7 +84,7 @@ e.execute = (msg, words) => {
                         }
                     logger.debug(urlList.length);
                     if (urlList.length == 0) {
-                        bu.send(msg.channel.id, 'No results found!');
+                        bu.send(msg, 'No results found!');
                         return;
                     }
                     message += `Found **${urlList.length}/50** posts\n`;
@@ -96,7 +96,7 @@ e.execute = (msg, words) => {
                             urlList.splice(choice, 1);
                         }
                     }
-                    bu.send(msg.channel.id, message);
+                    bu.send(msg, message);
                 } catch (err) {
                     logger.error(err.stack);
                 }

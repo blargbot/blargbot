@@ -54,19 +54,19 @@ e.execute = (msg, words) => {
     }
     logger.debug(bullets);
     if (bullets == 6) {
-        bu.send(msg.channel.id, 'Do you have a deathwish or something? Your revolver can only hold 6 bullets, that\'s guaranteed death!');
+        bu.send(msg, 'Do you have a deathwish or something? Your revolver can only hold 6 bullets, that\'s guaranteed death!');
         return;
     } else if (bullets > 6) {
-        bu.send(msg.channel.id, 'That\'s gutsy, but your revolver can only hold 6 bullets!');
+        bu.send(msg, 'That\'s gutsy, but your revolver can only hold 6 bullets!');
         return;
     } else if (bullets <= 0) {
-        bu.send(msg.channel.id, 'Wimp! You need to load at least one bullet.');
+        bu.send(msg, 'Wimp! You need to load at least one bullet.');
         return;
     }
     let dead = bu.getRandomInt(1, 6) <= bullets;
     let message = `You load ${bullets == 1 ? 'a' : numMap[bullets]} bullet${bullets == 1 ? '' : 's'} into your revolver, give it a spin, and place it against your head.`;
-    bu.send(msg.channel.id, message).then(msg2 => {
-        bu.send(msg.channel.id, `${words[2] || mojiList[bu.getRandomInt(0, mojiList.length - 1)]}:gun:`).then(msg3 => {
+    bu.send(msg, message).then(msg2 => {
+        bu.send(msg, `${words[2] || mojiList[bu.getRandomInt(0, mojiList.length - 1)]}:gun:`).then(msg3 => {
             setTimeout(() => {
                 if (dead) {
                     bot.editMessage(msg2.channel.id, msg2.id, emoji.emojify(message + `\n***BOOM!*** ${deathMsg[bu.getRandomInt(0, deathMsg.length - 1)]}`));

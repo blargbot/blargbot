@@ -31,5 +31,5 @@ e.execute = (msg, words) => {
     var chosenVerb = config.insult.verbs[(bu.getRandomInt(0, config.insult.verbs.length - 1))];
     var chosenAdje = config.insult.adjectives[(bu.getRandomInt(0, config.insult.adjectives.length - 1))];
     var message = `${target}${target == 'Your' ? `` : `'s`} ${chosenNoun} ${chosenVerb} ${chosenAdje}!`;
-    bu.send(msg.channel.id, message);
+    bu.send(msg, message);
 };

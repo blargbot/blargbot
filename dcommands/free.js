@@ -18,7 +18,7 @@ e.longinfo = `<p>Tells everyone what you got for free.</p>`;
 
 e.execute = function (msg, words, text) {
     if (words.length == 1) {
-        bu.send(msg.channel.id, 'Usage: `free <caption> [ | <lower caption>]`');
+        bu.send(msg, 'Usage: `free <caption> [ | <lower caption>]`');
         return;
     }
     text = words.slice(1).join(' ');
