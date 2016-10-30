@@ -9,7 +9,7 @@ e.usage = '';
 e.info = '';
 
 e.execute = (msg, words) => {
-    if (msg.author.id === blargutil.CAT_ID) {
+    if (msg.author.id === bu.CAT_ID) {
         var gArray;
         var botRatio = false;
         if (words[1]) {
@@ -35,8 +35,8 @@ e.execute = (msg, words) => {
             messages[i] += addTo;
         });
         for (i = 0; i < messages.length; i++) {
-            blargutil.sendMessageToDiscord(msg.channel.id, messages[i]);
+            bu.sendMessageToDiscord(msg.channel.id, messages[i]);
         }   
-        blargutil.sendMessageToDiscord(msg.channel.id, `${gArray.length} guilds total.`);
+        bu.sendMessageToDiscord(msg.channel.id, `${gArray.length} guilds total.`);
     }
 };
