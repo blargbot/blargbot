@@ -35,8 +35,8 @@ e.execute = (msg, words) => {
             messages[i] += addTo;
         });
         for (i = 0; i < messages.length; i++) {
-            bu.sendMessageToDiscord(msg.channel.id, messages[i]);
+            bu.send(msg, messages[i]);
         }   
-        bu.sendMessageToDiscord(msg.channel.id, `${gArray.length} guilds total.`);
+        bu.send(msg, `${gArray.length} guilds total.`);
     }
 };
