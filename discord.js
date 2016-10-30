@@ -440,7 +440,8 @@ If you are the owner of this server, here are a few things to know.
             msg.mentions = storedMsg.mentions.split(',').map(m => {
                 return {username: m};
             });
-            if (storedMsg.attachment) msg.attachments = [storedMsg.attachment];
+            msg.attachments = [];
+            if (storedMsg.attachment) msg.attachments = [{url:storedMsg.attachment}];
             msg.channel = bot.getChannel(msg.channelID);
             
             } else {
