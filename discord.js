@@ -430,7 +430,7 @@ If you are the owner of this server, here are a few things to know.
             .orderBy(bu.r.desc('msgtime')).run();
             if (storedMsg.length > 0) {
                 
-            logger.info('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
+           // logger.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
                 
                 storedMsg = storedMsg[0];
                 msg.content = storedMsg.content;
@@ -445,7 +445,7 @@ If you are the owner of this server, here are a few things to know.
             msg.channel = bot.getChannel(msg.channelID);
             
             } else {
-            logger.info('Somebody deleted an uncached message and unstored message.');
+            logger.warn('Somebody deleted an uncached message and unstored message.');
             msg.channel = bot.getChannel(msg.channelID);
             msg.author = {};
             msg.mentions = [];
@@ -912,7 +912,7 @@ function postStats() {
             'User-Agent': 'blargbot/1.0 (ratismal)',
             'Authorization': vars.botlisttoken,
             'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(stats)
+            'Content-Length': new Buffer.byteLength(stats)
         }
     };
     logger.info('Posting to abal');
