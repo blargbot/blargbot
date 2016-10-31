@@ -30,6 +30,7 @@ out.png
 music/*
 img/avatars/*
 img/avatars-old/*
+img/avatars-ol/*
 backend/public/codemirror/*
 backend/public/fonts/*
 avatar.js
