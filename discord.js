@@ -294,9 +294,12 @@ e.init = (v, em) => {
     bot.on('guildDelete', async function (guild) {
         postStats();
         logger.debug('removed from guild');
-        bu.send(`205153826162868225`
-            , `I was removed from the guild \`${guild
-                .name}\` (\`${guild.id}\`)!`);
+        let members = guild.memberCount;
+        let bots = guild.members.filter(m => m.user.bot).length;
+        let percent = Math.floor(bots / members * 10000) / 100;
+         var message = `I was added to guild \`${guild.name}\``
+                + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n - Users: **${members}** Bots: **${bots}** Percent: **${percent}**`;
+        bu.send(`205153826162868225`            , message);
 
         bu.r.table('guild').get(guild.id).update({
             active: false
@@ -325,12 +328,19 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
         logger.debug('added to guild');
         let storedGuild = await bu.r.table('guild').get(guild.id).run();
         if (!storedGuild || !storedGuild.active) {
-            var message = `I was added to the guild \`${guild.name}\``
-                + ` (\`${guild.id}\`)!`;
+            let members = guild.memberCount;
+            let bots = guild.members.filter(m => m.user.bot).length;
+            let percent = Math.floor(bots / members * 10000) / 100;
+            var message = `I was added to guild \`${guild.name}\``
+                + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n - Users: **${members}** Bots: **${bots}** Percent: **${percent}**`;
             bu.send(`205153826162868225`, message);
             if (bot.guilds.size % 100 == 0) {
                 bu.send(`205153826162868225`, `🎉 I'm now `
                     + `in ${bot.guilds.size} guilds! 🎉`);
+            }
+            if (bot.guilds.size % 1000 == 0) {
+                bu.send(`229135592720433152`, `🎊🎉🎊🎉 I'm now `
+                    + `in ${bot.guilds.size} guilds! WHOOOOO! 🎉🎊🎉🎊`);
             }
             var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you!
 - 💻 For command information, please do \`${config.discord.defaultPrefix}help\`!
@@ -610,6 +620,10 @@ If you are the owner of this server, here are a few things to know.
                     let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
                     logger.command('Was command:', wasCommand);
                     if (wasCommand) {
+                        bu.send('243229905360388106', `**Guild**: ${msg.channel.guild.name} (${msg.channel.guild.id})
+**Channel**: ${msg.channel.name} (${msg.channel.id})
+**User**: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
+${command}`);   
                         if (!isDm) {
                             let deletenotif = storedGuild.settings.deletenotif;
                             if (deletenotif != '0') {
