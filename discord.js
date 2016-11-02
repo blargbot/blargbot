@@ -255,6 +255,15 @@ e.init = (v, em) => {
         //console.dir(guilds);
         bot.guilds.forEach((g) => {
             if (guilds.indexOf(g.id) == -1) {
+                let guild = bot.guilds.get(g.id);
+                let members = guild.memberCount;
+        let users = guild.members.filter(m => !m.user.bot).length;
+        let bots = guild.members.filter(m => m.user.bot).length;
+        let percent = Math.floor(bots / members * 10000) / 100;
+         var message = `While I was offline, I was added to the guild \`${guild.name}\``
+                + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
+        bu.send(`205153826162868225`, message);
+            
                 console.log('Inserting a missing guild');
                 bu.r.table('guild').insert({
                     guildid: g.id,
@@ -295,11 +304,12 @@ e.init = (v, em) => {
         postStats();
         logger.debug('removed from guild');
         let members = guild.memberCount;
+        let users = guild.members.filter(m => !m.user.bot).length;
         let bots = guild.members.filter(m => m.user.bot).length;
         let percent = Math.floor(bots / members * 10000) / 100;
-         var message = `I was added to guild \`${guild.name}\``
-                + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n - Users: **${members}** Bots: **${bots}** Percent: **${percent}**`;
-        bu.send(`205153826162868225`            , message);
+         var message = `I was added to the guild \`${guild.name}\``
+                + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
+        bu.send(`205153826162868225`, message);
 
         bu.r.table('guild').get(guild.id).update({
             active: false
@@ -328,11 +338,12 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
         logger.debug('added to guild');
         let storedGuild = await bu.r.table('guild').get(guild.id).run();
         if (!storedGuild || !storedGuild.active) {
-            let members = guild.memberCount;
-            let bots = guild.members.filter(m => m.user.bot).length;
-            let percent = Math.floor(bots / members * 10000) / 100;
-            var message = `I was added to guild \`${guild.name}\``
-                + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n - Users: **${members}** Bots: **${bots}** Percent: **${percent}**`;
+             let members = guild.memberCount;
+        let users = guild.members.filter(m => !m.user.bot).length;
+        let bots = guild.members.filter(m => m.user.bot).length;
+        let percent = Math.floor(bots / members * 10000) / 100;
+         var message = `I was removed from guild \`${guild.name}\``
+                + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
             bu.send(`205153826162868225`, message);
             if (bot.guilds.size % 100 == 0) {
                 bu.send(`205153826162868225`, `🎉 I'm now `
