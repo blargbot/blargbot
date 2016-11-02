@@ -260,7 +260,7 @@ e.init = (v, em) => {
         let users = guild.members.filter(m => !m.user.bot).length;
         let bots = guild.members.filter(m => m.user.bot).length;
         let percent = Math.floor(bots / members * 10000) / 100;
-         var message = `:ballot_box_with_check: While I was offline, I was added to the guild \`${guild.name}\``
+         var message = `:ballot_box_with_check: Guild: \`${guild.name}\``
                 + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
         bu.send(`205153826162868225`, message);
             
@@ -307,7 +307,7 @@ e.init = (v, em) => {
         let users = guild.members.filter(m => !m.user.bot).length;
         let bots = guild.members.filter(m => m.user.bot).length;
         let percent = Math.floor(bots / members * 10000) / 100;
-         var message = `:x: I was removed from guild \`${guild.name}\``
+         var message = `:x: Guild: \`${guild.name}\``
                 + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
         bu.send(`205153826162868225`, message);
 
@@ -342,7 +342,7 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
         let users = guild.members.filter(m => !m.user.bot).length;
         let bots = guild.members.filter(m => m.user.bot).length;
         let percent = Math.floor(bots / members * 10000) / 100;
-         var message = `:white_check_mark: I was removed from guild \`${guild.name}\``
+         var message = `:white_check_mark: Guild: \`${guild.name}\``
                 + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
             bu.send(`205153826162868225`, message);
             if (bot.guilds.size % 100 == 0) {
