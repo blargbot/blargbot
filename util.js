@@ -40,12 +40,12 @@ bu.messageStats = 0;
 // A map of messages to await for
 bu.awaitMessages = {};
 
-bu.defaultStaff = Eris.Constants.Permissions.kickMembers
-    + Eris.Constants.Permissions.banMembers
-    + Eris.Constants.Permissions.administrator
-    + Eris.Constants.Permissions.manageChannels
-    + Eris.Constants.Permissions.manageGuild
-    + Eris.Constants.Permissions.manageMessages;
+bu.defaultStaff = Eris.Constants.Permissions.kickMembers +
+    Eris.Constants.Permissions.banMembers +
+    Eris.Constants.Permissions.administrator +
+    Eris.Constants.Permissions.manageChannels +
+    Eris.Constants.Permissions.manageGuild +
+    Eris.Constants.Permissions.manageMessages;
 
 bu.tags = {};
 bu.tagList = {};
@@ -117,8 +117,9 @@ bu.compareStats = (a, b) => {
     return 0;
 };
 
-bu.awaitMessage = async function (msg, message, callback) {
+bu.awaitMessage = async function (msg, message, callback, timeout) {
     let returnMsg = await bu.send(msg, message);
+    if (!timeout) timeout = 300000;
     if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
         bu.awaitMessages[msg.channel.id] = {};
     let event = 'await' + msg.channel.id + '-' + msg.author.id;
@@ -131,6 +132,7 @@ bu.awaitMessage = async function (msg, message, callback) {
         botmsg: returnMsg
     };
     bu.emitter.removeAllListeners(event);
+
     function registerEvent() {
         return new Promise((fulfill, reject) => {
             bu.emitter.on(event, async function (msg2) {
@@ -145,11 +147,12 @@ bu.awaitMessage = async function (msg, message, callback) {
                     fulfill(msg2);
                 }
             });
+
             bu.awaitMessages[msg.channel.id][msg.author.id].timer = setTimeout(() => {
                 bu.emitter.removeAllListeners(event);
-                bu.send(msg, 'Query canceled after 5 minutes.');
+                bu.send(msg, `Query canceled after ${moment.duration(timeout).humanize()}.`);
                 reject('Request timed out.');
-            }, 300000);
+            }, timeout);
         });
     }
     return await registerEvent();
@@ -163,22 +166,22 @@ bu.awaitMessage = async function (msg, message, callback) {
  * @returns {boolean}
  */
 bu.hasPerm = (msg, perm, quiet) => {
-    if (!msg.channel.guild) return true;
-    if ((msg.member.id === bu.CAT_ID && bu.catOverrides)
-        || msg.channel.guild.ownerID == msg.member.id
-        || msg.member.permission.administraton) {
-        return true;
-    }
-    var roles = msg.channel.guild.roles.filter(m => Array.isArray(perm)
-        ? perm.map(q => q.toLowerCase()).indexOf(m.name.toLowerCase()) > -1
-        : m.name.toLowerCase() == perm.toLowerCase());
-    for (var i = 0; i < roles.length; i++) {
-        if (msg.member.roles.indexOf(roles[i].id) > -1) {
+        if (!msg.channel.guild) return true;
+        if ((msg.member.id === bu.CAT_ID && bu.catOverrides) ||
+            msg.channel.guild.ownerID == msg.member.id ||
+            msg.member.permission.administraton) {
             return true;
         }
-    }
-    if (!quiet)
-        bu.send(msg, `You need the role ${Array.isArray(perm) ? perm.map(m => `\`${m}\``).join(', or ') : `\`${perm}\``} in order to use this command!`);
+        var roles = msg.channel.guild.roles.filter(m => Array.isArray(perm) ?
+            perm.map(q => q.toLowerCase()).indexOf(m.name.toLowerCase()) > -1 :
+            m.name.toLowerCase() == perm.toLowerCase());
+        for (var i = 0; i < roles.length; i++) {
+            if (msg.member.roles.indexOf(roles[i].id) > -1) {
+                return true;
+            }
+        }
+        if (!quiet)
+            bu.send(msg, `You need the role ${Array.isArray(perm) ? perm.map(m => `\`${m}\``).join(', or ') : `\`${perm}\``} in order to use this command!`);
     return false;
 };
 

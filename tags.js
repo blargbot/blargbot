@@ -107,7 +107,8 @@ e.executeTag = async function (msg, tagName, command) {
             }
         }
         bu.r.table('tag').get(tagName).update({
-            uses: tag.uses + 1
+            uses: tag.uses + 1,
+            lastuse: bu.r.now()
         }).run();
         var message = await e.processTag(msg, tag.content, command, tagName, tag.author);
         while (/<@!?[0-9]{17,21}>/.test(message)) {

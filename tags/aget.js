@@ -29,11 +29,10 @@ e.execute = async function(params) {
     }
     var replaceString = '';
     var replaceContent = false;
-    if (!bu.vars.authorTags[params.author]) {
-        bu.vars.authorTags[params.author] = {};
-    }
+    let storedAuthor = await bu.r.table('user').get(params.author);
+    let authorVars = storedAuthor.vars || {};
     if (params.args.length > 1) {
-        replaceString = bu.vars.authorTags[params.author][params.args[1]];
+        replaceString = authorVars[params.args[1]];
     } else {
         replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
     }

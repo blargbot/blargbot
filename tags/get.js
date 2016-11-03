@@ -30,11 +30,11 @@ e.execute = async function(params) {
         , tagName = params.tagName;
     var replaceString = '';
     var replaceContent = false;
-    if (!bu.vars.tags[tagName]) {
-        bu.vars.tags[tagName] = {};
-    }
+    let storedTag = await bu.r.table('tag').get(tagName).run();
+    if (!storedTag.hasOwnProperty('vars')) storedTag.vars = {};
+    let tagVars = storedTag.vars;
     if (args.length > 1) {
-        replaceString = bu.vars.tags[tagName][args[1]];
+        replaceString = tagVars[args[1]];
     } else {
         replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
     }

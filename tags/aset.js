@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
 
     e.category = bu.TagType.COMPLEX;
 };
@@ -22,27 +22,25 @@ e.exampleIn = `{aset;testvar;This is a test var}`;
 e.exampleOut = ``;
 
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
-    let args = params.args
-        , fallback = params.fallback
-        , author = params.author;
+    let args = params.args,
+        fallback = params.fallback,
+        author = params.author;
     var replaceString = '';
     var replaceContent = false;
-    if (!bu.vars.authorTags[author]) {
-        bu.vars.authorTags[author] = {};
-    }
+    let storedAuthor = await bu.r.table('user').get(author).run();
+    if (!storedAuthor.hasOwnProperty('var')) storedAuthor.vars = {};
+    let authorVars = storedAuthor.vars;
+
     if (args.length > 2) {
-        bu.vars.authorTags[author][args[1]] = args[2];
-        bu.emitter.emit('saveVars');
-
-    }
-    else if (args.length == 2) {
-        delete bu.vars.authorTags[author][args[1]];
-        bu.emitter.emit('saveVars');
-
+        authorVars[args[1]] = args[2];
+        saveUser(author, authorVars);
+    } else if (args.length == 2) {
+        authorVars[args[1]] = null;
+        saveUser(author, authorVars);
     } else {
         replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
     }
@@ -52,3 +50,9 @@ e.execute = async function(params) {
         replaceContent: replaceContent
     };
 };
+
+function saveUser(author, vars) {
+    bu.r.table('user').get(author).update({
+        vars: vars
+    }).run();
+}
