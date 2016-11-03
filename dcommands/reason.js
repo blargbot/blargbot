@@ -25,7 +25,7 @@ e.execute = async function(msg, words) {
     if (val) {
         if (words.length >= 3) {
             var latest = false;
-            if (words[1].toLowerCase() == 'latest' || words[1].toLowerCase == 'l') {
+            if (words[1].toLowerCase() == 'latest' || words[1].toLowerCase() == 'l') {
                 latest = true;
             }
             words.shift();
