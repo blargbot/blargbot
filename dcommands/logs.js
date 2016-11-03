@@ -16,46 +16,46 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'logs <number> [<type> <parameters...>]';
-e.info = 'DMs you a file with chat logs from the current channel, '
-    + 'where `number` is the amount of lines to get. You can retrieve a maximum of 1000 logs.'
-    + 'For more specific logs, you can specify a (case insensitive) '
-    + 'type and parameter as follows:\n'
-    + 'Types: \n'
-    + '     -TYPE (-T)\n'
-    + '        CREATE - Gets original messages.\n'
-    + '        UPDATE - Gets message edits.\n'
-    + '        DELETE - Gets message deletes.\n'
-    + '     -CHANNEL (-C)\n'
-    + '        <id> - The channel to get logs from. Must be on the current guild!'
-    + '     -USER (-U)\n'
-    + '        <name or id> - Gets messages made by specific user.\n'
-    + '     -ORDER (-O)\n'
-    + '        DESC - Get\'s the newest messages first (default).\n'
-    + '        ASC  - Get\'s the oldest messages first.</code></pre></p>'
-    + 'For example, if you wanted to get 100 messages `stupid cat` deleted, you would do this:\n'
-    + '`logs 100 -message delete -user stupid cat`'
-    + 'If you want to use multiple of the same type, separate parameters with commas. For example:\n'
-    + '`logs 100 -m create, update -u stupid cat, dumb cat`';
-e.longinfo = '<p>DMs you a file with chat logs from the current channel, '
-    + 'where `number` is the amount of lines to get. '
-    + 'For more specific logs, you can specify a (case insensitive) '
-    + 'type and parameter as follows:</p><p>'
-    + '<pre><code>Types: \n'
-    + '     -TYPE (-T)\n'
-    + '        CREATE - Gets original messages.\n'
-    + '        UPDATE - Gets message edits.\n'
-    + '        DELETE - Gets message deletes.\n'
-    + '     -CHANNEL (-C)\n'
-    + '        <id> - The channel to get logs from. Must be on the current guild!\n'
-    + '     -USER (-U)\n'
-    + '        <name or id> - Gets messages made by specific user.\n'
-    + '     -ORDER (-O)\n'
-    + '        DESC - Get\'s the newest messages first (default).\n'
-    + '        ASC  - Get\'s the oldest messages first.</code></pre></p>'
-    + '<p>For example, if you wanted to get 100 messages `stupid cat` deleted, you would do this:<\p>'
-    + '<pre><code>logs 100 -message delete -user stupid cat</code></pre>'
-    + '<p>If you want to use multiple of the same type, separate parameters with commas. For example:</p>'
-    + '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
+e.info = 'DMs you a file with chat logs from the current channel, ' +
+    'where `number` is the amount of lines to get. You can retrieve a maximum of 1000 logs.' +
+    'For more specific logs, you can specify a (case insensitive) ' +
+    'type and parameter as follows:\n' +
+    'Types: \n' +
+    '     -TYPE (-T)\n' +
+    '        CREATE - Gets original messages.\n' +
+    '        UPDATE - Gets message edits.\n' +
+    '        DELETE - Gets message deletes.\n' +
+    '     -CHANNEL (-C)\n' +
+    '        <id> - The channel to get logs from. Must be on the current guild!' +
+    '     -USER (-U)\n' +
+    '        <name or id> - Gets messages made by specific user.\n' +
+    '     -ORDER (-O)\n' +
+    '        DESC - Get\'s the newest messages first (default).\n' +
+    '        ASC  - Get\'s the oldest messages first.</code></pre></p>' +
+    'For example, if you wanted to get 100 messages `stupid cat` deleted, you would do this:\n' +
+    '`logs 100 -message delete -user stupid cat`' +
+    'If you want to use multiple of the same type, separate parameters with commas. For example:\n' +
+    '`logs 100 -m create, update -u stupid cat, dumb cat`';
+e.longinfo = '<p>DMs you a file with chat logs from the current channel, ' +
+    'where `number` is the amount of lines to get. ' +
+    'For more specific logs, you can specify a (case insensitive) ' +
+    'type and parameter as follows:</p><p>' +
+    '<pre><code>Types: \n' +
+    '     -TYPE (-T)\n' +
+    '        CREATE - Gets original messages.\n' +
+    '        UPDATE - Gets message edits.\n' +
+    '        DELETE - Gets message deletes.\n' +
+    '     -CHANNEL (-C)\n' +
+    '        <id> - The channel to get logs from. Must be on the current guild!\n' +
+    '     -USER (-U)\n' +
+    '        <name or id> - Gets messages made by specific user.\n' +
+    '     -ORDER (-O)\n' +
+    '        DESC - Get\'s the newest messages first (default).\n' +
+    '        ASC  - Get\'s the oldest messages first.</code></pre></p>' +
+    '<p>For example, if you wanted to get 100 messages `stupid cat` deleted, you would do this:<\p>' +
+    '<pre><code>logs 100 -message delete -user stupid cat</code></pre>' +
+    '<p>If you want to use multiple of the same type, separate parameters with commas. For example:</p>' +
+    '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
 
 
 var typeRef = {
@@ -72,12 +72,10 @@ e.execute = async function (msg, words) {
         bu.send(msg, e.info);
         return;
     }
-    let numberOfMessages = NaN
-        , type = ''
-        , user = ''
-        , current
-        , order
-        , channel = msg.channel.id;
+    let numberOfMessages = NaN,
+        type = '',
+        user = '',
+        current, order, channel = msg.channel.id;
     if (words.length > 1) {
         numberOfMessages = parseInt(words[1]);
     }
@@ -134,10 +132,10 @@ e.execute = async function (msg, words) {
     if (order == null) {
         order = false;
     }
-    var typesRaw = type.split(',')
-        , usersRaw = user.split(',')
-        , types = []
-        , users = [];
+    var typesRaw = type.split(','),
+        usersRaw = user.split(','),
+        types = [],
+        users = [];
     for (i = 0; i < typesRaw.length; i++) {
         if (typesRaw[i] != '') {
             types.push(typeRef[typesRaw[i].toUpperCase().trim()]);
@@ -169,8 +167,12 @@ e.execute = async function (msg, words) {
     }, 10000);
     let msgids = [msg.id, msg2.id];
     let thing = await bu.r.table('chatlogs')
-        .between([channel, bu.r.epochTime(0)], [channel, bu.r.now()], { index: 'channel_time' })
-        .orderBy({ index: order ? bu.r.asc('channel_time') : bu.r.desc('channel_time') })
+        .between([channel, bu.r.epochTime(0)], [channel, bu.r.now()], {
+            index: 'channel_time'
+        })
+        .orderBy({
+            index: order ? bu.r.asc('channel_time') : bu.r.desc('channel_time')
+        })
         .filter(function (q) {
             return bu.r.expr(users).count().eq(0).or(bu.r.expr(users).contains(q('userid')))
                 .and(bu.r.expr(types).count().eq(0).or(bu.r.expr(types).contains(q('type')))
@@ -184,9 +186,9 @@ e.execute = async function (msg, words) {
     } else {
         clearTimeout(timer);
         let key = await insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages);
-        let toSend = 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key
+        let toSend = 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key;
         if (pingUser) {
-            toSend = `Sorry that took so long, ${msg.author.mention}!\n${toSend}`
+            toSend = `Sorry that took so long, ${msg.author.mention}!\n${toSend}`;
         }
         await bot.editMessage(msg2.channel.id, msg2.id, toSend);
 

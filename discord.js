@@ -106,12 +106,12 @@ function buildCommand(commandName) {
         };
         /*
         if (bu.commands[commandName].longinfo) {
-        	bu.r.table('command').insert({
-        		name: commandName,
-        		usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
-        		info: bu.commands[commandName].longinfo,
-        		type: command.category
-        	}).run();
+            bu.r.table('command').insert({
+                name: commandName,
+                usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+                info: bu.commands[commandName].longinfo,
+                type: command.category
+            }).run();
         }
         */
         if (bu.commands[commandName].sub) {
@@ -257,12 +257,12 @@ e.init = (v, em) => {
             if (guilds.indexOf(g.id) == -1) {
                 let guild = bot.guilds.get(g.id);
                 let members = guild.memberCount;
-        let users = guild.members.filter(m => !m.user.bot).length;
-        let bots = guild.members.filter(m => m.user.bot).length;
-        let percent = Math.floor(bots / members * 10000) / 100;
-         var message = `:ballot_box_with_check: Guild: \`${guild.name}\``
+                let users = guild.members.filter(m => !m.user.bot).length;
+                let bots = guild.members.filter(m => m.user.bot).length;
+                let percent = Math.floor(bots / members * 10000) / 100;
+                var message = `:ballot_box_with_check: Guild: \`${guild.name}\``
                 + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
-        bu.send(`205153826162868225`, message);
+                bu.send(`205153826162868225`, message);
             
                 console.log('Inserting a missing guild');
                 bu.r.table('guild').insert({
@@ -338,11 +338,11 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
         logger.debug('added to guild');
         let storedGuild = await bu.r.table('guild').get(guild.id).run();
         if (!storedGuild || !storedGuild.active) {
-             let members = guild.memberCount;
-        let users = guild.members.filter(m => !m.user.bot).length;
-        let bots = guild.members.filter(m => m.user.bot).length;
-        let percent = Math.floor(bots / members * 10000) / 100;
-         var message = `:white_check_mark: Guild: \`${guild.name}\``
+            let members = guild.memberCount;
+            let users = guild.members.filter(m => !m.user.bot).length;
+            let bots = guild.members.filter(m => m.user.bot).length;
+            let percent = Math.floor(bots / members * 10000) / 100;
+            var message = `:white_check_mark: Guild: \`${guild.name}\``
                 + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
             bu.send(`205153826162868225`, message);
             if (bot.guilds.size % 100 == 0) {
@@ -1058,15 +1058,15 @@ async function eval1(msg, text) {
         //	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
         //		commandToProcess = splitCom.join('\n');
         let toEval = `async function letsEval() {
-		try {
-		${commandToProcess}
-		} catch (err) {
-			return err;
-		}
+        try {
+        ${commandToProcess}
+        } catch (err) {
+            return err;
+        }
     }
     letsEval().then(m => {
-		logger.debug(util.inspect(m, {depth: 1}));
-		bu.send(msg, \`Input:
+        logger.debug(util.inspect(m, {depth: 1}));
+        bu.send(msg, \`Input:
 \\\`\\\`\\\`js
 \${commandToProcess}
 \\\`\\\`\\\`
@@ -1074,16 +1074,16 @@ Output:
 \\\`\\\`\\\`js
 \${commandToProcess == '1/0' ? 1 : m}
 \\\`\\\`\\\`\`);
-			if (commandToProcess.indexOf('vars') > -1) {
-				saveVars();
-			}
-			return m;
-	}).catch(err => {
-		bu.send(msg, \`An error occured!
+            if (commandToProcess.indexOf('vars') > -1) {
+                saveVars();
+            }
+            return m;
+    }).catch(err => {
+        bu.send(msg, \`An error occured!
 \\\`\\\`\\\`js
 \${err.stack}
 \\\`\\\`\\\`\`);
-	})`;
+    })`;
         logger.debug(toEval);
         try {
             eval(toEval);
