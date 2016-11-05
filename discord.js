@@ -400,40 +400,19 @@ function postStats() {
     var stats = JSON.stringify({
         server_count: bot.guilds.size
     });
-
-    var options = {
-        hostname: 'bots.discord.pw',
-        method: 'POST',
-        port: 443,
-        path: `/api/bots/${bot.user.id}/stats`,
-        headers: {
-            'User-Agent': 'blargbot/1.0 (ratismal)',
+    request.post({
+        'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
+        'headers': {
+            'content-type': 'application/json',
+            'Content-Length': new Buffer.byteLength(stats),
             'Authorization': config.general.botlisttoken,
-            'Content-Type': 'application/json',
-            'Content-Length': new Buffer.byteLength(stats)
-        }
-    };
-    logger.info('Posting to abal');
-    var req = https.request(options, function(res) {
-        var body = '';
-        res.on('data', function(chunk) {
-            logger.debug(chunk);
-            body += chunk;
-        });
-
-        res.on('end', function() {
-            logger.debug('body: ' + body);
-        });
-
-        res.on('error', function(thing) {
-            logger.warn(`Result error occurred! ${thing}`);
-        });
+            'User-Agent': 'blargbot/1.0 (ratismal)'
+        },
+        'json': true,
+        body: stats
+    }, (err) => {
+        if (err) logger.error(err);
     });
-    req.on('error', function(err) {
-        logger.warn(`Request error occurred! ${err}`);
-    });
-    req.write(stats);
-    req.end();
 
     if (!config.general.isbeta) {
         logger.info('Posting to matt');
@@ -449,6 +428,8 @@ function postStats() {
                 'servercount': bot.guilds.size,
                 'logoid': 'https://i.imgur.com/uVq0zdO.png'
             }
+        }, (err) => {
+            if (err) logger.error(err);
         });
     }
 }
