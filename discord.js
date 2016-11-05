@@ -404,7 +404,6 @@ function postStats() {
         'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
         'headers': {
             'content-type': 'application/json',
-            'Content-Length': new Buffer.byteLength(stats),
             'Authorization': config.general.botlisttoken,
             'User-Agent': 'blargbot/1.0 (ratismal)'
         },
