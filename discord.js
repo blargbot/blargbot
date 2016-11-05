@@ -106,12 +106,12 @@ function buildCommand(commandName) {
         };
         /*
         if (bu.commands[commandName].longinfo) {
-            r.table('command').insert({
-                name: commandName,
-                usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
-                info: bu.commands[commandName].longinfo,
-                type: command.category
-            }).run();
+        r.table('command').insert({
+        name: commandName,
+        usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
+        info: bu.commands[commandName].longinfo,
+        type: command.category
+        }).run();
         }
         */
         if (bu.commands[commandName].sub) {
@@ -150,100 +150,546 @@ var error = true;
  * @param em - the event emitter (EventEmitter)
  */
 e.init = (v, em) => {
-        VERSION = v;
-        emitter = em;
-        logger.debug('HELLOOOOO?');
-        process.on('unhandledRejection', (reason, p) => {
-            logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    VERSION = v;
+    emitter = em;
+    logger.debug('HELLOOOOO?');
+    process.on('unhandledRejection', (reason, p) => {
+        logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    });
+    if (fs.existsSync(path.join(__dirname, 'vars.json'))) {
+        var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json'), 'utf8');
+        vars = JSON.parse(varsFile);
+    } else {
+        vars = {};
+        saveVars();
+    }
+    bot = new Eris.Client(config.discord.token, {
+        autoReconnect: true,
+        disableEveryone: true,
+        disableEvents: {
+            //PRESENCE_UPDATE: true,
+            //   VOICE_STATE_UPDATE: true,
+            TYPING_START: true
+        },
+        getAllUsers: true
+    });
+    global.bot = bot;
+
+    bu.init();
+    bu.emitter = em;
+    bu.VERSION = v;
+    bu.startTime = startTime;
+    bu.vars = vars;
+    tags.init();
+    webInterface.init(bot, bu);
+
+    /**
+     * EventEmitter stuff
+     */
+    emitter.on('reloadInterface', () => {
+        reloadInterface();
+    });
+    emitter.on('discordMessage', (message, attachment) => {
+        if (attachment)
+            bu.send(config.discord.channel, message, attachment);
+        else
+            bu.send(config.discord.channel, message);
+    });
+
+    emitter.on('discordTopic', (topic) => {
+        bot.editChannel(config.discord.channel, {
+            topic: topic
         });
-        if (fs.existsSync(path.join(__dirname, 'vars.json'))) {
-            var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json'), 'utf8');
-            vars = JSON.parse(varsFile);
-        } else {
-            vars = {};
-            saveVars();
+    });
+
+    emitter.on('eval', (msg, text) => {
+        eval1(msg, text);
+    });
+    emitter.on('eval2', (msg, text) => {
+        eval2(msg, text);
+    });
+
+    emitter.on('reloadCommand', (commandName) => {
+        reloadCommand(commandName);
+    });
+    emitter.on('loadCommand', (commandName) => {
+        loadCommand(commandName);
+    });
+    emitter.on('unloadCommand', (commandName) => {
+        unloadCommand(commandName);
+    });
+    emitter.on('saveVars', () => {
+        saveVars();
+    });
+
+    avatars = JSON.parse(fs.readFileSync(path.join(__dirname, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
+
+    registerListeners();
+
+    initCommands();
+    website.init();
+    bot.connect();
+};
+
+
+/**
+ * Reloads the misc variables object
+ */
+function reloadVars() {
+    fs.readFileSync(path.join(__dirname, 'vars.json'), 'utf8', function(err, data) {
+        if (err) throw err;
+        vars = JSON.parse(data);
+    });
+}
+
+/**
+ * Saves the misc variables to a file
+ */
+function saveVars() {
+    fs.writeFileSync(path.join(__dirname, 'vars.json'), JSON.stringify(vars, null, 4));
+}
+
+var gameId;
+/**
+ * Switches the game the bot is playing
+ * @param forced - if true, will not set a timeout (Boolean)
+ */
+function switchGame(forced) {
+    var name = '';
+    var oldId = gameId;
+    while (oldId == gameId) {
+        gameId = bu.getRandomInt(0, 6);
+    }
+    switch (gameId) {
+        case 0:
+            name = `with ${bot.users.size} users!`;
+            break;
+        case 1:
+            name = `in ${bot.guilds.size} guilds!`;
+            break;
+        case 2:
+            name = `in ${Object.keys(bot.channelGuildMap).length} channels!`;
+            break;
+        case 3:
+            name = `with tiny bits of string!`;
+            break;
+        case 4:
+            name = `with delicious fish!`;
+            break;
+        case 5:
+            name = `on version ${bu.VERSION}!`;
+            break;
+        case 6:
+            name = `type 'blargbot help'!`;
+            break;
+    }
+    bot.editStatus(null, {
+        name: name
+    });
+    if (!forced)
+        setTimeout(function() {
+            switchGame();
+        }, 60000);
+}
+
+var avatarId;
+/**
+ * Switches the avatar
+ * @param forced - if true, will not set a timeout (Boolean)
+ */
+function switchAvatar(forced) {
+    bot.editSelf({
+        avatar: avatars[avatarId]
+    });
+    avatarId++;
+    if (avatarId == 8)
+        avatarId = 0;
+    if (!forced)
+        setTimeout(function() {
+            switchAvatar();
+        }, 300000);
+}
+var commandMessages = {};
+var handleDiscordCommand = async function(channel, user, text, msg) {
+    let words = bu.splitInput(text);
+    if (msg.channel.guild)
+        logger.command(`Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
+    else
+        logger.command(`Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
+
+    if (msg.author.bot) {
+        return false;
+    }
+    let val = await bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]);
+    if (val) {
+        var command = text.replace(words[0], '').trim();
+        command = bu.fixContent(command);
+        var response = await tags.processTag(msg, val, command);
+        if (response !== 'null') {
+            bu.send(channel.id, response);
         }
-        bot = new Eris.Client(config.discord.token, {
-            autoReconnect: true,
-            disableEveryone: true,
-            disableEvents: {
-                //PRESENCE_UPDATE: true,
-                //   VOICE_STATE_UPDATE: true,
-                TYPING_START: true
+        bu.send(channel.id, `${config.discord.commands[words[0]].replace(/%REPLY/, '<@' + user.id + '>')}`);
+        return true;
+    } else {
+        if (config.discord.commands[words[0]] != null) {
+
+            return true;
+        } else {
+            if (bu.commandList.hasOwnProperty(words[0].toLowerCase())) {
+                let commandName = bu.commandList[words[0].toLowerCase()].name;
+                let val2 = await bu.canExecuteCommand(msg, commandName);
+                if (val2[0]) {
+                    executeCommand(commandName, msg, words, text);
+                }
+                return val2[0];
+            } else {
+                return false;
+            }
+        }
+    }
+};
+var executeCommand = async function(commandName, msg, words, text) {
+    r.table('stats').get(commandName).update({
+        uses: r.row('uses').add(1),
+        lastused: r.epochTime(moment() / 1000)
+    }).run();
+    if (bu.commandStats.hasOwnProperty(commandName)) {
+        bu.commandStats[commandName]++;
+    } else {
+        bu.commandStats[commandName] = 1;
+    }
+    bu.commandUses++;
+    bu.commands[commandName].execute(msg, words, text);
+    return true;
+};
+
+var messageLogs = [];
+var messageI = 0;
+/**
+ * Function to be called manually (through eval) to generate logs for any given channel
+ * @param channelid - channel id (String)
+ * @param msgid - id of starting message (String)
+ * @param times - number of times to repeat the cycle (int)
+ */
+function createLogs(channelid, msgid, times) {
+    if (messageI < times)
+        bot.getMessages(channelid, 100, msgid).then((kek) => {
+            logger.info(`finished ${messageI + 1}/${times}`);
+            for (var i = 0; i < kek.length; i++) {
+                messageLogs.push(`${kek[i].author.username}> ${kek[i].author.id}> ${kek[i].content}`);
+            }
+            messageI++;
+            setTimeout(() => {
+                createLogs(channelid, kek[kek.length - 1].id, times);
+            }, 5000);
+        });
+    else {}
+}
+/**
+ * Function to be used with createLogs
+ * @param name - file name (String)
+ */
+function saveLogs(name) {
+    messageI = 0;
+    fs.writeFile(path.join(__dirname, name), JSON.stringify(messageLogs, null, 4));
+}
+/**
+ * Posts stats about the bot to https://bots.discord.pw
+ */
+function postStats() {
+    var stats = JSON.stringify({
+        server_count: bot.guilds.size
+    });
+
+    var options = {
+        hostname: 'bots.discord.pw',
+        method: 'POST',
+        port: 443,
+        path: `/api/bots/${bot.user.id}/stats`,
+        headers: {
+            'User-Agent': 'blargbot/1.0 (ratismal)',
+            'Authorization': vars.botlisttoken,
+            'Content-Type': 'application/json',
+            'Content-Length': new Buffer.byteLength(stats)
+        }
+    };
+    logger.info('Posting to abal');
+    var req = https.request(options, function(res) {
+        var body = '';
+        res.on('data', function(chunk) {
+            logger.debug(chunk);
+            body += chunk;
+        });
+
+        res.on('end', function() {
+            logger.debug('body: ' + body);
+        });
+
+        res.on('error', function(thing) {
+            logger.warn(`Result error occurred! ${thing}`);
+        });
+    });
+    req.on('error', function(err) {
+        logger.warn(`Request error occurred! ${err}`);
+    });
+    req.write(stats);
+    req.end();
+
+    if (!config.general.isbeta) {
+        logger.info('Posting to matt');
+
+        request.post({
+            'url': 'https://www.carbonitex.net/discord/data/botdata.php',
+            'headers': {
+                'content-type': 'application/json'
             },
-            getAllUsers: true
+            'json': true,
+            body: {
+                'key': config.general.carbontoken,
+                'servercount': bot.guilds.size,
+                'logoid': 'https://i.imgur.com/uVq0zdO.png'
+            }
         });
-        global.bot = bot;
+    }
+}
 
-        bu.init();
-        bu.emitter = em;
-        bu.VERSION = v;
-        bu.startTime = startTime;
-        bu.vars = vars;
-        tags.init();
-        webInterface.init(bot, bu);
+var lastUserStatsKek;
+/**
+ * Gets information about a bot - test function
+ * @param id - id of bot
+ */
+function fml(id) {
+    var options = {
+        hostname: 'bots.discord.pw',
+        method: 'GET',
+        port: 443,
+        path: `/api/users/${id}`,
+        headers: {
+            'User-Agent': 'blargbot/1.0 (ratismal)',
+            'Authorization': vars.botlisttoken
+        }
+    };
 
-        /**
-         * EventEmitter stuff
-         */
-        emitter.on('reloadInterface', () => {
-            reloadInterface();
+    var req = https.request(options, function(res) {
+        var body = '';
+        res.on('data', function(chunk) {
+            logger.debug(chunk);
+            body += chunk;
         });
-        emitter.on('discordMessage', (message, attachment) => {
-            if (attachment)
-                bu.send(config.discord.channel, message, attachment);
-            else
-                bu.send(config.discord.channel, message);
+
+        res.on('end', function() {
+            logger.debug('body: ' + body);
+            lastUserStatsKek = JSON.parse(body);
+            logger.debug(lastUserStatsKek);
         });
 
-        emitter.on('discordTopic', (topic) => {
-            bot.editChannel(config.discord.channel, {
-                topic: topic
+        res.on('error', function(thing) {
+            logger.warn(`Result Error: ${thing}`);
+        });
+    });
+    req.on('error', function(err) {
+        logger.warn(`Request Error: ${err}`);
+    });
+    req.end();
+
+}
+
+/**
+ * Displays the contents of a function
+ * @param msg - message
+ * @param text - command text
+ */
+function eval2(msg, text) {
+    if (msg.author.id === bu.CAT_ID) {
+        var commandToProcess = text.replace('eval2 ', '');
+        logger.debug(commandToProcess);
+        try {
+            bu.send(msg, `\`\`\`js
+${eval(commandToProcess)})}
+\`\`\``);
+        } catch (err) {
+            bu.send(msg, err.message);
+        }
+    } else {
+        bu.send(msg, `You don't own me!`);
+    }
+}
+/**
+ * Evaluates code
+ * @param msg - message (Message)
+ * @param text - command text (String)
+ */
+async function eval1(msg, text) {
+    if (msg.author.id === bu.CAT_ID) {
+
+        var commandToProcess = text.replace('eval ', '');
+        if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
+            commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
+        else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
+            commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
+
+        //		let splitCom = commandToProcess.split('\n');
+        //	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
+        //		commandToProcess = splitCom.join('\n');
+        let toEval = `async function letsEval() {
+try {
+${commandToProcess}
+} catch (err) {
+return err;
+}
+}
+letsEval().then(m => {
+logger.debug(util.inspect(m, {depth: 1}));
+bu.send(msg, \`Input:
+\\\`\\\`\\\`js
+\${commandToProcess}
+\\\`\\\`\\\`
+Output:
+\\\`\\\`\\\`js
+\${commandToProcess == '1/0' ? 1 : m}
+\\\`\\\`\\\`\`);
+if (commandToProcess.indexOf('vars') > -1) {
+saveVars();
+}
+return m;
+}).catch(err => {
+bu.send(msg, \`An error occured!
+\\\`\\\`\\\`js
+\${err.stack}
+\\\`\\\`\\\`\`);
+})`;
+        logger.debug(toEval);
+        try {
+            eval(toEval);
+        } catch (err) {
+            bu.send(msg, `An error occured!
+\`\`\`js
+${err.stack}
+\`\`\``);
+        }
+    }
+};
+
+/**
+ * Processes a user into the database
+ * @param msg - message (Message)
+ */
+var processUser = async function(msg) {
+    let storedUser = await r.table('user').get(msg.author.id).run();
+    if (!storedUser) {
+        logger.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
+        r.table('user').insert({
+            userid: msg.author.id,
+            username: msg.author.username,
+            usernames: [{
+                name: msg.author.username,
+                date: r.epochTime(moment() / 1000)
+            }],
+            isbot: msg.author.bot,
+            lastspoke: r.epochTime(moment() / 1000),
+            lastcommand: null,
+            lastcommanddate: null,
+            messagecount: 1,
+            discriminator: msg.author.discriminator,
+            todo: []
+        }).run();
+    } else {
+        let newUser = {
+            lastspoke: r.epochTime(moment() / 1000),
+            lastchannel: msg.channel.id,
+            messagecount: storedUser.messagecount + 1
+        };
+        if (storedUser.username != msg.author.username) {
+            newUser.username = msg.author.username;
+            newUser.usernames = storedUser.usernames;
+            newUser.usernames.push({
+                name: msg.author.username,
+                date: r.epochTime(moment() / 1000)
             });
-        });
+        }
+        if (storedUser.discriminator != msg.author.discriminator) {
+            newUser.discriminator = msg.author.discriminator;
+        }
+        if (storedUser.avatarURL != msg.author.avatarURL) {
+            newUser.avatarURL = msg.author.avatarURL;
+        }
+        r.table('user').get(msg.author.id).update(newUser).run();
+    }
+};
 
-        emitter.on('eval', (msg, text) => {
-            eval1(msg, text);
-        });
-        emitter.on('eval2', (msg, text) => {
-            eval2(msg, text);
-        });
+var startTime = moment();
 
-        emitter.on('reloadCommand', (commandName) => {
-            reloadCommand(commandName);
-        });
-        emitter.on('loadCommand', (commandName) => {
-            loadCommand(commandName);
-        });
-        emitter.on('unloadCommand', (commandName) => {
-            unloadCommand(commandName);
-        });
-        emitter.on('saveVars', () => {
-            saveVars();
-        });
+/**
+ * Sends a message to irc
+ * @param msg - the message to send (String)
+ */
+function sendMessageToIrc(msg) {
+    emitter.emit('ircMessage', msg);
+}
+var tables = {
+    flip: {
+        prod: [
+            'Whoops! Let me get that for you ┬──┬﻿ ¯\\\\_(ツ)',
+            '(ヘ･_･)ヘ┳━┳ What are you, an animal?',
+            'Can you not? ヘ(´° □°)ヘ┳━┳',
+            'Tables are not meant to be flipped ┬──┬ ノ( ゜-゜ノ)'
+        ],
+        beta: [
+            '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Wheee!',
+            '┻━┻ ︵ヽ(`Д´)ﾉ︵﻿ ┻━┻ Get these tables out of my face!',
+            '┻━┻ミ＼(≧ﾛ≦＼) Hey, catch!',
+            'Flipping tables with elegance! (/¯◡ ‿ ◡)/¯ ~ ┻━┻'
+        ]
+    },
+    unflip: {
+        prod: [
+            '┬──┬﻿ ¯\\\\_(ツ) A table unflipped is a table saved!',
+            '┣ﾍ(≧∇≦ﾍ)… (≧∇≦)/┳━┳ Unflip that table!',
+            'Yay! Cleaning up! ┣ﾍ(^▽^ﾍ)Ξ(ﾟ▽ﾟ*)ﾉ┳━┳',
+            'ヘ(´° □°)ヘ┳━┳ Was that so hard?'
+        ],
+        beta: [
+            '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Here comes the entropy!',
+            'I\'m sorry, did you just pick that up? ༼ﾉຈل͜ຈ༽ﾉ︵┻━┻',
+            'Get back on the ground! (╯ರ ~ ರ）╯︵ ┻━┻',
+            'No need to be so serious! (ﾉ≧∇≦)ﾉ ﾐ ┸━┸'
+        ]
+    }
+};
 
-        avatars = JSON.parse(fs.readFileSync(path.join(__dirname, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
+var flipTables = async function(msg, unflip) {
+    let tableflip = await bu.guildSettings.get(msg.channel.guild.id, 'tableflip');
+    if (tableflip && tableflip != 0) {
+        var seed = bu.getRandomInt(0, 3);
+        bu.send(msg,
+            tables[unflip ? 'unflip' : 'flip'][config.general.isbeta ? 'beta' : 'prod'][seed]);
+    }
+};
 
-        bot.on('debug', function (message, id) {
-                    if (debug)
-                        logger.debug(`[${moment()
-                .format(`MM/DD HH:mm:ss`)}][DEBUG][${id}] ${message}`);
+function reloadInterface() {
+    webInterface.kill();
+    webInterface = reload('./interface.js');
+    webInterface.init(bot, bu);
+}
+
+function registerListeners() {
+    bot.on('debug', function(message, id) {
+        if (debug)
+            logger.debug(`[${moment().format('MM/DD HH:mm:ss')}][DEBUG][${id}] ${message}`);
         return 'no';
     });
 
-    bot.on('warn', function (message, id) {
+    bot.on('warn', function(message, id) {
         if (warn)
-            logger.warn(`[${moment()
-                .format(`MM/DD HH:mm:ss`)}][WARN][${id}] ${message}`);
+            logger.warn(`[${moment().format('MM/DD HH:mm:ss')}][WARN][${id}] ${message}`);
     });
 
-    bot.on('error', function (err, id) {
+    bot.on('error', function(err, id) {
         if (error)
-            logger.error(`[${moment()
-                .format(`MM/DD HH:mm:ss`)}][ERROR][${id}] ${err.stack}`);
+            logger.error(`[${moment().format('MM/DD HH:mm:ss')}][ERROR][${id}] ${err.stack}`);
     });
 
-    bot.on('ready', async function () {
+    bot.on('ready', async function() {
         logger.init('Ready!');
         let restart = await r.table('vars').get('restart').run();
         if (restart && restart.varvalue) {
@@ -260,10 +706,10 @@ e.init = (v, em) => {
                 let users = guild.members.filter(m => !m.user.bot).length;
                 let bots = guild.members.filter(m => m.user.bot).length;
                 let percent = Math.floor(bots / members * 10000) / 100;
-                var message = `:ballot_box_with_check: Guild: \`${guild.name}\``
-                + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
+                var message = `:ballot_box_with_check: Guild: \`${guild.name}\`` +
+                    ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
                 bu.send(`205153826162868225`, message);
-            
+
                 console.log('Inserting a missing guild');
                 r.table('guild').insert({
                     guildid: g.id,
@@ -288,7 +734,7 @@ e.init = (v, em) => {
         postStats();
     });
 
-    bot.on('guildMemberAdd', async function (guild, member) {
+    bot.on('guildMemberAdd', async function(guild, member) {
         let val = await bu.guildSettings.get(guild.id, 'greeting');
         if (val) {
             var message = await tags.processTag({
@@ -301,15 +747,15 @@ e.init = (v, em) => {
         bu.logEvent(guild.id, 'memberjoin', `**User:** ${member.user.username}#${member.user.discriminator} (${member.user.id})`);
     });
 
-    bot.on('guildDelete', async function (guild) {
+    bot.on('guildDelete', async function(guild) {
         postStats();
         logger.debug('removed from guild');
         let members = guild.memberCount;
         let users = guild.members.filter(m => !m.user.bot).length;
         let bots = guild.members.filter(m => m.user.bot).length;
         let percent = Math.floor(bots / members * 10000) / 100;
-         var message = `:x: Guild: \`${guild.name}\``
-                + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
+        var message = `:x: Guild: \`${guild.name}\`` +
+            ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
         bu.send(`205153826162868225`, message);
 
         r.table('guild').get(guild.id).update({
@@ -322,7 +768,7 @@ If it's not too much trouble, could you please tell me why you decided to remove
 You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you for your time!`);
     });
 
-    bot.on('guildMemberRemove', async function (guild, member) {
+    bot.on('guildMemberRemove', async function(guild, member) {
         let val = await bu.guildSettings.get(guild.id, 'farewell');
         if (val) {
             var message = await tags.processTag({
@@ -332,10 +778,10 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
             }, val, '');
             bu.send(guild.defaultChannel.id, message);
         }
-        bu.logEvent(guild.id, 'memberleave', `**User:** ${member.user.username}#${member.user.discriminator} (${member.user.id})`);        
+        bu.logEvent(guild.id, 'memberleave', `**User:** ${member.user.username}#${member.user.discriminator} (${member.user.id})`);
     });
 
-    bot.on('guildCreate', async function (guild) {
+    bot.on('guildCreate', async function(guild) {
         postStats();
         logger.debug('added to guild');
         let storedGuild = await r.table('guild').get(guild.id).run();
@@ -344,16 +790,16 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
             let users = guild.members.filter(m => !m.user.bot).length;
             let bots = guild.members.filter(m => m.user.bot).length;
             let percent = Math.floor(bots / members * 10000) / 100;
-            var message = `:white_check_mark: Guild: \`${guild.name}\``
-                + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
+            var message = `:white_check_mark: Guild: \`${guild.name}\`` +
+                ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
             bu.send(`205153826162868225`, message);
             if (bot.guilds.size % 100 == 0) {
-                bu.send(`205153826162868225`, `🎉 I'm now `
-                    + `in ${bot.guilds.size} guilds! 🎉`);
+                bu.send(`205153826162868225`, `🎉 I'm now ` +
+                    `in ${bot.guilds.size} guilds! 🎉`);
             }
             if (bot.guilds.size % 1000 == 0) {
-                bu.send(`229135592720433152`, `🎊🎉🎊🎉 I'm now `
-                    + `in ${bot.guilds.size} guilds! WHOOOOO! 🎉🎊🎉🎊`);
+                bu.send(`229135592720433152`, `🎊🎉🎊🎉 I'm now ` +
+                    `in ${bot.guilds.size} guilds! WHOOOOO! 🎉🎊🎉🎊`);
             }
             var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you!
 - 💻 For command information, please do \`${config.discord.defaultPrefix}help\`!
@@ -385,7 +831,7 @@ If you are the owner of this server, here are a few things to know.
         }
     });
 
-    bot.on('messageUpdate', async function (msg, oldmsg) {
+    bot.on('messageUpdate', async function(msg, oldmsg) {
         if (!oldmsg) {
             let storedMsg = await r.table('chatlogs')
                 .getAll(msg.id, {
@@ -452,24 +898,23 @@ If you are the owner of this server, here are a few things to know.
 ${oldMsg}
 **New Message:**
 ${newMsg}`);
-});
+    });
 
     bot.on('userUpdate', (user, oldUser) => {
         if (oldUser) {
-        if (user.id != bot.user.id) {
-            let guilds = bot.guilds.filter(g => g.members.get(user.id) != undefined);
-            let username;
-            let discrim;
-            if (oldUser.username != user.username) username = '**Old Name:** ' + oldUser.username + '\n';
-            if (oldUser.discriminator != user.discriminator) discrim = '**Old Discriminator:** ' + oldUser.discriminator + '\n';
-        let message = `**User:** ${user.username}#${user.discriminator} (${user.id})${username || ''}
-${discrim || ''}${user.avatar != oldUser.avatar ? `**New Avatar:** <${user.avatarURL}>
-**Old Avatar:** <https://cdn.discordapp.com/avatars/${user.id}/${oldUser.avatar}.jpg>` : ''}
+            if (user.id != bot.user.id) {
+                let guilds = bot.guilds.filter(g => g.members.get(user.id) != undefined);
+                let username;
+                let discrim;
+                if (oldUser.username != user.username) username = '**Old Name:** ' + oldUser.username + '\n';
+                if (oldUser.discriminator != user.discriminator) discrim = '**Old Discriminator:** ' + oldUser.discriminator + '\n';
+                let message = `**User:** ${user.username}#${user.discriminator} (${user.id})${username || ''}
+${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar:** <' + user.avatarURL + '>\n**Old Avatar:** <https://cdn.discordapp.com/avatars/${user.id}/${oldUser.avatar}.jpg>' : ''}
 `;
-            guilds.forEach(g => {
-               bu.logEvent(g.id, 'userupdate', message);
-            });
-        }
+                guilds.forEach(g => {
+                    bu.logEvent(g.id, 'userupdate', message);
+                });
+            }
         }
     });
 
@@ -510,40 +955,46 @@ ${discrim || ''}${user.avatar != oldUser.avatar ? `**New Avatar:** <${user.avata
         bu.logEvent(guild.id, 'memberunban', `**User:** ${user.username}#${user.discriminator} (${user.id})`);
     });
 
-    bot.on('messageDelete', async function (msg) {
+    bot.on('messageDelete', async function(msg) {
         if (!msg.channel) {
             let storedMsg = await r.table('chatlogs')
-            .getAll(msg.id, {index: 'msgid'})
-            .orderBy(r.desc('msgtime')).run();
+                .getAll(msg.id, {
+                    index: 'msgid'
+                })
+                .orderBy(r.desc('msgtime')).run();
             if (storedMsg.length > 0) {
-                
-           // logger.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
-                
+
+                // logger.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
+
                 storedMsg = storedMsg[0];
                 msg.content = storedMsg.content;
                 msg.author = bot.users.get(storedMsg.userid) || {
                     id: storedMsg.userid
                 };
-            msg.mentions = storedMsg.mentions.split(',').map(m => {
-                return {username: m};
-            });
-            msg.attachments = [];
-            if (storedMsg.attachment) msg.attachments = [{url:storedMsg.attachment}];
-            msg.channel = bot.getChannel(msg.channelID);
-            
+                msg.mentions = storedMsg.mentions.split(',').map(m => {
+                    return {
+                        username: m
+                    };
+                });
+                msg.attachments = [];
+                if (storedMsg.attachment) msg.attachments = [{
+                    url: storedMsg.attachment
+                }];
+                msg.channel = bot.getChannel(msg.channelID);
+
             } else {
-            logger.debug('Somebody deleted an uncached message and unstored message.');
-            msg.channel = bot.getChannel(msg.channelID);
-            msg.author = {};
-            msg.mentions = [];
-            msg.attachments = [];
+                logger.debug('Somebody deleted an uncached message and unstored message.');
+                msg.channel = bot.getChannel(msg.channelID);
+                msg.author = {};
+                msg.mentions = [];
+                msg.attachments = [];
             }
         }
         if (commandMessages[msg.channel.guild.id] && commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
             let val = await bu.guildSettings.get(msg.channel.guild.id, 'deletenotif');
             if (val && val != 0)
                 bu.send(msg, `**${msg.member.nick
-                    || msg.author.username}** deleted their command message.`);
+|| msg.author.username}** deleted their command message.`);
             commandMessages[msg.channel.guild.id].splice(commandMessages[msg.channel.guild.id].indexOf(msg.id), 1);
         }
         if (msg.channel.id != '204404225914961920') {
@@ -572,7 +1023,7 @@ ${newMsg}`);
     });
 
 
-    bot.on('messageCreate', async function (msg) {
+    bot.on('messageCreate', async function(msg) {
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
         let storedGuild;
@@ -582,18 +1033,18 @@ ${newMsg}`);
         if (msg.channel.id != '194950328393793536')
             if (msg.author.id == bot.user.id) {
                 if (!isDm)
-                    logger.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} `
-                        + `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
+                    logger.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} ` +
+                        `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
                 else
-                    logger.output(`PM> ${msg.channel.name} (${msg.channel.id})> `
-                        + `${msg.author.username}> ${msg.content} (${msg.id})`);
+                    logger.output(`PM> ${msg.channel.name} (${msg.channel.id})> ` +
+                        `${msg.author.username}> ${msg.content} (${msg.id})`);
             }
         if (msg.channel.id === config.discord.channel) {
             if (!(msg.author.id == bot.user.id && msg.content.startsWith('\u200B'))) {
                 var message;
                 if (msg.content.startsWith('_') && msg.content.endsWith('_'))
                     message = ` * ${msg.member.nick ? msg.member.nick : msg.author.username} ${msg.cleanContent
-                        .substring(1, msg.cleanContent.length - 1)}`;
+.substring(1, msg.cleanContent.length - 1)}`;
                 else {
                     if (msg.author.id == bot.user.id) {
                         message = `${msg.cleanContent}`;
@@ -620,7 +1071,11 @@ ${newMsg}`);
                     logger.info('BANN TIME');
                     if (!bu.bans[msg.channel.guild.id])
                         bu.bans[msg.channel.guild.id] = {};
-                    bu.bans[msg.channel.guild.id][msg.author.id] = { mod: bot.user, type: 'Auto-Ban', reason: 'Mention spam' };
+                    bu.bans[msg.channel.guild.id][msg.author.id] = {
+                        mod: bot.user,
+                        type: 'Auto-Ban',
+                        reason: 'Mention spam'
+                    };
                     try {
                         await bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1);
                     } catch (err) {
@@ -708,7 +1163,7 @@ ${newMsg}`);
                         bu.send('243229905360388106', `**Guild**: ${msg.channel.guild.name} (${msg.channel.guild.id})
 **Channel**: ${msg.channel.name} (${msg.channel.id})
 **User**: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
-${command}`);   
+${command}`);
                         if (!isDm) {
                             let deletenotif = storedGuild.settings.deletenotif;
                             if (deletenotif != '0') {
@@ -729,24 +1184,23 @@ ${command}`);
                         }
                     } else {
                         if (doCleverbot && !msg.author.bot) {
-                            Cleverbot.prepare(function () {
-                                var username = msg.channel.guild.members.get(bot.user.id).nick
-                                    ? msg.channel.guild.members.get(bot.user.id).nick
-                                    : bot.user.username;
+                            Cleverbot.prepare(function() {
+                                var username = msg.channel.guild.members.get(bot.user.id).nick ?
+                                    msg.channel.guild.members.get(bot.user.id).nick :
+                                    bot.user.username;
                                 var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
                                 logger.debug(msgToSend);
                                 bu.cleverbotStats++;
-                                cleverbot.write(msgToSend
-                                    , function (response) {
-                                        bot.sendChannelTyping(msg.channel.id);
-                                        setTimeout(function () {
-                                            bu.send(msg, response.message);
-                                        }, 1500);
-                                    });
+                                cleverbot.write(msgToSend, function(response) {
+                                    bot.sendChannelTyping(msg.channel.id);
+                                    setTimeout(function() {
+                                        bu.send(msg, response.message);
+                                    }, 1500);
+                                });
                             });
                         } else {
-                            if (bu.awaitMessages.hasOwnProperty(msg.channel.id)
-                                && bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
+                            if (bu.awaitMessages.hasOwnProperty(msg.channel.id) &&
+                                bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
                                 let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
                                 if (moment.duration(moment() - firstTime).asMinutes() <= 5) {
                                     bu.emitter.emit(bu.awaitMessages[msg.channel.id][msg.author.id].event, msg);
@@ -759,23 +1213,23 @@ ${command}`);
                 }
             } else {
 
-                if (bu.awaitMessages.hasOwnProperty(msg.channel.id)
-                    && bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
+                if (bu.awaitMessages.hasOwnProperty(msg.channel.id) &&
+                    bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
                     let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
                     if (moment.duration(moment() - firstTime).asMinutes() <= 5) {
                         bu.emitter.emit(bu.awaitMessages[msg.channel.id][msg.author.id].event, msg);
                     }
                 }
                 if (msg.author.id == bu.CAT_ID && msg.content.indexOf('discord.gg') == -1) {
-                    var prefixes = ['!', '@', '#', '$', '%', '^', '&'
-                        , '*', ')', '-', '_', '=', '+', '}', ']', '|'
-                        , ';', ':', '\'', '>', '?', '/', '.', '"'];
+                    var prefixes = ['!', '@', '#', '$', '%', '^', '&', '*', ')', '-', '_', '=', '+', '}', ']', '|', ';', ':', '\'', '>', '?', '/', '.', '"'];
                     if (!msg.content ||
-                        (prefixes.indexOf(msg.content.substring(0, 1)) == -1)
-                        && !msg.content.startsWith('k!')
-                        && !msg.content.startsWith('b!')
-                        && msg.channel.guild) {
-                        let last = await r.table('catchat').orderBy({ index: r.desc('id') }).nth(1).run();
+                        (prefixes.indexOf(msg.content.substring(0, 1)) == -1) &&
+                        !msg.content.startsWith('k!') &&
+                        !msg.content.startsWith('b!') &&
+                        msg.channel.guild) {
+                        let last = await r.table('catchat').orderBy({
+                            index: r.desc('id')
+                        }).nth(1).run();
                         if ((last && last.content != msg.content) || msg.content == '') {
                             var content = msg.content;
                             try {
@@ -820,456 +1274,4 @@ ${command}`);
             }).run();
         }
     });
-
-    initCommands();
-    website.init();
-    bot.connect();
-};
-
-
-/**
- * Reloads the misc variables object
- */
-function reloadVars() {
-    fs.readFileSync(path.join(__dirname, 'vars.json'), 'utf8', function (err, data) {
-        if (err) throw err;
-        vars = JSON.parse(data);
-    });
-}
-
-/**
- * Saves the misc variables to a file
- */
-function saveVars() {
-    fs.writeFileSync(path.join(__dirname, 'vars.json'), JSON.stringify(vars, null, 4));
-}
-
-var gameId;
-/**
- * Switches the game the bot is playing
- * @param forced - if true, will not set a timeout (Boolean)
- */
-function switchGame(forced) {
-    var name = '';
-    var oldId = gameId;
-    while (oldId == gameId) {
-        gameId = bu.getRandomInt(0, 6);
-    }
-    switch (gameId) {
-    case 0:
-        name = `with ${bot.users.size} users!`;
-        break;
-    case 1:
-        name = `in ${bot.guilds.size} guilds!`;
-        break;
-    case 2:
-        name = `in ${Object.keys(bot.channelGuildMap).length} channels!`;
-        break;
-    case 3:
-        name = `with tiny bits of string!`;
-        break;
-    case 4:
-        name = `with delicious fish!`;
-        break;
-    case 5:
-        name = `on version ${bu.VERSION}!`;
-        break;
-    case 6:
-        name = `type 'blargbot help'!`;
-        break;
-    }
-    bot.editStatus(null, {
-        name: name
-    });
-    if (!forced)
-        setTimeout(function () {
-            switchGame();
-        }, 60000);
-}
-
-var avatarId;
-/**
- * Switches the avatar
- * @param forced - if true, will not set a timeout (Boolean)
- */
-function switchAvatar(forced) {
-    bot.editSelf({ avatar: avatars[avatarId] });
-    avatarId++;
-    if (avatarId == 8)
-        avatarId = 0;
-    if (!forced)
-        setTimeout(function () {
-            switchAvatar();
-        }, 300000);
-}
-
-var commandMessages = {};
-
-var handleDiscordCommand = async function (channel, user, text, msg) {
-    let words = bu.splitInput(text);
-    if (msg.channel.guild)
-        logger.command(`Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
-    else
-        logger.command(`Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
-
-    if (msg.author.bot) {
-        return false;
-    }
-    let val = await bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]);
-    if (val) {
-        var command = text.replace(words[0], '').trim();
-        command = bu.fixContent(command);
-        var response = await tags.processTag(msg, val, command);
-        if (response !== 'null') {
-            bu.send(channel.id, response);
-        }
-        return true;
-    } else {
-        if (config.discord.commands[words[0]] != null) {
-            bu.send(channel.id, `${
-                config.discord.commands[words[0]]
-                    .replace(/%REPLY/, `<@${user.id}>`)}`);
-            return true;
-        } else {
-            if (bu.commandList.hasOwnProperty(words[0].toLowerCase())) {
-                let commandName = bu.commandList[words[0].toLowerCase()].name;
-                let val2 = await bu.canExecuteCommand(msg, commandName);
-                if (val2[0]) {
-                    executeCommand(commandName, msg, words, text);
-                }
-                return val2[0];
-            } else {
-                return false;
-            }
-        }
-    }
-};
-
-var executeCommand = async function (commandName, msg, words, text) {
-    r.table('stats').get(commandName).update({
-        uses: r.row('uses').add(1),
-        lastused: r.epochTime(moment() / 1000)
-    }).run();
-    if (bu.commandStats.hasOwnProperty(commandName)) {
-        bu.commandStats[commandName]++;
-    } else {
-        bu.commandStats[commandName] = 1;
-    }
-    bu.commandUses++;
-    bu.commands[commandName].execute(msg, words, text);
-    return true;
-};
-
-var messageLogs = [];
-var messageI = 0;
-
-/**
- * Function to be called manually (through eval) to generate logs for any given channel
- * @param channelid - channel id (String)
- * @param msgid - id of starting message (String)
- * @param times - number of times to repeat the cycle (int)
- */
-function createLogs(channelid, msgid, times) {
-    if (messageI < times)
-        bot.getMessages(channelid, 100, msgid).then((kek) => {
-            logger.info(`finished ${messageI + 1}/${times}`);
-            for (var i = 0; i < kek.length; i++) {
-                messageLogs.push(`${kek[i].author.username}> ${kek[i].author.id}> ${kek[i].content}`);
-            }
-            messageI++;
-            setTimeout(() => {
-                createLogs(channelid, kek[kek.length - 1].id, times);
-            }, 5000);
-        });
-    else {
-    }
-}
-
-/**
- * Function to be used with createLogs
- * @param name - file name (String)
- */
-function saveLogs(name) {
-    messageI = 0;
-    fs.writeFile(path.join(__dirname, name), JSON.stringify(messageLogs, null, 4));
-}
-
-/**
- * Posts stats about the bot to https://bots.discord.pw
- */
-function postStats() {
-    var stats = JSON.stringify({
-        server_count: bot.guilds.size
-    });
-
-    var options = {
-        hostname: 'bots.discord.pw',
-        method: 'POST',
-        port: 443,
-        path: `/api/bots/${bot.user.id}/stats`,
-        headers: {
-            'User-Agent': 'blargbot/1.0 (ratismal)',
-            'Authorization': vars.botlisttoken,
-            'Content-Type': 'application/json',
-            'Content-Length': new Buffer.byteLength(stats)
-        }
-    };
-    logger.info('Posting to abal');
-    var req = https.request(options, function (res) {
-        var body = '';
-        res.on('data', function (chunk) {
-            logger.debug(chunk);
-            body += chunk;
-        });
-
-        res.on('end', function () {
-            logger.debug('body: ' + body);
-        });
-
-        res.on('error', function (thing) {
-            logger.warn(`Result error occurred! ${thing}`);
-        });
-    });
-    req.on('error', function (err) {
-        logger.warn(`Request error occurred! ${err}`);
-    });
-    req.write(stats);
-    req.end();
-
-    if (!config.general.isbeta) {
-        logger.info('Posting to matt');
-
-        request.post({
-            'url': 'https://www.carbonitex.net/discord/data/botdata.php',
-            'headers': { 'content-type': 'application/json' }, 'json': true,
-            body: {
-                'key': config.general.carbontoken,
-                'servercount': bot.guilds.size,
-                'logoid': 'https://i.imgur.com/uVq0zdO.png'
-            }
-        });
-    }
-}
-
-var lastUserStatsKek;
-
-/**
- * Gets information about a bot - test function
- * @param id - id of bot
- */
-function fml(id) {
-    var options = {
-        hostname: 'bots.discord.pw',
-        method: 'GET',
-        port: 443,
-        path: `/api/users/${id}`,
-        headers: {
-            'User-Agent': 'blargbot/1.0 (ratismal)',
-            'Authorization': vars.botlisttoken
-        }
-    };
-
-    var req = https.request(options, function (res) {
-        var body = '';
-        res.on('data', function (chunk) {
-            logger.debug(chunk);
-            body += chunk;
-        });
-
-        res.on('end', function () {
-            logger.debug('body: ' + body);
-            lastUserStatsKek = JSON.parse(body);
-            logger.debug(lastUserStatsKek);
-        });
-
-        res.on('error', function (thing) {
-            logger.warn(`Result Error: ${thing}`);
-        });
-    });
-    req.on('error', function (err) {
-        logger.warn(`Request Error: ${err}`);
-    });
-    req.end();
-
-}
-
-/**
- * Displays the contents of a function
- * @param msg - message
- * @param text - command text
- */
-function eval2(msg, text) {
-    if (msg.author.id === bu.CAT_ID) {
-        var commandToProcess = text.replace('eval2 ', '');
-        logger.debug(commandToProcess);
-        try {
-            bu.send(msg, `\`\`\`js
-${eval(`${commandToProcess}.toString()`)}
-\`\`\``);
-        } catch (err) {
-            bu.send(msg, err.message);
-        }
-    } else {
-        bu.send(msg, `You don't own me!`);
-    }
-}
-
-/**
- * Evaluates code
- * @param msg - message (Message)
- * @param text - command text (String)
- */
-async function eval1(msg, text) {
-    if (msg.author.id === bu.CAT_ID) {
-
-        var commandToProcess = text.replace('eval ', '');
-        if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
-            commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
-        else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
-            commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
-
-        //		let splitCom = commandToProcess.split('\n');
-        //	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
-        //		commandToProcess = splitCom.join('\n');
-        let toEval = `async function letsEval() {
-        try {
-        ${commandToProcess}
-        } catch (err) {
-            return err;
-        }
-    }
-    letsEval().then(m => {
-        logger.debug(util.inspect(m, {depth: 1}));
-        bu.send(msg, \`Input:
-\\\`\\\`\\\`js
-\${commandToProcess}
-\\\`\\\`\\\`
-Output:
-\\\`\\\`\\\`js
-\${commandToProcess == '1/0' ? 1 : m}
-\\\`\\\`\\\`\`);
-            if (commandToProcess.indexOf('vars') > -1) {
-                saveVars();
-            }
-            return m;
-    }).catch(err => {
-        bu.send(msg, \`An error occured!
-\\\`\\\`\\\`js
-\${err.stack}
-\\\`\\\`\\\`\`);
-    })`;
-        logger.debug(toEval);
-        try {
-            eval(toEval);
-        } catch (err) {
-            bu.send(msg, `An error occured!
-\`\`\`js
-${err.stack}
-\`\`\``);
-        }
-    }
-};
-
-/**
- * Processes a user into the database
- * @param msg - message (Message)
- */
-var processUser = async function (msg) {
-    let storedUser = await r.table('user').get(msg.author.id).run();
-    if (!storedUser) {
-        logger.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
-        r.table('user').insert({
-            userid: msg.author.id,
-            username: msg.author.username,
-            usernames: [{
-                name: msg.author.username,
-                date: r.epochTime(moment() / 1000)
-            }],
-            isbot: msg.author.bot,
-            lastspoke: r.epochTime(moment() / 1000),
-            lastcommand: null,
-            lastcommanddate: null,
-            messagecount: 1,
-            discriminator: msg.author.discriminator,
-            todo: []
-        }).run();
-    } else {
-        let newUser = {
-            lastspoke: r.epochTime(moment() / 1000),
-            lastchannel: msg.channel.id,
-            messagecount: storedUser.messagecount + 1
-        };
-        if (storedUser.username != msg.author.username) {
-            newUser.username = msg.author.username;
-            newUser.usernames = storedUser.usernames;
-            newUser.usernames.push({
-                name: msg.author.username,
-                date: r.epochTime(moment() / 1000)
-            });
-        }
-        if (storedUser.discriminator != msg.author.discriminator) {
-            newUser.discriminator = msg.author.discriminator;
-        }
-        if (storedUser.avatarURL != msg.author.avatarURL) {
-            newUser.avatarURL = msg.author.avatarURL;
-        }
-        r.table('user').get(msg.author.id).update(newUser).run();
-    }
-};
-
-
-var startTime = moment();
-
-/**
- * Sends a message to irc
- * @param msg - the message to send (String)
- */
-function sendMessageToIrc(msg) {
-    emitter.emit('ircMessage', msg);
-}
-
-var tables = {
-    flip: {
-        prod: [
-            'Whoops! Let me get that for you ┬──┬﻿ ¯\\\\_(ツ)',
-            '(ヘ･_･)ヘ┳━┳ What are you, an animal?',
-            'Can you not? ヘ(´° □°)ヘ┳━┳',
-            'Tables are not meant to be flipped ┬──┬ ノ( ゜-゜ノ)'
-        ],
-        beta: [
-            '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Wheee!',
-            '┻━┻ ︵ヽ(`Д´)ﾉ︵﻿ ┻━┻ Get these tables out of my face!',
-            '┻━┻ミ＼(≧ﾛ≦＼) Hey, catch!',
-            'Flipping tables with elegance! (/¯◡ ‿ ◡)/¯ ~ ┻━┻'
-        ]
-    },
-    unflip: {
-        prod: [
-            '┬──┬﻿ ¯\\\\_(ツ) A table unflipped is a table saved!',
-            '┣ﾍ(≧∇≦ﾍ)… (≧∇≦)/┳━┳ Unflip that table!',
-            'Yay! Cleaning up! ┣ﾍ(^▽^ﾍ)Ξ(ﾟ▽ﾟ*)ﾉ┳━┳',
-            'ヘ(´° □°)ヘ┳━┳ Was that so hard?'
-        ],
-        beta: [
-            '(ﾉ´･ω･)ﾉ ﾐ ┸━┸ Here comes the entropy!',
-            'I\'m sorry, did you just pick that up? ༼ﾉຈل͜ຈ༽ﾉ︵┻━┻',
-            'Get back on the ground! (╯ರ ~ ರ）╯︵ ┻━┻',
-            'No need to be so serious! (ﾉ≧∇≦)ﾉ ﾐ ┸━┸'
-        ]
-    }
-};
-
-var flipTables = async function (msg, unflip) {
-    let tableflip = await bu.guildSettings.get(msg.channel.guild.id, 'tableflip');
-    if (tableflip && tableflip != 0) {
-        var seed = bu.getRandomInt(0, 3);
-        bu.send(msg,
-            tables[unflip ? 'unflip' : 'flip'][config.general.isbeta ? 'beta' : 'prod'][seed]);
-    }
-};
-
-function reloadInterface() {
-    webInterface.kill();
-    webInterface = reload('./interface.js');
-    webInterface.init(bot, bu);
 }
