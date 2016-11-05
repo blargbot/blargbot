@@ -408,7 +408,7 @@ function postStats() {
         path: `/api/bots/${bot.user.id}/stats`,
         headers: {
             'User-Agent': 'blargbot/1.0 (ratismal)',
-            'Authorization': vars.botlisttoken,
+            'Authorization': bu.config.botlisttoken,
             'Content-Type': 'application/json',
             'Content-Length': new Buffer.byteLength(stats)
         }
