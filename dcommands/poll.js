@@ -28,11 +28,12 @@ e.execute = async function (msg, words) {
 
         let msg2 = await bu.send(msg, message);
         for (let choice of choices) {
+            choice = choice.replace(/>/g, '').replace(/</g, '');
             try {
                 await bot.addMessageReaction(msg2.channel.id, msg2.id, encodeURIComponent(choice));
             } catch (err) {
                 //NO-OP
-                logger.error(err);
+                //   logger.error(err);
             }
         }
         setTimeout(async function () {
@@ -42,23 +43,32 @@ e.execute = async function (msg, words) {
                 msg3.reactions[key].emoji = key;
                 reactions.push(msg3.reactions[key]);
             }
+            if (reactions.length == 0) {
+                bu.send(msg, 'No results were collected!');
+                return;
+            }
+            let totalVotes = 0;
+            for (let key in reactions) {
+                if (/\d/.test(reactions[key].emoji))
+                    reactions[key].emoji = `<:${reactions[key].emoji}>`;
+                if (choices.indexOf(reactions[key].emoji) > -1)
+                    reactions[key].count--;
+                totalVotes += reactions[key].count;
+            }
             reactions.sort((a, b) => {
                 return b.count - a.count;
             });
-            let totalVotes = 0;
-            for (let reaction of reactions) {
-                totalVotes += reaction.count - 1;
-            }
             let max = reactions[0].count;
             let winners = reactions.filter(r => r.count == max);
+            let winnerString = winners.map(r => r.emoji).join(' ');
             if (winners.length > 1) {
-                bu.send(msg, `**__${words[1]}__**\nThe results are in! It was a tie between these choices, at **${max - 1}** vote${max == 1 ? '' : 's'} each:
-${winners.map(r => r.emoji).join('')}
+                bu.send(msg, `**__${words[1]}__**\nThe results are in! It was a tie between these choices, at **${max}** vote${max == 1 ? '' : 's'} each:
+${winnerString}
 
 A total of **${totalVotes}** were collected!`);
             } else {
-                bu.send(msg, `**__${words[1]}__**\nThe results are in! At **${max - 1}** vote${max == 1 ? '' : 's'}, the winner is:
-${winners[0].emoji}
+                bu.send(msg, `**__${words[1]}__**\nThe results are in! At **${max}** vote${max == 1 ? '' : 's'}, the winner is:
+${winnerString}
 
 A total of **${totalVotes}** were collected!`);
             }
