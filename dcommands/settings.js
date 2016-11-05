@@ -23,7 +23,7 @@ e.longinfo = '<p>Gets or sets the settigns for the current guild.</p>';
 e.execute = async function(msg, words) {
     if (words.length == 1) {
         //do settings shit
-        let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+        let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
         let settings = storedGuild.settings;
         let channels = storedGuild.channels;
 

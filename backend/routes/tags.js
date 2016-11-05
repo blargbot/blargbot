@@ -40,7 +40,7 @@ async function renderEditor(req, res) {
                 logger.website(req.body);
                 let tagName = req.body.tagName;
                 if (tagName) {
-                    let tag = await bu.r.table('tag').get(tagName).run();
+                    let tag = await r.table('tag').get(tagName).run();
                     logger.website(tag);
                     if (tag) res.locals.startText = tag.content;
                 }
@@ -53,14 +53,14 @@ async function renderEditor(req, res) {
                 if (title == '') {
                     res.locals.error = 'Blank is not a name!';
                 } else {
-                    storedTag = await bu.r.table('tag').get(title).run();
+                    storedTag = await r.table('tag').get(title).run();
                     if (storedTag) {
                         if (storedTag.author != req.user.id)
                             res.locals.error = 'You do not own this tag!';
                         else {
-                            await bu.r.table('tag').get(title).update({
+                            await r.table('tag').get(title).update({
                                 content: req.body.content,
-                                lastmodified: bu.r.now()
+                                lastmodified: r.now()
                             }).run();
                             res.locals.message = 'Your tag has been edited!';
                             logChange('Edit (WI)', {
@@ -70,11 +70,11 @@ async function renderEditor(req, res) {
                             });
                         }
                     } else {
-                        await bu.r.table('tag').get(title).replace({
+                        await r.table('tag').get(title).replace({
                             name: title,
                             author: req.user.id,
                             content: req.body.content,
-                            lastmodified: bu.r.now(),
+                            lastmodified: r.now(),
                             uses: 0
                         }).run();
                         res.locals.message = 'Your tag has been created!';
@@ -94,18 +94,18 @@ async function renderEditor(req, res) {
                 if (newTitle == '') {
                     res.locals.error = 'Blank is not a name!';
                 } else {
-                    storedTag = await bu.r.table('tag').get(title).run();
+                    storedTag = await r.table('tag').get(title).run();
                     if (storedTag) {
                         if (storedTag.author != req.user.id)
                             res.locals.error = 'You do not own this tag!';
                         else {
-                            let otherStoredTag = await bu.r.table('tag').get(newTitle).run();
+                            let otherStoredTag = await r.table('tag').get(newTitle).run();
                             if (otherStoredTag)
                                 res.locals.error = 'There is already a tag with that name!';
                             else {
                                 storedTag.name = newTitle;
-                                await bu.r.table('tag').insert(storedTag).run();
-                                await bu.r.table('tag').get(title).delete().run();
+                                await r.table('tag').insert(storedTag).run();
+                                await r.table('tag').get(title).delete().run();
                                 res.locals.message = 'Tag successfully renamed. Note: Only the name has changed. You still need to save if you made changes to the contents.';
                                 res.locals.tagName = newTitle;
                                 logChange('Rename (WI)', {
@@ -125,12 +125,12 @@ async function renderEditor(req, res) {
                 res.locals.tagName = req.body.tagName;
                 title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
 
-                storedTag = await bu.r.table('tag').get(title).run();
+                storedTag = await r.table('tag').get(title).run();
                 if (storedTag) {
                     if (storedTag.author != req.user.id)
                         res.locals.error = 'You do not own this tag!';
                     else {
-                        await bu.r.table('tag').get(title).delete().run();
+                        await r.table('tag').get(title).delete().run();
                         res.locals.startText = '';
                         res.locals.tagName = '';
                         res.locals.message = 'Tag successfully deleted! It\'s gone forever!';

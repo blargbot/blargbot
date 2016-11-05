@@ -25,7 +25,7 @@ e.longinfo = `<p>Sends a suggestion to my guild. Thank you for the feedback! It'
 e.execute = async function(msg, words) {
     if (words.length > 1) {
         let i = 0;
-        let lastSuggestion = await bu.r.table('suggestion').orderBy({ index: bu.r.desc('id') }).limit(1).run();
+        let lastSuggestion = await r.table('suggestion').orderBy({ index: r.desc('id') }).limit(1).run();
         if (lastSuggestion.length > 0) i = lastSuggestion[0].id + 1;
         logger.debug(i, lastSuggestion);
         if (isNaN(i)) i = 0;
@@ -47,13 +47,13 @@ ${words.slice(1).join(' ')}
         }, (err) => {
             if (err) throw err;
         });
-        await bu.r.table('suggestion').insert({
+        await r.table('suggestion').insert({
             id: i,
             author: msg.author.id,
             channel: msg.channel.id,
             message: words.slice(1).join(' '),
             messageid: msg.id,
-            date: bu.r.epochTime(moment().unix())
+            date: r.epochTime(moment().unix())
         }).run();
         await bu.send(msg, 'Suggestion sent! :ok_hand:');
     }

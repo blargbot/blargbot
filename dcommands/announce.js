@@ -15,13 +15,14 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'announce <text>';
-e.info = 'Makes an annoucement';
+e.info = 'Makes an annoucement to a configured role.';
+e.longinfo = 'Makes an announcement to a configured role.';
 var changeChannel = '229135592720433152';
 var roleId = '239396821645000704';
 
 e.execute = async function (msg, words) {
     var changeChannel, roleId;
-    let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+    let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
     if (storedGuild.hasOwnProperty('announce')) {
         changeChannel = storedGuild.announce.channel;
         roleId = storedGuild.announce.role;
@@ -34,7 +35,7 @@ e.execute = async function (msg, words) {
             });
         changeChannel = msg2.channelMentions[0];
         msg2 = await bu.awaitMessage(msg,
-            'Please type the name or ID of the announcements role.');
+            'Please type the name or ID of the role to announce to.');
         let role = await bu.getRole(msg, msg2.content);
         if (role != null) {
             roleId = role.id;
@@ -42,7 +43,7 @@ e.execute = async function (msg, words) {
             bu.send(msg, `I couldn't find a role with that name. Run \`b!announce\` to attempt the setup again.`);
             return;
         }
-        await bu.r.table('guild').get(msg.channel.guild.id).update({
+        await r.table('guild').get(msg.channel.guild.id).update({
             announce: {
                 channel: changeChannel,
                 role: roleId
@@ -52,7 +53,7 @@ e.execute = async function (msg, words) {
     if (msg.channel.guild.channels.get(changeChannel) == undefined || msg.channel.guild.roles.get(roleId) == undefined) {
         bu.send(msg, `The assigned channel or role has been deleted, the config will be cleaned. Please run the command again.`);
         delete storedGuild.announce;
-        await bu.r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
+        await r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
         return;
     }
     words.shift();

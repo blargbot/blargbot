@@ -29,19 +29,19 @@ router.post('/', async (req, res) => {
         hash = hash.replace('beta', '');
     }
     res.locals.hash = hash;
-    let logsSpecs = await bu.r.db(db).table('logs').get(hash).run();
+    let logsSpecs = await r.db(db).table('logs').get(hash).run();
     if (!logsSpecs) {
         res.locals.continue = false;
     } else {
-        let messages = await bu.r.db(db).table('chatlogs')
+        let messages = await r.db(db).table('chatlogs')
             .between([logsSpecs.channel, logsSpecs.firsttime], [logsSpecs.channel, logsSpecs.lasttime], { index: 'channel_time' })
             .orderBy({ index: 'channel_time' })
             .filter(function (q) {
-                return bu.r.expr(logsSpecs.users).count().eq(0).or(bu.r.expr(logsSpecs.users).contains(q('userid')))
-                    .and(bu.r.expr(logsSpecs.types).count().eq(0).or(bu.r.expr(logsSpecs.types).contains(q('type')))
+                return r.expr(logsSpecs.users).count().eq(0).or(r.expr(logsSpecs.users).contains(q('userid')))
+                    .and(r.expr(logsSpecs.types).count().eq(0).or(r.expr(logsSpecs.types).contains(q('type')))
                     );
             })
-            .limit(logsSpecs.limit).eqJoin('userid', bu.r.table('user'), { index: 'userid' }).zip().orderBy('msgtime').run();
+            .limit(logsSpecs.limit).eqJoin('userid', r.table('user'), { index: 'userid' }).zip().orderBy('msgtime').run();
         if (messages.length > 0) {
             messages = messages.map(m => {
                 let user = bot.users.get(m.userid);

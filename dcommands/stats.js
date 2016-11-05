@@ -23,8 +23,8 @@ e.longinfo = `<p>Gives you information about the bot.</p>`;
 
 e.execute = async function(msg, words) {
     let full = words[1] && words[1].toLowerCase() == 'full';
-    let sum = await bu.r.table('stats').sum('uses').run();
-    let stats = await bu.r.table('stats').orderBy({index: bu.r.desc('uses')}).limit(5).run();
+    let sum = await r.table('stats').sum('uses').run();
+    let stats = await r.table('stats').orderBy({index: r.desc('uses')}).limit(5).run();
     let topCommands = '';
     for (let i = 0; i < stats.length; i++) {
         topCommands += pad(stats[i].name + ':', 13) + ' ' + stats[i].uses + '\n';

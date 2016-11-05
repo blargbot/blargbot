@@ -19,7 +19,7 @@ e.info = '';
 
 e.execute = async function (msg) {
     if (msg.author.id === bu.CAT_ID) {
-        await bu.r.table('vars').get('restart').replace({
+        await r.table('vars').get('restart').replace({
           varname: 'restart',
           varvalue: msg.channel.id  
         }).run();

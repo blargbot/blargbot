@@ -29,7 +29,7 @@ e.execute = async function(params) {
     }
     var replaceString = '';
     var replaceContent = false;
-    let storedAuthor = await bu.r.table('user').get(params.author);
+    let storedAuthor = await r.table('user').get(params.author);
     let authorVars = storedAuthor.vars || {};
     if (params.args.length > 1) {
         replaceString = authorVars[params.args[1]];

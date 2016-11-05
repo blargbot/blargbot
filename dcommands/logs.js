@@ -166,17 +166,17 @@ e.execute = async function (msg, words) {
         pingUser = true;
     }, 10000);
     let msgids = [msg.id, msg2.id];
-    let thing = await bu.r.table('chatlogs')
-        .between([channel, bu.r.epochTime(0)], [channel, bu.r.now()], {
+    let thing = await r.table('chatlogs')
+        .between([channel, r.epochTime(0)], [channel, r.now()], {
             index: 'channel_time'
         })
         .orderBy({
-            index: order ? bu.r.asc('channel_time') : bu.r.desc('channel_time')
+            index: order ? r.asc('channel_time') : r.desc('channel_time')
         })
         .filter(function (q) {
-            return bu.r.expr(users).count().eq(0).or(bu.r.expr(users).contains(q('userid')))
-                .and(bu.r.expr(types).count().eq(0).or(bu.r.expr(types).contains(q('type')))
-                    .and(bu.r.expr(msgids).contains(q('msgid')).not())
+            return r.expr(users).count().eq(0).or(r.expr(users).contains(q('userid')))
+                .and(r.expr(types).count().eq(0).or(r.expr(types).contains(q('type')))
+                    .and(r.expr(msgids).contains(q('msgid')).not())
                 );
         })
         .limit(numberOfMessages).run();
@@ -199,17 +199,17 @@ var insertQuery = async function (msg, channel, users, types, firstTime, numberO
     async function attemptInsert() {
         var key = randomString(6);
         logger.debug(key);
-        let exists = await bu.r.table('logs').get(key);
+        let exists = await r.table('logs').get(key);
         if (exists) {
             return attemptInsert;
         }
-        await bu.r.table('logs').insert({
+        await r.table('logs').insert({
             keycode: key,
             channel: channel,
             users: users,
             types: types,
-            firsttime: bu.r.expr(firstTime),
-            lasttime: bu.r.now(),
+            firsttime: r.expr(firstTime),
+            lasttime: r.now(),
             limit: numberOfMessages
         }).run();
         return key;

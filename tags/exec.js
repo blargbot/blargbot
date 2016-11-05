@@ -50,7 +50,7 @@ e.execute = async function(params) {
     var replaceString = '';
     var replaceContent = false;
     if (params.args[1]) {
-        let tag = await bu.r.table('tag').get(params.args[1]).run();
+        let tag = await r.table('tag').get(params.args[1]).run();
         if (!tag) {
             replaceString = await bu.tagProcessError(params, params.fallback, '`Tag not found`');
         } else {
@@ -61,7 +61,7 @@ e.execute = async function(params) {
                     return;
                 }
             }
-            bu.r.table('tag').get(tag.name).update({
+            r.table('tag').get(tag.name).update({
                 uses: tag.uses + 1
             }).run();
             replaceString = await bu.processTag(params.msg

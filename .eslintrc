@@ -47,6 +47,7 @@
     "globals": {
         "bot": false,
         "config": false,
-        "bu": false
+        "bu": false,
+        "r": false
     }
 }

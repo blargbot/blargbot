@@ -42,7 +42,7 @@ e.longinfo = `<p>Changes command-specific usage permissions.</p>
 e.execute = async function (msg, words) {
     if (words.length >= 2) {
         let commandName;
-        let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id);
+        let storedGuild = await r.table('guild').get(msg.channel.guild.id);
         let commandperms = storedGuild.commandperms;
         if (!commandperms) commandperms = {};
         let commands, toSend, changedCommands = [];
@@ -94,7 +94,7 @@ e.execute = async function (msg, words) {
                         if (commands.length == 1) { bu.send(msg, `That's not a command!`); break; }
                     }
                 }
-                await bu.r.table('guild').get(msg.channel.guild.id).update({
+                await r.table('guild').get(msg.channel.guild.id).update({
                     commandperms: commandperms
                 }).run();
                 bu.send(msg, toSend + changedCommands.join(', ') + '\n```');
@@ -128,7 +128,7 @@ e.execute = async function (msg, words) {
                         if (commands.length == 1) { bu.send(msg, `That's not a command!`); break; }
                     }
                 }
-                await bu.r.table('guild').get(msg.channel.guild.id).update({
+                await r.table('guild').get(msg.channel.guild.id).update({
                     commandperms: commandperms
                 }).run();
                 bu.send(msg, util.format('Commands enabled:\n```\n%s \n```\nCommands disabled:\n```\n%s \n```'
@@ -173,7 +173,7 @@ e.execute = async function (msg, words) {
                         if (commands.length == 1) { bu.send(msg, `That's not a command!`); break; }
                     }
                 }
-                await bu.r.table('guild').get(msg.channel.guild.id).update({
+                await r.table('guild').get(msg.channel.guild.id).update({
                     commandperms: commandperms
                 }).run();
                 bu.send(msg, toSend + changedCommands.join(', ') + '\n```');

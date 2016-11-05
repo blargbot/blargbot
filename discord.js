@@ -25,7 +25,7 @@ e.requireCtx = require;
  * - hooray for modules!
  */
 async function initCommands() {
-    //	await bu.r.table('command').delete().run();
+    //	await r.table('command').delete().run();
     var fileArray = fs.readdirSync(path.join(__dirname, 'dcommands'));
     for (var i = 0; i < fileArray.length; i++) {
         var commandFile = fileArray[i];
@@ -106,7 +106,7 @@ function buildCommand(commandName) {
         };
         /*
         if (bu.commands[commandName].longinfo) {
-            bu.r.table('command').insert({
+            r.table('command').insert({
                 name: commandName,
                 usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
                 info: bu.commands[commandName].longinfo,
@@ -245,13 +245,13 @@ e.init = (v, em) => {
 
     bot.on('ready', async function () {
         logger.init('Ready!');
-        let restart = await bu.r.table('vars').get('restart').run();
+        let restart = await r.table('vars').get('restart').run();
         if (restart && restart.varvalue) {
             bu.send(restart.varvalue, 'Ok I\'m back.');
-            bu.r.table('vars').get('restart').delete().run();
+            r.table('vars').get('restart').delete().run();
         }
 
-        let guilds = (await bu.r.table('guild').withFields('guildid').run()).map(g => g.guildid);
+        let guilds = (await r.table('guild').withFields('guildid').run()).map(g => g.guildid);
         //console.dir(guilds);
         bot.guilds.forEach((g) => {
             if (guilds.indexOf(g.id) == -1) {
@@ -265,7 +265,7 @@ e.init = (v, em) => {
                 bu.send(`205153826162868225`, message);
             
                 console.log('Inserting a missing guild');
-                bu.r.table('guild').insert({
+                r.table('guild').insert({
                     guildid: g.id,
                     active: true,
                     name: g.name,
@@ -298,6 +298,7 @@ e.init = (v, em) => {
             }, val, '');
             bu.send(guild.defaultChannel.id, message);
         }
+        bu.logEvent(guild.id, 'memberjoin', `**User:** ${member.user.username}#${member.user.discriminator} (${member.user.id})`);
     });
 
     bot.on('guildDelete', async function (guild) {
@@ -311,7 +312,7 @@ e.init = (v, em) => {
                 + ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
         bu.send(`205153826162868225`, message);
 
-        bu.r.table('guild').get(guild.id).update({
+        r.table('guild').get(guild.id).update({
             active: false
         }).run();
         let channel = await bot.getDMChannel(guild.ownerID);
@@ -331,12 +332,13 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
             }, val, '');
             bu.send(guild.defaultChannel.id, message);
         }
+        bu.logEvent(guild.id, 'memberleave', `**User:** ${member.user.username}#${member.user.discriminator} (${member.user.id})`);        
     });
 
     bot.on('guildCreate', async function (guild) {
         postStats();
         logger.debug('added to guild');
-        let storedGuild = await bu.r.table('guild').get(guild.id).run();
+        let storedGuild = await r.table('guild').get(guild.id).run();
         if (!storedGuild || !storedGuild.active) {
             let members = guild.memberCount;
             let users = guild.members.filter(m => !m.user.bot).length;
@@ -366,7 +368,7 @@ If you are the owner of this server, here are a few things to know.
 👍 I hope you enjoy my services! 👍`;
             bu.send(guild.id, message2);
             if (!storedGuild)
-                bu.r.table('guild').insert({
+                r.table('guild').insert({
                     guildid: guild.id,
                     active: true,
                     name: guild.name,
@@ -377,35 +379,96 @@ If you are the owner of this server, here are a few things to know.
                     modlog: []
                 }).run();
             else
-                bu.r.table('guild').get(guild.id).update({
+                r.table('guild').get(guild.id).update({
                     active: true
                 }).run();
         }
     });
-
+    
     bot.on('messageUpdate', async function (msg, oldmsg) {
-        if (oldmsg) {
-            if (msg.content == oldmsg.content) {
+        if (!oldmsg) {
+            let storedMsg = await r.table('chatlogs')
+                .getAll(msg.id, {
+                    index: 'msgid'
+                })
+                .orderBy(r.desc('msgtime')).run();
+            if (storedMsg.length > 0) {
+
+                // logger.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
+
+                storedMsg = storedMsg[0];
+                oldmsg.content = storedMsg.content;
+                oldmsg.author = bot.users.get(storedMsg.userid) || {
+                    id: storedMsg.userid
+                };
+                oldmsg.cleanContent = storedMsg.content;
+                oldmsg.mentions = storedMsg.mentions.split(',').map(m => {
+                    return {
+                        username: m
+                    };
+                });
+                oldmsg.attachments = [];
+                if (storedMsg.attachment) msg.attachments = [{
+                    url: storedMsg.attachment
+                }];
+                oldmsg.channel = bot.getChannel(msg.channelID);
+
+            } else {
+                logger.debug('Somebody deleted an uncached message and unstored message.');
                 return;
             }
-            if (msg.author.id == bot.user.id) {
-                logger.output(`Message ${msg.id} was updated to '${msg.content}''`);
-            }
-            if (msg.channel.id != '204404225914961920') {
-                var nsfw = await bu.isNsfwChannel(msg.channel.id);
-                bu.r.table('chatlogs').insert({
-                    content: msg.content,
-                    attachment: msg.attachments[0] ? msg.attachments[0].url : null,
-                    userid: msg.author.id,
-                    msgid: msg.id,
-                    channelid: msg.channel.id,
-                    guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
-                    msgtime: bu.r.epochTime(moment(msg.editedTimestamp) / 1000),
-                    nsfw: nsfw,
-                    mentions: msg.mentions.map(u => u.username).join(','),
-                    type: 1
-                }).run();
-            }
+        }
+        if (msg.content == oldmsg.content) {
+            return;
+        }
+        if (msg.author.id == bot.user.id) {
+            logger.output(`Message ${msg.id} was updated to '${msg.content}''`);
+        }
+        if (msg.channel.id != '204404225914961920') {
+            var nsfw = await bu.isNsfwChannel(msg.channel.id);
+            r.table('chatlogs').insert({
+                content: msg.content,
+                attachment: msg.attachments[0] ? msg.attachments[0].url : null,
+                userid: msg.author.id,
+                msgid: msg.id,
+                channelid: msg.channel.id,
+                guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
+                msgtime: r.epochTime(moment(msg.editedTimestamp) / 1000),
+                nsfw: nsfw,
+                mentions: msg.mentions.map(u => u.username).join(','),
+                type: 1
+            }).run();
+        }
+        let oldMsg = oldmsg.cleanContent;
+        let newMsg = msg.cleanContent;
+        if (oldMsg.length + newMsg.length > 1900) {
+            if (oldMsg.length > 900) oldMsg = oldMsg.substring(0, 900) + '... (too long to display)';
+            if (newMsg.length > 900) newMsg = newMsg.substring(0, 900) + '... (too long to display)';
+        }
+        bu.logEvent(msg.channel.guild.id, 'messageupdate', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
+    **Message ID:** ${msg.id}
+    **Old Message:**
+    ${oldmsg.cleanContent}
+    **New Message:**
+    ${msg.cleanContent}`);
+    });
+
+    bot.on('userUpdate', (user, oldUser) => {
+        if (oldUser) {
+        if (user.id != bot.user.id) {
+            let guilds = bot.guilds.filter(g => g.members.get(user.id) != undefined);
+            let username;
+            let discrim;
+            if (oldUser.username != user.username) username = '**Old Name:** ' + oldUser.username + '\n';
+            if (oldUser.discriminator != user.discriminator) discrim = '**Old Discriminator:** ' + oldUser.discriminator + '\n';
+        let message = `**User:** ${user.username}#${user.discriminator} (${user.id})${username || ''}
+${discrim || ''}${user.avatar != oldUser.avatar ? `**New Avatar:** <${user.avatarURL}>
+**Old Avatar:** <https://cdn.discordapp.com/avatars/${user.id}/${oldUser.avatar}.jpg>` : ''}
+`;
+            guilds.forEach(g => {
+               bu.logEvent(g.id, 'userupdate', message);
+            });
+        }
         }
     });
 
@@ -433,6 +496,7 @@ If you are the owner of this server, here are a few things to know.
             delete bu.bans[guild.id][user.id];
         }
         bu.logAction(guild, user, mod, type, reason);
+        bu.logEvent(guild.id, 'memberban', `**User:** ${user.username}#${user.discriminator} (${user.id})`);
     });
 
     bot.on('guildBanRemove', (guild, user) => {
@@ -442,20 +506,21 @@ If you are the owner of this server, here are a few things to know.
             delete bu.unbans[guild.id][user.id];
         }
         bu.logAction(guild, user, mod, 'Unban');
+        bu.logEvent(guild.id, 'memberunban', `**User:** ${user.username}#${user.discriminator} (${user.id})`);
     });
 
     bot.on('messageDelete', async function (msg) {
         if (!msg.channel) {
-            let storedMsg = await bu.r.table('chatlogs')
+            let storedMsg = await r.table('chatlogs')
             .getAll(msg.id, {index: 'msgid'})
-            .orderBy(bu.r.desc('msgtime')).run();
+            .orderBy(r.desc('msgtime')).run();
             if (storedMsg.length > 0) {
                 
            // logger.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
                 
                 storedMsg = storedMsg[0];
                 msg.content = storedMsg.content;
-                msg.author = {
+                msg.author = bot.users.get(storedMsg.userid) || {
                     id: storedMsg.userid
                 };
             msg.mentions = storedMsg.mentions.split(',').map(m => {
@@ -482,18 +547,24 @@ If you are the owner of this server, here are a few things to know.
         }
         if (msg.channel.id != '204404225914961920') {
             var nsfw = await bu.isNsfwChannel(msg.channel.id);
-            bu.r.table('chatlogs').insert({
+            r.table('chatlogs').insert({
                 content: msg.content,
                 attachment: msg.attachments[0] ? msg.attachments[0].url : null,
                 userid: msg.author.id,
                 msgid: msg.id,
                 channelid: msg.channel.id,
                 guildid: msg.channel.guild.id,
-                msgtime: bu.r.epochTime(moment() / 1000),
+                msgtime: r.epochTime(moment() / 1000),
                 nsfw: nsfw,
                 mentions: msg.mentions.map(u => u.username).join(','),
                 type: 2
             }).run();
+            let newMsg = msg.content;
+            if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
+            bu.logEvent(msg.channel.guild.id, 'messagedelete', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
+**Message ID:** ${msg.id}
+**Message:**
+${msg.cleanContent}`);
         }
     });
 
@@ -502,7 +573,7 @@ If you are the owner of this server, here are a few things to know.
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
         let storedGuild;
-        if (!isDm) storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+        if (!isDm) storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
 
 
         if (msg.channel.id != '194950328393793536')
@@ -647,9 +718,9 @@ ${command}`);
                                 }
                             }
                             if (msg.channel.guild) {
-                                bu.r.table('user').get(msg.author.id).update({
+                                r.table('user').get(msg.author.id).update({
                                     lastcommand: msg.cleanContent,
-                                    lastcommanddate: bu.r.epochTime(moment() / 1000)
+                                    lastcommanddate: r.epochTime(moment() / 1000)
                                 }).run();
                             }
                         }
@@ -701,7 +772,7 @@ ${command}`);
                         && !msg.content.startsWith('k!')
                         && !msg.content.startsWith('b!')
                         && msg.channel.guild) {
-                        let last = await bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(1).run();
+                        let last = await r.table('catchat').orderBy({ index: r.desc('id') }).nth(1).run();
                         if ((last && last.content != msg.content) || msg.content == '') {
                             var content = msg.content;
                             try {
@@ -713,14 +784,14 @@ ${command}`);
                             }
                             let nsfw = true;
                             if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
-                            bu.r.table('catchat').insert({
+                            r.table('catchat').insert({
                                 content: msg.content,
                                 attachment: msg.attachments[0] ? msg.attachments[0].url : null,
                                 userid: msg.author.id,
                                 msgid: msg.id,
                                 channelid: msg.channel.id,
                                 guildid: isDm ? 'DM' : msg.channel.guild.id,
-                                msgtime: bu.r.epochTime(moment(msg.timestamp) / 1000),
+                                msgtime: r.epochTime(moment(msg.timestamp) / 1000),
                                 nsfw: nsfw,
                                 mentions: msg.mentions.map(u => u.username).join(','),
                             }).run();
@@ -732,14 +803,14 @@ ${command}`);
         if (msg.channel.id != '204404225914961920') {
             let nsfw = true;
             if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
-            bu.r.table('chatlogs').insert({
+            r.table('chatlogs').insert({
                 content: msg.content,
                 attachment: msg.attachments[0] ? msg.attachments[0].url : null,
                 userid: msg.author.id,
                 msgid: msg.id,
                 channelid: msg.channel.id,
                 guildid: isDm ? 'DM' : msg.channel.guild.id,
-                msgtime: bu.r.epochTime(moment(msg.timestamp) / 1000),
+                msgtime: r.epochTime(moment(msg.timestamp) / 1000),
                 nsfw: nsfw,
                 mentions: msg.mentions.map(u => u.username).join(','),
                 type: 0
@@ -872,9 +943,9 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
 };
 
 var executeCommand = async function (commandName, msg, words, text) {
-    bu.r.table('stats').get(commandName).update({
-        uses: bu.r.row('uses').add(1),
-        lastused: bu.r.epochTime(moment() / 1000)
+    r.table('stats').get(commandName).update({
+        uses: r.row('uses').add(1),
+        lastused: r.epochTime(moment() / 1000)
     }).run();
     if (bu.commandStats.hasOwnProperty(commandName)) {
         bu.commandStats[commandName]++;
@@ -1101,18 +1172,18 @@ ${err.stack}
  * @param msg - message (Message)
  */
 var processUser = async function (msg) {
-    let storedUser = await bu.r.table('user').get(msg.author.id).run();
+    let storedUser = await r.table('user').get(msg.author.id).run();
     if (!storedUser) {
         logger.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
-        bu.r.table('user').insert({
+        r.table('user').insert({
             userid: msg.author.id,
             username: msg.author.username,
             usernames: [{
                 name: msg.author.username,
-                date: bu.r.epochTime(moment() / 1000)
+                date: r.epochTime(moment() / 1000)
             }],
             isbot: msg.author.bot,
-            lastspoke: bu.r.epochTime(moment() / 1000),
+            lastspoke: r.epochTime(moment() / 1000),
             lastcommand: null,
             lastcommanddate: null,
             messagecount: 1,
@@ -1121,7 +1192,7 @@ var processUser = async function (msg) {
         }).run();
     } else {
         let newUser = {
-            lastspoke: bu.r.epochTime(moment() / 1000),
+            lastspoke: r.epochTime(moment() / 1000),
             lastchannel: msg.channel.id,
             messagecount: storedUser.messagecount + 1
         };
@@ -1130,7 +1201,7 @@ var processUser = async function (msg) {
             newUser.usernames = storedUser.usernames;
             newUser.usernames.push({
                 name: msg.author.username,
-                date: bu.r.epochTime(moment() / 1000)
+                date: r.epochTime(moment() / 1000)
             });
         }
         if (storedUser.discriminator != msg.author.discriminator) {
@@ -1139,7 +1210,7 @@ var processUser = async function (msg) {
         if (storedUser.avatarURL != msg.author.avatarURL) {
             newUser.avatarURL = msg.author.avatarURL;
         }
-        bu.r.table('user').get(msg.author.id).update(newUser).run();
+        r.table('user').get(msg.author.id).update(newUser).run();
     }
 };
 

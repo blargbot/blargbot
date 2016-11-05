@@ -20,7 +20,7 @@ e.longinfo = '<p>Designates the current channel as NSFW, allowing you to use NSF
 
 
 e.execute = async function(msg) {
-    let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+    let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
     let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id)
         ? storedGuild.channels[msg.channel.id] : {
             blacklisted: false
@@ -33,7 +33,7 @@ e.execute = async function(msg) {
         bu.send(msg, 'This channel is now NSFW.');
     }
     storedGuild.channels[msg.channel.id] = channel;
-    bu.r.table('guild').get(msg.channel.guild.id).update({
+    r.table('guild').get(msg.channel.guild.id).update({
         channels: storedGuild.channels
     }).run();
 };

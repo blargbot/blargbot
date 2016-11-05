@@ -23,7 +23,7 @@ e.info = 'Access your todo list.\n'
 e.longinfo = `<p>Access your todo list.</p><p>To add items, do <code>todo add &lt;item&gt;</code>.</p><p>To remove items, do <code>todo remove &lt;item id&gt;</code>, where item id is the number shown when you do <code>&lt;todo&gt;</code> by itself.</p>`;
 
 e.execute = async function(msg, words) {
-    let storedUser = await bu.r.table('user').get(msg.author.id).run();
+    let storedUser = await r.table('user').get(msg.author.id).run();
     let todo = storedUser.todo;
     let modified = false;
     
@@ -70,7 +70,7 @@ e.execute = async function(msg, words) {
         defaultOption(msg, storedUser);
     }
     if (modified) {
-        bu.r.table('user').get(msg.author.id).update({
+        r.table('user').get(msg.author.id).update({
             todo: todo
         }).run();
     }

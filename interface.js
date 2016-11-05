@@ -30,7 +30,7 @@ e.init = () => {
             };
             res.end(checkAuth(objectToSend, req, res));
         } else {
-            bu.r.table('user').get(req.params.id).run().then(user => {
+            r.table('user').get(req.params.id).run().then(user => {
                 if (user) {
                     objectToSend = {
                         id: req.param.id,

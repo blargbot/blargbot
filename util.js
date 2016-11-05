@@ -100,7 +100,7 @@ bu.CommandType = {
 };
 
 bu.init = () => {
-    bu.r = require('rethinkdbdash')({
+    global.r = require('rethinkdbdash')({
         host: config.db.host,
         db: config.db.database,
         password: config.db.password,
@@ -452,7 +452,7 @@ bu.saveConfig = () => {
 /**
  * Reloads the user list (only for irc)
  */
-bu.reloadUserList = () => {
+reloadUserList = () => {
     bu.emitter.emit('ircUserList');
 };
 
@@ -529,7 +529,7 @@ bu.logAction = async function (guild, user, mod, type, reason) {
     let isArray = Array.isArray(user);
     let val = await bu.guildSettings.get(guild.id, 'modlog');
     if (val) {
-        let storedGuild = await bu.r.table('guild').get(guild.id).run();
+        let storedGuild = await r.table('guild').get(guild.id).run();
         let caseid = 0;
         if (storedGuild.modlog.length > 0) {
             caseid = storedGuild.modlog.length;
@@ -556,7 +556,7 @@ bu.logAction = async function (guild, user, mod, type, reason) {
             type: type || 'Generic',
             userid: isArray ? user.map(u => u.id).join(',') : user.id
         });
-        await bu.r.table('guild').get(guild.id).update({
+        await r.table('guild').get(guild.id).update({
             modlog: cases
         }).run();
     }
@@ -774,51 +774,51 @@ bu.splitInput = (content, noTrim) => {
 
 bu.guildSettings = {
     set: async function (guildid, key, value, type) {
-        let storedGuild = await bu.r.table('guild').get(guildid).run();
+        let storedGuild = await r.table('guild').get(guildid).run();
         storedGuild.settings[key] = value;
-        await bu.r.table('guild').get(guildid).update({
+        await r.table('guild').get(guildid).update({
             settings: storedGuild.settings
         }).run();
         return;
     },
     get: async function (guildid, key) {
-        let storedGuild = await bu.r.table('guild').get(guildid).run();
+        let storedGuild = await r.table('guild').get(guildid).run();
         if (!storedGuild) return {};
         return storedGuild.settings[key];
     },
     remove: async function (guildid, key) {
-        let storedGuild = await bu.r.table('guild').get(guildid).run();
+        let storedGuild = await r.table('guild').get(guildid).run();
         delete storedGuild.settings[key];
-        await bu.r.table('guild').get(guildid).replace(storedGuild).run();
+        await r.table('guild').get(guildid).replace(storedGuild).run();
         logger.debug(':thonkang:');
         return;
     }
 };
 bu.ccommand = {
     set: async function (guildid, key, value) {
-        let storedGuild = await bu.r.table('guild').get(guildid).run();
+        let storedGuild = await r.table('guild').get(guildid).run();
         storedGuild.ccommands[key] = value;
-        bu.r.table('guild').get(guildid).update({
+        r.table('guild').get(guildid).update({
             ccommands: storedGuild.ccommands
         }).run();
         return;
     },
     get: async function (guildid, key) {
-        let storedGuild = await bu.r.table('guild').get(guildid).run();
+        let storedGuild = await r.table('guild').get(guildid).run();
         if (!storedGuild) return null;
         return storedGuild.ccommands[key];
     },
     rename: async function (guildid, key1, key2) {
-        let storedGuild = await bu.r.table('guild').get(guildid).run();
+        let storedGuild = await r.table('guild').get(guildid).run();
         storedGuild.ccommands[key2] = storedGuild.ccommands[key1];
         delete storedGuild.ccommands[key1];
-        bu.r.table('guild').get(guildid).replace(storedGuild).run();
+        r.table('guild').get(guildid).replace(storedGuild).run();
         return;
     },
     remove: async function (guildid, key) {
-        let storedGuild = await bu.r.table('guild').get(guildid).run();
+        let storedGuild = await r.table('guild').get(guildid).run();
         delete storedGuild.ccommands[key];
-        bu.r.table('guild').get(guildid).replace(storedGuild).run();
+        r.table('guild').get(guildid).replace(storedGuild).run();
         return;
     }
 };
@@ -829,7 +829,7 @@ bu.isNsfwChannel = async function (channelid) {
         //   logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isNsfwChannel');
         return true;
     }
-    let guild = await bu.r.table('guild').get(guildid).run();
+    let guild = await r.table('guild').get(guildid).run();
     return guild.channels[channelid] ? guild.channels[channelid].nsfw : false;
 };
 
@@ -839,7 +839,7 @@ bu.isBlacklistedChannel = async function (channelid) {
         logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
         return false;
     }
-    let guild = await bu.r.table('guild').get(guildid).run();
+    let guild = await r.table('guild').get(guildid).run();
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
@@ -851,7 +851,7 @@ bu.canExecuteCommand = async function (msg, commandName, quiet, storedGuild, per
         if (staffperms === undefined)
             val1 = await bu.guildSettings.get(msg.channel.guild.id, 'staffperms');
         if (storedGuild === undefined)
-            storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+            storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
 
         let command;
         if (storedGuild) {
@@ -972,9 +972,20 @@ bu.fixContent = (content) => {
 
 
 bu.padLeft = (value, length) => {
-    return (value.toString().length < length) ? pad(' ' + value, length) : value;
+    return (value.toString().length < length) ? bu.padLeft(' ' + value, length) : value;
 };
 
 bu.padRight = (value, length) => {
-    return (value.toString().length < length) ? pad(value + ' ', length) : value;
+    return (value.toString().length < length) ? bu.padRight(value + ' ', length) : value;
+};
+
+bu.logEvent = async function (guildid, event, message) {
+    let storedGuild = await r.table('guild').get(guildid);
+    if (!storedGuild.hasOwnProperty('log')) 
+        storedGuild.log = {};
+    if (storedGuild.log.hasOwnProperty(event)) {
+        let channel = storedGuild.log[event];
+        bu.send(channel, `:information_source: **[${moment().tz('UTC').format('YY/MM/DD hh:mm:ss zz')}]** **Event: __${event}__**
+${message}`);
+    }
 };

@@ -38,7 +38,7 @@ ${bu.commandList[words[1]].info}`;
         var modifiedCommands = [];
         let storedGuild, permOverride, staffPerms;
         if (msg.channel.guild) {
-            storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+            storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
             permOverride = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
             staffPerms = await bu.guildSettings.get(msg.channel.guild.id, 'staffPerms');
             let customizedCommands = storedGuild.commandperms;

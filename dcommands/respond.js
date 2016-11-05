@@ -16,14 +16,14 @@ e.execute = async function(msg, words) {
         if (words.length >= 3) {
             let suggestion;
             if (words[1].toLowerCase() == 'latest' || words[1].toLowerCase() == 'l') {
-                suggestion = (await bu.r.table('suggestion').orderBy({ index: bu.r.desc('id') }).limit(1).run())[0];
+                suggestion = (await r.table('suggestion').orderBy({ index: r.desc('id') }).limit(1).run())[0];
          } else {
                 let i = parseInt(words[1]);
                 if (isNaN(i)) {
                     bu.send(msg, 'You suck');
                     return;
                 }
-                suggestion = await bu.r.table('suggestion').get(i).run();
+                suggestion = await r.table('suggestion').get(i).run();
                 if (!suggestion) {
                     bu.send(msg, 'Invalid ID');
                     return;

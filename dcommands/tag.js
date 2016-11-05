@@ -90,8 +90,8 @@ var searchTags = async function(msg, originalTagList, query, page, deleteMsg) {
         if (!isNaN(choice) && choice >= 1 && choice <= maxPages) {
             return searchTags(msg, originalTagList, query, choice, deleteMsg);
         } else {
-            originalTagList = await bu.r.table('tag').filter(
-                bu.r.row('name').match('(?i)' + escapeRegex(newPage))
+            originalTagList = await r.table('tag').filter(
+                r.row('name').match('(?i)' + escapeRegex(newPage))
             ).run();
             if (originalTagList.length == 0) {
                 bu.send(msg, 'No results found!');
@@ -132,9 +132,9 @@ var listTags = async function(msg, originalTagList, page, author, deleteMsg)  {
         } else {
             author = await bu.getUser(msg, newPage);
             if (author)
-                originalTagList = await bu.r.table('tag').getAll(author.id, { index: 'author' }).run();
+                originalTagList = await r.table('tag').getAll(author.id, { index: 'author' }).run();
             else
-                originalTagList = await bu.r.table('tag').run();
+                originalTagList = await r.table('tag').run();
             if (originalTagList.length == 0) {
                 bu.send(msg, 'No results found!');
                 return;
@@ -159,7 +159,7 @@ e.execute = async function(msg, words, text) {
                     title = (await bu.awaitMessage(msg, tagNameMsg)).content;
 
                 title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@]/gi, '');
-                tag = await bu.r.table('tag').get(title).run();
+                tag = await r.table('tag').get(title).run();
                 if (tag) {
                     bu.send(msg, `❌ That tag already exists! ❌`);
                     break;
@@ -170,11 +170,11 @@ e.execute = async function(msg, words, text) {
 
             //    content = bu.fixContent(content);
 
-                await bu.r.table('tag').insert({
+                await r.table('tag').insert({
                     name: title,
                     author: msg.author.id,
                     content: content,
-                    lastmodified: bu.r.epochTime(moment() / 1000),
+                    lastmodified: r.epochTime(moment() / 1000),
                     uses: 0
                 }).run();
                 bu.send(msg, `✅ Tag \`${title}\` created. ✅`);
@@ -192,7 +192,7 @@ e.execute = async function(msg, words, text) {
 
                 if (!oldTagName) oldTagName = (await bu.awaitMessage(msg, `Enter the name of the tag you wish to rename:`)).content;
 
-                let oldTag = await bu.r.table('tag').get(oldTagName).run();
+                let oldTag = await r.table('tag').get(oldTagName).run();
                 if (!oldTag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
@@ -203,15 +203,15 @@ e.execute = async function(msg, words, text) {
                 }
 
                 if (!newTagName) newTagName = (await bu.awaitMessage(msg, `Enter the new name.`)).content;
-                let newTag = await bu.r.table('tag').get(newTagName).run();
+                let newTag = await r.table('tag').get(newTagName).run();
                 if (newTag) {
                     bu.send(msg, `❌ The tag \`${words[3]}\` already exist! ❌`);
                     break;
                 }
 
                 oldTag.name = newTagName;
-                await bu.r.table('tag').get(oldTagName).delete().run();
-                await bu.r.table('tag').insert(oldTag).run();
+                await r.table('tag').get(oldTagName).delete().run();
+                await r.table('tag').insert(oldTag).run();
 
                 bu.send(msg, `✅ Tag \`${oldTagName}\` has been renamed to \`${newTagName}\`. ✅`);
                 logChange('Rename', {
@@ -228,7 +228,7 @@ e.execute = async function(msg, words, text) {
                     title = await bu.awaitMessage(msg, tagNameMsg).content;
 
                 title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@]/gi, '');
-                tag = await bu.r.table('tag').get(title).run();
+                tag = await r.table('tag').get(title).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
@@ -243,9 +243,9 @@ e.execute = async function(msg, words, text) {
 
               //  content = bu.fixContent(content);
 
-                await bu.r.table('tag').get(title).update({
+                await r.table('tag').get(title).update({
                     content: content,
-                    lastmodified: bu.r.epochTime(moment() / 1000)
+                    lastmodified: r.epochTime(moment() / 1000)
                 }).run();
                 bu.send(msg, `✅ Tag \`${title}\` edited. ✅`);
                 logChange('Edit', {
@@ -264,7 +264,7 @@ e.execute = async function(msg, words, text) {
                     title = await bu.awaitMessage(msg, tagNameMsg).content;
 
                 title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
-                tag = await bu.r.table('tag').get(title).run();
+                tag = await r.table('tag').get(title).run();
                 if (tag && tag.author != msg.author.id) {
                     bu.send(msg, `❌ You don't own this tag! ❌`);
                     break;
@@ -277,11 +277,11 @@ e.execute = async function(msg, words, text) {
                 logger.debug('First:', content, words);
                 //  content = bu.fixContent(content);
                 logger.debug('Second:', content);
-                await bu.r.table('tag').get(title).replace({
+                await r.table('tag').get(title).replace({
                     name: title,
                     author: msg.author.id,
                     content: content,
-                    lastmodified: bu.r.epochTime(moment() / 1000),
+                    lastmodified: r.epochTime(moment() / 1000),
                     uses: tag ? tag.uses : 0
                 }).run();
                 bu.send(msg, `✅ Tag \`${title}\` ${tag ? 'edited' : 'created'}. ✅`);
@@ -296,7 +296,7 @@ e.execute = async function(msg, words, text) {
                 if (words[2]) title = words[2];
                 if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
 
-                tag = await bu.r.table('tag').get(title).run();
+                tag = await r.table('tag').get(title).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
@@ -305,11 +305,11 @@ e.execute = async function(msg, words, text) {
                     bu.send(msg, `❌ You don't own this tag! ❌`);
                     break;
                 }
-                await bu.r.table('tag').get(words[2]).delete();
+                await r.table('tag').get(words[2]).delete();
                 bu.send(msg, `✅ Tag \`${title}\` is gone forever! ✅`);
                 logChange('Delete', {
                     user: `${msg.author.username} (${msg.author.id})`,
-                    author: `${tag.author == msg.author.id ? msg.author.username : (await bu.r.table('user').get(tag.author)).username} (${tag.author})`,
+                    author: `${tag.author == msg.author.id ? msg.author.username : (await r.table('user').get(tag.author)).username} (${tag.author})`,
                     tag: title,
                     content: tag.content
                 });
@@ -321,7 +321,7 @@ e.execute = async function(msg, words, text) {
                 if (words[2]) title = words[2];
                 if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
 
-                tag = await bu.r.table('tag').get(words[2]).run();
+                tag = await r.table('tag').get(words[2]).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
@@ -341,19 +341,19 @@ ${content}
                 if (words[2]) title = words[2];
                 if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
 
-                tag = await bu.r.table('tag').get(words[2]).run();
+                tag = await r.table('tag').get(words[2]).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
-                author = await bu.r.table('user').get(tag.author).run();
+                author = await r.table('user').get(tag.author).run();
                 bu.send(msg, `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`);
                 break;
             case 'top':
-                let topTags = await bu.r.table('tag').orderBy(bu.r.desc(bu.r.row('uses'))).limit(5).run();
+                let topTags = await r.table('tag').orderBy(r.desc(r.row('uses'))).limit(5).run();
                 let returnMsg = '__Here are the top 5 tags:__\n';
                 for (let i = 0; i < topTags.length; i++) {
-                    let author = await bu.r.table('user').get(topTags[i].author);
+                    let author = await r.table('user').get(topTags[i].author);
                     returnMsg += `**${i + 1}.** **${topTags[i].name}** (**${author.username}#${author.discriminator}**) - used **${topTags[i].uses} time${topTags[i].uses == 1 ? '' : 's'}**\n`;
                 }
                 bu.send(msg, returnMsg);
@@ -361,12 +361,12 @@ ${content}
             case 'info':
                 if (words[2]) title = words[2];
                 if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
-                tag = await bu.r.table('tag').get(words[2]).run();
+                tag = await r.table('tag').get(words[2]).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
-                author = await bu.r.table('user').get(tag.author).run();
+                author = await r.table('user').get(tag.author).run();
                 bu.send(msg, `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
 It was last modified **${moment(tag.lastmodified).format('LLLL')}**.
@@ -379,8 +379,8 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
 
                 page = 1;
 
-                originalTagList = await bu.r.table('tag').filter(
-                    bu.r.row('name').match('(?i)' + query)
+                originalTagList = await r.table('tag').filter(
+                    r.row('name').match('(?i)' + query)
                 ).run();
                 if (originalTagList.length == 0) {
                     bu.send(msg, 'No results found!');
@@ -397,8 +397,8 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
 
                 }
                 if (user)
-                    originalTagList = await bu.r.table('tag').getAll(user.id, { index: 'author' }).run();
-                else originalTagList = await bu.r.table('tag').run();
+                    originalTagList = await r.table('tag').getAll(user.id, { index: 'author' }).run();
+                else originalTagList = await r.table('tag').run();
 
                 listTags(msg, originalTagList, 1, user);
                 break;

@@ -31,7 +31,7 @@ e.execute = async function (params) {
         author = params.author;
     var replaceString = '';
     var replaceContent = false;
-    let storedAuthor = await bu.r.table('user').get(author).run();
+    let storedAuthor = await r.table('user').get(author).run();
     if (!storedAuthor.hasOwnProperty('var')) storedAuthor.vars = {};
     let authorVars = storedAuthor.vars;
 
@@ -52,7 +52,7 @@ e.execute = async function (params) {
 };
 
 function saveUser(author, vars) {
-    bu.r.table('user').get(author).update({
+    r.table('user').get(author).update({
         vars: vars
     }).run();
 }

@@ -17,7 +17,7 @@ e.init = () => {
  */
 function initTags() {
     var fileArray = fs.readdirSync(path.join(__dirname, 'tags'));
-    // bu.r.table('rawtag').delete().run().then(() => {
+    // r.table('rawtag').delete().run().then(() => {
     for (var i = 0; i < fileArray.length; i++) {
 
         var tagFile = fileArray[i];
@@ -60,7 +60,7 @@ function buildTag(tagName) {
     };
     bu.tagList[bu.tags[tagName].name] = tag;
     /*
-    bu.r.table('rawtag').insert({
+    r.table('rawtag').insert({
         name: tagName,
         usage: tag.usage,
         args: tag.args,
@@ -95,7 +95,7 @@ e.processTag = async function (msg, contents, command, tagName, author) {
 };
 
 e.executeTag = async function (msg, tagName, command) {
-    let tag = await bu.r.table('tag').get(tagName).run();
+    let tag = await r.table('tag').get(tagName).run();
     if (!tag)
         bu.send(msg, `❌ That tag doesn't exist! ❌`);
     else {
@@ -106,9 +106,9 @@ e.executeTag = async function (msg, tagName, command) {
                 return;
             }
         }
-        bu.r.table('tag').get(tagName).update({
+        r.table('tag').get(tagName).update({
             uses: tag.uses + 1,
-            lastuse: bu.r.now()
+            lastuse: r.now()
         }).run();
         var message = await e.processTag(msg, tag.content, command, tagName, tag.author);
         while (/<@!?[0-9]{17,21}>/.test(message)) {

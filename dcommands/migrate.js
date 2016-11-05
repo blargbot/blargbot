@@ -24,14 +24,14 @@ e.execute = async function (msg, words) {
     if (msg.author.id == bu.CAT_ID) {
         let tags = bu.vars.tags;
         for (let tag in tags) {
-            await bu.r.table('tag').get(tag).update({
+            await r.table('tag').get(tag).update({
                 vars: tags[tag]
             }).run();
         }
 
         let authors = bu.vars.authorTags;
         for (let author in authors) {
-            await bu.r.table('user').get(author).update({
+            await r.table('user').get(author).update({
                 vars: authors[author]
             }).run();
         }

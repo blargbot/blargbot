@@ -65,8 +65,8 @@ e.init = (database) => {
                     }
                     break;
                 case 'pls': // yay markovs
-                    let max = await bu.r.table('catchat').count().run();
-                    let position = (await bu.r.table('vars').get('markovpos').run()).varvalue;
+                    let max = await r.table('catchat').count().run();
+                    let position = (await r.table('vars').get('markovpos').run()).varvalue;
                     if (!position) {
                         position = 0;
                     }
@@ -81,11 +81,11 @@ e.init = (database) => {
                             pos -= max;
                         }
                         logger.error('Getting message at pos', pos);
-                        let message = await bu.r.table('catchat').orderBy({ index: bu.r.desc('id') }).nth(pos);
+                        let message = await r.table('catchat').orderBy({ index: r.desc('id') }).nth(pos);
                         var messageToSend = `${message.content} ${message.attachment == 'none' ? '' :
                             message.attachment}`;
                         e.bot.createMessage(msg.channel.id, `\u200B` + messageToSend);
-                        bu.r.table('vars').get('markovpos').update({ varvalue: message.id }).run();
+                        r.table('vars').get('markovpos').update({ varvalue: message.id }).run();
                     } else {
                         e.bot.createMessage(msg.channel.id, `I don't have a big enough sample size.`);
                     }

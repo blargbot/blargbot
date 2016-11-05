@@ -45,7 +45,7 @@ e.execute = async function(msg, words) {
                         return;
                     }
                 }
-                let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+                let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
                 if (storedGuild && storedGuild.modlog.length > 0) {
                     let index = storedGuild.modlog.length - limit;
                     if (index < 0) {
@@ -55,7 +55,7 @@ e.execute = async function(msg, words) {
                     let messages = cases.map(m => m.msgid);
                     let modlogChannel = await bu.guildSettings.get(msg.channel.guild.id, 'modlog');
                     bot.deleteMessages(modlogChannel, messages);
-                    await bu.r.table('guild').get(msg.channel.guild.id).update({
+                    await r.table('guild').get(msg.channel.guild.id).update({
                         modlog: storedGuild.modlog
                     }).run();
                     bu.send(msg, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');

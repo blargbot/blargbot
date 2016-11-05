@@ -30,7 +30,7 @@ e.execute = async function(params) {
         , tagName = params.tagName;
     var replaceString = '';
     var replaceContent = false;
-    let storedTag = await bu.r.table('tag').get(tagName).run();
+    let storedTag = await r.table('tag').get(tagName).run();
     if (!storedTag.hasOwnProperty('vars')) storedTag.vars = {};
     let tagVars = storedTag.vars;
     if (args.length > 1) {

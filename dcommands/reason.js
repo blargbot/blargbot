@@ -31,7 +31,7 @@ e.execute = async function(msg, words) {
             words.shift();
             var caseid = parseInt(words.shift());
             logger.debug(caseid);
-            let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+            let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
             let modlog = storedGuild.modlog;
             let index = latest ? modlog.length - 1 : caseid;
             if (modlog.length > 0 && modlog[index]) {
@@ -44,7 +44,7 @@ e.execute = async function(msg, words) {
                     content = content.replace(/\*\*Moderator:\*\*.+/, `**Moderator:** ${msg.author.username}#${msg.author.discriminator}`);
                     modlog[index].modid = msg.author.id;
                 }
-                bu.r.table('guild').get(msg.channel.guild.id).update({
+                r.table('guild').get(msg.channel.guild.id).update({
                     modlog: modlog
                 }).run();
 

@@ -26,7 +26,7 @@ specific channels. The roleme command has three subcommands:</p>
 
 e.execute = async function (msg, words) {
     if (words[1]) {
-        let storedGuild = await bu.r.table('guild').get(msg.channel.guild.id).run();
+        let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
         let roleme = storedGuild.roleme;
         let res, rolemeString, rolemeList;
         if (roleme == undefined) roleme = [];
@@ -72,7 +72,7 @@ e.execute = async function (msg, words) {
                     message: activationMessage,
                     casesensitive: caseSensitive,
                 });
-                await bu.r.table('guild').get(msg.channel.guild.id).update({
+                await r.table('guild').get(msg.channel.guild.id).update({
                     roleme: roleme
                 }).run();
                 bu.send(msg, 'Roleme added!');
@@ -99,7 +99,7 @@ e.execute = async function (msg, words) {
                 }
                 roleme.splice(parseInt(resMsg.content) - 1, 1);
                 storedGuild.roleme = roleme;
-                await bu.r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
+                await r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
                 let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
                 await bot.deleteMessage(delmsg.channel.id, delmsg.id);
                 await bu.send(msg, 'Done! :ok_hand:');
