@@ -38,7 +38,7 @@ e.execute = async function (msg, words) {
     let storedGuild = await r.table('guild').get(msg.channel.guild.id);
     if (!storedGuild.hasOwnProperty('log')) storedGuild.log = {};
     logger.debug(words);
-    if (words.length >= 1) {
+    if (words.length >= 2) {
         switch (words[1].toLowerCase()) {
             case 'list':
                 let output = 'Currently logged events:\n';
