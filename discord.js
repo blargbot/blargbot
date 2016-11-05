@@ -447,6 +447,7 @@ If you are the owner of this server, here are a few things to know.
         }
         bu.logEvent(msg.channel.guild.id, 'messageupdate', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
 **Message ID:** ${msg.id}
+**Channel:** ${msg.channel.mention}
 **Old Message:**
 ${oldMsg}
 **New Message:**
@@ -564,6 +565,7 @@ ${discrim || ''}${user.avatar != oldUser.avatar ? `**New Avatar:** <${user.avata
             if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
             bu.logEvent(msg.channel.guild.id, 'messagedelete', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
 **Message ID:** ${msg.id}
+**Channel:** ${msg.channel.mention}
 **Message:**
 ${newMsg}`);
         }
