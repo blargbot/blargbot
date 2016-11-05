@@ -384,7 +384,7 @@ If you are the owner of this server, here are a few things to know.
                 }).run();
         }
     });
-    
+
     bot.on('messageUpdate', async function (msg, oldmsg) {
         if (!oldmsg) {
             let storedMsg = await r.table('chatlogs')
@@ -448,9 +448,9 @@ If you are the owner of this server, here are a few things to know.
         bu.logEvent(msg.channel.guild.id, 'messageupdate', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
     **Message ID:** ${msg.id}
     **Old Message:**
-    ${oldmsg.cleanContent}
+    ${oldMsg}
     **New Message:**
-    ${msg.cleanContent}`);
+    ${newMsg}`);
     });
 
     bot.on('userUpdate', (user, oldUser) => {
@@ -559,12 +559,13 @@ ${discrim || ''}${user.avatar != oldUser.avatar ? `**New Avatar:** <${user.avata
                 mentions: msg.mentions.map(u => u.username).join(','),
                 type: 2
             }).run();
-            let newMsg = msg.content;
+            if (!msg.cleanContent) msg.cleanContent = 'uncached';
+            let newMsg = msg.cleanContent;
             if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
             bu.logEvent(msg.channel.guild.id, 'messagedelete', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
 **Message ID:** ${msg.id}
 **Message:**
-${msg.cleanContent}`);
+${newMsg}`);
         }
     });
 
