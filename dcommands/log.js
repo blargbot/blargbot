@@ -59,10 +59,10 @@ e.execute = async function (msg, words) {
                         await r.table('guild').get(msg.channel.guild.id).replace(storedGuild);
                         bu.send(msg, 'Done!');
                     } else {
-                        bu.send(msg, e.info);
+                        bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
                     }
                 } else {
-                    bu.send(msg, e.info);
+                    bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
                 }
                 break;
             case 'disable':
@@ -76,14 +76,14 @@ e.execute = async function (msg, words) {
                     await r.table('guild').get(msg.channel.guild.id).replace(storedGuild);
                     bu.send(msg, 'Done!');
                 } else {
-                    bu.send(msg, e.info);
+                    bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
                 }
                 break;
             default:
-                bu.send(msg, e.info);
+                bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
                 break;
         }
     } else {
-        bu.send(msg, e.info);
+        bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
     }
 };
