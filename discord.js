@@ -889,7 +889,7 @@ ${newMsg}`);
                 if (oldUser.username != user.username) username = '**Old Name:** ' + oldUser.username + '\n';
                 if (oldUser.discriminator != user.discriminator) discrim = '**Old Discriminator:** ' + oldUser.discriminator + '\n';
                 let message = `**User:** ${user.username}#${user.discriminator} (${user.id})${username || ''}
-${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar:** <' + user.avatarURL + '>\n**Old Avatar:** <https://cdn.discordapp.com/avatars/' + 'user.id' + '/' + oldUser.avatar + '.jpg>' : ''}
+${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar:** <' + user.avatarURL + '>\n**Old Avatar:** <https://cdn.discordapp.com/avatars/' + user.id + '/' + oldUser.avatar + '.jpg>' : ''}
 `;
                 guilds.forEach(g => {
                     bu.logEvent(g.id, 'userupdate', message);
