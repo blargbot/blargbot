@@ -397,9 +397,9 @@ function saveLogs(name) {
  * Posts stats about the bot to https://bots.discord.pw
  */
 function postStats() {
-    var stats = JSON.stringify({
-        server_count: bot.guilds.size
-    });
+    var stats = {
+        'server_count': bot.guilds.size
+    };
     request.post({
         'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
         'headers': {
