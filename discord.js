@@ -446,12 +446,12 @@ If you are the owner of this server, here are a few things to know.
             if (newMsg.length > 900) newMsg = newMsg.substring(0, 900) + '... (too long to display)';
         }
         bu.logEvent(msg.channel.guild.id, 'messageupdate', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
-    **Message ID:** ${msg.id}
-    **Old Message:**
-    ${oldMsg}
-    **New Message:**
-    ${newMsg}`);
-    });
+**Message ID:** ${msg.id}
+**Old Message:**
+${oldMsg}
+**New Message:**
+${newMsg}`);
+});
 
     bot.on('userUpdate', (user, oldUser) => {
         if (oldUser) {

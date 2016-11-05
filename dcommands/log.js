@@ -51,7 +51,7 @@ e.execute = async function (msg, words) {
                 if (words.length >= 3) {
                     if (msg.channelMentions.length > 0) {
                         let channel = msg.channelMentions[0];
-                        let args = words.slice(3);
+                        let args = words.slice(2);
                         for (let event of args) {
                             if (events.indexOf(event.toLowerCase()) > -1)
                                 storedGuild.log[event.toLowerCase()] = channel;
