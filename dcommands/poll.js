@@ -52,12 +52,12 @@ e.execute = async function (msg, words) {
             let max = reactions[0].count;
             let winners = reactions.filter(r => r.count == max);
             if (winners.length > 1) {
-                bu.send(msg, `The results are in for **${words[1]}**! It was a tie between these choices, at **${max - 1}** vote${max == 1 ? '' : 's'} each:
+                bu.send(msg, `**__${words[1]}__**\nThe results are in! It was a tie between these choices, at **${max - 1}** vote${max == 1 ? '' : 's'} each:
 ${winners.map(r => r.emoji).join('')}
 
 A total of **${totalVotes}** were collected!`);
             } else {
-                bu.send(msg, `The results are in for **${words[1]}**! At **${max - 1}** vote${max == 1 ? '' : 's'}, the winner is:
+                bu.send(msg, `**__${words[1]}__**\nThe results are in! At **${max - 1}** vote${max == 1 ? '' : 's'}, the winner is:
 ${winners[0].emoji}
 
 A total of **${totalVotes}** were collected!`);
