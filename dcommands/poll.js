@@ -65,12 +65,12 @@ e.execute = async function (msg, words) {
                 bu.send(msg, `**__${words[1]}__**\nThe results are in! It was a tie between these choices, at **${max}** vote${max == 1 ? '' : 's'} each:
 ${winnerString}
 
-A total of **${totalVotes}** were collected!`);
+A total of **${totalVotes}** vote${totalVotes == 1 ? '' : 's'} were collected!`);
             } else {
                 bu.send(msg, `**__${words[1]}__**\nThe results are in! At **${max}** vote${max == 1 ? '' : 's'}, the winner is:
 ${winnerString}
 
-A total of **${totalVotes}** were collected!`);
+A total of **${totalVotes}** vote${totalVotes == 1 ? '' : 's'} were collected!`);
             }
         }, time);
     }
