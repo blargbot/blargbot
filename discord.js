@@ -172,7 +172,7 @@ e.init = (v, em) => {
             TYPING_START: true
         },
         getAllUsers: true,
-        maxShards: config.discord.shards
+        maxShards: config.discord.shards || 1
     });
     global.bot = bot;
 
