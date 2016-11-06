@@ -171,7 +171,8 @@ e.init = (v, em) => {
             //   VOICE_STATE_UPDATE: true,
             TYPING_START: true
         },
-        getAllUsers: true
+        getAllUsers: true,
+        maxShards: config.discord.shards
     });
     global.bot = bot;
 
