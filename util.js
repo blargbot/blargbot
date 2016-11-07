@@ -519,14 +519,8 @@ bu.bans = {};
 
 bu.unbans = {};
 
-bu.getPosition = (member) => {
-    var roles = member.roles;
-    var rolepos = 0;
-    for (var i = 0; i < roles.length; i++) {
-        var rolenum = member.guild.roles.get(roles[i]).position;
-        rolepos = rolepos > rolenum ? rolepos : rolenum;
-    }
-    return rolepos;
+bu.getPosition = (member) => {;
+    return member.guild.roles.get(member.roles.sort((a, b) => member.guild.roles.get(b).position - member.guild.roles.get(a).position)[0]).position;
 };
 
 bu.logAction = async function(guild, user, mod, type, reason) {

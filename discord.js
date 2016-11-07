@@ -1010,7 +1010,7 @@ ${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar:** <' + user.ava
             var nsfw = await bu.isNsfwChannel(msg.channel.id);
             r.table('chatlogs').insert({
                 content: msg.content,
-                attachment: msg.attachments[0] ? msg.attachments[0].url : null,
+                attachment: msg.attachments && msg.attachments[0] ? msg.attachments[0].url : null,
                 userid: msg.author.id,
                 msgid: msg.id,
                 channelid: msg.channel.id,
