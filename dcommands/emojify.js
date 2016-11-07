@@ -3,10 +3,6 @@ var e = module.exports = {};
 var request = require('request');
 
 e.init = () => {
-    
-    
-
-
     e.category = bu.CommandType.GENERAL;
 };
 
@@ -17,6 +13,8 @@ e.hidden = false;
 e.usage = 'emojify <text>';
 e.alias = ['💬'];
 e.info = 'Gets emojis based on input.';
+e.longinfo = '<p>Gets emojis based on input.</p>';
+
 
 e.execute = (msg, words) => {
     var options = {
