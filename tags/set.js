@@ -22,7 +22,7 @@ e.exampleIn = `{set;testvar;This is a test var}`;
 e.exampleOut = ``;
 
 
-e.execute = async function (params) {
+e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -51,8 +51,8 @@ e.execute = async function (params) {
     };
 };
 
-function saveTag(tagName, vars) {
-    r.table('tag').get(tagName).update({
+async function saveTag(tagName, vars) {
+    await r.table('tag').get(tagName).update({
         vars: vars
     }).run();
 }

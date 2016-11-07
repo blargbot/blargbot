@@ -18,8 +18,8 @@ var cache = {};
 
 
 e.init = () => {
-    
-    
+
+
     voiceConnections = bot.voiceConnections;
     init(bot, voiceConnections, voiceSettings);
     e.category = bu.CommandType.MUSIC;
@@ -157,11 +157,11 @@ Commands:
                 else
                     sendMessage(msg.channel.id, `I can't play until I'm in a voice channel!`);
                 break;
-            //          case 'resume':
-            //              if (msg.channel.guild.id in voiceConnections) {
-            //                   voiceConnections[msg.channel.guild.id].resume();
-            //                }
-            //                break;
+                //          case 'resume':
+                //              if (msg.channel.guild.id in voiceConnections) {
+                //                   voiceConnections[msg.channel.guild.id].resume();
+                //                }
+                //                break;
             case 'stop':
                 if (voiceConnections.get(msg.channel.guild.id).ready) {
                     if (queue.hasOwnProperty(msg.channel.guild.id)) {
@@ -246,7 +246,7 @@ Commands:
                 if (msg.member.voiceState && msg.member.voiceState.channelID) {
                     if (!voiceConnections.get(msg.channel.guild.id)) {
                         var p1 = bot.joinVoiceChannel(msg.member.voiceState.channelID);
-                        p1.then(function (voice) {
+                        p1.then(function(voice) {
                             sendMessage(msg.channel.id, `I'm here!`);
                             bu.guildSettings.get(msg.channel.guild.id, 'musicchannel').then(channel => {
                                 if (!channel) channel = msg.channel.id;
@@ -282,7 +282,7 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
                                 voice.on('warn', (warn) => {
                                     logger.warn('Warning: ', warn);
                                 });
-                                voice.on('end', function () {
+                                voice.on('end', function() {
                                     try {
                                         logger.music(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
                                         if (!bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID)) {
@@ -307,7 +307,7 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
                                         logger.error(err);
                                     }
                                 });
-                                voice.on('disconnect', function () {
+                                voice.on('disconnect', function() {
                                     logger.music(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
                                     sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, 'Bye!');
                                 });
@@ -415,10 +415,7 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
 
 function sendQueue(msg) {
     messageToSend = ':musical_score: Current Queue: :musical_score:\n```css\n';
-    var requester
-        , requesterMember
-        , line
-        , oddApo;
+    var requester, requesterMember, line, oddApo;
     if (current[msg.channel.guild.id]) {
         var currentSong = current[msg.channel.guild.id];
         var timeDiff = moment.duration(moment().diff(moment(currentSong.start)));
@@ -846,7 +843,7 @@ function saveVideo(msg, channel, id, name, duration, callback) {
     }
     //  if (!url)
     if (!cache[id].sc) {
-        url = `https://www.youtube.com/watch?v=${id}`;
+        let url = `https://www.youtube.com/watch?v=${id}`;
 
         logger.music(url);
         var filepath = path.join(__dirname, '..', 'cache', 'yt', `${id}.mp3`);
@@ -1096,4 +1093,3 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
         }
     }
 }
-
