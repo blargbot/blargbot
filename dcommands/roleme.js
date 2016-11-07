@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
     e.category = bu.CommandType.ADMIN;
 };
 
@@ -24,9 +24,11 @@ specific channels. The roleme command has three subcommands:</p>
 <li>add: adds a roleme to the guild. Just follow the instructions.</li>
 <li>remove: returns a list of rolemes so you can choose one to remove.<\li><\\ul>`;
 
-e.execute = async function (msg, words) {
+e.execute = async function(msg, words) {
     if (words[1]) {
-        let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
+        bu.dirtyCache[msg.guild.id] = true;
+
+        let storedGuild = await bu.getGuild(msg.guild.id);
         let roleme = storedGuild.roleme;
         let res, rolemeString, rolemeList;
         if (roleme == undefined) roleme = [];
@@ -92,7 +94,7 @@ e.execute = async function (msg, words) {
                 }
                 if (rolemeString.length > 2000) rolemeString = rolemeString.substring(0, 1934) + '...';
                 rolemeString += '```\nPlease type the number of the roleme you wish to remove, or `c` to cancel.';
-                let resMsg = (await bu.awaitMessage(msg, rolemeString, m => (!isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length)  || m.content.toLowerCase() == 'c'));
+                let resMsg = (await bu.awaitMessage(msg, rolemeString, m => (!isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length) || m.content.toLowerCase() == 'c'));
                 if (resMsg.content.toLowerCase() == 'c') {
                     await bu.send(msg, 'Remove canceled!');
                     break;

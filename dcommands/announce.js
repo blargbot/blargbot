@@ -14,19 +14,25 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'announce <text>';
-e.info = 'Makes an annoucement to a configured role.';
-e.longinfo = 'Makes an announcement to a configured role.';
-var changeChannel = '229135592720433152';
-var roleId = '239396821645000704';
+e.usage = 'announce <<text> | -reset>';
+e.info = 'Makes an annoucement to a configured role, or resets the announcement configuration.';
+e.longinfo = '<p>Makes an annoucement to a configured role, or resets the announcement configuration.</p>';
 
-e.execute = async function (msg, words) {
+e.execute = async function(msg, words) {
     var changeChannel, roleId;
-    let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
+    let storedGuild = await bu.getGuild(msg.guild.id);
+    if (words[1].toLowerCase() == '-reset') {
+        delete storedGuild.announce;
+        await r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
+        bu.dirtyCache[msg.guild.id] = true;
+        bu.send(msg, 'Announcement configuration reset! Do `b!announce` to reconfigure it.');
+        return;
+    }
     if (storedGuild.hasOwnProperty('announce')) {
         changeChannel = storedGuild.announce.channel;
         roleId = storedGuild.announce.role;
     } else {
+        bu.dirtyCache[msg.guild.id] = true;
         let msg2 = await bu.awaitMessage(msg,
             'This guild doesn\'t have announcements set up. Please mention the channel that announcements should be put in.',
             m => {

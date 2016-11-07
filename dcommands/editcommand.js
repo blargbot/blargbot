@@ -39,10 +39,11 @@ e.longinfo = `<p>Changes command-specific usage permissions.</p>
 </tbody>
 </table>`;
 
-e.execute = async function (msg, words) {
+e.execute = async function(msg, words) {
     if (words.length >= 2) {
         let commandName;
-        let storedGuild = await r.table('guild').get(msg.channel.guild.id);
+        let storedGuild;
+        storedGuild = await bu.getGuild(msg.guild.id);
         let commandperms = storedGuild.commandperms;
         if (!commandperms) commandperms = {};
         let commands, toSend, changedCommands = [];
@@ -51,11 +52,14 @@ e.execute = async function (msg, words) {
                 let message = '__Modified Commands:__\n';
                 let commandList = [];
                 for (let key in commandperms) {
-                    commandList.push(`**${key}** ${commandperms[key].rolename
-                        ? ' - ROLE: ' + commandperms[key].rolename
-                        : ''}${commandperms[key].permission
-                            ? ' - PERM: ' + commandperms[key].permission
-                            : ''}`);
+                    if (commandperms[key].rolename || commandperms[key].permission || commandperms[key].disabled)
+                        commandList.push(`**${key}** ${commandperms[key].rolename 
+                        ? '\n   __Role__: ' + commandperms[key].rolename 
+                        : ''}${commandperms[key].permission 
+                            ? '\n   __Perm__: ' + commandperms[key].permission 
+                            : ''}${commandperms[key].disabled 
+                                ? '\n   __DISABLED__' 
+                                : ''}`);
                 }
                 if (commandList.length > 0) message += commandList.join('\n');
                 else message += 'No modified commands found.';
@@ -76,8 +80,8 @@ e.execute = async function (msg, words) {
                 for (let i = 0; i < commands.length; i++) {
                     if (bu.commandList.hasOwnProperty(commands[i].toLowerCase())) {
                         commandName = bu.commandList[commands[i].toLowerCase()].name;
-                        if (bu.commands[commandName].category == bu.CommandType.CAT
-                            || bu.commands[commandName].category == bu.CommandType.MUSIC) {
+                        if (bu.commands[commandName].category == bu.CommandType.CAT ||
+                            bu.commands[commandName].category == bu.CommandType.MUSIC) {
                             logger.debug('no ur not allowed');
                         } else {
                             if (words.length == 3) {
@@ -91,7 +95,10 @@ e.execute = async function (msg, words) {
                             }
                         }
                     } else {
-                        if (commands.length == 1) { bu.send(msg, `That's not a command!`); break; }
+                        if (commands.length == 1) {
+                            bu.send(msg, `That's not a command!`);
+                            break;
+                        }
                     }
                 }
                 await r.table('guild').get(msg.channel.guild.id).update({
@@ -110,8 +117,8 @@ e.execute = async function (msg, words) {
                 for (let i = 0; i < commands.length; i++) {
                     if (bu.commandList.hasOwnProperty(commands[i].toLowerCase())) {
                         commandName = bu.commandList[commands[i].toLowerCase()].name;
-                        if (bu.commands[commandName].category == bu.CommandType.CAT
-                            || bu.commands[commandName].category == bu.CommandType.MUSIC) {
+                        if (bu.commands[commandName].category == bu.CommandType.CAT ||
+                            bu.commands[commandName].category == bu.CommandType.MUSIC) {
                             logger.debug('no ur not allowed');
                         } else {
                             logger.debug(commandperms[commandName]);
@@ -125,14 +132,16 @@ e.execute = async function (msg, words) {
                             }
                         }
                     } else {
-                        if (commands.length == 1) { bu.send(msg, `That's not a command!`); break; }
+                        if (commands.length == 1) {
+                            bu.send(msg, `That's not a command!`);
+                            break;
+                        }
                     }
                 }
                 await r.table('guild').get(msg.channel.guild.id).update({
                     commandperms: commandperms
                 }).run();
-                bu.send(msg, util.format('Commands enabled:\n```\n%s \n```\nCommands disabled:\n```\n%s \n```'
-                    , enabledList.join(', '), disabledList.join(', ')));
+                bu.send(msg, util.format('Commands enabled:\n```\n%s \n```\nCommands disabled:\n```\n%s \n```', enabledList.join(', '), disabledList.join(', ')));
                 break;
             case 'setperm':
                 if (!words[2]) {
@@ -149,8 +158,8 @@ e.execute = async function (msg, words) {
                 for (let i = 0; i < commands.length; i++) {
                     if (bu.commandList.hasOwnProperty(commands[i].toLowerCase())) {
                         commandName = bu.commandList[commands[i].toLowerCase()].name;
-                        if (bu.commands[commandName].category == bu.CommandType.CAT
-                            || bu.commands[commandName].category == bu.CommandType.MUSIC) {
+                        if (bu.commands[commandName].category == bu.CommandType.CAT ||
+                            bu.commands[commandName].category == bu.CommandType.MUSIC) {
                             logger.debug('no ur not allowed');
                         } else {
                             if (words.length == 3) {
@@ -170,7 +179,10 @@ e.execute = async function (msg, words) {
                             }
                         }
                     } else {
-                        if (commands.length == 1) { bu.send(msg, `That's not a command!`); break; }
+                        if (commands.length == 1) {
+                            bu.send(msg, `That's not a command!`);
+                            break;
+                        }
                     }
                 }
                 await r.table('guild').get(msg.channel.guild.id).update({
@@ -182,6 +194,8 @@ e.execute = async function (msg, words) {
                 bu.send(msg, e.info);
                 break;
         }
+        storedGuild.commandperms = commandperms;
+        bu.dirtyCache[msg.guild.id] = true;
     } else {
         bu.send(msg, 'Not enough arguments provided!');
     }

@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
 
     e.category = bu.CommandType.COMMANDER;
 };
@@ -18,9 +18,11 @@ e.info = 'Blacklists the current channel. The bot will not respond until you do 
 e.longinfo = `<p>Blacklists the current channel. The bot will not respond until you do the command again.</p>`;
 
 e.execute = async function(msg) {
-    let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
-    let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id)
-        ? storedGuild.channels[msg.channel.id] : {
+    bu.dirtyCache[msg.guild.id] = true;
+
+    let storedGuild = await bu.getGuild(msg.guild.id);
+    let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id) ?
+        storedGuild.channels[msg.channel.id] : {
             nsfw: false
         };
     if (channel.blacklisted) {

@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
 
 
     e.category = bu.CommandType.ADMIN;
@@ -17,11 +17,11 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'modlog [disable | clear [number to clear]]';
-e.info = 'Enables the modlog and sets it to the current channel. Doing \`modlog disable\` will disable it. Doing \`modlog clear [number]\` will clear the specified number of cases from the modlog. Leaving \`number\` blank will clear all cases.'
-    + 'When an admin does a moderation command (ban, unban, mute, unmute, and kick), the incident will be logged. '
-    + 'The admin will then be encouraged to do \`reason <case number> <reason>\` to specify why '
-    + 'the action took place.'
-    + '\nBans and unbans are logged regardless of whether the \`ban\` or \`unban\` commands are used.';
+e.info = 'Enables the modlog and sets it to the current channel. Doing \`modlog disable\` will disable it. Doing \`modlog clear [number]\` will clear the specified number of cases from the modlog. Leaving \`number\` blank will clear all cases.' +
+    'When an admin does a moderation command (ban, unban, mute, unmute, and kick), the incident will be logged. ' +
+    'The admin will then be encouraged to do \`reason <case number> <reason>\` to specify why ' +
+    'the action took place.' +
+    '\nBans and unbans are logged regardless of whether the \`ban\` or \`unban\` commands are used.';
 e.longinfo = `<p>Enables the modlog and sets it to the current channel. Doing <code>modlog disable</code> will disable it. Doing <code>modlog clear [number]</code> will clear the specified number of cases from the modlog. Leaving <code>number</code> blank will clear all cases.
         When an admin does a moderation command (ban, unban, mute, unmute, and kick), the incident will be logged.
         The admin will then be encouraged to do <code>reason &lt;case number&gt; &lt;reason&gt;</code> to specify why
@@ -45,7 +45,9 @@ e.execute = async function(msg, words) {
                         return;
                     }
                 }
-                let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
+                bu.dirtyCache[msg.guild.id] = true;
+
+                let storedGuild = await bu.getGuild(msg.guild.id);
                 if (storedGuild && storedGuild.modlog.length > 0) {
                     let index = storedGuild.modlog.length - limit;
                     if (index < 0) {

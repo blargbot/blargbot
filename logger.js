@@ -15,9 +15,10 @@ const levels = {
     website: 7,
     music: 8,
     info: 9,
-    verbose: 10,
+    shard: 10,
+    verbose: 11,
     debug: 12,
-    silly: 12
+    silly: 13
 };
 
 const colors = {
@@ -34,6 +35,7 @@ const colors = {
     init: 'green',
     output: 'magenta',
     irc: 'yellow',
+    shard: 'yellow',
     timestamp: 'grey',
     bold: 'bold'
 };
@@ -66,6 +68,15 @@ e.init = () => {
                 },
                 formatter: options => {
                     // Return string will be passed to logger.
+
+                    if (options.level == 'shard') {
+                        let message = options.message.split(' ');
+                        let level = pad('[' + options.level.toUpperCase() + message[0] + ']', maxLength + 2);
+                        message = message.slice(1).join(' ');
+                        return wconfig.colorize('timestamp', options.timestamp()) + wconfig.colorize(options.level, level) + ' ' +
+                            (options.level == 'error' && options.meta && options.meta.stack ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== message ? message : '') +
+                                (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
+                    }
                     return wconfig.colorize('timestamp', options.timestamp()) + wconfig.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' ' +
                         (options.level == 'error' && options.meta && options.meta.stack ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== options.message ? options.message : '') +
                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
@@ -119,7 +130,7 @@ e.init = () => {
     });
     logger.level = debug ? 'debug' : 'info';
 
-    logger.toggleDebug = function () {
+    logger.toggleDebug = function() {
         logger.level = debug ? 'info' : 'debug';
         debug = !debug;
         return debug;

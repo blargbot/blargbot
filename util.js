@@ -25,6 +25,7 @@ bu.specialCharDiv = '\uE002';
 bu.specialCharEnd = '\uE003';
 bu.tagDiv = '\uE004';
 
+bu.guildCache = {};
 
 // A list of command modules
 bu.commands = {};
@@ -117,7 +118,7 @@ bu.compareStats = (a, b) => {
     return 0;
 };
 
-bu.awaitMessage = async function (msg, message, callback, timeout) {
+bu.awaitMessage = async function(msg, message, callback, timeout) {
     let returnMsg = await bu.send(msg, message);
     if (!timeout) timeout = 300000;
     if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
@@ -135,7 +136,7 @@ bu.awaitMessage = async function (msg, message, callback, timeout) {
 
     function registerEvent() {
         return new Promise((fulfill, reject) => {
-            bu.emitter.on(event, async function (msg2) {
+            bu.emitter.on(event, async function(msg2) {
                 let response;
                 if (callback) {
                     response = await callback(msg2);
@@ -166,22 +167,24 @@ bu.awaitMessage = async function (msg, message, callback, timeout) {
  * @returns {boolean}
  */
 bu.hasPerm = (msg, perm, quiet) => {
-        if (!msg.channel.guild) return true;
-        if ((msg.member.id === bu.CAT_ID && bu.catOverrides) ||
-            msg.channel.guild.ownerID == msg.member.id ||
-            msg.member.permission.administraton) {
+    if (!msg.channel.guild) return true;
+    if ((msg.member.id === bu.CAT_ID && bu.catOverrides) ||
+        msg.channel.guild.ownerID == msg.member.id ||
+        msg.member.permission.administraton) {
+        return true;
+    }
+    var roles = msg.channel.guild.roles.filter(m => Array.isArray(perm) ?
+        perm.map(q => q.toLowerCase()).indexOf(m.name.toLowerCase()) > -1 :
+        m.name.toLowerCase() == perm.toLowerCase());
+    for (var i = 0; i < roles.length; i++) {
+        if (msg.member.roles.indexOf(roles[i].id) > -1) {
             return true;
         }
-        var roles = msg.channel.guild.roles.filter(m => Array.isArray(perm) ?
-            perm.map(q => q.toLowerCase()).indexOf(m.name.toLowerCase()) > -1 :
-            m.name.toLowerCase() == perm.toLowerCase());
-        for (var i = 0; i < roles.length; i++) {
-            if (msg.member.roles.indexOf(roles[i].id) > -1) {
-                return true;
-            }
-        }
-        if (!quiet)
-            bu.send(msg, `You need the role ${Array.isArray(perm) ? perm.map(m => `\`${m}\``).join(', or ') : `\`${perm}\``} in order to use this command!`);
+    }
+    if (!quiet) {
+        let permString = Array.isArray(perm) ? perm.map(m => '`' + m + '`').join(', or ') : '`' + perm + '`';
+        bu.send(msg, `You need the role ${ permString } in order to use this command!`);
+    }
     return false;
 };
 
@@ -192,7 +195,7 @@ bu.hasPerm = (msg, perm, quiet) => {
  * @param file - the file to send (Object|null)
  * @returns {Message}
  */
-bu.send = async function (channel, message, file) {
+bu.send = async function(channel, message, file) {
     let channelid = channel;
     if (channel instanceof Eris.Message) {
         channelid = channel.channel.id;
@@ -223,7 +226,7 @@ bu.send = async function (channel, message, file) {
  * @param file - the file to send (Object|null)
  * @returns {Message}
  */
-bu.sendDM = async function (user, message, file) {
+bu.sendDM = async function(user, message, file) {
     let userid = user;
     if (user instanceof Eris.Message) {
         userid = user.author.id;
@@ -256,7 +259,7 @@ bu.sendDM = async function (user, message, file) {
  * @param quiet - if true, won't respond with multiple users found(Boolean)
  * @returns {User|null}
  */
-bu.getUser = async function (msg, name, quiet) {
+bu.getUser = async function(msg, name, quiet) {
     var userList;
     var userId;
     var discrim;
@@ -277,14 +280,14 @@ bu.getUser = async function (msg, name, quiet) {
         name = name.substring(0, name.length - 5);
     }
     //userList =
-    userList = msg.channel.guild.members.filter(m => (m.user.username
-        && m.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1
-        && (discrim != undefined ? m.user.discriminator == discrim : true))
-        || ((m.nick)
-            && m.nick.toLowerCase().indexOf(name) > -1
-            && (discrim != undefined ? m.user.discriminator == discrim : true)));
+    userList = msg.channel.guild.members.filter(m => (m.user.username &&
+            m.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+            (discrim != undefined ? m.user.discriminator == discrim : true)) ||
+        ((m.nick) &&
+            m.nick.toLowerCase().indexOf(name) > -1 &&
+            (discrim != undefined ? m.user.discriminator == discrim : true)));
 
-    userList.sort(function (a, b) {
+    userList.sort(function(a, b) {
         let thingy = 0;
         if (a.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.user.username.startsWith(name)) {
             thingy += 100;
@@ -298,20 +301,20 @@ bu.getUser = async function (msg, name, quiet) {
         if (b.nick && b.nick.toLowerCase().indexOf(name.toLowerCase()) > -1 && b.nick.startsWith(name)) {
             thingy -= 100;
         }
-        if (a.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1
-            && a.user.username.toLowerCase().startsWith(name.toLowerCase())) {
+        if (a.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+            a.user.username.toLowerCase().startsWith(name.toLowerCase())) {
             thingy += 10;
         }
-        if (a.nick && a.nick.toLowerCase().indexOf(name.toLowerCase()) > -1
-            && a.nick.toLowerCase().startsWith(name.toLowerCase())) {
+        if (a.nick && a.nick.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+            a.nick.toLowerCase().startsWith(name.toLowerCase())) {
             thingy += 10;
         }
-        if (b.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1
-            && b.user.username.toLowerCase().startsWith(name.toLowerCase())) {
+        if (b.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+            b.user.username.toLowerCase().startsWith(name.toLowerCase())) {
             thingy -= 10;
         }
-        if (b.nick && b.nick.toLowerCase().indexOf(name.toLowerCase()) > -1
-            && b.nick.toLowerCase().startsWith(name.toLowerCase())) {
+        if (b.nick && b.nick.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+            b.nick.toLowerCase().startsWith(name.toLowerCase())) {
             thingy -= 10;
         }
         if (a.user.username.indexOf(name) > -1) {
@@ -344,13 +347,14 @@ bu.getUser = async function (msg, name, quiet) {
                 newUserList.push(userList[i]);
             }
             for (let i = 0; i < newUserList.length; i++) {
-                userListString += `${i + 1 < 10 ? ` ${i + 1}` : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator}\n`;
+                userListString += `${i + 1 < 10 ? ' ' +  (i + 1) : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator}\n`;
             }
-
+            let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
             let resMsg = await bu.awaitMessage(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
-${userListString}${newUserList.length < userList.length ? `...and ${userList.length - newUserList.length} more.\n` : ''}--------------------
- C. cancel query
-\`\`\``, (msg2) => {
+${userListString}${moreUserString}--------------------
+C.cancel query
+\`\`\``,
+                (msg2) => {
                     if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newUserList.length + 1 && parseInt(msg2.content) >= 1)) {
                         return true;
                     } else return false;
@@ -369,15 +373,15 @@ ${userListString}${newUserList.length < userList.length ? `...and ${userList.len
     }
 };
 
-bu.getRole = async function (msg, name, quiet) {
+bu.getRole = async function(msg, name, quiet) {
     if (msg.channel.guild.roles.get(name)) {
         return msg.channel.guild.roles.get(name);
     }
     //userList =
-    let roleList = msg.channel.guild.roles.filter(m => (m.name
-        && m.name.toLowerCase().indexOf(name.toLowerCase()) > -1));
+    let roleList = msg.channel.guild.roles.filter(m => (m.name &&
+        m.name.toLowerCase().indexOf(name.toLowerCase()) > -1));
 
-    roleList.sort(function (a, b) {
+    roleList.sort(function(a, b) {
         let thingy = 0;
         if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.name.startsWith(name)) {
             thingy += 100;
@@ -385,12 +389,12 @@ bu.getRole = async function (msg, name, quiet) {
         if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && b.name.startsWith(name)) {
             thingy -= 100;
         }
-        if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1
-            && a.name.toLowerCase().startsWith(name.toLowerCase())) {
+        if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+            a.name.toLowerCase().startsWith(name.toLowerCase())) {
             thingy += 10;
         }
-        if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1
-            && b.name.toLowerCase().startsWith(name.toLowerCase())) {
+        if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+            b.name.toLowerCase().startsWith(name.toLowerCase())) {
             thingy -= 10;
         }
         if (a.name.indexOf(name) > -1) {
@@ -417,17 +421,17 @@ bu.getRole = async function (msg, name, quiet) {
                 newRoleList.push(roleList[i]);
             }
             for (let i = 0; i < newRoleList.length; i++) {
-                roleListString += `${i + 1 < 10 ? ` ${i + 1}` : i + 1}. ${newRoleList[i].name} - ${newRoleList[i].color.toString(16)} (${newRoleList[i].id})\n`;
+                roleListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newRoleList[i].name} - ${newRoleList[i].color.toString(16)} (${newRoleList[i].id})\n`;
             }
-
+            let moreRoleString = newRoleList.length < roleList.length ? `...and ${roleList.length - newRoleList.length} more.\n` : '';
             let resMsg = await bu.awaitMessage(msg, `Multiple roles found! Please select one from the list.\`\`\`prolog
-${roleListString}${newRoleList.length < roleList.length ? `...and ${roleList.length - newRoleList.length} more.\n` : ''}--------------------
- C. cancel query
+${roleListString}${moreRoleString}--------------------
+C. cancel query
 \`\`\``, (msg2) => {
-                    if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
-                        return true;
-                    } else return false;
-                });
+                if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
+                    return true;
+                } else return false;
+            });
             if (resMsg.content.toLowerCase() == 'c') {
                 bu.send(msg, 'Query canceled.');
                 return null;
@@ -474,7 +478,7 @@ bu.sendFile = (channelid, message, url) => {
         request({
             uri: url,
             encoding: null
-        }, function (err, res, body) {
+        }, function(err, res, body) {
             bot.createMessage(channelid, message, {
                 name: filename,
                 file: body
@@ -525,23 +529,25 @@ bu.getPosition = (member) => {
     return rolepos;
 };
 
-bu.logAction = async function (guild, user, mod, type, reason) {
+bu.logAction = async function(guild, user, mod, type, reason) {
     let isArray = Array.isArray(user);
     let val = await bu.guildSettings.get(guild.id, 'modlog');
     if (val) {
-        let storedGuild = await r.table('guild').get(guild.id).run();
+        let storedGuild = await bu.getGuild(guild.id);
         let caseid = 0;
         if (storedGuild.modlog.length > 0) {
             caseid = storedGuild.modlog.length;
         }
-        let users = isArray
-            ? user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join(', ')
-            : `${user.username}#${user.discriminator} (${user.id})`;
+        let users = isArray ?
+            user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join(', ') :
+            `${user.username}#${user.discriminator} (${user.id})`;
+        reason = reason || `Responsible moderator, please do \`reason ${caseid}\` to set.`;
+        let moderator = mod ? `${mod.username}#${mod.discriminator}` : 'Unknown';
         var message = `**Case ${caseid}**
 **Type:** ${type}
 **User:** ${users}
-**Reason:** ${reason || `Responsible moderator, please do \`reason ${caseid}\` to set.`}
-**Moderator:** ${mod ? `${mod.username}#${mod.discriminator}` : 'Unknown'}`;
+**Reason:** ${reason}
+**Moderator:** ${moderator}`;
 
         let msg = await bu.send(val, message);
         let cases = storedGuild.modlog;
@@ -556,6 +562,8 @@ bu.logAction = async function (guild, user, mod, type, reason) {
             type: type || 'Generic',
             userid: isArray ? user.map(u => u.id).join(',') : user.id
         });
+        bu.dirtyCache[guild.id] = true;
+
         await r.table('guild').get(guild.id).update({
             modlog: cases
         }).run();
@@ -570,7 +578,8 @@ bu.comparePerms = (m, allow) => {
         if (m.permission.has(key)) {
             return true;
         }
-    } return false;
+    }
+    return false;
 };
 
 bu.debug = false;
@@ -580,16 +589,11 @@ function setCharAt(str, index, chr) {
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
-bu.processTagInner = async function (params, i) {
-    return await bu.processTag(params.msg
-        , params.words
-        , params.args[i]
-        , params.fallback
-        , params.author
-        , params.tagName);
+bu.processTagInner = async function(params, i) {
+    return await bu.processTag(params.msg, params.words, params.args[i], params.fallback, params.author, params.tagName);
 };
 
-bu.processTag = async function (msg, words, contents, fallback, author, tagName) {
+bu.processTag = async function(msg, words, contents, fallback, author, tagName) {
     let level = 0;
     let lastIndex = 0;
     let coords = [];
@@ -615,11 +619,10 @@ bu.processTag = async function (msg, words, contents, fallback, author, tagName)
         subtags.push(contents.substring(coords[i][0], coords[i][1]));
     }
     for (let i = 0; i < subtags.length; i++) {
-        let tagBrackets = subtags[i]
-            , tag = tagBrackets.substring(1, tagBrackets.length - 1)
-            , args = tag.split(bu.tagDiv)
-            , replaceString
-            , replaceObj = {
+        let tagBrackets = subtags[i],
+            tag = tagBrackets.substring(1, tagBrackets.length - 1),
+            args = tag.split(bu.tagDiv),
+            replaceString, replaceObj = {
                 replaceString: '',
                 replaceContent: false
             };
@@ -650,8 +653,7 @@ bu.processTag = async function (msg, words, contents, fallback, author, tagName)
         }
         if (replaceObj == '') {
             return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
-        }
-        else {
+        } else {
             replaceString = replaceObj.replaceString;
             if (replaceString == undefined) {
                 replaceString = '';
@@ -740,15 +742,6 @@ bu.splitInput = (content, noTrim) => {
                     quoted = input[i].substring(1, input[i].length) + ' ';
             } else {
                 words.push(input[i]);
-                //   let tempWords = input[i].split('\n');
-                //    logger.debug('Temp', tempWords);
-                //     for (let ii = 0; ii < tempWords.length; ii++) {
-                //        words.push(tempWords[ii] + (ii == tempWords.length - 1 ? '' : '\n'));
-                //     }
-                //  for (let ii in tempWords) {
-                //       if (ii != tempWords.length - 1) words.push(tempWords[ii] + '\n');
-                //       else words.push(tempWords[ii]);
-                //    }
             }
         } else if (inQuote) {
             if (input[i].endsWith('"') && !input[i].endsWith('\\"')) {
@@ -770,88 +763,115 @@ bu.splitInput = (content, noTrim) => {
     return words;
 };
 
-/* SQL STUFF */
+/* Database Stuff */
 
 bu.guildSettings = {
-    set: async function (guildid, key, value, type) {
-        let storedGuild = await r.table('guild').get(guildid).run();
+    set: async function(guildid, key, value, type) {
+        let storedGuild = await bu.getGuild(guildid);
+
         storedGuild.settings[key] = value;
+        bu.dirtyCache[guildid] = true;
+
         await r.table('guild').get(guildid).update({
             settings: storedGuild.settings
         }).run();
         return;
     },
-    get: async function (guildid, key) {
-        let storedGuild = await r.table('guild').get(guildid).run();
+    get: async function(guildid, key) {
+        let storedGuild = await bu.getGuild(guildid);
+
         if (!storedGuild) return {};
         return storedGuild.settings[key];
     },
-    remove: async function (guildid, key) {
-        let storedGuild = await r.table('guild').get(guildid).run();
+    remove: async function(guildid, key) {
+        let storedGuild = await bu.getGuild(guildid);
+
         delete storedGuild.settings[key];
+        bu.dirtyCache[guildid] = true;
+
         await r.table('guild').get(guildid).replace(storedGuild).run();
         logger.debug(':thonkang:');
         return;
     }
 };
 bu.ccommand = {
-    set: async function (guildid, key, value) {
-        let storedGuild = await r.table('guild').get(guildid).run();
+    set: async function(guildid, key, value) {
+        let storedGuild = await bu.getGuild(guildid);
+
         storedGuild.ccommands[key] = value;
+        bu.dirtyCache[guildid] = true;
         r.table('guild').get(guildid).update({
             ccommands: storedGuild.ccommands
         }).run();
         return;
     },
-    get: async function (guildid, key) {
-        let storedGuild = await r.table('guild').get(guildid).run();
+    get: async function(guildid, key) {
+        let storedGuild = await bu.getGuild(guildid);
+
         if (!storedGuild) return null;
         return storedGuild.ccommands[key];
     },
-    rename: async function (guildid, key1, key2) {
-        let storedGuild = await r.table('guild').get(guildid).run();
+    rename: async function(guildid, key1, key2) {
+        let storedGuild = await bu.getGuild(guildid);
+
         storedGuild.ccommands[key2] = storedGuild.ccommands[key1];
         delete storedGuild.ccommands[key1];
+        bu.dirtyCache[guildid] = true;
         r.table('guild').get(guildid).replace(storedGuild).run();
         return;
     },
-    remove: async function (guildid, key) {
-        let storedGuild = await r.table('guild').get(guildid).run();
+    remove: async function(guildid, key) {
+        let storedGuild = await bu.getGuild(guildid);
+
         delete storedGuild.ccommands[key];
+        bu.dirtyCache[guildid] = true;
         r.table('guild').get(guildid).replace(storedGuild).run();
         return;
     }
 };
 
-bu.isNsfwChannel = async function (channelid) {
+bu.isNsfwChannel = async function(channelid) {
     let guildid = bot.channelGuildMap[channelid];
     if (!guildid) {
         //   logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isNsfwChannel');
         return true;
     }
-    let guild = await r.table('guild').get(guildid).run();
+    let guild = await bu.getGuild(guildid);
+
     return guild.channels[channelid] ? guild.channels[channelid].nsfw : false;
 };
 
-bu.isBlacklistedChannel = async function (channelid) {
+bu.isBlacklistedChannel = async function(channelid) {
     let guildid = bot.channelGuildMap[channelid];
     if (!guildid) {
-        logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
+        //logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
         return false;
     }
-    let guild = await r.table('guild').get(guildid).run();
+    let guild = await bu.getGuild(guildid);
+
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
-bu.canExecuteCommand = async function (msg, commandName, quiet, storedGuild, permoverride, staffperms) {
+bu.dirtyCache = {};
+
+bu.getGuild = async function(guildid) {
+    let storedGuild;
+    if (bu.guildCache[guildid] && !bu.dirtyCache[guildid]) {
+        storedGuild = bu.guildCache[guildid];
+    } else {
+        storedGuild = await r.table('guild').get(guildid);
+        bu.guildCache[guildid] = storedGuild;
+    }
+    return storedGuild;
+};
+
+bu.canExecuteCommand = async function(msg, commandName, quiet) {
+    if (msg.author.id == bu.CAT_ID && bu.catOverrides) return [true, commandName];
     if (msg.channel.guild) {
-        let val = permoverride, val1 = staffperms;
-        if (permoverride === undefined)
-            val = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
-        if (staffperms === undefined)
-            val1 = await bu.guildSettings.get(msg.channel.guild.id, 'staffperms');
-        if (storedGuild === undefined)
-            storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
+        let permoverride, staffperms, storedGuild;
+        storedGuild = await bu.getGuild(msg.guild.id);
+        let val = storedGuild.settings.permoverride,
+            val1 = storedGuild.settings.staffperms;
 
         let command;
         if (storedGuild) {
@@ -927,7 +947,7 @@ bu.shuffle = (array) => {
     return array;
 };
 
-bu.getTagUser = async function (msg, args, index) {
+bu.getTagUser = async function(msg, args, index) {
     var obtainedUser;
     if (!index) index = 1;
 
@@ -949,15 +969,10 @@ bu.tagGetFloat = (arg) => {
     return parseFloat(arg) ? parseFloat(arg) : NaN;
 };
 
-bu.tagProcessError = async function (params, fallback, errormessage) {
+bu.tagProcessError = async function(params, fallback, errormessage) {
     let returnMessage = '';
     if (fallback == '') returnMessage = errormessage;
-    else returnMessage = await bu.processTag(params.msg
-        , params.words
-        , params.fallback
-        , params.fallback
-        , params.author
-        , params.tagName);
+    else returnMessage = await bu.processTag(params.msg, params.words, params.fallback, params.fallback, params.author, params.tagName);
     return returnMessage;
 };
 
@@ -979,9 +994,9 @@ bu.padRight = (value, length) => {
     return (value.toString().length < length) ? bu.padRight(value + ' ', length) : value;
 };
 
-bu.logEvent = async function (guildid, event, message) {
-    let storedGuild = await r.table('guild').get(guildid);
-    if (!storedGuild.hasOwnProperty('log')) 
+bu.logEvent = async function(guildid, event, message) {
+    let storedGuild = await bu.getGuild(guildid);
+    if (!storedGuild.hasOwnProperty('log'))
         storedGuild.log = {};
     if (storedGuild.log.hasOwnProperty(event)) {
         let channel = storedGuild.log[event];

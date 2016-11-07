@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
     e.category = bu.CommandType.COMMANDER;
 
 };
@@ -20,9 +20,11 @@ e.longinfo = '<p>Designates the current channel as NSFW, allowing you to use NSF
 
 
 e.execute = async function(msg) {
-    let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
-    let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id)
-        ? storedGuild.channels[msg.channel.id] : {
+    bu.dirtyCache[msg.guild.id] = true;
+
+    let storedGuild = await bu.getGuild(msg.guild.id);
+    let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id) ?
+        storedGuild.channels[msg.channel.id] : {
             blacklisted: false
         };
     if (channel.nsfw) {

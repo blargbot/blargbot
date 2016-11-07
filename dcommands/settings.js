@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
 
     e.category = bu.CommandType.ADMIN;
 
@@ -23,7 +23,7 @@ e.longinfo = '<p>Gets or sets the settigns for the current guild.</p>';
 e.execute = async function(msg, words) {
     if (words.length == 1) {
         //do settings shit
-        let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
+        let storedGuild = await bu.getGuild(msg.guild.id);
         let settings = storedGuild.settings;
         let channels = storedGuild.channels;
 
@@ -34,8 +34,8 @@ e.execute = async function(msg, words) {
             if (channels[channel].nsfw) nsfw.push(channel);
             if (channels[channel].blacklisted) blacklisted.push(channel);
         }
-        var prefix = settings.prefix
-            ? settings.prefix : 'Not Set';
+        var prefix = settings.prefix ?
+            settings.prefix : 'Not Set';
         var nsfwMessage = 'None Set';
         if (nsfw.length > 0) {
             nsfwMessage = '';
@@ -56,10 +56,10 @@ e.execute = async function(msg, words) {
             }
             blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19);
         }
-        var greeting = settings.greeting
-            ? settings.greeting : 'Not Set';
-        var farewell = settings.farewell
-            ? settings.farewell : 'Not Set';
+        var greeting = settings.greeting ?
+            settings.greeting : 'Not Set';
+        var farewell = settings.farewell ?
+            settings.farewell : 'Not Set';
         var modlogChannel;
         if (settings.modlog) {
             let channel = bot.getChannel(settings.modlog);

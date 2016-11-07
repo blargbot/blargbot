@@ -8,7 +8,7 @@ const tags = require('./tags.js');
 const reload = require('require-reload')(require);
 const request = require('request');
 const Promise = require('promise');
-const webInterface = require('./interface.js');
+//const webInterface = require('./interface.js');
 var bot;
 const Cleverbot = require('cleverbot-node');
 const website = require('./backend/main');
@@ -182,14 +182,14 @@ e.init = (v, em) => {
     bu.startTime = startTime;
     bu.vars = vars;
     tags.init();
-    webInterface.init(bot, bu);
+    //  webInterface.init(bot, bu);
 
     /**
      * EventEmitter stuff
      */
-    emitter.on('reloadInterface', () => {
-        reloadInterface();
-    });
+    // emitter.on('reloadInterface', () => {
+    //      reloadInterface();
+    //   });
     emitter.on('discordMessage', (message, attachment) => {
         if (attachment)
             bu.send(config.discord.channel, message, attachment);
@@ -229,6 +229,8 @@ e.init = (v, em) => {
 
     initCommands();
     website.init();
+    logger.init('Connecting...');
+
     bot.connect();
 };
 
@@ -646,13 +648,13 @@ var flipTables = async function(msg, unflip) {
             tables[unflip ? 'unflip' : 'flip'][config.general.isbeta ? 'beta' : 'prod'][seed]);
     }
 };
-
+/*
 function reloadInterface() {
     webInterface.kill();
     webInterface = reload('./interface.js');
     webInterface.init(bot, bu);
 }
-
+*/
 function registerListeners() {
     bot.on('debug', function(message, id) {
         if (debug)
@@ -668,6 +670,26 @@ function registerListeners() {
     bot.on('error', function(err, id) {
         if (error)
             logger.error(`[${moment().format('MM/DD HH:mm:ss')}][ERROR][${id}] ${err.stack}`);
+    });
+
+    bot.on('shardDisconnect', async function(err, id) {
+        if (err) {
+            logger.error(`[SHARD ${id}] Disconnected: ${err.stack}`);
+        } else {
+            logger.shard(`${id} Disconnected!`);
+        }
+    });
+
+    bot.on('shardPreReady', async function(id) {
+        logger.shard(`${id} Pre-Ready!`);
+    });
+    bot.on('shardReady', async function(id) {
+        let shard = bot.shards.get(id);
+        logger.shard(`${id} Ready! G:${shard.guildCount}`);
+    });
+    bot.on('shardResume', async function(id) {
+        let shard = bot.shards.get(id);
+        logger.shard(`${id} Resumed! G:${shard.guildCount}`);
     });
 
     bot.on('ready', async function() {
@@ -738,6 +760,7 @@ function registerListeners() {
         var message = `:x: Guild: \`${guild.name}\`` +
             ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
         bu.send(`205153826162868225`, message);
+        bu.dirtyCache[guild.id] = true;
 
         r.table('guild').get(guild.id).update({
             active: false
@@ -765,7 +788,7 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
     bot.on('guildCreate', async function(guild) {
         postStats();
         logger.debug('added to guild');
-        let storedGuild = await r.table('guild').get(guild.id).run();
+        let storedGuild = await bu.getGuild(guild.id);
         if (!storedGuild || !storedGuild.active) {
             let members = guild.memberCount;
             let users = guild.members.filter(m => !m.user.bot).length;
@@ -794,7 +817,9 @@ If you are the owner of this server, here are a few things to know.
 ❓ If you have any questions, comments, or concerns, please do \`${config.discord.defaultPrefix}feedback <feedback>\`. Thanks!
 👍 I hope you enjoy my services! 👍`;
             bu.send(guild.id, message2);
-            if (!storedGuild)
+            if (!storedGuild) {
+                bu.dirtyCache[guild.id] = true;
+
                 r.table('guild').insert({
                     guildid: guild.id,
                     active: true,
@@ -805,10 +830,13 @@ If you are the owner of this server, here are a few things to know.
                     ccommands: {},
                     modlog: []
                 }).run();
-            else
+
+            } else {
+                bu.dirtyCache[guild.id] = true;
                 r.table('guild').get(guild.id).update({
                     active: true
                 }).run();
+            }
         }
     });
 
@@ -1008,7 +1036,7 @@ ${newMsg}`);
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
         let storedGuild;
-        if (!isDm) storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
+        if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
 
 
         if (msg.channel.id != '194950328393793536')

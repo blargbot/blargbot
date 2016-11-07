@@ -39,7 +39,7 @@ ${bu.commandList[words[1]].info}`;
             var modifiedCommands = [];
             let storedGuild, permOverride, staffPerms;
             if (msg.channel.guild) {
-                storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
+                storedGuild = await bu.getGuild(msg.guild.id);
                 permOverride = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
                 staffPerms = await bu.guildSettings.get(msg.channel.guild.id, 'staffPerms');
                 let customizedCommands = storedGuild.commandperms;
@@ -48,6 +48,7 @@ ${bu.commandList[words[1]].info}`;
                     if (customizedCommands[key].rolename != null)
                         for (let i = 0; i < customizedCommands[key].rolename.length; i++) {
                             if (!otherCommands[customizedCommands[key].rolename[i].toLowerCase()]) {
+                                logger.debug('creating an entry for', customizedCommands[key].rolename[i].toLowerCase());
                                 otherCommands[customizedCommands[key].rolename[i].toLowerCase()] = [];
                             }
                             otherCommands[customizedCommands[key].rolename[i].toLowerCase()]
@@ -55,6 +56,7 @@ ${bu.commandList[words[1]].info}`;
                             modifiedCommands.push(key);
                         }
                 }
+                logger.debug(customizedCommands);
             }
             //    logger.debug(modifiedCommands);
             //   logger.debug(otherCommands);
@@ -62,7 +64,7 @@ ${bu.commandList[words[1]].info}`;
                 if (modifiedCommands.indexOf(command) == -1)
                     if (!bu.commands[command].hidden) {
                         if (bu.commands[command].category == bu.CommandType.GENERAL) {
-                            if ((await bu.canExecuteCommand(msg, command, true, storedGuild, permOverride, staffPerms))[0])
+                            if ((await bu.canExecuteCommand(msg, command, true))[0])
                                 generalCommands.push(command);
                         } else {
                             if (!otherCommands[bu.commands[command].category])

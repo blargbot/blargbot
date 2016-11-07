@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
 
     e.category = bu.CommandType.ADMIN;
 
@@ -31,7 +31,9 @@ e.execute = async function(msg, words) {
             words.shift();
             var caseid = parseInt(words.shift());
             logger.debug(caseid);
-            let storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
+            bu.dirtyCache[msg.guild.id] = true;
+
+            let storedGuild = await bu.getGuild(msg.guild.id);
             let modlog = storedGuild.modlog;
             let index = latest ? modlog.length - 1 : caseid;
             if (modlog.length > 0 && modlog[index]) {

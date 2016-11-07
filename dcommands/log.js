@@ -34,8 +34,8 @@ var events = [
     'userupdate'
 ];
 
-e.execute = async function (msg, words) {
-    let storedGuild = await r.table('guild').get(msg.channel.guild.id);
+e.execute = async function(msg, words) {
+    let storedGuild = await bu.getGuild(msg.guild.id);;
     if (!storedGuild.hasOwnProperty('log')) storedGuild.log = {};
     logger.debug(words);
     if (words.length >= 2) {
