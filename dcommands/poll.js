@@ -44,7 +44,8 @@ e.execute = async function(msg, words) {
             msg: msg2.id,
             endtime: r.epochTime(endTime.unix())
         });
-
+    } else {
+        bu.send(msg, 'Incorrect usage! Do `b!help poll` for more information.');
     }
 };
 
