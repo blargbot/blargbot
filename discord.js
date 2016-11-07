@@ -13,6 +13,7 @@ var bot;
 const Cleverbot = require('cleverbot-node');
 const website = require('./backend/main');
 const cleverbot = new Cleverbot();
+var eventTimer;
 
 var e = module.exports = {},
     avatars, vars, emitter, bot, VERSION;
@@ -735,6 +736,9 @@ function registerListeners() {
         switchGame();
         switchAvatar();
         postStats();
+        if (eventTimer == undefined) {
+            initEvents();
+        }
     });
 
     bot.on('guildMemberAdd', async function(guild, member) {
@@ -1283,4 +1287,18 @@ ${command}`);
             }).run();
         }
     });
+}
+
+function initEvents() {
+    logger.init('Starting event interval!');
+    eventTimer = setInterval(async function() {
+        let events = await r.table('events').between(r.epochTime(0), r.now(), {
+            index: 'endtime'
+        });
+        for (let event of events) {
+            let type = event.type;
+            bu.commands[type].event(event);
+            r.table('events').get(event.id).delete().run();
+        }
+    }, 10000);
 }
