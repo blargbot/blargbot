@@ -20,80 +20,80 @@ e.info = 'Gets a list of command or specific command help.';
 e.longinfo = `<p>Returns a list of commands and custom commands. If a command name is specified, it will return a description
         of that command instead.</p>`;
 
-e.execute = async function (msg, words) {
-    if (words.length > 1) {
-        var message = '';
-        if (bu.commandList.hasOwnProperty(words[1]) && !bu.commandList[words[1]].hidden) {
-            message = `Command Name: ${bu.commandList[words[1]].name}
+e.execute = async function(msg, words) {
+        if (words.length > 1) {
+            var message = '';
+            if (bu.commandList.hasOwnProperty(words[1]) && !bu.commandList[words[1]].hidden) {
+                message = `Command Name: ${bu.commandList[words[1]].name}
 Usage: \`${bu.commandList[words[1]].usage}\`
+Aliases: [ ${bu.commands[bu.commandList[words[1]].name].alias.join(', ')}]
 ${bu.commandList[words[1]].info}`;
+            } else {
+                message = `No description could be found for command \`${words[1]}\`.`;
+            }
+            bu.send(msg, message);
         } else {
-            message = `No description could be found for command \`${words[1]}\`.`;
-        }
-        bu.send(msg, message);
-    } else {
-        var commandsString = '```prolog\nGeneral Commands:\n  ';
-        var generalCommands = [];
-        var otherCommands = {};
-        var modifiedCommands = [];
-        let storedGuild, permOverride, staffPerms;
-        if (msg.channel.guild) {
-            storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
-            permOverride = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
-            staffPerms = await bu.guildSettings.get(msg.channel.guild.id, 'staffPerms');
-            let customizedCommands = storedGuild.commandperms;
-            //    logger.debug(customizedCommands);
-            for (let key in customizedCommands) {
-                if (customizedCommands[key].rolename != null)
-                    for (let i = 0; i < customizedCommands[key].rolename.length; i++) {
-                        if (!otherCommands[customizedCommands[key].rolename[i].toLowerCase()]) {
-                            otherCommands[customizedCommands[key].rolename[i].toLowerCase()] = [];
-                        }
-                        otherCommands[customizedCommands[key].rolename[i].toLowerCase()]
-                            .push(key);
-                        modifiedCommands.push(key);
-                    }
-            }
-        }
-        //    logger.debug(modifiedCommands);
-        //   logger.debug(otherCommands);
-        for (var command in bu.commandList) {
-            if (modifiedCommands.indexOf(command) == -1)
-                if (!bu.commandList[command].hidden) {
-                    if (bu.commandList[command].category == bu.CommandType.GENERAL) {
-                        if ((await bu.canExecuteCommand(msg, command, true, storedGuild, permOverride, staffPerms))[0])
-                            generalCommands.push(command);
-                    }
-                    else {
-                        if (!otherCommands[bu.commandList[command].category])
-                            otherCommands[bu.commandList[command].category] = [];
-                        otherCommands[bu.commandList[command].category].push(command);
-                    }
-                }
-        }
-        generalCommands.sort();
-        commandsString += generalCommands.join(', ');
-
-        var onComplete = async function () {
+            var commandsString = '```prolog\nGeneral Commands:\n  ';
+            var generalCommands = [];
+            var otherCommands = {};
+            var modifiedCommands = [];
+            let storedGuild, permOverride, staffPerms;
             if (msg.channel.guild) {
-                let ccommands = storedGuild.ccommands;
-                //      logger.debug(ccommands);
-                if (ccommands && Object.keys(ccommands).length > 0) {
-                    var ccommandsString = 'Custom Commands:\n  ';
-                    var helpCommandList = [];
-                    for (var key in ccommands) {
-                        helpCommandList.push(key);
-                    }
-                    helpCommandList.sort();
-                    ccommandsString += helpCommandList.join(', ');
-                    commandsString += `\n${ccommandsString}`;
+                storedGuild = await r.table('guild').get(msg.channel.guild.id).run();
+                permOverride = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
+                staffPerms = await bu.guildSettings.get(msg.channel.guild.id, 'staffPerms');
+                let customizedCommands = storedGuild.commandperms;
+                //    logger.debug(customizedCommands);
+                for (let key in customizedCommands) {
+                    if (customizedCommands[key].rolename != null)
+                        for (let i = 0; i < customizedCommands[key].rolename.length; i++) {
+                            if (!otherCommands[customizedCommands[key].rolename[i].toLowerCase()]) {
+                                otherCommands[customizedCommands[key].rolename[i].toLowerCase()] = [];
+                            }
+                            otherCommands[customizedCommands[key].rolename[i].toLowerCase()]
+                                .push(key);
+                            modifiedCommands.push(key);
+                        }
                 }
             }
+            //    logger.debug(modifiedCommands);
+            //   logger.debug(otherCommands);
+            for (var command in bu.commands) {
+                if (modifiedCommands.indexOf(command) == -1)
+                    if (!bu.commands[command].hidden) {
+                        if (bu.commands[command].category == bu.CommandType.GENERAL) {
+                            if ((await bu.canExecuteCommand(msg, command, true, storedGuild, permOverride, staffPerms))[0])
+                                generalCommands.push(command);
+                        } else {
+                            if (!otherCommands[bu.commands[command].category])
+                                otherCommands[bu.commands[command].category] = [];
+                            otherCommands[bu.commands[command].category].push(command);
+                        }
+                    }
+            }
+            generalCommands.sort();
+            commandsString += generalCommands.join(', ');
 
-            commandsString += '```';
-            let dmhelp = msg.channel.guild ? await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp') : true;
-            let doDM = dmhelp && dmhelp != 0;
-            let sendString = `${doDM ? `Here are your commands ${msg.channel.guild ? 'for ' + msg.channel.guild.name : ''}.\n` : ''}${commandsString}\n${!msg.channel.guild
+            var onComplete = async function() {
+                    if (msg.channel.guild) {
+                        let ccommands = storedGuild.ccommands;
+                        //      logger.debug(ccommands);
+                        if (ccommands && Object.keys(ccommands).length > 0) {
+                            var ccommandsString = 'Custom Commands:\n  ';
+                            var helpCommandList = [];
+                            for (var key in ccommands) {
+                                helpCommandList.push(key);
+                            }
+                            helpCommandList.sort();
+                            ccommandsString += helpCommandList.join(', ');
+                            commandsString += `\n${ccommandsString}`;
+                        }
+                    }
+
+                    commandsString += '```';
+                    let dmhelp = msg.channel.guild ? await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp') : true;
+                    let doDM = dmhelp && dmhelp != 0;
+                    let sendString = `${doDM ? `Here are your commands ${msg.channel.guild ? 'for ' + msg.channel.guild.name : ''}.\n` : ''}${commandsString}\n${!msg.channel.guild
                 ? 'Not all of these bu.commands work in DMs.\n'
                 : ''
                 }For more information about commands, do \`help <commandname>\` or visit https://blargbot.xyz/commands`;
