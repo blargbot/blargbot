@@ -26,7 +26,7 @@ e.execute = async function(msg, words) {
             if (bu.commandList.hasOwnProperty(words[1]) && !bu.commandList[words[1]].hidden) {
                 message = `Command Name: ${bu.commandList[words[1]].name}
 Usage: \`${bu.commandList[words[1]].usage}\`
-Aliases: [ ${bu.commands[bu.commandList[words[1]].name].alias.join(', ')}]
+Aliases: [ ${bu.commands[bu.commandList[words[1]].name].alias.join(', ')} ]
 ${bu.commandList[words[1]].info}`;
             } else {
                 message = `No description could be found for command \`${words[1]}\`.`;
