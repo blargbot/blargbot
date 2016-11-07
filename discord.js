@@ -308,7 +308,7 @@ function switchAvatar(forced) {
     if (!forced)
         setTimeout(function() {
             switchAvatar();
-        }, 300000);
+        }, 600000);
 }
 var commandMessages = {};
 var handleDiscordCommand = async function(channel, user, text, msg) {
