@@ -791,7 +791,7 @@ If you are the owner of this server, here are a few things to know.
 - 🙈 To mark channels as NSFW, please go to them and do \`${config.discord.defaultPrefix}nsfw\`.
 - ❗ To change my command prefix, please do \`${config.discord.defaultPrefix}setprefix <anything>\`.
 
-❓ If you have any questions, comments, or concerns, please do \`${config.discord.defaultPrefix}suggest <suggestion>\`. Thanks!
+❓ If you have any questions, comments, or concerns, please do \`${config.discord.defaultPrefix}feedback <feedback>\`. Thanks!
 👍 I hope you enjoy my services! 👍`;
             bu.send(guild.id, message2);
             if (!storedGuild)
