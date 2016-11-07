@@ -92,8 +92,9 @@ e.execute = async function(msg, words) {
                 for (let i = 0; i < rolemeList.length; i++) {
                     rolemeString += `${i + 1}:\n${rolemeList[i]}\n`;
                 }
-                if (rolemeString.length > 2000) rolemeString = rolemeString.substring(0, 1850) + '...';
+                if (rolemeString.length > 1900) rolemeString = rolemeString.substring(0, 1850) + '...';
                 rolemeString += '```\nPlease type the number of the roleme you wish to remove, or `c` to cancel.';
+                //  logger.debug(rolemeString.length, rolemeString);
                 let resMsg = (await bu.awaitMessage(msg, rolemeString, m => (!isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length) || m.content.toLowerCase() == 'c'));
                 if (resMsg.content.toLowerCase() == 'c') {
                     await bu.send(msg, 'Remove canceled!');
