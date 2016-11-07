@@ -37,10 +37,10 @@ e.execute = async function(params) {
 
     if (args.length > 2) {
         tagVars[args[1]] = args[2];
-        saveTag(tagName, tagVars);
+        await saveTag(tagName, tagVars);
     } else if (args.length == 2) {
         tagVars[args[1]] = null;
-        saveTag(tagName, tagVars);
+        await saveTag(tagName, tagVars);
     } else {
         replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
     }

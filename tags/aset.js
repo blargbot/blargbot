@@ -37,10 +37,10 @@ e.execute = async function(params) {
 
     if (args.length > 2) {
         authorVars[args[1]] = args[2];
-        saveUser(author, authorVars);
+        await saveUser(author, authorVars);
     } else if (args.length == 2) {
         authorVars[args[1]] = null;
-        saveUser(author, authorVars);
+        await saveUser(author, authorVars);
     } else {
         replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
     }
