@@ -24,9 +24,11 @@ e.execute = async function(msg, words) {
         if (words.length > 1) {
             var message = '';
             if (bu.commandList.hasOwnProperty(words[1]) && !bu.commandList[words[1]].hidden) {
+                let aliases = '';
+                if (bu.commands[bu.commandList[words[1]].name].alias)
+                    aliases = `\nAliases: [ ${bu.commands[bu.commandList[words[1]].name].alias.join(', ')} ]`;
                 message = `Command Name: ${bu.commandList[words[1]].name}
-Usage: \`${bu.commandList[words[1]].usage}\`
-Aliases: [ ${bu.commands[bu.commandList[words[1]].name].alias.join(', ')} ]
+Usage: \`${bu.commandList[words[1]].usage}\`${aliases}
 ${bu.commandList[words[1]].info}`;
             } else {
                 message = `No description could be found for command \`${words[1]}\`.`;
