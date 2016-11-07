@@ -40,7 +40,7 @@ e.execute = async function(msg, words) {
                     let tempSize = parseInt(words[2]);
                     if (!isNaN(tempSize)) size = tempSize;
                 }
-                if (body) {
+                if (res.headers['content-type'] == 'text/plain; charset=utf-8') {
                     let buffer = await svg2png(body, {
                         width: size,
                         height: size
@@ -50,7 +50,7 @@ e.execute = async function(msg, words) {
                         file: buffer
                     });
                 } else {
-                    bu.send(msg, 'Invalid emoji');
+                    bu.send(msg, 'Invalid emoji!');
                 }
             });
         }
