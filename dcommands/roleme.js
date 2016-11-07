@@ -30,7 +30,7 @@ e.execute = async function(msg, words) {
 
         let storedGuild = await bu.getGuild(msg.guild.id);
         let roleme = storedGuild.roleme;
-        let res, rolemeString, rolemeList;
+        let res, rolemeString, rolemeList, condensed = false;
         if (roleme == undefined) roleme = [];
         switch (words[1].toLowerCase()) {
             case 'add':
@@ -85,7 +85,6 @@ e.execute = async function(msg, words) {
                     break;
                 }
                 rolemeString = 'Here are the rolemes on your guild:\n```prolog\n';
-                let condensed = false;
                 if (roleme.length >= 30) {
                     rolemeList = roleme.map(m => {
                         return `Message: ${m.message}`;
@@ -121,7 +120,6 @@ e.execute = async function(msg, words) {
                     break;
                 }
                 rolemeString = 'Here are the rolemes on your guild:\n```prolog\n';
-                let condensed = false;
                 if (roleme.length >= 30) {
                     rolemeList = roleme.map(m => {
                         return `Message: ${m.message}`;
