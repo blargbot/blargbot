@@ -85,12 +85,20 @@ e.execute = async function(msg, words) {
                     break;
                 }
                 rolemeString = 'Here are the rolemes on your guild:\n```prolog\n';
-                rolemeList = roleme.map(m => {
-                    return `  Message: ${m.message}
+                let condensed = false;
+                if (roleme.length >= 30) {
+                    rolemeList = roleme.map(m => {
+                        return `Message: ${m.message}`;
+                    });
+                    condensed = true;
+                } else {
+                    rolemeList = roleme.map(m => {
+                        return `  Message: ${m.message}
   Channel(s): ${m.channels.join(' ')}`;
-                });
+                    });
+                }
                 for (let i = 0; i < rolemeList.length; i++) {
-                    rolemeString += `${i + 1}:\n${rolemeList[i]}\n`;
+                    rolemeString += `${i + 1}:${condensed ? ' ' + (i < 9 ? ' ' : '') : '\n'}${rolemeList[i]}\n`;
                 }
                 if (rolemeString.length > 1900) rolemeString = rolemeString.substring(0, 1850) + '...';
                 rolemeString += '```\nPlease type the number of the roleme you wish to remove, or `c` to cancel.';
@@ -113,12 +121,20 @@ e.execute = async function(msg, words) {
                     break;
                 }
                 rolemeString = 'Here are the rolemes on your guild:\n```prolog\n';
-                rolemeList = roleme.map(m => {
-                    return `  Message: ${m.message}
+                let condensed = false;
+                if (roleme.length >= 30) {
+                    rolemeList = roleme.map(m => {
+                        return `Message: ${m.message}`;
+                    });
+                    condensed = true;
+                } else {
+                    rolemeList = roleme.map(m => {
+                        return `  Message: ${m.message}
   Channel(s): ${m.channels.join(' ')}`;
-                });
+                    });
+                }
                 for (let i = 0; i < rolemeList.length; i++) {
-                    rolemeString += `${i + 1}:\n${rolemeList[i]}\n`;
+                    rolemeString += `${i + 1}:${condensed ? ' ' + (i < 9 ? ' ' : '') : '\n'}${rolemeList[i]}\n`;
                 }
                 if (rolemeString.length > 2000) rolemeString = rolemeString.substring(0, 1994) + '...';
                 rolemeString += '```';
