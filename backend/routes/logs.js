@@ -77,7 +77,16 @@ router.post('/', async(req, res) => {
                     let id = text.match(/&lt;@!?(\d+)&gt;/)[1];
                     let user;
                     if (bot.users.get(id)) user = bot.users.get(id);
-                    else user = await bot.getRESTUser(id);
+                    else {
+                        try {
+                            user = await bot.getRESTUser(id);
+                        } catch (err) {
+                            user = {
+                                username: 'Unknown',
+                                discriminator: '????'
+                            };
+                        }
+                    }
                     text = text.replace(/&lt;@!?\d+&gt;/, `<span class='mention clipboard' data-clipboard-text='${id}'>@${user.username}#${user.discriminator}</span>`);
                 }
                 logger.website(text);
