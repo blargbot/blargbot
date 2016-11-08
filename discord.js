@@ -429,7 +429,7 @@ function postStats() {
             body: {
                 'key': config.general.carbontoken,
                 'servercount': bot.guilds.size,
-                'logoid': 'https://i.imgur.com/uVq0zdO.png'
+                'logoid': bot.user.avatar
             }
         }, (err) => {
             if (err) logger.error(err);
