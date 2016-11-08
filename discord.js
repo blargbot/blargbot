@@ -1012,26 +1012,31 @@ ${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar:** <' + user.ava
         }
         if (msg.channel.id != '204404225914961920') {
             var nsfw = await bu.isNsfwChannel(msg.channel.id);
-            r.table('chatlogs').insert({
-                content: msg.content,
-                attachment: msg.attachments && msg.attachments[0] ? msg.attachments[0].url : null,
-                userid: msg.author.id,
-                msgid: msg.id,
-                channelid: msg.channel.id,
-                guildid: msg.channel.guild.id,
-                msgtime: r.epochTime(moment() / 1000),
-                nsfw: nsfw,
-                mentions: msg.mentions.map(u => u.username).join(','),
-                type: 2
-            }).run();
-            if (!msg.cleanContent) msg.cleanContent = 'uncached';
-            let newMsg = msg.cleanContent;
-            if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
-            bu.logEvent(msg.channel.guild.id, 'messagedelete', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
+            try {
+                await r.table('chatlogs').insert({
+                    content: msg.content,
+                    attachment: msg.attachments && msg.attachments[0] ? msg.attachments[0].url : null,
+                    userid: msg.author.id,
+                    msgid: msg.id,
+                    channelid: msg.channel.id,
+                    guildid: msg.channel.guild.id,
+                    msgtime: r.epochTime(moment() / 1000),
+                    nsfw: nsfw,
+                    mentions: msg.mentions.map(u => u.username).join(','),
+                    type: 2
+                }).run();
+
+                if (!msg.cleanContent) msg.cleanContent = 'uncached';
+                let newMsg = msg.cleanContent;
+                if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
+                bu.logEvent(msg.channel.guild.id, 'messagedelete', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
 **Message ID:** ${msg.id}
 **Channel:** ${msg.channel.mention}
 **Message:**
 ${newMsg}`);
+            } catch (err) {
+
+            }
         }
     });
 
