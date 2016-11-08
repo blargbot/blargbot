@@ -37,6 +37,7 @@
 	<!-- Misc Scripts -->
 	<script src="../js/scripts.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.13/clipboard.min.js"></script>
 
 	<!-- Fonts -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -66,8 +67,7 @@
 					<div class="card-content">
 						{{#if beta}}
 						<p class='centre'>BETA LOGS</p>
-						{{/if}}
-						{{#if continue}}
+						{{/if}} {{#if continue}}
 						<p>Channel: {{channelname}} ({{channel}})</p>
 						<p>User(s): {{users}}</p>
 						<p>Type(s): {{types}}</p>
@@ -75,6 +75,7 @@
 						<p>Last Timestamp: {{lasttime}}</p>
 
 						<p>Limit: {{limit}}</p>
+						<p>Click on a mention to copy the user's ID.</p>
 						{{else}}
 						<p>No results found.</p>
 						{{/if}}
@@ -92,7 +93,7 @@
 		
 		.collection-item {
 			/*border-bottom: 1px solid #394a52 !important;*/
-            border-bottom: 0px !important;
+			border-bottom: 0px !important;
 		}
 		
 		.edit {
@@ -102,21 +103,22 @@
 		
 		.delete {
 			background-color: #7e3f3f !important;
-		/*	border-bottom: 1px solid #4b2525 !important;*/
+			/*	border-bottom: 1px solid #4b2525 !important;*/
 			/* background-color: #753838 !important; */
 		}
 		
 		.bot {
 			border-radius: 4px;
-            height: 18px;
-            line-height: 18px;
-            padding: 0 7px 0 6px;
-            background-color: #738bd7;
+			height: 18px;
+			line-height: 18px;
+			padding: 0 7px 0 6px;
+			background-color: #738bd7;
 		}
-        .chip {
-            height: 24px;
-            line-height: 24px;
-        }
+		
+		.chip {
+			height: 24px;
+			line-height: 24px;
+		}
 	</style>
 
 	<main>
@@ -138,9 +140,7 @@
 								<div class='chip z-depth-1'>MSG ID: {{this.msgid}}</div>
 								<blockquote>{{this.content}}</blockquote>
 								{{#if this.attachment}}
-								<a href='{{this.attachment}}'>Attachment</a> {{/if}} {{#if this.mentions}}
-								<p>Mentions: {{this.mentions}}</p>
-								{{/if}}
+								<a href='{{this.attachment}}'>Attachment</a> {{/if}}
 							</li>
 							{{/each}}
 						</ul>
@@ -173,6 +173,12 @@
         console.log('hi');
     }
     doStuff();
+	var clipboard = new Clipboard('.clipboard');
+	clipboard.on('success', function(e) {
+	alert('User ID \'' + e.text + '\' successfully copied!')
+
+    e.clearSelection();
+});
 </script>
 
 

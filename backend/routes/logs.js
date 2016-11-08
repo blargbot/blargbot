@@ -3,11 +3,16 @@ const router = express.Router();
 const moment = require('moment');
 const hbs = require('hbs');
 
-const types = [
-    { name: 'Create', color: 'blue-grey darken-2' },
-    { name: 'Update', color: 'edit' },
-    { name: 'Delete', color: 'delete' }
-];
+const types = [{
+    name: 'Create',
+    color: 'blue-grey darken-2'
+}, {
+    name: 'Update',
+    color: 'edit'
+}, {
+    name: 'Delete',
+    color: 'delete'
+}];
 
 router.get('/', (req, res) => {
     res.locals.user = req.user;
@@ -16,7 +21,7 @@ router.get('/', (req, res) => {
     res.render('logsfirst');
 });
 
-router.post('/', async (req, res) => {
+router.post('/', async(req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/logs' + req.path;
 
@@ -34,16 +39,22 @@ router.post('/', async (req, res) => {
         res.locals.continue = false;
     } else {
         let messages = await r.db(db).table('chatlogs')
-            .between([logsSpecs.channel, logsSpecs.firsttime], [logsSpecs.channel, logsSpecs.lasttime], { index: 'channel_time' })
-            .orderBy({ index: 'channel_time' })
-            .filter(function (q) {
-                return r.expr(logsSpecs.users).count().eq(0).or(r.expr(logsSpecs.users).contains(q('userid')))
-                    .and(r.expr(logsSpecs.types).count().eq(0).or(r.expr(logsSpecs.types).contains(q('type')))
-                    );
+            .between([logsSpecs.channel, logsSpecs.firsttime], [logsSpecs.channel, logsSpecs.lasttime], {
+                index: 'channel_time'
             })
-            .limit(logsSpecs.limit).eqJoin('userid', r.table('user'), { index: 'userid' }).zip().orderBy('msgtime').run();
+            .orderBy({
+                index: 'channel_time'
+            })
+            .filter(function(q) {
+                return r.expr(logsSpecs.users).count().eq(0).or(r.expr(logsSpecs.users).contains(q('userid')))
+                    .and(r.expr(logsSpecs.types).count().eq(0).or(r.expr(logsSpecs.types).contains(q('type'))));
+            })
+            .limit(logsSpecs.limit).eqJoin('userid', r.table('user'), {
+                index: 'userid'
+            }).zip().orderBy('msgtime').run();
         if (messages.length > 0) {
-            messages = messages.map(m => {
+            let messages2 = [];
+            for (let m of messages) {
                 let user = bot.users.get(m.userid);
                 if (!user) user = {
                     username: m.username,
@@ -61,14 +72,20 @@ router.post('/', async (req, res) => {
 
                 text = hbs.handlebars.Utils.escapeExpression(text);
 
-
                 text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
+                while (/&lt;@!?(\d+)&gt;/.test(text)) {
+                    let id = text.match(/&lt;@!?(\d+)&gt;/)[1];
+                    let user;
+                    if (bot.users.get(id)) user = bot.users.get(id);
+                    else user = await bot.getRESTUser(id);
+                    text = text.replace(/&lt;@!?\d+&gt;/, `<span class='mention clipboard' data-clipboard-text='${id}'>@${user.username}#${user.discriminator}</span>`);
+                }
                 logger.website(text);
 
                 m.content = new hbs.handlebars.SafeString(text);
                 m.type = types[m.type];
-                return m;
-            });
+                messages2.push(m);
+            }
             res.locals.messages = messages;
             res.locals.channel = logsSpecs.channel;
             res.locals.channelname = bot.getChannel(logsSpecs.channel).name;

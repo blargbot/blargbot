@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
     height: 100%;
     width: 100%;
     margin: 0;
@@ -22,9 +23,8 @@ body {
     padding: 15px 0;
 }
 
-.main-header {
+.main-header {}
 
-}
 
 /*
 .container-med {
@@ -33,21 +33,20 @@ body {
     padding: 15px 0;
 }
 */
+
 .container-fluid a {
     color: #00e5ff;
 }
 
 a {
     transition-duration: 0.1s;
-    -webkit-transition-duration: 0.1s;    
+    -webkit-transition-duration: 0.1s;
     color: #00e5ff;
 }
 
-
 a:hover {
     transition-duration: 0.1s;
-    -webkit-transition-duration: 0.1s;    
-    
+    -webkit-transition-duration: 0.1s;
     color: #84ffff;
 }
 
@@ -55,7 +54,8 @@ h2 {
     color: #00e5ff;
 }
 
-code, pre code {
+code,
+pre code {
     color: #00e5ff;
 }
 
@@ -81,18 +81,23 @@ code, pre code {
     border: 0 solid transparent;
 }
 
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open > .dropdown-toggle.btn-primary {
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.open>.dropdown-toggle.btn-primary {
     background: #80DEEA;
     outline: none;
     border: 0 solid transparent;
     color: #fff;
 }
 
-.btn-primary:active, .btn-primary.active {
+.btn-primary:active,
+.btn-primary.active {
     background: #80DEEA;
     outline: none;
     border: 0 solid transparent;
-    color: #fff;    
+    color: #fff;
 }
 
 a:hover {
@@ -147,6 +152,7 @@ code {
     top: 24px;
     left: 24px;
 }
+
 .collection-item {
     outline: none !important;
     border: none !important;
@@ -162,29 +168,31 @@ code {
     width: 200px;
 }
 
-.sub-header {
-
-}
+.sub-header {}
 
 .sidebar-header {
     border-bottom: 1px solid #CFD8DC;
 }
 
-.side-nav .collapsible-header, .side-nav.fixed .collapsible-header {
+.side-nav .collapsible-header,
+.side-nav.fixed .collapsible-header {
     background-color: transparent;
     border: none;
     line-height: inherit;
     height: inherit;
-
     /*padding: inherit;*/
 }
 
-header, main, footer {
+header,
+main,
+footer {
     padding-left: 300px;
 }
 
-@media only screen and (max-width : 992px) {
-    header, main, footer {
+@media only screen and (max-width: 992px) {
+    header,
+    main,
+    footer {
         padding-left: 0;
     }
 }
@@ -202,4 +210,16 @@ header, main, footer {
 .userbutton {
     line-height: 20px !important;
     height: 20px !important;
+}
+
+.mention {
+    background: rgba(115, 139, 215, .1);
+    color: #7289da;
+    transition-duration: 0.2s;
+}
+
+.mention:hover {
+    background: rgba(115, 139, 215, .7);
+    color: #fff;
+    transition-duration: 0.2s;
 }
