@@ -87,7 +87,13 @@ router.post('/', async(req, res) => {
                             };
                         }
                     }
-                    text = text.replace(/&lt;@!?\d+&gt;/, `<span class='mention clipboard' data-clipboard-text='${id}'>@${user.username}#${user.discriminator}</span>`);
+                    text = text.replace(/&lt;@!?\d+&gt;/, `<span class='mention clipboard tooltipped' 
+                    data-position='top' 
+                    data-delay='50' 
+                    data-tooltip='<span class="${id} mentiontooltip">${id}</span>' 
+                    data-html='true'
+                    data-user-id='${id}'
+                    data-clipboard-text='${id}'>@${user.username}#${user.discriminator}</span>`);
                 }
                 logger.website(text);
 
