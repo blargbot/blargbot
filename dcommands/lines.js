@@ -42,7 +42,8 @@ e.execute = (msg) => {
         let middle = sections[2].split(/\n/);
         logger.debug(middle);
         for (let i = 0; i < middle.length; i++) {
-            table.push(middle[i].split(/\s\s+/));
+            if (middle[i] != '')
+                table.push(middle[i].split(/\s\s+/));
         }
         let footer = sections[3].slice(/\s\s+/);
         table.push(footer);
