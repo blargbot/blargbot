@@ -3,6 +3,7 @@ var e = module.exports = {};
 var exec = require('child_process').exec;
 var fs = require('fs');
 var path = require('path');
+var Table = require('cli-table');
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -21,9 +22,25 @@ e.execute = (msg) => {
 
     logger.debug(__dirname);
     exec(`cloc ${path.join(__dirname, '..')} --exclude-dir=codemirror`, (err, stdout, stderr) => {
-        logger.debug(err);
-        logger.debug(stdout);
-        logger.debug(stderr);
+        if (err) {
+            logger.error(err);
+            bu.send(msg, 'An error has occurred!');
+            return;
+        }
+        let message = '```prolog\n' + stdout;
+        let sections = stderr.split(/-+/);
+        for (let i = 0; i < sections.length; i++) {
+            if (sections[i] == '')
+                sections.splice(i, 1);
+        }
+        let head = sections[0].slice(/\s\s+/);
+        var table = new Table({
+            head: head
+        });
+        for (let i = 1; i < sections.length - 1; i++) {
+            table.push(sections[i].split(/\s\s+/));
+        }
+        logger.debug(table.toString());
     });
 
 };
