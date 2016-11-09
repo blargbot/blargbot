@@ -48,10 +48,10 @@ e.execute = (msg) => {
                 table.push(toPush);
             }
         }
-        let footer = sections[3].slice(/\s\s+/);
+        let footer = sections[3].split(/\s\s+/);
         logger.debug(footer);
         table.push(footer);
-        logger.info(table);
+        logger.debug(table);
         bu.send(msg, table.toString());
     });
 
