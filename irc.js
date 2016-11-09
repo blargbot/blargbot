@@ -35,7 +35,7 @@ e.init = (v, em) => {
     });
     e.bot = botIrc = ircbot;
 
-    notifInterval = setInterval(function () {
+    notifInterval = setInterval(function() {
         logger.irc('[NOT] Doing notifications');
         for (var user in ircUserList) {
             if (user !== botIrc.nick) {
@@ -56,11 +56,11 @@ e.init = (v, em) => {
         reloadUserList();
     });
 
-    botIrc.addListener('motd', function () {
+    botIrc.addListener('motd', function() {
         sendMessageToIrc('nickserv', `identify ${config.irc.nickserv_name} ${config.irc.nickserv_pass}`);
     });
 
-    botIrc.addListener('names', function (channel, nicks) {
+    botIrc.addListener('names', function(channel, nicks) {
         var message = 'Online Users: ';
         for (var key in nicks) {
             message += `${key}, `;
@@ -71,12 +71,17 @@ e.init = (v, em) => {
         changeDiscordTopic(message);
     });
 
-    botIrc.addListener('message', function (from, to, text) {
+    botIrc.addListener('message', function(from, to, text) {
         var userMessage = `\<${from}\> ${text}`;
         logger.irc(`[IRC] ${from}> ${to}> ${text}`);
         // logger.irc(userMessage);
         if (to === config.irc.channel) {
-            sendMessageToDiscord(userMessage);
+            bot.executeWebhook(config.irc.webhookId, config.irc.webhookToken, {
+                username: from,
+                content: text,
+                disableEveryone: true
+            });
+            // sendMessageToDiscord(userMessage);
 
             if (text.startsWith('!')) {
                 try {
@@ -88,12 +93,12 @@ e.init = (v, em) => {
                 //logger.irc(message);
                 logger.irc(text);
                 var messageForCleverbot = text.replace('blargbot, ');
-                Cleverbot.prepare(function () {
-                    cleverbot.write(messageForCleverbot, function (response) {
+                Cleverbot.prepare(function() {
+                    cleverbot.write(messageForCleverbot, function(response) {
                         logger.irc(messageForCleverbot);
                         logger.irc(response);
                         ///botIrc.sendChannelTyping(msg.channel.id);
-                        setTimeout(function () {
+                        setTimeout(function() {
                             sendIrcCommandMessage(to, response.message);
                             //   botIrc.sendChannelTyping(msg.channel.id);
                         }, 1500);
@@ -103,7 +108,7 @@ e.init = (v, em) => {
         }
     });
 
-    botIrc.addListener('join', function (channel, nick, message) {
+    botIrc.addListener('join', function(channel, nick, message) {
         var joinMessage = `${nick} (${message.user}@${message.host}) has joined ${channel}`;
         logger.irc(`[IRC] ${joinMessage}`);
         if (channel === config.irc.channel) {
@@ -130,7 +135,7 @@ e.init = (v, em) => {
         reloadUserList();
     });
 
-    botIrc.addListener('quit', function (nick, reason, channels, message) {
+    botIrc.addListener('quit', function(nick, reason, channels, message) {
         var quitMessage = `${nick} (${message.host}) has quit (Reason: ${reason})`;
         logger.irc(`[IRC] ${quitMessage}`);
         sendMessageToDiscord(quitMessage);
@@ -140,7 +145,7 @@ e.init = (v, em) => {
         reloadUserList();
     });
 
-    botIrc.addListener('part', function (channel, nick, reason, message) {
+    botIrc.addListener('part', function(channel, nick, reason, message) {
         var quitMessage = `${nick} (${message.host}) has parted (Reason: ${reason})`;
         logger.irc(`[IRC] ${quitMessage}`);
         sendMessageToDiscord(quitMessage);
@@ -150,7 +155,7 @@ e.init = (v, em) => {
         reloadUserList();
     });
 
-    botIrc.addListener('nick', function (oldnick, newnick, channels, message) {
+    botIrc.addListener('nick', function(oldnick, newnick, channels, message) {
         if (oldnick === botIrc.nick || newnick === botIrc.nick) {
             return;
         }
@@ -184,7 +189,7 @@ e.init = (v, em) => {
         sendMessageToDiscord(` * ${sender} ${text}`);
     });
 
-    botIrc.addListener('error', function (message) {
+    botIrc.addListener('error', function(message) {
         logger.irc('An IRC error occured: ', message);
     });
 };
@@ -192,8 +197,7 @@ e.init = (v, em) => {
 function handleIrcCommand(channel, user, text) {
     var words = text.split(' ');
     logger.irc(`[IRC] User ${user} executed command ${words[0]}`);
-    var time
-        , userFile;
+    var time, userFile;
     switch (words[0].toLowerCase()) {
         case 'help':
             sendIrcCommandMessage(channel, 'Valid commands: servers, ping, mail, seen, uptime, ' +
@@ -457,13 +461,13 @@ function sendDiscordAttachment(msg, attach) {
 
 function getCat(channel) {
     var output;
-    http.get('http://random.cat/meow', function (res) {
+    http.get('http://random.cat/meow', function(res) {
         var body = '';
-        res.on('data', function (chunk) {
+        res.on('data', function(chunk) {
             body += chunk;
         });
 
-        res.on('end', function () {
+        res.on('end', function() {
             logger.irc(body);
             output = JSON.parse(body);
             sendMessageToIrc(channel, output.file);
@@ -472,14 +476,15 @@ function getCat(channel) {
 }
 
 var xkcdMax = 0;
+
 function getXkcd(channel, words) {
     if (xkcdMax === 0) {
-        http.get('http://xkcd.com/info.0.json', function (res) {
+        http.get('http://xkcd.com/info.0.json', function(res) {
             var body = '';
-            res.on('data', function (chunk) {
+            res.on('data', function(chunk) {
                 body += chunk;
             });
-            res.on('end', function () {
+            res.on('end', function() {
                 logger.irc(body);
                 var output = JSON.parse(body);
                 xkcdMax = output.num;
@@ -505,12 +510,12 @@ function getXkcd(channel, words) {
     } else {
         url = `http://xkcd.com/${choice}/info.0.json`;
     }
-    http.get(url, function (res) {
+    http.get(url, function(res) {
         var body = '';
-        res.on('data', function (chunk) {
+        res.on('data', function(chunk) {
             body += chunk;
         });
-        res.on('end', function () {
+        res.on('end', function() {
             logger.irc(body);
             var output = JSON.parse(body);
             var message = '';

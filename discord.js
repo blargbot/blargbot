@@ -1042,6 +1042,7 @@ ${newMsg}`);
 
 
     bot.on('messageCreate', async function(msg) {
+
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
         let storedGuild;
@@ -1057,17 +1058,17 @@ ${newMsg}`);
                     logger.output(`PM> ${msg.channel.name} (${msg.channel.id})> ` +
                         `${msg.author.username}> ${msg.content} (${msg.id})`);
             }
-        if (msg.channel.id === config.discord.channel) {
+        if (msg.member && msg.channel.id === config.discord.channel) {
             if (!(msg.author.id == bot.user.id && msg.content.startsWith('\u200B'))) {
                 var message;
                 if (msg.content.startsWith('_') && msg.content.endsWith('_'))
-                    message = ` * ${msg.member.nick ? msg.member.nick : msg.author.username} ${msg.cleanContent
+                    message = ` * ${msg.member && msg.member.nick ? msg.member.nick : msg.author.username} ${msg.cleanContent
 .substring(1, msg.cleanContent.length - 1)}`;
                 else {
                     if (msg.author.id == bot.user.id) {
                         message = `${msg.cleanContent}`;
                     } else {
-                        message = `\<${msg.member.nick ? msg.member.nick : msg.author.username}\> ${msg.cleanContent}`;
+                        message = `\<${msg.member && msg.member.nick ? msg.member.nick : msg.author.username}\> ${msg.cleanContent}`;
                     }
                 }
                 logger.output(message);
