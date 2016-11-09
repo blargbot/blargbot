@@ -47,7 +47,7 @@ e.execute = (msg) => {
         }
         let footer = sections[3].slice(/\s\s+/);
         table.push(footer);
-        logger.debug(table);
+        logger.info(table);
         bu.send(msg, table.toString());
     });
 
