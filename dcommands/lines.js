@@ -40,12 +40,13 @@ e.execute = (msg) => {
             head: head
         });
         let middle = sections[2].split(/\n/);
+        logger.debug(middle);
         for (let i = 0; i < middle.length; i++) {
             table.push(middle[i].split(/\s\s+/));
         }
         let footer = sections[3].slice(/\s\s+/);
         table.push(footer);
-        logger.debug(table.toString());
+        bu.send(msg, table.toString());
     });
 
 };
