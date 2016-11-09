@@ -52,7 +52,11 @@ e.execute = (msg) => {
         logger.debug(footer);
         table.push(footer);
         logger.debug(table);
-        bu.send(msg, table.toString());
+        bu.send(msg, `\`\`\`prolog
+${sections[0]}
+${table.toString()}
+\`\`\`
+`);
     });
 
 };
