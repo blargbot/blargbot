@@ -14,7 +14,8 @@ e.info = `Toggles logging for the specified events. Available events are:
 - memberleave - when a user leaves
 - messagedelete - when a message gets deleted
 - messageupdate - when a message gets updated
-- userupdate - when a user changes their username or avatar`;
+- userupdate - when a user changes their username or avatar
+- all - enables all of the events`;
 e.longinfo = `<p>Toggles logging for the specified events. Available events are:</p>
 <ul><li>memberban - when a user gets banned</li>
 <li>memberunban - when a user gets unbanned</li>
@@ -22,7 +23,8 @@ e.longinfo = `<p>Toggles logging for the specified events. Available events are:
 <li>memberleave - when a user leaves</li>
 <li>messagedelete - when a message gets deleted</li>
 <li>messageupdate - when a message gets updated</li>
-<li>userupdate - when a user changes their username or avatar</li>`;
+<li>userupdate - when a user changes their username or avatar</li>
+<li>all - enables all of the events</li></ul>`;
 
 var events = [
     'memberban',
@@ -49,18 +51,23 @@ e.execute = async function(msg, words) {
                 break;
             case 'enable':
                 if (words.length >= 3) {
+                    let channel;
                     if (msg.channelMentions.length > 0) {
-                        let channel = msg.channelMentions[0];
-                        let args = words.slice(2);
+                        channel = msg.channelMentions[0];
+                    } else channel = msg.channel.id;
+                    let args = words.slice(2);
+                    if (args[0].toLowerCase() == 'all') {
+                        for (let event of events) {
+                            if (events.indexOf(event.toLowerCase()) > -1)
+                                storedGuild.log[event.toLowerCase()] = channel;
+                        }
+                    } else
                         for (let event of args) {
                             if (events.indexOf(event.toLowerCase()) > -1)
                                 storedGuild.log[event.toLowerCase()] = channel;
                         }
-                        await r.table('guild').get(msg.channel.guild.id).replace(storedGuild);
-                        bu.send(msg, 'Done!');
-                    } else {
-                        bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
-                    }
+                    await r.table('guild').get(msg.channel.guild.id).replace(storedGuild);
+                    bu.send(msg, 'Done!');
                 } else {
                     bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
                 }
@@ -69,9 +76,14 @@ e.execute = async function(msg, words) {
                 if (words.length >= 2) {
                     let args = words.slice(2);
                     logger.debug(storedGuild.log);
-                    for (let event of args) {
-                        storedGuild.log[event.toLowerCase()] = undefined;
-                    }
+                    if (args[0].toLowerCase() == 'all')
+                        for (let event of args) {
+                            storedGuild.log = {};
+                        }
+                    else
+                        for (let event of args) {
+                            storedGuild.log[event.toLowerCase()] = undefined;
+                        }
                     logger.debug(storedGuild.log);
                     await r.table('guild').get(msg.channel.guild.id).replace(storedGuild);
                     bu.send(msg, 'Done!');
