@@ -39,9 +39,12 @@ e.execute = (msg) => {
         var table = new Table({
             head: head
         });
-        for (let i = 2; i < sections.length - 1; i++) {
-            table.push(sections[i].split(/\s\s+/));
+        let middle = sections[2].slice(/\n/);
+        for (let i = 0; i < middle.length; i++) {
+            table.push(middle[i].split(/\s\s+/));
         }
+        let footer = sections[3].slice(/\s\s+/);
+        table.push(footer);
         logger.debug(table.toString());
     });
 
