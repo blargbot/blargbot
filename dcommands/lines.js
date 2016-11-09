@@ -29,11 +29,13 @@ e.execute = (msg) => {
         }
         let message = '```prolog\n' + stdout;
         let sections = stderr.split(/-+/);
+        logger.debug(sections);
         for (let i = 0; i < sections.length; i++) {
             if (sections[i] == '')
                 sections.splice(i, 1);
         }
-        let head = sections[0].slice(/\s\s+/);
+        logger.debug(sections);
+        let head = sections[0].split(/\s\s+/);
         var table = new Table({
             head: head
         });
