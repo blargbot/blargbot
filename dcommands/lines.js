@@ -34,7 +34,7 @@ e.execute = (msg) => {
                 sections.splice(i, 1);
         }
         logger.debug(sections);
-        sections[1].replace(/\n/g, '');
+        sections[1] = sections[1].replace(/\n/g, '');
         let head = sections[1].split(/\s\s+/);
         var table = new Table({
             chars: {
@@ -69,7 +69,7 @@ e.execute = (msg) => {
                 table.push(toPush);
             }
         }
-        sections[3].replace(/\n/g, '');
+        sections[3] = sections[3].replace(/\n/g, '');
         let footer = sections[3].split(/\s\s+/);
         logger.debug(footer);
         table.push(footer);
