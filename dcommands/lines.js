@@ -28,18 +28,18 @@ e.execute = (msg) => {
             return;
         }
         let message = '```prolog\n' + stdout;
-        let sections = stderr.split(/-+/);
+        let sections = stdout.split(/-+/);
         logger.debug(sections);
         for (let i = 0; i < sections.length; i++) {
             if (sections[i] == '')
                 sections.splice(i, 1);
         }
         logger.debug(sections);
-        let head = sections[0].split(/\s\s+/);
+        let head = sections[1].split(/\s\s+/);
         var table = new Table({
             head: head
         });
-        for (let i = 1; i < sections.length - 1; i++) {
+        for (let i = 2; i < sections.length - 1; i++) {
             table.push(sections[i].split(/\s\s+/));
         }
         logger.debug(table.toString());
