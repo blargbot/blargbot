@@ -4,8 +4,8 @@ var exec = require('child_process').exec;
 
 
 e.init = () => {
-    
-    
+
+
 
     e.category = bu.CommandType.CAT;
 };
@@ -21,13 +21,13 @@ e.execute = (msg, words, text) => {
     if (msg.author.id === bu.CAT_ID) {
         var commandToProcess = words.slice(1).join(' ');
         logger.debug(commandToProcess);
-        if (commandToProcess.trim().toLowerCase() == 'pm2 restart 0'
-            || commandToProcess.trim().toLowerCase() == 'pm2 reload 0'
-            || commandToProcess.trim().toLowerCase() == 'pm2 start 0') {
+        if (commandToProcess.trim().toLowerCase().includes('pm2 restart') ||
+            commandToProcess.trim().toLowerCase().includes('pm2 reload') ||
+            commandToProcess.trim().toLowerCase().includes('pm2 start')) {
             bu.send(msg, 'No! That\'s dangerous! Do `b!restart` instead.\n\nIt\'s not that I don\'t trust you, it\'s just...\n\nI don\'t trust you.');
             return;
         }
-        exec(commandToProcess, function (err, stdout, stderr) {
+        exec(commandToProcess, function(err, stdout, stderr) {
             if (err) {
                 bu.send(msg, `Error!
 \`\`\`js
