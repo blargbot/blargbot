@@ -21,7 +21,7 @@ e.longinfo = `<p>Gets the number of lines the bot is made of.</p>`;
 e.execute = (msg) => {
 
     logger.debug(__dirname);
-    exec(`cloc ${path.join(__dirname, '..')} --exclude-dir=codemirror`, (err, stdout, stderr) => {
+    exec(`cloc ${path.join(__dirname, '..')} --exclude-dir=public`, (err, stdout, stderr) => {
         if (err) {
             logger.error(err);
             bu.send(msg, 'An error has occurred!');
