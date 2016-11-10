@@ -45,7 +45,7 @@ e.execute = async function(msg, words) {
                         return;
                     }
                 }
-                bu.dirtyCache[msg.guild.id] = true;
+
 
                 let storedGuild = await bu.getGuild(msg.guild.id);
                 if (storedGuild && storedGuild.modlog.length > 0) {

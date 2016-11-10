@@ -26,7 +26,7 @@ specific channels. The roleme command has three subcommands:</p>
 
 e.execute = async function(msg, words) {
     if (words[1]) {
-        bu.dirtyCache[msg.guild.id] = true;
+
 
         let storedGuild = await bu.getGuild(msg.guild.id);
         let roleme = storedGuild.roleme;

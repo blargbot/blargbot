@@ -150,7 +150,7 @@ var error = true;
  * @param topConfig - the config file (Object)
  * @param em - the event emitter (EventEmitter)
  */
-e.init = (v, em) => {
+e.init = async function(v, em) {
     VERSION = v;
     emitter = em;
     logger.debug('HELLOOOOO?');
@@ -231,9 +231,15 @@ e.init = (v, em) => {
     initCommands();
     website.init();
     logger.init('Connecting...');
-    r.table('guild').changes().getField('new_val').run((err, cursor) => {
-        cursor.each(logger.debug);
+
+    r.table('guild').changes({
+        squash: true
+    }).getField('new_val').run((err, cursor) => {
+        cursor.each(guild => {
+            bu.guildCache[guild.guildid] = guild;
+        });
     });
+
     bot.connect();
 };
 
@@ -705,7 +711,7 @@ function registerListeners() {
 
         let guilds = (await r.table('guild').withFields('guildid').run()).map(g => g.guildid);
         //console.dir(guilds);
-        bot.guilds.forEach((g) => {
+        bot.guilds.forEach(async function(g) {
             if (guilds.indexOf(g.id) == -1) {
                 let guild = bot.guilds.get(g.id);
                 let members = guild.memberCount;
@@ -716,8 +722,8 @@ function registerListeners() {
                     ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
                 bu.send(`205153826162868225`, message);
 
-                console.log('Inserting a missing guild');
-                r.table('guild').insert({
+                console.log('Inserting a missing guild ' + g.id);
+                await r.table('guild').insert({
                     guildid: g.id,
                     active: true,
                     name: g.name,
@@ -728,6 +734,7 @@ function registerListeners() {
                     modlog: []
                 }).run();
             }
+            bu.guildCache[g.id] = await r.table('guild').get(g.id);
         });
 
         gameId = bu.getRandomInt(0, 4);
@@ -766,7 +773,7 @@ function registerListeners() {
         var message = `:x: Guild: \`${guild.name}\`` +
             ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
         bu.send(`205153826162868225`, message);
-        bu.dirtyCache[guild.id] = true;
+
 
         r.table('guild').get(guild.id).update({
             active: false
@@ -824,7 +831,7 @@ If you are the owner of this server, here are a few things to know.
 👍 I hope you enjoy my services! 👍`;
             bu.send(guild.id, message2);
             if (!storedGuild) {
-                bu.dirtyCache[guild.id] = true;
+
 
                 r.table('guild').insert({
                     guildid: guild.id,
@@ -838,7 +845,7 @@ If you are the owner of this server, here are a few things to know.
                 }).run();
 
             } else {
-                bu.dirtyCache[guild.id] = true;
+
                 r.table('guild').get(guild.id).update({
                     active: true
                 }).run();

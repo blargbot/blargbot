@@ -24,7 +24,7 @@ e.execute = async function(msg, words) {
     if (words[1].toLowerCase() == '-reset') {
         delete storedGuild.announce;
         await r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
-        bu.dirtyCache[msg.guild.id] = true;
+
         bu.send(msg, 'Announcement configuration reset! Do `b!announce` to reconfigure it.');
         return;
     }
@@ -32,7 +32,7 @@ e.execute = async function(msg, words) {
         changeChannel = storedGuild.announce.channel;
         roleId = storedGuild.announce.role;
     } else {
-        bu.dirtyCache[msg.guild.id] = true;
+
         let msg2 = await bu.awaitMessage(msg,
             'This guild doesn\'t have announcements set up. Please mention the channel that announcements should be put in.',
             m => {

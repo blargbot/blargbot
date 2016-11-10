@@ -18,7 +18,7 @@ e.info = 'Blacklists the current channel. The bot will not respond until you do 
 e.longinfo = `<p>Blacklists the current channel. The bot will not respond until you do the command again.</p>`;
 
 e.execute = async function(msg) {
-    bu.dirtyCache[msg.guild.id] = true;
+
 
     let storedGuild = await bu.getGuild(msg.guild.id);
     let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id) ?

@@ -195,7 +195,7 @@ e.execute = async function(msg, words) {
                 break;
         }
         storedGuild.commandperms = commandperms;
-        bu.dirtyCache[msg.guild.id] = true;
+
     } else {
         bu.send(msg, 'Not enough arguments provided!');
     }

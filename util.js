@@ -556,7 +556,7 @@ bu.logAction = async function(guild, user, mod, type, reason) {
             type: type || 'Generic',
             userid: isArray ? user.map(u => u.id).join(',') : user.id
         });
-        bu.dirtyCache[guild.id] = true;
+
 
         await r.table('guild').get(guild.id).update({
             modlog: cases
@@ -764,7 +764,7 @@ bu.guildSettings = {
         let storedGuild = await bu.getGuild(guildid);
 
         storedGuild.settings[key] = value;
-        bu.dirtyCache[guildid] = true;
+
 
         await r.table('guild').get(guildid).update({
             settings: storedGuild.settings
@@ -781,7 +781,7 @@ bu.guildSettings = {
         let storedGuild = await bu.getGuild(guildid);
 
         delete storedGuild.settings[key];
-        bu.dirtyCache[guildid] = true;
+
 
         await r.table('guild').get(guildid).replace(storedGuild).run();
         logger.debug(':thonkang:');
@@ -793,7 +793,7 @@ bu.ccommand = {
         let storedGuild = await bu.getGuild(guildid);
 
         storedGuild.ccommands[key] = value;
-        bu.dirtyCache[guildid] = true;
+
         r.table('guild').get(guildid).update({
             ccommands: storedGuild.ccommands
         }).run();
@@ -810,7 +810,7 @@ bu.ccommand = {
 
         storedGuild.ccommands[key2] = storedGuild.ccommands[key1];
         delete storedGuild.ccommands[key1];
-        bu.dirtyCache[guildid] = true;
+
         r.table('guild').get(guildid).replace(storedGuild).run();
         return;
     },
@@ -818,7 +818,7 @@ bu.ccommand = {
         let storedGuild = await bu.getGuild(guildid);
 
         delete storedGuild.ccommands[key];
-        bu.dirtyCache[guildid] = true;
+
         r.table('guild').get(guildid).replace(storedGuild).run();
         return;
     }
@@ -846,11 +846,10 @@ bu.isBlacklistedChannel = async function(channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
-bu.dirtyCache = {};
 
 bu.getGuild = async function(guildid) {
     let storedGuild;
-    if (bu.guildCache[guildid] && !bu.dirtyCache[guildid]) {
+    if (bu.guildCache[guildid]) {
         storedGuild = bu.guildCache[guildid];
     } else {
         storedGuild = await r.table('guild').get(guildid);
