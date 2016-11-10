@@ -119,6 +119,7 @@ var listTags = async function(msg, originalTagList, page, author, deleteMsg) {
         if (tagList.length != 0) {
             if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
             let message = `Found ${originalTagList.length} tags${author ? ` made by **${author.username}#${author.discriminator}**` : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to look up tags made by a specific user.`;
+        logger.debug(message, message.length);
         let newPage = (await bu.awaitMessage(msg, message)).content;
         if (newPage.toLowerCase() == 'c') {
             bu.send(msg, 'I hope you found what you were looking for!');
