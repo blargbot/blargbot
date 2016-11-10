@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var tags = require('./../tags');
 const moment = require('moment');
-const results = 50;
+const results = 100;
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
 };
@@ -76,10 +76,10 @@ var searchTags = async function(msg, originalTagList, query, page, deleteMsg) {
     let tagList = originalTagList.map(m => m.name);
     let maxPages = Math.floor(originalTagList.length / results) + 1;
     tagList.sort();
-    tagList = tagList.slice((page - 1) * results);
+    tagList = tagList.slice((page - 1) * results, ((page - 1) * results) + results);
     if (tagList.length != 0) {
         if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
-        var message = `Found ${originalTagList.length} tags matching '${query}'.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.join(', ').trim()}\n\`\`\`\nType a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to perform another search.`;
+        var message = `Found ${tagList.length}/${originalTagList.length} tags matching '${query}'.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.join(', ').trim()}\n\`\`\`\nType a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to perform another search.`;
         let newPage = (await bu.awaitMessage(msg, message)).content;
         if (newPage.toLowerCase() == 'c') {
             bu.send(msg, 'I hope you found what you were looking for!');
@@ -118,7 +118,7 @@ var listTags = async function(msg, originalTagList, page, author, deleteMsg) {
         tagList = tagList.slice((page - 1) * results, ((page - 1) * results) + results);
         if (tagList.length != 0) {
             if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
-            let message = `Found ${originalTagList.length} tags${author ? ` made by **${author.username}#${author.discriminator}**` : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to look up tags made by a specific user.`;
+            let message = `Found ${tagList.length}/${originalTagList.length} tags${author ? ` made by **${author.username}#${author.discriminator}**` : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to look up tags made by a specific user.`;
         logger.debug(message, message.length);
         let newPage = (await bu.awaitMessage(msg, message)).content;
         if (newPage.toLowerCase() == 'c') {
