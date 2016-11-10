@@ -1,7 +1,7 @@
 var e = module.exports = {};
 var tags = require('./../tags');
 const moment = require('moment');
-
+const results = 50;
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
 };
@@ -74,9 +74,9 @@ const tagContentsMsg = 'Enter the tag\'s contents:';
 
 var searchTags = async function(msg, originalTagList, query, page, deleteMsg) {
     let tagList = originalTagList.map(m => m.name);
-    let maxPages = Math.floor(originalTagList.length / 100) + 1;
+    let maxPages = Math.floor(originalTagList.length / results) + 1;
     tagList.sort();
-    tagList = tagList.slice((page - 1) * 100);
+    tagList = tagList.slice((page - 1) * results);
     if (tagList.length != 0) {
         if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
         var message = `Found ${originalTagList.length} tags matching '${query}'.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.join(', ').trim()}\n\`\`\`\nType a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to perform another search.`;
@@ -105,21 +105,20 @@ var searchTags = async function(msg, originalTagList, query, page, deleteMsg) {
     }
 };
 
-var listTags = async function(msg, originalTagList, page, author, deleteMsg)  {
+var listTags = async function(msg, originalTagList, page, author, deleteMsg) {
+        let tagList = [];
+        if (originalTagList.length == 0) {
+            bu.send(msg, 'No results found!');
+            return;
+        }
+        let maxPages = Math.floor(originalTagList.length / results) + 1;
+        tagList = originalTagList.map(m => m.name);
+        tagList.sort();
 
-    let tagList = [];
-    if (originalTagList.length == 0) {
-        bu.send(msg, 'No results found!');
-        return;
-    }
-    let maxPages = Math.floor(originalTagList.length / 100) + 1;
-    tagList = originalTagList.map(m => m.name);
-    tagList.sort();
-
-    tagList = tagList.slice((page - 1) * 100);
-    if (tagList.length != 0) {
-        if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
-        let message = `Found ${originalTagList.length} tags${author ? ` made by **${author.username}#${author.discriminator}**` : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to look up tags made by a specific user.`;
+        tagList = tagList.slice((page - 1) * results);
+        if (tagList.length != 0) {
+            if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
+            let message = `Found ${originalTagList.length} tags${author ? ` made by **${author.username}#${author.discriminator}**` : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to look up tags made by a specific user.`;
         let newPage = (await bu.awaitMessage(msg, message)).content;
         if (newPage.toLowerCase() == 'c') {
             bu.send(msg, 'I hope you found what you were looking for!');
@@ -444,4 +443,3 @@ function logChange(action, actionObj) {
     }
     bu.send('230810364164440065', output + actionArray.join('\n'));
 }
-

@@ -231,7 +231,9 @@ e.init = (v, em) => {
     initCommands();
     website.init();
     logger.init('Connecting...');
-
+    r.table('guild').changes().getField('new_val').run((err, cursor) => {
+        cursor.each(logger.debug);
+    });
     bot.connect();
 };
 
