@@ -48,8 +48,7 @@ router.post('/', async(req, res) => {
             .filter(function(q) {
                 return r.expr(logsSpecs.users).count().eq(0).or(r.expr(logsSpecs.users).contains(q('userid')))
                     .and(r.expr(logsSpecs.types).count().eq(0).or(r.expr(logsSpecs.types).contains(q('type'))));
-            })
-            .limit(logsSpecs.limit).eqJoin('userid', r.table('user'), {
+            }).eqJoin('userid', r.table('user'), {
                 index: 'userid'
             }).zip().orderBy('msgtime').run();
         if (messages.length > 0) {
@@ -95,8 +94,6 @@ router.post('/', async(req, res) => {
                     data-user-id='${id}'
                     data-clipboard-text='${id}'>@${user.username}#${user.discriminator}</span>`);
                 }
-                logger.website(text);
-
                 m.content = new hbs.handlebars.SafeString(text);
                 m.type = types[m.type];
                 messages2.push(m);
@@ -109,7 +106,7 @@ router.post('/', async(req, res) => {
             res.locals.types = logsSpecs.types.join(', ');
             res.locals.firsttime = moment(logsSpecs.firsttime).valueOf();
             res.locals.lasttime = moment(logsSpecs.lasttime).valueOf();
-            res.locals.limit = logsSpecs.limit;
+            res.locals.limit = messages.length;
             res.locals.continue = true;
         }
     }
