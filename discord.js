@@ -907,7 +907,7 @@ If you are the owner of this server, here are a few things to know.
                 type: 1
             }).run();
         }
-        let oldMsg = oldmsg.cleanContent;
+        let oldMsg = oldmsg.cleanContent || 'uncached :(';
         let newMsg = msg.cleanContent;
         if (oldMsg.length + newMsg.length > 1900) {
             if (oldMsg.length > 900) oldMsg = oldMsg.substring(0, 900) + '... (too long to display)';
@@ -1035,8 +1035,7 @@ ${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar:** <' + user.ava
                     type: 2
                 }).run();
 
-                if (!msg.cleanContent) msg.cleanContent = 'uncached';
-                let newMsg = msg.cleanContent;
+                let newMsg = msg.cleanContent || 'uncached :(';
                 if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
                 bu.logEvent(msg.channel.guild.id, 'messagedelete', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
 **Message ID:** ${msg.id}
