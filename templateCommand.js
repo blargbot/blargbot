@@ -1,10 +1,5 @@
 var e = module.exports = {};
-
-
-
 e.init = () => {
-    
-    
     e.category = bu.CommandType.GENERAL;
 };
 
@@ -15,6 +10,6 @@ e.hidden = false;
 e.usage = '';
 e.info = '';
 
-e.execute = (msg, words, text) => {
+e.execute = async function(msg, words, text) {
 
 };
