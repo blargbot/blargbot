@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
 
     e.category = bu.TagType.COMPLEX;
 };
@@ -25,14 +25,17 @@ e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
-    let args = params.args
-        , fallback = params.fallback
-        , tagName = params.tagName;
+    let args = params.args,
+        fallback = params.fallback,
+        tagName = params.tagName;
     var replaceString = '';
     var replaceContent = false;
+    let tagVars;
     let storedTag = await r.table('tag').get(tagName).run();
-    if (!storedTag.hasOwnProperty('vars')) storedTag.vars = {};
-    let tagVars = storedTag.vars;
+    if (!storedTag) {
+        tagVars = bu.guildCache[params.msg.guild.id].vars || {};
+    } else if (!storedTag.hasOwnProperty('vars')) tagVars = {};
+    else tagVars = storedTag.vars;
     if (args.length > 1) {
         replaceString = tagVars[args[1]];
     } else {

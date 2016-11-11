@@ -340,7 +340,6 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
         if (response !== 'null') {
             bu.send(channel.id, response);
         }
-        bu.send(channel.id, `${config.discord.commands[words[0]].replace(/%REPLY/, '<@' + user.id + '>')}`);
         return true;
     } else {
         if (config.discord.commands[words[0]] != null) {
