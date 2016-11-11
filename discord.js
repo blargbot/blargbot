@@ -235,6 +235,7 @@ e.init = async function(v, em) {
     r.table('guild').changes({
         squash: true
     }).getField('new_val').run((err, cursor) => {
+        if (err) logger.error(err);
         cursor.each(guild => {
             bu.guildCache[guild.guildid] = guild;
         });
