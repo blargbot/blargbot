@@ -31,7 +31,7 @@ const separators = [
 e.execute = async function(msg, words, text) {
     let command = 'syntax';
     if (words[1]) {
-        command = words.slice(1).join('\n');
+        command = words.slice(1).join(' ');
     }
     let output = `Invalid usage!\nProper usage: \`${command} `;
     let mTokens = [];
