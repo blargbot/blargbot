@@ -12,12 +12,20 @@ e.info = 'Gives you the \'syntax\' for a command :wink:';
 e.longinfo = '<p>Gives you the \'syntax\' for a command 😉</p>';
 e.alias = ['syntaxify'];
 
-const tokens = ['text', 'string', 'number', 'true/false', 'emote', 'fruit', 'tag', 'name', 'duration', 'question'];
+const tokens = [
+    'text', 'string', 'number', 'true/false', 'emote', 'fruit',
+    'tag', 'name', 'duration', 'question', 'member', 'user', 'name',
+    'command', 'integer', 'decimal', 'date', 'content', 'title', 'animal'
+];
 const keywords = ['edit', 'update', 'add', 'create', 'destroy', 'touch', 'fix', 'choose'];
 const brackets = [
     ['<', '>'],
     ['[', ']'],
     ['', '']
+];
+const separators = [
+    ' | ',
+    ' '
 ];
 
 e.execute = async function(msg, words, text) {
@@ -40,13 +48,13 @@ function getToken(iteration) {
     let type = bu.getRandomInt(0, 7);
     let token;
     let bracket = getElement(brackets);
-    if (type == 0 && iteration < 3) {
+    if (type == 0 && iteration < 4) {
         while (bracket[0] == '') bracket = getElement(brackets);
         let mTokens = [];
         for (let i = 0; i < bu.getRandomInt(2, 4); i++) {
             mTokens.push(getToken(iteration));
         }
-        token = `${bracket[0]}${mTokens.join(' | ')}${bracket[1]}`;
+        token = `${bracket[0]}${mTokens.join(getElement(separators))}${bracket[1]}`;
     } else {
         if (bracket[0] == '') token = getElement(keywords);
         else token = getElement(tokens);
