@@ -997,3 +997,7 @@ bu.logEvent = async function(guildid, event, message) {
 ${message}`);
     }
 };
+
+bu.getFullName = function(user) {
+    return `${user.username}#${user.discriminator}`;
+};
