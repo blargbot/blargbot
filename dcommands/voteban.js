@@ -15,9 +15,10 @@ e.execute = async function(msg, words, text) {
         if (words.length > 1) {
             let storedGuild = await bu.getGuild(msg.guild.id);
             let votebans = storedGuild.votebans || {};
-            let user = await bu.getUser(msg, words.slice(1).join(' '));
 
             if (words[1].toLowerCase() == 'info') {
+                let user = await bu.getUser(msg, words.slice(2).join(' '));
+
                 if (!votebans.hasOwnProperty(user.id))
                     bu.send(msg, `Nobody has signed to ban **${bu.getFullName(user)}**!`);
                 else {
@@ -31,6 +32,8 @@ ${userList.map(u => {
 }).join('\n')}`);
             }
         } else {
+            let user = await bu.getUser(msg, words.slice(1).join(' '));
+            
             if (!votebans.hasOwnProperty(user.id))
                 votebans[user.id] = [];
                 
