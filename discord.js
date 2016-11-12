@@ -1194,7 +1194,7 @@ ${newMsg}`);
                         bu.send('243229905360388106', `**Guild**: ${msg.channel.guild.name} (${msg.channel.guild.id})
 **Channel**: ${msg.channel.name} (${msg.channel.id})
 **User**: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
-${command}`);
+${msg.cleanContent}`);
                         if (!isDm) {
                             let deletenotif = storedGuild.settings.deletenotif;
                             if (deletenotif != '0') {
