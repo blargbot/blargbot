@@ -193,14 +193,16 @@ bu.hasPerm = (msg, perm, quiet) => {
  * @param channel - the channel id (String) or message object (Object)
  * @param message - the message to send (String)
  * @param file - the file to send (Object|null)
+ * @param embed - the message embed
  * @returns {Message}
  */
-bu.send = async function(channel, message, file) {
+bu.send = async function(channel, message, file, embed) {
     let channelid = channel;
     if (channel instanceof Eris.Message) {
         channelid = channel.channel.id;
     }
-    if (message.length <= 0 && !file) {
+    if (!message) message = '';
+    if (message.length <= 0 && !file && !embed) {
         logger.info('Tried to send a message with no content.');
         return Error('No content');
     }
@@ -211,8 +213,7 @@ bu.send = async function(channel, message, file) {
         message = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
     }
     try {
-        if (!file) return await bot.createMessage(channelid, message);
-        else return await bot.createMessage(channelid, message, file);
+        return await bot.createMessage(channelid, message, file, embed);
     } catch (err) {
         logger.error(err.stack);
         return null;
