@@ -309,18 +309,18 @@ function switchGame(forced) {
         }, 60000);
 }
 
-var avatarId;
+
 /**
  * Switches the avatar
  * @param forced - if true, will not set a timeout (Boolean)
  */
 function switchAvatar(forced) {
     bot.editSelf({
-        avatar: avatars[avatarId]
+        avatar: avatars[bu.avatarId]
     });
-    avatarId++;
-    if (avatarId == 8)
-        avatarId = 0;
+    bu.avatarId++;
+    if (bu.avatarId == 8)
+        bu.avatarId = 0;
     if (!forced)
         setTimeout(function() {
             switchAvatar();
@@ -743,9 +743,9 @@ function registerListeners() {
 
         gameId = bu.getRandomInt(0, 4);
         if (config.general.isbeta)
-            avatarId = 4;
+            bu.avatarId = 4;
         else
-            avatarId = 0;
+            bu.avatarId = 0;
         switchGame();
         switchAvatar();
         postStats();

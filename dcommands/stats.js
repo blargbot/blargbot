@@ -37,7 +37,7 @@ e.execute = async function(msg, words) {
         topCommandsSession += pad(sortable[i][0] + ':', 13) + ' ' + sortable[i][1] + '\n';
     }
     let embeds = {
-        color: 0x24d689,
+        color: bu.avatarColours[bu.avatarId],
         timestamp: moment(),
         description: 'Bot Statistics',
         footer: {
