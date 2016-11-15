@@ -76,8 +76,12 @@ e.init = (v, em) => {
         logger.irc(`[IRC] ${from}> ${to}> ${text}`);
         // logger.irc(userMessage);
         if (to === config.irc.channel) {
+            let avatar;
+            let userFile = getUserFile(from);
+            if (userFile.avatar) avatar = userFile.avatar;
             bot.executeWebhook(config.irc.webhookId, config.irc.webhookToken, {
                 username: from,
+                avatarURL: avatar,
                 content: text,
                 disableEveryone: true
             });
@@ -349,6 +353,14 @@ function handleIrcCommand(channel, user, text) {
             } else {
                 sendIrcCommandMessage(channel, `Disabled notifications for ${user}`);
             }
+            break;
+        case 'avatar':
+            userFile = getUserFile(user);
+            userFile.avatar = words[1];
+            logger.debug(userFile);
+            saveUserFile(user, userFile);
+            sendIrcCommandMessage(channel, `Set ${user}'s discord avatar!'`);
+
             break;
         case 'version':
             sendIrcCommandMessage(channel, `I am running blargbot version ${VERSION}`);
