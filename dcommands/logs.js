@@ -26,7 +26,7 @@ e.info = 'Creates a chatlog page for a specified channel, ' +
     '        UPDATE - Gets message edits.\n' +
     '        DELETE - Gets message deletes.\n' +
     '     -CHANNEL (-C)\n' +
-    '        <id> - The channel to get logs from. Must be on the current guild!' +
+    '        <id | mention> - The channel to get logs from. Must be on the current guild!' +
     '     -USER (-U)\n' +
     '        <name or id> - Gets messages made by specific user.\n' +
     '     -ORDER (-O)\n' +
@@ -114,8 +114,8 @@ e.execute = async function(msg, words) {
                         }
                         break;
                     case 3:
-                        if (/^\d*$/.test(words[i]))
-                            channel = words[i];
+                        if (/(\d+)/.test(words[i]))
+                            channel = words[i].match(/(\d+)/)[1];
                         break;
                     default:
                         logger.debug('wut');
