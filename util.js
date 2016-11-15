@@ -1006,3 +1006,32 @@ ${message}`);
 bu.getFullName = function(user) {
     return `${user.username}#${user.discriminator}`;
 };
+
+bu.sendPornLog = function(msg, type, tagList, nsfwChannel, color) {
+    bu.send('230801689551175681', undefined, undefined, {
+        title: type,
+        color: color || 0xc9cfd8,
+        description: tagList.join(' '),
+        fields: [{
+            name: msg.guild.name,
+            value: msg.guild.id,
+            inline: true
+        }, {
+            name: msg.channel.name,
+            value: msg.channel.id,
+            inline: true
+        }, {
+            name: 'NSFW',
+            value: nsfwChannel || false,
+            inline: true
+        }],
+        author: {
+            name: `${bu.getFullName(msg.author)} (${msg.author.id})`,
+            icon_url: msg.author.avatarURL
+        },
+        timestamp: moment(msg.timestamp),
+        footer: {
+            text: `MsgID: ${msg.id}`
+        }
+    });
+};

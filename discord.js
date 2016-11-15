@@ -85,12 +85,16 @@ function unloadCommand(commandName) {
  * @param commandName - the name of the command to load (String)
  */
 function loadCommand(commandName) {
-
-    bu.commands[commandName] = require(`./dcommands/${commandName}.js`);
-    if (bu.commands[commandName].isCommand) {
-        buildCommand(commandName);
-    } else {
-        logger.init('     Skipping non-command ', commandName + '.js');
+    try {
+        bu.commands[commandName] = require(`./dcommands/${commandName}.js`);
+        if (bu.commands[commandName].isCommand) {
+            buildCommand(commandName);
+        } else {
+            logger.init('     Skipping non-command ', commandName + '.js');
+        }
+    } catch (err) {
+        logger.warn(err);
+        logger.init(`     Failed to load command ${commandName}!`);
     }
 }
 
@@ -1191,10 +1195,26 @@ ${newMsg}`);
                     let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
                     logger.command('Was command:', wasCommand);
                     if (wasCommand) {
-                        bu.send('243229905360388106', `**Guild**: ${msg.channel.guild.name} (${msg.channel.guild.id})
-**Channel**: ${msg.channel.name} (${msg.channel.id})
-**User**: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
-${msg.cleanContent}`);
+                        bu.send('243229905360388106', undefined, undefined, {
+                            description: msg.cleanContent,
+                            fields: [{
+                                name: msg.guild.name,
+                                value: msg.guild.id,
+                                inline: true
+                            }, {
+                                name: msg.channel.name,
+                                value: msg.channel.id,
+                                inline: true
+                            }],
+                            author: {
+                                name: `${bu.getFullName(msg.author)} (${msg.author.id})`,
+                                icon_url: msg.author.avatarURL
+                            },
+                            timestamp: moment(msg.timestamp),
+                            footer: {
+                                text: `MsgID: ${msg.id}`
+                            }
+                        });
                         if (!isDm) {
                             let deletenotif = storedGuild.settings.deletenotif;
                             if (deletenotif != '0') {

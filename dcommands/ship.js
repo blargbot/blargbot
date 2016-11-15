@@ -18,7 +18,6 @@ e.execute = async function(msg, words, text) {
         let firstPart = users[0].username.substring(0, users[0].username.length / 2);
         let lastPart = users[1].username.substring(users[1].username.length / 2);
         bu.send(msg, `Your shipname is **${firstPart}${lastPart}**!`);
-
     } else {
         bu.send(msg, 'You have to tell me who you want to ship!');
     }

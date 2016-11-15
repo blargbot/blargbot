@@ -4,8 +4,8 @@ var https = require('https');
 
 
 e.init = () => {
-    
-    
+
+
 
 
     e.category = bu.CommandType.NSFW;
@@ -25,15 +25,16 @@ e.execute = (msg, words) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
         var tagList = JSON.parse(JSON.stringify(words));
         delete tagList[0];
-        bu.send('230801689551175681', `**__danbooru__:** \n  **tags:** \`${tagList.join(' ')}\` \n  **user:** ${msg.author.username} (${msg.author.id}) \n  **channel:** ${msg.channel.name} (${msg.channel.id}) \n  ${msg.channel.guild ? `**guild:** ${msg.channel.guild.name} (${msg.channel.guild.id})` : ''}\n  **NSFW Channel:** ${nsfwChannel}`);
+        bu.sendPornLog(msg, 'danbooru', tagList, nsfwChannel, 0xeaeaea);
+
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
                 logger.debug(`${i}: ${tagList[i]}`);
 
                 tagList[i] = tagList[i].toLowerCase();
             }
-        //  listylist = tagList;
-        //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+            //  listylist = tagList;
+            //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
                 //        logger.(kek); 
@@ -60,13 +61,13 @@ e.execute = (msg, words) => {
             }
         };
 
-        var req = https.request(options, function (res) {
+        var req = https.request(options, function(res) {
             var body = '';
-            res.on('data', function (chunk) {
+            res.on('data', function(chunk) {
                 body += chunk;
             });
 
-            res.on('end', function () {
+            res.on('end', function() {
                 try {
                     var doc = JSON.parse(body);
                     var urlList = [];

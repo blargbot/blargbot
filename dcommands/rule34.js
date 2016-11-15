@@ -4,8 +4,8 @@ var xml2js = require('xml2js');
 var https = require('https');
 
 e.init = () => {
-    
-    
+
+
 
     e.category = bu.CommandType.NSFW;
 
@@ -24,15 +24,16 @@ e.execute = (msg, words) => {
 
         var tagList = JSON.parse(JSON.stringify(words));
         delete tagList[0];
-        bu.send('230801689551175681', `**__rule34__:** \n  **tags:** \`${tagList.join(' ')}\` \n  **user:** ${msg.author.username} (${msg.author.id}) \n  **channel:** ${msg.channel.name} (${msg.channel.id}) \n  ${msg.channel.guild ? `**guild:** ${msg.channel.guild.name} (${msg.channel.guild.id})` : ''}\n  **NSFW Channel:** ${nsfwChannel}`);
+        bu.sendPornLog(msg, 'rule34', tagList, nsfwChannel, 0xAAE5A3);
+
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
                 logger.debug(`${i}: ${tagList[i]}`);
 
                 tagList[i] = tagList[i].toLowerCase();
             }
-        // listylist = tagList;
-        //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+            // listylist = tagList;
+            //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel) {
             bu.send(msg, config.general.nsfwMessage);
             return;
@@ -55,18 +56,18 @@ e.execute = (msg, words) => {
                 'User-Agent': 'blargbot/1.0 (ratismal)'
             }
         };
-        var req = https.request(options, function (res) {
+        var req = https.request(options, function(res) {
             var body = '';
-            res.on('data', function (chunk) {
+            res.on('data', function(chunk) {
                 //logger.(chunk);
                 body += chunk;
             });
 
-            res.on('end', function () {
+            res.on('end', function() {
                 //  logger.('body: ' + body);
                 //   var xml = JSON.parse(body);
                 try {
-                    xml2js.parseString(body, function (err, doc) {
+                    xml2js.parseString(body, function(err, doc) {
                         if (err != null) {
                             logger.debug('error: ' + err.message);
                         }
@@ -80,7 +81,7 @@ e.execute = (msg, words) => {
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                                     urlList.push('http:' + doc.posts.post[i].$.file_url);
                             }
-                        //    logger.(util.inspect(urlList));
+                            //    logger.(util.inspect(urlList));
                         if (urlList.length == 0) {
                             bu.send(msg, 'No results found!');
                             return;

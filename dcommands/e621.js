@@ -5,8 +5,8 @@ var https = require('https');
 
 
 e.init = () => {
-    
-    
+
+
 
 
     e.category = bu.CommandType.NSFW;
@@ -26,7 +26,7 @@ e.execute = (msg, words) => {
 
         var tagList = JSON.parse(JSON.stringify(words));
         delete tagList[0];
-        bu.send('230801689551175681', `**__e621__:** \n  **tags:** \`${tagList.join(' ')}\` \n  **user:** ${msg.author.username} (${msg.author.id}) \n  **channel:** ${msg.channel.name} (${msg.channel.id}) \n  ${msg.channel.guild ? `**guild:** ${msg.channel.guild.name} (${msg.channel.guild.id})` : ''}\n  **NSFW Channel:** ${nsfwChannel}`);
+        bu.sendPornLog(msg, 'e621', tagList, nsfwChannel, 0x002D55);
 
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
@@ -34,8 +34,8 @@ e.execute = (msg, words) => {
 
                 tagList[i] = tagList[i].toLowerCase();
             }
-        // listylist = tagList;
-        //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+            // listylist = tagList;
+            //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
                 //        logger.(kek);
@@ -44,7 +44,7 @@ e.execute = (msg, words) => {
                 return;
             }
 
-            
+
         var query = '';
         for (var tag in tagList) {
             query += tagList[tag] + '%20';
@@ -63,18 +63,18 @@ e.execute = (msg, words) => {
                 'User-Agent': 'blargbot/1.0 (ratismal)'
             }
         };
-        var req = https.request(options, function (res) {
+        var req = https.request(options, function(res) {
             var body = '';
-            res.on('data', function (chunk) {
+            res.on('data', function(chunk) {
                 //logger.(chunk);
                 body += chunk;
             });
 
-            res.on('end', function () {
+            res.on('end', function() {
                 //  logger.('body: ' + body);
                 //   var xml = JSON.parse(body);
                 try {
-                    xml2js.parseString(body, function (err, doc) {
+                    xml2js.parseString(body, function(err, doc) {
                         if (err != null) {
                             logger.error(err.stack);
                         }
@@ -88,7 +88,7 @@ e.execute = (msg, words) => {
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                                     urlList.push(doc.posts.post[i].file_url);
                             }
-                        //    logger.(util.inspect(urlList));
+                            //    logger.(util.inspect(urlList));
                         if (urlList.length == 0) {
                             bu.send(msg, 'No results found!');
                             return;
