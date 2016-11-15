@@ -14,58 +14,58 @@ e.usage = 'tag [<name> | create | rename | edit | delete | raw | author | search
 e.info = `Tags are a system of public commands that anyone can create or run, using the BBTag language.
 
 __**Usage:**__
-  **tag <name>** - executes tag with given name
-  **tag create <name> <content>** - creates a new tag with given name and content
-  **tag edit <name> <content>** - edits an existing tag with given content, provided that you were the one who created it
-  **tag set <name> <content>** - provides the functionality of \`create\` and \`edit\` in a single command
-  **tag delete <name>** - deletes the tag with given name, provided that you own it
-  **tag rename <tag1> <tag2>** - renames the tag by the name of \`tag1\` to \`tag2\`
-  **tag raw <name>** - displays the raw code of a tag
-  **tag info <name>** - displays information about a tag
-  **tag top** - displays information about the top 5 tags
-  **tag author <tag>** - displays the name of who made the tag
-  **tag search [page] <name>** - searches for a tag based on the provided name
-  **tag list [page] [author]** - lists all tags, or tags made by a specific author
-  **tag help** - shows this message
+**tag <name>** - executes tag with given name
+**tag create <name> <content>** - creates a new tag with given name and content
+**tag edit <name> <content>** - edits an existing tag with given content, provided that you were the one who created it
+**tag set <name> <content>** - provides the functionality of \`create\` and \`edit\` in a single command
+**tag delete <name>** - deletes the tag with given name, provided that you own it
+**tag rename <tag1> <tag2>** - renames the tag by the name of \`tag1\` to \`tag2\`
+**tag raw <name>** - displays the raw code of a tag
+**tag info <name>** - displays information about a tag
+**tag top** - displays information about the top 5 tags
+**tag author <tag>** - displays the name of who made the tag
+**tag search [page] <name>** - searches for a tag based on the provided name
+**tag list [page] [author]** - lists all tags, or tags made by a specific author
+**tag help** - shows this message
 
 NOTE: Any NSFW tags must contain \`{nsfw}\` somewhere in their body, or they will be deleted and you will be blacklisted.
 
 For more information about BBTag, visit https://blargbot.xyz/tags`;
 e.longinfo = `<p>
-        Tags are like public custom commands. You can create them on one guild, and use them on another. Anyone is
-        capable of making tags. Tags use a <a href="/tags/">tagging system</a>, so they can can range from simple to
-        complex. See the <a href="/tags/">tag</a> page for more details.
-    </p>
-    <pre><code>tag &lt;name&gt;</code></pre>
-    <p>
-        Executes a tag with the given name.
-    </p>
-    <pre><code>tag create &lt;name&gt; &lt;content&gt;</code></pre>
-    <p>
-        Creates a tag with the given name and content. The name must be unique.
-    </p>
-    <pre><code>tag edit &lt;name&gt; &lt;content&gt;</code></pre>
-    <p>Edits an existing tag. You must own it to edit it!</p>
-    <pre><code>tag set &lt;name&gt; &lt;content&gt;</code></pre>
-    <p>Provides the functionality of create and edit in a single command.</p>
-    <pre><code>tag delete &lt;name&gt;</code></pre>
-    <p>Deletes the specified tag. You must own it to delete it!</p>
-    <pre><code>tag rename &lt;name&gt; &lt;new name&gt;</code></pre>    
-    <p>Renames an existing tag to something else. You must own it to rename it!<p>
-    <pre><code>tag raw &lt;name&gt;</code></pre>
-    <p>Displays the raw code of a given tag.</p>
-    <pre><code>tag info &lt;name&gt;</code></pre>
-    <p>Displays information about a given tag.</p>
-    <pre><code>tag top</code></pre>
-    <p>Displays information about the top 5 tags.</p>
-    <pre><code>tag author &lt;name&gt;</code></pre>
-    <p>Tells you who made the specified tag</p>
-    <pre><code>tag search &lt;name&gt;</code></pre>
-    <p>Searches for tags with given name</p>
-    <pre><code>tag list</code></pre>
-    <p>Lists all tags</p>
-    <pre><code>help tag</code></pre>
-    <p>Gets basic help tag.</p>`;
+Tags are like public custom commands. You can create them on one guild, and use them on another. Anyone is
+capable of making tags. Tags use a <a href="/tags/">tagging system</a>, so they can can range from simple to
+complex. See the <a href="/tags/">tag</a> page for more details.
+</p>
+<pre><code>tag &lt;name&gt;</code></pre>
+<p>
+Executes a tag with the given name.
+</p>
+<pre><code>tag create &lt;name&gt; &lt;content&gt;</code></pre>
+<p>
+Creates a tag with the given name and content. The name must be unique.
+</p>
+<pre><code>tag edit &lt;name&gt; &lt;content&gt;</code></pre>
+<p>Edits an existing tag. You must own it to edit it!</p>
+<pre><code>tag set &lt;name&gt; &lt;content&gt;</code></pre>
+<p>Provides the functionality of create and edit in a single command.</p>
+<pre><code>tag delete &lt;name&gt;</code></pre>
+<p>Deletes the specified tag. You must own it to delete it!</p>
+<pre><code>tag rename &lt;name&gt; &lt;new name&gt;</code></pre>    
+<p>Renames an existing tag to something else. You must own it to rename it!<p>
+<pre><code>tag raw &lt;name&gt;</code></pre>
+<p>Displays the raw code of a given tag.</p>
+<pre><code>tag info &lt;name&gt;</code></pre>
+<p>Displays information about a given tag.</p>
+<pre><code>tag top</code></pre>
+<p>Displays information about the top 5 tags.</p>
+<pre><code>tag author &lt;name&gt;</code></pre>
+<p>Tells you who made the specified tag</p>
+<pre><code>tag search &lt;name&gt;</code></pre>
+<p>Searches for tags with given name</p>
+<pre><code>tag list</code></pre>
+<p>Lists all tags</p>
+<pre><code>help tag</code></pre>
+<p>Gets basic help tag.</p>`;
 e.alias = ['t'];
 
 const tagNameMsg = 'Enter the name of the tag:';
@@ -106,19 +106,19 @@ var searchTags = async function(msg, originalTagList, query, page, deleteMsg) {
 };
 
 var listTags = async function(msg, originalTagList, page, author, deleteMsg) {
-        let tagList = [];
-        if (originalTagList.length == 0) {
-            bu.send(msg, 'No results found!');
-            return;
-        }
-        let maxPages = Math.floor(originalTagList.length / results) + 1;
-        tagList = originalTagList.map(m => m.name);
-        tagList.sort();
+    let tagList = [];
+    if (originalTagList.length == 0) {
+        bu.send(msg, 'No results found!');
+        return;
+    }
+    let maxPages = Math.floor(originalTagList.length / results) + 1;
+    tagList = originalTagList.map(m => m.name);
+    tagList.sort();
 
-        tagList = tagList.slice((page - 1) * results, ((page - 1) * results) + results);
-        if (tagList.length != 0) {
-            if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
-            let message = `Found ${tagList.length}/${originalTagList.length} tags${author ? ` made by **${author.username}#${author.discriminator}**` : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to look up tags made by a specific user.`;
+    tagList = tagList.slice((page - 1) * results, ((page - 1) * results) + results);
+    if (tagList.length != 0) {
+        if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
+        let message = `Found ${tagList.length}/${originalTagList.length} tags${author ? ' made by **' + bu.getFullName(author) + '**' : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to look up tags made by a specific user.`;
         logger.debug(message, message.length);
         let newPage = (await bu.awaitMessage(msg, message)).content;
         if (newPage.toLowerCase() == 'c') {
@@ -132,7 +132,9 @@ var listTags = async function(msg, originalTagList, page, author, deleteMsg) {
         } else {
             author = await bu.getUser(msg, newPage);
             if (author)
-                originalTagList = await r.table('tag').getAll(author.id, { index: 'author' }).run();
+                originalTagList = await r.table('tag').getAll(author.id, {
+                    index: 'author'
+                }).run();
             else
                 originalTagList = await r.table('tag').run();
             if (originalTagList.length == 0) {
@@ -168,7 +170,7 @@ e.execute = async function(msg, words, text) {
                 if (!content)
                     content = (await bu.awaitMessage(msg, tagContentsMsg)).content;
 
-            //    content = bu.fixContent(content);
+                //    content = bu.fixContent(content);
 
                 await r.table('tag').insert({
                     name: title,
@@ -178,8 +180,7 @@ e.execute = async function(msg, words, text) {
                     uses: 0
                 }).run();
                 bu.send(msg, `✅ Tag \`${title}\` created. ✅`);
-                logChange('Create', {
-                    user: `${msg.author.username} (${msg.author.id})`,
+                logChange('Create', msg, {
                     tag: title,
                     content: content
                 });
@@ -214,8 +215,7 @@ e.execute = async function(msg, words, text) {
                 await r.table('tag').insert(oldTag).run();
 
                 bu.send(msg, `✅ Tag \`${oldTagName}\` has been renamed to \`${newTagName}\`. ✅`);
-                logChange('Rename', {
-                    user: `${msg.author.username} (${msg.author.id})`,
+                logChange('Rename', msg, {
                     oldName: oldTagName,
                     newName: newTagName
                 });
@@ -241,15 +241,14 @@ e.execute = async function(msg, words, text) {
                 if (!content)
                     content = await bu.awaitMessage(msg, tagContentsMsg).content;
 
-              //  content = bu.fixContent(content);
+                //  content = bu.fixContent(content);
 
                 await r.table('tag').get(title).update({
                     content: content,
                     lastmodified: r.epochTime(moment() / 1000)
                 }).run();
                 bu.send(msg, `✅ Tag \`${title}\` edited. ✅`);
-                logChange('Edit', {
-                    user: `${msg.author.username} (${msg.author.id})`,
+                logChange('Edit', msg, {
                     tag: title,
                     content: content
                 });
@@ -285,8 +284,7 @@ e.execute = async function(msg, words, text) {
                     uses: tag ? tag.uses : 0
                 }).run();
                 bu.send(msg, `✅ Tag \`${title}\` ${tag ? 'edited' : 'created'}. ✅`);
-                logChange(tag ? 'Edit' : 'Create', {
-                    user: `${msg.author.username} (${msg.author.id})`,
+                logChange(tag ? 'Edit' : 'Create', msg, {
                     tag: title,
                     content: content
                 });
@@ -307,8 +305,7 @@ e.execute = async function(msg, words, text) {
                 }
                 await r.table('tag').get(words[2]).delete();
                 bu.send(msg, `✅ Tag \`${title}\` is gone forever! ✅`);
-                logChange('Delete', {
-                    user: `${msg.author.username} (${msg.author.id})`,
+                logChange('Delete', msg, {
                     author: `${tag.author == msg.author.id ? msg.author.username : (await r.table('user').get(tag.author)).username} (${tag.author})`,
                     tag: title,
                     content: tag.content
@@ -397,7 +394,9 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
 
                 }
                 if (user)
-                    originalTagList = await r.table('tag').getAll(user.id, { index: 'author' }).run();
+                    originalTagList = await r.table('tag').getAll(user.id, {
+                        index: 'author'
+                    }).run();
                 else originalTagList = await r.table('tag').run();
 
                 listTags(msg, originalTagList, 1, user);
@@ -417,16 +416,16 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
 
 var tagHelp = `\`\`\`prolog
 Tag Usage
-  Tag <name> - executes tag with given name
-  Tag Create <name> <content> - creates a new tag with given name and content
-  Tag Rename <tag1> <tag2> - renames the tag by the name of \`tag1\` to \`tag2\`
-  Tag Edit <name> <content> - edits an existing tag with given content, provided that you were the one who created it
-  Tag Delete <name> - deletes the tag with given name, provided that you own it
-  Tag Raw <name> - displays the raw code of a tag
-  Tag Author <tag> - displays the name of who made the tag
-  Tag Search [page] <name> - searches for a tag based on the provided name
-  Tag List [page] [author] - lists all tags, or tags made by a specific author
-  help tag - shows this message
+Tag <name> - executes tag with given name
+Tag Create <name> <content> - creates a new tag with given name and content
+Tag Rename <tag1> <tag2> - renames the tag by the name of \`tag1\` to \`tag2\`
+Tag Edit <name> <content> - edits an existing tag with given content, provided that you were the one who created it
+Tag Delete <name> - deletes the tag with given name, provided that you own it
+Tag Raw <name> - displays the raw code of a tag
+Tag Author <tag> - displays the name of who made the tag
+Tag Search [page] <name> - searches for a tag based on the provided name
+Tag List [page] [author] - lists all tags, or tags made by a specific author
+help tag - shows this message
 NOTE: Any NSFW tags must contain '{nsfw}' somewhere in their body, or they will be deleted and you will be blacklisted.
 \`\`\`
 For more information about tags, visit https://blargbot.xyz/tags`;
@@ -436,11 +435,41 @@ function escapeRegex(str) {
     return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
 }
 
-function logChange(action, actionObj) {
-    let output = `**__${action}__**\n`;
+function logChange(action, msg, actionObj) {
     let actionArray = [];
     for (let key in actionObj) {
-        actionArray.push(`  **${key}**: ${actionObj[key]}`);
+        actionArray.push({
+            name: key,
+            value: actionObj[key],
+            inline: true
+        });
     }
-    bu.send('230810364164440065', output + actionArray.join('\n'));
+    let color = 0x000000;
+    switch (action.split(' ')[0].toLowerCase()) {
+        case 'create':
+            color = 0x0eed24;
+            break;
+        case 'edit':
+            color = 0x6b0eed;
+            break;
+        case 'delete':
+            color = 0xf20212;
+            break;
+        case 'rename':
+            color = 0x02f2ee;
+            break;
+    }
+    bu.send('230810364164440065', undefined, undefined, {
+        title: action,
+        color: color,
+        fields: actionArray,
+        author: {
+            name: `${bu.getFullName(msg.author)} (${msg.author.id})`,
+            icon_url: msg.author.avatarURL
+        },
+        timestamp: moment(msg.timestamp),
+        footer: {
+            text: `MsgID: ${msg.id}`
+        }
+    });
 }
