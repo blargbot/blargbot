@@ -16,7 +16,7 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'logs <number> [<type> <parameters...>]';
-e.info = 'DMs you a file with chat logs from the current channel, ' +
+e.info = 'Creates a chatlog page for a specified channel, ' +
     'where `number` is the amount of lines to get. You can retrieve a maximum of 1000 logs.' +
     'For more specific logs, you can specify a (case insensitive) ' +
     'type and parameter as follows:\n' +
@@ -36,7 +36,7 @@ e.info = 'DMs you a file with chat logs from the current channel, ' +
     '`logs 100 -message delete -user stupid cat`' +
     'If you want to use multiple of the same type, separate parameters with commas. For example:\n' +
     '`logs 100 -m create, update -u stupid cat, dumb cat`';
-e.longinfo = '<p>DMs you a file with chat logs from the current channel, ' +
+e.longinfo = '<p>Creates a chatlog page for a specified channel, ' +
     'where `number` is the amount of lines to get. ' +
     'For more specific logs, you can specify a (case insensitive) ' +
     'type and parameter as follows:</p><p>' +
@@ -65,7 +65,7 @@ var typeRef = {
 };
 
 
-e.execute = async function (msg, words) {
+e.execute = async function(msg, words) {
     //  bu.send(msg, 'WIP');
     //  return;
     if (words[0].toLowerCase() == 'help') {
@@ -173,7 +173,7 @@ e.execute = async function (msg, words) {
         .orderBy({
             index: order ? r.asc('channel_time') : r.desc('channel_time')
         })
-        .filter(function (q) {
+        .filter(function(q) {
             return r.expr(users).count().eq(0).or(r.expr(users).contains(q('userid')))
                 .and(r.expr(types).count().eq(0).or(r.expr(types).contains(q('type')))
                     .and(r.expr(msgids).contains(q('msgid')).not())
@@ -195,7 +195,7 @@ e.execute = async function (msg, words) {
     }
 };
 
-var insertQuery = async function (msg, channel, users, types, firstTime, numberOfMessages) {
+var insertQuery = async function(msg, channel, users, types, firstTime, numberOfMessages) {
     async function attemptInsert() {
         var key = randomString(6);
         logger.debug(key);
