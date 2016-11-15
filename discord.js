@@ -1196,7 +1196,7 @@ ${newMsg}`);
                     logger.command('Was command:', wasCommand);
                     if (wasCommand) {
                         bu.send('243229905360388106', undefined, undefined, {
-                            description: msg.cleanContent,
+                            description: msg.content,
                             fields: [{
                                 name: msg.guild.name,
                                 value: msg.guild.id,
