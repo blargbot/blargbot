@@ -1,15 +1,9 @@
 var e = module.exports = {};
 
-
-
-
+const moment = require('moment');
 
 e.init = () => {
-
-
-
     e.category = bu.CommandType.ADMIN;
-
 };
 
 e.requireCtx = require;
@@ -49,8 +43,20 @@ e.execute = async function(msg, words) {
                 r.table('guild').get(msg.channel.guild.id).update({
                     modlog: modlog
                 }).run();
-
-                bot.editMessage(val, modlog[index].msgid, content);
+                let embed = msg2.embeds[0];
+                if (embed) {
+                    embed.fields[1].value = words.join(' ');
+                    embed.timestamp = moment(embed.timestamp);
+                    if (!embed.hasOwnProperty('footer')) {
+                        embed.footer = {
+                            text: `${bu.getFullName(msg.author)} (${msg.author.id})`,
+                            icon_url: msg.author.avatarURL
+                        };
+                    }
+                    msg2.edit(' ', embed);
+                } else {
+                    msg2.edit(content);
+                }
                 bu.send(msg, ':ok_hand:');
             } else {
                 bu.send(msg, 'That case does not exist!');

@@ -525,7 +525,8 @@ bu.bans = {};
 bu.unbans = {};
 
 bu.getPosition = (member) => {;
-    return member.guild.roles.get(member.roles.sort((a, b) => member.guild.roles.get(b).position - member.guild.roles.get(a).position)[0]).position;
+    let role = member.guild.roles.get(member.roles.sort((a, b) => member.guild.roles.get(b).position - member.guild.roles.get(a).position)[0]);
+    return role ? role.position : 0;
 };
 
 bu.logAction = async function(guild, user, mod, type, reason) {
@@ -538,9 +539,37 @@ bu.logAction = async function(guild, user, mod, type, reason) {
             caseid = storedGuild.modlog.length;
         }
         let users = isArray ?
-            user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join(', ') :
+            user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join('\n') :
             `${user.username}#${user.discriminator} (${user.id})`;
         reason = reason || `Responsible moderator, please do \`reason ${caseid}\` to set.`;
+
+        let embed = {
+            title: `Case ${caseid}`,
+            fields: [{
+                name: 'Type',
+                value: type,
+                inline: true
+            }, {
+                name: 'Reason',
+                value: reason,
+                inline: true
+            }],
+            timestamp: moment()
+        };
+        if (mod) {
+            embed.footer = {
+                text: `${bu.getFullName(mod)} (${mod.id})`,
+                icon_url: mod.avatarURL
+            };
+        }
+        if (isArray) {
+            embed.description = users;
+        } else {
+            embed.author = {
+                name: users,
+                icon_url: user.avatarURL
+            };
+        }
         let moderator = mod ? `${mod.username}#${mod.discriminator}` : 'Unknown';
         var message = `**Case ${caseid}**
 **Type:** ${type}
@@ -548,7 +577,7 @@ bu.logAction = async function(guild, user, mod, type, reason) {
 **Reason:** ${reason}
 **Moderator:** ${moderator}`;
 
-        let msg = await bu.send(val, message);
+        let msg = await bu.send(val, undefined, undefined, embed);
         let cases = storedGuild.modlog;
         if (!Array.isArray(cases)) {
             cases = [];

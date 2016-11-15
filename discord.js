@@ -241,11 +241,12 @@ e.init = async function(v, em) {
     }).getField('new_val').run((err, cursor) => {
         if (err) logger.error(err);
         cursor.each(guild => {
-            try {
-                bu.guildCache[guild.guildid] = guild;
-            } catch (err) {
-                logger.error(err);
-            }
+            if (guild != null)
+                try {
+                    bu.guildCache[guild.guildid] = guild;
+                } catch (err) {
+                    logger.error(err);
+                }
         });
     });
 
