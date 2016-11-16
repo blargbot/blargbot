@@ -211,13 +211,21 @@ bu.send = async function(channel, message, file, embed) {
         return Error('No content');
     }
     bu.messageStats++;
-    message = emoji.emojify(message);
+    let content = {};
+    if (typeof message === "string") {
+        content.content = message;
+    } else {
+        content = message;
+    }
+    if (!content.content) content.content = '';
+    if (embed) content.embed = embed;
+    content.content = emoji.emojify(content.content);
 
-    if (message.length > 2000) {
-        message = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+    if (content.content.length > 2000) {
+        content.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
     }
     try {
-        return await bot.createMessage(channelid, message, file, embed);
+        return await bot.createMessage(channelid, content, file);
     } catch (err) {
         logger.error(err.stack);
         return null;
