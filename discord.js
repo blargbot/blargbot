@@ -899,8 +899,6 @@ If you are the owner of this server, here are a few things to know.
                 channelid: msg.channel.id,
                 guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
                 msgtime: r.epochTime(moment(msg.editedTimestamp) / 1000),
-                nsfw: nsfw,
-                mentions: msg.mentions.map(u => u.username).join(','),
                 type: 1
             }).run();
         }
@@ -1051,7 +1049,6 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
             commandMessages[msg.channel.guild.id].splice(commandMessages[msg.channel.guild.id].indexOf(msg.id), 1);
         }
         if (msg.channel.id != '204404225914961920') {
-            var nsfw = await bu.isNsfwChannel(msg.channel.id);
             try {
                 await r.table('chatlogs').insert({
                     content: msg.content,
@@ -1061,8 +1058,6 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
                     channelid: msg.channel.id,
                     guildid: msg.channel.guild.id,
                     msgtime: r.epochTime(moment() / 1000),
-                    nsfw: nsfw,
-                    mentions: msg.mentions.map(u => u.username).join(','),
                     type: 2
                 }).run();
 
@@ -1344,8 +1339,6 @@ ${newMsg}`);
                 channelid: msg.channel.id,
                 guildid: isDm ? 'DM' : msg.channel.guild.id,
                 msgtime: r.epochTime(moment(msg.timestamp) / 1000),
-                nsfw: nsfw,
-                mentions: msg.mentions.map(u => u.username).join(','),
                 type: 0
             }).run();
         }
