@@ -35,8 +35,8 @@ e.execute = async function(msg) {
         bu.send(msg, '**' + bot.getChannel(channelid).name + '** is now blacklisted.');
     }
 
-    storedGuild.channels[msg.channel.id] = channel;
-    r.table('guild').get(msg.channel.guild.id).update({
+    storedGuild.channels[channelid] = channel;
+    r.table('guild').get(msg.guild.id).update({
         channels: storedGuild.channels
     }).run();
 };
