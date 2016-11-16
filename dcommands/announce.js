@@ -66,6 +66,19 @@ e.execute = async function(msg, words) {
     var message = words.join(' ');
     let channel = bot.getChannel(changeChannel);
     let role = channel.guild.roles.get(roleId);
+    let embed = {
+        footer: {
+            text: bu.getFullName(msg.author),
+            icon_url: msg.author.avatarURL
+        },
+        color: getTopRole(msg.member).color,
+        description: message + '\n',
+        timestamp: moment(msg.timestamp),
+        author: {
+            name: 'Announcement',
+            icon_url: 'http://i.imgur.com/zcGyun6.png'
+        }
+    };
     message = `**:information_source: Announcement [${moment().format('MM/DD/YYYY')}] ${role.mention} :information_source:**
 **${msg.author.username}#${msg.author.discriminator}** has made the following announcement:
 
@@ -78,7 +91,10 @@ ${message}`;
     } catch (err) {
         logger.error(err);
     }
-    await bu.send(changeChannel, message);
+    await bu.send(changeChannel, {
+        content: role.mention,
+        embed: embed
+    });
     try {
         await role.edit({
             mentionable: false
@@ -87,4 +103,16 @@ ${message}`;
         logger.error(err);
     }
 
+};
+
+
+function getTopRole(member) {;
+    let role = member.guild.roles.get(member.roles.sort((a, b) => {
+        let thing = 0;
+        if (member.guild.roles.get(a).color > 0) thing -= 9999999;
+        if (member.guild.roles.get(b).color > 0) thing += 9999999;
+        thing += member.guild.roles.get(b).position - member.guild.roles.get(a).position;
+        return thing;
+    })[0]);
+    return role;
 };
