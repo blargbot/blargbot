@@ -236,19 +236,7 @@ e.init = async function(v, em) {
     website.init();
     logger.init('Connecting...');
 
-    r.table('guild').changes({
-        squash: true
-    }).getField('new_val').run((err, cursor) => {
-        if (err) logger.error(err);
-        cursor.each(guild => {
-            if (guild != null)
-                try {
-                    bu.guildCache[guild.guildid] = guild;
-                } catch (err) {
-                    logger.error(err);
-                }
-        });
-    });
+    registerChangefeed();
 
     bot.connect();
 };
@@ -949,7 +937,15 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
         }
     });
 
-    bot.on('guildBanAdd', (guild, user) => {
+    bot.on('guildBanAdd', async function(guild, user) {
+        let storedGuild = r.table('guild').get(guild.id);
+        let votebans = storedGuild.votebans || {};
+        if (votebans.hasOwnProperty(user.id)) {
+            delete votebans[user.id];
+            r.table('guild').get(guild.id).update({
+                votebans: r.literal(votebans)
+            });
+        }
         var mod;
         var type = 'Ban';
         var reason;
@@ -1342,4 +1338,28 @@ function initEvents() {
             r.table('events').get(event.id).delete().run();
         }
     }, 10000);
+}
+var changefeed;
+
+async function registerChangefeed() {
+    try {
+        logger.info('Registering a changefeed!');
+        changefeed = await r.table('guild').changes({
+            squash: true
+        }).getField('new_val').run((err, cursor) => {
+            if (err) logger.error(err);
+            cursor.each(guild => {
+                if (guild != null)
+                    try {
+                        bu.guildCache[guild.guildid] = guild;
+                    } catch (err) {
+                        logger.error(err);
+                    }
+            });
+        });
+        changefeed.on('end', registerChangefeed);
+    } catch (err) {
+        logger.warn(`Failed to register a changefeed, will try again in 10 seconds.`);
+        setTimeout(registerChangefeed, 10000);
+    }
 }

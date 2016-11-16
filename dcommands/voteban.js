@@ -43,9 +43,11 @@ return ' - ' + u;
             let user = await bu.getUser(msg, words[1]);
             let reason = words[2] ? words.slice(2).join(' ') : undefined;
             if (reason) reason = await bu.filterMentions(reason);
-            let tempVotebans = votebans[user.id] != undefined ? votebans[user.id].map(u => u.id) : [];
             if (!votebans.hasOwnProperty(user.id))
                 votebans[user.id] = [];
+
+            let tempVotebans = votebans[user.id] != undefined ? votebans[user.id].map(u => u.id) : [];
+
 
             if (tempVotebans.indexOf(msg.author.id) > -1) {
                 votebans[user.id].splice(tempVotebans.indexOf(msg.author.id), 1);
@@ -58,12 +60,14 @@ return ' - ' + u;
                 bu.send(msg, `**${bu.getFullName(msg.author)}** has signed to ban **${bu.getFullName(user)}**! Total signatures: **${votebans[user.id].length}**
 ${reason ? '**Reason:** ' + reason : ''}`);
             }
+            logger.debug(votebans);
             await r.table('guild').get(msg.guild.id).update({
                 votebans: votebans
             });
         }
 
     } else {
+        logger.debug(votebans);
         let votebanStats = [];
         for (let key in votebans) {
             votebanStats.push({
@@ -82,7 +86,6 @@ ${reason ? '**Reason:** ' + reason : ''}`);
             returnMsg += `**${i}**. **${bu.getFullName(user)}** (${user.id}) - **${stat.votes}** signatures\n`;
             i++;
         }
-        logger.debug(returnMsg);
         bu.send(msg, returnMsg);
     }
 };
