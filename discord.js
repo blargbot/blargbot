@@ -992,6 +992,7 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
             let embed = msg2.embeds[0];
             if (embed) {
                 embed.fields[0].value = 'Softban';
+                embed.color = 0xffee02;
                 embed.timestamp = moment(embed.timestamp);
 
                 msg2.edit({

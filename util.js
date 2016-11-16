@@ -533,6 +533,30 @@ bu.logAction = async function(guild, user, mod, type, reason) {
     let isArray = Array.isArray(user);
     let val = await bu.guildSettings.get(guild.id, 'modlog');
     if (val) {
+        let color = 0x17c484;
+        switch (type.toLowerCase()) {
+            case 'ban':
+                color = 0xcc0c1c;
+                break;
+            case 'unban':
+                color = 0x17c914;
+                break;
+            case 'hack-ban':
+                color = 0xb90dbf;
+                break;
+            case 'mass hack-ban':
+                color = 0x710775;
+                break;
+            case 'kick':
+                color = 0xdb7b1c;
+                break;
+            case 'mute':
+                color = 0xd80f66;
+                break;
+            case 'unmute':
+                color = 0x1cdb68;
+                break;
+        }
         let storedGuild = await bu.getGuild(guild.id);
         let caseid = 0;
         if (storedGuild.modlog.length > 0) {
@@ -545,6 +569,7 @@ bu.logAction = async function(guild, user, mod, type, reason) {
 
         let embed = {
             title: `Case ${caseid}`,
+            color: color,
             fields: [{
                 name: 'Type',
                 value: type,
