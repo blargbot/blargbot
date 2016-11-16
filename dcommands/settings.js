@@ -52,7 +52,7 @@ e.execute = async function(msg, words) {
             for (i = 0; i < blacklisted.length; i++) {
                 let channel = bot.getChannel(blacklisted[i]);
                 if (channel)
-                    blacklistMessage += `${channel.name} (${blacklisted[i]}\n                - `;
+                    blacklistMessage += `${channel.name} (${blacklisted[i]})\n                - `;
             }
             blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19);
         }
