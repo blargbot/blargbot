@@ -702,7 +702,7 @@ function registerListeners() {
         logger.init('Ready!');
         let restart = await r.table('vars').get('restart').run();
         if (restart && restart.varvalue) {
-            bu.send(restart.varvalue, 'Ok I\'m back.');
+            bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(moment(), moment(restart.varvalue.time)) + '.');
             r.table('vars').get('restart').delete().run();
         }
 
@@ -938,10 +938,14 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
     });
 
     bot.on('guildBanAdd', async function(guild, user) {
-        let storedGuild = r.table('guild').get(guild.id);
+
+        let storedGuild = await bu.getGuild(guild.id);
         let votebans = storedGuild.votebans || {};
+        logger.debug(0, votebans);
         if (votebans.hasOwnProperty(user.id)) {
+            logger.debug(1, votebans);
             delete votebans[user.id];
+            logger.debug(2, votebans);
             r.table('guild').get(guild.id).update({
                 votebans: r.literal(votebans)
             });
@@ -972,13 +976,34 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
         bu.logEvent(guild.id, 'memberban', `**User:** ${user.username}#${user.discriminator} (${user.id})`);
     });
 
-    bot.on('guildBanRemove', (guild, user) => {
+    bot.on('guildBanRemove', async function(guild, user) {
+        let storedGuild = await bu.getGuild(guild.id);
+        let modlog = storedGuild.modlog || [];
+        let lastCase = modlog[modlog.length - 1];
         var mod;
         if (bu.unbans[guild.id] && bu.unbans[guild.id][user.id]) {
             mod = bot.users.get(bu.unbans[guild.id][user.id]);
             delete bu.unbans[guild.id][user.id];
         }
-        bu.logAction(guild, user, mod, 'Unban');
+        if (lastCase.userid == user.id) {
+            let val = await bu.guildSettings.get(guild.id, 'modlog');
+
+            let msg2 = await bot.getMessage(val, lastCase.msgid);
+            let embed = msg2.embeds[0];
+            if (embed) {
+                embed.fields[0].value = 'Softban';
+                embed.timestamp = moment(embed.timestamp);
+
+                msg2.edit({
+                    content: ' ',
+                    embed: embed
+                });
+            } else {
+                bu.logAction(guild, user, mod, 'Unban');
+            }
+        } else {
+            bu.logAction(guild, user, mod, 'Unban');
+        }
         bu.logEvent(guild.id, 'memberunban', `**User:** ${user.username}#${user.discriminator} (${user.id})`);
     });
 

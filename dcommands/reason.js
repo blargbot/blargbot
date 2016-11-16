@@ -54,6 +54,7 @@ e.execute = async function(msg, words) {
                         };
                     }
                     msg2.edit({
+                        content: ' ',
                         embed: embed
                     });
                 } else {

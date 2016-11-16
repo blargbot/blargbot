@@ -507,16 +507,8 @@ bu.sendFile = (channelid, message, url) => {
  * @returns {string}
  */
 bu.createTimeDiffString = (moment1, moment2) => {
-    var ms = moment1.diff(moment2);
-    var diff = moment.duration(ms);
-    var days = diff.days();
-    diff.subtract(days, 'd');
-    var hours = diff.hours();
-    diff.subtract(hours, 'h');
-    var minutes = diff.minutes();
-    diff.subtract(minutes, 'm');
-    var seconds = diff.seconds();
-    return `${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds`;
+    var diff = moment.duration(moment1.diff(moment2));
+    return `${diff.days() > 0 ? diff.days() + ' days, ' : ''}${diff.hours() > 0 ? diff.hours() + ' hours, ' : ''}${diff.minutes()} minutes, and ${diff.seconds()} seconds`;
 };
 
 /**
