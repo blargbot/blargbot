@@ -42,6 +42,7 @@ return ' - ' + u;
         } else {
             let user = await bu.getUser(msg, words[1]);
             let reason = words[2] ? words.slice(2).join(' ') : undefined;
+            if (reason) reason = await bu.filterMentions(reason);
             let tempVotebans = votebans[user.id] != undefined ? votebans[user.id].map(u => u.id) : [];
             if (!votebans.hasOwnProperty(user.id))
                 votebans[user.id] = [];

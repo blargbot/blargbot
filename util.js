@@ -1076,3 +1076,16 @@ bu.sendPornLog = function(msg, type, tagList, nsfwChannel, color) {
         }
     });
 };
+
+bu.filterMentions = async function(message) {
+    while (/<@!?[0-9]{17,21}>/.test(message)) {
+        let id = message.match(/<@!?([0-9]{17,21})>/)[1];
+        try {
+            let user = bot.users.get(id) || await bot.getRESTUser(id);
+            message = message.replace(new RegExp(`<@!?${id}>`), bu.getFullName(user));
+        } catch (err) {
+            message = message.replace(new RegExp(`<@!?${id}>`), `<@\u200b${id}>`);
+        }
+    }
+    return message;
+};
