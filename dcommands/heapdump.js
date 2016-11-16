@@ -14,12 +14,12 @@ e.hidden = false;
 e.usage = 'heapdump [interval (ms)]';
 e.info = 'Does heapdumps.';
 
-e.execute = (msg, words) => {
+e.execute = async function(msg, words) {
     if (msg.author.id == bu.CAT_ID) {
         let interval = 1800000;
         if (words[1]) interval = parseInt(words[1]);
 
-        bu.send(msg, `I will perform four heapdumps in intervals of ${interval}ms. I will ping you every time a heapdump is completed.`);
+        await bu.send(msg, `I will perform four heapdumps in intervals of ${interval}ms. I will ping you every time a heapdump is completed.`);
 
         let i = 0;
         let startTime;
@@ -28,10 +28,10 @@ e.execute = (msg, words) => {
             bu.send(msg, `Hey ${msg.author.mention}, I'm done. Thanks for your patience.`);
         }
 
-        function doHeapdump() {
+        async function doHeapdump() {
             startTime = moment();
-            bu.send(msg, 'Writing snapshot...');
-            heapdump.writeSnapshot(path.join(__dirname, `blargdump${i}.heapsnapshot`), (err, filename) => {
+            await bu.send(msg, 'Writing snapshot...');
+            heapdump.writeSnapshot(path.join(__dirname, '..', `blargdump${i}.heapsnapshot`), (err, filename) => {
                 let diff = moment.duration(moment() - startTime);
                 bu.send(msg, {
                     content: `${msg.author.mention} Snapshot ${i + 1} complete.`,
