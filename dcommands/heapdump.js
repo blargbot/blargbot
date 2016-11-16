@@ -31,7 +31,7 @@ e.execute = (msg, words) => {
         function doHeapdump() {
             startTime = moment();
             bu.send(msg, 'Writing snapshot...');
-            heapdump.writeSnapshot(path.join(__dirname, `dump${i}.heapsnapshot`), (err, filename) => {
+            heapdump.writeSnapshot(path.join(__dirname, `blargdump${i}.heapsnapshot`), (err, filename) => {
                 let diff = moment.duration(moment() - startTime);
                 bu.send(msg, {
                     content: `${msg.author.mention} Snapshot ${i + 1} complete.`,
@@ -46,7 +46,7 @@ e.execute = (msg, words) => {
                             inline: true
                         }, {
                             name: 'Filename',
-                            value: filename.split('/')[filename.split('/').length - 1],
+                            value: filename,
                             inline: true
                         }]
                     }
