@@ -1196,7 +1196,7 @@ ${newMsg}`);
                     let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
                     logger.command('Was command:', wasCommand);
                     if (wasCommand) {
-                        bu.send('243229905360388106', undefined, undefined, {
+                        bu.send('243229905360388106', ' ', undefined, {
                             description: msg.content,
                             fields: [{
                                 name: msg.guild.name,

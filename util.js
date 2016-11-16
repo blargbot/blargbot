@@ -577,7 +577,7 @@ bu.logAction = async function(guild, user, mod, type, reason) {
 **Reason:** ${reason}
 **Moderator:** ${moderator}`;
 
-        let msg = await bu.send(val, undefined, undefined, embed);
+        let msg = await bu.send(val, ' ', undefined, embed);
         let cases = storedGuild.modlog;
         if (!Array.isArray(cases)) {
             cases = [];
@@ -1037,7 +1037,7 @@ bu.getFullName = function(user) {
 };
 
 bu.sendPornLog = function(msg, type, tagList, nsfwChannel, color) {
-    bu.send('230801689551175681', undefined, undefined, {
+    bu.send('230801689551175681', ' ', undefined, {
         title: type,
         color: color || 0xc9cfd8,
         description: tagList.join(' '),

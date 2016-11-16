@@ -459,7 +459,7 @@ function logChange(action, msg, actionObj) {
             color = 0x02f2ee;
             break;
     }
-    bu.send('230810364164440065', undefined, undefined, {
+    bu.send('230810364164440065', ' ', undefined, {
         title: action,
         color: color,
         fields: actionArray,
