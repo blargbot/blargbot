@@ -459,17 +459,19 @@ function logChange(action, msg, actionObj) {
             color = 0x02f2ee;
             break;
     }
-    bu.send('230810364164440065', ' ', undefined, {
-        title: action,
-        color: color,
-        fields: actionArray,
-        author: {
-            name: `${bu.getFullName(msg.author)} (${msg.author.id})`,
-            icon_url: msg.author.avatarURL
-        },
-        timestamp: moment(msg.timestamp),
-        footer: {
-            text: `MsgID: ${msg.id}`
+    bu.send('230810364164440065', {
+        embed: {
+            title: action,
+            color: color,
+            fields: actionArray,
+            author: {
+                name: `${bu.getFullName(msg.author)} (${msg.author.id})`,
+                icon_url: msg.author.avatarURL
+            },
+            timestamp: moment(msg.timestamp),
+            footer: {
+                text: `MsgID: ${msg.id}`
+            }
         }
     });
 }

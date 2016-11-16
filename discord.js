@@ -1196,24 +1196,26 @@ ${newMsg}`);
                     let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
                     logger.command('Was command:', wasCommand);
                     if (wasCommand) {
-                        bu.send('243229905360388106', ' ', undefined, {
-                            description: msg.content,
-                            fields: [{
-                                name: msg.guild.name,
-                                value: msg.guild.id,
-                                inline: true
-                            }, {
-                                name: msg.channel.name,
-                                value: msg.channel.id,
-                                inline: true
-                            }],
-                            author: {
-                                name: `${bu.getFullName(msg.author)} (${msg.author.id})`,
-                                icon_url: msg.author.avatarURL
-                            },
-                            timestamp: moment(msg.timestamp),
-                            footer: {
-                                text: `MsgID: ${msg.id}`
+                        bu.send('243229905360388106', {
+                            embed: {
+                                description: msg.content,
+                                fields: [{
+                                    name: msg.guild.name,
+                                    value: msg.guild.id,
+                                    inline: true
+                                }, {
+                                    name: msg.channel.name,
+                                    value: msg.channel.id,
+                                    inline: true
+                                }],
+                                author: {
+                                    name: `${bu.getFullName(msg.author)} (${msg.author.id})`,
+                                    icon_url: msg.author.avatarURL
+                                },
+                                timestamp: moment(msg.timestamp),
+                                footer: {
+                                    text: `MsgID: ${msg.id}`
+                                }
                             }
                         });
                         if (!isDm) {

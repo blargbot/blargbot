@@ -125,7 +125,9 @@ e.execute = async function(msg, words) {
     }
     logger.debug(embeds);
     logger.debug(embeds.fields.length);
-    bu.send(msg, undefined, undefined, embeds);
+    bu.send(msg, {
+        embed: embeds
+    });
 };
 
 

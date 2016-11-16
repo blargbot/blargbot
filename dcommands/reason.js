@@ -53,7 +53,9 @@ e.execute = async function(msg, words) {
                             icon_url: msg.author.avatarURL
                         };
                     }
-                    msg2.edit(' ', embed);
+                    msg2.edit({
+                        embed: embed
+                    });
                 } else {
                     msg2.edit(content);
                 }
