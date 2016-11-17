@@ -278,14 +278,14 @@ bu.getUser = async function(msg, name, quiet) {
     var discrim;
     if (/<@!?[0-9]{17,21}>/.test(name)) {
         userId = name.match(/<@!?([0-9]{17,21})>/)[1];
-        if (msg.channel.guild.members.get(userId)) {
-            return msg.channel.guild.members.get(userId).user;
+        if (bot.users.get(userId)) {
+            return bot.users.get(userId);
         }
     }
     if (/[0-9]{17,21}/.test(name)) {
         userId = name.match(/([0-9]{17,21})/)[1];
-        if (msg.channel.guild.members.get(userId)) {
-            return msg.channel.guild.members.get(userId).user;
+        if (bot.users.get(userId)) {
+            return bot.users.get(userId);
         }
     }
     if (/^.*#\d{4}$/.test(name)) {
