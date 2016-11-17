@@ -88,15 +88,15 @@ e.execute = async function(msg, words) {
 
     for (var i = 0; i < words.length; i++) {
         if (i >= 1) {
-            if (words[i].toLowerCase() == '-t' || words[i].toLowerCase() == '-type') {
+            if (words[i].toLowerCase() == '-t' || words[i].toLowerCase() == '-type' || words[i].toLowerCase() == '--type') {
                 current = 0;
                 type += ',';
-            } else if (words[i].toLowerCase() == '-u' || words[i].toLowerCase() == '-user') {
+            } else if (words[i].toLowerCase() == '-u' || words[i].toLowerCase() == '-user' || words[i].toLowerCase() == '--user') {
                 current = 1;
                 user += ',';
-            } else if (words[i].toLowerCase() == '-o' || words[i].toLowerCase() == '-order') {
+            } else if (words[i].toLowerCase() == '-o' || words[i].toLowerCase() == '-order' || words[i].toLowerCase() == '--order') {
                 current = 2;
-            } else if (words[i].toLowerCase() == '-c' || words[i].toLowerCase() == '-channel') {
+            } else if (words[i].toLowerCase() == '-c' || words[i].toLowerCase() == '-channel' || words[i].toLowerCase() == '--channel') {
                 current = 3;
             } else {
                 switch (current) {
