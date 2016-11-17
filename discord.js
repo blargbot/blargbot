@@ -1365,16 +1365,28 @@ async function registerChangefeed() {
         logger.info('Registering a changefeed!');
         changefeed = await r.table('guild').changes({
             squash: true
-        }).getField('new_val').run((err, cursor) => {
+        }).run((err, cursor) => {
             if (err) logger.error(err);
-            cursor.each(guild => {
-                if (guild != null)
-                    try {
-                        bu.guildCache[guild.guildid] = guild;
-                    } catch (err) {
-                        logger.error(err);
-                    }
+            //logger.debug(cursor);
+            cursor.on('error', err => {
+                logger.error(err);
             });
+            cursor.on('data', data => {
+                // logger.debug(data);
+                if (data.new_val)
+                    bu.guildCache[data.new_val.guildid] = data.new_val;
+                else delete bu.guildCache[data.old_val.guildid];
+            });
+            /*
+            cursor.each(guild => {
+                logger.debug(guild);
+                try {
+                    bu.guildCache[guild.guildid] = guild;
+                } catch (err) {
+                    logger.error(err);
+                }
+            });
+            */
         });
         changefeed.on('end', registerChangefeed);
     } catch (err) {
