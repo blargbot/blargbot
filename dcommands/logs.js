@@ -26,7 +26,7 @@ e.info = 'Creates a chatlog page for a specified channel, ' +
     '        UPDATE - Gets message edits.\n' +
     '        DELETE - Gets message deletes.\n' +
     '     -CHANNEL (-C)\n' +
-    '        <id | mention> - The channel to get logs from. Must be on the current guild!' +
+    '        <id | mention> - The channel to get logs from. Must be on the current guild!\n' +
     '     -USER (-U)\n' +
     '        <name or id> - Gets messages made by specific user.\n' +
     '     -ORDER (-O)\n' +
