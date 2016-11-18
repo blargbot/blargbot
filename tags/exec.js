@@ -5,8 +5,8 @@ var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
     e.category = bu.TagType.COMPLEX;
 };
 e.requireCtx = require;
@@ -58,18 +58,23 @@ e.execute = async function(params) {
                 let nsfwChan = await bu.isNsfwChannel(params.msg.channel.id);
                 if (!nsfwChan) {
                     replaceString = await bu.tagProcessError(params, params.fallback, '`NSFW tag');
-                    return;
+                    return {
+                        replaceString: replaceString,
+                        replaceContent: false
+                    };
                 }
             }
             r.table('tag').get(tag.name).update({
                 uses: tag.uses + 1
             }).run();
-            replaceString = await bu.processTag(params.msg
-                , params.words
-                , tag.content
-                , params.fallback
-                , params.author
-                , params.tagName);
+            let tagArgs;
+            if (params.args[2]) {
+                tagArgs = params.args[2];
+            } else {
+                tagArgs = '';
+            }
+            tagArgs = bu.splitInput(tagArgs);
+            replaceString = await bu.processTag(params.msg, tagArgs, tag.content, params.fallback, params.author, params.tagName);
 
         }
     } else {
