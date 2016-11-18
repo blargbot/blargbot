@@ -31,7 +31,7 @@ e.info = 'Creates a chatlog page for a specified channel, ' +
     '        <name or id> - Gets messages made by specific user.\n' +
     '     -ORDER (-O)\n' +
     '        DESC - Get\'s the newest messages first (default).\n' +
-    '        ASC  - Get\'s the oldest messages first.</code></pre></p>' +
+    '        ASC  - Get\'s the oldest messages first.\n' +
     'For example, if you wanted to get 100 messages `stupid cat` deleted, you would do this:\n' +
     '`logs 100 -message delete -user stupid cat`' +
     'If you want to use multiple of the same type, separate parameters with commas. For example:\n' +
