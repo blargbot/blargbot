@@ -70,7 +70,7 @@ e.execute = (msg) => {
         logger.debug(table);
         let output = table.toString().replace(/\[[0-9]{2}m/, '');
         bu.send(msg, `\`\`\`prolog
-${table.toString()}
+${output}
 \`\`\`
 `);
     });
