@@ -68,7 +68,7 @@ e.execute = (msg) => {
         let footer = sections[3].split(/\s\s+/);
         table.push(footer);
         logger.debug(table);
-        let output = table.toString().replace(/\[[0-9]{2}m/, '');
+        let output = table.toString().replace(/\[[0-9]{2}m/g, '');
         bu.send(msg, `\`\`\`prolog
 ${output}
 \`\`\`
