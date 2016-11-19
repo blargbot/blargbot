@@ -366,13 +366,17 @@ bu.getUser = async function(msg, name, quiet) {
             let resMsg = await bu.awaitMessage(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
 ${userListString}${moreUserString}--------------------
 C.cancel query
-\`\`\``,
+\`\`\`
+**${bu.getFullName(msg.author)}**, please type the number of the user you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.
+`,
                 (msg2) => {
                     if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newUserList.length + 1 && parseInt(msg2.content) >= 1)) {
                         return true;
                     } else return false;
                 });
             if (resMsg.content.toLowerCase() == 'c') {
+                let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
+                await bot.deleteMessage(delmsg.channel.id, delmsg.id);
                 bu.send(msg, 'Query canceled.');
                 return null;
             } else {
@@ -440,7 +444,8 @@ bu.getRole = async function(msg, name, quiet) {
             let resMsg = await bu.awaitMessage(msg, `Multiple roles found! Please select one from the list.\`\`\`prolog
 ${roleListString}${moreRoleString}--------------------
 C. cancel query
-\`\`\``, (msg2) => {
+\`\`\`
+**${bu.getFullName(msg.author)}**, please type the number of the role you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`, (msg2) => {
                 if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
                     return true;
                 } else return false;
