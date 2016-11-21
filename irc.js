@@ -85,30 +85,30 @@ e.init = (v, em) => {
                 content: text,
                 disableEveryone: true
             });
-            // sendMessageToDiscord(userMessage);
+        }
+        // sendMessageToDiscord(userMessage);
 
-            if (text.startsWith('!')) {
-                try {
-                    handleIrcCommand(to, from, text.replace('!', ''));
-                } catch (err) {
-                    logger.irc(err.stack);
-                }
-            } else if (text.startsWith('blargbot, ')) {
-                //logger.irc(message);
-                logger.irc(text);
-                var messageForCleverbot = text.replace('blargbot, ');
-                Cleverbot.prepare(function() {
-                    cleverbot.write(messageForCleverbot, function(response) {
-                        logger.irc(messageForCleverbot);
-                        logger.irc(response);
-                        ///botIrc.sendChannelTyping(msg.channel.id);
-                        setTimeout(function() {
-                            sendIrcCommandMessage(to, response.message);
-                            //   botIrc.sendChannelTyping(msg.channel.id);
-                        }, 1500);
-                    });
-                });
+        if (text.startsWith('!')) {
+            try {
+                handleIrcCommand(to, from, text.replace('!', ''));
+            } catch (err) {
+                logger.irc(err.stack);
             }
+        } else if (text.startsWith('blargbot, ')) {
+            //logger.irc(message);
+            logger.irc(text);
+            var messageForCleverbot = text.replace('blargbot, ');
+            Cleverbot.prepare(function() {
+                cleverbot.write(messageForCleverbot, function(response) {
+                    logger.irc(messageForCleverbot);
+                    logger.irc(response);
+                    ///botIrc.sendChannelTyping(msg.channel.id);
+                    setTimeout(function() {
+                        sendIrcCommandMessage(to, response.message);
+                        //   botIrc.sendChannelTyping(msg.channel.id);
+                    }, 1500);
+                });
+            });
         }
     });
 
