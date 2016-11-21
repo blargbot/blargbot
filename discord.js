@@ -336,7 +336,10 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
         command = bu.fixContent(command);
         var response = await tags.processTag(msg, val, command);
         if (response !== 'null') {
-            bu.send(channel.id, response);
+            bu.send(channel.id, {
+                content: response,
+                disableEveryone: false
+            });
         }
         return true;
     } else {
