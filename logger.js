@@ -14,8 +14,8 @@ const levels = {
     irc: 6,
     website: 7,
     music: 8,
-    info: 9,
-    shard: 10,
+    shard: 9,
+    info: 10,
     verbose: 11,
     debug: 12,
     silly: 13
