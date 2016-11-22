@@ -9,12 +9,11 @@ var Cleverbot = require('cleverbot-node');
 var mysql = require('mysql');
 cleverbot = new Cleverbot();
 
-class BotEmitter extends EventEmitter { }
+class BotEmitter extends EventEmitter {}
 const botEmitter = new BotEmitter();
 
 var irc = require('./irc.js');
 var discord = require('./discord.js');
-var catbot = require('./catbot.js');
 botEmitter.on('reloadConfig', () => {
     reloadConfig();
 });
@@ -37,8 +36,7 @@ botEmitter.on('reloadIrc', () => {
 
 /** LOGGING STUFF **/
 
-
-console.log = function () {
+console.log = function() {
     logger.debug(arguments);
 };
 
@@ -57,7 +55,7 @@ var VERSION = config.version;
 
 function reloadConfig() {
     logger.info('Attempting to reload config');
-    fs.readFile(path.join(__dirname, 'config.json'), 'utf8', function (err, data) {
+    fs.readFile(path.join(__dirname, 'config.json'), 'utf8', function(err, data) {
         if (err) throw err;
         config = JSON.parse(data);
     });
@@ -78,11 +76,6 @@ function saveConfig() {
 function init() {
     irc.init(VERSION, botEmitter);
     discord.init(VERSION, botEmitter);
-    catbot.init();
 }
 
 init();
-
-
-
-
