@@ -1295,38 +1295,26 @@ ${newMsg}`);
                     }
                 }
                 if (msg.author.id == bu.CAT_ID && msg.content.indexOf('discord.gg') == -1) {
-                    var prefixes = ['!', '@', '#', '$', '%', '^', '&', '*', ')', '-', '_', '=', '+', '}', ']', '|', ';', ':', '\'', '>', '?', '/', '.', '"'];
+                    var prefixes = ['!', '@', '#', '$', '%',
+                        '^', '&', '*', ')', '-', '_', '=', '+',
+                        '}', ']', '|', ';', ':', '\'', '>', '?',
+                        '/', '.', '"', '/', '[', '{'
+                    ];
+                    var prefixes2 = ['k!', 'b!', 't!', 'c!'];
                     if (!msg.content ||
                         (prefixes.indexOf(msg.content.substring(0, 1)) == -1) &&
-                        !msg.content.startsWith('k!') &&
-                        !msg.content.startsWith('b!') &&
-                        msg.channel.guild) {
-                        let last = await r.table('catchat').orderBy({
-                            index: r.desc('id')
-                        }).nth(1).run();
-                        if ((last && last.content != msg.content) || msg.content == '') {
-                            var content = msg.content;
-                            try {
-                                while (/<@!?[0-9]{17,21}>/.test(content)) {
-                                    content = content.replace(/<@!?[0-9]{17,21}>/, '@' + (await bu.getUser(msg, content.match(/<@!?([0-9]{17,21})>/)[1], true)).username);
-                                }
-                            } catch (err) {
-                                logger.error(err.stack);
-                            }
-                            let nsfw = true;
-                            if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
+                        (prefixes2.indexOf(msg.content.substring(0, 2)) == -1) &&
+                        !msg.content.startsWith('catpls') &&
+                        !msg.content.startsWith('catbetapls') && msg.guild) {
+                        var content = msg.content;
+
+                        let nsfw = true;
+                        if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
+                        if (!nsfw)
                             r.table('catchat').insert({
-                                content: msg.content,
-                                attachment: msg.attachments[0] ? msg.attachments[0].url : null,
-                                userid: msg.author.id,
-                                msgid: msg.id,
-                                channelid: msg.channel.id,
-                                guildid: isDm ? 'DM' : msg.channel.guild.id,
-                                msgtime: r.epochTime(moment(msg.timestamp) / 1000),
-                                nsfw: nsfw,
-                                mentions: msg.mentions.map(u => u.username).join(','),
+                                content: filterUrls(content),
+                                msgid: msg.id
                             }).run();
-                        }
                     }
                 }
             }
@@ -1346,6 +1334,10 @@ ${newMsg}`);
             }).run();
         }
     });
+}
+
+function filterUrls(input) {
+    return input.replace(/https?\:\/\/.+\.[a-z]{1,20}(\/[^\s]*)?/gi, '');
 }
 
 function initEvents() {
