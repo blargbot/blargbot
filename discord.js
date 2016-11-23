@@ -713,18 +713,18 @@ function reloadInterface() {
 function registerListeners() {
     bot.on('debug', function(message, id) {
         if (debug)
-            logger.debug(`[${moment().format('MM/DD HH:mm:ss')}][DEBUG][${id}] ${message}`);
+            logger.debug(`[${id}] ${message}`);
         return 'no';
     });
 
     bot.on('warn', function(message, id) {
         if (warn)
-            logger.warn(`[${moment().format('MM/DD HH:mm:ss')}][WARN][${id}] ${message}`);
+            logger.warn(`[${id}] ${message}`);
     });
 
     bot.on('error', function(err, id) {
         if (error)
-            logger.error(`[${moment().format('MM/DD HH:mm:ss')}][ERROR][${id}] ${err.stack}`);
+            logger.error(`[${id}] ${err.stack}`);
     });
 
     bot.on('shardDisconnect', async function(err, id) {
