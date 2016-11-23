@@ -172,8 +172,6 @@ e.init = async function(v, em) {
         autoReconnect: true,
         disableEveryone: true,
         disableEvents: {
-            //PRESENCE_UPDATE: true,
-            //   VOICE_STATE_UPDATE: true,
             TYPING_START: true
         },
         getAllUsers: true,
@@ -351,7 +349,51 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
                 let commandName = bu.commandList[words[0].toLowerCase()].name;
                 let val2 = await bu.canExecuteCommand(msg, commandName);
                 if (val2[0]) {
-                    executeCommand(commandName, msg, words, text);
+                    try {
+                        await executeCommand(commandName, msg, words, text);
+                    } catch (err) {
+                        logger.error(err);
+                        bu.send('250859956989853696', {
+                            embed: {
+                                title: err.message,
+                                color: 0xAD1111,
+                                description: err.stack,
+                                timestamp: moment(msg.timestamp),
+                                author: {
+                                    name: bu.getFullName(msg.author) + `(${msg.author.id})`,
+                                    icon_url: msg.author.avatarURL
+                                },
+                                footer: {
+                                    text: `MSG: ${msg.id}`
+                                },
+                                fields: [{
+                                    name: 'Guild',
+                                    value: msg.guild.name,
+                                    inline: true
+                                }, {
+                                    name: 'Guild ID',
+                                    value: msg.guild.id,
+                                    inline: true
+                                }, {
+                                    name: 'Channel',
+                                    value: msg.channel.name,
+                                    inline: true
+                                }, {
+                                    name: 'Channel ID',
+                                    value: msg.guild.name,
+                                    inline: true
+                                }, {
+                                    name: 'Command',
+                                    value: commandName,
+                                    inline: true
+                                }, {
+                                    name: 'Complete Command',
+                                    value: text,
+                                    inline: true
+                                }]
+                            }
+                        });
+                    }
                 }
                 return val2[0];
             } else {
@@ -371,7 +413,11 @@ var executeCommand = async function(commandName, msg, words, text) {
         bu.commandStats[commandName] = 1;
     }
     bu.commandUses++;
-    bu.commands[commandName].execute(msg, words, text);
+    try {
+        await bu.commands[commandName].execute(msg, words, text);
+    } catch (err) {
+        throw err;
+    }
     return true;
 };
 
