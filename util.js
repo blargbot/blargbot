@@ -244,7 +244,8 @@ bu.send = async function(channel, message, file, embed) {
                 logger.warn('Can\'t send messages in a voice channel!');
                 break;
             default:
-                logger.error(err.stack, err.reponse);
+                logger.error(err.response);
+                logger.error(err.stack);
                 break;
         }
         return null;
