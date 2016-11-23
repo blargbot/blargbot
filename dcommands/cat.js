@@ -20,7 +20,7 @@ e.info = 'Gets a picture of a cat.';
 e.info = '<p>Displays a picture of a cat, taken from <a href="http://random.cat/">random.cat</a></p>';
 
 
-e.execute = (msg) => {
+e.execute = async function(msg) {
     var output;
     http.get('http://random.cat/meow', function (res) {
         var body = '';
