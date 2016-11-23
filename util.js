@@ -227,7 +227,26 @@ bu.send = async function(channel, message, file, embed) {
     try {
         return await bot.createMessage(channelid, content, file);
     } catch (err) {
-        logger.error(err.stack);
+        switch (JSON.parse(err.response).code) {
+            case 50013:
+                logger.warn('Tried sending a message, but had no permissions!');
+                break;
+            case 50006:
+                logger.warn('Tried to send an empty message!');
+                break;
+            case 50004:
+                logger.warn('Embeds are disabled!');
+                break;
+            case 50007:
+                logger.warn('Can\'t send a message to this user!');
+                break;
+            case 50008:
+                logger.warn('Can\'t send messages in a voice channel!');
+                break;
+            default:
+                logger.error(err.stack, err.reponse);
+                break;
+        }
         return null;
     }
 };
