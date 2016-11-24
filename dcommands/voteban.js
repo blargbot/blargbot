@@ -41,6 +41,7 @@ return ' - ' + u;
             }
         } else {
             let user = await bu.getUser(msg, words[1]);
+            if (!user) return;
             let reason = words[2] ? words.slice(2).join(' ') : undefined;
             if (reason) reason = await bu.filterMentions(reason);
             if (!votebans.hasOwnProperty(user.id))
