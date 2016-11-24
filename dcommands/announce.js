@@ -45,9 +45,7 @@ e.execute = async function(msg, words) {
                 'Please type the name or ID of the role to announce to.');
             let role = await bu.getRole(msg, msg2.content);
             if (role != null) {
-                if (role.name == '@everyone')
-                    roleId = 'everyone'
-                else roleId = role.id;
+                roleId = role.id;
             } else {
                 bu.send(msg, `I couldn't find a role with that name. Run \`b!announce\` to attempt the setup again.`);
                 return;
@@ -84,7 +82,10 @@ e.execute = async function(msg, words) {
                 icon_url: 'http://i.imgur.com/zcGyun6.png'
             }
         };
-        message = `**:information_source: Announcement [${moment().format('MM/DD/YYYY')}] ${role.mention} :information_source:**
+        let roleMention = role.mention;
+        if (role.name == '@everyone')
+            roleMention = '@everyone';
+        message = `**:information_source: Announcement [${moment().format('MM/DD/YYYY')}] ${roleMention} :information_source:**
 **${msg.author.username}#${msg.author.discriminator}** has made the following announcement:
 
 ${message}`;
@@ -97,8 +98,9 @@ ${message}`;
             logger.error(err);
         }
         await bu.send(changeChannel, {
-            content: role.mention,
-            embed: embed
+            content: roleMention,
+            embed: embed,
+            disableEveryone: false
         });
         try {
             await role.edit({
