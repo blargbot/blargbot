@@ -338,8 +338,8 @@ bu.sendDM = async function(user, message, file) {
     }
     try {
         let privateChannel = await bot.getDMChannel(userid);
-        if (!file) return await bot.createMessage(privateChannel.id, message);
-        else return await bot.createMessage(privateChannel.id, message, file);
+        if (!file) return await bu.send(privateChannel.id, message);
+        else return await bu.send(privateChannel.id, message, file);
     } catch (err) {
         logger.error(err.stack);
         return err;
@@ -579,7 +579,7 @@ bu.sendFile = (channelid, message, url) => {
             uri: url,
             encoding: null
         }, function(err, res, body) {
-            bot.createMessage(channelid, message, {
+            bu.send(channelid, message, {
                 name: filename,
                 file: body
             });

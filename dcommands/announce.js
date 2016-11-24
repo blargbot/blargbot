@@ -45,7 +45,9 @@ e.execute = async function(msg, words) {
                 'Please type the name or ID of the role to announce to.');
             let role = await bu.getRole(msg, msg2.content);
             if (role != null) {
-                roleId = role.id;
+                if (role.name == '@everyone')
+                    roleId = 'everyone'
+                else roleId = role.id;
             } else {
                 bu.send(msg, `I couldn't find a role with that name. Run \`b!announce\` to attempt the setup again.`);
                 return;

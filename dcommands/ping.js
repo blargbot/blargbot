@@ -1,12 +1,11 @@
-
 var moment = require('moment');
 
 var e = module.exports = {};
 
 
 e.init = () => {
-    
-    
+
+
 
     e.category = bu.CommandType.GENERAL;
 
@@ -34,8 +33,8 @@ var messages = [
 
 e.execute = (msg) => {
     var message = messages[bu.getRandomInt(0, messages.length - 1)];
-    bot.createMessage(msg.channel.id, message).then((msg2) => {
-        bot.editMessage(msg2.channel.id, msg2.id, `Pong! (${msg2.timestamp - msg.timestamp}ms)\u202e`);
+    bu.send(msg, message).then((msg2) => {
+        msg2.edit(`Pong! (${msg2.timestamp - msg.timestamp}ms)\u202e`);
         return msg2;
     }).catch(err => logger.error(err.stack));
 };

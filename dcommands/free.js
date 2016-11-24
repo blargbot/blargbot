@@ -16,7 +16,7 @@ e.usage = 'free <caption> [ | <lower caption>]';
 e.info = 'Tells everyone what you got for free';
 e.longinfo = `<p>Tells everyone what you got for free.</p>`;
 
-e.execute = function (msg, words, text) {
+e.execute = function(msg, words, text) {
     if (words.length == 1) {
         bu.send(msg, 'Usage: `free <caption> [ | <lower caption>]`');
         return;
@@ -44,7 +44,7 @@ e.execute = function (msg, words, text) {
                         e.generateFrame(timestamp, 3, () => {
                             e.generateFrame(timestamp, 4, () => {
                                 e.generateFrame(timestamp, 5, () => {
-                                    e.generateFinalImage(timestamp, msg.channel.id);
+                                    e.generateFinalImage(timestamp, msg);
                                     // logger.(2, image)
                                     // fulfill(image);
                                 });
@@ -61,7 +61,7 @@ e.execute = function (msg, words, text) {
 };
 
 
-e.generateFinalImage = function (timestamp, channelid) {
+e.generateFinalImage = function(timestamp, msg) {
     gm()
         .in(path.join(__dirname, '..', `img/generated/freefreefreetest0-${timestamp}.png`))
         .in(path.join(__dirname, '..', `img/generated/freefreefreetest1-${timestamp}.png`))
@@ -73,7 +73,7 @@ e.generateFinalImage = function (timestamp, channelid) {
         .delay('4')
         .toBuffer('GIF', (err, buf) => {
             if (err) throw err;
-            bot.createMessage(channelid, 'It really works!', {
+            bu.send(msg, 'It really works!', {
                 name: 'FREE.gif',
                 file: buf
             });
@@ -92,7 +92,7 @@ e.generateFinalImage = function (timestamp, channelid) {
         });
 };
 
-e.generateCaption = function (timestamp, text, callback) {
+e.generateCaption = function(timestamp, text, callback) {
     gm()
         .command('convert')
         .font(path.join(__dirname, '..', 'img/fonts/impact.ttf'))
@@ -107,22 +107,22 @@ e.generateCaption = function (timestamp, text, callback) {
         .options({
             imageMagick: true
         })
-        .write(path.join(__dirname, '..', `img/generated/freefreefreeCaption-${timestamp}.png`), function (err) {
+        .write(path.join(__dirname, '..', `img/generated/freefreefreeCaption-${timestamp}.png`), function(err) {
             if (err) throw err;
             callback();
         });
 };
 
-e.generateLowerCaption = function (timestamp, text, callback) {
-    gm()
-        .command('convert')
-        .font(path.join(__dirname, '..', 'img/fonts/arialdb.ttf'))
-        .rawSize(380, 70)
-        .out('-background')
-        .out('transparent')
-        .fill('#ffffff')
-        .gravity('Center')
-        .out(`caption:${text ? text : `CLICK HERE TO\nFIND OUT HOW`}`)
+e.generateLowerCaption = function(timestamp, text, callback) {
+        gm()
+            .command('convert')
+            .font(path.join(__dirname, '..', 'img/fonts/arialdb.ttf'))
+            .rawSize(380, 70)
+            .out('-background')
+            .out('transparent')
+            .fill('#ffffff')
+            .gravity('Center')
+            .out(`caption:${text ? text : `CLICK HERE TO\nFIND OUT HOW`}`)
         .options({
             imageMagick: true
         })
