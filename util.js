@@ -253,8 +253,7 @@ bu.send = async function(channel, message, file, embed) {
                 throw err;
                 break;
         }
-        if (warnMsg) logger.warn(warnMsg);
-        logger.debug(response);
+        if (warnMsg) logger.warn(warnMsg, response);
         if (channel instanceof Eris.Message) {
             bu.send('250859956989853696', {
                 embed: {
@@ -283,7 +282,7 @@ bu.send = async function(channel, message, file, embed) {
                         inline: true
                     }, {
                         name: 'Content',
-                        value: message
+                        value: content.content
                     }]
                 }
             });
@@ -305,7 +304,7 @@ bu.send = async function(channel, message, file, embed) {
                         inline: true
                     }, {
                         name: 'Content',
-                        value: message
+                        value: content.content
                     }]
                 }
             });
