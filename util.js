@@ -270,7 +270,7 @@ bu.send = async function(channel, message, file, embed) {
                     },
                     fields: [{
                         name: channel.guild.name,
-                        value: channel.guild.id
+                        value: channel.guild.id,
                         inline: true
                     }, {
                         name: channel.channel.name,
