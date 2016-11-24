@@ -227,29 +227,88 @@ bu.send = async function(channel, message, file, embed) {
     try {
         return await bot.createMessage(channelid, content, file);
     } catch (err) {
-        switch (JSON.parse(err.response).code) {
+        let warnMsg;
+        let response = JSON.parse(err.response);
+        switch (response.code) {
             case 50013:
-                logger.warn('Tried sending a message, but had no permissions!');
+                warnMsg = 'Tried sending a message, but had no permissions!';
                 break;
             case 50006:
-                logger.warn('Tried to send an empty message!');
+                warnMsg = 'Tried to send an empty message!';
                 break;
             case 50004:
-                logger.warn('Embeds are disabled!');
+                warnMsg = 'Embeds are disabled!';
                 break;
             case 50007:
-                logger.warn('Can\'t send a message to this user!');
+                warnMsg = 'Can\'t send a message to this user!';
                 break;
             case 50008:
-                logger.warn('Can\'t send messages in a voice channel!');
+                warnMsg = 'Can\'t send messages in a voice channel!';
                 break;
             case 50001:
-                logger.warn('Missing access!');
+                warnMsg = 'Missing access!';
                 break;
             default:
-                logger.error(err.response);
-                logger.error(err.stack);
+                logger.error(err.response, err.stack);
+                throw err;
                 break;
+        }
+        if (warnMsg) logger.warn(warnMsg);
+        logger.debug(response);
+        if (channel instanceof Eris.Message) {
+            bu.send('250859956989853696', {
+                embed: {
+                    title: response.code + ' - ' + response.message,
+                    color: warnMsg ? 0xe27900 : 0xAD1111,
+                    description: warnMsg || err.stack,
+                    timestamp: moment(channel.timestamp),
+                    author: {
+                        name: bu.getFullName(channel.author) + ` (${channel.author.id})`,
+                        icon_url: channel.author.avatarURL
+                    },
+                    footer: {
+                        text: `MSG: ${channel.id}`
+                    },
+                    fields: [{
+                        name: 'Guild',
+                        value: channel.guild.name + `\n${channel.guild.id}`,
+                        inline: true
+                    }, {
+                        name: 'Channel',
+                        value: channel.channel.name + `\n${channel.channel.id}`,
+                        inline: true
+                    }, {
+                        name: 'Full Command',
+                        value: channel.content,
+                        inline: true
+                    }, {
+                        name: 'Content',
+                        value: message
+                    }]
+                }
+            });
+        } else {
+            let channel = bot.getChannel(channelid);
+            bu.send('250859956989853696', {
+                embed: {
+                    title: response.code + ' - ' + response.message,
+                    color: warnMsg ? 0xe27900 : 0xAD1111,
+                    description: warnMsg || err.stack,
+                    timestamp: moment(channel.timestamp),
+                    fields: [{
+                        name: 'Guild',
+                        value: channel.guild.name + `\n${channel.guild.id}`,
+                        inline: true
+                    }, {
+                        name: 'Channel',
+                        value: channel.name + `\n${channel.id}`,
+                        inline: true
+                    }, {
+                        name: 'Content',
+                        value: message
+                    }]
+                }
+            });
         }
         return null;
     }

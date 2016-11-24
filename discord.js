@@ -360,7 +360,7 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
                                 description: err.stack,
                                 timestamp: moment(msg.timestamp),
                                 author: {
-                                    name: bu.getFullName(msg.author) + `(${msg.author.id})`,
+                                    name: bu.getFullName(msg.author) + ` (${msg.author.id})`,
                                     icon_url: msg.author.avatarURL
                                 },
                                 footer: {
@@ -368,19 +368,11 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
                                 },
                                 fields: [{
                                     name: 'Guild',
-                                    value: msg.guild.name,
-                                    inline: true
-                                }, {
-                                    name: 'Guild ID',
-                                    value: msg.guild.id,
+                                    value: msg.guild.name + `\n${msg.guild.id}n`,
                                     inline: true
                                 }, {
                                     name: 'Channel',
-                                    value: msg.channel.name,
-                                    inline: true
-                                }, {
-                                    name: 'Channel ID',
-                                    value: msg.guild.name,
+                                    value: msg.channel.name + `\n${msg.channel.id}`,
                                     inline: true
                                 }, {
                                     name: 'Command',
