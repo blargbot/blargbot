@@ -367,12 +367,12 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
                                     text: `MSG: ${msg.id}`
                                 },
                                 fields: [{
-                                    name: 'Guild',
-                                    value: msg.guild.name + `\n${msg.guild.id}n`,
+                                    name: msg.guild.name,
+                                    value: msg.guild.id,
                                     inline: true
                                 }, {
-                                    name: 'Channel',
-                                    value: msg.channel.name + `\n${msg.channel.id}`,
+                                    name: msg.channel.name,
+                                    value: msg.channel.id,
                                     inline: true
                                 }, {
                                     name: 'Command',
