@@ -18,23 +18,39 @@ e.info = 'Sends me feedback. Thanks!';
 e.longinfo = `<p>Sends feedback to my guild. Thank you! It's very important to me.</p>`;
 
 e.execute = async function(msg, words) {
-        if (words.length > 1) {
-            let i = 0;
-            let lastSuggestion = await r.table('suggestion').orderBy({
-                index: r.desc('id')
-            }).limit(1).run();
-            if (lastSuggestion.length > 0) i = lastSuggestion[0].id + 1;
-            logger.debug(i, lastSuggestion);
-            if (isNaN(i)) i = 0;
-
-            await bu.send('195716879237644292', `
-**__${i} | Feedback__**
-**Author**: ${msg.author.username} (${msg.author.id})${msg.channel.guild
-                ? `\n**Guild**: ${msg.channel.guild.name} (${msg.channel.guild.id})
-**Channel**: ${msg.channel.name} (${msg.channel.id})` : ''}
-**Message**: ${msg.id}
-${words.slice(1).join(' ')} 
-`);
+    if (words.length > 1) {
+        let i = 0;
+        let lastSuggestion = await r.table('suggestion').orderBy({
+            index: r.desc('id')
+        }).limit(1).run();
+        if (lastSuggestion.length > 0) i = lastSuggestion[0].id + 1;
+        logger.debug(i, lastSuggestion);
+        if (isNaN(i)) i = 0;
+        let type = 'Feedback';
+        if (words[0].toLowerCase() == 'suggest') type = 'Suggestion'
+        await bu.send('195716879237644292', {
+            embed: {
+                title: type,
+                description: words.slice(1).join(' '),
+                author: {
+                    name: `${msg.author.username} (${msg.author.id})`,
+                    icon_url: msg.author.avatarURL
+                },
+                timestamp: moment(msg.timestamp),
+                footer: {
+                    text: 'Case ' + i + ' | ' + msg.id
+                },
+                fields: [{
+                    name: msg.channel.guild.name,
+                    value: msg.channel.guild.id,
+                    inline: true
+                }, {
+                    name: msg.channel.name,
+                    value: msg.channel.id,
+                    inline: true
+                }]
+            }
+        })
         t.post('1/cards', {
             name: words.slice(1).join(' '),
             desc: `Automated feedback added by blargbot - CASE ${i}.\n\nAuthor: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`,
