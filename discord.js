@@ -91,6 +91,7 @@ function loadCommand(commandName) {
             buildCommand(commandName);
         } else {
             logger.init('     Skipping non-command ', commandName + '.js');
+            delete bu.commands[commandName];
         }
     } catch (err) {
         logger.warn(err);
