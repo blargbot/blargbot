@@ -74,8 +74,13 @@ function saveConfig() {
  * Time to init the bots
  */
 function init() {
-    irc.init(VERSION, botEmitter);
+    logger.init('Initializing discord.')
     discord.init(VERSION, botEmitter);
 }
+
+botEmitter.on('ircInit', () => {
+    logger.init('Discord ready. Time to initialize IRC.')
+    irc.init(VERSION, botEmitter);
+})
 
 init();

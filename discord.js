@@ -368,11 +368,11 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
                                     text: `MSG: ${msg.id}`
                                 },
                                 fields: [{
-                                    name: msg.guild.name,
-                                    value: msg.guild.id,
+                                    name: msg.guild ? msg.guild.name : 'DM',
+                                    value: msg.guild ? msg.guild.id : 'null',
                                     inline: true
                                 }, {
-                                    name: msg.channel.name,
+                                    name: msg.channel.name || 'DM',
                                     value: msg.channel.id,
                                     inline: true
                                 }, {
@@ -741,6 +741,7 @@ function registerListeners() {
     });
 
     bot.on('ready', async function() {
+
         logger.init('Ready!');
         let restart = await r.table('vars').get('restart').run();
         if (restart && restart.varvalue) {
@@ -786,6 +787,11 @@ function registerListeners() {
         postStats();
         if (eventTimer == undefined) {
             initEvents();
+        }
+
+        if (!bu.ircInitialized) {
+            bu.emitter.emit('ircInit');
+            bu.ircInitialized = true;
         }
     });
 
@@ -950,7 +956,8 @@ If you are the owner of this server, here are a few things to know.
             if (oldMsg.length > 900) oldMsg = oldMsg.substring(0, 900) + '... (too long to display)';
             if (newMsg.length > 900) newMsg = newMsg.substring(0, 900) + '... (too long to display)';
         }
-        bu.logEvent(msg.channel.guild.id, 'messageupdate', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
+        if (msg.guild)
+            bu.logEvent(msg.channel.guild.id, 'messageupdate', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
 **Message ID:** ${msg.id}
 **Channel:** ${msg.channel.mention}
 **Old Message:**
@@ -1259,11 +1266,11 @@ ${newMsg}`);
                             embed: {
                                 description: msg.content,
                                 fields: [{
-                                    name: msg.guild.name,
-                                    value: msg.guild.id,
+                                    name: msg.guild ? msg.guild.name : 'DM',
+                                    value: msg.guild ? msg.guild.id : 'null',
                                     inline: true
                                 }, {
-                                    name: msg.channel.name,
+                                    name: msg.channel.name || 'DM',
                                     value: msg.channel.id,
                                     inline: true
                                 }],

@@ -269,11 +269,11 @@ bu.send = async function(channel, message, file, embed) {
                         text: `MSG: ${channel.id}`
                     },
                     fields: [{
-                        name: channel.guild.name,
-                        value: channel.guild.id,
+                        name: channel.guild ? channel.guild.name : 'DM',
+                        value: channel.guild ? channel.guild.id : 'null',
                         inline: true
                     }, {
-                        name: channel.channel.name,
+                        name: channel.channel.name || 'DM',
                         value: channel.channel.id,
                         inline: true
                     }, {
@@ -295,11 +295,11 @@ bu.send = async function(channel, message, file, embed) {
                     description: warnMsg || err.stack,
                     timestamp: moment(),
                     fields: [{
-                        name: channel.guild.name,
-                        value: channel.guild.id,
+                        name: channel.guild ? channel.guild.name : 'DM',
+                        value: channel.guild ? channel.guild.id : 'null',
                         inline: true
                     }, {
-                        name: channel.name,
+                        name: channel.name || 'DM',
                         value: channel.id,
                         inline: true
                     }, {
