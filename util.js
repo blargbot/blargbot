@@ -293,7 +293,7 @@ bu.send = async function(channel, message, file, embed) {
                     title: response.code + ' - ' + response.message,
                     color: warnMsg ? 0xe27900 : 0xAD1111,
                     description: warnMsg || err.stack,
-                    timestamp: moment(channel.timestamp),
+                    timestamp: moment(),
                     fields: [{
                         name: channel.guild.name,
                         value: channel.guild.id,
