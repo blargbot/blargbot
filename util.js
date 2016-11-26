@@ -325,7 +325,7 @@ bu.sendDM = async function(user, message, file) {
     if (user instanceof Eris.Message) {
         userid = user.author.id;
     }
-    if (message.length >= 0) {
+    if (message.length == 0) {
         logger.info('Tried to send a message with no content.');
         return Error('No content');
     }
