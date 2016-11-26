@@ -353,12 +353,12 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
                     try {
                         await executeCommand(commandName, msg, words, text);
                     } catch (err) {
-                        logger.error(err);
+                        logger.error(err.stack);
                         bu.send('250859956989853696', {
                             embed: {
-                                title: err.message,
+                                title: err.message.toString(),
                                 color: 0xAD1111,
-                                description: err.stack,
+                                description: err.stack.toString(),
                                 timestamp: moment(msg.timestamp),
                                 author: {
                                     name: bu.getFullName(msg.author) + ` (${msg.author.id})`,
