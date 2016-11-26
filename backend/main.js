@@ -13,7 +13,7 @@ const Strategy = require('passport-discord').Strategy;
 const hbs = require('hbs');
 const helpers = require('./helpers');
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
@@ -35,10 +35,10 @@ function checkAuth(req, res, next) {
 }
 
 e.init = () => {
-    passport.serializeUser(function (user, done) {
+    passport.serializeUser(function(user, done) {
         done(null, user);
     });
-    passport.deserializeUser(function (obj, done) {
+    passport.deserializeUser(function(obj, done) {
         done(null, obj);
     });
     passport.use(new Strategy({
@@ -46,8 +46,8 @@ e.init = () => {
         clientSecret: config.website.secret,
         callbackURL: config.website.callback,
         scope: scopes
-    }, function (accessToken, refreshToken, profile, done) {
-        process.nextTick(function () {
+    }, function(accessToken, refreshToken, profile, done) {
+        process.nextTick(function() {
             return done(null, profile);
         });
     }));
@@ -64,18 +64,23 @@ e.init = () => {
 
     app.use(passport.initialize());
     app.use(passport.session());
-    app.get('/login', passport.authenticate('discord', { scope: scopes }), function (req, res) { });
+    app.get('/login', passport.authenticate('discord', {
+        scope: scopes
+    }), function(req, res) {});
     app.get('/callback',
-        passport.authenticate('discord', { failureRedirect: '/' }), function (req, res) {
+        passport.authenticate('discord', {
+            failureRedirect: '/'
+        }),
+        function(req, res) {
             logger.website('A user has authenticated');
             res.redirect(req.session.returnTo || '/');
         } // auth success
     );
-    app.get('/logout', function (req, res) {
+    app.get('/logout', function(req, res) {
         req.logout();
         res.redirect(req.session.returnTo || '/');
     });
-    app.get('/info', checkAuth, function (req, res) {
+    app.get('/info', checkAuth, function(req, res) {
         logger.debug(req.user);
         //res.json(req.user);
         res.end(`<p>The person below sucks</p>
@@ -89,6 +94,7 @@ e.init = () => {
     app.use('/tags', require('./routes/tags'));
     app.use('/logs', require('./routes/logs'));
     app.use('/dashboard', require('./routes/dashboard'));
+    app.use('/donate', require('./routes/donate'));
 
 
     app.use(router);
