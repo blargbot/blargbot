@@ -112,13 +112,14 @@ e.init = () => {
                 colorize: true,
                 level: 'error',
                 silent: false,
+                json: false,
                 handleExceptions: true,
                 timestamp: () => {
                     return `[${moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
                 },
                 formatter: options => {
                     // Return string will be passed to logger.
-                    return options.timestamp() + '[' + options.level.toUpperCase() + '] ' +
+                    return options.timestamp() +
                         (options.level == 'error' && options.meta && options.meta.stack ?
                             (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) :
                             (undefined !== options.message ? options.message : '') +
