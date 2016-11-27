@@ -176,7 +176,8 @@ e.init = async function(v, em) {
             TYPING_START: true
         },
         getAllUsers: true,
-        maxShards: config.discord.shards || 1
+        maxShards: config.discord.shards || 1,
+        restMode: true
     });
     global.bot = bot;
 
@@ -361,8 +362,9 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
                                 description: err.stack.toString(),
                                 timestamp: moment(msg.timestamp),
                                 author: {
-                                    name: bu.getFullName(msg.author) + ` (${msg.author.id})`,
-                                    icon_url: msg.author.avatarURL
+                                    name: bu.getFullName(msg.author),
+                                    icon_url: msg.author.avatarURL,
+                                    url: `https://blargbot.xyz/user/${msg.author.id}`
                                 },
                                 footer: {
                                     text: `MSG: ${msg.id}`
@@ -1275,8 +1277,9 @@ ${newMsg}`);
                                     inline: true
                                 }],
                                 author: {
-                                    name: `${bu.getFullName(msg.author)} (${msg.author.id})`,
-                                    icon_url: msg.author.avatarURL
+                                    name: bu.getFullName(msg.author),
+                                    icon_url: msg.author.avatarURL,
+                                    url: `https://blargbot.xyz/user/${msg.author.id}`
                                 },
                                 timestamp: moment(msg.timestamp),
                                 footer: {

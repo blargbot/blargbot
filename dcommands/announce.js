@@ -79,7 +79,8 @@ e.execute = async function(msg, words) {
             timestamp: moment(msg.timestamp),
             author: {
                 name: 'Announcement',
-                icon_url: 'http://i.imgur.com/zcGyun6.png'
+                icon_url: 'http://i.imgur.com/zcGyun6.png',
+                url: `https://blargbot.xyz/user/${msg.author.id}`
             }
         };
         let roleMention = role.mention;

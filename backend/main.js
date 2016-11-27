@@ -95,6 +95,7 @@ e.init = () => {
     app.use('/logs', require('./routes/logs'));
     app.use('/dashboard', require('./routes/dashboard'));
     app.use('/donate', require('./routes/donate'));
+    app.use('/user', require('./routes/user'));
 
 
     app.use(router);

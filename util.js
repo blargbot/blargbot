@@ -262,8 +262,9 @@ bu.send = async function(channel, message, file, embed) {
                     description: warnMsg || err.stack,
                     timestamp: moment(channel.timestamp),
                     author: {
-                        name: bu.getFullName(channel.author) + ` (${channel.author.id})`,
-                        icon_url: channel.author.avatarURL
+                        name: bu.getFullName(channel.author),
+                        icon_url: channel.author.avatarURL,
+                        url: `https://blargbot.xyz/user/${channel.author.id}`
                     },
                     footer: {
                         text: `MSG: ${channel.id}`
@@ -1169,8 +1170,9 @@ bu.sendPornLog = function(msg, type, tagList, nsfwChannel, color) {
                 inline: true
             }],
             author: {
-                name: `${bu.getFullName(msg.author)} (${msg.author.id})`,
-                icon_url: msg.author.avatarURL
+                name: bu.getFullName(msg.author),
+                icon_url: msg.author.avatarURL,
+                url: `https://blargbot.xyz/user/${msg.author.id}`
             },
             timestamp: moment(msg.timestamp),
             footer: {

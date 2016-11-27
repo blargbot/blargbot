@@ -33,8 +33,9 @@ e.execute = async function(msg, words) {
                 title: type,
                 description: words.slice(1).join(' '),
                 author: {
-                    name: `${msg.author.username} (${msg.author.id})`,
-                    icon_url: msg.author.avatarURL
+                    name: bu.getFullName(msg.author),
+                    icon_url: msg.author.avatarURL,
+                    url: `https://blargbot.xyz/user/${msg.author.id}`
                 },
                 timestamp: moment(msg.timestamp),
                 footer: {

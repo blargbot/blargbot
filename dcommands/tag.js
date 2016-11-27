@@ -465,8 +465,9 @@ function logChange(action, msg, actionObj) {
             color: color,
             fields: actionArray,
             author: {
-                name: `${bu.getFullName(msg.author)} (${msg.author.id})`,
-                icon_url: msg.author.avatarURL
+                name: bu.getFullName(msg.author),
+                icon_url: msg.author.avatarURL,
+                url: `https://blargbot.xyz/user/${msg.author.id}`
             },
             timestamp: moment(msg.timestamp),
             footer: {
