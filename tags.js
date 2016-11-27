@@ -24,8 +24,7 @@ function initTags() {
         if (/.+\.js$/.test(tagFile)) {
             var tagName = tagFile.match(/(.+)\.js$/)[1];
             loadTag(tagName);
-            logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module '
-                , tagName);
+            logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading tag module ', tagName);
         } else {
             logger.init('     Skipping non-tag ', tagFile);
         }
@@ -72,7 +71,7 @@ function buildTag(tagName) {
     */
 }
 
-e.processTag = async function (msg, contents, command, tagName, author) {
+e.processTag = async function(msg, contents, command, tagName, author) {
     try {
         tagName = tagName || msg.channel.guild.id;
         author = author || msg.channel.guild.id;
@@ -84,9 +83,7 @@ e.processTag = async function (msg, contents, command, tagName, author) {
         }
         contents = contents.replace(new RegExp(bu.specialCharBegin, 'g'), '').replace(new RegExp(bu.specialCharDiv, 'g'), '').replace(new RegExp(bu.specialCharEnd, 'g'), '');
 
-        var fallback = '';
-
-        contents = await bu.processTag(msg, words, contents, fallback, author, tagName);
+        contents = await bu.processTag(msg, words, contents, undefined, author, tagName);
         contents = bu.processSpecial(contents, true);
     } catch (err) {
         logger.error(err);
@@ -94,7 +91,7 @@ e.processTag = async function (msg, contents, command, tagName, author) {
     return contents;
 };
 
-e.executeTag = async function (msg, tagName, command) {
+e.executeTag = async function(msg, tagName, command) {
     let tag = await r.table('tag').get(tagName).run();
     if (!tag)
         bu.send(msg, `❌ That tag doesn't exist! ❌`);

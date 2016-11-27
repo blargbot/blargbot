@@ -789,7 +789,7 @@ bu.processTag = async function(msg, words, contents, fallback, author, tagName) 
                 tagName: tagName
             }, fallback, '`Tag doesn\'t exist`');
         }
-        if (replaceObj.fallback) {
+        if (replaceObj.fallback !== undefined) {
             fallback = replaceObj.fallback;
         }
         if (replaceObj == '') {
@@ -1111,7 +1111,7 @@ bu.tagGetFloat = (arg) => {
 
 bu.tagProcessError = async function(params, fallback, errormessage) {
     let returnMessage = '';
-    if (fallback == '') returnMessage = errormessage;
+    if (fallback === undefined) returnMessage = errormessage;
     else returnMessage = await bu.processTag(params.msg, params.words, params.fallback, params.fallback, params.author, params.tagName);
     return returnMessage;
 };
