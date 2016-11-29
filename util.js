@@ -229,15 +229,24 @@ bu.send = async function(channel, message, file, embed) {
     } catch (err) {
         let warnMsg;
         let response = JSON.parse(err.response);
+        let dmMsg;
         switch (response.code) {
             case 50013:
                 warnMsg = 'Tried sending a message, but had no permissions!';
+                dmMsg = 'I tried to send a message in response to your command, ' +
+                    'but didn\'t have permission to speak. If you think this is an error, ' +
+                    'please contact the staff on your guild to give me the `Send Messages` permission.';
                 break;
             case 50006:
                 warnMsg = 'Tried to send an empty message!';
                 break;
             case 50004:
-                warnMsg = 'Embeds are disabled!';
+                warnMsg = 'Tried embeding a link, but had no permissions!';
+
+                dmMsg = 'I tried to send a message in response to your command, ' +
+                    'but didn\'t have permission to create embeds. If you think this is an error, ' +
+                    'please contact the staff on your guild to give me the `Embed Links` permission.';
+                bu.send(channelid, `I don't have permission to embed links! This will break several of my commands. Please give me the \`Embed Links\` permission. Thanks!`);
                 break;
             case 50007:
                 warnMsg = 'Can\'t send a message to this user!';
@@ -247,11 +256,21 @@ bu.send = async function(channel, message, file, embed) {
                 break;
             case 50001:
                 warnMsg = 'Missing access!';
+
+                dmMsg = 'I tried to send a message in response to your command, ' +
+                    'but didn\'t have permission to see the channel. If you think this is an error, ' +
+                    'please contact the staff on your guild to give me the `Read Messages` permission.';
                 break;
             default:
                 logger.error(err.response, err.stack);
                 throw err;
                 break;
+        }
+        if (dmMsg && channel.author) {
+            let storedUser = await r.table('user').get(channel.author.id);
+            if (!storedUser.dontdmerrors) {
+                bu.sendDM(channel.author.id, dmMsg + '\nCommand: ' + channel.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
+            }
         }
         if (warnMsg) logger.warn(warnMsg, response);
         if (channel instanceof Eris.Message) {
