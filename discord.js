@@ -1034,7 +1034,7 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
             mod = bot.users.get(bu.unbans[guild.id][user.id]);
             delete bu.unbans[guild.id][user.id];
         }
-        if (lastCase.userid == user.id) {
+        if (lastCase && lastCase.userid == user.id) {
             let val = await bu.guildSettings.get(guild.id, 'modlog');
 
             let msg2 = await bot.getMessage(val, lastCase.msgid);
