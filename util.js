@@ -269,7 +269,7 @@ bu.send = async function(channel, message, file, embed) {
         if (dmMsg && channel.author) {
             let storedUser = await r.table('user').get(channel.author.id);
             if (!storedUser.dontdmerrors) {
-                bu.sendDM(channel.author.id, dmMsg + '\nCommand: ' + channel.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
+                bu.sendDM(channel.author.id, dmMsg + '\nGuild: ' + channel.guild.name + '\nChannel: ' + channel.channel.name + '\nCommand: ' + channel.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
             }
         }
         if (warnMsg) logger.warn(warnMsg, response);
