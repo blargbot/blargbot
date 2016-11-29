@@ -189,8 +189,9 @@ e.execute = async function(msg, words) {
         let toSend = 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key;
         if (pingUser) {
             toSend = `Sorry that took so long, ${msg.author.mention}!\n${toSend}`;
-        }
-        await bot.editMessage(msg2.channel.id, msg2.id, toSend);
+            await bu.send(msg, toSend);
+        } else
+            await bot.editMessage(msg2.channel.id, msg2.id, toSend);
 
     }
 };
