@@ -75,7 +75,7 @@ e.execute = async function(msg, words) {
     let input = bu.parseInput(e.flags, words);
     let numberOfMessages = NaN,
         current, order, channel = msg.channel.id;
-    if (input.undefined.length > 1) {
+    if (input.undefined.length > 0) {
         numberOfMessages = parseInt(input.undefined[0]);
     }
     if (isNaN(numberOfMessages) || numberOfMessages > 1000)
