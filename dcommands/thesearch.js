@@ -43,7 +43,7 @@ e.execute = async function(msg, words) {
                 img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
                     bu.send(msg, undefined, {
                         file: buffer,
-                        name: 'SHIT.png'
+                        name: 'thesearch.png'
                     });
                 })
             })
