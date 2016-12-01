@@ -26,7 +26,7 @@ e.execute = async function(msg, words) {
     try {
         gm()
             .command('convert')
-            .font(path.join(__dirname, '..', 'img/fonts/AnnieUseYourTelescope.ttf'))
+            .font(path.join(__dirname, '..', 'img/fonts/SFToontime.ttf'))
             .rawSize(160, 68)
             .out('-background')
             .out('transparent')
