@@ -1277,7 +1277,7 @@ bu.parseInput = function(map, text) {
     return output;
 }
 
-bu.canSpeak = function(channelid) {
+bu.getPerms = function(channelid) {
     let channel = bot.getChannel(channelid);
     if (channel) {
         let permission = channel.permissionsOf(bot.user.id);
