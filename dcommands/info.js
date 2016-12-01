@@ -31,6 +31,8 @@ ${pad('Version:', 10)} ${bu.VERSION}
 
 Special thanks to my patron, Nex! :thumbsup:
 
+Additional credits to Aurieh#0258! :heart:
+
 For commands, do \`help\`. For information about supporting me, do \`donate\``);
     } catch (err) {
         logger.error(err);
