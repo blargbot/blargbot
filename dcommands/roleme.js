@@ -1,12 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-
-
     e.category = bu.CommandType.ADMIN;
 };
 

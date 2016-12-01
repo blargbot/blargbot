@@ -1,13 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.SIMPLE;
 };
 
@@ -23,7 +16,7 @@ e.exampleOut = `This command is not safe!`;
 
 
 e.execute = async function() {
-    
+
     var replaceString = '';
     var replaceContent = false;
 

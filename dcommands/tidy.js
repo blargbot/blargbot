@@ -1,13 +1,7 @@
 var e = module.exports = {};
 
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.ADMIN;
-
 };
 e.requireCtx = require;
 
@@ -28,8 +22,8 @@ e.execute = (msg, words) => {
     bot.purgeChannel(msg.channel.id, limit).then((num) => {
         //      (err)
         var p2 = bu.send(msg, `Deleted ${num} messages.`);
-        p2.then(function (val) {
-            setTimeout(function () {
+        p2.then(function(val) {
+            setTimeout(function() {
                 //   bot.deleteMessage(msg.channel.id, msg.id).catch(err => logger.(err));
                 bot.deleteMessage(msg.channel.id, val.id).catch(err => logger.error(err));
             }, 5000);

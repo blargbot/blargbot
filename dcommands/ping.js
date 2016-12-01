@@ -2,13 +2,8 @@ var moment = require('moment');
 
 var e = module.exports = {};
 
-
 e.init = () => {
-
-
-
     e.category = bu.CommandType.GENERAL;
-
 };
 e.requireCtx = require;
 

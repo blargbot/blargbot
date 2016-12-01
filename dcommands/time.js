@@ -3,22 +3,17 @@ var e = module.exports = {};
 var moment = require('moment-timezone');
 var util = require('util');
 
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.GENERAL;
-
 };
 e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'time <timezone> [ <timezone2> <time> ]';
-e.info = 'Tells you the current time in the specified timezone. If timezone2 and time are specified, converts the time from '
-    + 'timezone to timezone2. Time must be formatted as <code>hh:mm[AM/PM]</code>, and timezones must use '
-    + ' the timezone codes listed here: <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>';
+e.info = 'Tells you the current time in the specified timezone. If timezone2 and time are specified, converts the time from ' +
+    'timezone to timezone2. Time must be formatted as <code>hh:mm[AM/PM]</code>, and timezones must use ' +
+    ' the timezone codes listed here: <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>';
 e.longinfo = `    <p>Tells you the current time in the specified timezone. If timezone2 and time are specified, converts the time from
     timezone to timezone2. Time must be formatted as <code>hh:mm[AM/PM]</code>, and timezones must use
         <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">these</a> timezone codes.</p>`;

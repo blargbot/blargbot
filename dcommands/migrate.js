@@ -2,14 +2,10 @@ var util = require('util');
 
 var e = module.exports = {};
 
-
 e.init = () => {
-
-
-
     e.category = bu.CommandType.CAT;
-
 };
+
 e.requireCtx = require;
 
 e.isCommand = true;
@@ -20,7 +16,7 @@ e.info = 'Loads, unloads, or reloads a command module';
 
 var confirmIrc = false;
 var confirmDiscord = false;
-e.execute = async function (msg, words) {
+e.execute = async function(msg, words) {
     if (msg.author.id == bu.CAT_ID) {
         let tags = bu.vars.tags;
         for (let tag in tags) {

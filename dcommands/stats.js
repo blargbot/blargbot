@@ -2,16 +2,8 @@ var e = module.exports = {};
 
 var moment = require('moment-timezone');
 
-
-
-
-
 e.init = () => {
-
-
-
     e.category = bu.CommandType.GENERAL;
-
 };
 e.requireCtx = require;
 

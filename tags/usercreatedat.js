@@ -2,13 +2,7 @@ var e = module.exports = {};
 
 var moment = require('moment');
 
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.COMPLEX;
 };
 
@@ -37,8 +31,8 @@ e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
-    let args = params.args
-        , msg = params.msg;
+    let args = params.args,
+        msg = params.msg;
     var replaceString = '';
     var replaceContent = false;
 
@@ -51,8 +45,7 @@ e.execute = async function(params) {
             formatCode = args[1];
 
         replaceString = moment(createdDate).format(formatCode);
-    }
-    else if (!args[3])
+    } else if (!args[3])
         return '';
     else
         replaceString = args[2];

@@ -2,12 +2,7 @@ var e = module.exports = {};
 
 var http = require('http');
 
-
 e.init = () => {
-    
-    
-
-
     e.category = bu.CommandType.GENERAL;
 };
 
@@ -22,13 +17,13 @@ e.info = '<p>Displays a picture of a cat, taken from <a href="http://random.cat/
 
 e.execute = async function(msg) {
     var output;
-    http.get('http://random.cat/meow', function (res) {
+    http.get('http://random.cat/meow', function(res) {
         var body = '';
-        res.on('data', function (chunk) {
+        res.on('data', function(chunk) {
             body += chunk;
         });
 
-        res.on('end', function () {
+        res.on('end', function() {
             logger.debug(body);
             output = JSON.parse(body);
             bu.sendFile(msg.channel.id, '', output.file);

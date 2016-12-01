@@ -1,11 +1,6 @@
 var e = module.exports = {};
 
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.GENERAL;
 };
 
@@ -16,7 +11,6 @@ e.hidden = false;
 e.usage = 'donate';
 e.info = 'Gets you my donation information';
 e.longinfo = `<p>DMs you a list of my donation information.</p>`;
-
 
 e.execute = (msg) => {
     bot.getDMChannel(msg.author.id).then(channel => {

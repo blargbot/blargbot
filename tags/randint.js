@@ -1,13 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.COMPLEX;
 };
 
@@ -28,10 +21,10 @@ e.exampleOut = `You rolled a 5`;
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] =await bu.processTagInner(params, i);
+        params.args[i] = await bu.processTagInner(params, i);
     }
-    let args = params.args
-        , fallback = params.fallback;
+    let args = params.args,
+        fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
     var parsedFallback = parseInt(fallback);

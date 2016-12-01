@@ -1,13 +1,5 @@
 var e = module.exports = {};
-
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.COMPLEX;
 };
 
@@ -35,9 +27,9 @@ e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
-    let words = params.words
-        , args = params.args
-        , fallback = params.fallback;
+    let words = params.words,
+        args = params.args,
+        fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
 
@@ -61,8 +53,7 @@ e.execute = async function(params) {
     } else {
         if (!(words[0] == '' && words.length == 1)) {
             replaceString = words.join(' ');
-        }
-        else
+        } else
             replaceString = await bu.tagProcessError(params, fallback, '`User gave no args`');
     }
     replaceString = replaceString + '';

@@ -1,14 +1,9 @@
 var e = module.exports = {};
 
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.GENERAL;
-
 };
+
 e.requireCtx = require;
 
 e.isCommand = true;
@@ -20,62 +15,61 @@ e.longinfo = `<p>Rolls dice and adds a modifier. You can specify the number of d
         <code>1d20</code>.</p>`;
 
 e.execute = (msg, words) => {
-    var message = ``;
-    // if (bot === BotEnum.DISCORD) {
-    message += `**${msg.author.username}**, `;
-    // } else if (bot === BotEnum.IRC) {
-    //   message += `${user}, `;
-    // }
-    message += `Rolling `;
-    var max = 20
-        , rollList = []
-        , i
-        , total;
+        var message = ``;
+        // if (bot === BotEnum.DISCORD) {
+        message += `**${msg.author.username}**, `;
+        // } else if (bot === BotEnum.IRC) {
+        //   message += `${user}, `;
+        // }
+        message += `Rolling `;
+        var max = 20,
+            rollList = [],
+            i, total;
 
-    if (words.length > 1) {
-        if (words[1].indexOf('cat') > -1) {
-            var catUrl;
-            var seed = bu.getRandomInt(0, 3);
-            logger.debug(`The cat chosen is ${seed} `);
-            switch (seed) {
-                case 0:
-                    catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';
-                    break;
-                case 1:
-                    catUrl = 'http://random.cat/i/024_-_H1NMbQr.gif';
-                    break;
-                case 2:
-                    catUrl = 'http://random.cat/i/081_-_DWzDbUH.gif';
-                    break;
-                default:
-                    catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';
-                    break;
+        if (words.length > 1) {
+            if (words[1].indexOf('cat') > -1) {
+                var catUrl;
+                var seed = bu.getRandomInt(0, 3);
+                logger.debug(`The cat chosen is ${seed} `);
+                switch (seed) {
+                    case 0:
+                        catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';
+                        break;
+                    case 1:
+                        catUrl = 'http://random.cat/i/024_-_H1NMbQr.gif';
+                        break;
+                    case 2:
+                        catUrl = 'http://random.cat/i/081_-_DWzDbUH.gif';
+                        break;
+                    default:
+                        catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';
+                        break;
+                }
+                bu.send(msg, catUrl);
+                return;
             }
-            bu.send(msg, catUrl);
-            return;
-        }
-        if (words[1].indexOf('rick') > -1) {
-            bu.send(msg, 'http://static.celebuzz.com/uploads/2015/08/rick-roll-82415-1.gif');
-            return;
-        }
-        if (words[1] == 'character') {
-            //  sendMessageToDiscord(channel, 'So you want to roll a character, huh?', bot);
-            message = 'Rolling a character:\n```xl\n';
-            for (var ii = 0; ii < 6; ii++) {
-                message += `Stat #${ii + 1} - [`;
-                var rolls = [];
-                for (i = 0; i < 4; i++) {
-                    var roll = bu.getRandomInt(1, 6);
-                    rolls.push(roll);
-                    message += `${roll}, `;
-                }
-                rolls.sort();
-                total = 0;
-                for (i = 0; i < rolls.length; i++) {
-                    total += rolls[i];
-                }
-                var newtotal = total - rolls[0];
-                message = `${message.substring(0, message.length - 2)}] > ${total < 10 && total > -10 ? ` ${total}` : total} - ${rolls[0]} > ${newtotal < 10 && newtotal > -10 ? ` ${newtotal}` : newtotal}\n`;
+            if (words[1].indexOf('rick') > -1) {
+                bu.send(msg, 'http://static.celebuzz.com/uploads/2015/08/rick-roll-82415-1.gif');
+                return;
+            }
+            if (words[1] == 'character') {
+                //  sendMessageToDiscord(channel, 'So you want to roll a character, huh?', bot);
+                message = 'Rolling a character:\n```xl\n';
+                for (var ii = 0; ii < 6; ii++) {
+                    message += `Stat #${ii + 1} - [`;
+                    var rolls = [];
+                    for (i = 0; i < 4; i++) {
+                        var roll = bu.getRandomInt(1, 6);
+                        rolls.push(roll);
+                        message += `${roll}, `;
+                    }
+                    rolls.sort();
+                    total = 0;
+                    for (i = 0; i < rolls.length; i++) {
+                        total += rolls[i];
+                    }
+                    var newtotal = total - rolls[0];
+                    message = `${message.substring(0, message.length - 2)}] > ${total < 10 && total > -10 ? ` ${total}` : total} - ${rolls[0]} > ${newtotal < 10 && newtotal > -10 ? ` ${newtotal}` : newtotal}\n`;
             }
             bu.send(msg, `${message}\n\`\`\``);
 

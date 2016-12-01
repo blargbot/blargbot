@@ -1,17 +1,10 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-
-
-
     e.category = bu.CommandType.COMMANDER;
 };
-e.isCommand = true;
 
+e.isCommand = true;
 e.hidden = false;
 e.usage = 'blacklist [channel]';
 e.info = 'Blacklists the current channel, or the first channel that you mention. The bot will not respond until you do `blacklist` again.';

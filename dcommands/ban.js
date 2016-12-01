@@ -6,7 +6,6 @@ e.init = () => {
 
 e.isCommand = true;
 e.requireCtx = require;
-
 e.hidden = false;
 e.usage = 'ban <user> [days]';
 e.info = 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.';

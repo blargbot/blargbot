@@ -2,14 +2,7 @@ var e = module.exports = {};
 
 var tags = require('./../tags');
 
-
-
-
 e.init = () => {
-    
-    
-
-
     e.category = bu.CommandType.COMMANDER;
 };
 e.requireCtx = require;

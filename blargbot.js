@@ -83,4 +83,8 @@ botEmitter.on('ircInit', () => {
     irc.init(VERSION, botEmitter);
 })
 
+botEmitter.on('reloadBu', () => {
+    global.bu = reload('./util.js');
+})
+
 init();

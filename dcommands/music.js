@@ -11,15 +11,11 @@ var youtube = google.youtube('v3');
 var moment = require('moment');
 var SC = require('node-soundcloud');
 
-
 var queue = {};
 var current = {};
 var cache = {};
 
-
 e.init = () => {
-
-
     voiceConnections = bot.voiceConnections;
     init(bot, voiceConnections, voiceSettings);
     e.category = bu.CommandType.MUSIC;

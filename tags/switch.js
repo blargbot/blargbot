@@ -1,13 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.COMPLEX;
 };
 
@@ -17,9 +10,9 @@ e.isTag = true;
 e.name = 'switch';
 e.args = '&lt;arg&gt; &lt;case1&gt; &lt;then1&gt; [case2] [then2].. [default]';
 e.usage = '{switch;arg;case1;then1[;case2;then2..][;default]}';
-e.desc = 'Finds the <code>case</code> that matches <code>arg</code> and returns the following <code>then</code>.'
-    + 'If there is no matching <code>case</code> and <code>default</code> is specified,'
-    + '<code>default</code> is returned. If not, it returns blank.';
+e.desc = 'Finds the <code>case</code> that matches <code>arg</code> and returns the following <code>then</code>.' +
+    'If there is no matching <code>case</code> and <code>default</code> is specified,' +
+    '<code>default</code> is returned. If not, it returns blank.';
 e.exampleIn = '{switch;{args;0};yes;Correct!;no;Incorrect!;That is not yes or no}';
 e.exampleOut = 'Correct!';
 
@@ -47,12 +40,7 @@ e.execute = async function(params) {
     }
     if (args.length % 2 != 0) replaceString = cases[arg] || elseDo;
     else replaceString = cases[arg] || '';
-    replaceString = await bu.processTag(params.msg
-        , params.words
-        , replaceString
-        , params.fallback
-        , params.author
-        , params.tagName);
+    replaceString = await bu.processTag(params.msg, params.words, replaceString, params.fallback, params.author, params.tagName);
     return {
         replaceString: replaceString,
         replaceContent: replaceContent

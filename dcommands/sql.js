@@ -4,11 +4,7 @@ var util = require('util');
 var Table = require('cli-table');
 var moment = require('moment');
 
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.CAT;
 };
 e.requireCtx = require;

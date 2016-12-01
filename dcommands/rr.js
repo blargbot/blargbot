@@ -4,11 +4,7 @@ var http = require('http');
 const emoji = require('node-emoji');
 
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.GENERAL;
-
 };
 e.requireCtx = require;
 
@@ -22,7 +18,7 @@ var numMap = ['zero', 'one', 'two', 'three', 'four', 'five'];
 
 var mojiList =
     ':grinning: :grimacing: :joy: :smiley: :smile: :wink: :fearful: :persevere: :confounded: :tired_face: :triumph: :flushed: :neutral_face: :expressionless: :mask: :sob: :sleepy: :stuck_out_tongue_winking_eye: :blush: :smiley_cat:'
-        .split(' ');
+    .split(' ');
 
 var deathMsg = [
     'The gun goes off, splattering your brains across the wall. Unlucky!',

@@ -1,13 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.COMPLEX;
 };
 
@@ -31,8 +24,8 @@ e.execute = async function(params) {
     if (params.args[1]) {
         params.args[1] = await bu.processTagInner(params, 1);
     }
-    let args = params.args
-        , fallback = params.fallback;
+    let args = params.args,
+        fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
 
@@ -41,12 +34,7 @@ e.execute = async function(params) {
         if (!replaceString) {
             replaceString = args[2];
         }
-        replaceString = await bu.processTag(params.msg
-            , params.words
-            , replaceString
-            , params.fallback
-            , params.author
-            , params.tagName);
+        replaceString = await bu.processTag(params.msg, params.words, replaceString, params.fallback, params.author, params.tagName);
     } else
         replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
 

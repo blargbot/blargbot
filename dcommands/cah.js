@@ -1,31 +1,26 @@
 var e = module.exports = {};
 var path = require('path');
 var fs = require('fs');
-
 var cah = {};
 var cad = {};
 var Canvas = require('canvas');
 var Image = Canvas.Image;
 var request = require('request');
 
-
-
 e.init = () => {
-    
-    
     if (fs.existsSync(path.join(__dirname, '..', 'cah.json'))) {
         cah = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'cah.json'), 'utf8'));
     }
 
     request('https://api.cardcastgame.com/v1/decks/JJDFG/cards', (err, res, body) => {
         try {
-        let tempCad = JSON.parse(body);
-        cad.black = tempCad.calls.map(m => {
-            return m.text.join('______');
-        });
-        cad.white = tempCad.responses.map(m => {
-            return m.text.join('______');
-        });
+            let tempCad = JSON.parse(body);
+            cad.black = tempCad.calls.map(m => {
+                return m.text.join('______');
+            });
+            cad.white = tempCad.responses.map(m => {
+                return m.text.join('______');
+            });
         } catch (err) {
             console.log(err.stack);
         }
@@ -35,13 +30,12 @@ e.init = () => {
 };
 
 e.isCommand = true;
-
 e.requireCtx = require;
-
 e.hidden = false;
 e.usage = 'cah';
 e.info = 'Generates a set of CAH cards.';
 e.longinfo = '<p>Generates a random set of Cards Against Humanity cards.</p>';
+
 e.execute = (msg, words) => {
     new Promise((fulfill) => {
         bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw').then(val => {
@@ -121,8 +115,7 @@ function wrapText(context, text, x, y, maxWidth, lineHeight) {
             context.fillText(line, x, y);
             line = words[n] + ' ';
             y += lineHeight;
-        }
-        else {
+        } else {
             line = testLine;
         }
     }

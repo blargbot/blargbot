@@ -1,13 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.SIMPLE;
 };
 

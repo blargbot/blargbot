@@ -1,13 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.SIMPLE;
 };
 
@@ -23,7 +16,7 @@ e.exampleOut = `abalabahaha is a lovely person! stupid cat isn't as good.`;
 
 
 e.execute = async function(params) {
-    
+
     let msg = params.msg;
     var replaceString = msg.channel.guild.members.map(m => m)[bu.getRandomInt(0, msg.channel.guild.members.map(m => m).length - 1)].user.id;
     var replaceContent = false;

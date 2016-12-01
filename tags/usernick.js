@@ -1,13 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.COMPLEX;
 };
 
@@ -28,19 +21,19 @@ e.exampleOut = `Your nick is cat`;
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] =await bu.processTagInner(params, i);
+        params.args[i] = await bu.processTagInner(params, i);
     }
-    let args = params.args
-        , msg = params.msg;
+    let args = params.args,
+        msg = params.msg;
     var replaceString = '';
     var replaceContent = false;
 
     var obtainedUser = await bu.getTagUser(msg, args);
 
     if (obtainedUser) {
-        replaceString = msg.channel.guild.members.get(obtainedUser.id) && msg.channel.guild.members.get(obtainedUser.id).nick
-            ? msg.channel.guild.members.get(obtainedUser.id).nick
-            : obtainedUser.username;
+        replaceString = msg.channel.guild.members.get(obtainedUser.id) && msg.channel.guild.members.get(obtainedUser.id).nick ?
+            msg.channel.guild.members.get(obtainedUser.id).nick :
+            obtainedUser.username;
     } else if (!args[2])
         return '';
     else

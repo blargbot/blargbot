@@ -1,12 +1,6 @@
 // START: Do not touch
 var e = module.exports = {};
-
-
-
-
 e.init = () => {
-    
-    
     e.category = bu.TagType.COMPLEX;
 };
 e.requireCtx = require;
@@ -52,12 +46,7 @@ e.execute = async function(params) {
     if (params.args[1]) {
         let newStuff = bu.processSpecial(params.args[1], true);
         logger.debug('Thonkang', params.args, newStuff);
-        replaceString = await bu.processTag(params.msg
-            , params.words
-            , newStuff
-            , params.fallback
-            , params.author
-            , params.tagName);
+        replaceString = await bu.processTag(params.msg, params.words, newStuff, params.fallback, params.author, params.tagName);
     } else {
         replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
     }

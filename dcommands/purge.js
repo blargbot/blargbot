@@ -1,13 +1,7 @@
 var e = module.exports = {};
 
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.ADMIN;
-
 };
 e.requireCtx = require;
 
@@ -20,7 +14,7 @@ e.longinfo = `<p>Deletes all the messages in the current channel made by the bot
 e.execute = (msg) => {
     //  if (bu.hasPerm(msg, 'Bot Commander')) {
     bot.getMessages(msg.channel.id, 100)
-        .then(function (messageArray) {
+        .then(function(messageArray) {
             /**
              * Checks if we have the permissions to remove them all at once
              */
@@ -46,8 +40,8 @@ e.execute = (msg) => {
             }
         });
     bu.send(msg, 'Purging!')
-        .then(function (message) {
-            setTimeout(function () {
+        .then(function(message) {
+            setTimeout(function() {
                 bot.deleteMessage(msg.channel.id, message.id);
             }, 5000);
         });

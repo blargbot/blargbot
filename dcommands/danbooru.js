@@ -2,12 +2,7 @@ var e = module.exports = {};
 
 var https = require('https');
 
-
 e.init = () => {
-
-
-
-
     e.category = bu.CommandType.NSFW;
 };
 

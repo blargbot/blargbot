@@ -1,13 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.COMMANDER;
 };
 e.requireCtx = require;
@@ -163,4 +156,3 @@ e.execute = async function(msg, words, text) {
         bu.send(msg, 'Improper usage. Do \`help ccommand\` for more details.');
     }
 };
-

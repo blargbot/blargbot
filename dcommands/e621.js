@@ -3,12 +3,7 @@ var e = module.exports = {};
 var xml2js = require('xml2js');
 var https = require('https');
 
-
 e.init = () => {
-
-
-
-
     e.category = bu.CommandType.NSFW;
 };
 e.requireCtx = require;

@@ -2,13 +2,8 @@ var e = module.exports = {};
 
 var wordsearch = require('wordsearch');
 
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.GENERAL;
-
 };
 e.requireCtx = require;
 
@@ -116,8 +111,7 @@ function initWordSearch(msg, words, size) {
             if (i < 10) {
                 line1 += ` ${i}`;
                 line2 += `  `;
-            }
-            else {
+            } else {
                 line1 += ` ${Math.floor(i / 10)}`;
                 line2 += ` ${i % 10}`;
             }
@@ -153,8 +147,7 @@ function solveWordSearch(msg) {
             if (i < 10) {
                 line1 += ` ${i}`;
                 line2 += `  `;
-            }
-            else {
+            } else {
                 line1 += ` ${Math.floor(i / 10)}`;
                 line2 += ` ${i % 10}`;
             }

@@ -1,12 +1,8 @@
 var e = module.exports = {};
 
-
 const util = require('util');
 
-
 e.init = () => {
-
-
     e.category = bu.CommandType.ADMIN;
 };
 

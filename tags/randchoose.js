@@ -1,13 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.COMPLEX;
 };
 
@@ -23,8 +16,8 @@ e.exampleOut = `I feel like eating pudding today.`;
 
 
 e.execute = async function(params) {
-    let args = params.args
-        , fallback = params.fallback;
+    let args = params.args,
+        fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
     if (args.length > 1) {

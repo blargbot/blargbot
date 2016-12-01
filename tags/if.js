@@ -1,9 +1,5 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
     e.category = bu.TagType.COMPLEX;
 };
@@ -28,12 +24,12 @@ e.exampleIn = `{if;&lt;=;5;10;5 is less than or equal to 10;5 is greater than 10
 e.exampleOut = `5 is less than or equal to 10`;
 
 
-e.execute = async function (params) {
+e.execute = async function(params) {
     // for (let i = 1; i < params.args.length; i++) {
     //      params.args[i] =await bu.processTagInner(params, i);
     // }
-    let args = params.args
-        , fallback = params.fallback;
+    let args = params.args,
+        fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
 
@@ -100,12 +96,7 @@ e.execute = async function (params) {
                 replaceString = await bu.tagProcessError(params, fallback, '`Invalid Operator`');
                 break;
         }
-        replaceString = await bu.processTag(params.msg
-            , params.words
-            , replaceString
-            , params.fallback
-            , params.author
-            , params.tagName);
+        replaceString = await bu.processTag(params.msg, params.words, replaceString, params.fallback, params.author, params.tagName);
     } else {
         replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
     }

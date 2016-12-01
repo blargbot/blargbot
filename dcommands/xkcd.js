@@ -2,13 +2,8 @@ var e = module.exports = {};
 
 var http = require('http');
 
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.GENERAL;
-
 };
 e.requireCtx = require;
 
@@ -26,12 +21,12 @@ e.execute = (msg, words) => {
 
 function getXkcd(channel, words) {
     if (xkcdMax === 0) {
-        http.get('http://xkcd.com/info.0.json', function (res) {
+        http.get('http://xkcd.com/info.0.json', function(res) {
             var body = '';
-            res.on('data', function (chunk) {
+            res.on('data', function(chunk) {
                 body += chunk;
             });
-            res.on('end', function () {
+            res.on('end', function() {
                 logger.debug(body);
                 var output = JSON.parse(body);
                 xkcdMax = output.num;
@@ -57,12 +52,12 @@ function getXkcd(channel, words) {
     } else {
         url = `http://xkcd.com/${choice}/info.0.json`;
     }
-    http.get(url, function (res) {
+    http.get(url, function(res) {
         var body = '';
-        res.on('data', function (chunk) {
+        res.on('data', function(chunk) {
             body += chunk;
         });
-        res.on('end', function () {
+        res.on('end', function() {
             var output = JSON.parse(body);
             var message = '';
             //  if (bot === BotEnum.DISCORD) {

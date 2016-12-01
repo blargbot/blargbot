@@ -2,12 +2,7 @@ var e = module.exports = {};
 
 var http = require('http');
 
-
 e.init = () => {
-    
-    
-
-
     e.category = bu.CommandType.GENERAL;
 };
 e.requireCtx = require;
@@ -36,12 +31,12 @@ e.execute = (msg, words) => {
 
     var url = `http://api.fixer.io/latest?symbols=${to}&base=${from}`;
 
-    http.get(url, function (res) {
+    http.get(url, function(res) {
         var body = '';
-        res.on('data', function (chunk) {
+        res.on('data', function(chunk) {
             body += chunk;
         });
-        res.on('end', function () {
+        res.on('end', function() {
             var rates = JSON.parse(body);
             if (rates.error != null && rates.error === 'Invalid base') {
                 bu.send(msg, `Invalid currency ${from}\n\`econ \<from\> \<to\> \<amount\>\``);

@@ -2,10 +2,7 @@ var e = module.exports = {};
 
 var request = require('request');
 
-
 e.init = () => {
-    
-    
     e.category = bu.CommandType.GENERAL;
 };
 
@@ -46,7 +43,7 @@ e.execute = (msg, words, text) => {
         request({
             uri: url,
             encoding: null
-        }, function (err, res, body) {
+        }, function(err, res, body) {
             logger.debug(res.headers['content-type']);
             if (res.headers['content-type'] == 'text/html') {
                 bu.sendFile(msg.channel.id, '', urlStart + encodeURIComponent(404 + '.jpg'));

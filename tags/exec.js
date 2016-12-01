@@ -1,12 +1,7 @@
 // START: Do not touch
 var e = module.exports = {};
 
-
-
-
 e.init = () => {
-
-
     e.category = bu.TagType.COMPLEX;
 };
 e.requireCtx = require;

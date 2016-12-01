@@ -1,13 +1,6 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
-
     e.category = bu.TagType.COMPLEX;
 };
 
@@ -26,10 +19,10 @@ e.exampleOut = `Your avatar is (avatar url)`;
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
-        params.args[i] =await bu.processTagInner(params, i);
+        params.args[i] = await bu.processTagInner(params, i);
     }
-    let msg = params.msg
-        , args = params.args;
+    let msg = params.msg,
+        args = params.args;
     var replaceString = '';
     var replaceContent = false;
 

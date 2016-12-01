@@ -3,15 +3,10 @@ var e = module.exports = {};
 const moment = require('moment');
 
 e.init = () => {
-
-
-
     e.category = bu.CommandType.ADMIN;
-
 };
 
 e.requireCtx = require;
-
 e.isCommand = true;
 e.hidden = false;
 e.usage = 'announce <<text> | -reset>';

@@ -1,16 +1,11 @@
-
 var util = require('util');
 
 var e = module.exports = {};
 
-
 e.init = () => {
-    
-    
-
     e.category = bu.CommandType.CAT;
-
 };
+
 e.requireCtx = require;
 
 e.isCommand = true;
@@ -65,6 +60,8 @@ e.execute = (msg, words) => {
                             bu.emitter.emit('reloadIrc');
                         });
                 }
+            } else if (words[0] && words[0].toLowerCase() == 'bu') {
+                bu.emitter.emit('reloadBu');
             }
         }
     }

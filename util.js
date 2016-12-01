@@ -4,8 +4,6 @@ const Eris = require('eris');
 const emoji = require('node-emoji');
 const loggerModule = require('./logger.js');
 
-
-
 var bu = module.exports = {};
 
 bu.CAT_ID = '103347843934212096';
@@ -17,7 +15,6 @@ bu.startTime = null;
 bu.vars = null;
 loggerModule.init();
 logger.command('meow');
-//logger.level = 'debug';
 
 // A special character for tag injections
 bu.specialCharBegin = '\uE001';
