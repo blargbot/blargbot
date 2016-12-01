@@ -62,20 +62,7 @@ e.execute = async function(msg, words) {
                     bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', input.r);
                     bu.send(msg, ':ok_hand:');
                 }
-
-
-                //   if (!bu.bans[msg.channel.guild.id])
-                //        bu.bans[msg.channel.guild.id] = {}
-                //    bu.bans[msg.channel.guild.id][user.id] = msg.author.id
-                //    var deletedays = 0
-                //    if (words[2])
-                //       deletedays = parseInt(words[2])
-                // bot.banGuildMember(msg.channel.guild.id, user.id, deletedays)
             }
-            //bot.ban
-            //           } else {
-            //               bu.send(msg, `You don't have permission to mute users! Make sure you have the \`manage roles\` permission and try again.`);
-            //           }
         } else {
             bu.send(msg, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
         }
