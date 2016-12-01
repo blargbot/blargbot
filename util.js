@@ -697,7 +697,8 @@ bu.logAction = async function(guild, user, mod, type, reason) {
         } else {
             embed.author = {
                 name: users,
-                icon_url: user.avatarURL
+                icon_url: user.avatarURL,
+                url: `https://blargbot.xyz/user/${user.id}`
             };
         }
         let moderator = mod ? `${mod.username}#${mod.discriminator}` : 'Unknown';
