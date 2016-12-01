@@ -21,7 +21,8 @@ e.flags = [{
 
 e.execute = async function(msg, words) {
     if (msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
-        if (msg.member.permission.json.banMembers) {
+        let banPerms = await bu.guildSettings.get(msg.guild.id, 'banoverride') || 0;
+        if (!bu.comparePerms(msg.member, banPerms) && !msg.member.permission.json.banMembers) {
             if (words[1]) {
                 var user = await bu.getUser(msg, words[1]);
                 if (!user) {

@@ -24,7 +24,8 @@ e.execute = async function(msg, words) {
         bu.send(msg, `I don't have permission to kick users!`);
         return;
     }
-    if (!msg.member.permission.json.kickMembers) {
+    let kickPerms = await bu.guildSettings.get(msg.guild.id, 'kickoverride') || 0;
+    if (!bu.comparePerms(msg.member, kickPerms) && !msg.member.permission.json.kickMembers) {
         bu.send(msg, `You don't have permission to kick users!`);
         return;
     }

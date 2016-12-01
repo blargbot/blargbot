@@ -80,6 +80,8 @@ e.execute = async function(msg, words) {
         let dmHelp = settings.dmhelp && settings.dmhelp != 0 ? true : false;
 
         let staffPerms = settings.staffperms || bu.defaultStaff;
+        let kickPerms = settings.kickoverride || 0;
+        let banPerms = settings.banoverride || 0;
         var message = `\`\`\`prolog
 Settings For ${msg.channel.guild.name}
          Prefix : ${prefix}
@@ -96,6 +98,8 @@ Settings For ${msg.channel.guild.name}
         DM Help : ${dmHelp}
   Perm Override : ${permOverride}
     Staff Perms : ${staffPerms}
+  Kick Override : ${kickPerms}
+   Ban Override : ${banPerms}
 \`\`\``;
         bu.send(msg, message);
     } else {
@@ -108,7 +112,7 @@ Settings For ${msg.channel.guild.name}
                     key = words.shift();
                     let value = words.join(' ');
                     if (settings[key]) {
-                        await bu.guildSettings.set(msg.channel.guild.id, key, value);
+                        await bu.guildSettings.set(msg.channel.guild.id, key, value, settings[key].type);
                         bu.send(msg, ':ok_hand:');
                     } else {
                         bu.send(msg, 'Invalid key!');
@@ -118,7 +122,7 @@ Settings For ${msg.channel.guild.name}
             case 'help':
                 let message = '\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
                 for (key in settings) {
-                    message += '**__' + key.toUpperCase() + '__**' + ' - ' + settings[key] + '\n';
+                    message += '**__' + key.toUpperCase() + '__**' + ' - ' + settings[key].desc + '\n';
                 }
                 bu.send(msg, message);
                 break;
@@ -127,7 +131,7 @@ Settings For ${msg.channel.guild.name}
                     key = words.shift();
                     let value = words.join(' ');
                     if (settings[key]) {
-                        await bu.guildSettings.set(msg.channel.guild.id, key, value);
+                        await bu.guildSettings.set(msg.channel.guild.id, key, value, settings[key].type);
                         bu.send(msg, ':ok_hand:');
                     } else {
                         bu.send(msg, 'Invalid key!');
@@ -139,16 +143,60 @@ Settings For ${msg.channel.guild.name}
 };
 
 var settings = {
-    cahnsfw: `whether 'cah' can only be done in nsfw channels or not. Set to '0' to disable.`,
-    deletenotif: `if enabled, notifies you if a user deleted their command. Set to '0' to disable.`,
-    greeting: `what to say to new users when they join. You can also use the \`greet\` command`,
-    farewell: `what to say when a user leaves. You can also use the \`farewell\` command`,
-    prefix: `the custom command prefix. You can also use the \`setprefix\` command`,
-    modlog: `the id of the modlog channel. You can also use the \`modlog\` command`,
-    mutedrole: `the id of the muted role.`,
-    tableflip: `whether the bot should respond to tableflips/unflips. Set to '0' to disable.`,
-    antimention: `the number of unique mentions required to warrant a ban (for anti-mention spam). Set to '0' to disable. Recommended: 25`,
-    dmhelp: `whether or not to dm help messages or output them in channels`,
-    permoverride: `whether or not specific permissions override role requirement`,
-    staffperms: `the numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <https://discordapi.com/permissions.html> for a permission calculator.`
+    cahnsfw: {
+        desc: `whether 'cah' can only be done in nsfw channels or not. Set to '0' to disable.`,
+        type: 'bool'
+    },
+    deletenotif: {
+        desc: `if enabled, notifies you if a user deleted their command. Set to '0' to disable.`,
+        type: 'bool'
+    },
+    greeting: {
+        desc: `what to say to new users when they join. You can also use the \`greet\` command`,
+        type: 'string'
+    },
+    farewell: {
+        desc: `what to say when a user leaves. You can also use the \`farewell\` command`,
+        type: 'string'
+    },
+    prefix: {
+        desc: `the custom command prefix. You can also use the \`setprefix\` command`,
+        type: 'string'
+    },
+    modlog: {
+        desc: `the id of the modlog channel. You can also use the \`modlog\` command`,
+        type: 'string'
+    },
+    mutedrole: {
+        desc: `the id of the muted role.`,
+        type: 'string'
+    },
+    tableflip: {
+        desc: `whether the bot should respond to tableflips/unflips. Set to '0' to disable.`,
+        type: 'bool'
+    },
+    antimention: {
+        desc: `the number of unique mentions required to warrant a ban (for anti-mention spam). Set to '0' to disable. Recommended: 25`,
+        type: 'int'
+    },
+    dmhelp: {
+        desc: `whether or not to dm help messages or output them in channels`,
+        type: 'bool'
+    },
+    permoverride: {
+        desc: `whether or not specific permissions override role requirement`,
+        type: 'string'
+    },
+    staffperms: {
+        desc: `the numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <https://discordapi.com/permissions.html> for a permission calculator.`,
+        type: 'int'
+    },
+    kickoverride: {
+        desc: `same as staffperms, but allows users to use the kick command regardless of permissions`,
+        type: 'int'
+    },
+    banoverride: {
+        desc: `same as staffperms, but allows users to use the ban/hackban/unban commands regardless of permissions`,
+        type: 'int'
+    }
 };

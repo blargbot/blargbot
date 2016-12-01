@@ -24,7 +24,8 @@ e.execute = (msg, words, text) => {
         bu.send(msg, `I don't have permission to ban users!`);
         return;
     }
-    if (!msg.member.permission.json.banMembers) {
+    let banPerms = await bu.guildSettings.get(msg.guild.id, 'banoverride') || 0;
+    if (!bu.comparePerms(msg.member, banPerms) && !msg.member.permission.json.banMembers) {
         bu.send(msg, `You don't have permission to ban users!`);
         return;
     }
