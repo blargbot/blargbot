@@ -1,5 +1,7 @@
 var e = module.exports = {};
 
+const moment = require('moment');
+
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
 };
@@ -7,7 +9,7 @@ e.init = () => {
 e.isCommand = true;
 e.requireCtx = require;
 e.hidden = false;
-e.usage = 'ban <user> [days]';
+e.usage = 'ban <user> [days] [-t <time>]';
 e.info = 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.';
 e.longinfo = `<p>Bans a user, where <code>days</code> is the number of days to delete messages for. Defaults to 1.</p>
 <p>If mod-logging is enabled, the ban will be logged.</p>`;
@@ -16,6 +18,10 @@ e.flags = [{
     flag: 'r',
     word: 'reason',
     desc: 'The reason for the ban.'
+}, {
+    flag: 't',
+    word: 'time',
+    desc: 'If provided, the user will be unbanned after the period of time. (softban)'
 }];
 
 
@@ -65,8 +71,22 @@ e.execute = async function(msg, words) {
         if (words[2])
             deletedays = parseInt(words[2]);
         await bot.banGuildMember(msg.channel.guild.id, user.id, deletedays)
-        bu.send(msg, ':ok_hand:');
+        let suffix = '';
+        if (input.t && input.t.length > 0) {
+            let duration = bu.parseDuration(input.t.join(' '));
+            if (duration.asMilliseconds() > 0) {
+                await r.table('events').insert({
+                    type: 'unban',
+                    user: user.id,
+                    guild: msg.guild.id,
+                    duration: duration.toJSON(),
+                    endtime: r.epochTime(moment().add(duration).unix())
+                });
+                suffix = `The user will be unbanned ${duration.humanize(true)}.`;
+            } else {
+                suffix = `The user was banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`;
+            }
+        }
+        bu.send(msg, ':ok_hand: ' + suffix);
     }
-    //bot.ban
-
 };

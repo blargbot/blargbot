@@ -48,3 +48,12 @@ e.execute = async function(msg, words) {
         bu.send(msg, `I don't have permission to unban users!`);
     }
 };
+
+e.event = async function(args) {
+    if (!bu.unbans[args.guild]) bu.unbans[args.guild] = {};
+    bu.unbans[args.guild][args.user] = {
+        mod: bot.user.id,
+        reason: `Automatically unbanned after ${bu.parseDuration(args.duration).humanize()}.`
+    };
+    await bot.unbanGuildMember(args.guild, args.user);
+};
