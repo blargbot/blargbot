@@ -1,24 +1,25 @@
 var e = module.exports = {};
 
-
-
+const moment = require('moment');
 
 e.init = () => {
-
-
-
     e.category = bu.CommandType.ADMIN;
-
 };
 
 e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'unmute <user>';
+e.usage = 'unmute <user> [flags]';
 e.info = 'Unmutes a user.\nIf mod-logging is enabled, the unmute will be logged.';
 e.longinfo = `<p>Unmutes a user.</p>
     <p>If mod-logging is enabled, the unmute will be logged.</p>`;
+
+e.flags = [{
+    flag: 'r',
+    word: 'reason',
+    desc: 'The reason for the unmute.'
+}];
 
 e.execute = async function(msg, words) {
     let mutedrole = await bu.guildSettings.get(msg.channel.guild.id, 'mutedrole');
@@ -57,7 +58,8 @@ e.execute = async function(msg, words) {
                     bot.editGuildMember(msg.channel.guild.id, user.id, {
                         roles: roles
                     });
-                    bu.logAction(msg.channel.guild, user, msg.author, 'Unmute');
+                    let input = bu.parseInput(e.flags, words);
+                    bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', input.r);
                     bu.send(msg, ':ok_hand:');
                 }
 
@@ -77,5 +79,20 @@ e.execute = async function(msg, words) {
         } else {
             bu.send(msg, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
         }
+    }
+};
+
+e.event = async function(args) {
+    let guild = bot.guilds.get(args.guild);
+    if (!guild || !guild.members.get(args.user)) return;
+    let member = guild.members.get(args.user);
+
+    var roles = member.roles;
+    if (roles.indexOf(args.role) > -1) {
+        roles.splice(roles.indexOf(args.role), 1);
+        bot.editGuildMember(guild.id, member.user.id, {
+            roles: roles
+        });
+        bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${bu.parseDuration(args.duration).humanize()}.`);
     }
 };

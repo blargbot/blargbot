@@ -1,25 +1,24 @@
 var e = module.exports = {};
 
-
-
-
 e.init = () => {
-    
-    
-
-
     e.category = bu.CommandType.ADMIN;
-
 };
 
 e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'kick <user>';
+e.usage = 'kick <user> [flags]';
 e.info = 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.';
 e.longinfo = `<p>Kicks a user from the guild.</p>
     <p>If mod-logging is enabled, the kick will be logged.</p>`;
+
+e.flags = [{
+    flag: 'r',
+    word: 'reason',
+    desc: 'The reason for the kick.'
+}];
+
 e.execute = async function(msg, words) {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.kickMembers) {
         bu.send(msg, `I don't have permission to kick users!`);
@@ -56,7 +55,8 @@ e.execute = async function(msg, words) {
         //    if (words[2])
         //       deletedays = parseInt(words[2])
         bot.kickGuildMember(msg.channel.guild.id, user.id);
-        bu.logAction(msg.channel.guild, user, msg.author, 'Kick');
+        let input = bu.parseInput(e.flags, words);
+        bu.logAction(msg.channel.guild, user, msg.author, 'Kick', input.r);
         bu.send(msg, ':ok_hand:');
 
     } else {

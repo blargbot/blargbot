@@ -1,16 +1,9 @@
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-
-
-
-
     e.category = bu.CommandType.GENERAL;
 };
+
 e.requireCtx = require;
 
 e.isCommand = true;
@@ -25,11 +18,20 @@ e.execute = async function(msg, words) {
             var message = '';
             if (bu.commandList.hasOwnProperty(words[1]) && !bu.commandList[words[1]].hidden) {
                 let aliases = '';
+                let flags = '';
                 if (bu.commands[bu.commandList[words[1]].name].alias)
-                    aliases = `\nAliases: [ ${bu.commands[bu.commandList[words[1]].name].alias.join(', ')} ]`;
-                message = `Command Name: ${bu.commandList[words[1]].name}
-Usage: \`${bu.commandList[words[1]].usage}\`${aliases}
-${bu.commandList[words[1]].info}`;
+                    aliases = `\n**__Aliases__**: [ ${bu.commands[bu.commandList[words[1]].name].alias.join(', ')} ]`;
+                if (bu.commands[bu.commandList[words[1]].name].flags) {
+                    flags = `**__Flags__**:\n`;
+                    for (flag of bu.commands[bu.commandList[words[1]].name].flags) {
+                        flags += `   \`-${flag.flag}\` or \`--${flag.word}\` - ${flag.desc}\n`;
+                    }
+                }
+                message = `**__Command Name__**: ${bu.commandList[words[1]].name}
+**__Usage__**: \`${bu.commandList[words[1]].usage}\`${aliases}
+${bu.commandList[words[1]].info}
+
+${flags}`;
             } else {
                 message = `No description could be found for command \`${words[1]}\`.`;
             }

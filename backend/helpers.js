@@ -25,7 +25,7 @@ const tagType = {
 
 e.init = () => {
     hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
-    hbs.registerHelper('listcommands', function () {
+    hbs.registerHelper('listcommands', function() {
         let sidebar = '';
         let commands = bu.commands;
         let lastType = -10;
@@ -45,7 +45,7 @@ e.init = () => {
         return sidebar;
     });
 
-    hbs.registerHelper('listtags', function () {
+    hbs.registerHelper('listtags', function() {
         let sidebar = '';
         let lastType = -10;
         let tags = bu.tags;
@@ -64,7 +64,7 @@ e.init = () => {
         return sidebar;
     });
 
-    hbs.registerHelper('tags', function (text, url) {
+    hbs.registerHelper('tags', function(text, url) {
         let toReturn = '';
         let lastType = -10;
         let tags = bu.tags;
@@ -72,7 +72,7 @@ e.init = () => {
         keys.sort((a, b) => {
             return ((tags[a].category - tags[b].category) * 1000) + (a > b ? 1 : -1);
         });
-       // logger.debug(tags);
+        // logger.debug(tags);
         for (let i = 0; i < keys.length; i++) {
             if (tags[keys[i]].category != lastType) {
                 lastType = tags[keys[i]].category;
@@ -169,7 +169,7 @@ e.init = () => {
 
 
 
-    hbs.registerHelper('commands', function (text, url) {
+    hbs.registerHelper('commands', function(text, url) {
         let toReturn = '';
         let lastType = -10;
         let commands = bu.commands;
@@ -191,6 +191,14 @@ e.init = () => {
                 toReturn += `<p>Usage: <pre style="margin: 0" class="wrap"><code>${commands[keys[i]].usage.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></p>`;
                 toReturn += `<p>Role Needed: ${commandType.perms[commands[keys[i]].category]}</p>`;
                 toReturn += commands[keys[i]].longinfo;
+                let flags = commands[keys[i]].flags;
+                if (flags) {
+                    toReturn += `<p>Flags:</p><ul>`;
+                    for (let flag of flags) {
+                        toReturn += `<li><code>-${flag.flag}</code>/<code>--${flag.word}</code> - ${flag.desc}</li>`
+                    }
+                    toReturn += '</ul>';
+                }
                 toReturn += "</div>";
                 toReturn += "</div>";
                 toReturn += "</div>";

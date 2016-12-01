@@ -15,48 +15,51 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'logs <number> [<type> <parameters...>]';
+e.usage = 'logs <number> [flags]';
 e.info = 'Creates a chatlog page for a specified channel, ' +
     'where `number` is the amount of lines to get. You can retrieve a maximum of 1000 logs.' +
-    'For more specific logs, you can specify a (case insensitive) ' +
-    'type and parameter as follows:\n' +
-    'Types: \n' +
-    '     -TYPE (-T)\n' +
-    '        CREATE - Gets original messages.\n' +
-    '        UPDATE - Gets message edits.\n' +
-    '        DELETE - Gets message deletes.\n' +
-    '     -CHANNEL (-C)\n' +
-    '        <id | mention> - The channel to get logs from. Must be on the current guild!\n' +
-    '     -USER (-U)\n' +
-    '        <name or id> - Gets messages made by specific user.\n' +
-    '     -ORDER (-O)\n' +
-    '        DESC - Get\'s the newest messages first (default).\n' +
-    '        ASC  - Get\'s the oldest messages first.\n' +
+    'For more specific logs, you can specify flags.\n' +
     'For example, if you wanted to get 100 messages `stupid cat` deleted, you would do this:\n' +
-    '`logs 100 -message delete -user stupid cat`' +
-    'If you want to use multiple of the same type, separate parameters with commas. For example:\n' +
-    '`logs 100 -m create, update -u stupid cat, dumb cat`';
+    '`logs 100 --type delete --user stupid cat`' +
+    'If you want to use multiple of the same type, separate parameters with commas or chain them together. For example:\n' +
+    '`logs 100 -CU -u stupid cat, dumb cat`';
 e.longinfo = '<p>Creates a chatlog page for a specified channel, ' +
     'where `number` is the amount of lines to get. ' +
-    'For more specific logs, you can specify a (case insensitive) ' +
-    'type and parameter as follows:</p><p>' +
-    '<pre><code>Types: \n' +
-    '     -TYPE (-T)\n' +
-    '        CREATE - Gets original messages.\n' +
-    '        UPDATE - Gets message edits.\n' +
-    '        DELETE - Gets message deletes.\n' +
-    '     -CHANNEL (-C)\n' +
-    '        <id> - The channel to get logs from. Must be on the current guild!\n' +
-    '     -USER (-U)\n' +
-    '        <name or id> - Gets messages made by specific user.\n' +
-    '     -ORDER (-O)\n' +
-    '        DESC - Get\'s the newest messages first (default).\n' +
-    '        ASC  - Get\'s the oldest messages first.</code></pre></p>' +
+    'For more specific logs, you can specify flags.\n ' +
     '<p>For example, if you wanted to get 100 messages `stupid cat` deleted, you would do this:<\p>' +
-    '<pre><code>logs 100 -message delete -user stupid cat</code></pre>' +
-    '<p>If you want to use multiple of the same type, separate parameters with commas. For example:</p>' +
-    '<pre><code>logs 100 -m create, update -u stupid cat, dumb cat</code></pre>';
+    '<pre><code>logs 100 --type delete --user stupid cat</code></pre>' +
+    '<p>If you want to use multiple of the same type, separate parameters with commas or chain them together. For example:</p>' +
+    '<pre><code>logs 100 -CU -u stupid cat, dumb cat</code></pre>';
 
+e.flags = [{
+    flag: 't',
+    word: 'type',
+    desc: 'The type(s) of message. Value can be CREATE, UPDATE, and/or DELETE, separated by commas.'
+}, {
+    flag: 'c',
+    word: 'channel',
+    desc: 'The channel to retrieve logs from. Value can be a channel ID or a channel mention.'
+}, {
+    flag: 'u',
+    word: 'user',
+    desc: 'The user(s) to retrieve logs from. Value can be a username, nickname, mention, or ID. This uses the user lookup system.'
+}, {
+    flag: 'o',
+    word: 'order',
+    desc: 'The order of logs. Value can be DESC (get newest messages first) or ASC (get oldest messages first).'
+}, {
+    flag: 'C',
+    word: 'create',
+    desc: 'Get message creates.'
+}, {
+    flag: 'U',
+    word: 'update',
+    desc: 'Get message updates.'
+}, {
+    flag: 'D',
+    word: 'delete',
+    desc: 'Get message deletes.'
+}]
 
 var typeRef = {
     CREATE: 0,
@@ -64,20 +67,16 @@ var typeRef = {
     DELETE: 2
 };
 
-
 e.execute = async function(msg, words) {
-    //  bu.send(msg, 'WIP');
-    //  return;
     if (words[0].toLowerCase() == 'help') {
         bu.send(msg, e.info);
         return;
     }
+    let input = bu.parseInput(e.flags, words);
     let numberOfMessages = NaN,
-        type = '',
-        user = '',
         current, order, channel = msg.channel.id;
-    if (words.length > 1) {
-        numberOfMessages = parseInt(words[1]);
+    if (input.undefined.length > 1) {
+        numberOfMessages = parseInt(input.undefined[0]);
     }
     if (isNaN(numberOfMessages) || numberOfMessages > 1000)
         numberOfMessages = 1000;
@@ -85,53 +84,27 @@ e.execute = async function(msg, words) {
         numberOfMessages = 1;
     }
 
-
-    for (var i = 0; i < words.length; i++) {
-        if (i >= 1) {
-            if (words[i].toLowerCase() == '-t' || words[i].toLowerCase() == '-type' || words[i].toLowerCase() == '--type') {
-                current = 0;
-                type += ',';
-            } else if (words[i].toLowerCase() == '-u' || words[i].toLowerCase() == '-user' || words[i].toLowerCase() == '--user') {
-                current = 1;
-                user += ',';
-            } else if (words[i].toLowerCase() == '-o' || words[i].toLowerCase() == '-order' || words[i].toLowerCase() == '--order') {
-                current = 2;
-            } else if (words[i].toLowerCase() == '-c' || words[i].toLowerCase() == '-channel' || words[i].toLowerCase() == '--channel') {
-                current = 3;
-            } else {
-                switch (current) {
-                    case 0: //message
-                        type += words[i] + ' ';
-                        break;
-                    case 1: //user
-                        user += words[i] + ' ';
-                        break;
-                    case 2: //order
-                        if (words[i].toUpperCase().startsWith('ASC') && order == null) {
-                            order = true;
-                        } else if (words[i].toUpperCase().startsWith('DESC') && order == null) {
-                            order = false;
-                        }
-                        break;
-                    case 3:
-                        if (/(\d+)/.test(words[i]))
-                            channel = words[i].match(/(\d+)/)[1];
-                        break;
-                    default:
-                        logger.debug('wut');
-                        break;
-                }
-            }
-        }
-    }
+    if (input.c && input.c.length > 0)
+        if (/(\d+)/.test(input.c[0]))
+            channel = input.c[0].match(/(\d+)/)[1];
     let guild = bot.channelGuildMap[channel];
     if (!guild || guild != msg.channel.guild.id) {
         bu.send(msg, 'The channel must be on this guild!');
         return;
     }
+    if (input.o && input.o.length > 0)
+        if (input.o[0].startsWith('ASC') && order == null) {
+            order = true;
+        } else if (input.o[0].toUpperCase().startsWith('DESC') && order == null) {
+        order = false;
+    }
     if (order == null) {
         order = false;
     }
+    let user = '',
+        type = '';
+    if (input.t) type = input.t.join(' ');
+    if (input.u) user = input.u.join(' ');
     var typesRaw = type.split(','),
         usersRaw = user.split(','),
         types = [],
@@ -155,9 +128,10 @@ e.execute = async function(msg, words) {
             }
         }
     }
-    //if (types.length == 0) {
-    //    types = [0, 1, 2];
-    // }
+    if (input.C && !types.includes(0)) types.push(0);
+    if (input.U && !types.includes(1)) types.push(1);
+    if (input.D && !types.includes(2)) types.push(2);
+
     logger.debug(channel, users, types, order);
     let msg2 = await bu.send(msg, 'Generating your logs...');
     let pingUser = false;

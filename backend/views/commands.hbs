@@ -99,6 +99,17 @@
 							<p class="flow-text">&lt;&gt; - denotes a required parameter</p>
 
 							<p class="flow-text">[] - denotes an optional parameter</p>
+
+							<p class="flow-text">Some commands are able to take flag parameters. All flags are divided into flag codes (prefixed by -) and words (prefixed
+								by --). You can provide them in any order, but they should all be specified at the end of a command.</p>
+							<p class="flow-text">For example, if a command takes a user input, you'd be able to use <code>-u</code> or <code>--user</code>.</p>
+
+							<pre><code>b!command --user @user#1234
+b!command -u @user#1234</code></pre>
+
+							<p class="flow-text">You can also chain flag codes together. For example, <code>-flag test</code> would activate flags <code>f</code>,
+								<code>l</code>, <code>a</code>, and give the content 'test' to <code>g</code>.</p>
+
 						</div>
 					</div>
 				</div>

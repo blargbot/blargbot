@@ -1030,10 +1030,13 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
         let modlog = storedGuild.modlog || [];
         let lastCase = modlog[modlog.length - 1];
         var mod;
+        let reason;
         if (bu.unbans[guild.id] && bu.unbans[guild.id][user.id]) {
-            mod = bot.users.get(bu.unbans[guild.id][user.id]);
+            mod = bot.users.get(bu.unbans[guild.id][user.id].mod);
+            reason = bu.unbans[guild.id][user.id].reason;
             delete bu.unbans[guild.id][user.id];
         }
+        logger.debug(reason);
         if (lastCase && lastCase.userid == user.id) {
             let val = await bu.guildSettings.get(guild.id, 'modlog');
 
@@ -1049,10 +1052,10 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
                     embed: embed
                 });
             } else {
-                bu.logAction(guild, user, mod, 'Unban');
+                bu.logAction(guild, user, mod, 'Unban', reason);
             }
         } else {
-            bu.logAction(guild, user, mod, 'Unban');
+            bu.logAction(guild, user, mod, 'Unban', reason);
         }
         bu.logEvent(guild.id, 'memberunban', `**User:** ${user.username}#${user.discriminator} (${user.id})`);
     });

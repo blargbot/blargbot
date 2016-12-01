@@ -637,6 +637,7 @@ bu.getPosition = (member) => {;
 
 bu.logAction = async function(guild, user, mod, type, reason) {
     let isArray = Array.isArray(user);
+    if (Array.isArray(reason)) reason = reason.join(' ');
     let val = await bu.guildSettings.get(guild.id, 'modlog');
     if (val) {
         let color = 0x17c484;
@@ -659,6 +660,7 @@ bu.logAction = async function(guild, user, mod, type, reason) {
             case 'mute':
                 color = 0xd80f66;
                 break;
+            case 'auto-unmute':
             case 'unmute':
                 color = 0x1cdb68;
                 break;
@@ -1213,3 +1215,64 @@ bu.filterMentions = async function(message) {
     }
     return message;
 };
+
+const timeKeywords = {
+    days: ['day', 'days', 'd'],
+    hours: ['hours', 'hour', 'h'],
+    minutes: ['minutes', 'minute', 'min', 'mins', 'm'],
+    seconds: ['seconds', 'second', 'sec', 'secs', 's']
+}
+
+bu.parseDuration = function(text) {
+    let duration = moment.duration()
+    if (/([0-9]+) ?(day|days|d)/.test(text))
+        duration.add(parseInt(text.match(/([0-9]+) ?(day|days|d)/i)[1]) || 0, 'd');
+    if (/([0-9]+) ?(hours|hour|h)/.test(text))
+        duration.add(parseInt(text.match(/([0-9]+) ?(hours|hour|h)/i)[1]) || 0, 'h');
+    if (/([0-9]+) ?(minutes|minute|mins|min|m)/.test(text))
+        duration.add(parseInt(text.match(/([0-9]+) ?(minutes|minute|mins|min|m)/i)[1]) || 0, 'm');
+    if (/([0-9]+) ?(seconds|second|secs|sec|s)/.test(text))
+        duration.add(parseInt(text.match(/([0-9]+) ?(seconds|second|secs|sec|s)/i)[1]) || 0, 's');
+    return duration;
+}
+
+/*
+ * let map = [
+ *     {flag: 'u', word: 'user'}
+ * ];
+ * */
+bu.parseInput = function(map, text) {
+    let words;
+    if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '));
+    else words = bu.splitInput(text);
+    let output = {
+        undefined: []
+    };
+    let currentFlag = '';
+    for (let i = 0; i < words.length; i++) {
+        let pushFlag = true;
+        if (words[i].startsWith('--')) {
+            let flags = map.filter(f => f.word == words[i].substring(2).toLowerCase());
+            if (flags.length > 0) {
+                currentFlag = flags[0].flag;
+                output[currentFlag] = [];
+                pushFlag = false;
+            }
+        } else if (words[i].startsWith('-')) {
+            let tempFlag = words[i].substring(1);
+            for (let char of tempFlag) {
+                currentFlag = char;
+                output[currentFlag] = [];
+            }
+            pushFlag = false;
+        }
+        if (pushFlag) {
+            if (currentFlag !== '') {
+                output[currentFlag].push(words[i]);
+            } else {
+                output['undefined'].push(words[i]);
+            }
+        }
+    }
+    return output;
+}
