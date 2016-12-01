@@ -28,7 +28,7 @@ e.flags = [{
 }, {
     flag: 't',
     word: 'time',
-    desc: `The amount of time to mute for, formated as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`
+    desc: `The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`
 }];
 
 e.execute = async function(msg, words, text) {
