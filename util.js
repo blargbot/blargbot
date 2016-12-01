@@ -1276,3 +1276,13 @@ bu.parseInput = function(map, text) {
     }
     return output;
 }
+
+bu.canSpeak = function(channelid) {
+    let channel = bot.getChannel(channelid);
+    if (channel) {
+        let permission = channel.permissionsOf(bot.user.id);
+        return permission.json;
+    } else {
+        return null;
+    }
+}
