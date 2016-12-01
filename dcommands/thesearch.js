@@ -6,14 +6,8 @@ var moment = require('moment');
 var util = require('util');
 const reload = require('require-reload');
 const Jimp = reload('jimp');
-
-
 e.init = () => {
-
-
-
     e.category = bu.CommandType.GENERAL;
-
 };
 
 e.requireCtx = require;
@@ -36,7 +30,7 @@ e.execute = async function(msg, words) {
             .rawSize(160, 68)
             .out('-background')
             .out('transparent')
-            .fill('#000000')
+            .fill('#393b3e')
             .gravity('Center')
             .out(`caption:${shitText}`)
             .options({
