@@ -21,6 +21,7 @@ e.longinfo = `<p>Tells everyone about the progress of the search for intelligent
 e.execute = async function(msg, words) {
     var shitText = 'I use betterdiscord';
     if (words[1]) shitText = words.slice(1).join(' ');
+    shitText = await bu.filterMentions(shitText);
     logger.debug(util.inspect(words));
     bot.sendChannelTyping(msg.channel.id);
     try {

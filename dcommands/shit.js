@@ -7,13 +7,8 @@ var util = require('util');
 const reload = require('require-reload');
 const Jimp = reload('jimp');
 
-
 e.init = () => {
-
-
-
     e.category = bu.CommandType.GENERAL;
-
 };
 
 e.requireCtx = require;
@@ -36,6 +31,7 @@ e.execute = async function(msg, words) {
         }
         shitText = words.join(' ');
     }
+    shitText = await bu.filterMentions(shitText);
     bot.sendChannelTyping(msg.channel.id);
     try {
         gm()
