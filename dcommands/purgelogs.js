@@ -32,3 +32,32 @@ The operation took:
     ${diff.milliseconds()} milliseconds`);
     }
 };
+
+const logLogChannel = '254034744134598676';
+
+e.event = async function(args) {
+    await bu.send(logLogChannel, 'Doing a daily purge of logs that are over two weeks old.');
+    let start = moment();
+    let returnObj = await r.table('chatlogs')
+        .between(r.epochTime(0), r.now().sub(14 * 24 * 60 * 60), {
+            index: 'msgtime'
+        }).delete({
+            durability: "soft"
+        }).run();
+    let end = moment();
+    let diff = moment.duration(end - start);
+    bu.send(logLogChannel, `I'm finished!
+${returnObj.deleted} records were deleted.
+The operation took:
+    ${diff.days()} days
+    ${diff.hours()} hours
+    ${diff.minutes()} minutes
+    ${diff.seconds()} seconds
+    ${diff.milliseconds()} milliseconds`);
+
+    let tomorrow = moment(moment().format('YYYY-MM-DD')).add(1, 'd');
+    await r.table('events').insert({
+        type: 'purgelogs',
+        endtime: r.epochTime(tomorrow.unix())
+    });
+}
