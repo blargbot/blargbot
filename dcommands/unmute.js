@@ -38,18 +38,6 @@ e.execute = async function(msg, words) {
                 if (!user)
                     return;
 
-                var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
-                var userPos = bu.getPosition(msg.member);
-                var targetPos = role.position;
-                if (targetPos >= botPos) {
-                    bu.send(msg, `I don't have permission to get rid of the muted role!`);
-                    return;
-                }
-                if (targetPos >= userPos) {
-                    bu.send(msg, `You don't have permission to get rid of the muted role!`);
-                    return;
-                }
-
                 if (member.roles.indexOf(mutedrole) == -1) {
                     bu.send(msg, 'That user isn\'t muted!');
                 } else {

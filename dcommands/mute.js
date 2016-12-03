@@ -86,7 +86,7 @@ Modifying $ {
                     await bu.send(msg, `I couldn't find that user!`);
                     return;
                 }
-
+                /*
                 var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
                 var userPos = bu.getPosition(msg.member);
                 var targetPos = role.position;
@@ -98,7 +98,7 @@ Modifying $ {
                     bu.send(msg, `You don't have permission to assign the muted role!\nError: target is higher than you in the role heirarchy.`);
                     return;
                 }
-
+                */
                 if (member.roles.indexOf(mutedrole) > -1) {
                     bu.send(msg, 'That user is already muted!');
                 } else {
