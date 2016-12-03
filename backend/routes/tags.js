@@ -62,7 +62,7 @@ async function renderEditor(req, res) {
                                 content: req.body.content,
                                 lastmodified: r.now()
                             }).run();
-                            res.locals.message = 'Your tag has been edited!';
+                            res.locals.message = 'Your tag has been edited! It has been saved as \'' + title + '\'.';
                             logChange(req.user, 'Edit (WI)', {
                                 user: `${req.user.username} (${req.user.id})`,
                                 tag: title,
@@ -77,7 +77,7 @@ async function renderEditor(req, res) {
                             lastmodified: r.now(),
                             uses: 0
                         }).run();
-                        res.locals.message = 'Your tag has been created!';
+                        res.locals.message = 'Your tag has been created! It has been saved as \'' + title + '\'.';
                         logChange(req.user, 'Create (WI)', {
                             user: `${req.user.username} (${req.user.id})`,
                             tag: title,
@@ -106,7 +106,7 @@ async function renderEditor(req, res) {
                                 storedTag.name = newTitle;
                                 await r.table('tag').insert(storedTag).run();
                                 await r.table('tag').get(title).delete().run();
-                                res.locals.message = 'Tag successfully renamed. Note: Only the name has changed. You still need to save if you made changes to the contents.';
+                                res.locals.message = 'Tag successfully renamed to \'' + newTitle + '\'. Note: Only the name has changed. You still need to save if you made changes to the contents.';
                                 res.locals.tagName = newTitle;
                                 logChange(req.user, 'Rename (WI)', {
                                     user: `${req.user.username} (${req.user.id})`,
@@ -194,7 +194,10 @@ async function logChange(user, action, actionObj) {
                 icon_url: user.avatarURL,
                 url: `https://blargbot.xyz/user/${user.id}`
             },
-            timestamp: moment()
+            timestamp: moment(),
+            footer: {
+                text: 'Web Interface'
+            }
         }
     });
 }
