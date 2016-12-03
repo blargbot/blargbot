@@ -49,7 +49,7 @@ async function renderEditor(req, res) {
             case 'save':
                 res.locals.startText = req.body.content;
                 res.locals.tagName = req.body.tagName;
-                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
+                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
                 if (title == '') {
                     res.locals.error = 'Blank is not a name!';
                 } else {
@@ -63,7 +63,7 @@ async function renderEditor(req, res) {
                                 lastmodified: r.now()
                             }).run();
                             res.locals.message = 'Your tag has been edited!';
-                            logChange('Edit (WI)', {
+                            logChange(req.user, 'Edit (WI)', {
                                 user: `${req.user.username} (${req.user.id})`,
                                 tag: title,
                                 content: req.body.content
@@ -78,7 +78,7 @@ async function renderEditor(req, res) {
                             uses: 0
                         }).run();
                         res.locals.message = 'Your tag has been created!';
-                        logChange('Create (WI)', {
+                        logChange(req.user, 'Create (WI)', {
                             user: `${req.user.username} (${req.user.id})`,
                             tag: title,
                             content: req.body.content
@@ -89,8 +89,8 @@ async function renderEditor(req, res) {
             case 'rename':
                 res.locals.startText = req.body.content;
                 res.locals.tagName = req.body.tagName;
-                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
-                let newTitle = req.body.newname.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
+                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
+                let newTitle = req.body.newname.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
                 if (newTitle == '') {
                     res.locals.error = 'Blank is not a name!';
                 } else {
@@ -108,7 +108,7 @@ async function renderEditor(req, res) {
                                 await r.table('tag').get(title).delete().run();
                                 res.locals.message = 'Tag successfully renamed. Note: Only the name has changed. You still need to save if you made changes to the contents.';
                                 res.locals.tagName = newTitle;
-                                logChange('Rename (WI)', {
+                                logChange(req.user, 'Rename (WI)', {
                                     user: `${req.user.username} (${req.user.id})`,
                                     oldName: title,
                                     newName: newTitle
@@ -123,7 +123,7 @@ async function renderEditor(req, res) {
             case 'delete':
                 res.locals.startText = req.body.content;
                 res.locals.tagName = req.body.tagName;
-                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
+                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
 
                 storedTag = await r.table('tag').get(title).run();
                 if (storedTag) {
@@ -134,7 +134,7 @@ async function renderEditor(req, res) {
                         res.locals.startText = '';
                         res.locals.tagName = '';
                         res.locals.message = 'Tag successfully deleted! It\'s gone forever!';
-                        logChange('Delete (WI)', {
+                        logChange(req.user, 'Delete (WI)', {
                             user: `${req.user.username} (${req.user.id})`,
                             tag: title,
                             content: req.body.content
@@ -150,13 +150,53 @@ async function renderEditor(req, res) {
     res.render('editor');
 }
 
-function logChange(action, actionObj) {
+/*function logChange(req.user, action, actionObj) {
     let output = `**__${action}__**\n`;
     let actionArray = [];
     for (let key in actionObj) {
         actionArray.push(`  **${key}**: ${actionObj[key]}`);
     }
     bu.send('230810364164440065', output + actionArray.join('\n'));
+}*/
+
+async function logChange(user, action, actionObj) {
+    user = await bot.getRESTUser(user.id);
+    let actionArray = [];
+    for (let key in actionObj) {
+        actionArray.push({
+            name: key,
+            value: actionObj[key],
+            inline: true
+        });
+    }
+    let color = 0x000000;
+    switch (action.split(' ')[0].toLowerCase()) {
+        case 'create':
+            color = 0x0eed24;
+            break;
+        case 'edit':
+            color = 0x6b0eed;
+            break;
+        case 'delete':
+            color = 0xf20212;
+            break;
+        case 'rename':
+            color = 0x02f2ee;
+            break;
+    }
+    bu.send('230810364164440065', {
+        embed: {
+            title: action,
+            color: color,
+            fields: actionArray,
+            author: {
+                name: bu.getFullName(user),
+                icon_url: user.avatarURL,
+                url: `https://blargbot.xyz/user/${user.id}`
+            },
+            timestamp: moment()
+        }
+    });
 }
 
 module.exports = router;

@@ -160,7 +160,7 @@ e.execute = async function(msg, words, text) {
                 if (!title)
                     title = (await bu.awaitMessage(msg, tagNameMsg)).content;
 
-                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@]/gi, '');
+                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@]/gi, '');
                 tag = await r.table('tag').get(title).run();
                 if (tag) {
                     bu.send(msg, `❌ That tag already exists! ❌`);
@@ -227,7 +227,7 @@ e.execute = async function(msg, words, text) {
                 if (!title)
                     title = await bu.awaitMessage(msg, tagNameMsg).content;
 
-                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@]/gi, '');
+                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@]/gi, '');
                 tag = await r.table('tag').get(title).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
@@ -262,7 +262,7 @@ e.execute = async function(msg, words, text) {
                 if (!title)
                     title = await bu.awaitMessage(msg, tagNameMsg).content;
 
-                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_`~()@\[\]]/gi, '');
+                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
                 tag = await r.table('tag').get(title).run();
                 if (tag && tag.author != msg.author.id) {
                     bu.send(msg, `❌ You don't own this tag! ❌`);
