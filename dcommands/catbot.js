@@ -16,19 +16,18 @@ e.info = '';
 
 e.execute = async function(msg, words) {
     await bot.sendChannelTyping(msg.channel.id);
-    if (words[1] && words[1].toLowerCase() == 'chis') {
-        let chisMsgs = await r.table('chatlogs').getAll('100463282099326976', {
-            index: 'userid'
-        }).orderBy('msgid');
-        let content = [];
-        for (let message of chisMsgs) {
-            content.push(message.content);
+    if (words[1]) {
+        switch (words[1].toLowerCase()) {
+            case 'chis':
+                genlogs('100463282099326976', 'chis');
+                break;
+            case 'mindy':
+                genlogs('217122202934444033', 'mindy');
+                break;
+            case 'zeta':
+                genlogs('94129005791281152', 'zeta');
+                break;
         }
-        fs.writeFile(path.join(__dirname, '..', '..', 'catbot', 'chis.json'),
-            JSON.stringify(content, null, 2), (err) => {
-                if (err) bu.send(msg, err);
-                bu.send(msg, 'Done!');
-            });
     } else {
         let catMsgs = await r.table('catchat').orderBy('msgid');
         let content = [];
@@ -43,3 +42,18 @@ e.execute = async function(msg, words) {
             });
     }
 };
+
+async function genlogs(id, name) {
+    let msgs = await r.table('chatlogs').getAll(id, {
+        index: 'userid'
+    }).orderBy('msgid');
+    let content = [];
+    for (let message of msgs) {
+        content.push(message.content);
+    }
+    fs.writeFile(path.join(__dirname, '..', '..', 'catbot', name + '.json'),
+        JSON.stringify(content, null, 2), (err) => {
+            if (err) bu.send(msg, err);
+            bu.send(msg, 'Done!');
+        });
+}
