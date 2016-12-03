@@ -19,13 +19,13 @@ e.execute = async function(msg, words) {
     if (words[1]) {
         switch (words[1].toLowerCase()) {
             case 'chis':
-                genlogs('100463282099326976', 'chis');
+                genlogs(msg, '100463282099326976', 'chis');
                 break;
             case 'mindy':
-                genlogs('217122202934444033', 'mindy');
+                genlogs(msg, '217122202934444033', 'mindy');
                 break;
             case 'zeta':
-                genlogs('94129005791281152', 'zeta');
+                genlogs(msg, '94129005791281152', 'zeta');
                 break;
         }
     } else {
@@ -43,7 +43,7 @@ e.execute = async function(msg, words) {
     }
 };
 
-async function genlogs(id, name) {
+async function genlogs(msg, id, name) {
     let msgs = await r.table('chatlogs').getAll(id, {
         index: 'userid'
     }).orderBy('msgid');
