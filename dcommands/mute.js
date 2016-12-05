@@ -113,7 +113,7 @@ Modifying $ {
                     if (input.r) reason = input.r.join(' ');
                     bu.logAction(msg.channel.guild, user, msg.author, 'Mute');
                     let suffix = '';
-                    if (words[2]) {
+                    if (input.t) {
                         let duration = bu.parseDuration(input.t.join(' '));
                         if (duration.asMilliseconds() > 0) {
                             await r.table('events').insert({
