@@ -19,12 +19,12 @@ e.flags = [{
     desc: 'The reason for the ban.'
 }];
 
-e.execute = (msg, words, text) => {
+e.execute = async function(msg, words, text) {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
         bu.send(msg, `I don't have permission to ban users!`);
         return;
     }
-    let banPerms = await bu.guildSettings.get(msg.guild.id, 'banoverride') || 0;
+    let banPerms = (await bu.guildSettings.get(msg.guild.id, 'banoverride')) || 0;
     if (!bu.comparePerms(msg.member, banPerms) && !msg.member.permission.json.banMembers) {
         bu.send(msg, `You don't have permission to ban users!`);
         return;
