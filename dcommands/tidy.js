@@ -69,6 +69,7 @@ e.execute = async function(msg, words) {
     if (input.undefined.length > 0) {
         limit = parseInt(input.undefined.join(' '));
     }
+    if (limit < 0) limit = 100;
     try {
         let num = await bot.purgeChannel(msg.channel.id, limit, message => {
             if (input.b && !message.author.bot) return false;
