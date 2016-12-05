@@ -11,26 +11,39 @@ e.usage = 'poll <question> [duration] [emoji]...';
 e.info = 'Creates a poll for the given question and duration. If no duration is given, defaults to 60 seconds. If emojis are given, they will be used as options for the poll.';
 e.longinfo = `<p>Creates a poll for the given question and duration. If emojis are given, they will be used as options for the poll.`;
 
+e.flags = [{
+    flag: 't',
+    word: 'time',
+    desc: `How long before the poll expires, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`
+}, {
+    flag: 'e',
+    word: 'emojis',
+    desc: `The emojis to apply to the poll.`
+}];
+
 e.execute = async function(msg, words) {
     let choices = ['👍', '👎'];
-    if (words.length >= 2) {
-        if (!words[2]) words[2] = 60;
-        if (words.length > 3) {
-            choices = words.slice(3);
+    let input = bu.parseInput(e.flags, words);
+    if (input.undefined.length >= 1) {
+        if (input.e) {
+            choices = input.e;
         }
-        let time = parseInt(words[2]);
-        if (isNaN(time)) {
-            bu.send(msg, 'Invalid duration!');
+        let time = moment.duration(60, 's');
+        if (input.t) {
+            time = bu.parseDuration(input.t.join(' '));
+        }
+        if (time.asMilliseconds() <= 0) {
+            bu.send(msg, `The length of a poll can't be less than 0 seconds!`);
             return;
         }
-        time *= 1000;
-        let message = `**__${words[1]}__**\n\nThe poll will expire ${moment.duration(time).humanize(true)}.\n\nVote here:`;
+        let title = input.undefined.join(' ');
+        let message = `**__${title}__**\n\nThe poll will expire ${time.humanize(true)}.\n\nVote here:`;
 
         let msg2 = await bu.send(msg, message);
         for (let choice of choices) {
-            choice = choice.replace(/>/g, '').replace(/</g, '');
+            choice = choice.replace(/[<>]/g, '');
             try {
-                await bot.addMessageReaction(msg2.channel.id, msg2.id, encodeURIComponent(choice));
+                await bot.addMessageReaction(msg2.channel.id, msg2.id, choice);
             } catch (err) {
                 //NO-OP
                 //   logger.error(err);
@@ -38,7 +51,7 @@ e.execute = async function(msg, words) {
         }
         let endTime = moment(msg.timestamp).add(time);
         await r.table('events').insert({
-            title: words[1],
+            title: title,
             type: 'poll',
             channel: msg.channel.id,
             msg: msg2.id,
@@ -76,14 +89,22 @@ e.event = async function(args) {
     let winners = reactions.filter(r => r.count == max);
     let winnerString = winners.map(r => r.emoji).join(' ');
     if (winners.length > 1) {
-        bu.send(args.channel, `**__${args.title}__**\nThe results are in! It was a tie between these choices, at **${max}** vote${max == 1 ? '' : 's'} each:
-${winnerString}
+        bu.send(args.channel, {
+            content: `**__${args.title}__**\nThe results are in! A total of **${totalVotes}** vote${totalVotes == 1 ? '' : 's'} were collected!
 
-A total of **${totalVotes}** vote${totalVotes == 1 ? '' : 's'} were collected!`);
+It was a tie between these choices, at **${max}** vote${max == 1 ? '' : 's'} each:`,
+            embed: {
+                description: winnerString
+            }
+        });
     } else {
-        bu.send(args.channel, `**__${args.title}__**\nThe results are in! At **${max}** vote${max == 1 ? '' : 's'}, the winner is:
-${winnerString}
-
-A total of **${totalVotes}** vote${totalVotes == 1 ? '' : 's'} were collected!`);
+        bu.send(args.channel, {
+            content: `**__${args.title}__**\nThe results are in! A total of **${totalVotes}** vote${totalVotes == 1 ? '' : 's'} were collected!
+            
+At **${max}** vote${max == 1 ? '' : 's'}, the winner is:`,
+            embed: {
+                description: winnerString
+            }
+        });
     }
 };
