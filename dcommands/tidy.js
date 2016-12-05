@@ -1,8 +1,10 @@
 var e = module.exports = {};
+const safe = require('safe-regex');
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
 };
+
 e.requireCtx = require;
 
 e.isCommand = true;
@@ -53,7 +55,12 @@ e.execute = async function(msg, words) {
         } else {
             query = new RegExp(queryStr);
         }
+        if (!safe(query)) {
+            bu.send(msg, 'That regex is not safe! Terminating operation.');
+            return;
+        }
     }
+
     if (input.u) {
         let users = input.u.join(' ').split(',');
         userList = [];
