@@ -1265,10 +1265,11 @@ bu.parseInput = function(map, text) {
             pushFlag = false;
         }
         if (pushFlag) {
-            if (currentFlag !== '') {
+            if (currentFlag != '') {
                 output[currentFlag].push(words[i]);
             } else {
-                output['undefined'].push(words[i]);
+                if (words[i] != '')
+                    output['undefined'].push(words[i]);
             }
         }
     }

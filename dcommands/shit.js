@@ -27,10 +27,11 @@ e.flags = [{
 
 e.execute = async function(msg, words) {
     let input = bu.parseInput(e.flags, words);
-    var shitText = 'Your favourite anime';
+    let shitText = 'Your favourite anime';
     var plural = false;
     if (input.p) plural = true;
-    shitText = await bu.filterMentions(input.undefined.join(' '));
+    if (input.undefined.length > 0)
+        shitText = await bu.filterMentions(input.undefined.join(' '));
     bot.sendChannelTyping(msg.channel.id);
     try {
         gm()
