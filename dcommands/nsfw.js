@@ -13,22 +13,25 @@ e.longinfo = '<p>Designates the current channel as NSFW, allowing you to use NSF
 
 
 e.execute = async function(msg) {
+    if (msg.guild) {
 
-
-    let storedGuild = await bu.getGuild(msg.guild.id);
-    let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id) ?
-        storedGuild.channels[msg.channel.id] : {
-            blacklisted: false
-        };
-    if (channel.nsfw) {
-        channel.nsfw = false;
-        bu.send(msg, 'This channel is no longer NSFW.');
+        let storedGuild = await bu.getGuild(msg.guild.id);
+        let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(msg.channel.id) ?
+            storedGuild.channels[msg.channel.id] : {
+                blacklisted: false
+            };
+        if (channel.nsfw) {
+            channel.nsfw = false;
+            bu.send(msg, 'This channel is no longer NSFW.');
+        } else {
+            channel.nsfw = true;
+            bu.send(msg, 'This channel is now NSFW.');
+        }
+        storedGuild.channels[msg.channel.id] = channel;
+        r.table('guild').get(msg.channel.guild.id).update({
+            channels: storedGuild.channels
+        }).run();
     } else {
-        channel.nsfw = true;
-        bu.send(msg, 'This channel is now NSFW.');
+        bu.send(msg, `This command can only be executed in a guild.`);
     }
-    storedGuild.channels[msg.channel.id] = channel;
-    r.table('guild').get(msg.channel.guild.id).update({
-        channels: storedGuild.channels
-    }).run();
 };

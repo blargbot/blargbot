@@ -102,7 +102,6 @@ Modifying $ {
                 if (member.roles.indexOf(mutedrole) > -1) {
                     bu.send(msg, 'That user is already muted!');
                 } else {
-
                     var roles = member.roles;
                     roles.push(mutedrole);
                     await bot.editGuildMember(msg.channel.guild.id, user.id, {
