@@ -20,15 +20,30 @@ blargbot&gt; Greeting set. Simulation: Welcome, **User**. Please read #rules.
 </code></pre>`;
 
 e.execute = async function(msg, words) {
-
-    if (words.length == 1) {
+    let input = bu.parseInput(e.flags, words);
+    if (input.undefined.length == 0) {
         bu.guildSettings.remove(msg.channel.guild.id, 'greeting').then(() => {
             bu.send(msg, 'Disabled greetings');
         });
         return;
     }
-    var greeting = words.slice(1).join(' ');
+    var greeting = input.undefined.join(' ');
     await bu.guildSettings.set(msg.channel.guild.id, 'greeting', greeting);
-    bu.send(msg, `Greeting set. Simulation:
+    let suffix = '';
+    if (input.c) {
+        let channelStr = input.c.join(' ');
+        if (/[0-9]{17,23}/.test(channelStr)) {
+            let channel = channelStr.match(/([0-9]{17,23})/)[1];
+            if (!bot.getChannel(channel)) {
+                suffix = `A channel could not be found from the channel input, so this message will go into the default channel. `;
+            } else if (bot.channelGuildMap[channel] != msg.guild.id) {
+                suffix = `The channel must be on this guild! `;
+            } else {
+                await bu.guildSettings.set(msg.guild.id, 'greetchan', channel);
+                suffix = `This greeting will be outputted in <#${channel}>. `;
+            }
+        }
+    }
+    bu.send(msg, `Greeting set. ${suffix}Simulation:
 ${await tags.processTag(msg, greeting, '')}`);
 };

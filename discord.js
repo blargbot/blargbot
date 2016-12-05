@@ -799,13 +799,14 @@ function registerListeners() {
 
     bot.on('guildMemberAdd', async function(guild, member) {
         let val = await bu.guildSettings.get(guild.id, 'greeting');
+        let chan = await bu.guildSettings.get(guild.id, 'greetchan');
         if (val) {
             var message = await tags.processTag({
                 channel: guild.defaultChannel,
                 author: member.user,
                 member: member
             }, val, '');
-            bu.send(guild.defaultChannel.id, message);
+            bu.send(chan || guild.defaultChannel.id, message);
         }
         bu.logEvent(guild.id, 'memberjoin', `**User:** ${member.user.username}#${member.user.discriminator} (${member.user.id})`);
     });
@@ -834,13 +835,14 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
 
     bot.on('guildMemberRemove', async function(guild, member) {
         let val = await bu.guildSettings.get(guild.id, 'farewell');
+        let chan = await bu.guildSettings.get(guild.id, 'farewellchan');        
         if (val) {
             var message = await tags.processTag({
                 channel: guild.defaultChannel,
                 author: member.user,
                 member: member
             }, val, '');
-            bu.send(guild.defaultChannel.id, message);
+            bu.send(chan || guild.defaultChannel.id, message);
         }
         bu.logEvent(guild.id, 'memberleave', `**User:** ${member.user.username}#${member.user.discriminator} (${member.user.id})`);
     });

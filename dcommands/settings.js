@@ -82,24 +82,33 @@ e.execute = async function(msg, words) {
         let staffPerms = settings.staffperms || bu.defaultStaff;
         let kickPerms = settings.kickoverride || 0;
         let banPerms = settings.banoverride || 0;
+        let greetChan = settings.greetchan ? bot.getChannel(settings.greetchan) : 'Default';
+        if (greetChan && greetChan != 'Default') greetChan = greetChan.name;
+        else greetChan = 'Undefined';
+        let farewellChan = settings.farewellchan ? bot.getChannel(settings.farewellchan) : 'Default';
+        if (farewellChan && farewellChan != 'Default') farewellChan = farewellChan.name;
+        else farewellChan = 'Undefined';
+        
         var message = `\`\`\`prolog
 Settings For ${msg.channel.guild.name}
-         Prefix : ${prefix}
-  NSFW Channels : ${nsfwMessage}
-    Blacklisted : ${blacklistMessage}  
-       Greeting : ${greeting}
-       Farewell : ${farewell}
- Modlog Channel : ${modlogChannel}
-     Muted Role : ${mutedRole}
-  Track Deletes : ${deleteNotif}
-    CAH is NSFW : ${cahNsfw}
-     Tableflips : ${tableFlip}
-   Anti-Mention : ${antiMention}
-        DM Help : ${dmHelp}
-  Perm Override : ${permOverride}
-    Staff Perms : ${staffPerms}
-  Kick Override : ${kickPerms}
-   Ban Override : ${banPerms}
+          Prefix : ${prefix}
+   NSFW Channels : ${nsfwMessage}
+     Blacklisted : ${blacklistMessage}  
+        Greeting : ${greeting}
+Greeting Channel : ${greetChan}
+        Farewell : ${farewell}
+Farewell Channel : ${farewellChan}
+  Modlog Channel : ${modlogChannel}
+      Muted Role : ${mutedRole}
+   Track Deletes : ${deleteNotif}
+     CAH is NSFW : ${cahNsfw}
+      Tableflips : ${tableFlip}
+    Anti-Mention : ${antiMention}
+         DM Help : ${dmHelp}
+   Perm Override : ${permOverride}
+     Staff Perms : ${staffPerms}
+   Kick Override : ${kickPerms}
+    Ban Override : ${banPerms}
 \`\`\``;
         bu.send(msg, message);
     } else {
