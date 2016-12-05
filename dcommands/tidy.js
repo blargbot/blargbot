@@ -74,7 +74,7 @@ e.execute = async function(msg, words) {
             if (input.b && !message.author.bot) return false;
             if (input.i && !/discord\.gg\/[\d\w]+/.test(message.content)) return false;
             if (input.l && !/https?:\/\/.*\..*/.test(message.content)) return false;
-            if (input.e && !message.embed) return false;
+            if (input.e && message.embeds.length == 0) return false;
             if (input.a && message.attachments.length == 0) return false;
             if (userList && userList.length > 0 && !userList.includes(message.author.id)) return false;
             if (input.q && !query.test(message.content)) return false;
