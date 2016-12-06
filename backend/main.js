@@ -13,9 +13,6 @@ const Strategy = require('passport-discord').Strategy;
 const hbs = require('hbs');
 const helpers = require('./helpers');
 
-const SSE = require('express-sse');
-global.sse = new SSE(['oh', 'shit', 'waddap']);
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
@@ -27,11 +24,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 helpers.init();
 
-
 const server = app.server = http.createServer(app);
 
 var scopes = ['identify'];
-
+global.sse = require('./sseBackend')(server, app);
 
 function checkAuth(req, res, next) {
     if (req.isAuthenticated()) return next();
@@ -92,7 +88,6 @@ e.init = () => {
         <p>${req.user.username}#${req.user.discriminator}</p>
         `);
     });
-    app.get('/messagestream', sse.init);
     app.get('/messages', function(req, res) {
         res.render('messages');
     })
