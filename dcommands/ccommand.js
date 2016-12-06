@@ -13,12 +13,13 @@ e.info = `Creates a custom command, using the BBTag language.
 Custom commands take precedent over all other commands. As such, you can use it to overwrite commands, or disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the 'ccommand' command. For more in-depth command customization, see the \`commandperm\` command.
 
 __**Usage:**__
-  **cc create <name> <content>** - creates a new tag with given name and content
-  **cc edit <name> <content>** - edits an existing tag with given content, provided that you were the one who created it
+  **cc create <name> <content>** - creates a ccommand with given name and content
+  **cc edit <name> <content>** - edits an existing ccommand with given content
   **cc set <name> <content>** - provides the functionality of \`create\` and \`edit\` in a single command
-  **cc delete <name>** - deletes the tag with given name, provided that you own it
-  **cc rename <tag1> <tag2>** - renames the tag by the name of \`tag1\` to \`tag2\`
-  **cc raw <name>** - displays the raw code of a tag
+  **cc delete <name>** - deletes the ccommand with given name, provided that you own it
+  **cc rename <tag1> <tag2>** - renames the ccommand by the name of \`ccommand1\` to \`ccommand2\`
+  **cc raw <name>** - displays the raw code of a ccommand
+  **cc setrole <name> <role names...>** - sets the roles required to execute the ccommand
   **cc help** - shows this message
   
 For more information about BBTag, visit https://blargbot.xyz/tags`;
@@ -51,6 +52,8 @@ blargbot&gt; Hello, User. This is a test command.
     <p>Renames an existing ccommand to something else.<p>
     <pre><code>cc raw &lt;name&gt;</code></pre>
     <p>Displays the raw code of a given ccommand.</p>
+    <pre><code>cc setrole &lt;name&gt; &lt;role names...&gt;</code></pre>
+    <p>sets the roles required to execute the ccommand</p>
     <pre><code>cc help</code></pre>
     <p>Gets basic ccommand help.</p>`;
 e.alias = ['cc'];
@@ -60,6 +63,22 @@ e.execute = async function(msg, words, text) {
         let storedTag;
         let content;
         switch (words[1].toLowerCase()) {
+            case 'setrole':
+                if (words.length > 3) {
+                    storedTag = await bu.ccommand.get(msg.guild.id, words[2]);
+                    if (!storedTag) {
+                        bu.send(msg, 'That ccommand doesn\'t exist!');
+                        return;
+                    }
+                    await bu.ccommand.set(msg.guild.id, words[2], {
+                        content: storedTag.content || storedTag,
+                        roles: words.slice(3)
+                    });
+                    bu.send(msg, `Set the custom role requirements of '${words[2]}' to \`\`\`fix\n${words.slice(3).join(', ')}\n\`\`\` `)
+                } else {
+                    bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
+                }
+                break;
             case 'create':
                 if (words.length > 3) {
                     storedTag = await bu.ccommand.get(msg.channel.guild.id, words[2]);

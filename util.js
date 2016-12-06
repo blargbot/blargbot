@@ -1025,6 +1025,22 @@ bu.getGuild = async function(guildid) {
     return storedGuild;
 };
 
+bu.canExecuteCcommand = async function(msg, commandName, quiet) {
+    let val = await bu.ccommand.get(msg.guild ? msg.guild.id : '', commandName);
+    if (typeof val == "object") {
+        roles = val.roles;
+        if (roles.length > 0) {
+            for (let role of roles) {
+                if (bu.hasPerm(msg, role, quiet))
+                    return true;
+            }
+        } else return true;
+    } else {
+        return true;
+    }
+    return false;
+}
+
 bu.canExecuteCommand = async function(msg, commandName, quiet) {
     if (msg.author.id == bu.CAT_ID && bu.catOverrides) return [true, commandName];
     if (msg.channel.guild) {

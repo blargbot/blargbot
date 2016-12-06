@@ -332,16 +332,25 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
     }
     let val = await bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]);
     if (val) {
-        var command = text.replace(words[0], '').trim();
-        command = bu.fixContent(command);
-        var response = await tags.processTag(msg, val, command);
-        if (response !== 'null') {
-            bu.send(channel.id, {
-                content: response,
-                disableEveryone: false
-            });
+        let ccommandContent;
+        if (typeof val == "object") {
+            ccommandContent = val.content;
+        } else {
+            ccommandContent = val;
         }
-        return true;
+        
+        if (await bu.canExecuteCcommand(msg, words[0], true)) {
+            var command = text.replace(words[0], '').trim();
+            command = bu.fixContent(command);
+            var response = await tags.processTag(msg, ccommandContent, command);
+            if (response !== 'null') {
+                bu.send(channel.id, {
+                    content: response,
+                    disableEveryone: false
+                });
+            }
+            return true;
+        }
     } else {
         if (config.discord.commands[words[0]] != null) {
 
@@ -835,7 +844,7 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
 
     bot.on('guildMemberRemove', async function(guild, member) {
         let val = await bu.guildSettings.get(guild.id, 'farewell');
-        let chan = await bu.guildSettings.get(guild.id, 'farewellchan');        
+        let chan = await bu.guildSettings.get(guild.id, 'farewellchan');
         if (val) {
             var message = await tags.processTag({
                 channel: guild.defaultChannel,

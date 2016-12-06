@@ -88,7 +88,8 @@ ${flags}`;
                             var ccommandsString = 'Custom Commands:\n  ';
                             var helpCommandList = [];
                             for (var key in ccommands) {
-                                helpCommandList.push(key);
+                                if (await bu.canExecuteCcommand(msg, key, true))
+                                    helpCommandList.push(key);
                             }
                             helpCommandList.sort();
                             ccommandsString += helpCommandList.join(', ');
