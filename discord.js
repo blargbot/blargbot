@@ -1141,7 +1141,7 @@ ${newMsg}`);
 
 
     bot.on('messageCreate', async function(msg) {
-
+        sse.send(`${bu.getFullName(msg.author)}> ${msg.content}`);
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
         let storedGuild;

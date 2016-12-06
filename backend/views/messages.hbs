@@ -1,0 +1,15 @@
+<ul id="list"></ul>
+
+<script>
+var es = new EventSource('/messagestream');
+var list = document.querySelector('#list');
+
+es.onmessage = function (event) {
+    var item = document.createElement('li');
+    item.innerText = event.data.replace(/"/g, '');
+    list.insertBefore(item, list.firstChild);
+    if (list.childNodes.length > 50) {
+            list.removeChild(list.lastElementChild);
+    }
+};
+</script>
