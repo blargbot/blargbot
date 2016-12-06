@@ -28,7 +28,10 @@ e.execute = async function(msg, words) {
                 genlogs(msg, '94129005791281152', 'zeta');
                 break;
             case 'fuyu':
-                genlogs(msg, ['214796473689178133', '141545699442425856'], 'fuyu');
+                genlogs(msg, ['141545699442425856', '214796473689178133'], 'fuyu');
+                break;
+            case 'triping':
+                genlogs(msg, '128694295170514944', 'triping');
                 break;
         }
     } else {
