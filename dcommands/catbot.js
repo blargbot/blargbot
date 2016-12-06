@@ -64,7 +64,7 @@ async function genlogs(msg, id, name) {
     let userId;
     if (Array.isArray(id)) userId = id[0];
     else userId = id;
-    fs.writeFile(path.join(__dirname, '..', '..', 'catbot', userId + '.json'),
+    fs.writeFile(path.join(__dirname, '..', '..', 'catbot', 'jsons', userId + '.json'),
         JSON.stringify({
             name: name,
             lines: content
