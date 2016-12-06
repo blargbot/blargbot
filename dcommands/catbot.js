@@ -27,6 +27,9 @@ e.execute = async function(msg, words) {
             case 'zeta':
                 genlogs(msg, '94129005791281152', 'zeta');
                 break;
+            case 'fuyu':
+                genlogs(msg, ['214796473689178133', '141545699442425856'], 'fuyu');
+                break;
         }
     } else {
         let catMsgs = await r.table('catchat').orderBy('msgid');
@@ -44,15 +47,28 @@ e.execute = async function(msg, words) {
 };
 
 async function genlogs(msg, id, name) {
-    let msgs = await r.table('chatlogs').getAll(id, {
-        index: 'userid'
-    }).orderBy('msgid');
+    let msgs;
+    if (Array.isArray(id)) {
+        id.push({
+            index: 'userid'
+        });
+        msgs = await r.db('blargdb').table('chatlogs').getAll(id[0], id[1], id[2]).orderBy('msgid');
+    } else
+        msgs = await r.db('blargdb').table('chatlogs').getAll(id, {
+            index: 'userid'
+        }).orderBy('msgid');
     let content = [];
     for (let message of msgs) {
         content.push(message.content);
     }
-    fs.writeFile(path.join(__dirname, '..', '..', 'catbot', name + '.json'),
-        JSON.stringify(content, null, 2), (err) => {
+    let userId;
+    if (Array.isArray(id)) userId = id[0];
+    else userId = id;
+    fs.writeFile(path.join(__dirname, '..', '..', 'catbot', userId + '.json'),
+        JSON.stringify({
+            name: name,
+            lines: content
+        }, null, 2), (err) => {
             if (err) bu.send(msg, err);
             bu.send(msg, 'Done!');
         });
