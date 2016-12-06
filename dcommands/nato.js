@@ -10,7 +10,7 @@ e.requireCtx = require;
 e.hidden = false;
 e.usage = 'nato <text>';
 e.info = 'Translates the given text into the NATO phonetic alphabet.';
-e.info = '<p>Translates the given text into the NATO phonetic alphabet.</p>';
+e.longinfo = '<p>Translates the given text into the NATO phonetic alphabet.</p>';
 
 let natoMap = {
     a: 'alpha',
