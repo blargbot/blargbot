@@ -6,7 +6,7 @@ var list = document.querySelector('#list');
 
 es.onmessage = function (event) {
     var item = document.createElement('li');
-    item.innerText = event.data.replace(/"/g, '');
+    item.innerText = event.data.replace(/"/g, '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     list.insertBefore(item, list.firstChild);
     if (list.childNodes.length > 50) {
             list.removeChild(list.lastElementChild);
