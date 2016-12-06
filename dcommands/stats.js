@@ -94,12 +94,15 @@ e.execute = async function(msg, words) {
             value: 'This session',
             inline: false
         });
+        let i = 0;
         for (let item of sortable) {
             embeds.fields.push({
                 name: item[0],
                 value: item[1],
                 inline: true
             });
+            i++;
+            if (i >= 6) break;
         }
 
         embeds.fields.push({
