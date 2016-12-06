@@ -33,6 +33,12 @@ e.execute = async function(msg, words) {
             case 'triping':
                 genlogs(msg, '128694295170514944', 'triping');
                 break;
+            case 'hk':
+                genlogs(msg, '104360151208706048', 'hk');
+                break;
+            case 'tttie':
+                genlogs(msg, '150628341316059136', 'tttie');
+                break;
         }
     } else {
         let catMsgs = await r.table('catchat').orderBy('msgid');
