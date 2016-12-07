@@ -46,7 +46,7 @@ e.execute = async function(msg, words) {
                     value: msg.guild ? msg.guild.id : 'DM',
                     inline: true
                 }, {
-                    name: msg.channel.name : 'DM',
+                    name: msg.channel.name || 'DM',
                     value: msg.channel.id,
                     inline: true
                 }]
