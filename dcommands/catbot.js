@@ -38,6 +38,10 @@ e.execute = async function(msg, words) {
                         bu.send(msg, 'Nope.');
                     }
                     break;
+                case 'list':
+                    let things = await r.db('blargdb').table('markovs').withFields('id');
+                    bu.send(msg, things.map(t => t.id).join('\n'));
+                    break;
                 default:
                     let markov = await r.db('blargdb').table('markovs').get(words[1]);
                     if (markov) {
