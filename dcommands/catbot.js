@@ -21,8 +21,9 @@ e.execute = async function(msg, words) {
             switch (words[1].toLowerCase()) {
                 case 'add':
                     if (msg.mentions.length > 0 && words[2]) {
+                        let ids = msg.mentions.map(u => u.id);
                         await r.db('blargdb').table('markovs').insert({
-                            userid: msg.mentions.map(u => u.id),
+                            userid: ids.length == 1 ? ids[0] || ids,
                             id: words[2].toLowerCase()
                         });
                         bu.send(msg, 'Added.');
