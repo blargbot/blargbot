@@ -65,11 +65,11 @@ async function genlogs(msg, id, name) {
         id.push({
             index: 'userid'
         });
-        msgs = await r.db('blargdb').table('chatlogs').getAll(id[0], id[1], id[2]).orderBy('msgid');
+        msgs = await r.db('blargdb').table('chatlogs').getAll(id[0], id[1], id[2]);
     } else
         msgs = await r.db('blargdb').table('chatlogs').getAll(id, {
             index: 'userid'
-        }).orderBy('msgid');
+        });
     await msg2.edit('Generating array...');
     let content = [];
     for (let message of msgs) {
