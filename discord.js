@@ -1141,7 +1141,11 @@ ${newMsg}`);
 
 
     bot.on('messageCreate', async function(msg) {
-        wss.broadcast(`${bu.getFullName(msg.author)}> ${msg.content}`);
+        wss.broadcast({
+            author: bu.getFullName(msg.author),
+            avatar: msg.author.avatarURL,
+            content: msg.content 
+        });
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
         let storedGuild;
