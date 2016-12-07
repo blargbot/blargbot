@@ -59,6 +59,7 @@ e.execute = async function(msg, words) {
 };
 
 async function genlogs(msg, id, name) {
+    let msg2 = await bu.send(msg, 'Performing query...');
     let msgs;
     if (Array.isArray(id)) {
         id.push({
@@ -69,6 +70,7 @@ async function genlogs(msg, id, name) {
         msgs = await r.db('blargdb').table('chatlogs').getAll(id, {
             index: 'userid'
         }).orderBy('msgid');
+    await msg2.edit('Generating array...');
     let content = [];
     for (let message of msgs) {
         content.push(message.content);
@@ -76,12 +78,13 @@ async function genlogs(msg, id, name) {
     let userId;
     if (Array.isArray(id)) userId = id[0];
     else userId = id;
+    msg2.edit('Writing file...');
     fs.writeFile(path.join(__dirname, '..', '..', 'catbot', 'jsons', userId + '.json'),
         JSON.stringify({
             name: name,
             lines: content
         }, null, 2), (err) => {
             if (err) bu.send(msg, err);
-            bu.send(msg, 'Done!');
+            msg2.edit('Done.');
         });
 }
