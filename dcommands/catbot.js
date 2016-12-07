@@ -51,6 +51,9 @@ e.execute = async function(msg, words) {
             case 'notso':
                 genlogs(msg, '130070621034905600', 'notso');
                 break;
+            case 'mine':
+                genlogs(msg, '155112606661607425', 'mine');
+                break;
         }
     } else {
         let catMsgs = await r.table('catchat').orderBy('msgid');
