@@ -19,55 +19,33 @@ e.execute = async function(msg, words) {
         await bot.sendChannelTyping(msg.channel.id);
         if (words[1]) {
             switch (words[1].toLowerCase()) {
-                case 'chis':
-                    genlogs(msg, '100463282099326976', 'chis');
+                case 'add':
+                    if (msg.mentions.length > 0 && words[2]) {
+                        await r.db('blargdb').table('markovs').insert({
+                            userid: msg.mentions.map(u => u.id),
+                            id: words[2].toLowerCase()
+                        });
+                        bu.send(msg, 'Added.');
+                    } else {
+                        bu.send(msg, 'Nope.');
+                    }
                     break;
-                case 'mindy':
-                    genlogs(msg, '217122202934444033', 'mindy');
+                case 'remove':
+                    if (words[2]) {
+                        await r.db('blargdb').table('markovs').get(words[2].toLowerCase()).delete();
+                        bu.send(msg, 'Removed.');
+                    } else {
+                        bu.send(msg, 'Nope.');
+                    }
                     break;
-                case 'zeta':
-                    genlogs(msg, '94129005791281152', 'zeta');
-                    break;
-                case 'fuyu':
-                    genlogs(msg, ['141545699442425856', '214796473689178133'], 'fuyu');
-                    break;
-                case 'triping':
-                    genlogs(msg, '128694295170514944', 'triping');
-                    break;
-                case 'hk':
-                    genlogs(msg, '104360151208706048', 'hk');
-                    break;
-                case 'tttie':
-                    genlogs(msg, '150628341316059136', 'tttie');
-                    break;
-                case 'blarg':
-                    genlogs(msg, '134133271750639616', 'blarg');
-                    break;
-                case 'xeta':
-                    genlogs(msg, '155490847494897664', 'xeta');
-                    break;
-                case 'axonium':
-                    genlogs(msg, '133332642685779968', 'axonium');
-                    break;
-                case 'notso':
-                    genlogs(msg, '130070621034905600', 'notso');
-                    break;
-                case 'mine':
-                    genlogs(msg, '155112606661607425', 'mine');
-                    break;
-                case 'abal':
-                    genlogs(msg, ['150061853001777154', '98295630480314368'], 'abal');
-                    break;
-                case 'pollr':
-                    genlogs(msg, '168169809303961600', 'pollr');
-                    break;
-                case 'alex':
-                    genlogs(msg, '86477779717066752', 'alex');
-                    break;
-                case 'randon':
-                    genlogs(msg, '145162973910925312', 'randon');
+                default:
+                    let markov = await r.db('blargdb').table('markovs').get(words[1]);
+                    if (markov) {
+                        genlogs(msg, markov.userid, markov.id);
+                    }
                     break;
             }
+
         } else {
             let catMsgs = await r.table('catchat').orderBy('msgid');
             let content = [];
