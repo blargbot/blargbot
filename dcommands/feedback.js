@@ -42,11 +42,11 @@ e.execute = async function(msg, words) {
                     text: 'Case ' + i + ' | ' + msg.id
                 },
                 fields: [{
-                    name: msg.channel.guild.name,
-                    value: msg.channel.guild.id,
+                    name: msg.guild ? msg.guild.name || 'DM',
+                    value: msg.guild ? msg.guild.id || 'DM',
                     inline: true
                 }, {
-                    name: msg.channel.name,
+                    name: msg.channel.name || 'DM',
                     value: msg.channel.id,
                     inline: true
                 }]
