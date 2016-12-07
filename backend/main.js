@@ -87,7 +87,9 @@ e.init = () => {
         <p>${req.user.username}#${req.user.discriminator}</p>
         `);
     });
+
     app.get('/messages', function(req, res) {
+        res.locals.url = config.general.isbeta ? 'http://localhost:8085' : 'https://blargbot.xyz';
         res.render('messages');
     })
 
