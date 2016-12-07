@@ -338,7 +338,7 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
         } else {
             ccommandContent = val;
         }
-        
+
         if (await bu.canExecuteCcommand(msg, words[0], true)) {
             var command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
@@ -1141,9 +1141,7 @@ ${newMsg}`);
 
 
     bot.on('messageCreate', async function(msg) {
-        io.emit('message', {
-            data: `${bu.getFullName(msg.author)}> ${msg.content}`
-        });
+        wss.broadcast(`${bu.getFullName(msg.author)}> ${msg.content}`);
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
         let storedGuild;

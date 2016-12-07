@@ -1,17 +1,16 @@
 <ul id="list"></ul>
 
-<script src="/socket.io/socket.io.js"></script>
 <script>
+      var wss = new WebSocket('ws://{{url}}');
+
 var list = document.querySelector('#list');
-    
-  var socket = io.connect("{{url}}");
-  socket.on('message', function (event) {
-      console.dir(event);
+wss.onmessage = function(event) {
+console.dir(event);
     var item = document.createElement('li');
     item.innerText = event.data.replace(/"/g, '');
     list.insertBefore(item, list.firstChild);
     if (list.childNodes.length > 50) {
             list.removeChild(list.lastElementChild);
     }
-  });
+}
 </script>

@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
 const Strategy = require('passport-discord').Strategy;
+const WebSocketServer = require('ws').Server;
 const hbs = require('hbs');
 const helpers = require('./helpers');
 app.use(bodyParser.json());
@@ -24,7 +25,16 @@ app.use(express.static(path.join(__dirname, 'public')));
 helpers.init();
 
 const server = app.server = http.createServer(app);
-global.io = require('socket.io')(server);
+global.wss = new WebSocketServer({
+    server: server
+});
+
+
+wss.broadcast = function broadcast(data) {
+  wss.clients.forEach(function each(client) {
+    client.send(data);
+  });
+};
 
 var scopes = ['identify'];
 
@@ -89,7 +99,7 @@ e.init = () => {
     });
 
     app.get('/messages', function(req, res) {
-        res.locals.url = config.general.isbeta ? 'http://localhost:8085' : 'https://blargbot.xyz';
+        res.locals.url = config.general.isbeta ? 'localhost:8085' : 'blargbot.xyz';
         res.render('messages');
     })
 
@@ -100,7 +110,6 @@ e.init = () => {
     app.use('/dashboard', require('./routes/dashboard'));
     app.use('/donate', require('./routes/donate'));
     app.use('/user', require('./routes/user'));
-
 
     app.use(router);
     logger.website('Website listening on :8085');
