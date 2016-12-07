@@ -1141,12 +1141,13 @@ ${newMsg}`);
 
 
     bot.on('messageCreate', async function(msg) {
-        sse.broadcast(`${bu.getFullName(msg.author)}> ${msg.content}`);
+        io.emit('message', {
+            data: `${bu.getFullName(msg.author)}> ${msg.content}`
+        });
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
         let storedGuild;
         if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
-
 
         if (msg.channel.id != '194950328393793536')
             if (msg.author.id == bot.user.id) {

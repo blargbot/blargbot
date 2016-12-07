@@ -1,15 +1,17 @@
 <ul id="list"></ul>
 
+<script src="/socket.io/socket.io.js"></script>
 <script>
-var es = new EventSource('/messagestream');
 var list = document.querySelector('#list');
-
-es.onmessage = function (event) {
+    
+  var socket = io.connect('http://localhost:8085');
+  socket.on('message', function (event) {
+      console.dir(event);
     var item = document.createElement('li');
     item.innerText = event.data.replace(/"/g, '');
     list.insertBefore(item, list.firstChild);
     if (list.childNodes.length > 50) {
             list.removeChild(list.lastElementChild);
     }
-};
+  });
 </script>

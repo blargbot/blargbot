@@ -12,7 +12,6 @@ const session = require('express-session');
 const Strategy = require('passport-discord').Strategy;
 const hbs = require('hbs');
 const helpers = require('./helpers');
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
@@ -25,9 +24,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 helpers.init();
 
 const server = app.server = http.createServer(app);
+global.io = require('socket.io')(server);
 
 var scopes = ['identify'];
-global.sse = require('./sseBackend')(server, app);
 
 function checkAuth(req, res, next) {
     if (req.isAuthenticated()) return next();
