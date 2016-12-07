@@ -61,6 +61,12 @@ e.execute = async function(msg, words) {
                 case 'pollr':
                     genlogs(msg, '168169809303961600', 'pollr');
                     break;
+                case 'alex':
+                    genlogs(msg, '86477779717066752', 'alex');
+                    break;
+                case 'randon':
+                    genlogs(msg, '145162973910925312', 'randon');
+                    break;
             }
         } else {
             let catMsgs = await r.table('catchat').orderBy('msgid');
