@@ -39,6 +39,9 @@ e.execute = async function(msg, words) {
             case 'tttie':
                 genlogs(msg, '150628341316059136', 'tttie');
                 break;
+            case 'blarg':
+                genlogs(msg, '134133271750639616', 'blarg');
+                break;
         }
     } else {
         let catMsgs = await r.table('catchat').orderBy('msgid');
