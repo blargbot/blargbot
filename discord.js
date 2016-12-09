@@ -94,7 +94,7 @@ function loadCommand(commandName) {
             delete bu.commands[commandName];
         }
     } catch (err) {
-        logger.warn(err);
+        logger.error(err);
         logger.init(`     Failed to load command ${commandName}!`);
     }
 }

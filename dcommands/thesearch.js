@@ -4,8 +4,8 @@ var gm = require('gm');
 var path = require('path');
 var moment = require('moment');
 var util = require('util');
-const reload = require('require-reload');
-const Jimp = reload('jimp');
+const Jimp = require('jimp');
+
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
 };
