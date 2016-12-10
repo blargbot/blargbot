@@ -110,6 +110,8 @@ e.init = () => {
     app.use('/dashboard', require('./routes/dashboard'));
     app.use('/donate', require('./routes/donate'));
     app.use('/user', require('./routes/user'));
+    app.use('/colour', require('./routes/colour'));
+    app.use('/color', require('./routes/colour'));    
 
     app.use(router);
     logger.website('Website listening on :8085');
