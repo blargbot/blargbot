@@ -22,7 +22,7 @@ e.longinfo = `<p>Tells everyone who is retarded</p>`;
 e.flags = [{
     flag: 'u',
     word: 'user',
-    desc: 'The person who is retarded. If unset, it defaults to you!'
+    desc: 'The person who is retarded.'
 }]
 
 e.execute = async function(msg, words) {
