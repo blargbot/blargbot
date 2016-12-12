@@ -1269,3 +1269,18 @@ bu.getPerms = function(channelid) {
         return null;
     }
 }
+
+bu.request = function(options) {
+    return new Promise((fulfill, reject) => {
+        request(options, (err, res, body) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            fulfill({
+                res,
+                body
+            })
+        })
+    });
+}
