@@ -20,7 +20,6 @@ e.execute = (msg, words) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
         var tagList = JSON.parse(JSON.stringify(words));
         delete tagList[0];
-        bu.sendPornLog(msg, 'danbooru', tagList, nsfwChannel, 0xeaeaea);
 
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {

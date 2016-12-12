@@ -1185,38 +1185,6 @@ bu.getFullName = function(user) {
     return `${user.username}#${user.discriminator}`;
 };
 
-bu.sendPornLog = function(msg, type, tagList, nsfwChannel, color) {
-    bu.send('230801689551175681', {
-        embed: {
-            title: type,
-            color: color || 0xc9cfd8,
-            description: tagList.join(' '),
-            fields: [{
-                name: msg.guild.name,
-                value: msg.guild.id,
-                inline: true
-            }, {
-                name: msg.channel.name,
-                value: msg.channel.id,
-                inline: true
-            }, {
-                name: 'NSFW',
-                value: nsfwChannel || false,
-                inline: true
-            }],
-            author: {
-                name: bu.getFullName(msg.author),
-                icon_url: msg.author.avatarURL,
-                url: `https://blargbot.xyz/user/${msg.author.id}`
-            },
-            timestamp: moment(msg.timestamp),
-            footer: {
-                text: `MsgID: ${msg.id}`
-            }
-        }
-    });
-};
-
 bu.filterMentions = async function(message) {
     while (/<@!?[0-9]{17,21}>/.test(message)) {
         let id = message.match(/<@!?([0-9]{17,21})>/)[1];

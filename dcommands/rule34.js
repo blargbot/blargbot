@@ -20,7 +20,6 @@ e.execute = (msg, words) => {
 
         var tagList = JSON.parse(JSON.stringify(words));
         delete tagList[0];
-        bu.sendPornLog(msg, 'rule34', tagList, nsfwChannel, 0xAAE5A3);
 
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
