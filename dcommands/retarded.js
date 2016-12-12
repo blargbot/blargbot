@@ -42,36 +42,33 @@ e.execute = async function(msg, words) {
     })).body;
     bot.sendChannelTyping(msg.channel.id);
     try {
-        gm()
-            .command('convert')
-            .font(path.join(__dirname, '..', 'img/fonts/ARCENA.ttf'))
-            .rawSize(272, 60)
-            .out('-background')
-            .out('transparent')
-            .fill('#000000')
-            .stroke('#ffffff', 1)
-            .gravity('South')
-            .out(`caption:${quote}`)
-            .options({
-                imageMagick: true
-            }).toBuffer('PNG', async function(err, buf) {
-                let text = await Jimp.read(buf);
-                let avatar = await Jimp.read(body);
-                let img = await Jimp.read(path.join(__dirname, '..', 'img', `retarded.png`));
-                let smallAvatar = avatar.clone();
-                smallAvatar.resize(74, 74);
-                img.composite(smallAvatar, 166, 131);
-                avatar.resize(171, 171);
-                avatar.rotate(18)
-                img.composite(avatar, 277, 32);
-                img.composite(text, 268, 0);                
-                img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
-                    bu.send(msg, undefined, {
-                        file: buffer,
-                        name: 'SHIT.png'
-                    });
-                })
-            })
+
+        let buf = await bu.createCaption({
+            font: 'ARCENA.ttf',
+            fill: 'black',
+            stroke: 'white',
+            strokewidth: 5,
+            text: quote,
+            size: '272x60'
+        });
+
+
+        let text = await Jimp.read(buf);
+        let avatar = await Jimp.read(body);
+        let img = await Jimp.read(path.join(__dirname, '..', 'img', `retarded.png`));
+        let smallAvatar = avatar.clone();
+        smallAvatar.resize(74, 74);
+        img.composite(smallAvatar, 166, 131);
+        avatar.resize(171, 171);
+        avatar.rotate(18)
+        img.composite(avatar, 277, 32);
+        img.composite(text, 268, 0);
+        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            bu.send(msg, undefined, {
+                file: buffer,
+                name: 'SHIT.png'
+            });
+        })
     } catch (err) {
         logger.error(err);
     }

@@ -34,32 +34,26 @@ e.execute = async function(msg, words) {
         shitText = await bu.filterMentions(input.undefined.join(' '));
     bot.sendChannelTyping(msg.channel.id);
     try {
-        gm()
-            .command('convert')
-            .font(path.join(__dirname, '..', 'img/fonts/animeace.ttf'))
-            .rawSize(200, 160)
-            .out('-background')
-            .out('transparent')
-            .fill('#000000')
-            .gravity('South')
-            .out(`caption:${shitText}`)
-            .options({
-                imageMagick: true
-            }).toBuffer('PNG', async function(err, buf) {
-                let text = await Jimp.read(buf);
-                let img = await Jimp.read(path.join(__dirname, '..', 'img', `SHIT${plural ? 'S' : ''}.png`));
-                img.composite(text, 810, 31);
+        let buf = await bu.createCaption({
+            text: shitText,
+            font: 'animeace.ttf',
+            size: '200x160',
+            gravity: 'South'
+        });
 
-                img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
-                        bu.send(msg, undefined, {
-                            file: buffer,
-                            name: 'SHIT.png'
-                        });
-                    })
-                    //     bu.send(msg, undefined, {
-                    //          file: buffer,
-                    //           name: 'SHIT.png'
-                    //       });
+        let text = await Jimp.read(buf);
+        let img = await Jimp.read(path.join(__dirname, '..', 'img', `SHIT${plural ? 'S' : ''}.png`));
+        img.composite(text, 810, 31);
+
+        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+                bu.send(msg, undefined, {
+                    file: buffer,
+                    name: 'SHIT.png'
+                });
+                //     bu.send(msg, undefined, {
+                //          file: buffer,
+                //           name: 'SHIT.png'
+                //       });
             })
             /*
                     let text = new Jimp(1000, 1000);

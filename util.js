@@ -3,7 +3,8 @@ const request = require('request');
 const Eris = require('eris');
 const emoji = require('node-emoji');
 const loggerModule = require('./logger.js');
-
+const gm = require('gm');
+const path = require('path');
 var bu = module.exports = {};
 
 bu.CAT_ID = '103347843934212096';
@@ -1283,4 +1284,57 @@ bu.request = function(options) {
             })
         })
     });
+}
+
+bu.createCaption = function(options) {
+    return new Promise((fulfill, reject) => {
+        if (!options.text) {
+            reject(new Error('No text provided'));
+            return;
+        }
+        if (!options.font) {
+            reject(new Error('No font provided'));
+            return;
+        }
+        if (!options.size) {
+            reject(new Error('No size provided'));
+            return;
+        }
+        if (!options.fill) options.fill = 'black';
+        if (!options.gravity) options.gravity = 'Center';
+
+        let image = gm().command('convert');
+
+        image.font(path.join(__dirname, 'img', 'fonts', options.font));
+        image.out('-size').out(options.size);
+        image.out('-background').out('transparent');
+        image.out('-fill').out(options.fill);
+        image.out('-gravity').out(options.gravity);
+        image.out()
+        if (options.stroke) {
+            image.out('-stroke').out(options.stroke);
+            if (options.strokewidth) image.out('-strokewidth').out(options.strokewidth);
+        }
+        image.out(`caption:${options.text}`);
+        if (options.stroke) {
+            image.out('-compose').out('Over')
+            image.out('-size').out(options.size);
+            image.out('-background').out('transparent');
+            image.out('-fill').out(options.fill);
+            image.out('-gravity').out(options.gravity);
+            image.out('-stroke').out('none');
+            image.out(`caption:${options.text}`);
+            image.out('-composite');
+        }
+
+        image.options({
+            imageMagick: true
+        }).toBuffer('PNG', function(err, buf) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            fulfill(buf);
+        })
+    })
 }

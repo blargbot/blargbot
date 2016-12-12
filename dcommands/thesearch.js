@@ -25,29 +25,23 @@ e.execute = async function(msg, words) {
     logger.debug(util.inspect(words));
     bot.sendChannelTyping(msg.channel.id);
     try {
-        gm()
-            .command('convert')
-            .font(path.join(__dirname, '..', 'img/fonts/SFToontime.ttf'))
-            .rawSize(160, 68)
-            .out('-background')
-            .out('transparent')
-            .fill('#393b3e')
-            .gravity('Center')
-            .out(`caption:${shitText}`)
-            .options({
-                imageMagick: true
-            }).toBuffer('PNG', async function(err, buf) {
-                let text = await Jimp.read(buf);
-                let img = await Jimp.read(path.join(__dirname, '..', 'img', `thesearch.png`));
-                img.composite(text, 60, 331);
+        let buf = await bu.createCaption({
+            text: shitText,
+            fill: '#393b3e',
+            font: 'SFToontime.ttf',
+            size: '160x68'
+        })
 
-                img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
-                    bu.send(msg, undefined, {
-                        file: buffer,
-                        name: 'thesearch.png'
-                    });
-                })
-            })
+        let text = await Jimp.read(buf);
+        let img = await Jimp.read(path.join(__dirname, '..', 'img', `thesearch.png`));
+        img.composite(text, 60, 331);
+
+        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            bu.send(msg, undefined, {
+                file: buffer,
+                name: 'thesearch.png'
+            });
+        })
     } catch (err) {
         logger.error(err);
     }
