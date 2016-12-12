@@ -62,6 +62,7 @@ e.execute = async function(msg, words) {
                 smallAvatar.resize(74, 74);
                 img.composite(smallAvatar, 166, 131);
                 avatar.resize(171, 171);
+                avatar.rotate(18)
                 img.composite(avatar, 277, 32);
                 img.composite(text, 268, 0);                
                 img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
