@@ -31,15 +31,17 @@ e.execute = async function(msg, words) {
         bu.send(msg, 'Not enough input!');
         return;
     }
-    let user = msg.author;
+    let user;
     if (input.u) {
         user = await bu.getUser(msg, input.u.join(' '));
     }
     let quote = await bu.filterMentions(input.undefined.join(' '));
-    let body = (await bu.request({
-        uri: user.avatarURL,
-        encoding: null
-    })).body;
+    let body;
+    if (user)
+        body = (await bu.request({
+            uri: user.avatarURL,
+            encoding: null
+        })).body;
     bot.sendChannelTyping(msg.channel.id);
     try {
 
@@ -54,14 +56,16 @@ e.execute = async function(msg, words) {
 
 
         let text = await Jimp.read(buf);
-        let avatar = await Jimp.read(body);
         let img = await Jimp.read(path.join(__dirname, '..', 'img', `retarded.png`));
-        let smallAvatar = avatar.clone();
-        smallAvatar.resize(74, 74);
-        img.composite(smallAvatar, 166, 131);
-        avatar.resize(171, 171);
-        avatar.rotate(18)
-        img.composite(avatar, 277, 32);
+        if (body) {
+            let avatar = await Jimp.read(body);
+            let smallAvatar = avatar.clone();
+            smallAvatar.resize(74, 74);
+            img.composite(smallAvatar, 166, 131);
+            avatar.resize(171, 171);
+            avatar.rotate(18)
+            img.composite(avatar, 277, 32);
+        }
         img.composite(text, 268, 0);
         img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
             bu.send(msg, undefined, {
