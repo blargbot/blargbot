@@ -59,7 +59,7 @@ e.execute = async function(msg, words) {
         bu.send(msg, `Currently available fonts:\n - ${availFonts}`);
         return;
     }
-    if (!input.t && !input.b) {
+    if ((!input.t || input.t.length == 0) && (!input.b || input.t.length == 0)) {
         bu.send(msg, `You have to have at least one caption!`);
         return;
     }
@@ -116,13 +116,16 @@ e.execute = async function(msg, words) {
             let botcap = await Jimp.read(botbuf);
             img.composite(botcap, 0, height / 6 * 5);
         }
+        img.scaleToFit(800, 800);
 
-        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+        img.getBuffer(Jimp.MIME_JPEG, (err, buffer) => {
             bu.send(msg, undefined, {
                 file: buffer,
-                name: 'caption.png'
+                name: 'caption.jpeg'
             });
         })
+
+        img.write(path.join('..', 'temp.jpeg'));
 
     } catch (err) {
         logger.error(err);

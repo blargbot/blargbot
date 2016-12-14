@@ -226,108 +226,114 @@ bu.send = async function(channel, message, file, embed) {
         return await bot.createMessage(channelid, content, file);
     } catch (err) {
         let warnMsg;
-        let response = JSON.parse(err.response);
-        let dmMsg;
-        switch (response.code) {
-            case 50013:
-                warnMsg = 'Tried sending a message, but had no permissions!';
-                dmMsg = 'I tried to send a message in response to your command, ' +
-                    'but didn\'t have permission to speak. If you think this is an error, ' +
-                    'please contact the staff on your guild to give me the `Send Messages` permission.';
-                break;
-            case 50006:
-                warnMsg = 'Tried to send an empty message!';
-                break;
-            case 50004:
-                warnMsg = 'Tried embeding a link, but had no permissions!';
+        try {
+            let response = JSON.parse(err.response);
 
-                dmMsg = 'I tried to send a message in response to your command, ' +
-                    'but didn\'t have permission to create embeds. If you think this is an error, ' +
-                    'please contact the staff on your guild to give me the `Embed Links` permission.';
-                bu.send(channelid, `I don't have permission to embed links! This will break several of my commands. Please give me the \`Embed Links\` permission. Thanks!`);
-                break;
-            case 50007:
-                warnMsg = 'Can\'t send a message to this user!';
-                break;
-            case 50008:
-                warnMsg = 'Can\'t send messages in a voice channel!';
-                break;
-            case 50001:
-                warnMsg = 'Missing access!';
+            let dmMsg;
+            switch (response.code) {
+                case 50013:
+                    warnMsg = 'Tried sending a message, but had no permissions!';
+                    dmMsg = 'I tried to send a message in response to your command, ' +
+                        'but didn\'t have permission to speak. If you think this is an error, ' +
+                        'please contact the staff on your guild to give me the `Send Messages` permission.';
+                    break;
+                case 50006:
+                    warnMsg = 'Tried to send an empty message!';
+                    break;
+                case 50004:
+                    warnMsg = 'Tried embeding a link, but had no permissions!';
 
-                dmMsg = 'I tried to send a message in response to your command, ' +
-                    'but didn\'t have permission to see the channel. If you think this is an error, ' +
-                    'please contact the staff on your guild to give me the `Read Messages` permission.';
-                break;
-            default:
-                logger.error(err.response, err.stack);
-                throw err;
-                break;
-        }
-        if (dmMsg && channel.author) {
-            let storedUser = await r.table('user').get(channel.author.id);
-            if (!storedUser.dontdmerrors) {
-                bu.sendDM(channel.author.id, dmMsg + '\nGuild: ' + channel.guild.name + '\nChannel: ' + channel.channel.name + '\nCommand: ' + channel.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
+                    dmMsg = 'I tried to send a message in response to your command, ' +
+                        'but didn\'t have permission to create embeds. If you think this is an error, ' +
+                        'please contact the staff on your guild to give me the `Embed Links` permission.';
+                    bu.send(channelid, `I don't have permission to embed links! This will break several of my commands. Please give me the \`Embed Links\` permission. Thanks!`);
+                    break;
+                case 50007:
+                    warnMsg = 'Can\'t send a message to this user!';
+                    break;
+                case 50008:
+                    warnMsg = 'Can\'t send messages in a voice channel!';
+                    break;
+                case 50001:
+                    warnMsg = 'Missing access!';
+
+                    dmMsg = 'I tried to send a message in response to your command, ' +
+                        'but didn\'t have permission to see the channel. If you think this is an error, ' +
+                        'please contact the staff on your guild to give me the `Read Messages` permission.';
+                    break;
+                default:
+                    logger.error(err.response, err.stack);
+                    throw err;
+                    break;
             }
-        }
-        if (warnMsg) logger.warn(warnMsg, response);
-        if (channel instanceof Eris.Message) {
-            bu.send('250859956989853696', {
-                embed: {
-                    title: response.code + ' - ' + response.message,
-                    color: warnMsg ? 0xe27900 : 0xAD1111,
-                    description: warnMsg || err.stack,
-                    timestamp: moment(channel.timestamp),
-                    author: {
-                        name: bu.getFullName(channel.author),
-                        icon_url: channel.author.avatarURL,
-                        url: `https://blargbot.xyz/user/${channel.author.id}`
-                    },
-                    footer: {
-                        text: `MSG: ${channel.id}`
-                    },
-                    fields: [{
-                        name: channel.guild ? channel.guild.name : 'DM',
-                        value: channel.guild ? channel.guild.id : 'null',
-                        inline: true
-                    }, {
-                        name: channel.channel.name || 'DM',
-                        value: channel.channel.id,
-                        inline: true
-                    }, {
-                        name: 'Full Command',
-                        value: channel.content,
-                        inline: true
-                    }, {
-                        name: 'Content',
-                        value: content.content
-                    }]
+            if (dmMsg && channel.author) {
+                let storedUser = await r.table('user').get(channel.author.id);
+                if (!storedUser.dontdmerrors) {
+                    bu.sendDM(channel.author.id, dmMsg + '\nGuild: ' + channel.guild.name + '\nChannel: ' + channel.channel.name + '\nCommand: ' + channel.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
                 }
-            });
-        } else {
-            let channel = bot.getChannel(channelid);
-            bu.send('250859956989853696', {
-                embed: {
-                    title: response.code + ' - ' + response.message,
-                    color: warnMsg ? 0xe27900 : 0xAD1111,
-                    description: warnMsg || err.stack,
-                    timestamp: moment(),
-                    fields: [{
-                        name: channel.guild ? channel.guild.name : 'DM',
-                        value: channel.guild ? channel.guild.id : 'null',
-                        inline: true
-                    }, {
-                        name: channel.name || 'DM',
-                        value: channel.id,
-                        inline: true
-                    }, {
-                        name: 'Content',
-                        value: content.content
-                    }]
-                }
-            });
+            }
+            if (warnMsg) logger.warn(warnMsg, response);
+            if (channel instanceof Eris.Message) {
+                bu.send('250859956989853696', {
+                    embed: {
+                        title: response.code + ' - ' + response.message,
+                        color: warnMsg ? 0xe27900 : 0xAD1111,
+                        description: warnMsg || err.stack,
+                        timestamp: moment(channel.timestamp),
+                        author: {
+                            name: bu.getFullName(channel.author),
+                            icon_url: channel.author.avatarURL,
+                            url: `https://blargbot.xyz/user/${channel.author.id}`
+                        },
+                        footer: {
+                            text: `MSG: ${channel.id}`
+                        },
+                        fields: [{
+                            name: channel.guild ? channel.guild.name : 'DM',
+                            value: channel.guild ? channel.guild.id : 'null',
+                            inline: true
+                        }, {
+                            name: channel.channel.name || 'DM',
+                            value: channel.channel.id,
+                            inline: true
+                        }, {
+                            name: 'Full Command',
+                            value: channel.content,
+                            inline: true
+                        }, {
+                            name: 'Content',
+                            value: content.content
+                        }]
+                    }
+                });
+
+            } else {
+                let channel = bot.getChannel(channelid);
+                bu.send('250859956989853696', {
+                    embed: {
+                        title: response.code + ' - ' + response.message,
+                        color: warnMsg ? 0xe27900 : 0xAD1111,
+                        description: warnMsg || err.stack,
+                        timestamp: moment(),
+                        fields: [{
+                            name: channel.guild ? channel.guild.name : 'DM',
+                            value: channel.guild ? channel.guild.id : 'null',
+                            inline: true
+                        }, {
+                            name: channel.name || 'DM',
+                            value: channel.id,
+                            inline: true
+                        }, {
+                            name: 'Content',
+                            value: content.content
+                        }]
+                    }
+                });
+            }
+            return null;
+        } catch (err2) {
+            bu.send('250859956989853696', 'error: ' + err.stack);
         }
-        return null;
     }
 };
 
