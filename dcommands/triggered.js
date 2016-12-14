@@ -1,6 +1,6 @@
 var e = module.exports = {};
-var path = require('path');
-var util = require('util');
+const path = require('path');
+const util = require('util');
 const Jimp = require('jimp');
 const fs = require('fs');
 const GIFEncoder = require('gifencoder');
@@ -31,6 +31,7 @@ e.execute = async function(msg, words) {
         uri: user.avatarURL,
         encoding: null
     }, async function(err, res, body) {
+
         let avatar = await Jimp.read(body);
         avatar.resize(320, 320);
         let triggered = await Jimp.read(path.join(__dirname, '..', 'img', `triggered.png`))
@@ -54,38 +55,38 @@ e.execute = async function(msg, words) {
         let base = new Jimp(256, 256);
 
         let temp = base.clone();
-        let x = -32 + (bu.getRandomInt(-16, 16));
-        let y = -32 + (bu.getRandomInt(-16, 16));
+        let x = -29;
+        let y = -37;
         temp.composite(avatar, x, y);
-        x = 28 + (bu.getRandomInt(-4, 4));
-        y = 210 + (bu.getRandomInt(-4, 4));
+        x = 28;
+        y = 214;
         temp.composite(triggered, x, y);
         frames.push(temp.bitmap.data);
 
         temp = base.clone();
-        x = -32 + (bu.getRandomInt(-16, 16));
-        y = -32 + (bu.getRandomInt(-16, 16));
+        x = -25;
+        y = -25;
         temp.composite(avatar, x, y);
-        x = 28 + (bu.getRandomInt(-4, 4));
-        y = 210 + (bu.getRandomInt(-4, 4));
+        x = 28;
+        y = 213;
         temp.composite(triggered, x, y);
         frames.push(temp.bitmap.data);
 
         temp = base.clone();
-        x = -32 + (bu.getRandomInt(-16, 16));
-        y = -32 + (bu.getRandomInt(-16, 16));
+        x = -40;
+        y = -24;
         temp.composite(avatar, x, y);
-        x = 28 + (bu.getRandomInt(-4, 4));
-        y = 210 + (bu.getRandomInt(-4, 4));
+        x = 28;
+        y = 207;
         temp.composite(triggered, x, y);
         frames.push(temp.bitmap.data);
 
         temp = base.clone();
-        x = -32 + (bu.getRandomInt(-16, 16));
-        y = -32 + (bu.getRandomInt(-16, 16));
+        x = -24;
+        y = -44;
         temp.composite(avatar, x, y);
-        x = 28 + (bu.getRandomInt(-4, 4));
-        y = 210 + (bu.getRandomInt(-4, 4));
+        x = 27;
+        y = 209;
         temp.composite(triggered, x, y);
         frames.push(temp.bitmap.data);
 
