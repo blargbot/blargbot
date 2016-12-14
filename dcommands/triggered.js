@@ -11,7 +11,7 @@ e.init = () => {
 
 e.requireCtx = require;
 
-e.isCommand = false;
+e.isCommand = true;
 e.hidden = false;
 e.usage = 'triggered [user]';
 e.info = `Shows everyone how triggered you are.`;
@@ -24,16 +24,17 @@ e.execute = async function(msg, words) {
     }
     bot.sendChannelTyping(msg.channel.id);
     try {
-        let avatar = await Jimp.read(user.avatarURL);
-        avatar.resize(640, 640)
-            //  let avatarBuffer = await getImageBuffer(avatar)
-            //  logger.debug('meow', avatarBuffer)
-        let triggered = await Jimp.read(path.join(__dirname, '..', 'img', `triggered.png`))
+        let frameCount = 4;
+        let frames = [];
 
+        let avatar = await Jimp.read(user.avatarURL);
+        avatar.resize(320, 320)
+        let triggered = await Jimp.read(path.join(__dirname, '..', 'img', `triggered.png`))
+        triggered.resize(200, 30);
         let buffers = [];
-        let encoder = new GIFEncoder(512, 512);
+        let encoder = new GIFEncoder(256, 256);
         let stream = encoder.createReadStream();
-        //   encoder.createReadStream().pipe(fs.createWriteStream(path.join('..', 'myanimated.gif')));
+
         stream.on('data', function(buffer) {
             buffers.push(buffer);
         });
@@ -45,35 +46,57 @@ e.execute = async function(msg, words) {
             });
         });
 
-        encoder.start();
-        encoder.setRepeat(0);
-        encoder.setDelay(20);
-        let base = new Jimp(512, 512);
 
-        for (let i = 0; i < 4; i++) {
-            let temp = base.clone();
-            let x = -64 + (bu.getRandomInt(-32, 32));
-            let y = -64 + (bu.getRandomInt(-32, 32));
-            temp.composite(avatar, x, y);
-            x = 56 + (bu.getRandomInt(-8, 8));
-            y = 420 + (bu.getRandomInt(-8, 8));
-            temp.composite(triggered, x, y);
-     //       encoder.addFrame(temp.bitmap.data);
-        }
-        encoder.finish();
+        let base = new Jimp(256, 256);
+
+        // for (let i = 0; i < frameCount; i++) {
+        let temp = base.clone();
+        let x = -32 + (bu.getRandomInt(-16, 16));
+        let y = -32 + (bu.getRandomInt(-16, 16));
+        temp.composite(avatar, x, y);
+        x = 28 + (bu.getRandomInt(-4, 4));
+        y = 210 + (bu.getRandomInt(-4, 4));
+        temp.composite(triggered, x, y);
+        frames.push(temp.bitmap.data);
+
+        temp = base.clone();
+        x = -32 + (bu.getRandomInt(-16, 16));
+        y = -32 + (bu.getRandomInt(-16, 16));
+        temp.composite(avatar, x, y);
+        x = 28 + (bu.getRandomInt(-4, 4));
+        y = 210 + (bu.getRandomInt(-4, 4));
+        temp.composite(triggered, x, y);
+        frames.push(temp.bitmap.data);
+
+        temp = base.clone();
+        x = -32 + (bu.getRandomInt(-16, 16));
+        y = -32 + (bu.getRandomInt(-16, 16));
+        temp.composite(avatar, x, y);
+        x = 28 + (bu.getRandomInt(-4, 4));
+        y = 210 + (bu.getRandomInt(-4, 4));
+        temp.composite(triggered, x, y);
+        frames.push(temp.bitmap.data);
+
+        temp = base.clone();
+        x = -32 + (bu.getRandomInt(-16, 16));
+        y = -32 + (bu.getRandomInt(-16, 16));
+        temp.composite(avatar, x, y);
+        x = 28 + (bu.getRandomInt(-4, 4));
+        y = 210 + (bu.getRandomInt(-4, 4));
+        temp.composite(triggered, x, y);
+        frames.push(temp.bitmap.data);
+
+        setTimeout(function() {
+            encoder.start();
+            encoder.setRepeat(0);
+            encoder.setDelay(20);
+            for (let frame of frames) encoder.addFrame(frame);
+            encoder.finish();
+        }, 500);
+
+        //}
+        bu.send(msg, 'done')
     } catch (err) {
         logger.error(err);
     }
 };
-
-function getImageBuffer(image) {
-    return new Promise((fulfill, reject) => {
-        image.getBuffer(Jimp.MIME_PNG, (err, buf) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            fulfill(buf);
-        })
-    });
-}
