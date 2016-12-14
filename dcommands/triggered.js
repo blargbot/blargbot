@@ -4,6 +4,7 @@ var util = require('util');
 const Jimp = require('jimp');
 const fs = require('fs');
 const GIFEncoder = require('gifencoder');
+const request = require('request');
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -23,11 +24,14 @@ e.execute = async function(msg, words) {
         user = await bu.getUser(msg, words.slice(1).join(' '));
     }
     await bot.sendChannelTyping(msg.channel.id);
-    try {
-        let frameCount = 4;
-        let frames = [];
+    let frameCount = 4;
+    let frames = [];
 
-        let avatar = await Jimp.read(user.avatarURL);
+    request({
+        uri: user.avatarURL,
+        encoding: null
+    }, async function(err, res, body) {
+        let avatar = await Jimp.read(body);
         avatar.resize(320, 320);
         let triggered = await Jimp.read(path.join(__dirname, '..', 'img', `triggered.png`))
         triggered.resize(200, 30);
@@ -85,14 +89,10 @@ e.execute = async function(msg, words) {
         temp.composite(triggered, x, y);
         frames.push(temp.bitmap.data);
 
-        setTimeout(function() {
-            encoder.start();
-            encoder.setRepeat(0);
-            encoder.setDelay(20);
-            for (let frame of frames) encoder.addFrame(frame);
-            encoder.finish();
-        }, 500);
-    } catch (err) {
-        logger.error(err);
-    }
+        encoder.start();
+        encoder.setRepeat(0);
+        encoder.setDelay(20);
+        for (let frame of frames) encoder.addFrame(frame);
+        encoder.finish();
+    })
 };
