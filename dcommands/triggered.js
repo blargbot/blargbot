@@ -58,7 +58,7 @@ e.execute = async function(msg, words) {
             x = 56 + (bu.getRandomInt(-8, 8));
             y = 420 + (bu.getRandomInt(-8, 8));
             temp.composite(triggered, x, y);
-            encoder.addFrame(temp.bitmap.data);
+     //       encoder.addFrame(temp.bitmap.data);
         }
         encoder.finish();
     } catch (err) {
