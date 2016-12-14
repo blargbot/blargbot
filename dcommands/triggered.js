@@ -23,6 +23,7 @@ e.execute = async function(msg, words) {
     if (words[1]) {
         user = await bu.getUser(msg, words.slice(1).join(' '));
     }
+    if (!user) return;
     await bot.sendChannelTyping(msg.channel.id);
     let frameCount = 4;
     let frames = [];
@@ -31,11 +32,14 @@ e.execute = async function(msg, words) {
         uri: user.avatarURL,
         encoding: null
     }, async function(err, res, body) {
-
+        try {
         let avatar = await Jimp.read(body);
         avatar.resize(320, 320);
         let triggered = await Jimp.read(path.join(__dirname, '..', 'img', `triggered.png`))
         triggered.resize(200, 30);
+        let overlay = await Jimp.read(path.join(__dirname, '..', 'img', `red.png`));
+        //overlay.opacity(0.5);
+
         let buffers = [];
         let encoder = new GIFEncoder(256, 256);
         let stream = encoder.createReadStream();
@@ -60,6 +64,7 @@ e.execute = async function(msg, words) {
         temp.composite(avatar, x, y);
         x = 28;
         y = 214;
+        temp.composite(overlay, 0, 0);
         temp.composite(triggered, x, y);
         frames.push(temp.bitmap.data);
 
@@ -69,6 +74,7 @@ e.execute = async function(msg, words) {
         temp.composite(avatar, x, y);
         x = 28;
         y = 213;
+        temp.composite(overlay, 0, 0);        
         temp.composite(triggered, x, y);
         frames.push(temp.bitmap.data);
 
@@ -78,6 +84,7 @@ e.execute = async function(msg, words) {
         temp.composite(avatar, x, y);
         x = 28;
         y = 207;
+        temp.composite(overlay, 0, 0);        
         temp.composite(triggered, x, y);
         frames.push(temp.bitmap.data);
 
@@ -87,6 +94,7 @@ e.execute = async function(msg, words) {
         temp.composite(avatar, x, y);
         x = 27;
         y = 209;
+        temp.composite(overlay, 0, 0);        
         temp.composite(triggered, x, y);
         frames.push(temp.bitmap.data);
 
@@ -95,5 +103,8 @@ e.execute = async function(msg, words) {
         encoder.setDelay(20);
         for (let frame of frames) encoder.addFrame(frame);
         encoder.finish();
+        } catch (err) {
+            logger.error(err);
+        }
     })
 };
