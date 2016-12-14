@@ -1088,7 +1088,7 @@ bu.canExecuteCommand = async function(msg, commandName, quiet) {
                 }
             }
         }
-        if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
+        if (bu.commandList[commandName] && bu.CommandType.properties[bu.commandList[commandName].category].perm) {
             if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
                 return [false, commandName, 3];
             }
