@@ -22,13 +22,13 @@ e.execute = async function(msg, words) {
     if (words[1]) {
         user = await bu.getUser(msg, words.slice(1).join(' '));
     }
-    bot.sendChannelTyping(msg.channel.id);
+    await bot.sendChannelTyping(msg.channel.id);
     try {
         let frameCount = 4;
         let frames = [];
 
         let avatar = await Jimp.read(user.avatarURL);
-        avatar.resize(320, 320)
+        avatar.resize(320, 320);
         let triggered = await Jimp.read(path.join(__dirname, '..', 'img', `triggered.png`))
         triggered.resize(200, 30);
         let buffers = [];
@@ -49,7 +49,6 @@ e.execute = async function(msg, words) {
 
         let base = new Jimp(256, 256);
 
-        // for (let i = 0; i < frameCount; i++) {
         let temp = base.clone();
         let x = -32 + (bu.getRandomInt(-16, 16));
         let y = -32 + (bu.getRandomInt(-16, 16));
@@ -93,9 +92,6 @@ e.execute = async function(msg, words) {
             for (let frame of frames) encoder.addFrame(frame);
             encoder.finish();
         }, 500);
-
-        //}
-        bu.send(msg, 'done')
     } catch (err) {
         logger.error(err);
     }
