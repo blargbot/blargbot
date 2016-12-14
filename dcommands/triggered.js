@@ -11,7 +11,7 @@ e.init = () => {
 
 e.requireCtx = require;
 
-e.isCommand = true;
+e.isCommand = false;
 e.hidden = false;
 e.usage = 'triggered [user]';
 e.info = `Shows everyone how triggered you are.`;
