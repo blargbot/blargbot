@@ -2,10 +2,10 @@
 blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.
 
 ### Commands
-blargbot is equipped with numerous commands, which are detailed [here](https://github.com/Ratismal/blargbot/wiki/Commands).
+blargbot is equipped with numerous commands, which are detailed [here](https://blargbot.xyz/commands).
 
 ### Tags
-blargbot has a comprehensive [tag system](https://github.com/Ratismal/blargbot/wiki/Tags) for making your own complex commands.
+blargbot has a comprehensive [tag system](https://blargbot.xyz/tags/) for making your own complex commands.
 
 ### Moderation
 blargbot has a built-in modlogging system, as well as commands to ban, unban, kick, mute, and unmute rowdy users. It also keeps extensive logs about user messages, which are available to you upon command.
