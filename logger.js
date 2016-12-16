@@ -13,13 +13,14 @@ const levels = {
     irc: 5,
     website: 6,
     cluster: 7,
-    music: 8,
-    shard: 9,
-    info: 10,
-    output: 11,
-    verbose: 12,
-    debug: 13,
-    silly: 14
+    worker: 8,    
+    music: 9,
+    shard: 10,
+    info: 11,
+    output: 12,
+    verbose: 13,
+    debug: 14,
+    silly: 15
 };
 
 const colors = {
@@ -36,6 +37,7 @@ const colors = {
     init: 'green',
     output: 'magenta',
     cluster: 'magenta',
+    worker: 'magenta',
     irc: 'yellow',
     shard: 'yellow',
     timestamp: 'grey',
@@ -45,7 +47,11 @@ const colors = {
 var debug;
 
 e.init = () => {
-    debug = config.general.isbeta;
+    try {
+        debug = config.general.isbeta;
+    } catch (err) {
+        debug = false;
+    }
     var maxLength = 0;
     for (let key in levels) {
         if (key.length > maxLength) {

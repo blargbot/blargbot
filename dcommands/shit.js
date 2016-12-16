@@ -8,7 +8,7 @@ const reload = require('require-reload');
 const Jimp = reload('jimp');
 
 e.init = () => {
-    e.category = bu.CommandType.GENERAL;
+    e.category = bu.CommandType.IMAGE;
 };
 
 e.requireCtx = require;
@@ -33,64 +33,16 @@ e.execute = async function(msg, words) {
     if (input.undefined.length > 0)
         shitText = await bu.filterMentions(input.undefined.join(' '));
     bot.sendChannelTyping(msg.channel.id);
-    try {
-        let buf = await bu.createCaption({
-            text: shitText,
-            font: 'animeace.ttf',
-            size: '200x160',
-            gravity: 'South'
-        });
-
-        let text = await Jimp.read(buf);
-        let img = await Jimp.read(path.join(__dirname, '..', 'img', `SHIT${plural ? 'S' : ''}.png`));
-        img.composite(text, 810, 31);
-
-        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
-                bu.send(msg, undefined, {
-                    file: buffer,
-                    name: 'SHIT.png'
-                });
-                //     bu.send(msg, undefined, {
-                //          file: buffer,
-                //           name: 'SHIT.png'
-                //       });
-            })
-            /*
-                    let text = new Jimp(1000, 1000);
-                    let font = await Jimp.loadFont(path.join(__dirname, '..', 'img', 'fonts', `animeace.fnt`));
-                    text.print(font, 0, 0, shitText, 400, Jimp.ALIGN_FONT_CENTER);
-                    let height = text.clone().autocrop().bitmap.height + 15;
-                    text.crop(0, 0, 400, height).resize(200, Jimp.AUTO);
-                    //.autocrop();
-                    logger.debug(text.bitmap.height, text.bitmap.width);
-                    let height2 = text.bitmap.height;
-                    let index = 1;
-                    while (text.bitmap.height > 200) {
-                        let diff = (height2 - 200) * index;
-                        text = undefined;
-                        text = new Jimp(1000, 1000);
-
-                        text.print(font, 0, 0, shitText, 400 + diff, Jimp.ALIGN_FONT_CENTER);
-                        let height = text.clone().autocrop().bitmap.height + 15;
-
-                        text.crop(0, 0, 400 + diff, height).resize(200, Jimp.AUTO);
-                        //.autocrop();
-                        logger.debug(text.bitmap.height, diff);
-                        index++;
-                    }
-                    let img = await Jimp.read(path.join(__dirname, '..', 'img', `SHIT${plural ? 'S' : ''}.png`));
-                    img.composite(text, 810, 31 + (170 - text.bitmap.height));
-
-                    img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
-                        bu.send(msg, undefined, {
-                            file: buffer,
-                            name: 'SHIT.png'
-                        });
-                    });
-                    //            });
-
-            */
-    } catch (err) {
-        logger.error(err);
-    }
+    let code = bu.genEventCode();
+    let buffer = await bu.awaitEvent({
+        cmd: 'img',
+        command: 'shit',
+        code: code,
+        text: shitText,
+        plural: plural
+    });    
+    bu.send(msg, undefined, {
+        file: buffer,
+        name: 'SHIIIITTTTTT.png'
+    });
 };

@@ -8,7 +8,7 @@ const reload = require('require-reload');
 const Jimp = reload('jimp');
 
 e.init = () => {
-    e.category = bu.CommandType.GENERAL;
+    e.category = bu.CommandType.IMAGE;
 };
 
 e.requireCtx = require;
@@ -80,54 +80,18 @@ e.execute = async function(msg, words) {
         bu.send(msg, `That's not a valid url!`);
         return;
     }
-    try {
-        let imgbuf = (await bu.request({
-            url,
-            encoding: null
-        })).body;
-        let img = await Jimp.read(imgbuf);
-        let height = img.bitmap.height;
-        let width = img.bitmap.width;
-        let topbuf;
-        let botbuf;
-        if (input.t) {
-            topbuf = await bu.createCaption({
-                text: input.t.join(' '),
-                font,
-                size: `${width}x${height / 6}`,
-                gravity: 'north',
-                fill: 'white',
-                stroke: 'black',
-                strokewidth: 4
-            })
-            let topcap = await Jimp.read(topbuf);
-            img.composite(topcap, 0, 0);
-        }
-        if (input.b) {
-            botbuf = await bu.createCaption({
-                text: input.b.join(' '),
-                font,
-                size: `${width}x${height / 6}`,
-                gravity: 'south',
-                fill: 'white',
-                stroke: 'black',
-                strokewidth: 4
-            })
-            let botcap = await Jimp.read(botbuf);
-            img.composite(botcap, 0, height / 6 * 5);
-        }
-        img.scaleToFit(800, 800);
+    let code = bu.genEventCode();
+    let buffer = await bu.awaitEvent({
+        cmd: 'img',
+        command: 'caption',
+        code: code,
+        input: input,
+        url,
+        font
+    });    
+    bu.send(msg, undefined, {
+        file: buffer,
+        name: 'caption.jpeg'
+    });
 
-        img.getBuffer(Jimp.MIME_JPEG, (err, buffer) => {
-            bu.send(msg, undefined, {
-                file: buffer,
-                name: 'caption.jpeg'
-            });
-        })
-
-        img.write(path.join('..', 'temp.jpeg'));
-
-    } catch (err) {
-        logger.error(err);
-    }
 };

@@ -26,7 +26,7 @@ e.init = () => {
         }
     });
 
-    e.category = bu.CommandType.GENERAL;
+    e.category = bu.CommandType.IMAGE;
 };
 
 e.isCommand = true;
@@ -36,88 +36,46 @@ e.usage = 'cah';
 e.info = 'Generates a set of CAH cards.';
 e.longinfo = '<p>Generates a random set of Cards Against Humanity cards.</p>';
 
-e.execute = (msg, words) => {
-    new Promise((fulfill) => {
-        bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw').then(val => {
-            if (val && val != 0) {
-                bu.isNsfwChannel(msg.channel.id).then(cont => {
-                    fulfill(cont);
-                });
-            } else {
-                fulfill(true);
-            }
-        });
-    }).then(cont => {
-        if (cont)
-            doit(msg, words);
-        else
-            bu.send(msg, config.general.nsfwMessage);
-    });
+e.execute = async function(msg, words) {
+    let val = await bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw')
+    let cont = true;
+    if (val && val != 0) {
+        cont = await bu.isNsfwChannel(msg.channel.id)
+    }
+
+    if (cont) {
+        doit(msg, words);
+    } else
+        bu.send(msg, config.general.nsfwMessage);
 };
 
-function doit(msg, words) {
+async function doit(msg, words) {
     let doCad = words[1] && words[1].toLowerCase() == 'cad';
     let cardObj = doCad ? cad : cah;
 
-    var blackphrase = cardObj.black[bu.getRandomInt(0, cardObj.black.length)];
-    var blankCount = /.\_([^\_]|$)/g.test(blackphrase) ? blackphrase.match(/.\_([^\_]|$)/g).length : 1;
-    var canvas = new Canvas(185 * (1 + blankCount), 254);
-    var ctx = canvas.getContext('2d');
-    logger.debug(blackphrase);
-    var blackcard = new Image();
-    blackcard.src = fs.readFileSync(path.join(__dirname, '..', 'img', 'blackcard.png'));
-    var whitecard = new Image();
-    whitecard.src = fs.readFileSync(path.join(__dirname, '..', 'img', 'whitecard.png'));
+    var blackPhrase = cardObj.black[bu.getRandomInt(0, cardObj.black.length)];
+    var blankCount = /.\_([^\_]|$)/g.test(blackPhrase) ? blackPhrase.match(/.\_([^\_]|$)/g).length : 1;
 
-    ctx.fillStyle = 'white';
-    ctx.drawImage(blackcard, 0, 0);
-    wrapText(ctx, blackphrase, 19, 38, 144, 20);
-    ctx.fillStyle = 'black';
-    var usedCards = [];
-
+    let whitePhrases = [];
     for (var i = 0; i < blankCount; i++) {
-        ctx.drawImage(whitecard, ((i + 1) * (184 + 1)), 0);
-
-        var whitephrase = cardObj.white[bu.getRandomInt(0, cardObj.black.length)];
-        while (usedCards.indexOf(whitephrase) > -1) {
-            whitephrase = cardObj.white[bu.getRandomInt(0, cardObj.black.length)];
+        var whitePhrase = cardObj.white[bu.getRandomInt(0, cardObj.black.length)];
+        while (whitePhrases.indexOf(whitePhrase) > -1) {
+            whitePhrase = cardObj.white[bu.getRandomInt(0, cardObj.black.length)];
         }
-        logger.debug(blackphrase);
-        usedCards.push(whitephrase);
-        wrapText(ctx, whitephrase, 19 + ((i + 1) * (184 + 1)), 38, 144, 20);
+        whitePhrases.push(whitePhrase);
     }
+    bot.sendChannelTyping(msg.channel.id);
 
-    var data = canvas.toBuffer();
-    bu.send(msg, ``, {
-        name: 'cards.png',
-        file: data
-    }).catch(err => {
-        logger.error(err);
+    let code = bu.genEventCode();
+    let buffer = await bu.awaitEvent({
+        cmd: 'img',
+        command: 'cah',
+        black: blackPhrase,
+        white: whitePhrases
+    });
+    bu.send(msg, undefined, {
+        file: buffer,
+        name: 'cah.png'
     });
 
-}
-
-function wrapText(context, text, x, y, maxWidth, lineHeight) {
-    if (text.length > 110) {
-        context.font = '16px Arial';
-    } else {
-        context.font = '20px Arial';
-
-    }
-    var words = text.split(' ');
-    var line = '';
-
-    for (var n = 0; n < words.length; n++) {
-        var testLine = line + words[n] + ' ';
-        var metrics = context.measureText(testLine);
-        var testWidth = metrics.width;
-        if (testWidth > maxWidth && n > 0) {
-            context.fillText(line, x, y);
-            line = words[n] + ' ';
-            y += lineHeight;
-        } else {
-            line = testLine;
-        }
-    }
-    context.fillText(line, x, y);
 }

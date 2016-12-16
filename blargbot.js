@@ -3,12 +3,11 @@ var util = require('util');
 var moment = require('moment-timezone');
 var mkdirp = require('mkdirp');
 var path = require('path');
-const EventEmitter = require('events');
 var reload = require('require-reload')(require);
 var Cleverbot = require('cleverbot-node');
 var mysql = require('mysql');
 cleverbot = new Cleverbot();
-
+const EventEmitter = require('eventemitter3');
 class BotEmitter extends EventEmitter {}
 const botEmitter = new BotEmitter();
 

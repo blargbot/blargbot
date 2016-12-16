@@ -62,6 +62,9 @@ e.execute = (msg, words) => {
                 }
             } else if (words[0] && words[0].toLowerCase() == 'bu') {
                 bu.emitter.emit('reloadBu');
+            } else if (words[0] && words[0].toLowerCase() == 'cluster') {
+                cluster.reset();
+                bu.send(msg, `:ok_hand: Reloading the workers. :ok_hand:`)
             }
         }
     }

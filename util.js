@@ -16,7 +16,7 @@ bu.startTime = null;
 bu.vars = null;
 loggerModule.init();
 logger.command('meow');
-global.cluster = require('./workers.js');
+global.cluster = require('./cluster.js');
 
 
 // A special character for tag injections
@@ -71,35 +71,39 @@ bu.CommandType = {
     GENERAL: 1,
     CAT: 2,
     NSFW: 3,
-    MUSIC: 4,
-    COMMANDER: 5,
+    IMAGE: 4,
+    MUSIC: 5,
     ADMIN: 6,
     properties: {
         1: {
             name: 'General',
-            requirement: () => true
+            requirement: () => true,
+            description: 'General commands.'
         },
         2: {
             name: 'CATZ MEOW MEOW',
-            requirement: msg => msg.author.id == bu.CAT_ID
+            requirement: msg => msg.author.id == bu.CAT_ID,
+            description: 'MREOW MEOWWWOW! **purr**'
         },
         3: {
             name: 'NSFW',
-            requirement: () => true
+            requirement: () => true,
+            description: 'Commands that can only be executed in NSFW channels.'
         },
         4: {
-            name: 'Music',
-            requirement: msg => !msg.channel.guild ? false : config.discord.musicGuilds[msg.channel.guild.id]
+            name: 'Image',
+            requirement: () => true,
+            description: 'Commands that generate images.'
         },
         5: {
-            name: 'Bot Commander',
-            requirement: () => true,
-            perm: 'Bot Commander'
+            name: 'Music',
+            requirement: msg => !msg.channel.guild ? false : config.discord.musicGuilds[msg.channel.guild.id]
         },
         6: {
             name: 'Admin',
             requirement: () => true,
-            perm: 'Admin'
+            perm: 'Admin',
+            description: 'Powerful commands that require an `admin` role or special permissions.'
         }
     }
 };
@@ -594,7 +598,6 @@ reloadUserList = () => {
 bu.getRandomInt = (min, max) => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
-
 
 bu.sendFile = (channelid, message, url) => {
     var i = url.lastIndexOf('/');
@@ -1345,4 +1348,29 @@ bu.createCaption = function(options) {
             fulfill(buf);
         })
     })
+}
+
+const tokenChoices = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+bu.genToken = function(length) {
+    if (!length) length = 7;
+    let output = '';
+    for (let i = 0; i < length; i++) {
+        output += tokenChoices[bu.getRandomInt(0, tokenChoices.length - 1)];
+    }
+    return output;
+}
+
+bu.awaitEvent = function(obj) {
+    return new Promise((fulfill, reject) => {
+        cluster.send(obj)
+        bu.emitter.once(obj.code, fulfill);
+    });
+}
+
+bu.genEventCode = function() {
+    let code = bu.genToken(15);
+    while (bu.emitter.listeners(code, true)) {
+        code = bu.genToken(15);
+    }
+    return code;
 }

@@ -8,7 +8,7 @@ const reload = require('require-reload');
 const Jimp = reload('jimp');
 
 e.init = () => {
-    e.category = bu.CommandType.GENERAL;
+    e.category = bu.CommandType.IMAGE;
 };
 
 e.requireCtx = require;
@@ -43,37 +43,16 @@ e.execute = async function(msg, words) {
             encoding: null
         })).body;
     bot.sendChannelTyping(msg.channel.id);
-    try {
-
-        let buf = await bu.createCaption({
-            font: 'ARCENA.ttf',
-            fill: 'black',
-            stroke: 'white',
-            strokewidth: 5,
-            text: quote,
-            size: '272x60'
-        });
-
-
-        let text = await Jimp.read(buf);
-        let img = await Jimp.read(path.join(__dirname, '..', 'img', `retarded.png`));
-        if (body) {
-            let avatar = await Jimp.read(body);
-            let smallAvatar = avatar.clone();
-            smallAvatar.resize(74, 74);
-            img.composite(smallAvatar, 166, 131);
-            avatar.resize(171, 171);
-            avatar.rotate(18)
-            img.composite(avatar, 277, 32);
-        }
-        img.composite(text, 268, 0);
-        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
-            bu.send(msg, undefined, {
-                file: buffer,
-                name: 'SHIT.png'
-            });
-        })
-    } catch (err) {
-        logger.error(err);
-    }
+    let code = bu.genEventCode();
+    let buffer = await bu.awaitEvent({
+        cmd: 'img',
+        command: 'retarded',
+        code: code,
+        text: quote,
+        avatar: user ? user.avatarURL : undefined
+    });    
+    bu.send(msg, undefined, {
+        file: buffer,
+        name: 'retarded.png'
+    });
 };
