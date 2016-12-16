@@ -15,6 +15,7 @@ const website = require('./backend/main');
 const cleverbot = new Cleverbot();
 var eventTimer;
 
+
 var e = module.exports = {},
     avatars, vars, emitter, bot, VERSION;
 
@@ -581,7 +582,6 @@ return err;
 }
 }
 letsEval().then(m => {
-logger.debug(util.inspect(m, {depth: 1}));
 bu.send(msg, \`Input:
 \\\`\\\`\\\`js
 \${commandToProcess}
@@ -600,7 +600,7 @@ bu.send(msg, \`An error occured!
 \${err.stack}
 \\\`\\\`\\\`\`);
 })`;
-        logger.debug(toEval);
+   //     logger.debug(toEval);
         try {
             eval(toEval);
         } catch (err) {

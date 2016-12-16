@@ -16,6 +16,8 @@ bu.startTime = null;
 bu.vars = null;
 loggerModule.init();
 logger.command('meow');
+global.cluster = require('./workers.js');
+
 
 // A special character for tag injections
 bu.specialCharBegin = '\uE001';

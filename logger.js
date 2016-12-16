@@ -12,13 +12,14 @@ const levels = {
     init: 4,
     irc: 5,
     website: 6,
-    music: 7,
-    shard: 8,
-    info: 9,
-    output: 10,
-    verbose: 11,
-    debug: 12,
-    silly: 13
+    cluster: 7,
+    music: 8,
+    shard: 9,
+    info: 10,
+    output: 11,
+    verbose: 12,
+    debug: 13,
+    silly: 14
 };
 
 const colors = {
@@ -34,6 +35,7 @@ const colors = {
     music: 'cyan',
     init: 'green',
     output: 'magenta',
+    cluster: 'magenta',
     irc: 'yellow',
     shard: 'yellow',
     timestamp: 'grey',
