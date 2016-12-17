@@ -600,7 +600,7 @@ bu.send(msg, \`An error occured!
 \${err.stack}
 \\\`\\\`\\\`\`);
 })`;
-   //     logger.debug(toEval);
+        //     logger.debug(toEval);
         try {
             eval(toEval);
         } catch (err) {
@@ -1144,8 +1144,22 @@ ${newMsg}`);
         wss.broadcast({
             author: bu.getFullName(msg.author),
             avatar: msg.author.avatarURL,
-            content: msg.content 
+            content: msg.content
         });
+        if (msg.channel.id != '204404225914961920') {
+            let nsfw = true;
+            if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
+            r.table('chatlogs').insert({
+                content: msg.content,
+                attachment: msg.attachments[0] ? msg.attachments[0].url : null,
+                userid: msg.author.id,
+                msgid: msg.id,
+                channelid: msg.channel.id,
+                guildid: isDm ? 'DM' : msg.channel.guild.id,
+                msgtime: r.epochTime(moment(msg.timestamp) / 1000),
+                type: 0
+            }).run();
+        }
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
         let storedGuild;
@@ -1385,20 +1399,7 @@ ${newMsg}`);
                 }
             }
         }
-        if (msg.channel.id != '204404225914961920') {
-            let nsfw = true;
-            if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
-            r.table('chatlogs').insert({
-                content: msg.content,
-                attachment: msg.attachments[0] ? msg.attachments[0].url : null,
-                userid: msg.author.id,
-                msgid: msg.id,
-                channelid: msg.channel.id,
-                guildid: isDm ? 'DM' : msg.channel.guild.id,
-                msgtime: r.epochTime(moment(msg.timestamp) / 1000),
-                type: 0
-            }).run();
-        }
+
     });
 }
 
