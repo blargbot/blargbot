@@ -33,8 +33,8 @@ e.execute = async function(params) {
     var replaceContent = false;
     var createdDate = msg.channel.guild.createdAt;
     var formatCode = '';
-    if (args[2])
-        formatCode = args[2];
+    if (args[1])
+        formatCode = args[1];
 
     replaceString = moment(createdDate).format(formatCode);
 
