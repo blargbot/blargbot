@@ -21,6 +21,7 @@ e.execute = async function(msg, words) {
     if (words[1]) {
         user = await bu.getUser(msg, words.slice(1).join(' '));
     }
+    if (!user) return;
     bot.sendChannelTyping(msg.channel.id);
 
     let code = bu.genEventCode();
