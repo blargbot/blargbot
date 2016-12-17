@@ -1146,6 +1146,11 @@ ${newMsg}`);
             avatar: msg.author.avatarURL,
             content: msg.content
         });
+
+        processUser(msg);
+        let isDm = msg.channel.guild == undefined;
+        let storedGuild;
+        if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
         if (msg.channel.id != '204404225914961920') {
             let nsfw = true;
             if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
@@ -1160,11 +1165,6 @@ ${newMsg}`);
                 type: 0
             }).run();
         }
-        processUser(msg);
-        let isDm = msg.channel.guild == undefined;
-        let storedGuild;
-        if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
-
         if (msg.channel.id != '194950328393793536')
             if (msg.author.id == bot.user.id) {
                 if (!isDm)
