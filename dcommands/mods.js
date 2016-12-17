@@ -109,7 +109,7 @@ e.execute = (msg, words) => {
 };
 
 function getName(member) {
-    return member.user.username;
+    return member.user.username + '#' + member.user.discriminator;
 }
 
 function pad(value, length) {
