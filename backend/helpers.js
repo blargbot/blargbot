@@ -178,7 +178,7 @@ e.init = () => {
             return ((commands[a].category - commands[b].category) * 1000) + (a > b ? 1 : -1);
         });
         for (let i = 0; i < keys.length; i++) {
-            if (commands[keys[i]].category != 2 && commands[keys[i]].category != 4) {
+            if (commands[keys[i]].category != bu.CommandType.CAT && commands[keys[i]].category != bu.CommandType.MUSIC) {
                 if (commands[keys[i]].category != lastType) {
                     toReturn += `<div class='centre white-text'><h2 id='${commands[keys[i]].category}' class='white-text'>${commandType[commands[keys[i]].category]}</h2></div>`;
                     lastType = commands[keys[i]].category;
