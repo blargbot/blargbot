@@ -423,15 +423,16 @@ var executeCommand = async function(commandName, msg, words, text) {
     } catch (err) {
         if (err.response) {
             let response = JSON.parse(err.response);
-            //logger.debug(response);
+            logger.debug(response);
             let dmMsg;
-            switch(response.code) {
-                50013:
-                    dmMsg = `Hi! You asked me to do something, but I didn't have perms! Please make sure I have permissions to do what you asked.`
+            switch (response.code) {
+                case 50001:
+                    dmMsg = `Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.`
                     break;
             }
-            if (dmMsg) 
-                    bu.sendDM(channel.author.id, dmMsg + '\nGuild: ' + channel.guild.name + '\nChannel: ' + channel.channel.name + '\nCommand: ' + channel.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');            
+            let storedUser = await r.table('user').get(msg.author.id);
+            if (dmMsg && !storedUser.dontdmerrors)
+                bu.sendDM(msg, dmMsg + '\nGuild: ' + msg.guild.name + '\nChannel: ' + msg.channel.name + '\nCommand: ' + msg.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
         }
         throw err;
     }
