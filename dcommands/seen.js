@@ -20,6 +20,7 @@ e.execute = async function(msg, words) {
     let user = await bu.getUser(msg, words.slice(1).join(' '));
     if (user) {
         let storedUser = await r.table('user').get(user.id);
+        if (!storedUser) return;
         let lastSeen = moment(storedUser.lastspoke);
         logger.debug(storedUser.lastspoke, lastSeen.format('llll'));
         let diff = moment.duration(moment() - lastSeen);

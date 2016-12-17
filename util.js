@@ -237,6 +237,9 @@ bu.send = async function(channel, message, file, embed) {
 
             let dmMsg;
             switch (response.code) {
+                case 10003:
+                    warnMsg = 'Channel not found';
+                    break;
                 case 50013:
                     warnMsg = 'Tried sending a message, but had no permissions!';
                     dmMsg = 'I tried to send a message in response to your command, ' +
