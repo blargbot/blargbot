@@ -10,7 +10,7 @@ for (let key in jsonSpells) {
     temp.id = key;
     spells.add(temp);
 }
-
+logger.debug(spells.size);
 const components = {
     V: 'Verbal',
     S: 'Somantic',
@@ -87,7 +87,9 @@ ${spell.description}`,
             inline: true
         }, {
             name: 'Components',
-            value: spell.components.split(/,[\s]+/).map(m => components[m.split(' ')[0]] + ' ' + m.split(' ').slice(1).join(' ')).join(', '),
+            value: spell.components.split(/,[\s]+/).map(m => {
+                    return (components[m.split(' ')[0]] || m.split(' ')[0]) + ' ' + m.split(' ').slice(1).join(' ')
+            }).join(', '),
             inline: true
         }]
     }
