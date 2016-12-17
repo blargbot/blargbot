@@ -3,7 +3,7 @@ var e = module.exports = {};
 var http = require('http');
 
 e.init = () => {
-    e.category = bu.CommandType.GENERAL;
+    e.category = bu.CommandType.IMAGE;
 };
 
 e.isCommand = true;

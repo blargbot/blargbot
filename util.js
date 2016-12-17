@@ -93,7 +93,7 @@ bu.CommandType = {
         4: {
             name: 'Image',
             requirement: () => true,
-            description: 'Commands that generate images.'
+            description: 'Commands that generate or display images.'
         },
         5: {
             name: 'Music',
