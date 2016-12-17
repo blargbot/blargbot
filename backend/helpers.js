@@ -4,17 +4,17 @@ const path = require('path');
 
 const commandType = {
     1: "General Commands",
-    2: "PRIVATE ERROR",
+    2: "CAT ERROR",
     3: "NSFW Commands",
-    4: "MUSIC ERROR",
-    5: "Bot Commander Commands",
+    4: "Image Commands",
+    5: "MUSIC ERROR",
     6: "Admin Commands",
     perms: {
         1: 'None',
         2: 'None',
         3: 'None',
         4: 'None',
-        5: 'Bot Commander',
+        5: 'None',
         6: 'Admin'
     }
 };
@@ -34,7 +34,7 @@ e.init = () => {
             return ((commands[a].category - commands[b].category) * 1000) + (a > b ? 1 : -1);
         });
         for (let i = 0; i < keys.length; i++) {
-            if (commands[keys[i]].category != 2 && commands[keys[i]].category != 4) {
+            if (commands[keys[i]].category != bu.CommandType.CAT && commands[keys[i]].category != bu.CommandType.MUSIC) {
                 if (commands[keys[i]].category != lastType) {
                     sidebar += `<li class=\"sidebar-header blue-grey darken-3\"><a class='grey-text text-lighten-5 waves-effect waves-light' href='/commands/#${commands[keys[i]].category}'>${commandType[commands[keys[i]].category]}</a></li>`;
                     lastType = commands[keys[i]].category;
