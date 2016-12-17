@@ -218,7 +218,7 @@ async function imgCah(msg) {
 }
 
 async function imgRetarded(msg) {
-    let buf = await bu.createCaption({
+    let buf = await createCaption({
         font: 'ARCENA.ttf',
         fill: 'black',
         stroke: 'white',
