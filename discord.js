@@ -421,6 +421,18 @@ var executeCommand = async function(commandName, msg, words, text) {
     try {
         await bu.commands[commandName].execute(msg, words, text);
     } catch (err) {
+        if (err.response) {
+            let response = JSON.parse(err.response);
+            //logger.debug(response);
+            let dmMsg;
+            switch(response.code) {
+                50013:
+                    dmMsg = `Hi! You asked me to do something, but I didn't have perms! Please make sure I have permissions to do what you asked.`
+                    break;
+            }
+            if (dmMsg) 
+                    bu.sendDM(channel.author.id, dmMsg + '\nGuild: ' + channel.guild.name + '\nChannel: ' + channel.channel.name + '\nCommand: ' + channel.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');            
+        }
         throw err;
     }
     return true;
