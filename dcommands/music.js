@@ -272,9 +272,6 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
                                 voice.on('error', (err) => {
                                     logger.error('Error: ', err);
                                 });
-                                voice.on('debug', (debug) => {
-                                    logger.music('Debug: ', debug);
-                                });
                                 voice.on('warn', (warn) => {
                                     logger.warn('Warning: ', warn);
                                 });
