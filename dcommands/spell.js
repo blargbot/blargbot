@@ -57,8 +57,13 @@ e.execute = async function(msg, words, text) {
         } else if (filteredSpells.length == 1) {
             spell = filteredSpells[0];
         } else {
-            bu.send(msg, `Multiple spells found!\n\`\`\`${filteredSpells.map(m => m.id).join('\n')}\`\`\``);
-            return;
+            let moreFilters = filteredSpells.filter(m => m.id.toLowerCase() == words.slice(1).join(' ').toLowerCase());
+            if (moreFilters.length == 1) {
+                spell = moreFilters[0];
+            } else {
+                bu.send(msg, `Multiple spells found!\n\`\`\`${filteredSpells.map(m => m.id).join('\n')}\`\`\``);
+                return;
+            }
         }
     }
     let colour = schools[spell.school.toLowerCase()] || 0xaaaaaa;
