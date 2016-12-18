@@ -10,7 +10,7 @@ e.isTag = true;
 e.name = `set`;
 e.args = `&lt;name&gt; &lt;value&gt;`;
 e.usage = `{set;name;value}`;
-e.desc = `Stores a variable. These variables are saved between sessions, and are unique per-tag.`;
+e.desc = `Stores a variable. These variables are saved between sessions, and are unique per-tag. If used in a custom command, they are unique per-guild.`;
 e.exampleIn = `{set;testvar;This is a test var}`;
 e.exampleOut = ``;
 
