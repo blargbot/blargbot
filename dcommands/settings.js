@@ -10,7 +10,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'settings [help|set <key>]';
 e.info = 'Gets or sets the settings for the current guild.';
-e.longinfo = '<p>Gets or sets the settigns for the current guild.</p>';
+e.longinfo = '<p>Gets or sets the settings for the current guild.</p>';
 
 e.execute = async function(msg, words) {
     if (words.length == 1) {
