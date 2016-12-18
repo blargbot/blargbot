@@ -22,6 +22,12 @@ e.execute = async function(params) {
     var replaceString = '';
     var replaceContent = false;
     let storedAuthor = await r.table('user').get(params.author);
+    if (!storedAuthor) {
+        return {
+            replaceString: await bu.tagProcessError(params, params.fallback, '`Author not found`'),
+            replaceContent
+        }
+    }
     let authorVars = storedAuthor.vars || {};
     if (params.args.length > 1) {
         replaceString = authorVars[params.args[1]];

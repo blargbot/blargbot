@@ -87,7 +87,7 @@ e.execute = async function(msg, words, text) {
                         break;
                     }
                     content = bu.splitInput(text, true).slice(3).join(' ');
-                    await bu.ccommand.set(msg.channel.guild.id, words[2], content);
+                    await bu.ccommand.set(msg.channel.guild.id, words[2], {content, author: msg.author.id});
                     bu.send(msg, `✅ Custom command \`${words[2]}\` created. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
@@ -101,7 +101,7 @@ e.execute = async function(msg, words, text) {
                         break;
                     }
                     content = bu.splitInput(text, true).slice(3).join(' ');
-                    await bu.ccommand.set(msg.channel.guild.id, words[2], content);
+                    await bu.ccommand.set(msg.channel.guild.id, words[2], {content, author: msg.author.id});
                     bu.send(msg, `✅ Custom command \`${words[2]}\` edited. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
@@ -110,7 +110,7 @@ e.execute = async function(msg, words, text) {
             case 'set':
                 if (words.length > 3) {
                     content = bu.splitInput(text, true).slice(3).join(' ');
-                    await bu.ccommand.set(msg.channel.guild.id, words[2], content);
+                    await bu.ccommand.set(msg.channel.guild.id, words[2], {content, author: msg.author.id});
                     bu.send(msg, `✅ Custom command \`${words[2]}\` set. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');

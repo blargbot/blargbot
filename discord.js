@@ -334,8 +334,10 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
     let val = await bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0]);
     if (val) {
         let ccommandContent;
+        let author;
         if (typeof val == "object") {
             ccommandContent = val.content;
+            author = val.author;
         } else {
             ccommandContent = val;
         }
@@ -343,7 +345,7 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
         if (await bu.canExecuteCcommand(msg, words[0], true)) {
             var command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
-            var response = await tags.processTag(msg, ccommandContent, command);
+            var response = await tags.processTag(msg, ccommandContent, command, undefined, author);
             if (response !== 'null') {
                 bu.send(channel.id, {
                     content: response,
