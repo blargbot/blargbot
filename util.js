@@ -234,7 +234,7 @@ bu.send = async function(channel, message, file, embed) {
         let warnMsg;
         try {
             let response = JSON.parse(err.response);
-
+            logger.debug(response);
             let dmMsg;
             switch (response.code) {
                 case 10003:
@@ -245,6 +245,7 @@ bu.send = async function(channel, message, file, embed) {
                     dmMsg = 'I tried to send a message in response to your command, ' +
                         'but didn\'t have permission to speak. If you think this is an error, ' +
                         'please contact the staff on your guild to give me the `Send Messages` permission.';
+
                     break;
                 case 50006:
                     warnMsg = 'Tried to send an empty message!';
@@ -274,6 +275,12 @@ bu.send = async function(channel, message, file, embed) {
                     logger.error(err.response, err.stack);
                     throw err;
                     break;
+            }
+            if (typeof channel == 'string') {
+                throw {
+                    message: warnMsg,
+                    throwOriginal: true
+                }
             }
             if (dmMsg && channel.author) {
                 let storedUser = await r.table('user').get(channel.author.id);
@@ -341,6 +348,7 @@ bu.send = async function(channel, message, file, embed) {
             }
             return null;
         } catch (err2) {
+            if (err2.throwOriginal) throw err;
             bu.send('250859956989853696', 'error: ' + err.stack);
         }
     }
