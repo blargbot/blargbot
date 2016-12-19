@@ -348,8 +348,10 @@ bu.send = async function(channel, message, file, embed) {
             }
             return null;
         } catch (err2) {
+            bu.send('250859956989853696', 'error: ' + err.stack + '\nresponse: ' + err.response);
+
             if (err2.throwOriginal) throw err;
-            bu.send('250859956989853696', 'error: ' + err.stack);
+
         }
     }
 };
