@@ -87,7 +87,10 @@ e.execute = async function(msg, words, text) {
                         break;
                     }
                     content = bu.splitInput(text, true).slice(3).join(' ');
-                    await bu.ccommand.set(msg.channel.guild.id, words[2], {content, author: msg.author.id});
+                    await bu.ccommand.set(msg.channel.guild.id, words[2], {
+                        content,
+                        author: msg.author.id
+                    });
                     bu.send(msg, `✅ Custom command \`${words[2]}\` created. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
@@ -101,7 +104,10 @@ e.execute = async function(msg, words, text) {
                         break;
                     }
                     content = bu.splitInput(text, true).slice(3).join(' ');
-                    await bu.ccommand.set(msg.channel.guild.id, words[2], {content, author: msg.author.id});
+                    await bu.ccommand.set(msg.channel.guild.id, words[2], {
+                        content,
+                        author: msg.author.id
+                    });
                     bu.send(msg, `✅ Custom command \`${words[2]}\` edited. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
@@ -110,7 +116,10 @@ e.execute = async function(msg, words, text) {
             case 'set':
                 if (words.length > 3) {
                     content = bu.splitInput(text, true).slice(3).join(' ');
-                    await bu.ccommand.set(msg.channel.guild.id, words[2], {content, author: msg.author.id});
+                    await bu.ccommand.set(msg.channel.guild.id, words[2], {
+                        content,
+                        author: msg.author.id
+                    });
                     bu.send(msg, `✅ Custom command \`${words[2]}\` set. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
@@ -154,6 +163,7 @@ e.execute = async function(msg, words, text) {
                         break;
                     }
                     let lang = '';
+                    if (storedTag.content) storedTag = storedTag.content;
                     if (/\{lang;.*?}/i.test(storedTag)) {
                         lang = storedTag.match(/\{lang;(.*?)}/i)[1];
                     }
