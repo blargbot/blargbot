@@ -1005,7 +1005,7 @@ If you are the owner of this server, here are a few things to know.
             if (newMsg.length > 900) newMsg = newMsg.substring(0, 900) + '... (too long to display)';
         }
         if (msg.guild)
-            bu.logEvent(msg.channel.guild.id, 'messageupdate', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
+            bu.logEvent(msg.guild.id, 'messageupdate', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
 **Message ID:** ${msg.id}
 **Channel:** ${msg.channel.mention}
 **Old Message:**
