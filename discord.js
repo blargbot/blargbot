@@ -266,37 +266,57 @@ var gameId;
  * @param forced - if true, will not set a timeout (Boolean)
  */
 function switchGame(forced) {
-    var name = '';
-    var oldId = gameId;
-    while (oldId == gameId) {
-        gameId = bu.getRandomInt(0, 6);
+    for (const shard of bot.shards) {
+        var name = '';
+        var oldId = gameId;
+        while (oldId == gameId) {
+            gameId = bu.getRandomInt(0, 11);
+        }
+        switch (gameId) {
+            case 0:
+                name = `with ${bot.users.size} users!`;
+                break;
+            case 1:
+                name = `in ${bot.guilds.size} guilds!`;
+                break;
+            case 2:
+                name = `in ${Object.keys(bot.channelGuildMap).length} channels!`;
+                break;
+            case 3:
+                name = `with tiny bits of string!`;
+                break;
+            case 4:
+                name = `with a laser pointer!`;
+                break;
+            case 5:
+                name = `on version ${bu.VERSION}!`;
+                break;
+            case 6:
+                name = `type 'b!help'!`;
+                break;
+            case 7:
+                name = `with a laser pointer!`;
+                break;
+            case 8:
+                name = `with ${bot.shards.size} shards!`;
+                break;
+            case 9:
+                name = `with a mouse!`;
+                break;
+            case 10:
+                name = `with a ball of yarn!`;
+                break;
+            case 11:
+                name = `in a box!`;
+                break;
+            case 12:
+                name = `on shard ${shard[1].id}!`;
+                break;
+        }
+        shard[1].editStatus(null, {
+            name: name
+        });
     }
-    switch (gameId) {
-        case 0:
-            name = `with ${bot.users.size} users!`;
-            break;
-        case 1:
-            name = `in ${bot.guilds.size} guilds!`;
-            break;
-        case 2:
-            name = `in ${Object.keys(bot.channelGuildMap).length} channels!`;
-            break;
-        case 3:
-            name = `with tiny bits of string!`;
-            break;
-        case 4:
-            name = `with delicious fish!`;
-            break;
-        case 5:
-            name = `on version ${bu.VERSION}!`;
-            break;
-        case 6:
-            name = `type 'blargbot help'!`;
-            break;
-    }
-    bot.editStatus(null, {
-        name: name
-    });
     if (!forced)
         setTimeout(function() {
             switchGame();
