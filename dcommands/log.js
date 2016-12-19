@@ -56,7 +56,7 @@ e.execute = async function(msg, words) {
                         channel = msg.channelMentions[0];
                     } else channel = msg.channel.id;
                     let args = words.slice(2);
-                    if (args[0].toLowerCase() == 'all') {
+                    if (args.map(m => m.toLowerCase()).includes('all')) {
                         for (let event of events) {
                             if (events.indexOf(event.toLowerCase()) > -1)
                                 storedGuild.log[event.toLowerCase()] = channel;
@@ -76,7 +76,7 @@ e.execute = async function(msg, words) {
                 if (words.length >= 2) {
                     let args = words.slice(2);
                     logger.debug(storedGuild.log);
-                    if (args[0].toLowerCase() == 'all')
+                    if (args.map(m => m.toLowerCase()).includes('all'))
                         for (let event of args) {
                             storedGuild.log = {};
                         }
