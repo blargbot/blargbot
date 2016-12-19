@@ -1205,7 +1205,7 @@ bu.logEvent = async function(guildid, event, message) {
             await bu.send(channel, `:information_source: **[${moment().tz('UTC').format('YY/MM/DD hh:mm:ss zz')}]** **Event: __${event}__**
 ${message}`);
         } catch (err) {
-            bu.send(guildid, `Disabling event \`${event}\` because the either output channel doesn't exist, or I don't have permission to post messages in it.`);
+            bu.send(guildid, `Disabling event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.`);
             storedGuild.log[event] = undefined;
             await r.table('guild').get(guildid).replace(storedGuild);
         }
