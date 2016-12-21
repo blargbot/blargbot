@@ -24,9 +24,8 @@ e.execute = async function(params) {
         tagName = params.tagName;
     var replaceString = '';
     var replaceContent = false;
-    let storedTag = await r.table('tag').get(tagName).run();
     let tagVars;
-    if (!storedTag) {
+    if (!tagName) {
         tagVars = bu.guildCache[params.msg.guild.id].vars || {};
         if (args.length > 2) {
             tagVars[args[1]] = args[2];
@@ -38,6 +37,8 @@ e.execute = async function(params) {
             replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
         }
     } else {
+        let storedTag = await r.table('tag').get(tagName).run();
+
         if (!storedTag.hasOwnProperty('vars')) storedTag.vars = {};
         tagVars = storedTag.vars;
 
