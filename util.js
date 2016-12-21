@@ -348,7 +348,36 @@ bu.send = async function(channel, message, file, embed) {
             }
             return null;
         } catch (err2) {
-            bu.send('250859956989853696', 'error: ' + err.stack + '\nresponse: ' + err.response);
+            let errEmbed = {
+                title: err.message,
+                description: err.stack,
+                fields: [{
+                    name: 'response',
+                    value: err.response,
+                    inline: true
+                }, {
+                    name: 'channel',
+                    value: channelid,
+                    inline: true
+                }],
+                color: 0x00aa55
+            }
+            let channel = bot.getChannel(channelid);
+            if (channel) {
+                errEmbed.fields[1].name = channel.name
+                errEmbed.fields.splice(1, 0, {
+                    name: channel.guild ? channel.guild.name : 'DM',
+                    value: channel.guild ? channel.guild.id : 'DM',
+                    inline: true
+                });
+            }
+            errEmbed.fields.push({
+                name: 'content',
+                value: content.content
+            });
+            bu.send('250859956989853696', {
+                embed: errEmbed
+            });
 
             if (err2.throwOriginal) throw err;
 
