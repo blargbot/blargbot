@@ -105,7 +105,8 @@ Modifying $ {
                     var roles = member.roles;
                     roles.push(mutedrole);
                     await bot.editGuildMember(msg.channel.guild.id, user.id, {
-                        roles: roles
+                        roles: roles,
+                        mute: true
                     });
                     let input = bu.parseInput(e.flags, words);
                     let reason;

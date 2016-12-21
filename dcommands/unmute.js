@@ -44,7 +44,8 @@ e.execute = async function(msg, words) {
                     var roles = member.roles;
                     roles.splice(roles.indexOf(mutedrole), 1);
                     bot.editGuildMember(msg.channel.guild.id, user.id, {
-                        roles: roles
+                        roles: roles,
+                        mute: false
                     });
                     let input = bu.parseInput(e.flags, words);
                     bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', input.r);
