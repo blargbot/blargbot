@@ -809,6 +809,11 @@ bu.processTagInner = async function(params, i) {
 };
 
 bu.processTag = async function(msg, words, contents, fallback, author, tagName) {
+    let duration = moment.duration(moment() - msg.timestamp);
+    if (duration.asMilliseconds() >= 30000) {
+        return 'Terminated recursive tag after 30 seconds.';
+    }
+
     let level = 0;
     let lastIndex = 0;
     let coords = [];
