@@ -73,7 +73,6 @@ function buildTag(tagName) {
 
 e.processTag = async function(msg, contents, command, tagName, author) {
     try {
-        tagName = tagName || msg.channel.guild.id;
         author = author || msg.channel.guild.id;
         logger.debug(command);
         var words = bu.splitInput(command);

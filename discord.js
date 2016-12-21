@@ -366,8 +366,9 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
             var command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
             var response = await tags.processTag(msg, ccommandContent, command, undefined, author);
-            if (response !== 'null') {
-                bu.send(channel.id, {
+            logger.debug(response, msg.channel.id, msg.channel.name); 
+            if (response !== 'null' && response !== '') {
+                bu.send(msg, {
                     content: response,
                     disableEveryone: false
                 });

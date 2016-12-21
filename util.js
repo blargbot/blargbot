@@ -231,6 +231,11 @@ bu.send = async function(channel, message, file, embed) {
     try {
         return await bot.createMessage(channelid, content, file);
     } catch (err) {
+        if (channelid == '250859956989853696') {
+            logger.error(err);
+            bot.createMessage('250859956989853696', 'An error occurred logging an error: \n' + err.stack);
+            return;
+        };
         let warnMsg;
         try {
             let response = JSON.parse(err.response);
@@ -375,6 +380,7 @@ bu.send = async function(channel, message, file, embed) {
                 name: 'content',
                 value: content.content
             });
+            logger.debug('aaa', errEmbed, embed);
             bu.send('250859956989853696', {
                 embed: errEmbed
             });
