@@ -7,12 +7,12 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `abs`;
+e.name = `ceil`;
 e.args = `&lt;number&gt;`;
-e.usage = `{abs;number}`;
-e.desc = `Gets the absolute value of a number`;
-e.exampleIn = `{abs;-535}`;
-e.exampleOut = `535`;
+e.usage = `{ceil;number}`;
+e.desc = `Rounds a number up.`;
+e.exampleIn = `{ceil;1.23}`;
+e.exampleOut = `2`;
 
 
 e.execute = async function(params) {
@@ -26,7 +26,7 @@ e.execute = async function(params) {
     if (args[1]) {
         var asNumber = parseFloat(args[1]);
         if (!isNaN(asNumber)) {
-            replaceString = Math.abs(asNumber);
+            replaceString = Math.ceil(asNumber);
         } else {
             replaceString = await bu.tagProcessError(params, fallback, '`Not a number`');
         }
