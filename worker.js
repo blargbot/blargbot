@@ -285,6 +285,8 @@ async function imgTriggered(msg) {
     if (msg.vertical) avatar.flip(false, true);
     if (msg.sepia) avatar.sepia();
     if (msg.blur) avatar.blur(10);
+    if (msg.greyscale) avatar.greyscale();
+    
     let triggered = await Jimp.read(path.join(__dirname, 'img', `triggered.png`))
     triggered.resize(280, 60);
     triggered.opacity(0.8);

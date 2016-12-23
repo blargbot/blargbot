@@ -38,6 +38,10 @@ e.flags = [{
     flag: 'b',
     word: 'blur',
     desc: 'Applies a blur.'
+}, {
+    flag: 'g',
+    word: 'greyscale',
+    desc: 'Makes the image greyscale'
 }];
 
 e.execute = async function(msg, words) {
@@ -53,8 +57,9 @@ e.execute = async function(msg, words) {
     let vertical = input.v != undefined;
     let sepia = input.s != undefined;
     let blur = input.b != undefined;
+    let greyscale = input.g != undefined;
 
-    let code = bu.genEventCode();   
+    let code = bu.genEventCode();
     let buffer = await bu.awaitEvent({
         cmd: 'img',
         command: 'triggered',
@@ -64,7 +69,8 @@ e.execute = async function(msg, words) {
         horizontal,
         vertical,
         sepia,
-        blur
+        blur,
+        greyscale
     });
     bu.send(msg, undefined, {
         file: buffer,
