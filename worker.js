@@ -276,12 +276,18 @@ async function imgArt(msg) {
 }
 
 async function imgTriggered(msg) {
-    let frameCount = 4;
+    let frameCount = 8;
     let frames = [];
     let avatar = await Jimp.read(msg.avatar);
     avatar.resize(320, 320);
+    if (msg.inverted) avatar.invert();
+    if (msg.horizontal) avatar.flip(true, false);
+    if (msg.vertical) avatar.flip(false, true);
+    if (msg.sepia) avatar.sepia();
+    if (msg.blur) avatar.blur(10);
     let triggered = await Jimp.read(path.join(__dirname, 'img', `triggered.png`))
-    triggered.resize(200, 30);
+    triggered.resize(280, 60);
+    triggered.opacity(0.8);
     let overlay = await Jimp.read(path.join(__dirname, 'img', `red.png`));
 
     let buffers = [];
@@ -298,49 +304,21 @@ async function imgTriggered(msg) {
 
     let base = new Jimp(256, 256);
 
-    let temp = base.clone();
-    let x = -29;
-    let y = -37;
-    temp.composite(avatar, x, y);
-    x = 28;
-    y = 214;
-    temp.composite(overlay, 0, 0);
-    temp.composite(triggered, x, y);
-    frames.push(temp.bitmap.data);
-
-    temp = base.clone();
-    x = -25;
-    y = -25;
-    temp.composite(avatar, x, y);
-    x = 28;
-    y = 213;
-    temp.composite(overlay, 0, 0);
-    temp.composite(triggered, x, y);
-    frames.push(temp.bitmap.data);
-
-    temp = base.clone();
-    x = -40;
-    y = -24;
-    temp.composite(avatar, x, y);
-    x = 28;
-    y = 207;
-    temp.composite(overlay, 0, 0);
-    temp.composite(triggered, x, y);
-    frames.push(temp.bitmap.data);
-
-    temp = base.clone();
-    x = -24;
-    y = -44;
-    temp.composite(avatar, x, y);
-    x = 27;
-    y = 209;
-    temp.composite(overlay, 0, 0);
-    temp.composite(triggered, x, y);
-    frames.push(temp.bitmap.data);
-
+    let temp, x, y;
+    for (let i = 0; i < frameCount; i++) {
+        temp = base.clone();
+        x = -32 +(getRandomInt(-16, 16));
+        y = -32 + (getRandomInt(-16, 16));
+        temp.composite(avatar, x, y);
+        x = -12 + (getRandomInt(-8, 8));
+        y = 200 + (getRandomInt(-0, 12));
+        temp.composite(overlay, 0, 0);
+        temp.composite(triggered, x, y);
+        frames.push(temp.bitmap.data);
+    }
     encoder.start();
     encoder.setRepeat(0);
-    encoder.setDelay(20);
+    encoder.setDelay(30);
     for (let frame of frames) encoder.addFrame(frame);
     encoder.finish();
 }
