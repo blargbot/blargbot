@@ -1269,6 +1269,7 @@ ${newMsg}`);
                             content = content.toLowerCase();
                         }
                         if (message == content) {
+                            console.info(`A roleme was triggered > ${msg.guild.name} (${msg.guild.id}) > ${msg.channel.name} (${msg.channel.id}) > ${msg.author.username} (${msg.author.id})`);
                             let roleList = msg.member.roles;
                             let add = roleme[i].add;
                             let del = roleme[i].remove;
