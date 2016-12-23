@@ -318,7 +318,7 @@ async function imgTriggered(msg) {
     }
     encoder.start();
     encoder.setRepeat(0);
-    encoder.setDelay(30);
+    encoder.setDelay(20);
     for (let frame of frames) encoder.addFrame(frame);
     encoder.finish();
 }
