@@ -1067,16 +1067,24 @@ If you are the owner of this server, here are a few things to know.
                     name: 'User ID',
                     value: user.id
                 });
+                let image;
+                let thumbnail;
+                if (user.avatar != oldUser.avatar) {
+                    image = {
+                        url: user.avatarURL
+                    };
+                    thumbnail = {
+                        url: `https://cdn.discordapp.com/avatars/${user.id}/${oldUser.avatar}.jpg`
+                    };
+                } else {
+                    thumbnail = {
+                        url: user.avatarURL
+                    };
+                }
                 guilds.forEach(g => {
                     bu.logEvent(g.id, 'userupdate', fields, {
-                        thumbnail: {
-                            url: `https://cdn.discordapp.com/avatars/${user.id}/${oldUser.avatar}.jpg`
-                        },
-                        image: {
-                       //    url: user.avatarURL
-                            url: user.avatarURL
-                       
-                        },
+                        thumbnail,
+                        image,
                         fields,
                         description
                     });
