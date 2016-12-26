@@ -19,6 +19,12 @@ e.longinfo = `<p>Sets a greeting for any new user who joins your guild. You can 
 blargbot&gt; Greeting set. Simulation: Welcome, **User**. Please read #rules.
 </code></pre>`;
 
+e.flags = [{
+    flag: 'c',
+    word: 'channel',
+    desc: 'The channel to put the greeting in.'
+}];
+
 e.execute = async function(msg, words) {
     let input = bu.parseInput(e.flags, words);
     if (input.undefined.length == 0) {

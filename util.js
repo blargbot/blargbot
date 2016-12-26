@@ -1274,10 +1274,7 @@ bu.logEvent = async function(guildid, event, fields, embed) {
         }
         let channel = storedGuild.log[event];
         if (!embed) embed = {};
-        embed.author = {
-            name: eventName,
-            icon_url: 'http://i.imgur.com/zcGyun6.png',
-        };
+        embed.title = `:information_source: ${eventName}`;
         embed.timestamp = moment();
         embed.fields = fields;
         embed.color = color;
@@ -1473,4 +1470,12 @@ bu.genEventCode = function() {
         code = bu.genToken(15);
     }
     return code;
+}
+
+bu.getAuthor = function(user) {
+    return {
+        name: bu.getFullName(user),
+        url: `https://blargbot.xyz/user/${user.id}`,
+        icon: user.avatarURL
+    };
 }
