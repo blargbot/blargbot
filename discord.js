@@ -879,7 +879,7 @@ function registerListeners() {
         bu.send(channel.id, `Hi!
 I see I was removed from your guild **${guild.name}**, and I'm sorry I wasn't able to live up to your expectations.
 If it's not too much trouble, could you please tell me why you decided to remove me, what you didn't like about me, or what you think could be improved? It would be very helpful.
-You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you for your time!`);
+You can do this by typing \`feedback <your feedback here>\` right in this DM (don't include the <>). Thank you for your time!`);
     });
 
     bot.on('guildMemberRemove', async function(guild, member) {
