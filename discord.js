@@ -366,7 +366,7 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
             var command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
             var response = await tags.processTag(msg, ccommandContent, command, undefined, author);
-            logger.debug(response, msg.channel.id, msg.channel.name); 
+            logger.debug(response, msg.channel.id, msg.channel.name);
             if (response !== 'null' && response !== '') {
                 bu.send(msg, {
                     content: response,
@@ -853,7 +853,11 @@ function registerListeners() {
             }, val, '');
             bu.send(chan || guild.defaultChannel.id, message);
         }
-        bu.logEvent(guild.id, 'memberjoin', `**User:** ${member.user.username}#${member.user.discriminator} (${member.user.id})`);
+        bu.logEvent(guild.id, 'memberjoin', [{
+            name: 'User',
+            value: bu.getFullName(member.user) + ` (${member.user.id})`,
+            inline: true
+        }]);
     });
 
     bot.on('guildDelete', async function(guild) {
@@ -889,7 +893,11 @@ You can do this by typing \`suggest <suggestion>\` right in this DM. Thank you f
             }, val, '');
             bu.send(chan || guild.defaultChannel.id, message);
         }
-        bu.logEvent(guild.id, 'memberleave', `**User:** ${member.user.username}#${member.user.discriminator} (${member.user.id})`);
+        bu.logEvent(guild.id, 'memberleave', [{
+            name: 'User',
+            value: bu.getFullName(member.user) + ` (${member.user.id})`,
+            inline: true
+        }]);
     });
 
     bot.on('guildCreate', async function(guild) {
@@ -957,13 +965,12 @@ If you are the owner of this server, here are a few things to know.
             if (storedMsg.length > 0) {
 
                 // logger.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
-
+                oldmsg = {};
                 storedMsg = storedMsg[0];
                 oldmsg.content = storedMsg.content;
                 oldmsg.author = bot.users.get(storedMsg.userid) || {
                     id: storedMsg.userid
                 };
-                oldmsg.cleanContent = storedMsg.content;
                 oldmsg.mentions = storedMsg.mentions.split(',').map(m => {
                     return {
                         username: m
@@ -999,20 +1006,32 @@ If you are the owner of this server, here are a few things to know.
                 type: 1
             }).run();
         }
-        let oldMsg = oldmsg.cleanContent || 'uncached :(';
-        let newMsg = msg.cleanContent;
+        let oldMsg = oldmsg.content || 'uncached :(';
+        let newMsg = msg.content;
         if (oldMsg.length + newMsg.length > 1900) {
             if (oldMsg.length > 900) oldMsg = oldMsg.substring(0, 900) + '... (too long to display)';
             if (newMsg.length > 900) newMsg = newMsg.substring(0, 900) + '... (too long to display)';
         }
         if (msg.guild)
-            bu.logEvent(msg.guild.id, 'messageupdate', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
-**Message ID:** ${msg.id}
-**Channel:** ${msg.channel.mention}
-**Old Message:**
-${oldMsg}
-**New Message:**
-${newMsg}`);
+            bu.logEvent(msg.guild.id, 'messageupdate', [{
+                name: 'User',
+                value: bu.getFullName(msg.author) + ` (${msg.author.id})`,
+                inline: true
+            }, {
+                name: 'Message ID',
+                value: msg.id,
+                inline: true
+            }, {
+                name: 'Channel',
+                value: msg.channel.mention,
+                inline: true
+            }, {
+                name: 'Old Message',
+                value: oldMsg
+            }, {
+                name: 'New Message',
+                value: newMsg
+            }]);
     });
 
     bot.on('userUpdate', (user, oldUser) => {
@@ -1021,13 +1040,41 @@ ${newMsg}`);
                 let guilds = bot.guilds.filter(g => g.members.get(user.id) != undefined);
                 let username;
                 let discrim;
-                if (oldUser.username != user.username) username = '**Old Name:** ' + oldUser.username + '\n';
-                if (oldUser.discriminator != user.discriminator) discrim = '**Old Discriminator:** ' + oldUser.discriminator + '\n';
-                let message = `**User:** ${user.username}#${user.discriminator} (${user.id})
-${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar:** <' + user.avatarURL + '>\n**Old Avatar:** <https://cdn.discordapp.com/avatars/' + user.id + '/' + oldUser.avatar + '.jpg>' : ''}
-`;
+                let fields = [];
+                let description = '';
+                if (oldUser.username != user.username) description += 'Username Changed\n';
+                if (oldUser.discriminator != user.discriminator) description += 'Discriminator Changed\n';
+                if (oldUser.avatar != user.avatar) description += 'Avatar Changed';
+                if (oldUser.username != user.username || oldUser.discriminator != user.discriminator) {
+                    fields.push({
+                        name: 'Old Name',
+                        value: bu.getFullName(oldUser),
+                        inline: true
+                    });
+                    fields.push({
+                        name: 'New Name',
+                        value: bu.getFullName(user),
+                        inline: true
+                    });
+                } else {
+                    fields.push({
+                        name: 'User',
+                        value: bu.getFullName(user),
+                        inline: true
+                    });
+                }
+                fields.push({
+                    name: 'User ID',
+                    value: user.id
+                });
                 guilds.forEach(g => {
-                    bu.logEvent(g.id, 'userupdate', message);
+                    bu.logEvent(g.id, 'userupdate', fields, {
+                        thumbnail: {
+                            url: user.avatarURL
+                        },
+                        fields,
+                        description
+                    });
                 });
             }
         }
@@ -1069,7 +1116,11 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
             delete bu.bans[guild.id][user.id];
         }
         bu.logAction(guild, user, mod, type, reason);
-        bu.logEvent(guild.id, 'memberban', `**User:** ${user.username}#${user.discriminator} (${user.id})`);
+        bu.logEvent(guild.id, 'memberban', [{
+            name: 'User',
+            value: bu.getFullName(user) + ` (${user.id})`,
+            inline: true
+        }]);
     });
 
     bot.on('guildBanRemove', async function(guild, user) {
@@ -1104,7 +1155,11 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
         } else {
             bu.logAction(guild, user, mod, 'Unban', reason);
         }
-        bu.logEvent(guild.id, 'memberunban', `**User:** ${user.username}#${user.discriminator} (${user.id})`);
+        bu.logEvent(guild.id, 'memberunban', [{
+            name: 'User',
+            value: bu.getFullName(user) + ` (${user.id})`,
+            inline: true
+        }]);
     });
 
     bot.on('messageDelete', async function(msg) {
@@ -1162,15 +1217,26 @@ ${username || ''}${discrim || ''}${user.avatar != oldUser.avatar ? '**New Avatar
                     type: 2
                 }).run();
 
-                let newMsg = msg.cleanContent || 'uncached :(';
+                let newMsg = msg.content || 'uncached :(';
                 if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
-                bu.logEvent(msg.channel.guild.id, 'messagedelete', `**User:** ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})
-**Message ID:** ${msg.id}
-**Channel:** ${msg.channel.mention}
-**Message:**
-${newMsg}`);
+                bu.logEvent(msg.channel.guild.id, 'messagedelete', [{
+                    name: 'User',
+                    value: bu.getFullName(msg.author) + ` (${msg.author.id})`,
+                    inline: true
+                }, {
+                    name: 'Message ID',
+                    value: msg.id,
+                    inline: true
+                }, {
+                    name: 'Channel',
+                    value: msg.channel.mention,
+                    inline: true
+                }, {
+                    name: 'Content',
+                    value: newMsg
+                }]);
             } catch (err) {
-
+                logger.error(err);
             }
         }
     });

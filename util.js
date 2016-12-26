@@ -1235,15 +1235,56 @@ bu.padRight = (value, length) => {
     return (value.toString().length < length) ? bu.padRight(value + ' ', length) : value;
 };
 
-bu.logEvent = async function(guildid, event, message) {
+bu.logEvent = async function(guildid, event, fields, embed) {
     let storedGuild = await bu.getGuild(guildid);
     if (!storedGuild.hasOwnProperty('log'))
         storedGuild.log = {};
     if (storedGuild.log.hasOwnProperty(event)) {
+        let color;
+        let eventName;
+        switch (event.toLowerCase()) {
+            case 'messagedelete':
+                color = 0xaf1d1d;
+                eventName = 'Message Deleted';
+                break;
+            case 'messageupdate':
+                color = 0x771daf;
+                eventName = 'Message Updated';
+                break;
+            case 'userupdate':
+                color = 0xd8af1a;
+                eventName = 'User Updated';
+                break;
+            case 'memberjoin':
+                color = 0x1ad8bc;
+                eventName = 'User Joined';
+                break;
+            case 'memberleave':
+                color = 0xd8761a;
+                eventName = 'User Left';
+                break;
+            case 'memberunban':
+                color = 0x17c914;
+                eventName = 'User Was Unbanned';
+                break;
+            case 'memberban':
+                color = 0xcc0c1c;
+                eventName = 'User Was Banned';
+                break;
+        }
         let channel = storedGuild.log[event];
+        if (!embed) embed = {};
+        embed.author = {
+            name: eventName,
+            icon_url: 'http://i.imgur.com/zcGyun6.png',
+        };
+        embed.timestamp = moment();
+        embed.fields = fields;
+        embed.color = color;
         try {
-            await bu.send(channel, `:information_source: **[${moment().tz('UTC').format('YY/MM/DD hh:mm:ss zz')}]** **Event: __${event}__**
-${message}`);
+            await bu.send(channel, {
+                embed
+            });
         } catch (err) {
             storedGuild.log[event] = undefined;
             await r.table('guild').get(guildid).replace(storedGuild);
