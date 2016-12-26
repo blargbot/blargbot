@@ -37,7 +37,8 @@ var events = [
     'memberleave',
     'messagedelete',
     'messageupdate',
-    'userupdate',
+    'nameupdate',
+    'avatarupdate',    
     'nickupdate'
 ];
 

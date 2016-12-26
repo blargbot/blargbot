@@ -905,13 +905,14 @@ You can do this by typing \`feedback <your feedback here>\` right in this DM (do
             let fields = [{
                 name: 'User',
                 value: bu.getFullName(member.user) + ` (${member.user.id})`,
-                inline: true
             }, {
                 name: 'Old Nickname',
-                value: oldMember.nick || member.user.username
+                value: oldMember.nick || member.user.username,
+                inline: true
             }, {
                 name: 'New Nickname',
-                value: member.nick || member.user.username
+                value: member.nick || member.user.username,
+                inline: true
             }]
             bu.logEvent(guild.id, 'nickupdate', fields, {
                 embed: {
@@ -1115,7 +1116,7 @@ If you are the owner of this server, here are a few things to know.
                             thumbnail: {
                                 url: `https://cdn.discordapp.com/avatars/${user.id}/${oldUser.avatar}.jpg`
                             },
-                            description
+                            description: ':arrow_right: Old avatar\n:arrow_down: New avatar'
                         });
                     });
                 }
