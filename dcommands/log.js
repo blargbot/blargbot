@@ -14,7 +14,9 @@ e.info = `Toggles logging for the specified events. Available events are:
 - memberleave - when a user leaves
 - messagedelete - when a message gets deleted
 - messageupdate - when a message gets updated
-- userupdate - when a user changes their username or avatar
+- nameupdate - when a user changes their username
+- avatarupdate - when a user changes their avatar
+- nickupdate - when a user changes their nickname
 - all - enables all of the events`;
 e.longinfo = `<p>Toggles logging for the specified events. Available events are:</p>
 <ul><li>memberban - when a user gets banned</li>
@@ -23,7 +25,9 @@ e.longinfo = `<p>Toggles logging for the specified events. Available events are:
 <li>memberleave - when a user leaves</li>
 <li>messagedelete - when a message gets deleted</li>
 <li>messageupdate - when a message gets updated</li>
-<li>userupdate - when a user changes their username or avatar</li>
+<li>nameupdate - when a user changes their username</li>
+<li>avatarupdate - when a user changes their avatar</li>
+<li>nickupdate - when a user changes their nickname</li>
 <li>all - enables all of the events</li></ul>`;
 
 var events = [
@@ -33,7 +37,8 @@ var events = [
     'memberleave',
     'messagedelete',
     'messageupdate',
-    'userupdate'
+    'userupdate',
+    'nickupdate'
 ];
 
 e.execute = async function(msg, words) {

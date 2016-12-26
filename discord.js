@@ -900,6 +900,29 @@ You can do this by typing \`feedback <your feedback here>\` right in this DM (do
         }]);
     });
 
+    bot.on('guildMemberUpdate', async function(guild, member, oldMember) {
+        if (member.nick != oldMember.nick) {
+            let fields = [{
+                name: 'User',
+                value: bu.getFullName(member.user) + ` (${member.user.id})`,
+                inline: true
+            }, {
+                name: 'Old Nickname',
+                value: oldMember.nick || member.user.username
+            }, {
+                name: 'New Nickname',
+                value: member.nick || member.user.username
+            }]
+            bu.logEvent(guild.id, 'nickupdate', fields, {
+                embed: {
+                    thumbnail: {
+                        url: member.avatarURL
+                    }
+                }
+            });
+        }
+    });
+
     bot.on('guildCreate', async function(guild) {
         postStats();
         logger.debug('added to guild');
@@ -1040,12 +1063,13 @@ If you are the owner of this server, here are a few things to know.
                 let guilds = bot.guilds.filter(g => g.members.get(user.id) != undefined);
                 let username;
                 let discrim;
-                let fields = [];
+                let fields;
                 let description = '';
-                if (oldUser.username != user.username) description += 'Username Changed\n';
-                if (oldUser.discriminator != user.discriminator) description += 'Discriminator Changed\n';
-                if (oldUser.avatar != user.avatar) description += 'Avatar Changed';
+
                 if (oldUser.username != user.username || oldUser.discriminator != user.discriminator) {
+                    fields = [];
+                    if (oldUser.username != user.username) description += 'Username Changed\n';
+                    if (oldUser.discriminator != user.discriminator) description += 'Discriminator Changed\n';
                     fields.push({
                         name: 'Old Name',
                         value: bu.getFullName(oldUser),
@@ -1056,39 +1080,45 @@ If you are the owner of this server, here are a few things to know.
                         value: bu.getFullName(user),
                         inline: true
                     });
-                } else {
+                    fields.push({
+                        name: 'User ID',
+                        value: user.id,
+                        inline: true
+                    });
+
+                    guilds.forEach(g => {
+                        bu.logEvent(g.id, 'nameupdate', fields, {
+                            thumbnail: {
+                                url: user.avatarURL
+                            },
+                            description
+                        });
+                    });
+
+                } else if (user.avatar != oldUser.avatar) {
+                    fields = [];
                     fields.push({
                         name: 'User',
                         value: bu.getFullName(user),
                         inline: true
                     });
-                }
-                fields.push({
-                    name: 'User ID',
-                    value: user.id
-                });
-                let image;
-                let thumbnail;
-                if (user.avatar != oldUser.avatar) {
-                    image = {
-                        url: user.avatarURL
-                    };
-                    thumbnail = {
-                        url: `https://cdn.discordapp.com/avatars/${user.id}/${oldUser.avatar}.jpg`
-                    };
-                } else {
-                    thumbnail = {
-                        url: user.avatarURL
-                    };
-                }
-                guilds.forEach(g => {
-                    bu.logEvent(g.id, 'userupdate', fields, {
-                        thumbnail,
-                        image,
-                        fields,
-                        description
+                    fields.push({
+                        name: 'User ID',
+                        value: user.id,
+                        inline: true
                     });
-                });
+                    guilds.forEach(g => {
+                        bu.logEvent(g.id, 'avatarupdate', fields, {
+                            image: {
+                                url: user.avatarURL
+                            },
+                            thumbnail: {
+                                url: `https://cdn.discordapp.com/avatars/${user.id}/${oldUser.avatar}.jpg`
+                            },
+                            description
+                        });
+                    });
+                }
             }
         }
     });

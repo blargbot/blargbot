@@ -1251,9 +1251,17 @@ bu.logEvent = async function(guildid, event, fields, embed) {
                 color = 0x771daf;
                 eventName = 'Message Updated';
                 break;
-            case 'userupdate':
+            case 'nameupdate':
                 color = 0xd8af1a;
-                eventName = 'User Updated';
+                eventName = 'Username Updated';
+                break;
+            case 'avatarupdate':
+                color = 0xd8af1a;
+                eventName = 'Avatar Updated';
+                break;
+            case 'nickupdate':
+                color = 0xd8af1a;
+                eventName = 'Nickname Updated';
                 break;
             case 'memberjoin':
                 color = 0x1ad8bc;
