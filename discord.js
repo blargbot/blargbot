@@ -1070,10 +1070,12 @@ If you are the owner of this server, here are a few things to know.
                 guilds.forEach(g => {
                     bu.logEvent(g.id, 'userupdate', fields, {
                         thumbnail: {
-                            url: oldUser.avatarURL
+                            url: `https://cdn.discordapp.com/avatars/${user.id}/${oldUser.avatar}.jpg`
                         },
                         image: {
+                       //    url: user.avatarURL
                             url: user.avatarURL
+                       
                         },
                         fields,
                         description
