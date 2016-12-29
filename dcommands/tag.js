@@ -149,6 +149,10 @@ var listTags = async function(msg, originalTagList, page, author, deleteMsg) {
     }
 };
 
+function filterTitle(title) {
+    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@]/gi, '');
+}
+
 e.execute = async function(msg, words, text) {
     let page = 0;
     let title, content, tag, author, originalTagList;
@@ -160,7 +164,7 @@ e.execute = async function(msg, words, text) {
                 if (!title)
                     title = (await bu.awaitMessage(msg, tagNameMsg)).content;
 
-                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@]/gi, '');
+                title = filterTitle(title);
                 tag = await r.table('tag').get(title).run();
                 if (tag) {
                     bu.send(msg, `❌ That tag already exists! ❌`);
@@ -192,7 +196,7 @@ e.execute = async function(msg, words, text) {
                 if (words[3]) newTagName = words[3];
 
                 if (!oldTagName) oldTagName = (await bu.awaitMessage(msg, `Enter the name of the tag you wish to rename:`)).content;
-
+                oldTagName = filterTitle(oldTagName);
                 let oldTag = await r.table('tag').get(oldTagName).run();
                 if (!oldTag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
@@ -204,6 +208,7 @@ e.execute = async function(msg, words, text) {
                 }
 
                 if (!newTagName) newTagName = (await bu.awaitMessage(msg, `Enter the new name.`)).content;
+                newTagName = filterTitle(newTagName);
                 let newTag = await r.table('tag').get(newTagName).run();
                 if (newTag) {
                     bu.send(msg, `❌ The tag \`${words[3]}\` already exist! ❌`);
@@ -227,7 +232,7 @@ e.execute = async function(msg, words, text) {
                 if (!title)
                     title = await bu.awaitMessage(msg, tagNameMsg).content;
 
-                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@]/gi, '');
+                title = filterTitle(title);
                 tag = await r.table('tag').get(title).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
@@ -262,7 +267,7 @@ e.execute = async function(msg, words, text) {
                 if (!title)
                     title = await bu.awaitMessage(msg, tagNameMsg).content;
 
-                title = title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
+                title = filterTitle(title);
                 tag = await r.table('tag').get(title).run();
                 if (tag && tag.author != msg.author.id) {
                     bu.send(msg, `❌ You don't own this tag! ❌`);
@@ -293,7 +298,7 @@ e.execute = async function(msg, words, text) {
             case 'delete':
                 if (words[2]) title = words[2];
                 if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
-
+                
                 tag = await r.table('tag').get(title).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
