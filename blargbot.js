@@ -11,7 +11,7 @@ const EventEmitter = require('eventemitter3');
 class BotEmitter extends EventEmitter {}
 const botEmitter = new BotEmitter();
 
-var irc = require('./irc.js'); 
+var irc = require('./irc.js');
 var discord = require('./discord.js');
 botEmitter.on('reloadConfig', () => {
     reloadConfig();
