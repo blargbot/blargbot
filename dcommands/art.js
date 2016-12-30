@@ -16,23 +16,37 @@ e.usage = 'art [user]';
 e.info = `Shows everyone a work of art.`;
 e.longinfo = `<p>Shows everyone a work of art.</p>`;
 
+e.flags = [{
+    flag: 'i',
+    word: 'image',
+    desc: 'A custom image.'
+}]
+
 e.execute = async function(msg, words) {
+    let input = bu.parseInput(e.flags, words);
     let user = msg.author;
-    if (words[1]) {
-        user = await bu.getUser(msg, words.slice(1).join(' '));
+    let url;
+    if (msg.attachments.length > 0) {
+        url = msg.attachments[0].url; 
+    } else if (input.i) {
+        url = input.i.join(' ');
+    } else if (input.undefined.length > 0) {
+        user = await bu.getUser(msg, input.undefined.join(' '));
+        if (!user) return;
+        url = user.avatarURL;
     }
-    if (!user) return;
+    if (!url) return;
     bot.sendChannelTyping(msg.channel.id);
 
     let code = bu.genEventCode();
-    
+
     let buffer = await bu.awaitEvent({
         cmd: 'img',
         command: 'art',
         code: code,
-        avatar: user.avatarURL
+        avatar: url
     });
-    
+
     bu.send(msg, undefined, {
         file: buffer,
         name: 'sobeautifulstan.png'
