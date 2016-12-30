@@ -42,15 +42,26 @@ e.flags = [{
     flag: 'g',
     word: 'greyscale',
     desc: 'Makes the image greyscale'
+}, {
+    flag: 'I',
+    word: 'image',
+    desc: 'A custom image.'
 }];
 
 e.execute = async function(msg, words) {
     let input = bu.parseInput(e.flags, words);
     let user = msg.author;
-    if (input.undefined.length > 0) {
+    let url;
+    if (msg.attachments.length > 0) {
+        url = msg.attachments[0].url;
+    } else if (input.I) {
+        url = input.I.join(' ');
+    } else if (input.undefined.length > 0) {
         user = await bu.getUser(msg, input.undefined.join(' '));
+        if (!user) return;
+        url = user.avatarURL;
     }
-    if (!user) return;
+    if (!url) url = msg.author.avatarURL;
     await bot.sendChannelTyping(msg.channel.id);
     let inverted = input.i != undefined;
     let horizontal = input.h != undefined;
@@ -64,7 +75,7 @@ e.execute = async function(msg, words) {
         cmd: 'img',
         command: 'triggered',
         code: code,
-        avatar: user.avatarURL,
+        avatar: url,
         inverted,
         horizontal,
         vertical,

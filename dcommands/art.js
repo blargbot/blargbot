@@ -17,10 +17,10 @@ e.info = `Shows everyone a work of art.`;
 e.longinfo = `<p>Shows everyone a work of art.</p>`;
 
 e.flags = [{
-    flag: 'i',
+    flag: 'I',
     word: 'image',
     desc: 'A custom image.'
-}]
+}];
 
 e.execute = async function(msg, words) {
     let input = bu.parseInput(e.flags, words);
@@ -28,8 +28,8 @@ e.execute = async function(msg, words) {
     let url;
     if (msg.attachments.length > 0) {
         url = msg.attachments[0].url; 
-    } else if (input.i) {
-        url = input.i.join(' ');
+    } else if (input.I) {
+        url = input.I.join(' ');
     } else if (input.undefined.length > 0) {
         user = await bu.getUser(msg, input.undefined.join(' '));
         if (!user) return;
