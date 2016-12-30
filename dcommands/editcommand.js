@@ -10,12 +10,20 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'editcommand < list | setrole <commandname | "commandname,..."> [role name]... | setperm <commandname | "commandname,..."> [perm number] | toggle <commandname | "commandname,...">';
+e.usage = 'editcommand < list \n    | setrole <commandname | "commandname,..."> [role name]... \n    | setperm <commandname | "commandname,..."> [perm number] \n    | toggle <commandname | "commandname,...">';
 e.info = `Changes command-specific usage permissions.
-**__list__** - Shows a list of modified commands (role required/perms required)
-**__setrole__** - Sets the role(s) required in order to use the command(s). Set to blank to disable the custom role requirement.
-**__setperm__** - Sets the permissions required in order to bypass the role requirement (requires \`permoverride\` in the settings command to be enabled). This has to be a permission number, which can be calculated at <https://discordapi.com/permissions.html>. Set to blank to disable the custom permission options.
-**__toggle__** - Enables/disables the listed commands`;
+
+**list** 
+Shows a list of modified commands (role required/perms required)
+
+**setrole**
+Sets the role(s) required in order to use the command(s). Set to blank to disable the custom role requirement.
+
+**setperm** 
+Sets the permissions required in order to bypass the role requirement (requires \`permoverride\` in the settings command to be enabled). This has to be a permission number, which can be calculated at <https://discordapi.com/permissions.html>. Set to blank to disable the custom permission options.
+
+**toggle** 
+Enables/disables the listed commands`;
 e.longinfo = `<p>Changes command-specific usage permissions.</p>
 <table>
 <thead>
