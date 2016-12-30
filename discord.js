@@ -846,11 +846,20 @@ function registerListeners() {
         let val = await bu.guildSettings.get(guild.id, 'greeting');
         let chan = await bu.guildSettings.get(guild.id, 'greetchan');
         if (val) {
+            let ccommandContent;
+            let author;
+            if (typeof val == "object") {
+                ccommandContent = val.content;
+                author = val.author;
+            } else {
+                ccommandContent = val;
+            }
             var message = await tags.processTag({
-                channel: guild.defaultChannel,
+                channel: chan ? bot.getChannel(chan) : guild.defaultChannel,
                 author: member.user,
-                member: member
-            }, val, '');
+                member: member,
+                guild: guild
+            }, ccommandContent, '', undefined, author);
             bu.send(chan || guild.defaultChannel.id, message);
         }
         bu.logEvent(guild.id, 'memberjoin', [{
@@ -886,11 +895,20 @@ You can do this by typing \`feedback <your feedback here>\` right in this DM (do
         let val = await bu.guildSettings.get(guild.id, 'farewell');
         let chan = await bu.guildSettings.get(guild.id, 'farewellchan');
         if (val) {
+            let ccommandContent;
+            let author;
+            if (typeof val == "object") {
+                ccommandContent = val.content;
+                author = val.author;
+            } else {
+                ccommandContent = val;
+            }
             var message = await tags.processTag({
-                channel: guild.defaultChannel,
+                channel: chan ? bot.getChannel(chan) : guild.defaultChannel,
                 author: member.user,
-                member: member
-            }, val, '');
+                member: member,
+                guild: guild
+            }, ccommandContent, '', undefined, author);
             bu.send(chan || guild.defaultChannel.id, message);
         }
         bu.logEvent(guild.id, 'memberleave', [{
