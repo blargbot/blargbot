@@ -35,7 +35,7 @@ e.execute = async function(msg, words) {
         if (!user) return;
         url = user.avatarURL;
     }
-    if (!url) return;
+    if (!url) url = msg.author.avatarURL;
     bot.sendChannelTyping(msg.channel.id);
 
     let code = bu.genEventCode();
