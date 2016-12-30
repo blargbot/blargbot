@@ -178,7 +178,7 @@ bu.hasPerm = (msg, perm, quiet) => {
     if (!msg.channel.guild) return true;
     if ((msg.member.id === bu.CAT_ID && bu.catOverrides) ||
         msg.channel.guild.ownerID == msg.member.id ||
-        msg.member.permission.administraton) {
+        msg.member.permission.json.administrator) {
         return true;
     }
     var roles = msg.channel.guild.roles.filter(m => Array.isArray(perm) ?
