@@ -320,11 +320,11 @@ bu.send = async function(channel, message, file, embed) {
                             inline: true
                         }, {
                             name: 'Full Command',
-                            value: channel.content,
+                            value: channel.content || 'empty',
                             inline: true
                         }, {
                             name: 'Content',
-                            value: content.content
+                            value: content.content || 'empty'
                         }]
                     }
                 });
@@ -347,7 +347,7 @@ bu.send = async function(channel, message, file, embed) {
                             inline: true
                         }, {
                             name: 'Content',
-                            value: content.content
+                            value: content.content || 'empty'
                         }]
                     }
                 });
