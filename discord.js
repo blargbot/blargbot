@@ -1225,7 +1225,7 @@ If you are the owner of this server, here are a few things to know.
     });
 
     async function handleDelete(msg, quiet) {
-        if (!msg.author) {
+        if (!msg.author || !msg.channel) {
             let storedMsg = await r.table('chatlogs')
                 .getAll(msg.id, {
                     index: 'msgid'
