@@ -21,6 +21,7 @@ __**Usage:**__
   **cc raw <name>** - displays the raw code of a ccommand
   **cc setrole <name> <role names...>** - sets the roles required to execute the ccommand
   **cc help** - shows this message
+  **cc sethelp** <name> [help text] - set the help message for a custom command
   
 For more information about BBTag, visit https://blargbot.xyz/tags`;
 e.longinfo = `<p>Creates a custom command using the <a href="/tags">BBTag language</a>. Once created, whenever you say the command name, blargbot will respond with the
@@ -55,7 +56,9 @@ blargbot&gt; Hello, User. This is a test command.
     <pre><code>cc setrole &lt;name&gt; &lt;role names...&gt;</code></pre>
     <p>sets the roles required to execute the ccommand</p>
     <pre><code>cc help</code></pre>
-    <p>Gets basic ccommand help.</p>`;
+    <p>Gets basic ccommand help.</p>
+    <pre><code>cc sethelp &lt;name&gt; &#91;help text&#93;</code></pre>
+    <p>sets the help message for the given ccommand</p>`;
 e.alias = ['cc'];
 e.execute = async function(msg, words, text) {
     logger.debug('Text:', text);
@@ -172,6 +175,22 @@ e.execute = async function(msg, words, text) {
                     bu.send(msg, `The raw code for ${words[2]} is\`\`\`${lang}\n${content}\n\`\`\``);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
+                }
+                break;
+            case 'sethelp':
+                if (words.length > 3) {
+                    content = bu.splitInput(text, true).slice(3).join(' ')
+                    var message = "";
+                    if (!await bu.ccommand.sethelp(msg.channel.guild.id, words[2], content)){
+                        message = `✅ Custom command \`${words[2]}\` set. ✅`;
+                    } else {
+                        message = `Custom command \`${words[2]}\` not found. Do \`help\` for a list of all commands, including ccommands`;
+                    }
+
+                    bu.send(msg, message);
+                } else {
+                    await bu.ccommand.sethelp(msg.channel.guild.id, words[2], undefined);
+                    bu.send(msg, `✅ Help text for \`${words[2]}\` removed. ✅`);
                 }
                 break;
             case 'help':

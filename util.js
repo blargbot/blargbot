@@ -1087,7 +1087,7 @@ bu.ccommand = {
     set: async function(guildid, key, value) {
         let storedGuild = await bu.getGuild(guildid);
 
-        storedGuild.ccommands[key.toLowerCase()] = value;
+        storedGuild.ccommands[key.toLowerCase()] = {value: value, help: undefined};
 
         r.table('guild').get(guildid).update({
             ccommands: storedGuild.ccommands
@@ -1098,7 +1098,7 @@ bu.ccommand = {
         let storedGuild = await bu.getGuild(guildid);
 
         if (!storedGuild) return null;
-        return storedGuild.ccommands[key.toLowerCase()];
+        return storedGuild.ccommands[key.toLowerCase()].value;
     },
     rename: async function(guildid, key1, key2) {
         let storedGuild = await bu.getGuild(guildid);
@@ -1116,6 +1116,19 @@ bu.ccommand = {
 
         r.table('guild').get(guildid).replace(storedGuild).run();
         return;
+    },
+    sethelp: async function(guildid, key, help) {
+        let storedGuild = await bu.getGuild(guildid);
+
+        if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return false;
+        storedGuild.ccommands[key.toLowerCase()].help = help;
+        return true;
+    },
+    gethelp: async function(guildid, key) {
+        let storedGuild = await bu.getGuild(guildid);
+
+        if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return undefined;
+        return storedGuild.ccommands[key.toLowerCase()].help;
     }
 };
 
