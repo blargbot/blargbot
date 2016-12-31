@@ -14,8 +14,16 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'feedback <feedback>';
 e.alias = ['suggest', 'report'];
-e.info = 'Sends me feedback. Thanks!';
-e.longinfo = `<p>Sends feedback to my guild. Thank you! It's very important to me.</p>`;
+e.info = `This command has three different functions for varying purposes. Please do not abuse it.
+
+**__feedback__** - give me feedback about the bot
+**__suggest__** - tell me something you want to be added or changed
+**__report__** - let me know about a bug you found
+
+Thank you for your support. It means a lot to me!`;
+e.longinfo = `<p>This command has three different functions for varying purposes. Please do not abuse it.</p>
+<ul><li>feedback - give me feedback about the bot</li><li>suggest - tell me something you want added or changed</li><li>report - let me know about a bug you found</li></ul>
+<p>Thank you for your support. It means a lot to me!</p>`;
 
 e.execute = async function(msg, words) {
     if (words.length > 1) {
