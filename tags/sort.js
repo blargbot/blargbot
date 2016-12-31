@@ -7,13 +7,12 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `shuffle`;
-e.args = `[array]`;
-e.usage = `{shuffle[;array]}`;
-e.desc = `Shuffles the args the user provided, or the provided array.`;
-e.exampleIn = `{shuffle} {args;0} {args;1} {args;2}`;
-e.exampleOut = `Input: <code>one two three</code><br>Output: <code>three one two</code>`;
-
+e.name = `sort`;
+e.args = `&lt;array&gt; [descending]`;
+e.usage = `{sort;array[;descending]}`;
+e.desc = `Sorts the provided array in ascending order. If descending is provided, sorts in descending order. If {get} or {aget} are used, will modify the original array.`;
+e.exampleIn = `{sort;[3, 2, 5, 1, 4]}`;
+e.exampleOut = `[1,2,3,4,5]`;
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
@@ -27,15 +26,15 @@ e.execute = async function(params) {
         let deserialized = bu.deserializeTagArray(args[1]);
 
         if (deserialized && Array.isArray(deserialized.v)) {
-            deserialized.v = bu.shuffle(deserialized.v);
+            deserialized.v.sort();
+            if (args[2]) deserialized.v.reverse();
             if (deserialized.n) {
                 await bu.setArray(deserialized, params);
             } else replaceString = bu.serializeTagArray(deserialized.v)
         } else {
         replaceString = await bu.tagProcessError(params, params.fallback, '`Not an array`');
         }
-    } else
-        words = bu.shuffle(words);
+    }
     return {
         replaceString: replaceString,
         replaceContent: replaceContent

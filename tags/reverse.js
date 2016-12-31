@@ -7,13 +7,12 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `shuffle`;
-e.args = `[array]`;
-e.usage = `{shuffle[;array]}`;
-e.desc = `Shuffles the args the user provided, or the provided array.`;
-e.exampleIn = `{shuffle} {args;0} {args;1} {args;2}`;
-e.exampleOut = `Input: <code>one two three</code><br>Output: <code>three one two</code>`;
-
+e.name = `reverse`;
+e.args = `&lt;text&gt;`;
+e.usage = `{reverse;text}`;
+e.desc = `Reverses the order of text or an array. If {get} or {aget} are used with an array, will modify the original array.`;
+e.exampleIn = `{sort;text}`;
+e.exampleOut = `txet`;
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
@@ -27,15 +26,14 @@ e.execute = async function(params) {
         let deserialized = bu.deserializeTagArray(args[1]);
 
         if (deserialized && Array.isArray(deserialized.v)) {
-            deserialized.v = bu.shuffle(deserialized.v);
+            deserialized.v.reverse();
             if (deserialized.n) {
                 await bu.setArray(deserialized, params);
             } else replaceString = bu.serializeTagArray(deserialized.v)
         } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not an array`');
+            replaceString = args[1].split('').reverse().join('');
         }
-    } else
-        words = bu.shuffle(words);
+    }
     return {
         replaceString: replaceString,
         replaceContent: replaceContent
