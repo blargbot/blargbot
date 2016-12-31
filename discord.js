@@ -1250,11 +1250,11 @@ If you are the owner of this server, here are a few things to know.
                 if (storedMsg.attachment) msg.attachments = [{
                     url: storedMsg.attachment
                 }];
-                msg.channel = bot.getChannel(msg.channelID);
+             //   msg.channel = bot.getChannel(msg.channelID);
 
             } else {
                 logger.debug('Somebody deleted an uncached message and unstored message.');
-                msg.channel = bot.getChannel(msg.channelID);
+         //       msg.channel = bot.getChannel(msg.channelID);
                 msg.author = {};
                 msg.mentions = [];
                 msg.attachments = [];
