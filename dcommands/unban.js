@@ -38,9 +38,13 @@ e.execute = async function(msg, words) {
                     mod: msg.author.id,
                     reason: input.r
                 };
-
-                await bot.unbanGuildMember(msg.channel.guild.id, user.id);
-                bu.send(msg, ':ok_hand:');
+                try {
+                    await bot.unbanGuildMember(msg.channel.guild.id, user.id);
+                    bu.send(msg, ':ok_hand:');
+                } catch (err) {
+                    bu.send(msg, `Failed to unban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``);
+                    throw err;
+                }
             }
         } else {
             bu.send(msg, `You don't have permission to unban users!`);

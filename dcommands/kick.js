@@ -55,11 +55,15 @@ e.execute = async function(msg, words) {
         //     var deletedays = 0
         //    if (words[2])
         //       deletedays = parseInt(words[2])
-        bot.kickGuildMember(msg.channel.guild.id, user.id);
-        let input = bu.parseInput(e.flags, words);
-        bu.logAction(msg.channel.guild, user, msg.author, 'Kick', input.r);
-        bu.send(msg, ':ok_hand:');
-
+        try {
+            await bot.kickGuildMember(msg.channel.guild.id, user.id);
+            let input = bu.parseInput(e.flags, words);
+            bu.logAction(msg.channel.guild, user, msg.author, 'Kick', input.r);
+            bu.send(msg, ':ok_hand:');
+        } catch (err) {
+            bu.send(msg, `Failed to kick the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``);
+            throw err;
+        }
     } else {
         bu.send(msg, `You didn't tell me who to kick!`);
     }

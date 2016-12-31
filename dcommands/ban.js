@@ -71,23 +71,28 @@ e.execute = async function(msg, words) {
         var deletedays = 1;
         if (words[2])
             deletedays = parseInt(words[2]);
-        await bot.banGuildMember(msg.channel.guild.id, user.id, deletedays)
-        let suffix = '';
-        if (input.t && input.t.length > 0) {
-            let duration = bu.parseDuration(input.t.join(' '));
-            if (duration.asMilliseconds() > 0) {
-                await r.table('events').insert({
-                    type: 'unban',
-                    user: user.id,
-                    guild: msg.guild.id,
-                    duration: duration.toJSON(),
-                    endtime: r.epochTime(moment().add(duration).unix())
-                });
-                suffix = `The user will be unbanned ${duration.humanize(true)}.`;
-            } else {
-                suffix = `The user was banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`;
+        try {
+            await bot.banGuildMember(msg.channel.guild.id, user.id, deletedays)
+            let suffix = '';
+            if (input.t && input.t.length > 0) {
+                let duration = bu.parseDuration(input.t.join(' '));
+                if (duration.asMilliseconds() > 0) {
+                    await r.table('events').insert({
+                        type: 'unban',
+                        user: user.id,
+                        guild: msg.guild.id,
+                        duration: duration.toJSON(),
+                        endtime: r.epochTime(moment().add(duration).unix())
+                    });
+                    suffix = `The user will be unbanned ${duration.humanize(true)}.`;
+                } else {
+                    suffix = `The user was banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`;
+                }
             }
+            bu.send(msg, ':ok_hand: ' + suffix);
+        } catch (err) {
+            bu.send(msg, `Failed to ban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``);
+            throw err;
         }
-        bu.send(msg, ':ok_hand: ' + suffix);
     }
 };
