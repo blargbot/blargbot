@@ -30,7 +30,10 @@ e.execute = async function(params) {
             if (channel) {
                 if (channel.guild.id == params.msg.guild.id) {
                     if (params.args[2]) {
-                        bu.send(channel.id, params.args[2]);
+                        bu.send(channel.id, {
+                            content: params.args[2],
+                            disableEveryone: false
+                        });
                     } else params.msg.channel = channel;
                 } else {
                     replaceString = await bu.tagProcessError(params, params.fallback, '`Channel must be in guild`');
