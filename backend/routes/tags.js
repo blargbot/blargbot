@@ -6,7 +6,7 @@ const moment = require('moment');
 
 router.get('/', (req, res) => {
     res.locals.user = req.user;
-    req.session.returnTo = '/tags'  + req.path;
+    req.session.returnTo = '/tags' + req.path;
     res.render('tags');
 });
 
@@ -163,6 +163,7 @@ async function logChange(user, action, actionObj) {
     user = await bot.getRESTUser(user.id);
     let actionArray = [];
     for (let key in actionObj) {
+        if (actionObj[key].length > 1000) actionObj[key] = actionObj[key].substring(0, 1000) + '... (too long)';
         actionArray.push({
             name: key,
             value: actionObj[key],

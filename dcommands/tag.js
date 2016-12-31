@@ -298,7 +298,7 @@ e.execute = async function(msg, words, text) {
             case 'delete':
                 if (words[2]) title = words[2];
                 if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
-                
+
                 tag = await r.table('tag').get(title).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
@@ -443,6 +443,7 @@ function escapeRegex(str) {
 function logChange(action, msg, actionObj) {
     let actionArray = [];
     for (let key in actionObj) {
+        if (actionObj[key].length > 1000) actionObj[key] = actionObj[key].substring(0, 1000) + '... (too long)';
         actionArray.push({
             name: key,
             value: actionObj[key],
