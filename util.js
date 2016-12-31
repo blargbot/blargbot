@@ -810,6 +810,68 @@ function setCharAt(str, index, chr) {
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
+bu.serializeTagArray = function(array, varName, authorVar) {
+    if (!varName && !authorVar)
+        return JSON.stringify(array);
+
+    let obj = {
+        v: array,
+        n: varName
+    };
+    if (authorVar) obj.a = true;
+    return JSON.stringify(obj);
+}
+
+bu.deserializeTagArray = function(value) {
+    try {
+        let obj = JSON.parse(value
+            .replace(new RegExp(bu.specialCharBegin + 'LB' + bu.specialCharEnd, "g"), '{')
+            .replace(new RegExp(bu.specialCharBegin + 'RB' + bu.specialCharEnd, "g"), '}'));
+        if (Array.isArray(obj)) obj = {
+            v: obj
+        };
+        return obj;
+    } catch (err) {
+        return null;
+    }
+}
+
+bu.setArray = async function(deserialized, params) {
+    let table, name;
+    if (deserialized.a) {
+        table = 'user';
+        name = params.author;
+    } else {
+        if (params.tagName) {
+            table = 'tag';
+            name = params.tagName;
+        } else {
+            table = 'guild';
+            name = params.msg.guild.id;
+        }
+    }
+    await bu.setVariable(name, deserialized.n, deserialized.v, table)
+}
+
+bu.setVariable = async function(name, key, value, table) {
+    let vars = {};
+    vars[key] = value;
+    await r.table(table).get(name).update({
+        vars
+    }).run();
+}
+
+bu.getVariables = async function(name, key, table) {
+    let storedThing;
+    if (table == 'guild') {
+        storedThing = await bu.getGuild(name);
+    } else {
+        storedThing = await r.table(table).get(name).run();
+    }
+    if (!storedThing.vars) storedThing.vars = {};
+    return storedThing.vars[key];
+}
+
 bu.processTagInner = async function(params, i) {
     return await bu.processTag(params.msg, params.words, params.args[i], params.fallback, params.author, params.tagName);
 };

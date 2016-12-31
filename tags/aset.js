@@ -34,15 +34,20 @@ e.execute = async function(params) {
     if (!storedAuthor.hasOwnProperty('var')) storedAuthor.vars = {};
     let authorVars = storedAuthor.vars;
 
-    if (args.length > 2) {
-        authorVars[args[1]] = args[2];
-        await saveUser(author, authorVars);
+    if (args.length == 3) {
+        let deserialized = bu.deserializeTagArray(args[2]);
+        if (deserialized) {
+            authorVars[args[1]] = deserialized.v;
+        } else authorVars[args[1]] = args[2];
+    } else if (args.length > 3) {
+        authorVars[args[1]] = args.slice(2);
     } else if (args.length == 2) {
         authorVars[args[1]] = null;
-        await saveUser(author, authorVars);
     } else {
+        x
         replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
     }
+    await saveUser(author, authorVars);
 
     return {
         replaceString: replaceString,

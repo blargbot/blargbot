@@ -28,9 +28,28 @@ e.execute = async function(params) {
             replaceContent
         }
     }
+    let args = params.args, fallback = params.fallback;
     let authorVars = storedAuthor.vars || {};
-    if (params.args.length > 1) {
-        replaceString = authorVars[params.args[1]];
+    if (args.length == 2) {
+        let result = authorVars[args[1]];
+        if (Array.isArray(result)) {
+            replaceString = bu.serializeTagArray(result, args[1], true);
+        } else
+            replaceString = result;
+    } else if (args.length > 2) {
+        let result = authorVars[args[1]];
+        if (Array.isArray(result)) {
+            let index = parseInt(args[2]);
+            if (isNaN(index)) {
+                replaceString = await bu.tagProcessError(params, fallback, '`Invalid index`');
+            } else {
+                if (!result[index]) {
+                    replaceString = await bu.tagProcessError(params, fallback, '`Undefined index`');
+                } else
+                    replaceString = result[index];
+            }
+        } else
+            replaceString = result;
     } else {
         replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
     }
