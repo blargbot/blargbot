@@ -1293,7 +1293,7 @@ If you are the owner of this server, here are a few things to know.
                         inline: true
                     }, {
                         name: 'Channel',
-                        value: msg.channel.mention,
+                        value: msg.channel ? msg.channel.mention : 'Uncached',
                         inline: true
                     }, {
                         name: 'Content',
