@@ -8,9 +8,9 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `aget`;
-e.args = `&lt;name&gt;`;
-e.usage = `{aget;name}`;
-e.desc = `Returns a stored variable. Variables are unique per-author.`;
+e.args = `&lt;name&gt; [index]`;
+e.usage = `{aget;name[;index]}`;
+e.desc = `Returns a stored variable, or an index in a stored array. Variables are unique per-author.`;
 e.exampleIn = `{aget;testvar}`;
 e.exampleOut = `This is a test var`;
 

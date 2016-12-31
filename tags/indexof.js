@@ -10,7 +10,7 @@ e.isTag = true;
 e.name = 'indexof';
 e.args = '&lt;text&gt; &lt;searchfor&gt; [start]';
 e.usage = '{indexof;text;search[;start]}';
-e.desc = 'Finds the index of <code>searchfor</code> in <code>text</code>, after <code>start</code>. If it\'s not found, returns -1.';
+e.desc = 'Finds the index of <code>searchfor</code> in <code>text</code>, after <code>start</code>. <code>text</code> can either be plain text or an array. If it\'s not found, returns -1.';
 e.exampleIn = 'The index of \'o\' in \'hello world\' is {indexof;hello world;o}';
 e.exampleOut = 'The index of \'o\' in \'hello world\' is 4';
 
@@ -37,7 +37,13 @@ e.execute = async function(params) {
                 }
             }
         }
-        replaceString = args[1].indexOf(args[2], start);
+        let deserialized = bu.deserializeTagArray(args[1]);
+
+        if (deserialized && Array.isArray(deserialized.v)) {
+            replaceString = deserialized.v.indexOf(args[2], start);
+        } else {
+            replaceString = args[1].indexOf(args[2], start);
+        }
     } else {
         replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
     }

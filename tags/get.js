@@ -8,9 +8,9 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `get`;
-e.args = `&lt;name&gt;`;
-e.usage = `{get;name}`;
-e.desc = `Returns a stored variable. Variables are unique per-tag.`;
+e.args = `&lt;name&gt; [index]`;
+e.usage = `{get;name[;index]}`;
+e.desc = `Returns a stored variable, or an index in a stored array. Variables are unique per-tag.`;
 e.exampleIn = `{get;testvar}`;
 e.exampleOut = `This is a test var`;
 

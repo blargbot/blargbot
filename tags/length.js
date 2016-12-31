@@ -10,7 +10,7 @@ e.isTag = true;
 e.name = `length`;
 e.args = `&lt;text&gt;`;
 e.usage = `{length;text}`;
-e.desc = `Gives the amount of characters in <code>text</code>.`;
+e.desc = `Gives the amount of characters in <code>text</code>, or the number of elements if it is an array.`;
 e.exampleIn = `What you said is {length;{args}} chars long.`;
 e.exampleOut = `What you said is 5 chars long.`;
 
@@ -21,7 +21,13 @@ e.execute = async function(params) {
     if (params.args.length >= 2) {
         params.args[1] = await bu.processTagInner(params, 1);
         let args1 = params.args[1];
-        replaceString = args1.length;
+        let deserialized = bu.deserializeTagArray(args1);
+
+        if (deserialized && Array.isArray(deserialized.v)) {
+            replaceString = deserialized.v.length;
+        } else {
+            replaceString = args1.length;
+        }
     } else {
         replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
     }
