@@ -33,10 +33,12 @@ ${bu.commandList[words[1]].info}
 
 ${flags}`;
             } else {
-                message = await bu.ccommand.gethelp(msg.guild.id, words[2]);
-                if (!message){
-                    message = `No description could be found for command \`${words[1]}\`.`;
-                }
+                let ccommand = await bu.ccommand.gethelp(msg.guild.id, words[1]);
+                if (ccommand)
+                    message = `**__Custom Command Name__**: ${words[1].toLowerCase()}\n${ccommand}`;
+            }
+            if (!message) {
+                message = `No description could be found for command \`${words[1]}\`.`;
             }
             bu.send(msg, message);
         } else {

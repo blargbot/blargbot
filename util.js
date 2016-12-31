@@ -232,7 +232,7 @@ bu.send = async function(channel, message, file, embed) {
         return await bot.createMessage(channelid, content, file);
     } catch (err) {
         if (channelid == '250859956989853696') {
-            bot.createMessage('250859956989853696', 'An error occurred logging an error: \n' + err.stack);            
+            bot.createMessage('250859956989853696', 'An error occurred logging an error: \n' + err.stack);
             logger.error(err);
             logger.info(content);
             return;
@@ -1087,7 +1087,10 @@ bu.ccommand = {
     set: async function(guildid, key, value) {
         let storedGuild = await bu.getGuild(guildid);
 
-        storedGuild.ccommands[key.toLowerCase()] = {value: value, help: undefined};
+        storedGuild.ccommands[key.toLowerCase()] = {
+            value: value,
+            help: undefined
+        };
 
         r.table('guild').get(guildid).update({
             ccommands: storedGuild.ccommands
@@ -1097,7 +1100,7 @@ bu.ccommand = {
     get: async function(guildid, key) {
         let storedGuild = await bu.getGuild(guildid);
 
-        if (!storedGuild) return null;
+        if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return null;
         return storedGuild.ccommands[key.toLowerCase()].value;
     },
     rename: async function(guildid, key1, key2) {
@@ -1119,9 +1122,11 @@ bu.ccommand = {
     },
     sethelp: async function(guildid, key, help) {
         let storedGuild = await bu.getGuild(guildid);
-
+        
         if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return false;
         storedGuild.ccommands[key.toLowerCase()].help = help;
+        logger.debug(storedGuild.ccommands[key.toLowerCase()]);
+        r.table('guild').get(guildid).replace(storedGuild).run();        
         return true;
     },
     gethelp: async function(guildid, key) {
@@ -1168,7 +1173,7 @@ bu.getGuild = async function(guildid) {
 
 bu.canExecuteCcommand = async function(msg, commandName, quiet) {
     let val = await bu.ccommand.get(msg.guild ? msg.guild.id : '', commandName);
-    if (typeof val == "object") {
+    if (val && typeof val == "object") {
         roles = val.roles;
         if (roles && roles.length > 0) {
             for (let role of roles) {

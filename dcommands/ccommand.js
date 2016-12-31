@@ -177,12 +177,16 @@ e.execute = async function(msg, words, text) {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
                 break;
+            case 'list':
+                let storedGuild = await bu.getGuild(msg.guild.id);
+                bu.send(msg, `Here are a list of the custom commands on this guild:\`\`\`${Object.keys(storedGuild.ccommands).join(', ')}\`\`\` `)
+                break;
             case 'sethelp':
                 if (words.length > 3) {
                     content = bu.splitInput(text, true).slice(3).join(' ')
                     var message = "";
-                    if (!await bu.ccommand.sethelp(msg.channel.guild.id, words[2], content)){
-                        message = `✅ Custom command \`${words[2]}\` set. ✅`;
+                    if (await bu.ccommand.sethelp(msg.channel.guild.id, words[2], content)) {
+                        message = `✅ Help for custom command \`${words[2]}\` set. ✅`;
                     } else {
                         message = `Custom command \`${words[2]}\` not found. Do \`help\` for a list of all commands, including ccommands`;
                     }
