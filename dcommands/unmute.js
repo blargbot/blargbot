@@ -43,17 +43,22 @@ e.execute = async function(msg, words) {
                 } else {
                     var roles = member.roles;
                     roles.splice(roles.indexOf(mutedrole), 1);
-                    bot.editGuildMember(msg.channel.guild.id, user.id, {
-                        roles: roles,
-                        mute: false
-                    });
-                    let input = bu.parseInput(e.flags, words);
-                    bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', input.r);
-                    bu.send(msg, ':ok_hand:');
+                    try {
+                        await bot.editGuildMember(msg.channel.guild.id, user.id, {
+                            roles: roles,
+                            mute: false
+                        });
+                        let input = bu.parseInput(e.flags, words);
+                        bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', input.r);
+                        bu.send(msg, ':ok_hand:');
+                    } catch (err) {
+                        bu.send(msg, `Failed to remove the muted role! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``);
+                        throw err;
+                    }
                 }
             }
         } else {
-            bu.send(msg, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
+            bu.send(msg, `I don't have permission to unmute users! Make sure I have the \`manage roles\` permission and try again.`);
         }
     }
 };

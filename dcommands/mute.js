@@ -86,8 +86,13 @@ Modifying $ {
                     await bu.send(msg, `I couldn't find that user!`);
                     return;
                 }
-                /*
                 var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
+                logger.debug(role.position, botPos);
+                if (role.position >= botPos) {
+                    await bu.send(msg, `I can't assign the muted role! (it's higher than or equal to my top role)`);
+                    return;
+                }
+                /*
                 var userPos = bu.getPosition(msg.member);
                 var targetPos = role.position;
                 if (targetPos >= botPos) {
@@ -102,34 +107,39 @@ Modifying $ {
                 if (member.roles.indexOf(mutedrole) > -1) {
                     bu.send(msg, 'That user is already muted!');
                 } else {
-                    var roles = member.roles;
-                    roles.push(mutedrole);
-                    await bot.editGuildMember(msg.channel.guild.id, user.id, {
-                        roles: roles,
-                        mute: true
-                    });
-                    let input = bu.parseInput(e.flags, words);
-                    let reason;
-                    if (input.r) reason = input.r.join(' ');
-                    bu.logAction(msg.channel.guild, user, msg.author, 'Mute');
-                    let suffix = '';
-                    if (input.t) {
-                        let duration = bu.parseDuration(input.t.join(' '));
-                        if (duration.asMilliseconds() > 0) {
-                            await r.table('events').insert({
-                                type: 'unmute',
-                                user: user.id,
-                                guild: msg.guild.id,
-                                duration: duration.toJSON(),
-                                role: mutedrole,
-                                endtime: r.epochTime(moment().add(duration).unix())
-                            });
-                            suffix = `The user will be unmuted ${duration.humanize(true)}.`;
-                        } else {
-                            suffix = `The user was muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`;
+                    try {
+                        var roles = member.roles;
+                        roles.push(mutedrole);
+                        await bot.editGuildMember(msg.channel.guild.id, user.id, {
+                            roles: roles,
+                            mute: true
+                        });
+                        let input = bu.parseInput(e.flags, words);
+                        let reason;
+                        if (input.r) reason = input.r.join(' ');
+                        bu.logAction(msg.channel.guild, user, msg.author, 'Mute');
+                        let suffix = '';
+                        if (input.t) {
+                            let duration = bu.parseDuration(input.t.join(' '));
+                            if (duration.asMilliseconds() > 0) {
+                                await r.table('events').insert({
+                                    type: 'unmute',
+                                    user: user.id,
+                                    guild: msg.guild.id,
+                                    duration: duration.toJSON(),
+                                    role: mutedrole,
+                                    endtime: r.epochTime(moment().add(duration).unix())
+                                });
+                                suffix = `The user will be unmuted ${duration.humanize(true)}.`;
+                            } else {
+                                suffix = `The user was muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`;
+                            }
                         }
+                        bu.send(msg, ':ok_hand: ' + suffix);
+                    } catch (err) {
+                        bu.send(msg, `Failed to assign the muted role! Please check your permission settings and command and retry.\n If you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``);
+                        throw err;
                     }
-                    bu.send(msg, ':ok_hand: ' + suffix);
                 }
             }
         } else {
