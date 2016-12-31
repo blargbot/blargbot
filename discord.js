@@ -1032,9 +1032,6 @@ If you are the owner of this server, here are a few things to know.
         if (msg.content == oldmsg.content) {
             return;
         }
-        if (msg.author.id == bot.user.id) {
-            logger.output(`Message ${msg.id} was updated to '${msg.content}''`);
-        }
         if (msg.channel.id != '204404225914961920') {
             var nsfw = await bu.isNsfwChannel(msg.channel.id);
             r.table('chatlogs').insert({
