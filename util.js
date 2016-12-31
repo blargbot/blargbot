@@ -334,6 +334,7 @@ bu.send = async function(channel, message, file, embed) {
             } else {
                 let channel = bot.getChannel(channelid);
                 bu.send('250859956989853696', {
+                    content: " ",
                     embed: {
                         title: response.code + ' - ' + response.message,
                         color: warnMsg ? 0xe27900 : 0xAD1111,
