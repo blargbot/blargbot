@@ -1087,10 +1087,7 @@ bu.ccommand = {
     set: async function(guildid, key, value) {
         let storedGuild = await bu.getGuild(guildid);
 
-        storedGuild.ccommands[key.toLowerCase()] = {
-            value: value,
-            help: undefined
-        };
+        storedGuild.ccommands[key.toLowerCase()] = value;
 
         r.table('guild').get(guildid).update({
             ccommands: storedGuild.ccommands
@@ -1101,7 +1098,7 @@ bu.ccommand = {
         let storedGuild = await bu.getGuild(guildid);
 
         if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return null;
-        return storedGuild.ccommands[key.toLowerCase()].value;
+        return storedGuild.ccommands[key.toLowerCase()];
     },
     rename: async function(guildid, key1, key2) {
         let storedGuild = await bu.getGuild(guildid);
