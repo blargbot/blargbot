@@ -52,6 +52,10 @@ e.flags = [{
     flag: 'D',
     word: 'delete',
     desc: 'Get message deletes.'
+}, {
+    flag: 'j',
+    word: 'json',
+    desc: 'Returns the logs in a json file rather than on a webpage.'
 }]
 
 var typeRef = {
@@ -152,6 +156,14 @@ e.execute = async function(msg, words) {
         bot.editMessage(msg2.channel.id, msg2.id, 'No results found!');
     } else {
         clearTimeout(timer);
+        if (input.j) {
+            let toSend = `${pingUser ? 'Sorry that took so long, ' + msg.author.mention : ''}Here are your logs, in a JSON file!`;
+            await bu.send(msg, toSend, {
+                file: JSON.stringify(thing, null, 2),
+                name: `${msg.channel.id}-logs.json`
+            });
+            return;
+        }
         let key = await insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages);
         let toSend = 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key;
         if (pingUser) {
