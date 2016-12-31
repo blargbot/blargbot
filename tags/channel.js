@@ -8,9 +8,9 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `channel`;
-e.args = `&lt;channel&gt;`;
-e.usage = `{channel;#channel}`;
-e.desc = `Sends the output to a specific channel. Only works in custom commands.`;
+e.args = `&lt;channel&gt; [message]`;
+e.usage = `{channel;#channel[;message]}`;
+e.desc = `Sends the output to a specific channel. Only works in custom commands. If a message is specified, it will create a new message in the specified channel instead of rerouting output.`;
 e.exampleIn = `{channel;#channel}Hello!`;
 e.exampleOut = `In #channel: Hello!`;
 
@@ -29,7 +29,9 @@ e.execute = async function(params) {
             let channel = bot.getChannel(channelid);
             if (channel) {
                 if (channel.guild.id == params.msg.guild.id) {
-                    params.msg.channel = channel;
+                    if (params.args[2]) {
+                        bu.send(channel.id, params.args[2]);
+                    } else params.msg.channel = channel;
                 } else {
                     replaceString = await bu.tagProcessError(params, params.fallback, '`Channel must be in guild`');
                 }
