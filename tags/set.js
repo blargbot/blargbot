@@ -35,7 +35,7 @@ e.execute = async function(params) {
 
     if (args.length == 3) {
         let deserialized = bu.deserializeTagArray(args[2]);
-        if (deserialized) {
+        if (deserialized && deserialized.v) {
             tagVars[args[1]] = deserialized.v;
         } else tagVars[args[1]] = args[2];
     } else if (args.length > 3) {
