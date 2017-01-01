@@ -12,12 +12,13 @@ e.usage = 'mute <user> [flags]';
 e.info = 'Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to ' +
     '`manage roles` to create and assign the role, and `manage channels` to configure ' +
     'the role. You are able to manually configure the role without the bot, but the bot has to make it. ' +
-    'Deleting the muted role causes it to be regenerated.\n' +
+    'Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\n' +
     'If mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as `1 hour 2 minutes` or `1h2m`.';
 e.longinfo = `<p>Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to
         <code>manage roles</code> to create and assign the role, and <code>manage channels</code> to configure
         the role. You are able to manually configure the role without the bot, but the bot has to make it.
         Deleting the muted role causes it to be regenerated.</p>
+        <p>If the bot has permissions for it, this command will also voice-mute the user.</p>
     <p>If mod-logging is enabled, the mute will be logged.</p>
     You can also specify a length of time the user should be muted for, using formats such as <code>1 hour 2 minutes</code> or <code>1h2m</code></p>`;
 
@@ -92,6 +93,7 @@ Modifying $ {
                     await bu.send(msg, `I can't assign the muted role! (it's higher than or equal to my top role)`);
                     return;
                 }
+                let voiceMute = msg.guild.members.get(bot.user.id).permission.json.voiceMuteMembers;
                 /*
                 var userPos = bu.getPosition(msg.member);
                 var targetPos = role.position;
@@ -112,7 +114,7 @@ Modifying $ {
                         roles.push(mutedrole);
                         await bot.editGuildMember(msg.channel.guild.id, user.id, {
                             roles: roles,
-                            mute: true
+                            mute: voiceMute ? true : undefined
                         });
                         let input = bu.parseInput(e.flags, words);
                         let reason;

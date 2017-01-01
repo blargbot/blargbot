@@ -43,10 +43,11 @@ e.execute = async function(msg, words) {
                 } else {
                     var roles = member.roles;
                     roles.splice(roles.indexOf(mutedrole), 1);
+                    let voiceMute = msg.guild.members.get(bot.user.id).permission.json.voiceMuteMembers;
                     try {
                         await bot.editGuildMember(msg.channel.guild.id, user.id, {
                             roles: roles,
-                            mute: false
+                            mute: voiceMute ? false : undefined
                         });
                         let input = bu.parseInput(e.flags, words);
                         bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', input.r);
