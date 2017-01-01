@@ -359,7 +359,7 @@ function createCaption(options) {
         if (!options.gravity) options.gravity = 'Center';
         logger.debug(`Generating caption for text '${options.text}'`)
 
-        let image = im('fuck.gif').command('convert');
+        let image = im().command('convert');
 
         image.font(path.join(__dirname, 'img', 'fonts', options.font));
         image.out('-size').out(options.size);
