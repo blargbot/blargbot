@@ -384,9 +384,11 @@ function createCaption(options) {
             imageMagick: true
         }).toBuffer('PNG', function(err, buf) {
             if (err) {
+                logger.error(`Failed to generate a caption: '${options.text}'`)
                 reject(err);
                 return;
             }
+            logger.debug(`Caption generated: '${options.text}'`)
             fulfill(buf);
         })
     })
