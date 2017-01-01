@@ -407,7 +407,7 @@ function getResource(url) {
             uri: url
         });
         if (r.res.headers['content-type'] == 'image/gif') {
-            gm(r.body, 'temp.gif').selectFrame(0).setFormat('PNG').toBuffer('PNG', function(err, buffer) {
+            gm(r.body, 'temp.gif').selectFrame(0).setFormat('png').toBuffer(function(err, buffer) {
                 if (err) {
                     logger.error('Error converting gif');
                     reject(err);
