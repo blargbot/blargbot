@@ -7,6 +7,7 @@ const path = require('path');
 const GIFEncoder = require('gifencoder');
 const util = require('util');
 const request = require('request');
+const fs = require('fs');
 
 const logger = {
     cluster: function(msg) {
@@ -406,8 +407,9 @@ function getResource(url) {
             uri: url
         });
         if (r.res.headers['content-type'] == 'image/gif') {
-            gm(r.body, 'temp.gif').setFormat('png').toBuffer('PNG', function(err, buffer) {
+            gm(r.body, 'temp.gif').selectFrame(0).setFormat('PNG').toBuffer('PNG', function(err, buffer) {
                 if (err) {
+                    logger.error('Error converting gif');
                     reject(err);
                     return;
                 }
@@ -432,8 +434,8 @@ function aRequest(obj) {
                 return;
             }
             fulfill({
-                res,
-                body
+                res: res,
+                body: body
             });
         })
     });
