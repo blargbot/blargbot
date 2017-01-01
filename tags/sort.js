@@ -32,8 +32,10 @@ e.execute = async function(params) {
                 await bu.setArray(deserialized, params);
             } else replaceString = bu.serializeTagArray(deserialized.v)
         } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not an array`');
+            replaceString = await bu.tagProcessError(params, params.fallback, '`Not an array`');
         }
+    } else {
+        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
     }
     return {
         replaceString: replaceString,
