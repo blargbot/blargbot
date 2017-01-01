@@ -382,8 +382,8 @@ function createCaption(options) {
             image.out(`caption:${options.text}`);
             image.out('-composite');
         }
-
-        image.toBuffer('PNG', function(err, buf) {
+        image.setFormat('png');
+        image.toBuffer(function(err, buf) {
             if (err) {
                 logger.error(`Failed to generate a caption: '${options.text}'`)
                 reject(err);
