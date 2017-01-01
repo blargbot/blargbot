@@ -6,6 +6,7 @@ const Jimp = require('jimp');
 const path = require('path');
 const GIFEncoder = require('gifencoder');
 const util = require('util');
+const request = require('request');
 
 const logger = {
     cluster: function(msg) {
@@ -145,7 +146,7 @@ async function imgFree(msg) {
 }
 
 async function imgCaption(msg) {
-    let img = await Jimp.read(msg.url);
+    let img = await Jimp.read(await getResource(msg.url));
     let height = img.bitmap.height;
     let width = img.bitmap.width;
     let topbuf;
@@ -230,7 +231,7 @@ async function imgRetarded(msg) {
     let text = await Jimp.read(buf);
     let img = await Jimp.read(path.join(__dirname, 'img', `retarded.png`));
     if (msg.avatar) {
-        let avatar = await Jimp.read(msg.avatar);
+        let avatar = await Jimp.read(await getResource(msg.avatar));
         let smallAvatar = avatar.clone();
         smallAvatar.resize(74, 74);
         img.composite(smallAvatar, 166, 131);
@@ -262,7 +263,7 @@ async function imgShit(msg) {
 }
 
 async function imgArt(msg) {
-    let avatar = await Jimp.read(msg.avatar);
+    let avatar = await Jimp.read(await getResource(msg.avatar));
     avatar.resize(370, 370);
     let foreground = await Jimp.read(path.join(__dirname, 'img', `art.png`));
     let img = new Jimp(1364, 1534);
@@ -278,7 +279,7 @@ async function imgArt(msg) {
 async function imgTriggered(msg) {
     let frameCount = 8;
     let frames = [];
-    let avatar = await Jimp.read(msg.avatar);
+    let avatar = await Jimp.read(await getResource(msg.avatar));
     avatar.resize(320, 320);
     if (msg.inverted) avatar.invert();
     if (msg.horizontal) avatar.flip(true, false);
@@ -286,7 +287,7 @@ async function imgTriggered(msg) {
     if (msg.sepia) avatar.sepia();
     if (msg.blur) avatar.blur(10);
     if (msg.greyscale) avatar.greyscale();
-    
+
     let triggered = await Jimp.read(path.join(__dirname, 'img', `triggered.png`))
     triggered.resize(280, 60);
     triggered.opacity(0.8);
@@ -309,11 +310,21 @@ async function imgTriggered(msg) {
     let temp, x, y;
     for (let i = 0; i < frameCount; i++) {
         temp = base.clone();
-        x = -32 +(getRandomInt(-16, 16));
-        y = -32 + (getRandomInt(-16, 16));
+        if (i == 0) {
+            x = -16;
+            y = -16
+        } else {
+            x = -32 + (getRandomInt(-16, 16));
+            y = -32 + (getRandomInt(-16, 16));
+        }
         temp.composite(avatar, x, y);
-        x = -12 + (getRandomInt(-8, 8));
-        y = 200 + (getRandomInt(-0, 12));
+        if (i == 0) {
+            x = -10;
+            y = 200;
+        } else {
+            x = -12 + (getRandomInt(-8, 8));
+            y = 200 + (getRandomInt(-0, 12));
+        }
         temp.composite(overlay, 0, 0);
         temp.composite(triggered, x, y);
         frames.push(temp.bitmap.data);
@@ -388,3 +399,42 @@ function padRight(value, length) {
 function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+
+function getResource(url) {
+    return new Promise(async function(fulfill, reject) {
+        let r = await aRequest({
+            uri: url
+        });
+        if (r.res.headers['content-type'] == 'image/gif') {
+            gm(r.body, 'temp.gif').setFormat('png').toBuffer('PNG', function(err, buffer) {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+                fulfill(buffer);
+            });
+        } else if (r.res.headers['content-type'] == 'image/png' ||
+            r.res.headers['content-type'] == 'image/jpeg' ||
+            r.res.headers['content-type'] == 'image/bmp') {
+            fulfill(r.body);
+        } else {
+            reject('Wrong file type!');
+        }
+    });
+}
+
+function aRequest(obj) {
+    return new Promise((fulfill, reject) => {
+        if (!obj.encoding) obj.encoding = null;
+        request(obj, (err, res, body) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            fulfill({
+                res,
+                body
+            });
+        })
+    });
+}
