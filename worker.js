@@ -2,6 +2,9 @@ process.execArgv[0] = process.execArgv[0].replace('-brk', '');
 
 const cluster = require('cluster');
 const gm = require('gm');
+const im = require('gm').subClass({
+    imageMagick: true
+});
 const Jimp = require('jimp');
 const path = require('path');
 const GIFEncoder = require('gifencoder');
@@ -356,14 +359,14 @@ function createCaption(options) {
         if (!options.gravity) options.gravity = 'Center';
         logger.debug(`Generating caption for text '${options.text}'`)
 
-        let image = gm().command('convert');
+        let image = im('fuck.gif').command('convert');
 
         image.font(path.join(__dirname, 'img', 'fonts', options.font));
         image.out('-size').out(options.size);
+
         image.out('-background').out('transparent');
         image.out('-fill').out(options.fill);
         image.out('-gravity').out(options.gravity);
-        image.out()
         if (options.stroke) {
             image.out('-stroke').out(options.stroke);
             if (options.strokewidth) image.out('-strokewidth').out(options.strokewidth);
@@ -380,9 +383,7 @@ function createCaption(options) {
             image.out('-composite');
         }
 
-        image.options({
-            imageMagick: true
-        }).toBuffer('PNG', function(err, buf) {
+        image.toBuffer('PNG', function(err, buf) {
             if (err) {
                 logger.error(`Failed to generate a caption: '${options.text}'`)
                 reject(err);
