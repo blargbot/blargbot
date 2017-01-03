@@ -1635,12 +1635,5 @@ async function registerChangefeed() {
     }
 }
 
-// Now look at this net,
-// that I just found!
-async function net() {
-  // When I say go, be ready to throw!
-  
-  // GO!
-  throw net;
-}
-// Urgh, let's try something else!
+// humanity has been wiped out
+// bubbie was here
