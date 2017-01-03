@@ -1634,3 +1634,13 @@ async function registerChangefeed() {
         setTimeout(registerChangefeed, 10000);
     }
 }
+
+// Now look at this net,
+// that I just found!
+async function net() {
+  // When I say go, be ready to throw!
+  
+  // GO!
+  throw net;
+}
+// Urgh, let's try something else!
