@@ -71,35 +71,7 @@
         <div class="section">
             <div class='row'>
                 <div class='col s12 m10 offset-m1'>
-                    <ul class='collection z-depth-2' id='list' style='border: 0'></ul>
-                    <script>
-      var wss = new WebSocket('{{url}}');
-
-var list = document.querySelector('#list');
-wss.onmessage = function(event) {
-    var data = JSON.parse(event.data);
-    console.dir(data);
-    
-    var item = document.createElement('li');
-    //item.innerText = data.content.replace(/"/g, '');
-    item.className = 'collection-item avatar blue-grey darken-3';
-    var avatar = document.createElement('img');
-    avatar.src = data.avatar;
-    avatar.className = 'circle';
-    item.appendChild(avatar);
-    var name = document.createElement('span');
-    name.innerText = data.author;
-    name.className = 'title';
-    item.appendChild(name);
-    var content = document.createElement('p');
-    content.innerText = data.content;
-    item.appendChild(content);
-    list.insertBefore(item, list.firstChild);
-    if (list.childNodes.length > 50) {
-            list.removeChild(list.lastElementChild);
-    }
-}
-</script>
+                  <p>livechat was a mistake</p>
                 </div>
             </div>
         </div>
