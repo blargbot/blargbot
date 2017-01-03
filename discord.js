@@ -1323,11 +1323,6 @@ If you are the owner of this server, here are a few things to know.
 
 
     bot.on('messageCreate', async function(msg) {
-        wss.broadcast({
-            author: bu.getFullName(msg.author),
-            avatar: msg.author.avatarURL,
-            content: msg.content
-        });
 
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
