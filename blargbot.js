@@ -8,6 +8,7 @@ var Cleverbot = require('cleverbot-node');
 var mysql = require('mysql');
 cleverbot = new Cleverbot();
 const EventEmitter = require('eventemitter3');
+global.Promise = require('bluebird');
 class BotEmitter extends EventEmitter {}
 const botEmitter = new BotEmitter();
 

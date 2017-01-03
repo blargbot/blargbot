@@ -1319,7 +1319,7 @@ If you are the owner of this server, here are a few things to know.
         }], {
             description: 'Bulk Message Delete'
         });
-    })
+    });
 
 
     bot.on('messageCreate', async function(msg) {

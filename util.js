@@ -295,7 +295,7 @@ bu.send = async function(channel, message, file, embed) {
                 }
             }
             if (warnMsg) logger.warn(warnMsg, response);
-            if (/^\s$/.test(content.content)) content.content == undefined; 
+            if (/^\s$/.test(content.content)) content.content == undefined;
             if (channel instanceof Eris.Message) {
                 bu.send('250859956989853696', {
                     content: " ",
@@ -1122,11 +1122,11 @@ bu.ccommand = {
     },
     sethelp: async function(guildid, key, help) {
         let storedGuild = await bu.getGuild(guildid);
-        
+
         if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return false;
         storedGuild.ccommands[key.toLowerCase()].help = help;
         logger.debug(storedGuild.ccommands[key.toLowerCase()]);
-        r.table('guild').get(guildid).replace(storedGuild).run();        
+        r.table('guild').get(guildid).replace(storedGuild).run();
         return true;
     },
     gethelp: async function(guildid, key) {
@@ -1247,6 +1247,25 @@ bu.canExecuteCommand = async function(msg, commandName, quiet) {
         }
         return [true, commandName];
     }
+};
+
+bu.isUserStaff = async function(userId, guildId) {
+    let guild = bot.guilds.get(guildId);
+    if (!guild) return false;
+    let member = guild.members.get(userId);
+    if (!member) return false;
+
+    if (guild.ownerID == userId) return true;
+    if (member.permission.has('administrator')) return true;
+
+    let storedGuild = await bu.getGuild(guildId);
+    if (storedGuild && storedGuild.settings && storedGuild.settings.permoverride) {
+        let allow = storedGuild.settings.staffperms || bu.defaultStaff;
+        if (bu.comparePerms(bot.guilds.get(guildId).members.get(userId), allow)) {
+            return true;
+        }
+    }
+    return false;
 };
 
 bu.shuffle = (array) => {
@@ -1568,3 +1587,4 @@ bu.getAuthor = function(user) {
         icon: user.avatarURL
     };
 }
+

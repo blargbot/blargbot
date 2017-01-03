@@ -10,7 +10,6 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const session = require('express-session');
 const Strategy = require('passport-discord').Strategy;
-const WebSocketServer = require('ws').Server;
 const hbs = require('hbs');
 const helpers = require('./helpers');
 app.use(bodyParser.json());
@@ -25,25 +24,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 helpers.init();
 
 const server = app.server = http.createServer(app);
-global.wss = new WebSocketServer({
-    server: server
-});
+require('./websocket.js').init(server);
 
-
-wss.broadcast = function broadcast(data) {
-  wss.clients.forEach(function each(client) {
-    client.send(JSON.stringify(data));
-  });
-};
-
-var scopes = ['identify'];
+var scopes = ['identify', 'guilds'];
 
 function checkAuth(req, res, next) {
     if (req.isAuthenticated()) return next();
     res.send('not logged in :(');
 }
 
+const sessionUserMap = {};
+
 e.init = () => {
+    bu.getUserFromSession = function(sessionId) {
+        return sessionUserMap[sessionId];
+    };
+
     passport.serializeUser(function(user, done) {
         done(null, user);
     });
@@ -82,11 +78,13 @@ e.init = () => {
         }),
         function(req, res) {
             logger.website('A user has authenticated');
+            sessionUserMap[req.sessionID] = req.user.id;
             res.redirect(req.session.returnTo || '/');
         } // auth success
     );
     app.get('/logout', function(req, res) {
         req.logout();
+        delete sessionUserMap[req.sessionID];
         res.redirect(req.session.returnTo || '/');
     });
     app.get('/info', checkAuth, function(req, res) {
@@ -101,7 +99,7 @@ e.init = () => {
     app.get('/messages', function(req, res) {
         res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
         res.render('messages');
-    })
+    });
 
     app.use('/', require('./routes/index'));
     app.use('/commands', require('./routes/commands'));
@@ -111,7 +109,7 @@ e.init = () => {
     app.use('/donate', require('./routes/donate'));
     app.use('/user', require('./routes/user'));
     app.use('/colour', require('./routes/colour'));
-    app.use('/color', require('./routes/colour'));    
+    app.use('/color', require('./routes/colour'));
 
     app.use(router);
     logger.website('Website listening on :8085');
