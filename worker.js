@@ -56,6 +56,9 @@ process.on('message', async function(msg, handle) {
             let command = msg.command;
             try {
                 switch (command) {
+                    case 'pixelate':
+                        await imgPixelate(msg);
+                        break;
                     case 'shit':
                         await imgShit(msg);
                         break;
@@ -277,7 +280,24 @@ async function imgArt(msg) {
 
     img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
         submitBuffer(msg.code, buffer);
-    })
+    });
+}
+
+async function imgPixelate(msg) {
+    let image = await Jimp.read(await getResource(msg.url));
+    let img;
+    let scale = msg.scale;
+    if (image.bitmap.width >= image.bitmap.height) {
+        image.resize(scale, Jimp.AUTO);
+        image.resize(256, Jimp.AUTO, Jimp.RESIZE_NEAREST_NEIGHBOR);
+    } else {
+        image.resize(Jimp.AUTO, scale);
+        image.resize(Jimp.AUTO, 256, Jimp.RESIZE_NEAREST_NEIGHBOR);
+    }
+
+    image.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+        submitBuffer(msg.code, buffer);
+    });
 }
 
 async function imgTriggered(msg) {
