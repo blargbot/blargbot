@@ -295,7 +295,7 @@ bu.send = async function(channel, message, file, embed) {
                 }
             }
             if (warnMsg) logger.warn(warnMsg, response);
-            if (/^\s$/.test(content.content)) content.content == undefined; 
+            if (/^\s$/.test(content.content)) content.content == undefined;
             if (channel instanceof Eris.Message) {
                 bu.send('250859956989853696', {
                     content: " ",
@@ -887,6 +887,7 @@ bu.processTag = async function(msg, words, contents, fallback, author, tagName) 
         throw ('Runtime Too Long');
     }
 
+
     let level = 0;
     let lastIndex = 0;
     let coords = [];
@@ -941,10 +942,14 @@ bu.processTag = async function(msg, words, contents, fallback, author, tagName) 
                 tagName: tagName
             }, fallback, '`Tag doesn\'t exist`');
         }
+
         if (replaceObj.fallback !== undefined) {
             fallback = replaceObj.fallback;
         }
-        if (replaceObj == '') {
+        if (replaceObj.terminate) {
+            contents = contents.substring(0, coords[i][0]);
+            break;
+        } else if (replaceObj == '') {
             return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
         } else {
             replaceString = replaceObj.replaceString;
@@ -1123,11 +1128,11 @@ bu.ccommand = {
     },
     sethelp: async function(guildid, key, help) {
         let storedGuild = await bu.getGuild(guildid);
-        
+
         if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return false;
         storedGuild.ccommands[key.toLowerCase()].help = help;
         logger.debug(storedGuild.ccommands[key.toLowerCase()]);
-        r.table('guild').get(guildid).replace(storedGuild).run();        
+        r.table('guild').get(guildid).replace(storedGuild).run();
         return true;
     },
     gethelp: async function(guildid, key) {
