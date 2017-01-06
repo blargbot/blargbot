@@ -59,9 +59,6 @@ e.execute = async function(params) {
                     };
                 }
             }
-            r.table('tag').get(tag.name).update({
-                uses: tag.uses + 1
-            }).run();
             let tagArgs;
             if (params.args[2]) {
                 tagArgs = params.args[2];
