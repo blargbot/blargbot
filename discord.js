@@ -1247,11 +1247,11 @@ If you are the owner of this server, here are a few things to know.
                 if (storedMsg.attachment) msg.attachments = [{
                     url: storedMsg.attachment
                 }];
-             //   msg.channel = bot.getChannel(msg.channelID);
+                //   msg.channel = bot.getChannel(msg.channelID);
 
             } else {
                 logger.debug('Somebody deleted an uncached message and unstored message.');
-         //       msg.channel = bot.getChannel(msg.channelID);
+                //       msg.channel = bot.getChannel(msg.channelID);
                 msg.author = {};
                 msg.mentions = [];
                 msg.attachments = [];
@@ -1449,9 +1449,9 @@ If you are the owner of this server, here are a few things to know.
             let blacklisted;
             if (!isDm && storedGuild.channels[msg.channel.id]) blacklisted = storedGuild.channels[msg.channel.id].blacklisted;
 
-            if (blacklisted &&
-                msg.content.replace(prefix, '').split(' ')[0].toLowerCase() != 'blacklist') {
-                return;
+            if (blacklisted && msg.content.replace(prefix, '').split(' ')[0].toLowerCase() != 'blacklist') {
+                if (!(await bu.isUserStaff(msg.author.id, msg.guild.id)))
+                    return;
             }
 
             if (msg.content.indexOf('(╯°□°）╯︵ ┻━┻') > -1 && !msg.author.bot) {
@@ -1638,9 +1638,9 @@ async function registerChangefeed() {
 // Now look at this net,
 // that I just found!
 async function net() {
-  // When I say go, be ready to throw!
-  
-  // GO!
-  throw net;
+    // When I say go, be ready to throw!
+
+    // GO!
+    throw net;
 }
 // Urgh, let's try something else!

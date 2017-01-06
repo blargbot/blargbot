@@ -1570,3 +1570,22 @@ bu.getAuthor = function(user) {
         icon: user.avatarURL
     };
 };
+
+bu.isUserStaff = async function(userId, guildId) {
+    let guild = bot.guilds.get(guildId);
+    if (!guild) return false;
+    let member = guild.members.get(userId);
+    if (!member) return false;
+
+    if (guild.ownerID == userId) return true;
+    if (member.permission.has('administrator')) return true;
+
+    let storedGuild = await bu.getGuild(guildId);
+    if (storedGuild && storedGuild.settings && storedGuild.settings.permoverride) {
+        let allow = storedGuild.settings.staffperms || bu.defaultStaff;
+        if (bu.comparePerms(bot.guilds.get(guildId).members.get(userId), allow)) {
+            return true;
+        }
+    }
+    return false;
+};
