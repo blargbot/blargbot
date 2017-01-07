@@ -223,10 +223,15 @@ bu.send = async function(channel, message, file, embed) {
     }
     if (!content.content) content.content = '';
     if (embed) content.embed = embed;
-    content.content = emoji.emojify(content.content);
+    content.content = emoji.emojify(content.content).trim();
 
     if (content.content.length > 2000) {
+        if (!file) file = {
+            file: content.content,
+            name: 'output.txt'
+        };
         content.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+
     }
     try {
         return await bot.createMessage(channelid, content, file);
