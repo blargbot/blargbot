@@ -12,7 +12,7 @@ e.init = () => {
 
 e.requireCtx = require;
 
-e.isCommand = true;
+e.isCommand = false;
 e.hidden = false;
 e.usage = 'object &lt;text&gt;';
 e.info = `OBJECTION!`;
