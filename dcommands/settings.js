@@ -78,6 +78,8 @@ e.execute = async function(msg, words) {
         var antiMention = parsedAntiMention;
         let permOverride = settings.permoverride && settings.permoverride != 0 ? true : false;
         let dmHelp = settings.dmhelp && settings.dmhelp != 0 ? true : false;
+        let makeLogs = settings.makelogs && settings.makelogs != 0 ? true : false;
+        
 
         let staffPerms = settings.staffperms || bu.defaultStaff;
         let kickPerms = settings.kickoverride || 0;
@@ -92,6 +94,7 @@ e.execute = async function(msg, words) {
         var message = `\`\`\`prolog
 Settings For ${msg.channel.guild.name}
           Prefix : ${prefix}
+       Chat Logs : ${makeLogs}
    NSFW Channels : ${nsfwMessage}
      Blacklisted : ${blacklistMessage}  
         Greeting : ${greeting}
@@ -152,6 +155,10 @@ Farewell Channel : ${farewellChan}
 };
 
 var settings = {
+    makelogs: {
+        desc: `whether to record chat logs or not. Set to '0' to disable.`,
+        type: 'bool'
+    },
     cahnsfw: {
         desc: `whether 'cah' can only be done in nsfw channels or not. Set to '0' to disable.`,
         type: 'bool'

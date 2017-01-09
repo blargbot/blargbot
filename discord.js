@@ -975,8 +975,6 @@ If you are the owner of this server, here are a few things to know.
 👍 I hope you enjoy my services! 👍`;
             bu.send(guild.id, message2);
             if (!storedGuild) {
-
-
                 r.table('guild').insert({
                     guildid: guild.id,
                     active: true,
@@ -998,6 +996,8 @@ If you are the owner of this server, here are a few things to know.
     });
 
     bot.on('messageUpdate', async function(msg, oldmsg) {
+        if (!msg.guild) return;
+        const storedGuild = await bu.getGuild(msg.guild.id);
         if (!oldmsg) {
             let storedMsg = await r.table('chatlogs')
                 .getAll(msg.id, {
@@ -1032,19 +1032,20 @@ If you are the owner of this server, here are a few things to know.
         if (msg.content == oldmsg.content) {
             return;
         }
-        if (msg.channel.id != '204404225914961920') {
-            var nsfw = await bu.isNsfwChannel(msg.channel.id);
-            r.table('chatlogs').insert({
-                content: msg.content,
-                attachment: msg.attachments && msg.attachments.length > 0 ? msg.attachments[0].url : null,
-                userid: msg.author.id,
-                msgid: msg.id,
-                channelid: msg.channel.id,
-                guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
-                msgtime: r.epochTime(moment(msg.editedTimestamp) / 1000),
-                type: 1
-            }).run();
-        }
+        if (storedGuild.settings.makelogs)
+            if (msg.channel.id != '204404225914961920') {
+                var nsfw = await bu.isNsfwChannel(msg.channel.id);
+                r.table('chatlogs').insert({
+                    content: msg.content,
+                    attachment: msg.attachments && msg.attachments.length > 0 ? msg.attachments[0].url : null,
+                    userid: msg.author.id,
+                    msgid: msg.id,
+                    channelid: msg.channel.id,
+                    guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
+                    msgtime: r.epochTime(moment(msg.editedTimestamp) / 1000),
+                    type: 1
+                }).run();
+            }
         let oldMsg = oldmsg.content || 'uncached :(';
         let newMsg = msg.content;
         if (oldMsg.length + newMsg.length > 1900) {
@@ -1222,6 +1223,8 @@ If you are the owner of this server, here are a few things to know.
     });
 
     async function handleDelete(msg, quiet) {
+        if (!msg.guild) return;
+        const storedGuild = await bu.getGuild(msg.guild.id);
         if (!msg.author || !msg.channel) {
             let storedMsg = await r.table('chatlogs')
                 .getAll(msg.id, {
@@ -1264,42 +1267,43 @@ If you are the owner of this server, here are a few things to know.
 || msg.author.username}** deleted their command message.`);
             commandMessages[msg.channel.guild.id].splice(commandMessages[msg.channel.guild.id].indexOf(msg.id), 1);
         }
-        if (msg.channel.id != '204404225914961920') {
-            try {
-                await r.table('chatlogs').insert({
-                    content: msg.content,
-                    attachment: msg.attachments && msg.attachments[0] ? msg.attachments[0].url : null,
-                    userid: msg.author.id,
-                    msgid: msg.id,
-                    channelid: msg.channel.id,
-                    guildid: msg.channel.guild.id,
-                    msgtime: r.epochTime(moment() / 1000),
-                    type: 2
-                }).run();
+        if (storedGuild.settings.makelogs)
+            if (msg.channel.id != '204404225914961920') {
+                try {
+                    await r.table('chatlogs').insert({
+                        content: msg.content,
+                        attachment: msg.attachments && msg.attachments[0] ? msg.attachments[0].url : null,
+                        userid: msg.author.id,
+                        msgid: msg.id,
+                        channelid: msg.channel.id,
+                        guildid: msg.channel.guild.id,
+                        msgtime: r.epochTime(moment() / 1000),
+                        type: 2
+                    }).run();
 
-                let newMsg = msg.content || 'uncached :(';
-                if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
-                if (!quiet)
-                    bu.logEvent(msg.channel.guild.id, 'messagedelete', [{
-                        name: 'User',
-                        value: bu.getFullName(msg.author) + ` (${msg.author.id})`,
-                        inline: true
-                    }, {
-                        name: 'Message ID',
-                        value: msg.id,
-                        inline: true
-                    }, {
-                        name: 'Channel',
-                        value: msg.channel ? msg.channel.mention : 'Uncached',
-                        inline: true
-                    }, {
-                        name: 'Content',
-                        value: newMsg
-                    }]);
-            } catch (err) {
-                logger.error(err);
+                    let newMsg = msg.content || 'uncached :(';
+                    if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
+                    if (!quiet)
+                        bu.logEvent(msg.channel.guild.id, 'messagedelete', [{
+                            name: 'User',
+                            value: bu.getFullName(msg.author) + ` (${msg.author.id})`,
+                            inline: true
+                        }, {
+                            name: 'Message ID',
+                            value: msg.id,
+                            inline: true
+                        }, {
+                            name: 'Channel',
+                            value: msg.channel ? msg.channel.mention : 'Uncached',
+                            inline: true
+                        }, {
+                            name: 'Content',
+                            value: newMsg
+                        }]);
+                } catch (err) {
+                    logger.error(err);
+                }
             }
-        }
     }
 
     bot.on('messageDelete', handleDelete);
@@ -1323,25 +1327,23 @@ If you are the owner of this server, here are a few things to know.
 
 
     bot.on('messageCreate', async function(msg) {
-
         processUser(msg);
         let isDm = msg.channel.guild == undefined;
         let storedGuild;
         if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
-        if (msg.channel.id != '204404225914961920') {
-            let nsfw = true;
-            if (!isDm && storedGuild.channels[msg.channel.id]) nsfw = storedGuild.channels[msg.channel.id].nsfw;
-            r.table('chatlogs').insert({
-                content: msg.content,
-                attachment: msg.attachments[0] ? msg.attachments[0].url : null,
-                userid: msg.author.id,
-                msgid: msg.id,
-                channelid: msg.channel.id,
-                guildid: isDm ? 'DM' : msg.channel.guild.id,
-                msgtime: r.epochTime(moment(msg.timestamp) / 1000),
-                type: 0
-            }).run();
-        }
+        if (storedGuild && storedGuild.settings.makelogs)
+            if (msg.channel.id != '204404225914961920') {
+                r.table('chatlogs').insert({
+                    content: msg.content,
+                    attachment: msg.attachments[0] ? msg.attachments[0].url : null,
+                    userid: msg.author.id,
+                    msgid: msg.id,
+                    channelid: msg.channel.id,
+                    guildid: isDm ? 'DM' : msg.channel.guild.id,
+                    msgtime: r.epochTime(moment(msg.timestamp) / 1000),
+                    type: 0
+                }).run();
+            }
         if (msg.channel.id != '194950328393793536')
             if (msg.author.id == bot.user.id) {
                 if (!isDm)
