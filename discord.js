@@ -970,6 +970,7 @@ If you are the owner of this server, here are a few things to know.
 - 🗨 To enable modlogging, please create a channel for me to log in and do \`${config.discord.defaultPrefix}modlog\`
 - 🙈 To mark channels as NSFW, please go to them and do \`${config.discord.defaultPrefix}nsfw\`.
 - ❗ To change my command prefix, please do \`${config.discord.defaultPrefix}setprefix <anything>\`.
+- 🗄 To enable chatlogs, please do \`${config.discord.defaultPrefix}settings makelogs true\`.
 
 ❓ If you have any questions, comments, or concerns, please do \`${config.discord.defaultPrefix}feedback <feedback>\`. Thanks!
 👍 I hope you enjoy my services! 👍`;
