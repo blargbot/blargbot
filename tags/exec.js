@@ -38,6 +38,12 @@ e.exampleOut = 'Let me do a tag for you. User#1111 has paid their respects. Tota
  * @return.fallback? String - if provided, will change the fallback
  */
 e.execute = async function(params) {
+    if (params.msg.iterations && params.msg.iterations > 200) {
+        bu.send(params.msg, 'Terminated recursive tag after 200 execs.');
+        throw ('Too Much Exec');
+    } else if (!params.msg.iterations) params.msg.iterations = 1;
+    else params.msg.iterations++;
+
     // processes any nested tags in the `args` array. if your tag uses advanced logic, you may wish to reimplement this
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
