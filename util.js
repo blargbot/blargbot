@@ -886,12 +886,11 @@ bu.processTagInner = async function(params, i) {
 };
 
 bu.processTag = async function(msg, words, contents, fallback, author, tagName) {
-    let duration = moment.duration(moment() - msg.timestamp);
-    if (duration.asMilliseconds() >= 10000) {
-        bu.send(msg, 'Terminated recursive tag after 10 seconds.');
+    if (msg.iterations && msg.iterations > 1000) {
+        bu.send(msg, 'Terminated recursive tag after 1000 loops.');
         throw ('Runtime Too Long');
-    }
-
+    } else if (!msg.iterations) msg.iterations = 1
+    else msg.iterations++;
 
     let level = 0;
     let lastIndex = 0;
