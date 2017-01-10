@@ -58,7 +58,7 @@ e.execute = async function(params) {
             if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
                 let nsfwChan = await bu.isNsfwChannel(params.msg.channel.id);
                 if (!nsfwChan) {
-                    replaceString = await bu.tagProcessError(params, '`NSFW tag');
+                    replaceString = await bu.tagProcessError(params, '`NSFW tag`');
                     return {
                         replaceString: replaceString,
                         replaceContent: false
@@ -75,7 +75,6 @@ e.execute = async function(params) {
             params.words = tagArgs;
             params.content = tag.content;
             replaceString = await bu.processTag(params);
-
         }
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
