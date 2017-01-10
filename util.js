@@ -911,7 +911,7 @@ bu.setVariable = async function(name, key, value, type, guildId) {
             storedThing.ccommands[name].vars[key] = value;
             break;
         case bu.TagVariableType.TAGGUILD:
-            updateObj.tagVars = vars;
+            updateObj.tagVars = vars; 
             await r.table('guild').get(name).update(updateObj);
             storedThing = await bu.getGuild(name);
             if (!storedThing.tagVars) storedThing.tagVars = {};
