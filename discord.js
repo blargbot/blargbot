@@ -1607,8 +1607,8 @@ var changefeed;
 
 async function registerChangefeed() {
     registerSubChangefeed('guild', 'guildid', bu.guildCache);
-    registerSubChangefeed('user', 'userid', bu.guildCache);
-    registerSubChangefeed('tag', 'name', bu.guildCache);
+    registerSubChangefeed('user', 'userid', bu.userCache);
+    registerSubChangefeed('tag', 'name', bu.tagCache);
     registerGlobalChangefeed();
 }
 

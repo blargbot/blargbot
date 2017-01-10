@@ -904,10 +904,18 @@ bu.setVariable = async function(name, key, value, type, guildId) {
             updateObj.ccommands[name] = {};
             updateObj.ccommands[name].vars = vars;
             await r.table('guild').get(guildId).update(updateObj);
+            storedThing = await bu.getGuild(guildId);
+            if (!storedThing.ccommands) storedThing.ccommands = {};
+            if (!storedThing.ccommands[name]) storedThing.ccommands[name] = {};
+            if (!storedThing.ccommands[name].vars) storedThing.ccommands[name].vars = {};
+            storedThing.ccommands[name].vars[key] = value;
             break;
         case bu.TagVariableType.TAGGUILD:
             updateObj.tagVars = vars;
             await r.table('guild').get(name).update(updateObj);
+            storedThing = await bu.getGuild(name);
+            if (!storedThing.tagVars) storedThing.tagVars = {};
+            storedThing.tagVars[key] = value;
             break;
         case bu.TagVariableType.GLOBAL:
             let values = vars;
@@ -919,6 +927,20 @@ bu.setVariable = async function(name, key, value, type, guildId) {
         default:
             updateObj.vars = vars;
             await r.table(bu.TagVariableType.properties[type].table).get(name).update(updateObj).run();
+            switch (type) {
+                case bu.TagVariableType.GUILD:
+                    storedThing = await bu.getGuild(name);
+                    break;
+                case bu.TagVariableType.LOCAL:
+                    storedThing = await bu.getCachedTag(name);
+                    break;
+                case bu.TagVariableType.AUTHOR:
+                    storedThing = await bu.getCachedUser(name);
+                    break;
+            }
+            if (!storedThing.vars) storedThing.vars = {};
+            storedThing.vars[key] = value;
+            break;
     }
 };
 
