@@ -7,12 +7,12 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `increment`;
+e.name = `decrement`;
 e.args = `&lt;variable name&gt; [amount]`;
-e.usage = `{increment;variable name[;amount]}`;
-e.desc = `Increases the value of the specified variable by the specified amount. Defaults to 1`;
-e.exampleIn = `{set;counter;0} {repeat;{increment;counter},;10}`;
-e.exampleOut = `1,2,3,4,5,6,7,8,9,10`;
+e.usage = `{decrement;variable name[;amount]}`;
+e.desc = `Decreases the value of the specified variable by the specified amount. Defaults to 1`;
+e.exampleIn = `{set;counter;0} {repeat;{decrement;counter},;10}`;
+e.exampleOut = `-1,-2,-3,-4,-5,-6,-7,-8,-9,-10`;
 
 //@Stupid cat The idea of this is to accept a variable name and an optional amount to increment by (dafaults to 1)
 //If the variable name supplied relates to an integer variable, then increment the value and re-assign it
@@ -29,16 +29,16 @@ e.execute = async function(params) {
     var replaceString = '';
     var replaceContent = false;
 
-    let incrementBy = parseInt(args[2]);
-    if (isNaN(incrementBy)) {
-        incrementBy = 1;
+    let decrementBy = parseInt(args[2]);
+    if (isNaN(decrementBy)) {
+        decrementBy = 1;
     }
     if (args.length <= 2) {
         let result = await bu.tags['get'].getVar(params, args[1]);
         if (!result) {
             replaceString = await bu.tagProcessError(params, fallback, '`Variable not defined`');
         } else {
-            result = parseInt(result) + incrementBy;
+            result = parseInt(result) - decrementBy;
             if (isNaN(result)) {
                 replaceString = await bu.tagProcessError(params, fallback, '`Not a number`');
             } else replaceString = result;
