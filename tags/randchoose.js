@@ -24,7 +24,7 @@ e.execute = async function(params) {
         let seed = bu.getRandomInt(1, args.length - 1);
         replaceString = await bu.processTagInner(params, seed);
     } else {
-        replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

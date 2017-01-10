@@ -10,7 +10,7 @@ e.isTag = true;
 e.name = `aget`;
 e.args = `&lt;name&gt; [index]`;
 e.usage = `{aget;name[;index]}`;
-e.desc = `Returns a stored variable, or an index in a stored array. Variables are unique per-author.`;
+e.desc = `DEPRECATED. Returns a stored variable, or an index in a stored array. Variables are unique per-author.`;
 e.exampleIn = `{aget;testvar}`;
 e.exampleOut = `This is a test var`;
 
@@ -24,7 +24,7 @@ e.execute = async function(params) {
     let storedAuthor = await r.table('user').get(params.author);
     if (!storedAuthor) {
         return {
-            replaceString: await bu.tagProcessError(params, params.fallback, '`Author not found`'),
+            replaceString: await bu.tagProcessError(params, '`Author not found`'),
             replaceContent
         }
     }
@@ -41,17 +41,17 @@ e.execute = async function(params) {
         if (Array.isArray(result)) {
             let index = parseInt(args[2]);
             if (isNaN(index)) {
-                replaceString = await bu.tagProcessError(params, fallback, '`Invalid index`');
+                replaceString = await bu.tagProcessError(params, '`Invalid index`');
             } else {
                 if (!result[index]) {
-                    replaceString = await bu.tagProcessError(params, fallback, '`Undefined index`');
+                    replaceString = await bu.tagProcessError(params, '`Undefined index`');
                 } else
                     replaceString = result[index];
             }
         } else
             replaceString = result;
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
     return {
         replaceString: replaceString,

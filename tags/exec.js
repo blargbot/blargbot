@@ -53,12 +53,12 @@ e.execute = async function(params) {
     if (params.args[1]) {
         let tag = await r.table('tag').get(params.args[1]).run();
         if (!tag) {
-            replaceString = await bu.tagProcessError(params, params.fallback, '`Tag not found`');
+            replaceString = await bu.tagProcessError(params, '`Tag not found`');
         } else {
             if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
                 let nsfwChan = await bu.isNsfwChannel(params.msg.channel.id);
                 if (!nsfwChan) {
-                    replaceString = await bu.tagProcessError(params, params.fallback, '`NSFW tag');
+                    replaceString = await bu.tagProcessError(params, '`NSFW tag');
                     return {
                         replaceString: replaceString,
                         replaceContent: false
@@ -72,11 +72,13 @@ e.execute = async function(params) {
                 tagArgs = '';
             }
             tagArgs = bu.splitInput(tagArgs);
-            replaceString = await bu.processTag(params.msg, tagArgs, tag.content, params.fallback, params.author, params.tagName);
+            params.words = tagArgs;
+            params.content = tag.content;
+            replaceString = await bu.processTag(params);
 
         }
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

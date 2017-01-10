@@ -93,12 +93,13 @@ e.execute = async function(params) {
                     replaceString = args[5] || '';
                 break;
             default:
-                replaceString = await bu.tagProcessError(params, fallback, '`Invalid Operator`');
+                replaceString = await bu.tagProcessError(params, '`Invalid Operator`');
                 break;
         }
-        replaceString = await bu.processTag(params.msg, params.words, replaceString, params.fallback, params.author, params.tagName);
+        params.content = replaceString;
+        replaceString = await bu.processTag(params);
     } else {
-        replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

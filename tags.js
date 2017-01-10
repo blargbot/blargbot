@@ -71,7 +71,7 @@ function buildTag(tagName) {
     */
 }
 
-e.processTag = async function(msg, contents, command, tagName, author) {
+e.processTag = async function(msg, contents, command, tagName, author, isCcommand) {
     try {
         author = author || msg.channel.guild.id;
         logger.debug(command);
@@ -82,7 +82,14 @@ e.processTag = async function(msg, contents, command, tagName, author) {
         }
         contents = contents.replace(new RegExp(bu.specialCharBegin, 'g'), '').replace(new RegExp(bu.specialCharDiv, 'g'), '').replace(new RegExp(bu.specialCharEnd, 'g'), '');
 
-        contents = await bu.processTag(msg, words, contents, undefined, author, tagName);
+        contents = await bu.processTag({
+            msg,
+            words,
+            contents,
+            author,
+            tagName,
+            ccommand: isCcommand
+        });
         contents = bu.processSpecial(contents, true);
     } catch (err) {
         logger.error(err);

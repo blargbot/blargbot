@@ -29,7 +29,7 @@ e.execute = async function(params) {
             replaceString = args1.length;
         }
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

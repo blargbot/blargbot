@@ -42,19 +42,19 @@ e.execute = async function(params) {
                     replaceString += ` ${words[i]}`;
             }
         } else {
-            replaceString = await bu.tagProcessError(params, fallback, '`MIN is greater than MAX`');
+            replaceString = await bu.tagProcessError(params, '`MIN is greater than MAX`');
         }
     } else if (args.length == 2) {
         if (words[parseInt(args[1])]) {
             replaceString = words[parseInt(args[1])];
         } else {
-            replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
+            replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
         }
     } else {
         if (!(words[0] == '' && words.length == 1)) {
             replaceString = words.join(' ');
         } else
-            replaceString = await bu.tagProcessError(params, fallback, '`User gave no args`');
+            replaceString = await bu.tagProcessError(params, '`User gave no args`');
     }
     replaceString = replaceString + '';
     replaceString = bu.fixContent(replaceString);

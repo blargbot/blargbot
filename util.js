@@ -25,7 +25,11 @@ bu.specialCharDiv = '\uE002';
 bu.specialCharEnd = '\uE003';
 bu.tagDiv = '\uE004';
 
+// Caches
 bu.guildCache = {};
+bu.userCache = {};
+bu.tagCache = {};
+bu.globalVars = {};
 
 // A list of command modules
 bu.commands = {};
@@ -819,15 +823,43 @@ function setCharAt(str, index, chr) {
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
-bu.serializeTagArray = function(array, varName, authorVar) {
-    if (!varName && !authorVar)
+bu.TagVariableType = {
+    LOCAL: 1,
+    AUTHOR: 2,
+    GUILD: 3,
+    GLOBAL: 4,
+    TAGGUILD: 5,
+    GUILDLOCAL: 6,
+    properties: {
+        1: {
+            table: 'tag',
+        },
+        2: {
+            table: 'user',
+        },
+        3: {
+            table: 'guild',
+        },
+        4: {
+            table: 'vars',
+        },
+        5: {
+            table: 'tag',
+        },
+        6: {
+            table: 'guild'
+        }
+    }
+};
+
+bu.serializeTagArray = function(array, varName) {
+    if (!varName)
         return JSON.stringify(array);
 
     let obj = {
         v: array,
         n: varName
     };
-    if (authorVar) obj.a = true;
     return JSON.stringify(obj);
 }
 
@@ -843,54 +875,108 @@ bu.deserializeTagArray = function(value) {
     } catch (err) {
         return null;
     }
+};
+
+bu.getArray = async function(params, arrName) {
+    let obj = bu.deserializeTagArray(arrName);
+    if (!obj) {
+        let arr = await bu.tags['get'].getVar(params, arrName);
+        if (arr) {
+            obj = bu.deserializeTagArray(bu.serializeTagArray(arr, arrName));
+        }
+    }
+    return obj;
 }
 
 bu.setArray = async function(deserialized, params) {
-    let table, name;
-    if (deserialized.a) {
-        table = 'user';
-        name = params.author;
-    } else {
-        if (params.tagName) {
-            table = 'tag';
-            name = params.tagName;
-        } else {
-            table = 'guild';
-            name = params.msg.guild.id;
-        }
-    }
-    await bu.setVariable(name, deserialized.n, deserialized.v, table)
-}
-
-bu.setVariable = async function(name, key, value, table) {
-    let vars = {};
-    vars[key] = value;
-    await r.table(table).get(name).update({
-        vars
-    }).run();
-}
-
-bu.getVariables = async function(name, key, table) {
-    let storedThing;
-    if (table == 'guild') {
-        storedThing = await bu.getGuild(name);
-    } else {
-        storedThing = await r.table(table).get(name).run();
-    }
-    if (!storedThing.vars) storedThing.vars = {};
-    return storedThing.vars[key];
-}
-
-bu.processTagInner = async function(params, i) {
-    return await bu.processTag(params.msg, params.words, params.args[i], params.fallback, params.author, params.tagName);
+    await bu.tags['set'].setVar(params, deserialized.n, deserialized.v);
 };
 
-bu.processTag = async function(msg, words, contents, fallback, author, tagName) {
-  //  if (msg.iterations && msg.iterations > 1000) {
-  //      bu.send(msg, 'Terminated recursive tag after 1000 loops.');
-  //      throw ('Runtime Too Long');
-  //  } else if (!msg.iterations) msg.iterations = 1
-  //  else msg.iterations++;
+bu.setVariable = async function(name, key, value, type, guildId) {
+    let vars = {};
+    let updateObj = {};
+    vars[key] = value;
+    let storedThing;
+
+    switch (type) {
+        case bu.TagVariableType.GUILDLOCAL:
+            updateObj.ccommands = {};
+            updateObj.ccommands[name] = {};
+            updateObj.ccommands[name].vars = vars;
+            await r.table('guild').get(guildId).update(updateObj);
+            break;
+        case bu.TagVariableType.TAGGUILD:
+            updateObj.tagVars = vars;
+            await r.table('guild').get(name).update(updateObj);
+            break;
+        case bu.TagVariableType.GLOBAL:
+            let values = vars;
+            await r.table('vars').update({
+                values
+            });
+            bu.globalVars[key] = value;
+            break;
+        default:
+            updateObj.vars = vars;
+            await r.table(bu.TagVariableType.properties[type].table).get(name).update(updateObj).run();
+    }
+};
+
+bu.getVariable = async function(name, key, type, guildId) {
+    let storedThing;
+    let returnVar;
+    switch (type) {
+        case bu.TagVariableType.GUILD:
+            storedThing = await bu.getGuild(name);
+            if (!storedThing.vars) storedThing.vars = {};
+            returnVar = storedThing.vars[key];
+            break;
+        case bu.TagVariableType.GUILDLOCAL:
+            storedThing = await bu.getGuild(guildId);
+
+            if (!storedThing.ccommands[name].vars) storedThing.ccommands[name].vars = {};
+            returnVar = storedThing.ccommands[name].vars[key];
+            break;
+        case bu.TagVariableType.TAGGUILD:
+            storedThing = await bu.getGuild(name);
+            if (!storedThing.tagVars) storedThing.tagVars = {};
+            returnVar = storedThing.tagVars[key];
+            break;
+        case bu.TagVariableType.AUTHOR:
+            storedThing = await bu.getCachedUser(name);
+            if (!storedThing.vars) storedThing.vars = {};
+            returnVar = storedThing.vars[key];
+            break;
+        case bu.TagVariableType.LOCAL:
+            storedThing = await bu.getCachedTag(name);
+            if (!storedThing.vars) storedThing.vars = {};
+            returnVar = storedThing.vars[key];
+            break;
+        case bu.TagVariableType.GLOBAL:
+            returnVar = await bu.getCachedGlobal(key);
+            break;
+        default:
+            storedThing = await r.table(bu.TagVariableType.properties[type].table).get(name);
+            if (!storedThing.vars)
+                storedThing.vars = {};
+            returnVar = storedThing.vars[key];
+            break;
+    }
+    return returnVar;
+};
+
+bu.processTagInner = async function(params, i) {
+    params.content = params.args[i];
+    return await bu.processTag(params);
+};
+
+bu.processTag = async function(params) {
+    let msg = params.msg,
+        words = params.words,
+        contents = params.content || params.contents,
+        fallback = params.fallback,
+        author = params.author,
+        tagName = params.tagName;
 
     let level = 0;
     let lastIndex = 0;
@@ -934,7 +1020,8 @@ bu.processTag = async function(msg, words, contents, fallback, author, tagName) 
                 fallback: fallback,
                 words: words,
                 author: author,
-                tagName: tagName
+                tagName: tagName,
+                ccommand: params.ccommand
             });
         } else {
             replaceObj.replaceString = await bu.tagProcessError({
@@ -943,7 +1030,8 @@ bu.processTag = async function(msg, words, contents, fallback, author, tagName) 
                 fallback: fallback,
                 words: words,
                 author: author,
-                tagName: tagName
+                tagName: tagName,
+                ccommand: params.ccommand
             }, fallback, '`Tag doesn\'t exist`');
         }
 
@@ -1169,6 +1257,45 @@ bu.isBlacklistedChannel = async function(channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
+bu.getCachedGlobal = async function(varname) {
+    let storedVar;
+    if (bu.globalVars[varname]) {
+        storedVar = bu.globalVars[varname];
+    } else {
+        let globalVars = await r.table('vars').get('tagVars');
+        if (!globalVars) {
+            await r.table('vars').insert({
+                varname: 'tagVars',
+                values: {}
+            });
+            bu.globalVars = {};
+        } else bu.globalVars = globalVars.values;
+        storedVar = bu.globalVars[varname];
+    }
+    return storedVar;
+};
+
+bu.getCachedTag = async function(tagname) {
+    let storedTag;
+    if (bu.tagCache[tagname]) {
+        storedTag = bu.tagCache[tagname];
+    } else {
+        storedTag = await r.table('tag').get(tagname);
+        bu.tagCache[tagname] = storedTag;
+    }
+    return storedTag;
+};
+
+bu.getCachedUser = async function(userid) {
+    let storedUser;
+    if (bu.userCache[userid]) {
+        storedUser = bu.userCache[userid];
+    } else {
+        storedUser = await r.table('user').get(userid);
+        bu.userCache[userid] = storedUser;
+    }
+    return storedUser;
+};
 
 bu.getGuild = async function(guildid) {
     let storedGuild;
@@ -1297,7 +1424,8 @@ bu.tagGetFloat = (arg) => {
     return parseFloat(arg) ? parseFloat(arg) : NaN;
 };
 
-bu.tagProcessError = async function(params, fallback, errormessage) {
+bu.tagProcessError = async function(params, errormessage) {
+    let fallback = params.fallback;
     let returnMessage = '';
     if (fallback === undefined) returnMessage = errormessage;
     else returnMessage = await bu.processTag(params.msg, params.words, params.fallback, params.fallback, params.author, params.tagName);

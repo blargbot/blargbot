@@ -28,10 +28,10 @@ e.execute = async function(params) {
         if (!isNaN(asNumber)) {
             replaceString = Math.round(asNumber);
         } else {
-            replaceString = await bu.tagProcessError(params, fallback, '`Not a number`');
+            replaceString = await bu.tagProcessError(params, '`Not a number`');
         }
     } else {
-        replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
     return {
         replaceString: replaceString,

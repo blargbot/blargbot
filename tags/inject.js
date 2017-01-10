@@ -46,9 +46,10 @@ e.execute = async function(params) {
     if (params.args[1]) {
         let newStuff = bu.processSpecial(params.args[1], true);
         logger.debug('Thonkang', params.args, newStuff);
-        replaceString = await bu.processTag(params.msg, params.words, newStuff, params.fallback, params.author, params.tagName);
+        params.content = newStuff;
+        replaceString = await bu.processTag(params);
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

@@ -38,7 +38,7 @@ e.execute = async function(params) {
         emojis.splice(amount);
         replaceString = emojis.join(' ');
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

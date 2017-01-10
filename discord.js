@@ -353,6 +353,7 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
     }
     let val = await bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0].toLowerCase());
     if (val) {
+        let ccommandName = words[0].toLowerCase();
         let ccommandContent;
         let author;
         if (typeof val == "object") {
@@ -360,12 +361,13 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
             author = val.author;
         } else {
             ccommandContent = val;
+            await bu.ccommand.set(msg.guild.id, ccommandName, {content: ccommandContent});
         }
 
-        if (await bu.canExecuteCcommand(msg, words[0].toLowerCase(), true)) {
+        if (await bu.canExecuteCcommand(msg, ccommandName, true)) {
             var command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
-            var response = await tags.processTag(msg, ccommandContent, command, undefined, author);
+            var response = await tags.processTag(msg, ccommandContent, command, ccommandName, author, true);
             logger.debug(response, msg.channel.id, msg.channel.name);
             if (response !== 'null' && response !== '') {
                 bu.send(msg, {
@@ -1604,36 +1606,54 @@ function initEvents() {
 var changefeed;
 
 async function registerChangefeed() {
+    registerSubChangefeed('guild', 'guildid', bu.guildCache);
+    registerSubChangefeed('user', 'userid', bu.guildCache);
+    registerSubChangefeed('tag', 'name', bu.guildCache);
+    registerGlobalChangefeed();
+}
+
+async function registerGlobalChangefeed() {
     try {
-        logger.info('Registering a changefeed!');
-        changefeed = await r.table('guild').changes({
+        logger.info('Registering a global changefeed!');
+        changefeed = await r.table('vars').changes({
             squash: true
         }).run((err, cursor) => {
             if (err) logger.error(err);
-            //logger.debug(cursor);
             cursor.on('error', err => {
                 logger.error(err);
             });
             cursor.on('data', data => {
-                // logger.debug(data);
-                if (data.new_val)
-                    bu.guildCache[data.new_val.guildid] = data.new_val;
-                else delete bu.guildCache[data.old_val.guildid];
+                logger.verbose(data.new_val.values);
+                if (data.new_val && data.new_val.varname == 'tagVars')
+                    bu.globalVars = data.new_val.values;
             });
-            /*
-            cursor.each(guild => {
-                logger.debug(guild);
-                try {
-                    bu.guildCache[guild.guildid] = guild;
-                } catch (err) {
-                    logger.error(err);
-                }
-            });
-            */
         });
         changefeed.on('end', registerChangefeed);
     } catch (err) {
-        logger.warn(`Failed to register a changefeed, will try again in 10 seconds.`);
+        logger.warn(`Failed to register a global changefeed, will try again in 10 seconds.`);
+        setTimeout(registerChangefeed, 10000);
+    }
+}
+
+async function registerSubChangefeed(type, idName, cache) {
+    try {
+        logger.info('Registering a ' + type + ' changefeed!');
+        changefeed = await r.table(type).changes({
+            squash: true
+        }).run((err, cursor) => {
+            if (err) logger.error(err);
+            cursor.on('error', err => {
+                logger.error(err);
+            });
+            cursor.on('data', data => {
+                if (data.new_val)
+                    cache[data.new_val[idName]] = data.new_val;
+                else delete cache[data.old_val[idName]];
+            });
+        });
+        changefeed.on('end', registerChangefeed);
+    } catch (err) {
+        logger.warn(`Failed to register a ${type} changefeed, will try again in 10 seconds.`);
         setTimeout(registerChangefeed, 10000);
     }
 }

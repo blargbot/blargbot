@@ -34,7 +34,7 @@ e.execute = async function(params) {
             replaceString = args[1].split('').reverse().join('');
         }
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
     return {
         replaceString: replaceString,
