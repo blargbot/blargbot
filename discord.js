@@ -1623,7 +1623,6 @@ async function registerGlobalChangefeed() {
                 logger.error(err);
             });
             cursor.on('data', data => {
-                logger.verbose(data.new_val.values);
                 if (data.new_val && data.new_val.varname == 'tagVars')
                     bu.globalVars = data.new_val.values;
             });
