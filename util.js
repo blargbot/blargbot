@@ -1456,8 +1456,10 @@ bu.tagGetFloat = (arg) => {
 bu.tagProcessError = async function(params, errormessage) {
     let fallback = params.fallback;
     let returnMessage = '';
+    params.content = fallback;
+    
     if (fallback === undefined) returnMessage = errormessage;
-    else returnMessage = await bu.processTag(params.msg, params.words, params.fallback, params.fallback, params.author, params.tagName);
+    else returnMessage = await bu.processTag(params);
     return returnMessage;
 };
 
