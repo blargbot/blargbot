@@ -13,7 +13,7 @@ const levels = {
     irc: 5,
     website: 6,
     cluster: 7,
-    worker: 8,    
+    worker: 8,
     music: 9,
     shard: 10,
     info: 11,
@@ -86,7 +86,7 @@ e.init = () => {
                                 (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                     }
                     return wconfig.colorize('timestamp', options.timestamp()) + wconfig.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' ' +
-                        (options.level == 'error' && options.meta && options.meta.stack ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== options.message ? options.message : '') +
+                        (options.level == 'error' && options.meta && options.meta.stack ? options.meta.message + ': ' + (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== options.message ? options.message : '') +
                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }
             }),
