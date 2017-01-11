@@ -70,7 +70,7 @@ e.setVar = async function(params, varName, value) {
             break;
         default: // local to tag
             if (params.ccommand) { // custom command
-                await bu.setVariable(params.tagName, varName, value, bu.TagVariableType.GUILDLOCAL);
+                await bu.setVariable(params.tagName, varName, value, bu.TagVariableType.GUILDLOCAL, params.msg.guild.id);
             } else { // normal tag
                 await bu.setVariable(params.tagName, varName, value, bu.TagVariableType.LOCAL);
             }

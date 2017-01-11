@@ -75,7 +75,7 @@ e.getVar = async function(params, varName) {
             break;
         default: // local to tag
             if (params.ccommand) { // custom command
-                vars = await bu.getVariable(params.tagName, varName, bu.TagVariableType.GUILDLOCAL);
+                vars = await bu.getVariable(params.tagName, varName, bu.TagVariableType.GUILDLOCAL, params.msg.guild.id);
             } else { // normal tag
                 vars = await bu.getVariable(params.tagName, varName, bu.TagVariableType.LOCAL);
             }
