@@ -70,7 +70,6 @@ e.execute = async function(msg, words) {
 
     let changelogs = await r.table('vars').get('changelog');
     if (changelogs) {
-        logger.debug(changelogs);
         for (const channelId of Object.values(changelogs.guilds)) {
             const channel = bot.getChannel(channelId);
             if (channel != undefined) {
