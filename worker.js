@@ -244,7 +244,7 @@ const functions = {
         let foreground = await Jimp.read(path.join(__dirname, 'img', `clint.png`));
         let img = new Jimp(1200, 675);
         img.composite(jBgImg, 782, 0);
-        
+
         img.composite(foreground, 0, 0);
 
         img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
@@ -325,6 +325,22 @@ const functions = {
         encoder.setDelay(20);
         for (let frame of frames) encoder.addFrame(frame);
         encoder.finish();
+    },
+    thesearch: async function(msg) {
+        let buf = await createCaption({
+            text: msg.text,
+            fill: '#393b3e',
+            font: 'SFToontime.ttf',
+            size: '160x68'
+        });
+
+        let text = await Jimp.read(buf);
+        let img = await Jimp.read(path.join(__dirname, 'img', `thesearch.png`));
+        img.composite(text, 60, 331);
+
+        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            submitBuffer(msg.code, buffer);
+        });
     },
     objection: async function(msg) {
         let frameCount = 6;
