@@ -18,9 +18,11 @@ const commandType = {
         6: 'Admin'
     }
 };
+
 const tagType = {
     1: "Simple Tags",
-    2: "Complex Tags"
+    2: "General Tags",
+    3: "Array Tags"
 };
 
 e.init = () => {
@@ -49,7 +51,7 @@ e.init = () => {
         let sidebar = '';
         let lastType = -10;
         let tags = bu.tags;
-        keys = Object.keys(tags);
+        let keys = Object.keys(tags);
         keys.sort((a, b) => {
             return ((tags[a].category - tags[b].category) * 1000) + (a > b ? 1 : -1);
         });
@@ -87,69 +89,58 @@ e.init = () => {
         </div>
     </div><div class="row">
         <div class="col s12 m10 offset-m1 l10 offset-l1">
-            <div class="card blue-grey darken-2">
-                <div class="card-content">
-                    <table class="responsive-table bordered">
-                        <thead>
-                        <tr>
-                            <th>Tag Name</th>
-                            <th>Function</th>
-                            <th>Example Tag</th>
-                            <th>Example Output</th>
-                        </tr>
-                        </thead>
-                        <tbody>`;
-                } else {
-                    toReturn += `</tbody>
-                    </table>
-                </div>
-            </div>
+            `;
+                } else if (lastType == 2) {
+                    toReturn += `
         </div>
     </div>
+
     <div class="row">
-    <div class=\"centre\" id=\"simple\">
-        <h2 id='${lastType}' class='white-text'>${tagType[lastType]}</h2>
-    </div>
-        <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
-            <p class="centre">These tags are more powerful.<br>
-                &lt;&gt; - denotes required arguments<br>
-                [] - denotes optional arguments<br>
-                ... - denotes one or more arguments </p>
+        <div class=\"centre\" id=\"complex\">
+            <h2 class='white-text'>Complex</h2>
         </div>
-    </div><div class="row">
-        <div class="col s12 m10 offset-m1 l10 offset-l1">
-            <div class="card blue-grey darken-2">
-                <div class="card-content">
+    <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
+        <p class="centre">These tags are more powerful.<br>
+            &lt;&gt; - denotes required arguments<br>
+            [] - denotes optional arguments<br>
+            ... - denotes one or more arguments </p>
+    </div></div>`;
+                    toReturn += `<div class='row'>
+        <h3 class='centre' id='${lastType}'>${bu.TagType.properties[lastType].name}</h3>
+        <p class='flow-text centre'>${bu.TagType.properties[lastType].desc}</p>
+    </div>`;
 
-                    <table class="responsive-table bordered">
-                        <thead>
-
-                        <tr>
-                            <th>Tag Name</th>
-                            <th>Arguments</th>
-                            <th>Function</th>
-                            <th>Example Tag</th>
-                            <th>Example Output</th>
-                        </tr>
-                        </thead>
-                        <tbody>`;
+                    toReturn += `<div class="row">
+        <div class="col s12 m10 offset-m1 l10 offset-l1">`;
+                } else {
+                    toReturn += '</div></div>';
+                    toReturn += `<div class='row'>
+        <h3 class='centre' id='${lastType}'>${bu.TagType.properties[lastType].name}</h3>
+        <p class='flow-text centre'>${bu.TagType.properties[lastType].desc}</p>
+    </div>`;
+                    toReturn += `<div class="row">
+        <div class="col s12 m10 offset-m1 l10 offset-l1">`;
                 }
             }
-            toReturn += `<tr id='${keys[i]}'>`;
-            toReturn += `<td>${keys[i]}</td>`;
-            if (lastType != 1) {
-                toReturn += `<td>${tags[keys[i]].args}</td>`;
+            let colour = 'blue-grey darken-2';
+            if (tags[keys[i]].deprecated) colour = 'red darken-4';
+            toReturn += `<div class="card ${colour}"><div class="card-content">`;
+            toReturn += `<h4 id='${keys[i]}'>${keys[i]}</h4>`;
+            if (tags[keys[i]].deprecated) {
+                toReturn += `<p>This tag is deprecated. Avoid using it, as it will eventually become unsupported.</p>`;
             }
-            toReturn += `<td>${tags[keys[i]].desc}</td>`;
-            toReturn += `<td>${tags[keys[i]].exampleIn}</td>`;
-            toReturn += `<td>${tags[keys[i]].exampleOut}</td>`;
-            toReturn += "</tr>";
-        }
-        toReturn += `</tbody>
-                    </table>
+            if (lastType != 1) {
+                toReturn += `<p>Arguments: <code>${tags[keys[i]].args}</code></p>`;
+            }
+            if (tags[keys[i]].array) toReturn += `<p>Array compatible</p>`;
+            toReturn += `<p>${tags[keys[i]].desc}</p>`;
 
-                </div>
-            </div>
+            toReturn += `<h5>Example Input:</h5><blockquote>${tags[keys[i]].exampleIn}</blockquote>`;
+            toReturn += `<h5>Example Output:</h5><blockquote>${tags[keys[i]].exampleOut}</blockquote>`;
+            toReturn += ' </div></div>';
+        }
+        toReturn += `
+                   
         </div>
     </div`;
         return toReturn;

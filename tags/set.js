@@ -7,6 +7,8 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.array = true;
+
 e.name = `set`;
 e.args = `&lt;name&gt; &lt;value&gt; [value]...`;
 e.usage = `{set;name;value[;value]...}`;

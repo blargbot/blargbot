@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
 e.init = () => {
-    e.category = bu.TagType.COMPLEX;
+    e.category = bu.TagType.ARRAY;
 };
 
 e.requireCtx = require;

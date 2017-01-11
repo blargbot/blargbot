@@ -8,9 +8,11 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `aset`;
+e.deprecated = true;
+e.array = true;
 e.args = `&lt;name&gt; &lt;value&gt;`;
 e.usage = `{aset;name;value}`;
-e.desc = `DEPRECATED. Stores a variable. These variables are saved between sessions, and are unique per-author.`;
+e.desc = `Stores a variable. These variables are saved between sessions, and are unique per-author.`;
 e.exampleIn = `{aset;testvar;This is a test var}`;
 e.exampleOut = ``;
 

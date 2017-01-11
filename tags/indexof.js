@@ -7,6 +7,8 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.array = true;
+
 e.name = 'indexof';
 e.args = '&lt;text&gt; &lt;searchfor&gt; [start]';
 e.usage = '{indexof;text;search[;start]}';

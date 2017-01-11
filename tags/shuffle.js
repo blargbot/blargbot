@@ -7,6 +7,7 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.array = true;
 e.name = `shuffle`;
 e.args = `[array]`;
 e.usage = `{shuffle[;array]}`;

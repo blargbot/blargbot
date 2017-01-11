@@ -61,12 +61,18 @@ bu.tagList = {};
 bu.TagType = {
     SIMPLE: 1,
     COMPLEX: 2,
+    ARRAY: 3,
     properties: {
         1: {
             name: 'Simple'
         },
         2: {
-            name: 'Complex'
+            name: 'General',
+            desc: 'General purpose functions.'
+        },
+        3: {
+            name: 'Array',
+            desc: 'Functions designed specifically for arrays.'
         }
     }
 };

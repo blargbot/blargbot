@@ -7,6 +7,7 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.array = true;
 e.name = `length`;
 e.args = `&lt;text&gt;`;
 e.usage = `{length;text}`;

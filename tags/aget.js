@@ -7,10 +7,11 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.deprecated = true;
 e.name = `aget`;
 e.args = `&lt;name&gt; [index]`;
 e.usage = `{aget;name[;index]}`;
-e.desc = `DEPRECATED. Returns a stored variable, or an index in a stored array. Variables are unique per-author.`;
+e.desc = `Returns a stored variable, or an index in a stored array. Variables are unique per-author.`;
 e.exampleIn = `{aget;testvar}`;
 e.exampleOut = `This is a test var`;
 

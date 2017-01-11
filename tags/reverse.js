@@ -7,6 +7,8 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.array = true;
+
 e.name = `reverse`;
 e.args = `&lt;text&gt;`;
 e.usage = `{reverse;text}`;

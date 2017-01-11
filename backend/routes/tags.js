@@ -10,6 +10,18 @@ router.get('/', (req, res) => {
     res.render('tags');
 });
 
+router.get('/variables', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = '/tags' + req.path;
+    res.render('variables');
+});
+
+router.get('/arrays', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = '/tags' + req.path;
+    res.render('arrays');
+});
+
 
 router.get('/editor', (req, res) => {
     res.locals.user = req.user;
