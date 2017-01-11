@@ -232,31 +232,18 @@ const functions = {
         });
     },
     clint: async function(msg) {
-        let canvas = new Canvas(330, 600),
-            ctx = canvas.getContext('2d'),
-            bgImg = new Image();
-
         let avatar = await Jimp.read(await getResource(msg.avatar));
-        avatar.resize(330, 600);
-        bgImg.src = await getBufferFromJimp(avatar);
-        let width = bgImg.width,
-            height = bgImg.height;
-        for (let i = 0; i <= height / 2; ++i) {
-            ctx.setTransform(1, -0.4 * i / height,
-                0, 1, 0, 60);
-            ctx.drawImage(bgImg,
-                0, height / 2 - i, width, 2,
-                0, height / 2 - i, width, 2);
-            ctx.setTransform(1, 0.4 * i / height,
-                0, 1, 0, 60);
-            ctx.drawImage(bgImg,
-                0, height / 2 + i, width, 2,
-                0, height / 2 + i, width, 2);
-        }
-        let jBgImg = await Jimp.read(canvas.toBuffer());
+        avatar.resize(700, 700);
+        let bgImg = im(await getBufferFromJimp(avatar));
+        bgImg.command('convert');
+        bgImg.out('-matte').out('-virtual-pixel').out('transparent');
+        bgImg.out('-distort');
+        bgImg.out('Perspective');
+        bgImg.out("0,0,0,132  700,0,330,0  0,700,0,530  700,700,330,700");
+        let jBgImg = await Jimp.read(await getBufferFromIM(bgImg));
         let foreground = await Jimp.read(path.join(__dirname, 'img', `clint.png`));
         let img = new Jimp(1200, 675);
-        img.composite(jBgImg, 782, 49);
+        img.composite(jBgImg, 782, 0);
         
         img.composite(foreground, 0, 0);
 
