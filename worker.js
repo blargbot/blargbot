@@ -11,6 +11,8 @@ const GIFEncoder = require('gifencoder');
 const util = require('util');
 const request = require('request');
 const fs = require('fs');
+const Canvas = require('canvas'),
+    Image = Canvas.Image;
 
 const logger = {
     cluster: function(msg) {
@@ -229,6 +231,39 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
+    clint: async function(msg) {
+        let canvas = new Canvas(330, 600),
+            ctx = canvas.getContext('2d'),
+            bgImg = new Image();
+
+        let avatar = await Jimp.read(await getResource(msg.avatar));
+        avatar.resize(330, 600);
+        bgImg.src = await getBufferFromJimp(avatar);
+        let width = bgImg.width,
+            height = bgImg.height;
+        for (let i = 0; i <= height / 2; ++i) {
+            ctx.setTransform(1, -0.4 * i / height,
+                0, 1, 0, 60);
+            ctx.drawImage(bgImg,
+                0, height / 2 - i, width, 2,
+                0, height / 2 - i, width, 2);
+            ctx.setTransform(1, 0.4 * i / height,
+                0, 1, 0, 60);
+            ctx.drawImage(bgImg,
+                0, height / 2 + i, width, 2,
+                0, height / 2 + i, width, 2);
+        }
+        let jBgImg = await Jimp.read(canvas.toBuffer());
+        let foreground = await Jimp.read(path.join(__dirname, 'img', `clint.png`));
+        let img = new Jimp(1200, 675);
+        img.composite(jBgImg, 782, 49);
+        
+        img.composite(foreground, 0, 0);
+
+        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            submitBuffer(msg.code, buffer);
+        });
+    },
     pixelate: async function(msg) {
         let image = await Jimp.read(await getResource(msg.url));
         let img;
@@ -385,6 +420,18 @@ function getBufferFromIM(img) {
             fulfill(buffer);
         });
     });
+}
+
+function getBufferFromJimp(img) {
+    return new Promise((fulfill, reject) => {
+        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            fulfill(buffer)
+        });
+    })
 }
 
 
