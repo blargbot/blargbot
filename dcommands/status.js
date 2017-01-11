@@ -12,7 +12,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'status <code> [cat | dog]';
 e.info = 'Gets you an image of an HTTP status code.';
-e.info = '<p>Gets you an image of an HTTP status code.</p>';
+e.longinfo = '<p>Gets you an image of an HTTP status code.</p>';
 
 
 e.execute = (msg, words, text) => {
