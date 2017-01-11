@@ -1175,7 +1175,8 @@ bu.splitInput = (content, noTrim) => {
         words = input;
     }
     for (let i in words) {
-        words[i] = words[i].replace(/\\"/g, '"').replace(/^[\s]+/g, '');
+        words[i] = words[i].replace(/\\"/g, '"');
+        if (!noTrim) words[i] = words[i].replace(/^ +/g, '');
     }
     logger.debug(words);
     return words;
@@ -1583,10 +1584,10 @@ bu.parseDuration = function(text) {
  *     {flag: 'u', word: 'user'}
  * ];
  * */
-bu.parseInput = function(map, text) {
+bu.parseInput = function(map, text, noTrim) {
     let words;
-    if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '));
-    else words = bu.splitInput(text);
+    if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
+    else words = bu.splitInput(text, noTrim);
     let output = {
         undefined: []
     };
