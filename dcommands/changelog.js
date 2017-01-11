@@ -6,9 +6,9 @@ e.init = () => {
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'blacklist [channel]';
-e.info = 'Blacklists the current channel, or the first channel that you mention. The bot will not respond until you do `blacklist` again.';
-e.longinfo = `<p>Blacklists the current channel. The bot will not respond until you do the command again.</p>`;
+e.usage = 'changelog';
+e.info = 'Sets the current channel as your guild\'s changelog channel. A message will be posted in this channel whenever there is an update. The bot requires the `embed links` permission for this.';
+e.longinfo = `<p>Sets the current channel as your guild\'s changelog channel. A message will be posted in this channel whenever there is an update. The bot requires the <code>embed links</code> permission for this.</p>`;
 
 e.execute = async function(msg) {
     let channelid = msg.channel.id;
