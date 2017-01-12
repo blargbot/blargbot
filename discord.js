@@ -1,6 +1,6 @@
 const fs = require('fs');
 const util = require('util');
-const Eris = require('eris');
+const Eris = require('Discord.js');
 const moment = require('moment-timezone');
 const path = require('path');
 const https = require('https');
