@@ -7,45 +7,26 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `if`;
-e.args = `&lt;evaluator&gt; &lt;arg1&gt; &lt;arg2&gt; &lt;then&gt; &lt;else&gt;`;
-e.usage = `{if;evaluator;arg1;arg2;then;else}`;
-e.desc = `Evaluates <code>arg1</code> and <code>arg2</code> using the <code>evaluator</code>. If
-                                it
-                                returns
-                                true,
-                                the tag returns <code>then</code>. Otherwise, it returns <code>else</code>. Valid
+e.name = `bool`;
+e.args = `&lt;evaluator&gt; &lt;arg1&gt; &lt;arg2&gt;`;
+e.usage = `{bool;evaluator;arg1;arg2}`;
+e.desc = `Evaluates <code>arg1</code> and <code>arg2</code> using the <code>evaluator</code> and returns <code>true</code> or <code>false</code>. Valid
                                 evaluators are
                                 <code>==</code>
                                 <code>!=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>
                                     &gt;=</code> <code>startswith</code> <code>endswith</code>
                             `;
-e.exampleIn = `{if;&lt;=;5;10;5 is less than or equal to 10;5 is greater than 10}`;
-e.exampleOut = `5 is less than or equal to 10`;
+e.exampleIn = `{bool;&lt;=;5;10}`;
+e.exampleOut = `true`;
 
 
 e.execute = async function(params) {
-    // for (let i = 1; i < params.args.length; i++) {
-    //      params.args[i] =await bu.processTagInner(params, i);
-    // }
     let args = params.args,
         fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
 
-    if (args.length == 3){
-        args[1] = await bu.processTagInner(params, 1);
-        if (args[1] == "true"){
-            params.content = args[2];
-            replaceString = await bu.processTag(params);
-        } else if (args[1] == "false"){
-            params.content = args[3];
-            replaceString = await bu.processTag(params);
-        } else {
-            replaceString = await bu.tagProcessError(params, '`Invalid Boolean`');
-        }
-        replaceString = await bu.processTag(params);
-    } else if (args.length > 4) {
+    if (args.length > 2) {
         args[1] = await bu.processTagInner(params, 1);
         var arg1 = await bu.processTagInner(params, 2);
         var arg2 = await bu.processTagInner(params, 3);
@@ -58,58 +39,56 @@ e.execute = async function(params) {
         switch (args[1].toLowerCase()) {
             case '==':
                 if (arg1 == arg2)
-                    replaceString = args[4];
+                    replaceString = "true";
                 else
-                    replaceString = args[5] || '';
+                    replaceString = "false" || '';
                 break;
             case '!=':
                 if (arg1 != arg2)
-                    replaceString = args[4];
+                    replaceString = "true";
                 else
-                    replaceString = args[5] || '';
+                    replaceString = "false" || '';
                 break;
             case '>=':
                 if (arg1 >= arg2)
-                    replaceString = args[4];
+                    replaceString = "true";
                 else
-                    replaceString = args[5] || '';
+                    replaceString = "false" || '';
                 break;
             case '<=':
                 if (arg1 <= arg2)
-                    replaceString = args[4];
+                    replaceString = "true";
                 else
-                    replaceString = args[5] || '';
+                    replaceString = "false" || '';
                 break;
             case '>':
                 if (arg1 > arg2)
-                    replaceString = args[4];
+                    replaceString = "true";
                 else
-                    replaceString = args[5] || '';
+                    replaceString = "false" || '';
                 break;
             case '<':
                 if (arg1 < arg2)
-                    replaceString = args[4];
+                    replaceString = "true";
                 else
-                    replaceString = args[5] || '';
+                    replaceString = "false" || '';
                 break;
             case 'startswith':
                 if (arg1.startsWith(arg2))
-                    replaceString = args[4];
+                    replaceString = "true";
                 else
-                    replaceString = args[5] || '';
+                    replaceString = "false" || '';
                 break;
             case 'endswith':
                 if (arg1.endsWith(arg2))
-                    replaceString = args[4];
+                    replaceString = "true";
                 else
-                    replaceString = args[5] || '';
+                    replaceString = "false" || '';
                 break;
             default:
                 replaceString = await bu.tagProcessError(params, '`Invalid Operator`');
                 break;
         }
-        params.content = replaceString;
-        replaceString = await bu.processTag(params);
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
