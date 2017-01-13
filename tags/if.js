@@ -48,18 +48,23 @@ e.execute = async function(params) {
             params.content = args[3];
             replaceString = await bu.processTag(params);
         }
-        replaceString = await bu.processTag(params);
     } else if (args.length > 4) {
         args[1] = await bu.processTagInner(params, 1);
         args[2] = await bu.processTagInner(params, 2);
         args[3] = await bu.processTagInner(params, 3);
+        let res;
         if (operators.hasOwnProperty(args[1].toLowerCase())) {
-            replaceString = operators[args[1].toLowerCase()](args[2], args[3]).toString();
+            res = operators[args[1].toLowerCase()](args[2], args[3]);
         } else if (operators.hasOwnProperty(args[2].toLowerCase())) {
-            replaceString = operators[args[2].toLowerCase()](args[1], args[3]).toString();
+            res = operators[args[2].toLowerCase()](args[1], args[3]);
         } else replaceString = await bu.tagProcessError(params, '`Invalid Operator`');
-        params.content = replaceString;
-        replaceString = await bu.processTag(params);
+        if (res === true) {
+            params.content = args[4];
+            replaceString = await bu.processTag(params);
+        } else if (res === false) {
+            params.content = args[5];
+            replaceString = await bu.processTag(params);
+        }
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
