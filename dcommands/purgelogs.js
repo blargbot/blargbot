@@ -17,9 +17,7 @@ e.execute = async function(msg) {
         let returnObj = await r.table('chatlogs')
             .between(r.epochTime(0), r.now().sub(7 * 24 * 60 * 60), {
                 index: 'msgtime'
-            }).delete({
-                durability: "soft"
-            }).run();
+            }).delete().run();
         let end = moment();
         let diff = moment.duration(end - start);
         bu.send(msg, `Ok, ${msg.author.mention}! I'm finished!
@@ -36,14 +34,18 @@ The operation took:
 const logLogChannel = '254034744134598676';
 
 e.event = async function(args) {
+    let tomorrow = moment(moment().format('YYYY-MM-DD')).add(1, 'd');
+    await r.table('events').insert({
+        type: 'purgelogs',
+        endtime: r.epochTime(tomorrow.unix())
+    });
+
     await bu.send(logLogChannel, 'Doing a daily purge of logs that are over a week old.');
     let start = moment();
     let returnObj = await r.table('chatlogs')
         .between(r.epochTime(0), r.now().sub(7 * 24 * 60 * 60), {
             index: 'msgtime'
-        }).delete({
-            durability: "soft"
-        }).run();
+        }).delete().run();
     let end = moment();
     let diff = moment.duration(end - start);
     bu.send(logLogChannel, `I'm finished!
@@ -53,11 +55,7 @@ The operation took:
     ${diff.hours()} hours
     ${diff.minutes()} minutes
     ${diff.seconds()} seconds
-    ${diff.milliseconds()} milliseconds`);
+    ${diff.milliseconds()} milliseconds
 
-    let tomorrow = moment(moment().format('YYYY-MM-DD')).add(1, 'd');
-    await r.table('events').insert({
-        type: 'purgelogs',
-        endtime: r.epochTime(tomorrow.unix())
-    });
-}
+The next operation will be ${moment.duration(tomorrow - moment()).humanize(true)}`);
+};
