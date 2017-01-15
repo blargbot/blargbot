@@ -39,7 +39,7 @@ e.execute = async function(params) {
     var replaceString = '';
     var replaceContent = false;
 
-    if (args.length == 3) {
+    if (args.length == 4) {
         args[1] = await bu.processTagInner(params, 1);
         if (args[1].toLowerCase() == "true" || args[1] == true) {
             params.content = args[2];
