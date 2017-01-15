@@ -886,9 +886,13 @@ bu.deserializeTagArray = function(value) {
 bu.getArray = async function(params, arrName) {
     let obj = bu.deserializeTagArray(arrName);
     if (!obj) {
-        let arr = await bu.tags['get'].getVar(params, arrName);
-        if (arr) {
-            obj = bu.deserializeTagArray(bu.serializeTagArray(arr, arrName));
+        try {
+            let arr = await bu.tags['get'].getVar(params, arrName);
+            if (arr) {
+                obj = bu.deserializeTagArray(bu.serializeTagArray(arr, arrName));
+            }
+        } catch (err) {
+            return undefined;
         }
     }
     return obj;
@@ -917,7 +921,7 @@ bu.setVariable = async function(name, key, value, type, guildId) {
             storedThing.ccommands[name].vars[key] = value;
             break;
         case bu.TagVariableType.TAGGUILD:
-            updateObj.tagVars = vars; 
+            updateObj.tagVars = vars;
             await r.table('guild').get(name).update(updateObj);
             storedThing = await bu.getGuild(name);
             if (!storedThing.tagVars) storedThing.tagVars = {};
@@ -1457,7 +1461,7 @@ bu.tagProcessError = async function(params, errormessage) {
     let fallback = params.fallback;
     let returnMessage = '';
     params.content = fallback;
-    
+
     if (fallback === undefined) returnMessage = errormessage;
     else returnMessage = await bu.processTag(params);
     return returnMessage;
