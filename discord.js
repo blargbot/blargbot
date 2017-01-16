@@ -361,7 +361,9 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
             author = val.author;
         } else {
             ccommandContent = val;
-            await bu.ccommand.set(msg.guild.id, ccommandName, {content: ccommandContent});
+            await bu.ccommand.set(msg.guild.id, ccommandName, {
+                content: ccommandContent
+            });
         }
 
         if (await bu.canExecuteCcommand(msg, ccommandName, true)) {
@@ -1040,8 +1042,9 @@ If you are the owner of this server, here are a few things to know.
             if (msg.channel.id != '204404225914961920') {
                 var nsfw = await bu.isNsfwChannel(msg.channel.id);
                 r.table('chatlogs').insert({
+                    id: bu.makeSnowflake(),
                     content: msg.content,
-                    attachment: msg.attachments && msg.attachments.length > 0 ? msg.attachments[0].url : null,
+                    attachment: msg.attachments && msg.attachments.length > 0 ? msg.attachments[0].url : undefined,
                     userid: msg.author.id,
                     msgid: msg.id,
                     channelid: msg.channel.id,
@@ -1275,8 +1278,9 @@ If you are the owner of this server, here are a few things to know.
             if (msg.channel.id != '204404225914961920') {
                 try {
                     await r.table('chatlogs').insert({
+                        id: bu.makeSnowflake(),
                         content: msg.content,
-                        attachment: msg.attachments && msg.attachments[0] ? msg.attachments[0].url : null,
+                        attachment: msg.attachments && msg.attachments[0] ? msg.attachments[0].url : undefined,
                         userid: msg.author.id,
                         msgid: msg.id,
                         channelid: msg.channel.id,
@@ -1338,8 +1342,9 @@ If you are the owner of this server, here are a few things to know.
         if (storedGuild && storedGuild.settings.makelogs)
             if (msg.channel.id != '204404225914961920') {
                 r.table('chatlogs').insert({
+                    id: bu.makeSnowflake(),                    
                     content: msg.content,
-                    attachment: msg.attachments[0] ? msg.attachments[0].url : null,
+                    attachment: msg.attachments[0] ? msg.attachments[0].url : undefined,
                     userid: msg.author.id,
                     msgid: msg.id,
                     channelid: msg.channel.id,

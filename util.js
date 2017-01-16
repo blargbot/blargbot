@@ -1756,3 +1756,11 @@ bu.isUserStaff = async function(userId, guildId) {
     }
     return false;
 };
+
+bu.makeSnowflake = function() {
+    return (moment() - 1420070400000) * 4194304;
+};
+
+bu.unmakeSnowflake = function(snowflake) {
+    return (snowflake / 4194304) + 1420070400000;
+};
