@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', async function(req, res) {
+    if (!req.user) {
+        res.redirect('/login');
+        return;
+    }
     res.locals.user = req.user;
     req.session.returnTo = req.path;
     //    logger.website();
