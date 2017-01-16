@@ -1,8 +1,8 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
     <!-- Latest compiled and minified CSS -->
     <!--
@@ -34,14 +34,12 @@
     <script src="../js/scripts.js"></script>
 
     <!-- Fonts -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- OpenGraph -->
     <title>dashboard</title>
 
-    <link rel="icon"
-          type="image/png"
-          href="/img/blargbotmini.png">
+    <link rel="icon" type="image/png" href="/img/blargbotmini.png">
 
     <meta name="author" content="stupid cat">
 
@@ -58,32 +56,68 @@
 </head>
 
 <body class="blue-grey">
-{{> sidebar}}
+    {{> sidebar}}
 
-<a class="btn-floating btn-primary button-collapse btn-large waves-effects waves-light" data-activates="slide-out">
-    <i class="large material-icons">menu</i></a>
+    <a class="btn-floating btn-primary button-collapse btn-large waves-effects waves-light" data-activates="slide-out">
+        <i class="large material-icons">menu</i></a>
 
-<header class="page-header">
+    <header class="page-header">
 
 
-    <h1 class="centre">dashboard</h1>
-</header>
-<main>
-<div class="section">
-    <div class="row">
-        <div class="col s12 m10 offset-m1 l8 offset-l2">
-            <div class="card blue-grey darken-2">
-                <div class="card-image">
-                    <img src="https://c2.staticflickr.com/6/5137/5457033663_65a61b2b76.jpg">
-                    <span class="card-title">Coming Soon™</span>
-                </div>
-                <div class="card-content">
-                    <p class="grey-text text-lighten-5"> Yeah, I'm upset about it too.</p>
-                </div>
+        <h1 class="centre">dashboard</h1>
+    </header>
+    <main>
+        <div class="section">
+            <div class="row">
+                <div class="col s12 m10 offset-m1 l8 offset-l2">
+                    <div class="card blue-grey darken-2">
+                        {{#if user}}
 
-            </div>
-        </div>
-    </div>
+                        <div id='workspace'>
+                            <ul class='collection with-header'>
+                                <li class='collection-header blue-grey darken-2'>Available Guilds</li>
+                                {{#each guilds}}
+                                <li class='collection-item avatar blue-grey darken-3'>
+                                    <img src='https://cdn.discordapp.com/icons/{{id}}/{{icon}}.jpg' alt='{{name}}' class='circle'>                                    {{name}}
+                                    <a href="#!" class="secondary-content" onclick='sendData("displayGuild", {guild: "{{id}}"})'><i class="material-icons">settings</i></a>
+                                </li>
+                                {{/each}}
+                            </ul>
+                        </div>
+                        <script>
+                            var sid = '{{sessionId}}';
+                            var wss = new WebSocket('{{url}}');
+                            var workspace = document.getElementById('workspace')
+                            var index = workspace.innerHTML;
+
+                            wss.onmessage = function (event) {
+                                let data = JSON.parse(event.data);
+                                console.dir(data);
+                                if (data.code == 200) {
+                                    switch (data.data.type) {
+                                        case 'displayGuild':
+
+                                            workspace.innerHTML = `<p>${data.data.guild.name} Settings</p>`;
+                                            workspace.innerHTML += `<ul class='collection blue-grey darken-3'>`
+                                            for (var i = 0; i < Object.keys(data.data.guild.settings).length; i++) {
+                                                let key = Object.keys(data.data.guild.settings)[i];
+                                                workspace.innerHTML += `<li class='collection-item'>${key} - ${data.data.guild.settings[key]}</li>`;
+                                            }
+                                            workspace.innerHTML += `</ul>`;
+                                            break;
+                                    }
+                                }
+                            }
+
+                            function sendData(type, data) {
+                                wss.send(JSON.stringify({ type, sid, data }));
+                            }
+                        </script>
+{{else}}
+<span class='card-content'>You need to be logged in to use this!</span> {{/if}}
+</div>
+</div>
+</div>
 </div>
 
 </main>

@@ -153,10 +153,11 @@ code {
     left: 24px;
 }
 
-.collection-item {
+.collection-item, .collection, .collection-header {
     outline: none !important;
     border: none !important;
 }
+
 
 #slide-out .main-brand {
     height: 65px;
