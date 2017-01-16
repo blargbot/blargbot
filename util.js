@@ -1419,21 +1419,37 @@ bu.canExecuteCommand = async function(msg, commandName, quiet) {
     }
 };
 
+bu.isUserStaff = async function(userId, guildId) {
+    let guild = bot.guilds.get(guildId);
+    if (!guild) return false;
+    let member = guild.members.get(userId);
+    if (!member) return false;
+
+    if (guild.ownerID == userId) return true;
+    if (member.permission.has('administrator')) return true;
+
+    let storedGuild = await bu.getGuild(guildId);
+    if (storedGuild && storedGuild.settings && storedGuild.settings.permoverride) {
+        let allow = storedGuild.settings.staffperms || bu.defaultStaff;
+        if (bu.comparePerms(bot.guilds.get(guildId).members.get(userId), allow)) {
+            return true;
+        }
+    }
+    return false;
+};
 
 bu.shuffle = (array) => {
-    let i = 0,
-        j = 0,
-        temp = null;
+    let counter = array.length;
 
-    for (i = array.length - 1; i > 0; i -= 1) {
-        j = Math.floor(Math.random() * (i + 1));
-        temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
     }
-
-    return array;
-};
+}
 
 bu.getTagUser = async function(msg, args, index) {
     var obtainedUser;
@@ -1764,3 +1780,4 @@ bu.makeSnowflake = function() {
 bu.unmakeSnowflake = function(snowflake) {
     return (snowflake / 4194304) + 1420070400000;
 };
+
