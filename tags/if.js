@@ -52,9 +52,9 @@ e.execute = async function(params) {
         args[1] = await bu.processTagInner(params, 1);
         if (/^[0-9]+\.?[0-9]*$/.test(args[1])) args[1] = parseFloat(args[1]);
         args[2] = await bu.processTagInner(params, 2);
-        if (/^[0-9]+\.?[0-9]*$/.test(args[2])) args[1] = parseFloat(args[1]);
+        if (/^[0-9]+\.?[0-9]*$/.test(args[2])) args[2] = parseFloat(args[2]);
         args[3] = await bu.processTagInner(params, 3);
-        if (/^[0-9]+\.?[0-9]*$/.test(args[3])) args[1] = parseFloat(args[1]);
+        if (/^[0-9]+\.?[0-9]*$/.test(args[3])) args[3] = parseFloat(args[3]);
 
         let res;
         if (typeof args[1] == 'string' && operators.hasOwnProperty(args[1].toLowerCase())) {
