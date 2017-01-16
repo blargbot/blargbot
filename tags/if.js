@@ -50,12 +50,16 @@ e.execute = async function(params) {
         }
     } else if (args.length > 4) {
         args[1] = await bu.processTagInner(params, 1);
+        if (/^[0-9]+\.?[0-9]*$/.test(args[1])) args[1] = parseFloat(args[1]);
         args[2] = await bu.processTagInner(params, 2);
+        if (/^[0-9]+\.?[0-9]*$/.test(args[2])) args[1] = parseFloat(args[1]);
         args[3] = await bu.processTagInner(params, 3);
+        if (/^[0-9]+\.?[0-9]*$/.test(args[3])) args[1] = parseFloat(args[1]);
+
         let res;
-        if (operators.hasOwnProperty(args[1].toLowerCase())) {
+        if (typeof args[1] == 'string' && operators.hasOwnProperty(args[1].toLowerCase())) {
             res = operators[args[1].toLowerCase()](args[2], args[3]);
-        } else if (operators.hasOwnProperty(args[2].toLowerCase())) {
+        } else if (typeof args[2] == 'string' && operators.hasOwnProperty(args[2].toLowerCase())) {
             res = operators[args[2].toLowerCase()](args[1], args[3]);
         } else replaceString = await bu.tagProcessError(params, '`Invalid Operator`');
         if (res === true) {
