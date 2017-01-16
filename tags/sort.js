@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
 e.init = () => {
-    e.category = bu.TagType.COMPLEX;
+    e.category = bu.TagType.ARRAY;
 };
 
 e.requireCtx = require;
@@ -23,7 +23,7 @@ e.execute = async function(params) {
     var replaceContent = false;
     let args = params.args;
     if (params.args[1]) {
-        let deserialized = bu.deserializeTagArray(args[1]);
+        let deserialized = await bu.getArray(params, args[1]);
 
         if (deserialized && Array.isArray(deserialized.v)) {
             deserialized.v.sort();
@@ -32,10 +32,10 @@ e.execute = async function(params) {
                 await bu.setArray(deserialized, params);
             } else replaceString = bu.serializeTagArray(deserialized.v)
         } else {
-            replaceString = await bu.tagProcessError(params, params.fallback, '`Not an array`');
+            replaceString = await bu.tagProcessError(params, '`Not an array`');
         }
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
     return {
         replaceString: replaceString,

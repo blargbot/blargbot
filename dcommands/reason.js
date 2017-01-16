@@ -36,10 +36,8 @@ e.execute = async function(msg, words) {
                 var content = msg2.content;
                 content = content.replace(/\*\*Reason:\*\*.+?\n/, `**Reason:** ${words.join(' ')}\n`);
                 modlog[index].reason = words.join(' ');
-                if (!modlog[index].modid) {
-                    content = content.replace(/\*\*Moderator:\*\*.+/, `**Moderator:** ${msg.author.username}#${msg.author.discriminator}`);
-                    modlog[index].modid = msg.author.id;
-                }
+                content = content.replace(/\*\*Moderator:\*\*.+/, `**Moderator:** ${msg.author.username}#${msg.author.discriminator}`);
+                modlog[index].modid = msg.author.id;
                 r.table('guild').get(msg.channel.guild.id).update({
                     modlog: modlog
                 }).run();
@@ -47,12 +45,10 @@ e.execute = async function(msg, words) {
                 if (embed) {
                     embed.fields[1].value = words.join(' ');
                     embed.timestamp = moment(embed.timestamp);
-                    if (!embed.hasOwnProperty('footer')) {
-                        embed.footer = {
-                            text: `${bu.getFullName(msg.author)} (${msg.author.id})`,
-                            icon_url: msg.author.avatarURL
-                        };
-                    }
+                    embed.footer = {
+                        text: `${bu.getFullName(msg.author)} (${msg.author.id})`,
+                        icon_url: msg.author.avatarURL
+                    };
                     msg2.edit({
                         content: ' ',
                         embed: embed

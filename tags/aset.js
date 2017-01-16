@@ -8,6 +8,8 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `aset`;
+e.deprecated = true;
+e.array = true;
 e.args = `&lt;name&gt; &lt;value&gt;`;
 e.usage = `{aset;name;value}`;
 e.desc = `Stores a variable. These variables are saved between sessions, and are unique per-author.`;
@@ -27,7 +29,7 @@ e.execute = async function(params) {
     let storedAuthor = await r.table('user').get(author).run();
     if (!storedAuthor) {
         return {
-            replaceString: await bu.tagProcessError(params, params.fallback, '`Author not found`'),
+            replaceString: await bu.tagProcessError(params, '`Author not found`'),
             replaceContent
         }
     }
@@ -45,7 +47,7 @@ e.execute = async function(params) {
         authorVars[args[1]] = null;
     } else {
         x
-        replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
     await saveUser(author, authorVars);
 

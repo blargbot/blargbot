@@ -26,7 +26,7 @@ e.execute = async function(params) {
     if (args.length > 1)
         replaceString = args[1].toLowerCase();
     else
-        replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
 
 
     return {

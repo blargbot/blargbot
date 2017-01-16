@@ -34,24 +34,30 @@ e.execute = async function(msg, words) {
         if (lastSuggestion.length > 0) i = lastSuggestion[0].id + 1;
         logger.debug(i, lastSuggestion);
         if (isNaN(i)) i = 0;
-        let type, colour;
+        let type, colour, channel, list;
         switch (words[0].toLowerCase()) {
             case 'suggest':
                 type = 'Suggestion';
                 colour = 0x1faf0c;
+                channel = '195716879237644292';
+                list = '57ef25d2ba874bf651e96fc1';
                 break;
             case 'report':
                 type = 'Bug Report';
                 colour = 0xaf0c0c;
+                channel = '229137183234064384';
+                list = '57ef25d5d777b8b35192eff2';
                 break;
             default:
                 type = 'Feedback';
                 colour = 0xaaaf0c;
+                channel = '268859677326966784';
+                list = '5876a95f090e7f5189cd089b';
                 break;
         }
         if (words[0].toLowerCase() == 'suggest') type = 'Suggestion';
         else if (words[0].toLowerCase() == 'report') type = 'Bug Report';
-        await bu.send('195716879237644292', {
+        await bu.send(channel, {
             embed: {
                 title: type,
                 description: words.slice(1).join(' '),
@@ -78,9 +84,9 @@ e.execute = async function(msg, words) {
         })
         t.post('1/cards', {
             name: words.slice(1).join(' '),
-            desc: `Automated feedback added by blargbot - CASE ${i}.\n\nAuthor: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`,
+            desc: `Automated ${type} added by blargbot - CASE ${i}.\n\nAuthor: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`,
             due: null,
-            idList: '57ef25d2ba874bf651e96fc1',
+            idList: list,
             idLabels: '58025f0184e677fd36dbd756'
         }, (err) => {
             if (err) throw err;

@@ -40,7 +40,8 @@ e.execute = async function(params) {
     }
     if (args.length % 2 != 0) replaceString = cases[arg] || elseDo;
     else replaceString = cases[arg] || '';
-    replaceString = await bu.processTag(params.msg, params.words, replaceString, params.fallback, params.author, params.tagName);
+    params.content = replaceString;
+    replaceString = await bu.processTag(params);
     return {
         replaceString: replaceString,
         replaceContent: replaceContent

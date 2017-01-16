@@ -21,8 +21,8 @@ e.execute = async function(params) {
     }
     var replaceString = '';
     var replaceContent = false;
-    if (params.tagName) {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Can only set channel in CCommands`');
+    if (!params.ccommand) {
+        replaceString = await bu.tagProcessError(params, '`Can only set channel in CCommands`');
     } else {
         if (/([0-9]{17,23})/.test(params.args[1])) {
             let channelid = params.args[1].match(/([0-9]{17,23})/)[1];
@@ -36,13 +36,13 @@ e.execute = async function(params) {
                         });
                     } else params.msg.channel = channel;
                 } else {
-                    replaceString = await bu.tagProcessError(params, params.fallback, '`Channel must be in guild`');
+                    replaceString = await bu.tagProcessError(params, '`Channel must be in guild`');
                 }
             } else {
-                replaceString = await bu.tagProcessError(params, params.fallback, '`Channel not found`');
+                replaceString = await bu.tagProcessError(params, '`Channel not found`');
             }
         } else {
-            replaceString = await bu.tagProcessError(params, params.fallback, '`Invalid channel`');
+            replaceString = await bu.tagProcessError(params, '`Invalid channel`');
         }
     }
     params.fallback = params.args[1];

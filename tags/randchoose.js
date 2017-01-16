@@ -7,6 +7,7 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.array = true;
 e.name = `randchoose`;
 e.args = `&lt;choices...&gt;`;
 e.usage = `{randchoose;choices...}`;
@@ -21,10 +22,16 @@ e.execute = async function(params) {
     var replaceString = '';
     var replaceContent = false;
     if (args.length > 1) {
-        let seed = bu.getRandomInt(1, args.length - 1);
-        replaceString = await bu.processTagInner(params, seed);
+        let deserialized = await bu.getArray(params, args[1]);
+        if (deserialized && Array.isArray(deserialized.v)) {
+            let seed = bu.getRandomInt(1, deserialized.v.length);
+            replaceString = deserialized.v[seed];
+        } else {
+            let seed = bu.getRandomInt(1, args.length - 1);
+            replaceString = await bu.processTagInner(params, seed);
+        }
     } else {
-        replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

@@ -65,6 +65,11 @@ var typeRef = {
 };
 
 e.execute = async function(msg, words) {
+    const storedGuild = await bu.getGuild(msg.guild.id);
+    if (!storedGuild.settings.makelogs) {
+        bu.send(msg, `This guild has not opted into chatlogs. Please do \`b!settings makelogs true\` to allow me to start creating chatlogs.`);
+        return;
+    }
     if (words[0].toLowerCase() == 'help') {
         bu.send(msg, e.info);
         return;

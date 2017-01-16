@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
 e.init = () => {
-    e.category = bu.TagType.COMPLEX;
+    e.category = bu.TagType.ARRAY;
 };
 
 e.requireCtx = require;
@@ -26,7 +26,7 @@ e.execute = async function(params) {
         let array = params.args[1].split(params.args[2]);
         replaceString = bu.serializeTagArray(array);
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
     return {
         replaceString: replaceString,

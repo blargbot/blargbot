@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
 e.init = () => {
-    e.category = bu.TagType.COMPLEX;
+    e.category = bu.TagType.ARRAY;
 };
 
 e.requireCtx = require;
@@ -29,7 +29,7 @@ e.execute = async function(params) {
             replaceString = 'false';
         }
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

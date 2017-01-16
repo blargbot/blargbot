@@ -38,6 +38,12 @@ e.exampleOut = 'Let me do a tag for you. User#1111 has paid their respects. Tota
  * @return.fallback? String - if provided, will change the fallback
  */
 e.execute = async function(params) {
+    if (params.msg.iterations && params.msg.iterations > 200) {
+        bu.send(params.msg, 'Terminated recursive tag after 200 execs.');
+        throw ('Too Much Exec');
+    } else if (!params.msg.iterations) params.msg.iterations = 1;
+    else params.msg.iterations++;
+
     // processes any nested tags in the `args` array. if your tag uses advanced logic, you may wish to reimplement this
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
@@ -47,21 +53,18 @@ e.execute = async function(params) {
     if (params.args[1]) {
         let tag = await r.table('tag').get(params.args[1]).run();
         if (!tag) {
-            replaceString = await bu.tagProcessError(params, params.fallback, '`Tag not found`');
+            replaceString = await bu.tagProcessError(params, '`Tag not found`');
         } else {
             if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
                 let nsfwChan = await bu.isNsfwChannel(params.msg.channel.id);
                 if (!nsfwChan) {
-                    replaceString = await bu.tagProcessError(params, params.fallback, '`NSFW tag');
+                    replaceString = await bu.tagProcessError(params, '`NSFW tag`');
                     return {
                         replaceString: replaceString,
                         replaceContent: false
                     };
                 }
             }
-            r.table('tag').get(tag.name).update({
-                uses: tag.uses + 1
-            }).run();
             let tagArgs;
             if (params.args[2]) {
                 tagArgs = params.args[2];
@@ -69,11 +72,12 @@ e.execute = async function(params) {
                 tagArgs = '';
             }
             tagArgs = bu.splitInput(tagArgs);
-            replaceString = await bu.processTag(params.msg, tagArgs, tag.content, params.fallback, params.author, params.tagName);
-
+            params.words = tagArgs;
+            params.content = tag.content;
+            replaceString = await bu.processTag(params);
         }
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

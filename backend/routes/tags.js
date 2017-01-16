@@ -10,6 +10,18 @@ router.get('/', (req, res) => {
     res.render('tags');
 });
 
+router.get('/variables', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = '/tags' + req.path;
+    res.render('variables');
+});
+
+router.get('/arrays', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = '/tags' + req.path;
+    res.render('arrays');
+});
+
 
 router.get('/editor', (req, res) => {
     res.locals.user = req.user;
@@ -31,6 +43,8 @@ Documentation is available here: https://blargbot.xyz/tags/ }`;
 async function renderEditor(req, res) {
     if (!req.user) {
         res.locals.message = 'You are not logged in. In order to use the save, rename, and delete features, please log in! \nNote: this will delete any work done in the editor.';
+        res.redirect('/login');
+        return;
     }
     if (req.body && req.body.action) {
         logger.website('Tag editor:', req.body);

@@ -352,8 +352,8 @@ ${content}
                 bu.send(msg, `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`);
                 break;
             case 'top':
-                let topTags = await r.table('tag').orderBy(r.desc(r.row('uses'))).limit(5).run();
-                let returnMsg = '__Here are the top 5 tags:__\n';
+                let topTags = await r.table('tag').orderBy(r.desc(r.row('uses'))).limit(10).run();
+                let returnMsg = '__Here are the top 10 tags:__\n';
                 for (let i = 0; i < topTags.length; i++) {
                     let author = await r.table('user').get(topTags[i].author);
                     returnMsg += `**${i + 1}.** **${topTags[i].name}** (**${author.username}#${author.discriminator}**) - used **${topTags[i].uses} time${topTags[i].uses == 1 ? '' : 's'}**\n`;

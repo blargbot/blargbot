@@ -1,9 +1,8 @@
-
 <html lang="en">
 
 <head>
-    <meta charset="utf-8"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
     <!-- Latest compiled and minified CSS -->
     <!--
@@ -32,14 +31,12 @@
     <script src="../js/scripts.js"></script>
 
     <!-- Fonts -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- OpenGraph -->
     <title>Tags</title>
 
-    <link rel="icon"
-          type="image/png"
-          href="/img/blargbotmini.png">
+    <link rel="icon" type="image/png" href="/img/blargbotmini.png">
 
     <meta name="author" content="stupid cat">
 
@@ -56,52 +53,93 @@
 </head>
 
 <body class="blue-grey">
-{{> sidebar}}
+    {{> sidebar}}
 
-<a class="btn-floating btn-primary button-collapse btn-large waves-effects waves-light" data-activates="slide-out">
-    <i class="large material-icons">menu</i></a>
+    <a class="btn-floating btn-primary button-collapse btn-large waves-effects waves-light" data-activates="slide-out">
+        <i class="large material-icons">menu</i></a>
 
-<header class="page-header">
-    <h1 class="centre">tags</h1>
-</header>
-<main>
-<div class="section">
-
-    <div class="row">
-        <div class="col s12 m10 offset-m1 l8 offset-l2">
-            <div class="card blue-grey darken-2">
-                <div class="card-content">
-                    <span class="card-title">BBTag</span>
-                    <p class="flow-text">blargbot is equipped with a system of tags called BBTag,
-                        designed to mimic a programming language while still remaining simple.
-                        You can use this system as the building-blocks to create your own
-                        advanced command system, whether it be through public tags
-                        or guild-specific custom commands.</p>
-                    <p class="flow-text">Have a suggestion for a tag? I'm all ears! Drop me a
-                        suggestion using <code>b!suggest</code> or come by my guild to talk to me in person.
+    <header class="page-header">
+        <h1 class="centre">BBTag</h1>
+    </header>
+    <main>
+        <div class="section">
+            <div class='row'>
+                <div class='col s12 m10 offset-m1'>
+                    <p class="flow-text">blargbot is equipped with a system of tags called BBTag, designed to mimic a programming language while
+                        still remaining simple. You can use this system as the building-blocks to create your own advanced
+                        command system, whether it be through public tags or guild-specific custom commands.</p>
+                    <p class="flow-text">Have a suggestion for a tag? I'm all ears! Drop me a suggestion using <code>b!suggest</code> or come
+                        by my guild to talk to me in person.
                     </p>
-                    <p class="flow-text">There is also an online BBTag IDE (in beta) that you can use to see the
-                        contents of your custom command a little bit easier. Feel free to give it a try!</p>
-                </div>
-                <div class="card-action">
-                    <a href="/tags/editor">BBTag Editor</a>
                 </div>
             </div>
-        </div>
-    </div>
-    {{#tags}}
-    {{/tags}}
-    <h2 class="centre" id="examples">
-        Examples</h2>
-    <div class="row">
-        <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
-            <p class="centre">Tags can be combined, nested, and used together to create powerful commands. Here are some
-                examples of existing tags.</p>
-        </div>
-    </div>
+            <div class="row">
+                <div class="col s12 m10 offset-m1 l8 offset-l2">
+                    <div class="card blue-grey darken-2">
+                        <div class="card-content">
+                            <span class="card-title">Editor</span>
+
+                            <p class="flow-text">There is also an online BBTag IDE (in beta) that you can use to see the contents of your custom
+                                command a little bit easier. Feel free to give it a try!</p>
+                        </div>
+                        <div class="card-action">
+                            <a href="/tags/editor">BBTag Editor</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <h1 class='centre'>Features</h1>
+
+            <div class='row'>
+                <div class='col s12 m10 offset-m1 l8 offset-l2'>
+                    <div class='card blue-grey darken-2'>
+                        <div class='card-content'>
+                            <span class='card-title'>Variables</span>
+                            <p class='flow-text'>
+                                BBTag features four different types of variables, each with a different scope. These types are distinguished from each other
+                                with prefixes.
+                            </p>
+
+                        </div>
+                        <div class="card-action">
+                            <a href="/tags/variables">More Info</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col s12 m10 offset-m1 l8 offset-l2'>
+                    <div class='card blue-grey darken-2'>
+                        <div class='card-content'>
+                            <span class='card-title'>Arrays</span>
+                            <p class='flow-text'>
+                                BBTag has array implementation for more complex data stuctures.
+                            </p>
+
+                        </div>
+                        <div class="card-action">
+                            <a href="/tags/arrays">More Info</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{#tags}} {{/tags}}
+            <div class='row'>
+                <h1 class="centre" id="examples">
+                    Examples
+                </h1>
+            </div>
+
+            <div class="row">
+
+                <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
+                    <p class="centre">Tags can be combined, nested, and used together to create powerful commands. Here are some examples of
+                        existing tags.</p>
+                </div>
+            </div>
 
 
-    <style>
+            <style>
         .collection {
             border: none;
             outline: none
@@ -113,27 +151,23 @@
         }
     </style>
 
-    <div class="row">
-        <div class="col s12 m6 l4">
-            <div class="card blue-grey darken-2">
-                <div class="card-content">
-                    <span class="card-title">waifu</span>
-                    <ul class="collection z-depth-2 blue-grey darken-4">
-                        <li class="collection-item avatar blue-grey darken-4"><img
-                                src="/img/catavatar.png"
-                                alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">stupid cat#8160</span>
-                            <p>b!t uwaifu stupid cat</p>
-                        </li>
-                        <li class="collection-item avatar blue-grey darken-4"><img
-                                src="/img/blargicon.png"
-                                alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">blargbot#0128</span>
-                            <div class="chip">BOT</div>
-                            <p>❤ I'd rate stupid cat as 9.5/10 ❤</p>
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-content">
-                    <pre><code class="block">{if;
+<div class="row">
+    <div class="col s12 m10 offset-m1">
+        <div class="card blue-grey darken-2">
+            <div class="card-content">
+                <span class="card-title">waifu</span>
+                <ul class="collection z-depth-2 blue-grey darken-4">
+                    <li class="collection-item avatar blue-grey darken-4"><img src="/img/catavatar.png" alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">stupid cat#8160</span>
+<p>b!t uwaifu stupid cat</p>
+</li>
+<li class="collection-item avatar blue-grey darken-4"><img src="/img/blargicon.png" alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">blargbot#0128</span>
+<div class="chip">BOT</div>
+<p>❤ I'd rate stupid cat as 9.5/10 ❤</p>
+</li>
+</ul>
+</div>
+<div class="card-content">
+    <pre><code class="block">{if;
   >;
   {argslength};
   0;
@@ -171,32 +205,28 @@
   {get;waifumoji} I'd rate {usernick;{args}} as {math;/;{get;waifurating};10}/10 {get;waifumoji};
   Calculate the waifu rating of any user. Use waifu if you want to use any word.
 Usage: `uwaifu &lt;name&gt;`</code></pre>
-                </div>
+</div>
 
-            </div>
-        </div>
-        <div class="col s12 m6 l4">
-            <div class="card blue-grey darken-2">
-                <div class="card-content">
-                    <span class="card-title">sleepykitty</span>
-                    <ul class="collection z-depth-2 blue-grey darken-4">
-                        <li class="collection-item avatar blue-grey darken-4"><img
-                                src="/img/catavatar.png"
-                                alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">stupid cat#8160</span>
-                            <p>b!t sleepykitty</p>
-                        </li>
-                        <li class="collection-item avatar blue-grey darken-4"><img
-                                src="/img/blargicon.png"
-                                alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">blargbot#0128</span>
-                            <div class="chip">BOT</div>
-                            <p>Here's your sleepy kitty, stupid cat!</p>
-                            <a href="http://i.imgur.com/EDBtvW4.gif">http://i.imgur.com/EDBtvW4.gif</a>
-                            <img src="//i.imgur.com/EDBtvW4.gif" alt="A cat falling asleep">
-                        </li>
-                    </ul>
-                </div>
-                <div class="card-content">
-                    <code class="block">
+</div>
+</div>
+<div class="col s12 m10 offset-m1">
+    <div class="card blue-grey darken-2">
+        <div class="card-content">
+            <span class="card-title">sleepykitty</span>
+            <ul class="collection z-depth-2 blue-grey darken-4">
+                <li class="collection-item avatar blue-grey darken-4"><img src="/img/catavatar.png" alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">stupid cat#8160</span>
+<p>b!t sleepykitty</p>
+</li>
+<li class="collection-item avatar blue-grey darken-4"><img src="/img/blargicon.png" alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">blargbot#0128</span>
+<div class="chip">BOT</div>
+<p>Here's your sleepy kitty, stupid cat!</p>
+<p><a href="http://i.imgur.com/EDBtvW4.gif">http://i.imgur.com/EDBtvW4.gif</a></p>
+<img src="//i.imgur.com/EDBtvW4.gif" alt="A cat falling asleep">
+</li>
+</ul>
+</div>
+<div class="card-content">
+    <code class="block">
                         Here's your sleepy kitty, {username}!
                         {randchoose; http://i.imgur.com/zuhDRDT.gif ;http://i.imgur.com/0Jouxni.gif
                         ;http://i.imgur.com/xP4Twvo.gif ;http://i.imgur.com/EDBtvW4.gif
@@ -211,42 +241,38 @@ Usage: `uwaifu &lt;name&gt;`</code></pre>
                         ;http://i.imgur.com/IWa6N2B.gif ;http://i.imgur.com/YxYpOHc.gif
                         ;http://i.imgur.com/YwLHV2L.gif}
                     </code>
-                </div>
+</div>
 
-            </div>
-        </div>
+</div>
+</div>
 
-        <div class="col s12 m6 l4">
-            <div class="card blue-grey darken-2">
-                <div class="card-content">
-                    <span class="card-title">f</span>
+<div class="col s12 m10 offset-m1">
+    <div class="card blue-grey darken-2">
+        <div class="card-content">
+            <span class="card-title">f</span>
 
-                    <ul class="collection z-depth-2 blue-grey darken-4">
-                        <li class="collection-item avatar blue-grey darken-4"><img
-                                src="/img/catavatar.png"
-                                alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">stupid cat#8160</span>
-                            <p>b!t f</p>
-                        </li>
-                        <li class="collection-item avatar blue-grey darken-4"><img
-                                src="/img/blargicon.png"
-                                alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">blargbot#0128</span>
-                            <div class="chip">BOT</div>
-                            <p><strong>stupid cat</strong> has paid their respects. Total respects given:
-                                <strong>13</strong></p>
-                        </li>
-                    </ul>
+            <ul class="collection z-depth-2 blue-grey darken-4">
+                <li class="collection-item avatar blue-grey darken-4"><img src="/img/catavatar.png" alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">stupid cat#8160</span>
+<p>b!t f</p>
+</li>
+<li class="collection-item avatar blue-grey darken-4"><img src="/img/blargicon.png" alt="" class="circle backavatar"><span class="title" style="padding-right: 5px;">blargbot#0128</span>
+<div class="chip">BOT</div>
+<p><strong>stupid cat</strong> has paid their respects. Total respects given:
+    <strong>13</strong></p>
+</li>
+</ul>
 
-                </div>
-                <div class="card-content">
-                    <code class="block">
+</div>
+<div class="card-content">
+    <code class="block">
                         {fallback;0}{set;respects;{math;+;{get;respects};1}} **{usernick}** has paid their respects.
                         Total respects given: **{get;respects}**
                     </code>
-                </div>
+</div>
 
-            </div>
-        </div>
-    </div>
+</div>
+</div>
+</div>
 
 </div>
 

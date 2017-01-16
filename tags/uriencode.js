@@ -23,7 +23,7 @@ e.execute = async function(params) {
     if (params.args[1]) {
         replaceString = encodeURIComponent(params.args[1]);
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

@@ -18,7 +18,7 @@ e.execute = async function(msg, words, text) {
         if (!users[0] || !users[1]) {
             return;
         }
-        users = bu.shuffle(users);
+        bu.shuffle(users);
         let firstPart = users[0].username.substring(0, users[0].username.length / 2);
         let lastPart = users[1].username.substring(users[1].username.length / 2);
         bu.send(msg, `Your shipname is **${firstPart}${lastPart}**!`);

@@ -14,6 +14,7 @@ e.hidden = false;
 e.usage = 'emoji <emoji> [size]';
 e.alias = ['e'];
 e.info = 'Gives you a large version of an emoji. If size is specified, makes the image that size.';
+e.longinfo = '<p>Gives you a large version of an emoji. If size is specified, makes the image that size.</p>';
 
 e.execute = async function(msg, words) {
     if (words[1]) {

@@ -7,6 +7,7 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.array = true;
 e.name = `shuffle`;
 e.args = `[array]`;
 e.usage = `{shuffle[;array]}`;
@@ -27,15 +28,15 @@ e.execute = async function(params) {
         let deserialized = bu.deserializeTagArray(args[1]);
 
         if (deserialized && Array.isArray(deserialized.v)) {
-            deserialized.v = bu.shuffle(deserialized.v);
+            bu.shuffle(deserialized.v);
             if (deserialized.n) {
                 await bu.setArray(deserialized, params);
             } else replaceString = bu.serializeTagArray(deserialized.v)
         } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not an array`');
+        replaceString = await bu.tagProcessError(params, '`Not an array`');
         }
     } else
-        words = bu.shuffle(words);
+        bu.shuffle(words);
     return {
         replaceString: replaceString,
         replaceContent: replaceContent

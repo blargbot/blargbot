@@ -25,7 +25,11 @@ bu.specialCharDiv = '\uE002';
 bu.specialCharEnd = '\uE003';
 bu.tagDiv = '\uE004';
 
+// Caches
 bu.guildCache = {};
+bu.userCache = {};
+bu.tagCache = {};
+bu.globalVars = {};
 
 // A list of command modules
 bu.commands = {};
@@ -57,12 +61,18 @@ bu.tagList = {};
 bu.TagType = {
     SIMPLE: 1,
     COMPLEX: 2,
+    ARRAY: 3,
     properties: {
         1: {
             name: 'Simple'
         },
         2: {
-            name: 'Complex'
+            name: 'General',
+            desc: 'General purpose functions.'
+        },
+        3: {
+            name: 'Array',
+            desc: 'Functions designed specifically for arrays.'
         }
     }
 };
@@ -223,10 +233,15 @@ bu.send = async function(channel, message, file, embed) {
     }
     if (!content.content) content.content = '';
     if (embed) content.embed = embed;
-    content.content = emoji.emojify(content.content);
+    content.content = emoji.emojify(content.content).trim();
 
     if (content.content.length > 2000) {
+        if (!file) file = {
+            file: content.content,
+            name: 'output.txt'
+        };
         content.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+
     }
     try {
         return await bot.createMessage(channelid, content, file);
@@ -814,15 +829,43 @@ function setCharAt(str, index, chr) {
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
-bu.serializeTagArray = function(array, varName, authorVar) {
-    if (!varName && !authorVar)
+bu.TagVariableType = {
+    LOCAL: 1,
+    AUTHOR: 2,
+    GUILD: 3,
+    GLOBAL: 4,
+    TAGGUILD: 5,
+    GUILDLOCAL: 6,
+    properties: {
+        1: {
+            table: 'tag',
+        },
+        2: {
+            table: 'user',
+        },
+        3: {
+            table: 'guild',
+        },
+        4: {
+            table: 'vars',
+        },
+        5: {
+            table: 'tag',
+        },
+        6: {
+            table: 'guild'
+        }
+    }
+};
+
+bu.serializeTagArray = function(array, varName) {
+    if (!varName)
         return JSON.stringify(array);
 
     let obj = {
         v: array,
         n: varName
     };
-    if (authorVar) obj.a = true;
     return JSON.stringify(obj);
 }
 
@@ -838,53 +881,134 @@ bu.deserializeTagArray = function(value) {
     } catch (err) {
         return null;
     }
+};
+
+bu.getArray = async function(params, arrName) {
+    let obj = bu.deserializeTagArray(arrName);
+    if (!obj) {
+        try {
+            let arr = await bu.tags['get'].getVar(params, arrName);
+            if (arr) {
+                obj = bu.deserializeTagArray(bu.serializeTagArray(arr, arrName));
+            }
+        } catch (err) {
+            return undefined;
+        }
+    }
+    return obj;
 }
 
 bu.setArray = async function(deserialized, params) {
-    let table, name;
-    if (deserialized.a) {
-        table = 'user';
-        name = params.author;
-    } else {
-        if (params.tagName) {
-            table = 'tag';
-            name = params.tagName;
-        } else {
-            table = 'guild';
-            name = params.msg.guild.id;
-        }
-    }
-    await bu.setVariable(name, deserialized.n, deserialized.v, table)
-}
-
-bu.setVariable = async function(name, key, value, table) {
-    let vars = {};
-    vars[key] = value;
-    await r.table(table).get(name).update({
-        vars
-    }).run();
-}
-
-bu.getVariables = async function(name, key, table) {
-    let storedThing;
-    if (table == 'guild') {
-        storedThing = await bu.getGuild(name);
-    } else {
-        storedThing = await r.table(table).get(name).run();
-    }
-    if (!storedThing.vars) storedThing.vars = {};
-    return storedThing.vars[key];
-}
-
-bu.processTagInner = async function(params, i) {
-    return await bu.processTag(params.msg, params.words, params.args[i], params.fallback, params.author, params.tagName);
+    await bu.tags['set'].setVar(params, deserialized.n, deserialized.v);
 };
 
-bu.processTag = async function(msg, words, contents, fallback, author, tagName) {
-    let duration = moment.duration(moment() - msg.timestamp);
-    if (duration.asMilliseconds() >= 30000) {
-        return 'Terminated recursive tag after 30 seconds.';
+bu.setVariable = async function(name, key, value, type, guildId) {
+    let vars = {};
+    let updateObj = {};
+    vars[key] = value;
+    let storedThing;
+
+    switch (type) {
+        case bu.TagVariableType.GUILDLOCAL:
+            updateObj.ccommands = {};
+            updateObj.ccommands[name] = {};
+            updateObj.ccommands[name].vars = vars;
+            await r.table('guild').get(guildId).update(updateObj);
+            storedThing = await bu.getGuild(guildId);
+            if (!storedThing.ccommands) storedThing.ccommands = {};
+            if (!storedThing.ccommands[name]) storedThing.ccommands[name] = {};
+            if (!storedThing.ccommands[name].vars) storedThing.ccommands[name].vars = {};
+            storedThing.ccommands[name].vars[key] = value;
+            break;
+        case bu.TagVariableType.TAGGUILD:
+            updateObj.tagVars = vars;
+            await r.table('guild').get(name).update(updateObj);
+            storedThing = await bu.getGuild(name);
+            if (!storedThing.tagVars) storedThing.tagVars = {};
+            storedThing.tagVars[key] = value;
+            break;
+        case bu.TagVariableType.GLOBAL:
+            let values = vars;
+            await r.table('vars').update({
+                values
+            });
+            bu.globalVars[key] = value;
+            break;
+        default:
+            updateObj.vars = vars;
+            await r.table(bu.TagVariableType.properties[type].table).get(name).update(updateObj).run();
+            switch (type) {
+                case bu.TagVariableType.GUILD:
+                    storedThing = await bu.getGuild(name);
+                    break;
+                case bu.TagVariableType.LOCAL:
+                    storedThing = await bu.getCachedTag(name);
+                    break;
+                case bu.TagVariableType.AUTHOR:
+                    storedThing = await bu.getCachedUser(name);
+                    break;
+            }
+            if (!storedThing.vars) storedThing.vars = {};
+            storedThing.vars[key] = value;
+            break;
     }
+};
+
+bu.getVariable = async function(name, key, type, guildId) {
+    let storedThing;
+    let returnVar;
+    switch (type) {
+        case bu.TagVariableType.GUILD:
+            storedThing = await bu.getGuild(name);
+            if (!storedThing.vars) storedThing.vars = {};
+            returnVar = storedThing.vars[key];
+            break;
+        case bu.TagVariableType.GUILDLOCAL:
+            storedThing = await bu.getGuild(guildId);
+
+            if (!storedThing.ccommands[name].vars) storedThing.ccommands[name].vars = {};
+            returnVar = storedThing.ccommands[name].vars[key];
+            break;
+        case bu.TagVariableType.TAGGUILD:
+            storedThing = await bu.getGuild(name);
+            if (!storedThing.tagVars) storedThing.tagVars = {};
+            returnVar = storedThing.tagVars[key];
+            break;
+        case bu.TagVariableType.AUTHOR:
+            storedThing = await bu.getCachedUser(name);
+            if (!storedThing.vars) storedThing.vars = {};
+            returnVar = storedThing.vars[key];
+            break;
+        case bu.TagVariableType.LOCAL:
+            storedThing = await bu.getCachedTag(name);
+            if (!storedThing.vars) storedThing.vars = {};
+            returnVar = storedThing.vars[key];
+            break;
+        case bu.TagVariableType.GLOBAL:
+            returnVar = await bu.getCachedGlobal(key);
+            break;
+        default:
+            storedThing = await r.table(bu.TagVariableType.properties[type].table).get(name);
+            if (!storedThing.vars)
+                storedThing.vars = {};
+            returnVar = storedThing.vars[key];
+            break;
+    }
+    return returnVar;
+};
+
+bu.processTagInner = async function(params, i) {
+    params.content = params.args[i];
+    return await bu.processTag(params);
+};
+
+bu.processTag = async function(params) {
+    let msg = params.msg,
+        words = params.words,
+        contents = params.content || params.contents || '',
+        fallback = params.fallback,
+        author = params.author,
+        tagName = params.tagName;
 
     let level = 0;
     let lastIndex = 0;
@@ -928,7 +1052,8 @@ bu.processTag = async function(msg, words, contents, fallback, author, tagName) 
                 fallback: fallback,
                 words: words,
                 author: author,
-                tagName: tagName
+                tagName: tagName,
+                ccommand: params.ccommand
             });
         } else {
             replaceObj.replaceString = await bu.tagProcessError({
@@ -937,13 +1062,18 @@ bu.processTag = async function(msg, words, contents, fallback, author, tagName) 
                 fallback: fallback,
                 words: words,
                 author: author,
-                tagName: tagName
+                tagName: tagName,
+                ccommand: params.ccommand
             }, fallback, '`Tag doesn\'t exist`');
         }
+
         if (replaceObj.fallback !== undefined) {
             fallback = replaceObj.fallback;
         }
-        if (replaceObj == '') {
+        if (replaceObj.terminate) {
+            contents = contents.substring(0, coords[i][0]);
+            break;
+        } else if (replaceObj == '') {
             return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
         } else {
             replaceString = replaceObj.replaceString;
@@ -1049,7 +1179,8 @@ bu.splitInput = (content, noTrim) => {
         words = input;
     }
     for (let i in words) {
-        words[i] = words[i].replace(/\\"/g, '"').replace(/^[\s]+/g, '');
+        words[i] = words[i].replace(/\\"/g, '"');
+        if (!noTrim) words[i] = words[i].replace(/^ +/g, '');
     }
     logger.debug(words);
     return words;
@@ -1159,6 +1290,45 @@ bu.isBlacklistedChannel = async function(channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
+bu.getCachedGlobal = async function(varname) {
+    let storedVar;
+    if (bu.globalVars[varname]) {
+        storedVar = bu.globalVars[varname];
+    } else {
+        let globalVars = await r.table('vars').get('tagVars');
+        if (!globalVars) {
+            await r.table('vars').insert({
+                varname: 'tagVars',
+                values: {}
+            });
+            bu.globalVars = {};
+        } else bu.globalVars = globalVars.values;
+        storedVar = bu.globalVars[varname];
+    }
+    return storedVar;
+};
+
+bu.getCachedTag = async function(tagname) {
+    let storedTag;
+    if (bu.tagCache[tagname]) {
+        storedTag = bu.tagCache[tagname];
+    } else {
+        storedTag = await r.table('tag').get(tagname);
+        bu.tagCache[tagname] = storedTag;
+    }
+    return storedTag;
+};
+
+bu.getCachedUser = async function(userid) {
+    let storedUser;
+    if (bu.userCache[userid]) {
+        storedUser = bu.userCache[userid];
+    } else {
+        storedUser = await r.table('user').get(userid);
+        bu.userCache[userid] = storedUser;
+    }
+    return storedUser;
+};
 
 bu.getGuild = async function(guildid) {
     let storedGuild;
@@ -1278,15 +1448,8 @@ bu.shuffle = (array) => {
 
         // Decrease counter by 1
         counter--;
-
-        // And swap the last element with it
-        let temp = array[counter];
-        array[counter] = array[index];
-        array[index] = temp;
     }
-
-    return array;
-};
+}
 
 bu.getTagUser = async function(msg, args, index) {
     var obtainedUser;
@@ -1310,10 +1473,13 @@ bu.tagGetFloat = (arg) => {
     return parseFloat(arg) ? parseFloat(arg) : NaN;
 };
 
-bu.tagProcessError = async function(params, fallback, errormessage) {
+bu.tagProcessError = async function(params, errormessage) {
+    let fallback = params.fallback;
     let returnMessage = '';
+    params.content = fallback;
+
     if (fallback === undefined) returnMessage = errormessage;
-    else returnMessage = await bu.processTag(params.msg, params.words, params.fallback, params.fallback, params.author, params.tagName);
+    else returnMessage = await bu.processTag(params);
     return returnMessage;
 };
 
@@ -1440,10 +1606,10 @@ bu.parseDuration = function(text) {
  *     {flag: 'u', word: 'user'}
  * ];
  * */
-bu.parseInput = function(map, text) {
+bu.parseInput = function(map, text, noTrim) {
     let words;
-    if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '));
-    else words = bu.splitInput(text);
+    if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
+    else words = bu.splitInput(text, noTrim);
     let output = {
         undefined: []
     };
@@ -1586,5 +1752,32 @@ bu.getAuthor = function(user) {
         url: `https://blargbot.xyz/user/${user.id}`,
         icon: user.avatarURL
     };
-}
+};
+
+bu.isUserStaff = async function(userId, guildId) {
+    let guild = bot.guilds.get(guildId);
+    if (!guild) return false;
+    let member = guild.members.get(userId);
+    if (!member) return false;
+
+    if (guild.ownerID == userId) return true;
+    if (member.permission.has('administrator')) return true;
+
+    let storedGuild = await bu.getGuild(guildId);
+    if (storedGuild && storedGuild.settings && storedGuild.settings.permoverride) {
+        let allow = storedGuild.settings.staffperms || bu.defaultStaff;
+        if (bu.comparePerms(bot.guilds.get(guildId).members.get(userId), allow)) {
+            return true;
+        }
+    }
+    return false;
+};
+
+bu.makeSnowflake = function() {
+    return (moment() - 1420070400000) * 4194304;
+};
+
+bu.unmakeSnowflake = function(snowflake) {
+    return (snowflake / 4194304) + 1420070400000;
+};
 

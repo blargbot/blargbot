@@ -7,6 +7,8 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.array = true;
+
 e.name = `set`;
 e.args = `&lt;name&gt; &lt;value&gt; [value]...`;
 e.usage = `{set;name;value[;value]...}`;
@@ -23,31 +25,23 @@ e.execute = async function(params) {
         tagName = params.tagName;
     var replaceString = '';
     var replaceContent = false;
-    let tagVars;
-    let isCcommand = !tagName;
-    if (isCcommand) {
-        tagVars = bu.guildCache[params.msg.guild.id].vars || {};
-    } else {
-        let storedTag = await r.table('tag').get(tagName).run();
-        if (!storedTag.hasOwnProperty('vars')) storedTag.vars = {};
-        tagVars = storedTag.vars;
-    }
+    let value;
 
     if (args.length == 3) {
         let deserialized = bu.deserializeTagArray(args[2]);
         if (deserialized && deserialized.v) {
-            tagVars[args[1]] = deserialized.v;
-        } else tagVars[args[1]] = args[2];
+            value = deserialized.v;
+        } else value = args[2];
     } else if (args.length > 3) {
-        tagVars[args[1]] = args.slice(2);
+        value = args.slice(2);
     } else if (args.length == 2) {
-        tagVars[args[1]] = null;
+        value = null;
     } else {
-        replaceString = await bu.tagProcessError(params, fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
-
-    if (isCcommand) await saveGuild(params.msg.guild.id, tagVars);
-    else await saveTag(tagName, tagVars);
+    if (value !== undefined) {
+        await e.setVar(params, args[1], value);
+    }
 
     return {
         replaceString: replaceString,
@@ -55,14 +49,33 @@ e.execute = async function(params) {
     };
 };
 
-async function saveGuild(guildId, vars) {
-    await r.table('guild').get(guildId).update({
-        vars: vars
-    }).run();
-}
-
-async function saveTag(tagName, vars) {
-    await r.table('tag').get(tagName).update({
-        vars: vars
-    }).run();
-}
+e.setVar = async function(params, varName, value) {
+    let vars = {};
+    let subVarName = varName.substring(1);
+    let prefix = varName.substring(0, 1);
+    let type;
+    switch (prefix) {
+        case '_': // local to guild
+            if (params.ccommand) { //custom command
+                await bu.setVariable(params.msg.guild.id, subVarName, value, bu.TagVariableType.GUILD);
+            } else { //guild variable in tag
+                await bu.setVariable(params.msg.guild.id, subVarName, value, bu.TagVariableType.TAGGUILD);
+            }
+            break;
+        case '@': // local to author
+            if (params.author)
+                await bu.setVariable(params.author, subVarName, value, bu.TagVariableType.AUTHOR);
+            else return await bu.tagProcessError(params, '`No author found`');
+            break;
+        case '*': // global
+            await bu.setVariable(undefined, subVarName, value, bu.TagVariableType.GLOBAL);
+            break;
+        default: // local to tag
+            if (params.ccommand) { // custom command
+                await bu.setVariable(params.tagName, varName, value, bu.TagVariableType.GUILDLOCAL, params.msg.guild.id);
+            } else { // normal tag
+                await bu.setVariable(params.tagName, varName, value, bu.TagVariableType.LOCAL);
+            }
+            break;
+    }
+};

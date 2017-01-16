@@ -7,7 +7,7 @@ var util = require('util');
 const Jimp = require('jimp');
 
 e.init = () => {
-    e.category = bu.CommandType.GENERAL;
+    e.category = bu.CommandType.IMAGE;
 };
 
 e.requireCtx = require;
@@ -24,25 +24,15 @@ e.execute = async function(msg, words) {
     shitText = await bu.filterMentions(shitText);
     logger.debug(util.inspect(words));
     bot.sendChannelTyping(msg.channel.id);
-    try {
-        let buf = await bu.createCaption({
-            text: shitText,
-            fill: '#393b3e',
-            font: 'SFToontime.ttf',
-            size: '160x68'
-        })
-
-        let text = await Jimp.read(buf);
-        let img = await Jimp.read(path.join(__dirname, '..', 'img', `thesearch.png`));
-        img.composite(text, 60, 331);
-
-        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
-            bu.send(msg, undefined, {
-                file: buffer,
-                name: 'thesearch.png'
-            });
-        })
-    } catch (err) {
-        logger.error(err);
-    }
+    let code = bu.genEventCode();
+    let buffer = await bu.awaitEvent({
+        cmd: 'img',
+        command: 'thesearch',
+        code: code,
+        text: shitText,
+    });    
+    bu.send(msg, undefined, {
+        file: buffer,
+        name: 'TheSearch.png'
+    });
 };

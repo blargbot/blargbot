@@ -7,6 +7,7 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.array = true;
 e.name = `length`;
 e.args = `&lt;text&gt;`;
 e.usage = `{length;text}`;
@@ -29,7 +30,7 @@ e.execute = async function(params) {
             replaceString = args1.length;
         }
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 
     return {

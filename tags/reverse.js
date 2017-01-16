@@ -7,6 +7,8 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.array = true;
+
 e.name = `reverse`;
 e.args = `&lt;text&gt;`;
 e.usage = `{reverse;text}`;
@@ -34,7 +36,7 @@ e.execute = async function(params) {
             replaceString = args[1].split('').reverse().join('');
         }
     } else {
-        replaceString = await bu.tagProcessError(params, params.fallback, '`Not enough arguments`');
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
     return {
         replaceString: replaceString,
