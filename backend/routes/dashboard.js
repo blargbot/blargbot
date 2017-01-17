@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const hbs = require('hbs');
 
 router.get('/', async function(req, res) {
     if (!req.user) {
@@ -12,7 +13,14 @@ router.get('/', async function(req, res) {
     if (req.user) {
         res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
         res.locals.sessionId = req.sessionID;
-
+        let settings = Object.keys(bu.settings).map(k => {
+            let returnObj = bu.settings[k];
+            returnObj.key = k;
+            return returnObj;
+        });
+      //  logger.debug(settings);
+        res.locals.gsettings = new hbs.handlebars.SafeString(JSON.stringify(settings).replace(/`/g, '\\`'));
+        logger.debug(res.locals.gsettings);
         let guilds = req.user.guilds;
         let firstGuildCount = guilds.length;
 

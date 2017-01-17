@@ -56,7 +56,17 @@
 </head>
 
 <body class="blue-grey">
+    <div id="modal1" class="modal blue-grey darken-3">
+        <div id='modal-content' class="modal-content">
+        </div>
+        <div class="modal-footer blue-grey darken-4 ">
+            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat white-text ">Close</a>
+        </div>
+    </div>
+
     {{> sidebar}}
+
+
 
     <a class="btn-floating btn-primary button-collapse btn-large waves-effects waves-light" data-activates="slide-out">
         <i class="large material-icons">menu</i></a>
@@ -67,6 +77,7 @@
         <h1 class="centre">dashboard</h1>
     </header>
     <main>
+
         <div class="section">
             <div class="row">
                 <div class="col s12 m10 offset-m1">
@@ -76,47 +87,19 @@
                         <div id='workspace'>
                             {{> displayGuilds}}
                         </div>
-                        <script>
-                            var sid = '{{sessionId}}';
-                            var wss = new WebSocket('{{url}}');
-                            var workspace = document.getElementById('workspace')
-                            var index = workspace.innerHTML;
 
-                            wss.onmessage = function (event) {
-                                let data = JSON.parse(event.data);
-                                console.dir(data);
-                                if (data.code == 200) {
-                                    switch (data.data.type) {
-                                        case 'displayGuild':
+                        {{else}}
+                        <span class='card-content'>You need to be logged in to use this!</span> {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                                            workspace.innerHTML = `<p>${data.data.guild.name} Settings</p>`;
-                                            workspace.innerHTML += `<ul class='collection blue-grey darken-3'>`
-                                            for (var i = 0; i < Object.keys(data.data.guild.settings).length; i++) {
-                                                let key = Object.keys(data.data.guild.settings)[i];
-                                                workspace.innerHTML += `<li class='collection-item blue-grey darken-3'>${key} - ${data.data.guild.settings[key]}</li>`;
-                                            }
-                                            workspace.innerHTML += `</ul>`;
-                                            break;
-                                    }
-                                }
-                            }
-
-                            function sendData(type, data) {
-                                wss.send(JSON.stringify({ type, sid, data }));
-                            }
-                        </script>
-{{else}}
-<span class='card-content'>You need to be logged in to use this!</span> {{/if}}
-</div>
-</div>
-</div>
-</div>
-
-</main>
-<!-- Menu Toggle Script -->
-<script>
-    init();
-</script>
+    </main>
+    <!-- Menu Toggle Script -->
+    <script>
+        init();
+    </script>
 <footer class="page-footer blue-grey darken-2">
     <div class="section">
         <div class="rows">
@@ -130,5 +113,61 @@
 </footer>
 
 </body>
+<script>
+    $(document).ready(function () {
+        $('.modal-trigger').leanModal();
+    });
+
+    var sid = '{{sessionId}}';
+    var wss = new WebSocket('{{url}}');
+    var workspace = document.getElementById('workspace')
+    var index = workspace.innerHTML;
+    var settings = JSON.parse(`{{gsettings}}`);
+
+    wss.onmessage = function (event) {
+        let data = JSON.parse(event.data);
+        console.dir(data);
+        if (data.code == 200) {
+            switch (data.data.type) {
+                case 'displayGuild':
+                    var output = `<form class='col s12 blue-grey darken-2'>`;
+
+                    for (var i = 0; i < settings.length; i++) {
+                        output += `<div class='row'><div class='col s1'>
+<button data-target="modal1" class="btn-floating modal-trigger")' onclick='setModal("${settings[i].desc.replace(/"/g, '\\"').replace(/'/g, '\\')}")'><i class='material-icons'>help_outline</i></button>
+                            </div>
+        <div class='input-field col s11'>`;
+                        var value = data.data.guild.settings[settings[i].key];
+                        switch (settings[i].type) {
+                            case 'int':
+                                break;
+                            case 'bool':
+                                break;
+                            case 'string':
+                            default:
+                                output += `<input value="${value ? value.replace(/"/g, '&quot;') : ''}" id='${settings[i].key}' type='text'>
+            <label for='${settings[i].key}'>${settings[i].name}</label>`;
+                                break;
+                        }
+
+                        output += `</div></div>`;
+                    }
+                    workspace.innerHTML = output;
+                    $('.modal-trigger').leanModal();
+                    Materialize.updateTextFields();
+
+                    break;
+            }
+        }
+    }
+
+    function setModal(text) {
+        document.getElementById('modal-content').innerHTML = text;
+    }
+
+    function sendData(type, data) {
+        wss.send(JSON.stringify({ type, sid, data }));
+    }
+</script>
 
 </html>
