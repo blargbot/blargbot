@@ -1438,17 +1438,19 @@ bu.isUserStaff = async function(userId, guildId) {
 };
 
 bu.shuffle = (array) => {
-    let counter = array.length;
+    let i = 0,
+        j = 0,
+        temp = null;
 
-    // While there are elements in the array
-    while (counter > 0) {
-        // Pick a random index
-        let index = Math.floor(Math.random() * counter);
-
-        // Decrease counter by 1
-        counter--;
+    for (i = array.length - 1; i > 0; i -= 1) {
+        j = Math.floor(Math.random() * (i + 1));
+        temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
     }
-}
+
+    return array;
+};
 
 bu.getTagUser = async function(msg, args, index) {
     var obtainedUser;
