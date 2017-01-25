@@ -11,10 +11,8 @@ e.name = `usernick`;
 e.args = `[user] [quiet]`;
 e.usage = `{usernick[;user[;quiet]]}`;
 e.desc = `Returns the user's nickname. If it doesn't exist, returns their username instead. If
-                                <code>name</code>
-                                is specified, gets that user instead. If <code>quiet</code> is
-                                specified, if a user can't be found it will simply return the <code>name</code>
-                            `;
+<code>name</code> is specified, gets that user instead. If <code>quiet</code> is
+specified, if a user can't be found it will simply return the <code>name</code>`;
 e.exampleIn = `Your nick is {usernick}`;
 e.exampleOut = `Your nick is cat`;
 
@@ -40,6 +38,7 @@ e.execute = async function(params) {
         replaceString = args[1];
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

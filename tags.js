@@ -90,7 +90,8 @@ e.processTag = async function(msg, contents, command, tagName, author, isCcomman
             tagName,
             ccommand: isCcommand
         });
-        contents = bu.processSpecial(contents, true);
+        logger.verbose(contents);
+        contents = bu.processSpecial(contents.contents, true);
     } catch (err) {
         logger.error(err);
     }

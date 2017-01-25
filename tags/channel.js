@@ -14,7 +14,6 @@ e.desc = `Sends the output to a specific channel. Only works in custom commands.
 e.exampleIn = `{channel;#channel}Hello!`;
 e.exampleOut = `In #channel: Hello!`;
 
-
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
@@ -48,6 +47,7 @@ e.execute = async function(params) {
     params.fallback = params.args[1];
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

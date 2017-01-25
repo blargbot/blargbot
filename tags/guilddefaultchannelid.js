@@ -14,7 +14,6 @@ e.desc = `Returns the guild's default channel's id`;
 e.exampleIn = `Default channel is {guilddefaultchannelid}`;
 e.exampleOut = `Default channel is 1234567890123455`;
 
-
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
@@ -25,6 +24,7 @@ e.execute = async function(params) {
 
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

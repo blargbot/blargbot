@@ -28,6 +28,7 @@ e.execute = async function(params) {
     }
     replaceString = args[1].replace(/^[\s\n]+|[\s\b]+$/g, '');
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

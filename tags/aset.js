@@ -29,6 +29,7 @@ e.execute = async function(params) {
     let storedAuthor = await r.table('user').get(author).run();
     if (!storedAuthor) {
         return {
+            terminate: params.terminate,
             replaceString: await bu.tagProcessError(params, '`Author not found`'),
             replaceContent
         }
@@ -52,6 +53,7 @@ e.execute = async function(params) {
     await saveUser(author, authorVars);
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

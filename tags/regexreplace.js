@@ -10,12 +10,9 @@ e.name = `regexreplace`;
 e.args = `[toreplace] &lt;regex&gt; &lt;replacewith&gt;`;
 e.usage = `{regexreplace[;textToReplace];regex;replaceWith}`;
 e.desc = `Replaces the <code>regex</code> phrase with <code>replacewith</code>. If
-                                <code>toreplace</code>
-                                is
-                                specified, the tag is replaced with the new <code>toreplace</code>. If not, it replaces
-                                the
-                                message.
-                            `;
+<code>toreplace</code> is specified, the tag is replaced with the new <code>toreplace</code>. 
+If not, it replaces the message.`;
+
 e.exampleIn = `I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e/gi;n}`;
 e.exampleOut = `I likn ta cansumn chnnsn.`;
 

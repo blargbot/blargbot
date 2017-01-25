@@ -11,9 +11,7 @@ e.name = `userid`;
 e.args = `[user] [quiet]`;
 e.usage = `{userid[;user[;quiet]]}`;
 e.desc = `Returns the user's ID. If <code>name</code> is specified, gets that user instead. If
-                                <code>quiet</code>
-                                is
-                                specified, if a user can't be found it will simply return the <code>name</code>`;
+<code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
 e.exampleIn = `Your id is {userid}`;
 e.exampleOut = `Your id is 123456789123456`;
 
@@ -39,6 +37,7 @@ e.execute = async function(params) {
 
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

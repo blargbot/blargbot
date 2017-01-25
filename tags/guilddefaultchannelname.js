@@ -14,7 +14,6 @@ e.desc = `Returns the guild's default channel's name`;
 e.exampleIn = `Default channel is {guilddefaultchannelname}`;
 e.exampleOut = `Default channel is defaultchannel`;
 
-
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
@@ -23,8 +22,8 @@ e.execute = async function(params) {
     var replaceString = msg.channel.guild.defaultChannel.name;
     var replaceContent = false;
 
-
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

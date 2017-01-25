@@ -15,13 +15,14 @@ e.exampleIn = `This is a bracket! {lb}`;
 e.exampleOut = `This is a bracket! {`;
 
 
-e.execute = async function() {
+e.execute = async function(params) {
 
     var replaceString = bu.specialCharBegin + 'LB' + bu.specialCharEnd;
     var replaceContent = false;
 
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

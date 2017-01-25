@@ -14,7 +14,6 @@ e.desc = `Returns the icon of the current guild`;
 e.exampleIn = `The guild's icon is {guildicon}`;
 e.exampleOut = `The guild's icon is (icon url)`;
 
-
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
@@ -26,6 +25,7 @@ e.execute = async function(params) {
 
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

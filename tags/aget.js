@@ -25,11 +25,13 @@ e.execute = async function(params) {
     let storedAuthor = await r.table('user').get(params.author);
     if (!storedAuthor) {
         return {
+            terminate: params.terminate,
             replaceString: await bu.tagProcessError(params, '`Author not found`'),
             replaceContent
         }
     }
-    let args = params.args, fallback = params.fallback;
+    let args = params.args,
+        fallback = params.fallback;
     let authorVars = storedAuthor.vars || {};
     if (args.length == 2) {
         let result = authorVars[args[1]];
@@ -55,6 +57,7 @@ e.execute = async function(params) {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

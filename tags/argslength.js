@@ -29,6 +29,7 @@ e.execute = async function(params) {
     replaceString = length;
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

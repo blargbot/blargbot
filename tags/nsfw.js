@@ -15,13 +15,14 @@ e.exampleIn = `This command is not safe! {nsfw}`;
 e.exampleOut = `This command is not safe!`;
 
 
-e.execute = async function() {
+e.execute = async function(params) {
 
     var replaceString = '';
     var replaceContent = false;
 
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

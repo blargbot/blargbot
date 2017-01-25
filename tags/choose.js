@@ -10,12 +10,9 @@ e.isTag = true;
 e.name = `choose`;
 e.args = `&lt;choice&gt; &lt;choices...&gt;`;
 e.usage = `{choose;choice;choices...}`;
-e.desc = `Chooses from the given options, where <code>choice</code> is the index of the option
-                                selected
-                            `;
+e.desc = `Chooses from the given options, where <code>choice</code> is the index of the option selected`;
 e.exampleIn = `I feel like eating {choose;1;cake;pie;pudding} today.`;
 e.exampleOut = `I feel like eating pie today.`;
-
 
 e.execute = async function(params) {
     // for (let i = 1; i < params.args.length; i++) {
@@ -35,11 +32,12 @@ e.execute = async function(params) {
             replaceString = args[2];
         }
         params.content = replaceString;
-        replaceString = await bu.processTag(params);
+        replaceString = await bu.processTagInner(params);
     } else
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

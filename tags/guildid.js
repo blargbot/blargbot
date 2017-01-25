@@ -14,7 +14,6 @@ e.desc = `Returns the id of the current guild`;
 e.exampleIn = `This guild's id is {guildid}`;
 e.exampleOut = `This guild's id is 1234567890123456`;
 
-
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
@@ -25,6 +24,7 @@ e.execute = async function(params) {
 
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

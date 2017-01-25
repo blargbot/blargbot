@@ -24,7 +24,7 @@ e.execute = async function(params) {
         params.args[1] = await bu.processTagInner(params, 1);
         let args = params.args;
         let deserialized = await bu.getArray(params, args[1]);
-        
+
         if (deserialized && Array.isArray(deserialized.v)) {
             let start = parseInt(args[2]);
             let end;
@@ -40,6 +40,7 @@ e.execute = async function(params) {
     }
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

@@ -11,8 +11,7 @@ e.name = `username`;
 e.args = `[user] [quiet]`;
 e.usage = `{username[;user[;quiet]]}`;
 e.desc = `Returns the user's name. If <code>name</code> is specified, gets that user instead. If
-                                <code>quiet</code> is
-                                specified, if a user can't be found it will simply return the <code>name</code>`;
+<code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
 e.exampleIn = `Your username is {username;stupid;this can be anything}`;
 e.exampleOut = `Your username is stupid cat`;
 
@@ -38,6 +37,7 @@ e.execute = async function(params) {
     }
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

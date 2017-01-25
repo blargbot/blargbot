@@ -14,13 +14,12 @@ e.desc = 'A tag that just gets removed. Useful for documenting your code.';
 e.exampleIn = 'This is a sentence. {//;This is a comment.}';
 e.exampleOut = 'This is a sentence.';
 
-
-e.execute = async function() {
+e.execute = async function(params) {
     var replaceString = '';
     var replaceContent = false;
 
-
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

@@ -11,10 +11,7 @@ e.name = `userdiscrim`;
 e.args = `[user] [quiet]`;
 e.usage = `{userdiscrim[;user[;quiet]]}`;
 e.desc = `Returns the user's discriminator. If <code>name</code> is specified, gets that user
-                                instead. If
-                                <code>quiet</code>
-                                is
-                                specified, if a user can't be found it will simply return the <code>name</code>`;
+instead. If <code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
 e.exampleIn = `Your discrim is {userdiscrim}`;
 e.exampleOut = `Your discrim is 1234`;
 
@@ -38,6 +35,7 @@ e.execute = async function(params) {
         replaceString = args[1];
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

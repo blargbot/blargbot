@@ -999,8 +999,17 @@ bu.getVariable = async function(name, key, type, guildId) {
 };
 
 bu.processTagInner = async function(params, i) {
-    params.content = params.args[i];
-    return await bu.processTag(params);
+    if (i)
+        params.content = params.args[i];
+    let result = await bu.processTag(params);
+
+    logger.verbose(result);
+
+    if (result.terminate)
+        params.terminate = true;
+
+    return result.contents;
+
 };
 
 bu.processTag = async function(params) {
@@ -1009,7 +1018,13 @@ bu.processTag = async function(params) {
         contents = params.content || params.contents || '',
         fallback = params.fallback,
         author = params.author,
-        tagName = params.tagName;
+        tagName = params.tagName,
+        terminate = params.terminate;
+
+    if (terminate) return {
+        contents: contents,
+        terminate: true
+    };
 
     let level = 0;
     let lastIndex = 0;
@@ -1034,11 +1049,10 @@ bu.processTag = async function(params) {
     let subtags = [];
     for (let i = 0; i < coords.length; i++) {
         let subtagindex = subtags.push(contents.substring(coords[i][0], coords[i][1]));
-        if (subtags[subtagindex - 1].indexOf('{return}') > -1) {
-            contents = contents.substring(0, coords[i][1]);
-            break;
-        }
     }
+    let result = {
+        contents
+    };
     for (let i = 0; i < subtags.length; i++) {
         let tagBrackets = subtags[i],
             tag = tagBrackets.substring(1, tagBrackets.length - 1),
@@ -1058,7 +1072,8 @@ bu.processTag = async function(params) {
                 words: words,
                 author: author,
                 tagName: tagName,
-                ccommand: params.ccommand
+                ccommand: params.ccommand,
+                terminate
             });
         } else {
             replaceObj.replaceString = await bu.tagProcessError({
@@ -1076,35 +1091,41 @@ bu.processTag = async function(params) {
             fallback = replaceObj.fallback;
         }
         if (replaceObj.terminate) {
-            contents = contents.substring(0, coords[i][0]);
-            break;
-        } else if (replaceObj == '') {
-            return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
+            logger.verbose('one', result.contents, coords[i]);
+            result.contents = result.contents.substring(0, coords[i][1]);
+            result.terminate = true;
+            logger.verbose('two', result.contents);
+        }
+
+        if (replaceObj == '') {
+            result.contents = bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
         } else {
             replaceString = replaceObj.replaceString;
             if (replaceString == undefined) {
                 replaceString = '';
             }
             if (replaceString == bu.specialCharBegin + 'BREAK' + bu.specialCharEnd) {
-                return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
-            }
-            replaceString = replaceString.toString();
-            replaceString = replaceString.replace(/\}/gi, `${bu.specialCharBegin}RB${bu.specialCharEnd}`)
-                .replace(/\{/gi, `${bu.specialCharBegin}LB${bu.specialCharEnd}`)
-                .replace(/\;/g, `${bu.specialCharBegin}SEMI${bu.specialCharEnd}`);
-            logger.debug('Contents:', contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
-            contents = contents.replace(tagBrackets, replaceString);
-            if (replaceObj.replaceContent) {
-                if (replaceObj.replace == undefined) {
-                    contents = replaceObj.replaceString;
-                } else {
-                    contents.replace(tagBrackets, '');
-                    contents = contents.replace(replaceObj.replace, replaceObj.replaceString);
+                result.contents = bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
+            } else {
+                replaceString = replaceString.toString();
+                replaceString = replaceString.replace(/\}/gi, `${bu.specialCharBegin}RB${bu.specialCharEnd}`)
+                    .replace(/\{/gi, `${bu.specialCharBegin}LB${bu.specialCharEnd}`)
+                    .replace(/\;/g, `${bu.specialCharBegin}SEMI${bu.specialCharEnd}`);
+                logger.debug('result.contents:', result.contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
+                result.contents = result.contents.replace(tagBrackets, replaceString);
+                if (replaceObj.replaceContent) {
+                    if (replaceObj.replace == undefined) {
+                        result.contents = replaceObj.replaceString;
+                    } else {
+                        result.contents.replace(tagBrackets, '');
+                        result.contents = result.contents.replace(replaceObj.replace, replaceObj.replaceString);
+                    }
                 }
             }
         }
+        if (result.terminate) break;
     }
-    return contents;
+    return result;
 };
 
 bu.processSpecial = (contents, final) => {

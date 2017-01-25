@@ -27,6 +27,7 @@ e.execute = async function(params) {
         if (isNaN(args2)) {
             if (isNaN(parsedFallback)) {
                 return {
+                    terminate: params.terminate,
                     replaceString: await bu.tagProcessError(params, '`Not a number`'),
                     replaceContent: replaceContent
                 };
@@ -36,7 +37,15 @@ e.execute = async function(params) {
         }
         if (args2 < 0) {
             return {
+                terminate: params.terminate,
                 replaceString: await bu.tagProcessError(params, '`Can\'t be negative`'),
+                replaceContent: replaceContent
+            };
+        }
+        if (args2 > 500) {
+            return {
+                terminate: params.terminate,
+                replaceString: await bu.tagProcessError(params, '`Too Many Loops`'),
                 replaceContent: replaceContent
             };
         }
@@ -49,6 +58,7 @@ e.execute = async function(params) {
     }
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

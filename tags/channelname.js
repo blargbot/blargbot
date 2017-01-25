@@ -14,7 +14,6 @@ e.desc = `Returns the name of the current channel`;
 e.exampleIn = `This channel's name is #{channelname}`;
 e.exampleOut = `This channel's name is #test-channel`;
 
-
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
@@ -24,6 +23,7 @@ e.execute = async function(params) {
 
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };
