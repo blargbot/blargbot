@@ -1370,7 +1370,7 @@ bu.getGuild = async function(guildid) {
 bu.canExecuteCcommand = async function(msg, commandName, quiet) {
     let val = await bu.ccommand.get(msg.guild ? msg.guild.id : '', commandName);
     if (val && typeof val == "object") {
-        roles = val.roles;
+        let roles = val.roles;
         if (roles && roles.length > 0) {
             for (let role of roles) {
                 if (bu.hasPerm(msg, role, quiet))
