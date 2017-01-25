@@ -1033,7 +1033,11 @@ bu.processTag = async function(params) {
     }
     let subtags = [];
     for (let i = 0; i < coords.length; i++) {
-        subtags.push(contents.substring(coords[i][0], coords[i][1]));
+        let subtagindex = subtags.push(contents.substring(coords[i][0], coords[i][1]));
+        if (subtags[subtagindex - 1].indexOf('{return}') > -1) {
+            contents = contents.substring(0, coords[i][1]);
+            break;
+        }
     }
     for (let i = 0; i < subtags.length; i++) {
         let tagBrackets = subtags[i],
