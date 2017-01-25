@@ -4,6 +4,7 @@ const Eris = require('eris');
 const emoji = require('node-emoji');
 const loggerModule = require('./logger.js');
 const gm = require('gm');
+const Trello = require('node-trello');
 const path = require('path');
 var bu = module.exports = {};
 
@@ -126,6 +127,7 @@ bu.init = () => {
         user: config.db.user,
         port: config.db.port
     });
+    bu.trello = new Trello(config.general.trellokey, config.general.trellotoken);
 };
 
 bu.compareStats = (a, b) => {
@@ -1781,4 +1783,3 @@ bu.makeSnowflake = function() {
 bu.unmakeSnowflake = function(snowflake) {
     return (snowflake / 4194304) + 1420070400000;
 };
-
