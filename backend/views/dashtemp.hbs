@@ -82,14 +82,81 @@
             <div class="row">
                 <div class="col s12 ">
                     <div class="card blue-grey darken-2">
-                        {{#if user}}
-
                         <div id='workspace'>
-                            {{> displayGuilds}}
-                        </div>
 
-                        {{else}}
-                        <span class='card-content'>You need to be logged in to use this!</span> {{/if}}
+                            <form class='col s12 blue-grey darken-2'>
+                                Greetings
+                                <div class='row'>
+                                    <div class='col s12 m9'><label for='greeting_message'>Greeting Message</label>
+                                        <textarea placeholder='The message that will be outputted when somebody joins the guild. BBTag compatible.' id='greeting_message'
+                                            class='materialize-textarea'></textarea>
+                                    </div>
+                                    <div class='col s12 m3'>
+                                        <div class='input-field' id='greeting_channel'>
+                                            <select>
+                                                <option value="">Default</option>    
+                                            </select> <label>Greeting Channel</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                Farewells
+                                <div class='row'>
+                                    <div class='col s12 m9'><label for='farewell_message'>Farewell Message</label>
+                                        <textarea placeholder='The message that will be outputted when somebody leaves the guild. BBTag compatible.' id='farewell_message'
+                                            class='materialize-textarea'></textarea>
+                                    </div>
+                                    <div class='col s12 m3'>
+                                        <div class='input-field' id='farewell_channel'>
+                                            <select>
+                                                <option value="">Default</option>    
+                                            </select> <label>Farewell Channel</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='row'>
+                                    <div class='col s12 m4 centre'>
+                                        Make Chatlogs
+                                        <div class="switch">
+                                            <label>
+      Off
+      <input type="checkbox" id='makelogs'>
+      <span class="lever"></span>
+      On
+    </label></div>
+                                    </div>
+                                    <div class='col s12 m4 centre'>
+                                        CAH NSFW
+                                        <div class="switch">
+                                            <label>
+      Off
+      <input type="checkbox" id='cahnsfw'>
+      <span class="lever"></span>
+      On
+    </label></div>
+                                    </div>
+                                    <div class='col s12 m4 centre'>
+                                        DM Help
+                                        <div class="switch">
+                                            <label>
+      Off
+      <input type="checkbox" id='dmhelp'>
+      <span class="lever"></span>
+      On
+    </label></div>
+                                    </div>
+                                </div>
+                                <div class='row'>
+                                    <div class='col s12'>
+                                        <p class="range-field">
+                                            Anti-Mention Spam
+                                            <label for='antimention'>The number of unique mentions allowed in a message before banning. 0 to disable.</label>
+                                            <input type="range" id="antimention" min="0" max="50" />
+                                        </p>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -116,6 +183,7 @@
 <script>
     $(document).ready(function () {
         $('.modal-trigger').leanModal();
+        $('select').material_select();
     });
 
     var sid = '{{sessionId}}';
@@ -132,9 +200,7 @@
                 case 'displayGuild':
                     var settings = data.data.guild.settings;
                     var guild = data.data.guild.guild;
-                    var output = `<form class='col s12 blue-grey darken-2'>`;
-
-                    output += `<div class='row'>
+                    var output = `<form class='col s12 blue-grey darken-2'><div class='row'>
 <div class='col s9'><label for='greeting_message'>Greeting Message</label>
 <textarea id='greeting_message' class='materialize-textarea'></textarea></div>
 <div class='col s3'><div class='input-field'><select>
@@ -142,8 +208,7 @@
 </select><label>Greeting Channel</label></div>
 </div>
                     
-`;
-                    output += `</form>`;
+</form>`;
                     workspace.innerHTML = output;
                     $('.modal-trigger').leanModal();
                     $('select').material_select();

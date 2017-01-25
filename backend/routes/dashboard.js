@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const hbs = require('hbs');
 
+router.get('/template', async function(req, res) {
+    res.render('dashtemp');
+});
+
 router.get('/', async function(req, res) {
     if (!req.user) {
         res.redirect('/login');

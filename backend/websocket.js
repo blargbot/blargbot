@@ -81,7 +81,17 @@ async function displayGuild(ws, message, userId) {
             username: owner.username,
             discriminator: owner.discriminator,
             avatarURL: owner.avatarURL
-        }
+        },
+        channels: guild.channels.map(c => {
+            return {
+                id: c.id,
+                name: c.name,
+                position: c.position,
+                type: c.type
+            };
+        }).sort((a, b) => {
+            return a.position - b.position;
+        })
     };
     sendData(ws, 200, {
         guild: storedGuild,
