@@ -19,22 +19,11 @@ e.execute = (msg, words) => {
     getXkcd(msg.channel.id, words);
 };
 
-function getXkcd(channel, words) {
+async function getXkcd(channel, words) {
     if (xkcdMax === 0) {
-        http.get('http://xkcd.com/info.0.json', function(res) {
-            var body = '';
-            res.on('data', function(chunk) {
-                body += chunk;
-            });
-            res.on('end', function() {
-                logger.debug(body);
-                var output = JSON.parse(body);
-                xkcdMax = output.num;
-                getXkcd(channel, words);
-
-                //sendMessageToDiscord(channel, output.file, bot);
-            });
-        });
+        const response = await bu.request('http://xkcd.com/info.0.json');
+        xkcdMax = JSON.parse(response.body).num;
+        getXkcd(channel, words);
         return;
     }
     var choice;
@@ -52,22 +41,11 @@ function getXkcd(channel, words) {
     } else {
         url = `http://xkcd.com/${choice}/info.0.json`;
     }
-    http.get(url, function(res) {
-        var body = '';
-        res.on('data', function(chunk) {
-            body += chunk;
-        });
-        res.on('end', function() {
-            var output = JSON.parse(body);
-            var message = '';
-            //  if (bot === BotEnum.DISCORD) {
-            message = `__**${output.title}, ${output.year}**__
+    const response = await bu.request(url);
+    let output = JSON.parse(response.body);
+    let message = `__**${output.title}, ${output.year}**__
 *Comic #${output.num}*
 ${output.alt}`;
-            bu.sendFile(channel, message, output.img);
-            //xkcdMax = output.num;
-            //getXkcd(channel, words, bot);
-            //sendMessageToDiscord(channel, output.file, bot);
-        });
-    });
+    bu.sendFile(channel, message, output.img);
+
 }
