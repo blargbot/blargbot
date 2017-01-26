@@ -13,11 +13,6 @@
 
     <link href="//fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
 
-    <!-- Compiled and minified CSS -->
-    <link rel="stylesheet" href="../css/materialize.min.css">
-
-    <link rel="stylesheet" href="../css/main.css">
-
     <!-- Font Awesome -->
     <script src="//use.fontawesome.com/811ca3dd9f.js"></script>
 
@@ -37,6 +32,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- OpenGraph -->
+
+    <!-- Compiled and minified CSS -->
+    <link rel="stylesheet" href="../css/materialize.min.css">
+
+    <link rel="stylesheet" href="../css/main.css">
+
     <title>dashboard</title>
 
     <link rel="icon" type="image/png" href="/img/blargbotmini.png">
@@ -56,13 +57,7 @@
 </head>
 
 <body class="blue-grey">
-    <div id="modal1" class="modal blue-grey darken-3">
-        <div id='modal-content' class="modal-content">
-        </div>
-        <div class="modal-footer blue-grey darken-4 ">
-            <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat white-text ">Close</a>
-        </div>
-    </div>
+
 
     {{> sidebar}}
 
@@ -99,6 +94,7 @@
     <!-- Menu Toggle Script -->
     <script>
         init();
+
     </script>
 <footer class="page-footer blue-grey darken-2">
     <div class="section">
@@ -116,6 +112,7 @@
 <script>
     $(document).ready(function () {
         $('.modal-trigger').leanModal();
+        $('select').material_select();
     });
 
     var sid = '{{sessionId}}';
@@ -123,43 +120,268 @@
     var workspace = document.getElementById('workspace')
     var index = workspace.innerHTML;
     var settings = JSON.parse(`{{gsettings}}`);
+    let data;
+
+    function save() {
+        if (!data) return;
+        for (let i = 0; i < keys.length; i++) {
+            let element = document.getElementById(keys[i]);
+            let value = settings[keys[i]];
+
+
+            if (element) {
+                switch (element.type) {
+                    case 'checkbox':
+                        data.data.guild.settings[keys[i]] = element.checked;
+                        break;
+                    default:
+                        data.data.guild.settings[keys[i]] = element.value;
+                        break;
+                }
+            }
+        }
+        sendData('saveGuild', data.data.guild);
+    }
 
     wss.onmessage = function (event) {
-        let data = JSON.parse(event.data);
+        data = JSON.parse(event.data);
         console.dir(data);
         if (data.code == 200) {
             switch (data.data.type) {
                 case 'displayGuild':
-                    var settings = data.data.guild.settings;
-                    var guild = data.data.guild.guild;
-                    var output = `<form class='col s12 blue-grey darken-2'>`;
+                    let settings = data.data.guild.settings;
+                    console.dir(settings);
+                    let modal = document.getElementById('settings-modal')
+                    let keys = Object.keys(settings);
+                    document.getElementById('modal-guild').innerText = 'Settings for ' + data.data.guild.guild.name;
 
-                    output += `<div class='row'>
-<div class='col s9'><label for='greeting_message'>Greeting Message</label>
-<textarea id='greeting_message' class='materialize-textarea'></textarea></div>
-<div class='col s3'><div class='input-field'><select>
-    <option value="" disabled selected>Select A Channel</option>    
-</select><label>Greeting Channel</label></div>
-</div>
-                    
-`;
-                    output += `</form>`;
-                    workspace.innerHTML = output;
-                    $('.modal-trigger').leanModal();
-                    $('select').material_select();
+                    let channelSelectors = document.getElementsByClassName("channel-selector");
+                    let channels = data.data.guild.guild.channels;
+                    for (let i = 0; i < channelSelectors.length; i++) {
+                        let select = channelSelectors[i];
+                        console.log(select.tagName);
+                        if (select.tagName == 'SELECT') {
+                            let defaultVal = select.getAttribute('data-default');
+                            if (defaultVal == 'none') {
+                                let channel = document.createElement("option")
+                                channel.setAttribute("value", "");
+                                channel.setAttribute("selected", "");
+                                channel.text = "None";
+                                select.appendChild(channel);
+                            }
+                            for (let ii = 0; ii < channels.length; ii++) {
+                                if (channels[ii].type == 0) {
+                                    let channel = document.createElement("option")
+                                    channel.setAttribute("value", channels[ii].id);
+                                    if (channels[ii].id == data.data.guild.guildid && defaultVal == 'default') {
+                                        channel.setAttribute("selected", "");
+                                    }
+                                    channel.text = channels[ii].name;
+                                    select.appendChild(channel);
+                                }
+                            }
+                        }
+                    }
+
+                    let roleSelectors = document.getElementsByClassName("role-selector");
+                    let roles = data.data.guild.guild.roles;
+                    for (let i = 0; i < roleSelectors.length; i++) {
+                        let select = roleSelectors[i];
+                        console.log(select.tagName);
+                        if (select.tagName == 'SELECT') {
+                            let defaultVal = select.getAttribute('data-default');
+                            if (defaultVal == 'none') {
+                                let role = document.createElement("option")
+                                role.setAttribute("value", "");
+                                role.setAttribute("selected", "");
+                                role.text = "None";
+                                select.appendChild(role);
+                            }
+                            for (let ii = 0; ii < roles.length; ii++) {
+                                if (roles[ii].type == 0) {
+                                    let role = document.createElement("option")
+                                    role.setAttribute("value", roles[ii].id);
+                                    role.text = roles[ii].name;
+                                    select.appendChild(role);
+                                }
+                            }
+                        }
+                    }
+
+                    for (let i = 0; i < keys.length; i++) {
+                        let element = document.getElementById(keys[i]);
+                        let value = settings[keys[i]];
+
+                        if (element) {
+                            switch (element.type) {
+                                case 'checkbox':
+                                    value = value != '0'
+                                    element.checked = value;
+                                    break;
+                                default:
+                                    element.value = value;
+                                    break;
+                            }
+                        }
+                    }
+
                     Materialize.updateTextFields();
+                    $('select').material_select();
+                    $('#settings-modal').openModal({
+                        dismissible: false
+                    });
+
                     break;
             }
         }
-    }
-
-    function setModal(text) {
-        document.getElementById('modal-content').innerHTML = text;
     }
 
     function sendData(type, data) {
         wss.send(JSON.stringify({ type, sid, data }));
     }
 </script>
+
+<div id="settings-modal" class="modal modal-fixed-footer blue-grey darken-2">
+    <div class="modal-content">
+        <h3 id="modal-guild"></h3>
+        <p>This settings dashboard is incomplete and in beta. Use at your own risk.</p>
+        <form>
+            <h4>Messages</h4>
+            Greetings
+            <div class='row'>
+                <div class='col s12 m9'><label for='greeting'>Greeting Message</label>
+                    <textarea placeholder='The message that will be outputted when somebody joins the guild. BBTag compatible.' id='greeting'
+                        class='materialize-textarea'></textarea>
+                </div>
+                <div class='col s12 m3'>
+                    <div class='input-field'>
+                        <select id='greetingchannel' class='channel-selector' data-default='default'>
+                                            </select> <label>Greeting Channel</label>
+                    </div>
+                </div>
+            </div>
+            Farewells
+            <div class='row'>
+                <div class='col s12 m9'><label for='farewell'>Farewell Message</label>
+                    <textarea placeholder='The message that will be outputted when somebody leaves the guild. BBTag compatible.' id='farewell'
+                        class='materialize-textarea'></textarea>
+                </div>
+                <div class='col s12 m3'>
+                    <div class='input-field'>
+                        <select id='farewellchan' class='channel-selector' data-default='default'>
+                                            </select> <label>Farewell Channel</label>
+                    </div>
+                </div>
+            </div>
+            <h4>Administrative</h4>
+
+            <div class='row'>
+                <div class='col s12'>
+                    <p class="range-field">
+                        Anti-Mention Spam
+                        <label for='antimention'>The number of unique mentions allowed in a message before banning. 0 to disable.</label>
+                        <input type="range" id="antimention" min="0" max="50" />
+                    </p>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col s12 m4 centre'>
+                    Make Chatlogs
+                    <div class="switch">
+                        <label>
+      Off
+      <input type="checkbox" id='makelogs'>
+      <span class="lever"></span>
+      On
+    </label></div>
+                </div>
+                <div class='col s12 m4'>
+                    <div class='input-field'>
+                        <select id='modlog' class='channel-selector' data-default='none'>
+                                            </select> <label>Modlog Channel</label>
+                    </div>
+                </div>
+                <div class='col s12 m4'>
+                    <div class='input-field'>
+                        <select id='mutedrole' class='role-selector' data-default='none'>
+                                            </select> <label>Muted Role</label>
+                    </div>
+                </div>
+            </div>
+            <h4>Permissions</h4>
+            <div class='row'>
+                <div class='col s12 m4 centre'>
+                    Permission Override
+                    <div class="switch">
+                        <label>
+      Off
+      <input type="checkbox" id='permoverride'>
+      <span class="lever"></span>
+      On
+    </label></div>
+                </div>
+                <div class='col s12 m4 input-field'>
+                    <input id="staffperms" type="number" class="validate">
+                    <label for="staffperms">Staff Permissions</label>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col s12 m4 centre'>
+                    <a class='waves-effect waves-light btn' href="https://discordapi.com/permissions.html" target="_blank">Calculator</a>
+                </div>
+                <div class='col s12 m4 offset input-field'>
+                    <input id="kickoverride" type="number" class="validate">
+                    <label for="kickoverride">Kick Override</label>
+                </div>
+                <div class='col s12 m4 input-field'>
+                    <input id="banoverride" type="number" class="validate">
+                    <label for="banoverride">Ban Override</label>
+                </div>
+            </div>
+            <h4>Misc</h4>
+            <div class='row'>
+                <div class='col s12 m4 centre'>
+                    Tableflips
+                    <div class="switch">
+                        <label>
+      Off
+      <input type="checkbox" id='tableflip'>
+      <span class="lever"></span>
+      On
+    </label></div>
+                </div>
+                <div class='col s12 m4 centre'>
+                    CAH NSFW
+                    <div class="switch">
+                        <label>
+      Off
+      <input type="checkbox" id='cahnsfw'>
+      <span class="lever"></span>
+      On
+    </label></div>
+                </div>
+                <div class='col s12 m4 centre'>
+                    DM Help
+                    <div class="switch">
+                        <label>
+      Off
+      <input type="checkbox" id='dmhelp'>
+      <span class="lever"></span>
+      On
+    </label></div>
+                </div>
+            </div>
+            <div class='row'>
+                <div class='col s12'><label for='greeting'>Custom Prefix</label>
+                    <textarea placeholder='The custom prefix for your guild. Does not replace the original prefix.' id='prefix' class='materialize-textarea'></textarea>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer blue-grey darken-4 ">
+        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat white-text ">Close</a>
+        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat white-text " onclick="save()">Save</a>
+</div>
+</div>
 
 </html>

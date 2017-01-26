@@ -30,6 +30,9 @@ e.init = function(server) {
                     case 'displayGuild':
                         displayGuild(ws, message, userId);
                         break;
+                    case 'saveGuild':
+                        saveGuild(ws, message, userId);
+                        break;
                 }
             } catch (err) {
                 sendData(ws, 400, 'Malformed request');
@@ -53,6 +56,25 @@ function sendData(ws, code, data) {
     if (codes[code]) datum.desc = codes[code];
     logger.website('Outgoing', datum);
     ws.send(JSON.stringify(datum));
+}
+
+async function saveGuild(ws, message, userId) {
+    let user = bot.users.get(userId);
+    if (!user) {
+        sendData(ws, 404, 'User not found');
+        return;
+    }
+    let guild = bot.guilds.get(message.data.guild);
+    if (!guild) {
+        sendData(ws, 404, 'Guild not found');
+        return;
+    }
+    let isStaff = await bu.isUserStaff(userId, guild.id);
+    if (!isStaff) {
+        sendData(ws, 403, 'Missing access');
+    }
+    message.data.guild.guild = undefined;
+    await r.table('guild').get(message.data.guild.guildid).replace(message.data.guild);
 }
 
 async function displayGuild(ws, message, userId) {
@@ -91,7 +113,16 @@ async function displayGuild(ws, message, userId) {
             };
         }).sort((a, b) => {
             return a.position - b.position;
-        })
+        }),
+        roles: guild.roles.map(c => {
+            return {
+                id: c.id,
+                name: c.name,
+                position: c.position
+            };
+        }).sort((a, b) => {
+            return a.position - b.position;
+        }),
     };
     sendData(ws, 200, {
         guild: storedGuild,

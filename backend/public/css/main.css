@@ -6,6 +6,10 @@ body {
     padding: 0;
 }
 
+#settings-modal {
+    width: 90%;
+}
+
 body {
     color: #ffffff;
     font-family: 'Ubuntu', sans-serif;
