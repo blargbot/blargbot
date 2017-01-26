@@ -64,7 +64,8 @@ async function saveGuild(ws, message, userId) {
         sendData(ws, 404, 'User not found');
         return;
     }
-    let guild = bot.guilds.get(message.data.guild);
+    logger.debug(message);
+    let guild = bot.guilds.get(message.data.guildid);
     if (!guild) {
         sendData(ws, 404, 'Guild not found');
         return;
@@ -73,8 +74,13 @@ async function saveGuild(ws, message, userId) {
     if (!isStaff) {
         sendData(ws, 403, 'Missing access');
     }
-    message.data.guild.guild = undefined;
-    await r.table('guild').get(message.data.guild.guildid).replace(message.data.guild);
+    message.data.guild = undefined;
+    await r.table('guild').get(message.data.guildid).replace(message.data);
+
+    sendData(ws, 200, {
+        data: 'Successfully updated settings.',
+        type: 'guildSaved'
+    });
 }
 
 async function displayGuild(ws, message, userId) {
@@ -86,14 +92,14 @@ async function displayGuild(ws, message, userId) {
     let guild = bot.guilds.get(message.data.guild);
     if (!guild) {
         sendData(ws, 404, 'Guild not found');
-        return;
+        return; 
     }
     let isStaff = await bu.isUserStaff(userId, guild.id);
     if (!isStaff) {
         sendData(ws, 403, 'Missing access');
     }
     let storedGuild = await bu.getGuild(guild.id);
-    let owner = bot.users.get(guild.ownerID);
+    let owner = bot.users.get(guild.ownerID); 
     storedGuild.guild = {
         id: guild.id,
         name: guild.name,
@@ -118,10 +124,11 @@ async function displayGuild(ws, message, userId) {
             return {
                 id: c.id,
                 name: c.name,
-                position: c.position
+                position: c.position,
+                color: c.color > 1 ? '#' + c.color.toString(16) : ''
             };
         }).sort((a, b) => {
-            return a.position - b.position;
+            return b.position - a.position;
         }),
     };
     sendData(ws, 200, {
