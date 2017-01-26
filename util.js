@@ -1508,7 +1508,8 @@ bu.tagProcessError = async function(params, errormessage) {
 
     if (fallback === undefined) returnMessage = errormessage;
     else returnMessage = await bu.processTag(params);
-    return returnMessage;
+    if (returnMessage.terminate) params.terminate = true;
+    return returnMessage.contents;
 };
 
 
