@@ -239,10 +239,11 @@ bu.send = async function(channel, message, file, embed) {
 
     if (content.content.length > 2000) {
         if (!file) file = {
-            file: content.content.toString(),
+            file: content.content,
             name: 'output.txt'
         };
         content.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+
     }
     try {
         return await bot.createMessage(channelid, content, file);
@@ -999,17 +1000,8 @@ bu.getVariable = async function(name, key, type, guildId) {
 };
 
 bu.processTagInner = async function(params, i) {
-    if (i)
-        params.content = params.args[i];
-    let result = await bu.processTag(params);
-
-    logger.verbose(result);
-
-    if (result.terminate)
-        params.terminate = true;
-
-    return result.contents;
-
+    params.content = params.args[i];
+    return await bu.processTag(params);
 };
 
 bu.processTag = async function(params) {
@@ -1018,13 +1010,7 @@ bu.processTag = async function(params) {
         contents = params.content || params.contents || '',
         fallback = params.fallback,
         author = params.author,
-        tagName = params.tagName,
-        terminate = params.terminate;
-
-    if (terminate) return {
-        contents: contents,
-        terminate: true
-    };
+        tagName = params.tagName;
 
     let level = 0;
     let lastIndex = 0;
@@ -1072,8 +1058,7 @@ bu.processTag = async function(params) {
                 words: words,
                 author: author,
                 tagName: tagName,
-                ccommand: params.ccommand,
-                terminate
+                ccommand: params.ccommand
             });
         } else {
             replaceObj.replaceString = await bu.tagProcessError({
@@ -1091,14 +1076,10 @@ bu.processTag = async function(params) {
             fallback = replaceObj.fallback;
         }
         if (replaceObj.terminate) {
-            logger.verbose('one', result.contents, coords[i]);
-            result.contents = result.contents.substring(0, coords[i][1]);
-            result.terminate = true;
-            logger.verbose('two', result.contents);
-        }
-
-        if (replaceObj == '') {
-            result.contents = bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
+            contents = contents.substring(0, coords[i][0]);
+            break;
+        } else if (replaceObj == '') {
+            return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
         } else {
             replaceString = replaceObj.replaceString;
             if (replaceString == undefined) {
@@ -1465,19 +1446,17 @@ bu.isUserStaff = async function(userId, guildId) {
 };
 
 bu.shuffle = (array) => {
-    let i = 0,
-        j = 0,
-        temp = null;
+    let counter = array.length;
 
-    for (i = array.length - 1; i > 0; i -= 1) {
-        j = Math.floor(Math.random() * (i + 1));
-        temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
     }
-
-    return array;
-};
+}
 
 bu.getTagUser = async function(msg, args, index) {
     var obtainedUser;
@@ -1508,8 +1487,7 @@ bu.tagProcessError = async function(params, errormessage) {
 
     if (fallback === undefined) returnMessage = errormessage;
     else returnMessage = await bu.processTag(params);
-    if (returnMessage.terminate) params.terminate = true;
-    return returnMessage.contents;
+    return returnMessage;
 };
 
 
@@ -1804,6 +1782,10 @@ bu.isUserStaff = async function(userId, guildId) {
 
 bu.makeSnowflake = function() {
     return (moment() - 1420070400000) * 4194304;
+};
+
+bu.unmakeSnowflake = function(snowflake) {
+    return (snowflake / 4194304) + 1420070400000;
 };
 
 bu.unmakeSnowflake = function(snowflake) {

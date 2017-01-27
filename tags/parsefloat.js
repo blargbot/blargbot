@@ -22,13 +22,12 @@ e.execute = async function(params) {
         fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
-
+    
     let val = parseFloat(args[1]);
     if (isNaN(val)) replaceString = 'NaN';
     else replaceString = val;
 
     return {
-        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

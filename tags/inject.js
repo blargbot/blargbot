@@ -22,8 +22,7 @@ e.execute = async function(params) {
         let newStuff = bu.processSpecial(params.args[1], true);
         logger.debug('Thonkang', params.args, newStuff);
         params.content = newStuff;
-        replaceString = await bu.processTagInner(params);
-        logger.verbose('after inject', replaceString);
+        replaceString = await bu.processTag(params);
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }

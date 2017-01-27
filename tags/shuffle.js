@@ -33,7 +33,7 @@ e.execute = async function(params) {
                 await bu.setArray(deserialized, params);
             } else replaceString = bu.serializeTagArray(deserialized.v)
         } else {
-            replaceString = await bu.tagProcessError(params, '`Not an array`');
+        replaceString = await bu.tagProcessError(params, '`Not an array`');
         }
     } else
         bu.shuffle(words);

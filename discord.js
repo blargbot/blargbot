@@ -5,7 +5,7 @@ Object.defineProperty(Eris.Message, "guild", {
     get: function guild() {
         return this.channel.guild;
     }
-});
+})
 const moment = require('moment-timezone');
 const path = require('path');
 const https = require('https');

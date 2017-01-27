@@ -23,7 +23,6 @@ e.execute = async function(params) {
         if (isNaN(length)) {
             if (isNaN(parsedFallback)) {
                 return {
-                    terminate: params.terminate,
                     replaceString: await bu.tagProcessError(params, '`Not a number`'),
                     replaceContent: replaceContent
                 };

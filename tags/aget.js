@@ -25,7 +25,6 @@ e.execute = async function(params) {
     let storedAuthor = await r.table('user').get(params.author);
     if (!storedAuthor) {
         return {
-            terminate: params.terminate,
             replaceString: await bu.tagProcessError(params, '`Author not found`'),
             replaceContent
         }

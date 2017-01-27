@@ -11,6 +11,8 @@ const GIFEncoder = require('gifencoder');
 const util = require('util');
 const request = require('request');
 const fs = require('fs');
+const Canvas = require('canvas'),
+    Image = Canvas.Image;
 
 const logger = {
     cluster: function(msg) {

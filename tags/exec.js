@@ -21,6 +21,7 @@ e.execute = async function(params) {
     } else if (!params.msg.iterations) params.msg.iterations = 1;
     else params.msg.iterations++;
 
+    // processes any nested tags in the `args` array. if your tag uses advanced logic, you may wish to reimplement this
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -35,7 +36,7 @@ e.execute = async function(params) {
                 let nsfwChan = await bu.isNsfwChannel(params.msg.channel.id);
                 if (!nsfwChan) {
                     replaceString = await bu.tagProcessError(params, '`NSFW tag`');
-                    return { terminate: params.terminate,
+                    return {
                         replaceString: replaceString,
                         replaceContent: false
                     };
@@ -50,7 +51,7 @@ e.execute = async function(params) {
             tagArgs = bu.splitInput(tagArgs);
             params.words = tagArgs;
             params.content = tag.content;
-            replaceString = await bu.processTagInner(params);
+            replaceString = await bu.processTag(params);
         }
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');

@@ -24,7 +24,6 @@ e.execute = async function(params) {
 
 
     return {
-        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent,
         terminate: true

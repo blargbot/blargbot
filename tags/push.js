@@ -24,7 +24,7 @@ e.execute = async function(params) {
         params.args[1] = await bu.processTagInner(params, 1);
         let args1 = params.args[1];
         let deserialized = await bu.getArray(params, args1);
-
+        
         if (deserialized && Array.isArray(deserialized.v)) {
             let toPush = params.args.slice(2);
             for (const val of toPush)

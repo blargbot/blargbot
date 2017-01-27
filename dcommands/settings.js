@@ -123,8 +123,8 @@ Farewell Channel : ${farewellChan}
                 if (words.length > 0) {
                     key = words.shift();
                     let value = words.join(' ');
-                    if (settings[key]) {
-                        await bu.guildSettings.set(msg.channel.guild.id, key, value, settings[key].type);
+                    if (bu.settings[key]) {
+                        await bu.guildSettings.set(msg.channel.guild.id, key, value, bu.settings[key].type);
                         bu.send(msg, ':ok_hand:');
                     } else {
                         bu.send(msg, 'Invalid key!');
@@ -133,8 +133,8 @@ Farewell Channel : ${farewellChan}
                 break;
             case 'help':
                 let message = '\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
-                for (key in settings) {
-                    message += '**__' + key.toUpperCase() + '__**' + ' - ' + settings[key].desc + '\n';
+                for (key in bu.settings) {
+                    message += '**__' + key.toUpperCase() + '__**' + ' - ' + bu.settings[key].desc + '\n';
                 }
                 bu.send(msg, message);
                 break;
@@ -142,8 +142,8 @@ Farewell Channel : ${farewellChan}
                 if (words.length > 0) {
                     key = words.shift();
                     let value = words.join(' ');
-                    if (settings[key]) {
-                        await bu.guildSettings.set(msg.channel.guild.id, key, value, settings[key].type);
+                    if (bu.settings[key]) {
+                        await bu.guildSettings.set(msg.channel.guild.id, key, value, bu.settings[key].type);
                         bu.send(msg, ':ok_hand:');
                     } else {
                         bu.send(msg, 'Invalid key!');
@@ -154,65 +154,80 @@ Farewell Channel : ${farewellChan}
     }
 };
 
-var settings = {
+bu.settings = {
     makelogs: {
-        desc: `whether to record chat logs or not. Set to '0' to disable.`,
+        name: 'Make Chatlogs',
+        desc: `Whether to record chat logs or not. Set to '0' to disable.`,
         type: 'bool'
     },
     cahnsfw: {
-        desc: `whether 'cah' can only be done in nsfw channels or not. Set to '0' to disable.`,
+        name: 'Is CAH NSFW',
+        desc: `Whether 'cah' can only be done in nsfw channels or not. Set to '0' to disable.`,
         type: 'bool'
     },
     deletenotif: {
-        desc: `if enabled, notifies you if a user deleted their command. Set to '0' to disable.`,
+        name: 'Delete Notifications',
+        desc: `If enabled, notifies you if a user deleted their command. Set to '0' to disable.`,
         type: 'bool'
     },
     greeting: {
-        desc: `what to say to new users when they join. You can also use the \`greet\` command`,
+        name: 'Greeting Message',
+        desc: `What to say to new users when they join. You can also use the \`greet\` command`,
         type: 'string'
     },
     farewell: {
-        desc: `what to say when a user leaves. You can also use the \`farewell\` command`,
+        name: 'Farewell Message',
+        desc: `What to say when a user leaves. You can also use the \`farewell\` command`,
         type: 'string'
     },
     prefix: {
-        desc: `the custom command prefix. You can also use the \`setprefix\` command`,
+        name: 'Custom Prefix',
+        desc: `The custom command prefix. You can also use the \`setprefix\` command`,
         type: 'string'
     },
     modlog: {
-        desc: `the id of the modlog channel. You can also use the \`modlog\` command`,
+        name: 'Modlog Channel',
+        desc: `The id of the modlog channel. You can also use the \`modlog\` command`,
         type: 'string'
     },
     mutedrole: {
-        desc: `the id of the muted role.`,
+        name: 'Muted Role',
+        desc: `The id of the muted role.`,
         type: 'string'
     },
     tableflip: {
-        desc: `whether the bot should respond to tableflips/unflips. Set to '0' to disable.`,
+        name: 'Tableflips',
+        desc: `Whether the bot should respond to tableflips/unflips. Set to '0' to disable.`,
         type: 'bool'
     },
     antimention: {
-        desc: `the number of unique mentions required to warrant a ban (for anti-mention spam). Set to '0' to disable. Recommended: 25`,
+        name: 'Anti-Mention',
+        desc: `The number of unique mentions required to warrant a ban (for anti-mention spam). Set to '0' to disable. Recommended: 25`,
         type: 'int'
     },
     dmhelp: {
-        desc: `whether or not to dm help messages or output them in channels`,
+        name: 'DM Help',
+        desc: `Whether or not to dm help messages or output them in channels`,
         type: 'bool'
     },
     permoverride: {
-        desc: `whether or not specific permissions override role requirement`,
-        type: 'string'
+        name: 'Permission Override',
+        desc: `Whether or not specific permissions override role requirement`,
+        type: 'bool'
     },
     staffperms: {
-        desc: `the numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <https://discordapi.com/permissions.html> for a permission calculator.`,
+        name: 'Staff Permissions',
+        desc: `The numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <https://discordapi.com/permissions.html> for a permission calculator.`,
         type: 'int'
     },
     kickoverride: {
-        desc: `same as staffperms, but allows users to use the kick command regardless of permissions`,
+        name: 'Kick Override',
+        desc: `Same as staffperms, but allows users to use the kick command regardless of permissions`,
         type: 'int'
     },
     banoverride: {
-        desc: `same as staffperms, but allows users to use the ban/hackban/unban commands regardless of permissions`,
+        name: 'Ban Override',
+        desc: `Same as staffperms, but allows users to use the ban/hackban/unban commands regardless of permissions`,
         type: 'int'
     }
 };
