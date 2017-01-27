@@ -1680,7 +1680,9 @@ async function updateStats() {
                 varname: 'stats',
                 stats: {}
             });
-            storedStats = {};
+            storedStats = {
+                stats: {}
+            };
         }
         stats[yesterday] = storedStats.stats[yesterday];
         if (!stats[yesterday]) {
