@@ -14,7 +14,6 @@ e.desc = `Determines whether the provided text is a valid array.`;
 e.exampleIn = `{isarray;["array?"]} {isarray;array?}`;
 e.exampleOut = `true false`;
 
-
 e.execute = async function(params) {
     let replaceContent = false;
     let replaceString;
@@ -22,7 +21,7 @@ e.execute = async function(params) {
         params.args[1] = await bu.processTagInner(params, 1);
         let args1 = params.args[1];
         let deserialized = bu.deserializeTagArray(args1);
-        
+
         if (deserialized && Array.isArray(deserialized.v)) {
             replaceString = 'true';
         } else {
@@ -33,6 +32,7 @@ e.execute = async function(params) {
     }
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

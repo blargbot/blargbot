@@ -52,6 +52,7 @@ e.execute = async function(params) {
     await saveUser(author, authorVars);
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

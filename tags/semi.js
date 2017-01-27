@@ -15,12 +15,13 @@ e.exampleIn = `This is a semicolon! {semi}`;
 e.exampleOut = `This is a semicolon! ;`;
 
 
-e.execute = async function() {
+e.execute = async function(params) {
     var replaceString = bu.specialCharBegin + 'SEMI' + bu.specialCharEnd;
     var replaceContent = false;
 
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

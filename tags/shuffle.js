@@ -38,6 +38,7 @@ e.execute = async function(params) {
     } else
         bu.shuffle(words);
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

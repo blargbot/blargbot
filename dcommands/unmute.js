@@ -72,8 +72,10 @@ e.event = async function(args) {
     var roles = member.roles;
     if (roles.indexOf(args.role) > -1) {
         roles.splice(roles.indexOf(args.role), 1);
-        bot.editGuildMember(guild.id, member.user.id, {
-            roles: roles
+        let voiceMute = guild.members.get(bot.user.id).permission.json.voiceMuteMembers;
+        await bot.editGuildMember(guild.id, member.id, {
+            roles: roles,
+            mute: voiceMute ? false : undefined
         });
         bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${bu.parseDuration(args.duration).humanize()}.`);
     }

@@ -11,8 +11,7 @@ e.name = `usergame`;
 e.args = `[user] [quiet]`;
 e.usage = `{usergame[;user[;quiet]]}`;
 e.desc = `Returns the game the user is playing. If the user isn't playing a game, returns the word 'nothing'. If <code>name</code> is specified, gets that user instead. If
-                                <code>quiet</code> is
-                                specified, if a user can't be found it will simply return the <code>name</code>`;
+<code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
 e.exampleIn = `You are playing {usergame}`;
 e.exampleOut = `You are playing with bbtag`;
 
@@ -37,6 +36,7 @@ e.execute = async function(params) {
         replaceString = args[1];
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

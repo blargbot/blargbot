@@ -14,7 +14,6 @@ e.desc = `Returns <code>string</code> as lowercase`;
 e.exampleIn = `{lower;THIS WILL BECOME LOWERCASE}`;
 e.exampleOut = `this will become lowercase`;
 
-
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
@@ -30,6 +29,7 @@ e.execute = async function(params) {
 
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

@@ -14,7 +14,6 @@ e.desc = `Returns the position of the current channel`;
 e.exampleIn = `This channel is in position {channelpos}`;
 e.exampleOut = `This channel is in position 1`;
 
-
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
@@ -23,6 +22,7 @@ e.execute = async function(params) {
     var replaceContent = false;
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

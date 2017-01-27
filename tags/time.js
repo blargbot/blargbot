@@ -34,6 +34,7 @@ e.execute = async function(params) {
     replaceString = moment.tz('Etc/UTC').format(formatCode);
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

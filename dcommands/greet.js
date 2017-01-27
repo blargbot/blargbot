@@ -51,5 +51,5 @@ e.execute = async function(msg, words) {
         }
     }
     bu.send(msg, `Greeting set. ${suffix}Simulation:
-${await tags.processTag(msg, greeting, '')}`);
+${await tags.processTag(msg, greeting, '', undefined, msg.author.id, true)}`);
 };

@@ -10,13 +10,9 @@ e.isTag = true;
 e.name = `fallback`;
 e.args = `&lt;message&gt;`;
 e.usage = `{fallback;message}`;
-e.desc = `Should any tag fail to parse, it will be replaced with the fallback message instead of
-                                an
-                                error
-                            `;
+e.desc = `Should any tag fail to parse, it will be replaced with the fallback message instead of an error`;
 e.exampleIn = `{fallback;This tag failed} {randint}`;
 e.exampleOut = `This tag failed`;
-
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
@@ -27,6 +23,7 @@ e.execute = async function(params) {
     params.fallback = params.args[1];
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent,
         fallback: params.fallback

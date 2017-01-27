@@ -11,10 +11,7 @@ e.name = `randint`;
 e.args = `[min] &lt;max&gt;`;
 e.usage = `{randint[;min];max}`;
 e.desc = `If only max is specified, gets a random number between max and 0. If both arguments are
-                                specified,
-                                gets
-                                a random number between them.
-                            `;
+specified, gets a random number between them.`;
 e.exampleIn = `You rolled a {randint;1;6}`;
 e.exampleOut = `You rolled a 5`;
 
@@ -70,6 +67,7 @@ e.execute = async function(params) {
     }
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

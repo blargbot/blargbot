@@ -14,7 +14,6 @@ e.desc = `Gets the absolute value of a number`;
 e.exampleIn = `{abs;-535}`;
 e.exampleOut = `535`;
 
-
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
@@ -34,6 +33,7 @@ e.execute = async function(params) {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

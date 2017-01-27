@@ -868,7 +868,7 @@ function registerListeners() {
                 author: member.user,
                 member: member,
                 guild: guild
-            }, ccommandContent, '', undefined, author);
+            }, ccommandContent, '', undefined, author, true);
             bu.send(chan || guild.defaultChannel.id, message);
         }
         bu.logEvent(guild.id, 'memberjoin', [{
@@ -917,7 +917,7 @@ You can do this by typing \`feedback <your feedback here>\` right in this DM (do
                 author: member.user,
                 member: member,
                 guild: guild
-            }, ccommandContent, '', undefined, author);
+            }, ccommandContent, '', undefined, author, true);
             bu.send(chan || guild.defaultChannel.id, message);
         }
         bu.logEvent(guild.id, 'memberleave', [{
@@ -1212,7 +1212,7 @@ If you are the owner of this server, here are a few things to know.
 
             let msg2 = await bot.getMessage(val, lastCase.msgid);
             let embed = msg2.embeds[0];
-            if (embed) {
+            if (embed && (moment() - embed.timestamp) <= 60000) {
                 embed.fields[0].value = 'Softban';
                 embed.color = 0xffee02;
                 embed.timestamp = moment(embed.timestamp);

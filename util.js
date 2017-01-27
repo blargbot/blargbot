@@ -4,6 +4,7 @@ const Eris = require('eris');
 const emoji = require('node-emoji');
 const loggerModule = require('./logger.js');
 const gm = require('gm');
+const Trello = require('node-trello');
 const path = require('path');
 var bu = module.exports = {};
 
@@ -126,6 +127,7 @@ bu.init = () => {
         user: config.db.user,
         port: config.db.port
     });
+    bu.trello = new Trello(config.general.trellokey, config.general.trellotoken);
 };
 
 bu.compareStats = (a, b) => {
@@ -377,7 +379,7 @@ bu.send = async function(channel, message, file, embed) {
                 description: err.stack,
                 fields: [{
                     name: 'response',
-                    value: err.response,
+                    value: err.response || "null",
                     inline: true
                 }, {
                     name: 'channel',
@@ -1032,8 +1034,11 @@ bu.processTag = async function(params) {
     }
     let subtags = [];
     for (let i = 0; i < coords.length; i++) {
-        subtags.push(contents.substring(coords[i][0], coords[i][1]));
+        let subtagindex = subtags.push(contents.substring(coords[i][0], coords[i][1]));
     }
+    let result = {
+        contents
+    };
     for (let i = 0; i < subtags.length; i++) {
         let tagBrackets = subtags[i],
             tag = tagBrackets.substring(1, tagBrackets.length - 1),
@@ -1081,25 +1086,27 @@ bu.processTag = async function(params) {
                 replaceString = '';
             }
             if (replaceString == bu.specialCharBegin + 'BREAK' + bu.specialCharEnd) {
-                return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
-            }
-            replaceString = replaceString.toString();
-            replaceString = replaceString.replace(/\}/gi, `${bu.specialCharBegin}RB${bu.specialCharEnd}`)
-                .replace(/\{/gi, `${bu.specialCharBegin}LB${bu.specialCharEnd}`)
-                .replace(/\;/g, `${bu.specialCharBegin}SEMI${bu.specialCharEnd}`);
-            logger.debug('Contents:', contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
-            contents = contents.replace(tagBrackets, replaceString);
-            if (replaceObj.replaceContent) {
-                if (replaceObj.replace == undefined) {
-                    contents = replaceObj.replaceString;
-                } else {
-                    contents.replace(tagBrackets, '');
-                    contents = contents.replace(replaceObj.replace, replaceObj.replaceString);
+                result.contents = bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
+            } else {
+                replaceString = replaceString.toString();
+                replaceString = replaceString.replace(/\}/gi, `${bu.specialCharBegin}RB${bu.specialCharEnd}`)
+                    .replace(/\{/gi, `${bu.specialCharBegin}LB${bu.specialCharEnd}`)
+                    .replace(/\;/g, `${bu.specialCharBegin}SEMI${bu.specialCharEnd}`);
+                logger.debug('result.contents:', result.contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
+                result.contents = result.contents.replace(tagBrackets, replaceString);
+                if (replaceObj.replaceContent) {
+                    if (replaceObj.replace == undefined) {
+                        result.contents = replaceObj.replaceString;
+                    } else {
+                        result.contents.replace(tagBrackets, '');
+                        result.contents = result.contents.replace(replaceObj.replace, replaceObj.replaceString);
+                    }
                 }
             }
         }
+        if (result.terminate) break;
     }
-    return contents;
+    return result;
 };
 
 bu.processSpecial = (contents, final) => {
@@ -1344,7 +1351,7 @@ bu.getGuild = async function(guildid) {
 bu.canExecuteCcommand = async function(msg, commandName, quiet) {
     let val = await bu.ccommand.get(msg.guild ? msg.guild.id : '', commandName);
     if (val && typeof val == "object") {
-        roles = val.roles;
+        let roles = val.roles;
         if (roles && roles.length > 0) {
             for (let role of roles) {
                 if (bu.hasPerm(msg, role, quiet))
@@ -1781,3 +1788,6 @@ bu.unmakeSnowflake = function(snowflake) {
     return (snowflake / 4194304) + 1420070400000;
 };
 
+bu.unmakeSnowflake = function(snowflake) {
+    return (snowflake / 4194304) + 1420070400000;
+};

@@ -7,12 +7,12 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `join`;
-e.args = `&lt;array&gt; &lt;text&gt;`;
-e.usage = `{join;array;text}`;
-e.desc = `Joins the elements of an array together with the provided text.`;
-e.exampleIn = `{join;["this", "is", "an", "array"];!}`;
-e.exampleOut = `this!is!an!array`;
+e.name = `pop`;
+e.args = `&lt;pop&gt;`;
+e.usage = `{pop;array}`;
+e.desc = `Returns the last element in an array. If used with {get} or {aget}, this will remove the last element from the array as well.`;
+e.exampleIn = `{shift;["this", "is", "an", "array"]}`;
+e.exampleOut = `this`;
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
@@ -20,13 +20,16 @@ e.execute = async function(params) {
     }
     let replaceContent = false;
     let replaceString;
-    if (params.args.length >= 3) {
+    if (params.args.length >= 2) {
         params.args[1] = await bu.processTagInner(params, 1);
         let args1 = params.args[1];
         let deserialized = await bu.getArray(params, args1);
-        
+
         if (deserialized && Array.isArray(deserialized.v)) {
-            replaceString = deserialized.v.join(params.args[2]);
+            replaceString = deserialized.v.pop();
+            if (deserialized.n) {
+                await bu.setArray(deserialized, params);
+            }
         } else {
             replaceString = await bu.tagProcessError(params, '`Not an array`');
         }

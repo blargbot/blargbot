@@ -1,12 +1,10 @@
 var e = module.exports = {};
 
-const Trello = require('node-trello');
 var t;
 const moment = require('moment');
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
-    t = new Trello(config.general.trellokey, config.general.trellotoken);
 };
 e.requireCtx = require;
 

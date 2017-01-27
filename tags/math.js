@@ -10,13 +10,17 @@ e.isTag = true;
 e.name = `math`;
 e.args = `&lt;operator&gt; &lt;operands...&gt;`;
 e.usage = `{math;operator;operands...}`;
-e.desc = `Returns a number based on the operator and operands. Valid operators are <code>+</code>
-                                <code>-</code>
-                                <code>*</code> <code>/</code> <code>%</code> <code>^</code>
-                            `;
+e.desc = `Returns a number based on the operator and operands. Valid operators are 
+<ul>
+<li>+</li>
+<li>-</li>
+<li>*</li>
+<li>/</li>
+<li>%</li>
+<li>^</li>
+</ul>`;
 e.exampleIn = `2 + 3 + 6 - 2 = {math;-;{math;+;2;3;6};2}`;
 e.exampleOut = `2 + 3 + 6 - 2 = 9`;
-
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
@@ -90,6 +94,7 @@ e.execute = async function(params) {
     }
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

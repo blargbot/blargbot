@@ -7,12 +7,12 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `space`;
+e.name = `newline`;
 e.args = `[length]`;
-e.usage = `{space[;length]}`;
-e.desc = `Will be replaced by a specified number of spaces.`;
-e.exampleIn = `{space;4}Hello, world!`;
-e.exampleOut = `    Hello, world!`;
+e.usage = `{newline[;length]}`;
+e.desc = `Will be replaced by a specified number of newline characters (\\n).`;
+e.exampleIn = `{newline}Hello, world!`;
+e.exampleOut = `\nHello, world!`;
 
 
 e.execute = async function(params) {
@@ -23,6 +23,7 @@ e.execute = async function(params) {
         if (isNaN(length)) {
             if (isNaN(parsedFallback)) {
                 return {
+                    terminate: params.terminate,
                     replaceString: await bu.tagProcessError(params, '`Not a number`'),
                     replaceContent: replaceContent
                 };
@@ -34,7 +35,7 @@ e.execute = async function(params) {
     var replaceString = '';
 
     for (let i = 0; i < length; i++) {
-        replaceString += ' ';
+        replaceString += '\n';
     }
 
     var replaceContent = false;

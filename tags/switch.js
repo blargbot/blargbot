@@ -43,6 +43,7 @@ e.execute = async function(params) {
     params.content = replaceString;
     replaceString = await bu.processTag(params);
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };

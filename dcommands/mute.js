@@ -119,7 +119,7 @@ Modifying $ {
                         let input = bu.parseInput(e.flags, words);
                         let reason;
                         if (input.r) reason = input.r.join(' ');
-                        bu.logAction(msg.channel.guild, user, msg.author, 'Mute');
+                        bu.logAction(msg.channel.guild, user, msg.author, 'Mute', reason);
                         let suffix = '';
                         if (input.t) {
                             let duration = bu.parseDuration(input.t.join(' '));

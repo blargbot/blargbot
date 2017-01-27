@@ -11,8 +11,7 @@ e.name = `useravatar`;
 e.args = `[user] [quiet]`;
 e.usage = `{useravatar[;user[;quiet]]}`;
 e.desc = `Returns the user's avatar. If <code>name</code> is specified, gets that user instead. If
-                                <code>quiet</code> is
-                                specified, if a user can't be found it will simply return the <code>name</code>`;
+<code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
 e.exampleIn = `Your avatar is {useravatar}`;
 e.exampleOut = `Your avatar is (avatar url)`;
 
@@ -37,6 +36,7 @@ e.execute = async function(params) {
         replaceString = args[1];
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };
