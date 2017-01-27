@@ -20,7 +20,6 @@ router.get('/', async function(req, res) {
         });
       //  logger.debug(settings);
         res.locals.gsettings = new hbs.handlebars.SafeString(JSON.stringify(settings).replace(/`/g, '\\`'));
-        logger.debug(res.locals.gsettings);
         let guilds = req.user.guilds;
         let firstGuildCount = guilds.length;
 

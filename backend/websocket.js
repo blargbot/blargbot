@@ -16,7 +16,6 @@ e.init = function(server) {
         ws.on('message', function(message) {
             try {
                 message = JSON.parse(message);
-                logger.website('Incoming', message);
                 let userId = bu.getUserFromSession(message.sid);
                 if (!userId) {
                     sendData(ws, 403, 'Not authenticated');
@@ -54,7 +53,6 @@ function sendData(ws, code, data) {
         data
     };
     if (codes[code]) datum.desc = codes[code];
-    logger.website('Outgoing', datum);
     ws.send(JSON.stringify(datum));
 }
 
