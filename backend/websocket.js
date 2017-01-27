@@ -73,10 +73,11 @@ async function saveGuild(ws, message, userId) {
     let isStaff = await bu.isUserStaff(userId, guild.id);
     if (!isStaff) {
         sendData(ws, 403, 'Missing access');
+        return;
     }
     message.data.guild = undefined;
-    await r.table('guild').get(message.data.guildid).replace(message.data);
-
+    let res = await r.table('guild').get(message.data.guildid).replace(message.data);
+    logger.website(res);
     sendData(ws, 200, {
         data: 'Successfully updated settings.',
         type: 'guildSaved'
@@ -97,6 +98,7 @@ async function displayGuild(ws, message, userId) {
     let isStaff = await bu.isUserStaff(userId, guild.id);
     if (!isStaff) {
         sendData(ws, 403, 'Missing access');
+        return;
     }
     let storedGuild = await bu.getGuild(guild.id);
     let owner = bot.users.get(guild.ownerID); 
