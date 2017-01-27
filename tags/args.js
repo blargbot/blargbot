@@ -10,17 +10,10 @@ e.name = `args`;
 e.args = `[index] [range]`;
 e.usage = `{args[;index;[range]]}`;
 e.desc = `Gets user input. Specifying an index will only get the word at that location, specifying
-                                a range
-                                will
-                                get all the words between index and range. Specify range as <code>n</code> to get all
-                                the words
-                                from
-                                index to the end
-                            `;
+a range will get all the words between index and range. Specify range as <code>n</code> to get all
+the words from index to the end`;
 e.exampleIn = `Your second word was {args;1}`;
-e.exampleOut = `
-                                Input: <code>Hello world!</code> <br>Output: <code>Your second word was world!</code>
-                            `;
+e.exampleOut = `Input: <code>Hello world!</code> <br>Output: <code>Your second word was world!</code>`;
 
 
 e.execute = async function(params) {
