@@ -28,6 +28,7 @@ e.execute = async function(params) {
     else replaceString = val;
 
     return {
+        terminate: params.terminate,
         replaceString: replaceString,
         replaceContent: replaceContent
     };
