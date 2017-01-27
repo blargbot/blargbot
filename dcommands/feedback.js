@@ -55,48 +55,68 @@ e.execute = async function(msg, words) {
         }
         if (words[0].toLowerCase() == 'suggest') type = 'Suggestion';
         else if (words[0].toLowerCase() == 'report') type = 'Bug Report';
-        await bu.send(channel, {
-            embed: {
-                title: type,
-                description: words.slice(1).join(' '),
-                color: colour,
-                author: {
-                    name: bu.getFullName(msg.author),
-                    icon_url: msg.author.avatarURL,
-                    url: `https://blargbot.xyz/user/${msg.author.id}`
-                },
-                timestamp: moment(msg.timestamp),
-                footer: {
-                    text: 'Case ' + i + ' | ' + msg.id
-                },
-                fields: [{
-                    name: msg.guild ? msg.guild.name : 'DM',
-                    value: msg.guild ? msg.guild.id : 'DM',
-                    inline: true
-                }, {
-                    name: msg.channel.name || 'DM',
-                    value: msg.channel.id,
-                    inline: true
-                }]
-            }
-        })
-        t.post('1/cards', {
-            name: words.slice(1).join(' '),
-            desc: `Automated ${type} added by blargbot - CASE ${i}.\n\nAuthor: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`,
-            due: null,
-            idList: list,
-            idLabels: '58025f0184e677fd36dbd756'
-        }, (err) => {
-            if (err) throw err;
-        });
-        await r.table('suggestion').insert({
-            id: i,
-            author: msg.author.id,
-            channel: msg.channel.id,
-            message: words.slice(1).join(' '),
-            messageid: msg.id,
-            date: r.epochTime(moment().unix())
-        }).run();
-        await bu.send(msg, type + ' sent! :ok_hand:');
+
+        function trelloPost() {
+            return new Promise((f, r) => {
+                bu.trello.post('1/cards', {
+                    name: words.slice(1).join(' '),
+                    desc: `Automated ${type} added by ${bot.user.username} - CASE ${i}.\n\nAuthor: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`,
+                    due: null,
+                    idList: list,
+                    idLabels: '58025f0184e677fd36dbd756' + (config.general.isbeta ? ',5888db5bced82109fff170af' : '')
+                }, (err, data) => {
+                    if (err) {
+                        r(err);
+                        return;
+                    }
+                    f(data);
+                });
+            });
+        }
+        try {
+            let data = await trelloPost();
+
+            await bu.send(channel, {
+                embed: {
+                    title: type,
+                    description: words.slice(1).join(' ') + `\n\n[Trello Card](${data.shortUrl})`,
+                    color: colour,
+                    author: {
+                        name: bu.getFullName(msg.author),
+                        icon_url: msg.author.avatarURL,
+                        url: `https://blargbot.xyz/user/${msg.author.id}`
+                    },
+                    timestamp: moment(msg.timestamp),
+                    footer: {
+                        text: 'Case ' + i + ' | ' + msg.id
+                    },
+                    fields: [{
+                        name: msg.guild ? msg.guild.name : 'DM',
+                        value: msg.guild ? msg.guild.id : 'DM',
+                        inline: true
+                    }, {
+                        name: msg.channel.name || 'DM',
+                        value: msg.channel.id,
+                        inline: true
+                    }]
+                }
+            });
+
+
+            await r.table('suggestion').insert({
+                id: i,
+                author: msg.author.id,
+                channel: msg.channel.id,
+                message: words.slice(1).join(' '),
+                messageid: msg.id,
+                date: r.epochTime(moment().unix()),
+                cardId: data.id,
+                cardUrl: data.shortUrl
+            }).run();
+            await bu.send(msg, `${type} has been sent, and has been assigned an ID ${i}! :ok_hand:\n\nYou can view your ${type.toLowerCase()} here: <${data.shortUrl}>`);
+        } catch (err) {
+            logger.error(err);
+            await bu.send(msg, 'An error occured posting to trello. Please try again.');
+        }
     }
 };
