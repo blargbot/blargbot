@@ -51,7 +51,7 @@ e.execute = async function(params) {
             tagArgs = bu.splitInput(tagArgs);
             params.words = tagArgs;
             params.content = tag.content;
-            replaceString = await bu.processTag(params);
+            replaceString = await bu.processTagInner(params);
         }
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');

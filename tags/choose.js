@@ -32,7 +32,7 @@ e.execute = async function(params) {
             replaceString = args[2];
         }
         params.content = replaceString;
-        replaceString = await bu.processTag(params);
+        replaceString = await bu.processTagInner(params);
     } else
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
 
