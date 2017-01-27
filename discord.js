@@ -505,6 +505,7 @@ function saveLogs(name) {
  * Posts stats about the bot to https://bots.discord.pw
  */
 function postStats() {
+    updateStats();
     var stats = {
         'server_count': bot.guilds.size
     };
@@ -1666,6 +1667,37 @@ async function registerSubChangefeed(type, idName, cache) {
         logger.warn(`Failed to register a ${type} changefeed, will try again in 10 seconds.`);
         setTimeout(registerChangefeed, 10000);
     }
+}
+
+const stats = {};
+
+async function updateStats() {
+    let yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
+    if (!stats[yesterday]) {
+        let storedStats = await r.table('vars').get('stats');
+        if (!storedStats) {
+            await r.table('vars').insert({
+                varname: 'stats',
+                stats: {}
+            });
+            storedStats = {};
+        }
+        stats[yesterday] = storedStats.stats[yesterday];
+        if (!stats[yesterday]) {
+            stats[yesterday] = {
+                guilds: bot.guilds.size,
+                change: 0
+            };
+        }
+    }
+    let day = moment().format('YYYY-MM-DD');
+    if (!stats[day]) stats[day] = {};
+    stats[day].guilds = bot.guilds.size;
+    stats[day].change = stats[day].guilds - stats[yesterday].guilds;
+
+    await r.table('vars').get('stats').update({
+        stats: stats
+    });
 }
 
 // Now look at this net,

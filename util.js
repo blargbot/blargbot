@@ -932,6 +932,7 @@ bu.setVariable = async function(name, key, value, type, guildId) {
         case bu.TagVariableType.GLOBAL:
             let values = vars;
             await r.table('vars').update({
+                varname: 'tagVars',
                 values
             });
             bu.globalVars[key] = value;
