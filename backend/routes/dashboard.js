@@ -11,7 +11,7 @@ router.get('/', async function(req, res) {
     req.session.returnTo = req.path;
     //    logger.website();
     if (req.user) {
-        res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
+        res.locals.url = config.general.isbeta ? 'ws://localhost:8085/websocket' : 'wss://blargbot.xyz/websocket';
         res.locals.sessionId = req.sessionID;
         let settings = Object.keys(bu.settings).map(k => {
             let returnObj = bu.settings[k];

@@ -1,7 +1,6 @@
 var workspace = document.getElementById('workspace')
 var index = workspace.innerHTML;
 let data;
-console.log('aaa');
 function save() {
     if (!data) return;
     let keys = Object.keys(data.data.guild.settings);

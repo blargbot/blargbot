@@ -16,11 +16,12 @@ const levels = {
     worker: 8,
     music: 9,
     shard: 10,
-    info: 11,
-    output: 12,
-    verbose: 13,
-    debug: 14,
-    silly: 15
+    ws: 11,        
+    info: 12,
+    output: 13,
+    verbose: 14,
+    debug: 15,
+    silly: 16
 };
 
 const colors = {
@@ -40,6 +41,7 @@ const colors = {
     worker: 'magenta',
     irc: 'yellow',
     shard: 'yellow',
+    ws: 'yellow',
     timestamp: 'grey',
     bold: 'bold'
 };

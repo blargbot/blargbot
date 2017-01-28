@@ -1,5 +1,6 @@
 const e = module.exports = {};
 const WebSocketServer = require('ws').Server;
+const util = require('util');
 
 e.init = function(server) {
     global.wss = new WebSocketServer({
@@ -13,8 +14,10 @@ e.init = function(server) {
     };
 
     wss.on('connection', function(ws) {
+        logger.ws('A user has connected');
         ws.on('message', function(message) {
             try {
+                logger.ws(util.inspect(message, {depth: 1}));
                 message = JSON.parse(message);
                 let userId = bu.getUserFromSession(message.sid);
                 if (!userId) {

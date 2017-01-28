@@ -180,7 +180,7 @@
 										</button>
 									</div>
 								</div>
-								<textarea id="yayEditor" style="height: 100%" name='content'>{{startText}}</textarea>
+								<textarea id="yayEditor" style="height: 100%; font-size: 1px" name='content' >{{startText}}</textarea>
 								<script>
                             var words = {{#tagseditor}}
                                 {{/tagseditor}};
@@ -200,12 +200,14 @@
                                     words: words
                                 }
                             });
+							
                             editor.on("inputRead", function (editor, change) {
                                 if (change.text[0] == '{') {
                                     editor.showHint();
                                 }
                                 editor.save();
                             });
+							document.getElementsByClassName("CodeMirror")[0].
                         </script><br>
 								<!--	<input type="submit" value="Load" class="cyan accent-3 white-text btn waves-effect waves-light">-->
 
