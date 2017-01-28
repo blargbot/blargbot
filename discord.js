@@ -162,6 +162,8 @@ var error = true;
  * @param em - the event emitter (EventEmitter)
  */
 e.init = async function(v, em) {
+    bu.commandMessages = {};
+
     VERSION = v;
     emitter = em;
     logger.debug('HELLOOOOO?');
@@ -345,7 +347,6 @@ function switchAvatar(forced) {
             switchAvatar();
         }, 600000);
 }
-var commandMessages = {};
 var handleDiscordCommand = async function(channel, user, text, msg) {
     let words = bu.splitInput(text);
     if (msg.channel.guild)
@@ -1273,12 +1274,12 @@ If you are the owner of this server, here are a few things to know.
                 msg.attachments = [];
             }
         }
-        if (commandMessages[msg.channel.guild.id] && commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
+        if (bu.commandMessages[msg.channel.guild.id] && bu.commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
             let val = await bu.guildSettings.get(msg.channel.guild.id, 'deletenotif');
             if (val && val != 0)
                 bu.send(msg, `**${msg.member.nick
 || msg.author.username}** deleted their command message.`);
-            commandMessages[msg.channel.guild.id].splice(commandMessages[msg.channel.guild.id].indexOf(msg.id), 1);
+            bu.commandMessages[msg.channel.guild.id].splice(bu.commandMessages[msg.channel.guild.id].indexOf(msg.id), 1);
         }
         if (storedGuild.settings.makelogs)
             if (msg.channel.id != '204404225914961920') {
@@ -1348,7 +1349,7 @@ If you are the owner of this server, here are a few things to know.
         if (storedGuild && storedGuild.settings.makelogs)
             if (msg.channel.id != '204404225914961920') {
                 r.table('chatlogs').insert({
-                    id: bu.makeSnowflake(),                    
+                    id: bu.makeSnowflake(),
                     content: msg.content,
                     attachment: msg.attachments[0] ? msg.attachments[0].url : undefined,
                     userid: msg.author.id,
@@ -1516,12 +1517,12 @@ If you are the owner of this server, here are a few things to know.
                         if (!isDm) {
                             let deletenotif = storedGuild.settings.deletenotif;
                             if (deletenotif != '0') {
-                                if (!commandMessages[msg.channel.guild.id]) {
-                                    commandMessages[msg.channel.guild.id] = [];
+                                if (!bu.commandMessages[msg.channel.guild.id]) {
+                                    bu.commandMessages[msg.channel.guild.id] = [];
                                 }
-                                commandMessages[msg.channel.guild.id].push(msg.id);
-                                if (commandMessages[msg.channel.guild.id].length > 100) {
-                                    commandMessages[msg.channel.guild.id].shift();
+                                bu.commandMessages[msg.channel.guild.id].push(msg.id);
+                                if (bu.commandMessages[msg.channel.guild.id].length > 100) {
+                                    bu.commandMessages[msg.channel.guild.id].shift();
                                 }
                             }
                             if (msg.channel.guild) {
