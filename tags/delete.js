@@ -25,7 +25,11 @@ e.execute = async function(params) {
             bu.commandMessages[msg.guild.id].splice(index, 1);
         }
     }
-    if (msg.delete) msg.delete();
+    try {
+        if (msg.delete) msg.delete();
+    } catch (err) {
+
+    }
     var replaceString = ``;
     var replaceContent = false;
 
