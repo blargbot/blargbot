@@ -4,8 +4,7 @@ const util = require('util');
 
 e.init = function(server) {
     global.wss = new WebSocketServer({
-        server: server,
-        port: 8109
+        server: server
     });
 
     wss.broadcast = function broadcast(data) {
