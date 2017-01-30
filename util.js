@@ -303,7 +303,7 @@ bu.send = async function(channel, message, file, embed) {
                 throw {
                     message: warnMsg,
                     throwOriginal: true
-                }
+                };
             }
             if (dmMsg && channel.author) {
                 let storedUser = await r.table('user').get(channel.author.id);
@@ -387,10 +387,10 @@ bu.send = async function(channel, message, file, embed) {
                     inline: true
                 }],
                 color: 0x00aa55
-            }
+            };
             let channel = bot.getChannel(channelid);
             if (channel) {
-                errEmbed.fields[1].name = channel.name
+                errEmbed.fields[1].name = channel.name;
                 errEmbed.fields.splice(1, 0, {
                     name: channel.guild ? channel.guild.name : 'DM',
                     value: channel.guild ? channel.guild.id : 'DM',
@@ -840,19 +840,19 @@ bu.TagVariableType = {
     GUILDLOCAL: 6,
     properties: {
         1: {
-            table: 'tag',
+            table: 'tag'
         },
         2: {
-            table: 'user',
+            table: 'user'
         },
         3: {
-            table: 'guild',
+            table: 'guild'
         },
         4: {
-            table: 'vars',
+            table: 'vars'
         },
         5: {
-            table: 'tag',
+            table: 'tag'
         },
         6: {
             table: 'guild'
@@ -869,7 +869,7 @@ bu.serializeTagArray = function(array, varName) {
         n: varName
     };
     return JSON.stringify(obj);
-}
+};
 
 bu.deserializeTagArray = function(value) {
     try {
@@ -890,7 +890,7 @@ bu.getArray = async function(params, arrName) {
     if (!obj) {
         try {
             let arr = await bu.tags['get'].getVar(params, arrName);
-            if (arr) {
+            if (arr != undefined) {
                 obj = bu.deserializeTagArray(bu.serializeTagArray(arr, arrName));
             }
         } catch (err) {
@@ -898,7 +898,7 @@ bu.getArray = async function(params, arrName) {
         }
     }
     return obj;
-}
+};
 
 bu.setArray = async function(deserialized, params) {
     await bu.tags['set'].setVar(params, deserialized.n, deserialized.v);
@@ -1023,7 +1023,7 @@ bu.processTag = async function(params) {
     if (terminate) return {
         contents: contents,
         terminate: true
-    }
+    };
 
     let level = 0;
     let lastIndex = 0;
@@ -1378,7 +1378,7 @@ bu.canExecuteCcommand = async function(msg, commandName, quiet) {
         return true;
     }
     return false;
-}
+};
 
 bu.canExecuteCommand = async function(msg, commandName, quiet) {
     if (msg.author.id == bu.CAT_ID && bu.catOverrides) return [true, commandName];
@@ -1472,7 +1472,7 @@ bu.shuffle = (array) => {
         array[i] = array[j];
         array[j] = temp;
     }
-}
+};
 
 bu.getTagUser = async function(msg, args, index) {
     var obtainedUser;
@@ -1498,10 +1498,10 @@ bu.tagGetFloat = (arg) => {
 
 bu.tagProcessError = async function(params, errormessage) {
     let fallback = params.fallback;
-    let returnMessage = '';
+    let returnMessage = {};
     params.content = fallback;
 
-    if (fallback === undefined) returnMessage = errormessage;
+    if (fallback === undefined) returnMessage.contents = errormessage;
     else returnMessage = await bu.processTag(params);
     if (returnMessage.terminate) params.terminate = true;
     return returnMessage.contents;
@@ -1610,10 +1610,10 @@ const timeKeywords = {
     hours: ['hours', 'hour', 'h'],
     minutes: ['minutes', 'minute', 'min', 'mins', 'm'],
     seconds: ['seconds', 'second', 'sec', 'secs', 's']
-}
+};
 
 bu.parseDuration = function(text) {
-    let duration = moment.duration()
+    let duration = moment.duration();
     if (/([0-9]+) ?(day|days|d)/.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(day|days|d)/i)[1]) || 0, 'd');
     if (/([0-9]+) ?(hours|hour|h)/.test(text))
@@ -1623,7 +1623,7 @@ bu.parseDuration = function(text) {
     if (/([0-9]+) ?(seconds|second|secs|sec|s)/.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(seconds|second|secs|sec|s)/i)[1]) || 0, 's');
     return duration;
-}
+};
 
 /*
  * let map = [
@@ -1665,7 +1665,7 @@ bu.parseInput = function(map, text, noTrim) {
         }
     }
     return output;
-}
+};
 
 bu.getPerms = function(channelid) {
     let channel = bot.getChannel(channelid);
@@ -1675,7 +1675,7 @@ bu.getPerms = function(channelid) {
     } else {
         return null;
     }
-}
+};
 
 bu.request = function(options) {
     return new Promise((fulfill, reject) => {
@@ -1687,10 +1687,10 @@ bu.request = function(options) {
             fulfill({
                 res,
                 body
-            })
-        })
+            });
+        });
     });
-}
+};
 
 bu.createCaption = function(options) {
     return new Promise((fulfill, reject) => {
@@ -1716,14 +1716,14 @@ bu.createCaption = function(options) {
         image.out('-background').out('transparent');
         image.out('-fill').out(options.fill);
         image.out('-gravity').out(options.gravity);
-        image.out()
+        image.out();
         if (options.stroke) {
             image.out('-stroke').out(options.stroke);
             if (options.strokewidth) image.out('-strokewidth').out(options.strokewidth);
         }
         image.out(`caption:${options.text}`);
         if (options.stroke) {
-            image.out('-compose').out('Over')
+            image.out('-compose').out('Over');
             image.out('-size').out(options.size);
             image.out('-background').out('transparent');
             image.out('-fill').out(options.fill);
@@ -1741,9 +1741,9 @@ bu.createCaption = function(options) {
                 return;
             }
             fulfill(buf);
-        })
-    })
-}
+        });
+    });
+};
 
 const tokenChoices = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
 bu.genToken = function(length) {
@@ -1753,14 +1753,14 @@ bu.genToken = function(length) {
         output += tokenChoices[bu.getRandomInt(0, tokenChoices.length - 1)];
     }
     return output;
-}
+};
 
 bu.awaitEvent = function(obj) {
     return new Promise((fulfill, reject) => {
-        cluster.send(obj)
+        cluster.send(obj);
         bu.emitter.once(obj.code, fulfill);
     });
-}
+};
 
 bu.genEventCode = function() {
     let code = bu.genToken(15);
@@ -1768,7 +1768,7 @@ bu.genEventCode = function() {
         code = bu.genToken(15);
     }
     return code;
-}
+};
 
 bu.getAuthor = function(user) {
     return {

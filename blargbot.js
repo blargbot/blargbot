@@ -1,19 +1,19 @@
-var fs = require('fs');
-var util = require('util');
-var moment = require('moment-timezone');
-var mkdirp = require('mkdirp');
-var path = require('path');
-var reload = require('require-reload')(require);
-var Cleverbot = require('cleverbot-node');
-var mysql = require('mysql');
-cleverbot = new Cleverbot();
+const babel = require('babel-core');
+
+const fs = require('fs');
+const util = require('util');
+const moment = require('moment-timezone');
+const mkdirp = require('mkdirp');
+const path = require('path');
+const reload = require('require-reload')(require);
+const mysql = require('mysql');
 const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
 class BotEmitter extends EventEmitter {}
 const botEmitter = new BotEmitter();
 
-var irc = require('./irc.js');
-var discord = require('./discord.js');
+const irc = require('./irc.js');
+const discord = require('./discord.js');
 botEmitter.on('reloadConfig', () => {
     reloadConfig();
 });
@@ -74,18 +74,17 @@ function saveConfig() {
  * Time to init the bots
  */
 function init() {
-    logger.init('Initializing discord.')
+    logger.init('Initializing discord.');
     discord.init(VERSION, botEmitter);
 }
 
 botEmitter.on('ircInit', () => {
-    logger.init('Discord ready. Time to initialize IRC.')
+    logger.init('Discord ready. Time to initialize IRC.');
     irc.init(VERSION, botEmitter);
-})
+});
 
 botEmitter.on('reloadBu', () => {
     global.bu = reload('./util.js');
-})
+});
 
 init();
-
