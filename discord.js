@@ -5,7 +5,7 @@ Object.defineProperty(Eris.Message, "guild", {
     get: function guild() {
         return this.channel.guild;
     }
-})
+});
 const moment = require('moment-timezone');
 const path = require('path');
 const https = require('https');
@@ -460,7 +460,7 @@ var executeCommand = async function(commandName, msg, words, text) {
             let dmMsg;
             switch (response.code) {
                 case 50001:
-                    dmMsg = `Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.`
+                    dmMsg = `Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.`;
                     break;
             }
             let storedUser = await r.table('user').get(msg.author.id);
@@ -933,7 +933,7 @@ You can do this by typing \`feedback <your feedback here>\` right in this DM (do
         if (member.nick != oldMember.nick) {
             let fields = [{
                 name: 'User',
-                value: bu.getFullName(member.user) + ` (${member.user.id})`,
+                value: bu.getFullName(member.user) + ` (${member.user.id})`
             }, {
                 name: 'Old Nickname',
                 value: oldMember.nick || member.user.username,
@@ -942,7 +942,7 @@ You can do this by typing \`feedback <your feedback here>\` right in this DM (do
                 name: 'New Nickname',
                 value: member.nick || member.user.username,
                 inline: true
-            }]
+            }];
             bu.logEvent(guild.id, 'nickupdate', fields, {
                 embed: {
                     thumbnail: {
@@ -1237,6 +1237,7 @@ If you are the owner of this server, here are a few things to know.
     });
 
     async function handleDelete(msg, quiet) {
+        logger.debug('A message was deleted in ' + msg.guild.name);
         if (!msg.guild) return;
         const storedGuild = await bu.getGuild(msg.guild.id);
         if (!msg.author || !msg.channel) {
