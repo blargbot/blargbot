@@ -1237,9 +1237,9 @@ If you are the owner of this server, here are a few things to know.
     });
 
     async function handleDelete(msg, quiet) {
-        logger.debug('A message was deleted in ' + msg.guild.name);
-        if (!msg.guild) return;
-        const storedGuild = await bu.getGuild(msg.guild.id);
+        //   logger.debug('A message was deleted in ' + msg.)
+        if (msg.channel.guild == undefined) return;
+        const storedGuild = await bu.getGuild(msg.channel.guild.id);
         if (!msg.author || !msg.channel) {
             let storedMsg = await r.table('chatlogs')
                 .getAll(msg.id, {
@@ -1248,7 +1248,7 @@ If you are the owner of this server, here are a few things to know.
                 .orderBy(r.desc('msgtime')).run();
             if (storedMsg.length > 0) {
 
-                // logger.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
+                logger.debug('Somebody deleted an uncached message, but we found it in the DB.');
 
                 storedMsg = storedMsg[0];
                 msg.content = storedMsg.content;
@@ -1296,30 +1296,29 @@ If you are the owner of this server, here are a few things to know.
                         msgtime: r.epochTime(moment() / 1000),
                         type: 2
                     }).run();
-
-                    let newMsg = msg.content || 'uncached :(';
-                    if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
-                    if (!quiet)
-                        bu.logEvent(msg.channel.guild.id, 'messagedelete', [{
-                            name: 'User',
-                            value: bu.getFullName(msg.author) + ` (${msg.author.id})`,
-                            inline: true
-                        }, {
-                            name: 'Message ID',
-                            value: msg.id,
-                            inline: true
-                        }, {
-                            name: 'Channel',
-                            value: msg.channel ? msg.channel.mention : 'Uncached',
-                            inline: true
-                        }, {
-                            name: 'Content',
-                            value: newMsg
-                        }]);
                 } catch (err) {
                     logger.error(err);
                 }
             }
+        let newMsg = msg.content || 'uncached :(';
+        if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
+        if (!quiet)
+            bu.logEvent(msg.channel.guild.id, 'messagedelete', [{
+                name: 'User',
+                value: bu.getFullName(msg.author) + ` (${msg.author.id})`,
+                inline: true
+            }, {
+                name: 'Message ID',
+                value: msg.id,
+                inline: true
+            }, {
+                name: 'Channel',
+                value: msg.channel ? msg.channel.mention : 'Uncached',
+                inline: true
+            }, {
+                name: 'Content',
+                value: newMsg
+            }]);
     }
 
     bot.on('messageDelete', handleDelete);
