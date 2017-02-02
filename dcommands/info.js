@@ -17,7 +17,9 @@ e.longinfo = `<p>Gets information about the specified user.</p>`;
 
 const patrons = [
     'Nex',
-    '196018922854678528'
+    '196018922854678528',
+    '135556895086870528',
+    '196013641479225344'
 ];
 
 e.execute = (msg) => {
