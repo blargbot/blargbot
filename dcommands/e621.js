@@ -28,14 +28,24 @@ e.execute = (msg, words) => {
 
                 tagList[i] = tagList[i].toLowerCase();
             }
-            // listylist = tagList;
-            //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+        // listylist = tagList;
+        //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
                 //        logger.(kek);
                 bu.send(msg, config.general.nsfwMessage);
 
                 return;
+            } else {
+                tagList.sort((a, b) => {
+                    if (/rating\:s(afe)?/.test(a)) {
+                        return 1000;
+                    }
+                    if (/rating\:s(afe)?/.test(b)) {
+                        return -1000;
+                    }
+                    return a - b;
+                });
             }
 
 
@@ -82,7 +92,7 @@ e.execute = (msg, words) => {
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                                     urlList.push(doc.posts.post[i].file_url);
                             }
-                            //    logger.(util.inspect(urlList));
+                        //    logger.(util.inspect(urlList));
                         if (urlList.length == 0) {
                             bu.send(msg, 'No results found!');
                             return;
