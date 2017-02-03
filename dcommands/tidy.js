@@ -41,7 +41,7 @@ e.flags = [{
     flag: 'q',
     word: 'query',
     desc: 'Removes messages that match the regex query. You can also use regex.'
-}]
+}];
 
 e.execute = async function(msg, words) {
     let input = bu.parseInput(e.flags, words);
@@ -50,7 +50,7 @@ e.execute = async function(msg, words) {
     if (input.q) {
         let queryStr = input.q.join(' ');
         if (/^\/?.*\/.*/.test(queryStr)) {
-            regexList = queryStr.match(/^\/?(.*)\/(.*)/);
+            let regexList = queryStr.match(/^\/?(.*)\/(.*)/);
             query = new RegExp(regexList[1], regexList[2]);
         } else {
             query = new RegExp(queryStr);
@@ -78,7 +78,7 @@ e.execute = async function(msg, words) {
     }
     if (limit < 0 || isNaN(limit)) limit = 100;
     if (limit > 100) {
-        let msg2 = await bu.awaitMessage(msg, `This operation will clear up to ${limit} messages. There is no way to recover them after deletion. Please type 'yes' to continue, or anything else to cancel. This query will expire in 60 seconds.`, undefined, 60000)
+        let msg2 = await bu.awaitMessage(msg, `This operation will clear up to ${limit} messages. There is no way to recover them after deletion. Please type 'yes' to continue, or anything else to cancel. This query will expire in 60 seconds.`, undefined, 60000);
         if (msg2.content.toLowerCase() != 'yes') {
             bu.send(msg, 'Tidy canceled.');
             return;
