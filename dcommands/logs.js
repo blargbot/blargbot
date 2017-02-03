@@ -56,7 +56,7 @@ e.flags = [{
     flag: 'j',
     word: 'json',
     desc: 'Returns the logs in a json file rather than on a webpage.'
-}]
+}];
 
 var typeRef = {
     CREATE: 0,
@@ -111,13 +111,13 @@ e.execute = async function(msg, words) {
         usersRaw = user.split(','),
         types = [],
         users = [];
-    for (i = 0; i < typesRaw.length; i++) {
+    for (let i = 0; i < typesRaw.length; i++) {
         if (typesRaw[i] != '') {
             types.push(typeRef[typesRaw[i].toUpperCase().trim()]);
         }
     }
 
-    for (i = 0; i < usersRaw.length; i++) {
+    for (let i = 0; i < usersRaw.length; i++) {
         if (usersRaw[i] != '') {
             var name = usersRaw[i].trim();
             var u = await bu.getUser(msg, name, false);
