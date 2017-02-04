@@ -10,7 +10,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'settings [keys|help|set <key>]';
 e.info = 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.';
-e.longinfo = '<p>Gets or sets the settings for the current guild. For key documentation, go <a href="settings">here</a></p>';
+e.longinfo = '<p>Gets or sets the settings for the current guild. For key documentation, go <a href="/commands/settings">here</a>.</p>';
 
 e.execute = async function(msg, words) {
     if (words.length == 1) {
