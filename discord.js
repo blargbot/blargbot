@@ -1009,9 +1009,10 @@ If you are the owner of this server, here are a few things to know.
     });
 
     bot.on('messageUpdate', async function(msg, oldmsg) {
-        logger.info(util.inspect(msg, {
-            depth: 0
-        }));
+        if (!msg.author)
+            logger.info(util.inspect(msg, {
+                depth: 0
+            }));
         if (!msg.guild) return;
         const storedGuild = await bu.getGuild(msg.guild.id);
         if (!oldmsg) {
@@ -1035,7 +1036,7 @@ If you are the owner of this server, here are a few things to know.
                     };
                 });
                 oldmsg.attachments = [];
-                if (storedMsg.attachment) msg.attachments = [{
+                if (storedMsg.attachment) oldmsg.attachments = [{
                     url: storedMsg.attachment
                 }];
                 oldmsg.channel = bot.getChannel(msg.channelID);
