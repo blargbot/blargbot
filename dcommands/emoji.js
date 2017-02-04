@@ -15,10 +15,17 @@ e.usage = 'emoji <emoji> [size]';
 e.alias = ['e'];
 e.info = 'Gives you a large version of an emoji. If size is specified, makes the image that size.';
 e.longinfo = '<p>Gives you a large version of an emoji. If size is specified, makes the image that size.</p>';
+e.flags = [{
+    flag: 's',
+    word: 'svg',
+    desc: 'Get the emote as an svg instead of a png.'
+}];
+
 
 e.execute = async function(msg, words) {
-    if (words[1]) {
-        if (/\<\:.+\:\d+\>/.test(words[1])) {
+    let input = bu.parseInput(e.flags, words);
+    if (input.undefined[0]) {
+        if (/\<\:.+\:\d+\>/.test(input.undefined[0])) {
             let url = `https://cdn.discordapp.com/emojis/${words[1].match(/(\d+)/)[1]}.png`;
             request({
                 uri: url,
@@ -30,30 +37,38 @@ e.execute = async function(msg, words) {
                 });
             });
         } else {
-            let codePoint = twemoji.convert.toCodePoint(words[1]);
+            let codePoint = twemoji.convert.toCodePoint(input.undefined[0]);
             let url = `https://raw.githubusercontent.com/twitter/twemoji/gh-pages/2/svg/${codePoint}.svg`;
             request({
                 uri: url,
                 encoding: null
             }, async function(err, res, body) {
-                let size = 668;
-                if (words[2]) {
-                    let tempSize = parseInt(words[2]);
-                    if (!isNaN(tempSize)) size = tempSize;
-                }
-                if (res.headers['content-type'] == 'text/plain; charset=utf-8') {
-                    let buffer = await svg2png(body, {
-                        width: size,
-                        height: size
-                    });
+                if (input.s) {
                     bu.send(msg, '', {
-                        name: 'emoji.png',
-                        file: buffer
+                        name: 'emoji.svg',
+                        file: body
                     });
                 } else {
-                    bu.send(msg, 'Invalid emoji!');
+                    let size = 668;
+                    if (input.undefined[1]) {
+                        let tempSize = parseInt(input.undefined[1]);
+                        if (!isNaN(tempSize)) size = tempSize;
+                    }
+                    if (res.headers['content-type'] == 'text/plain; charset=utf-8') {
+                        let buffer = await svg2png(body, {
+                            width: size,
+                            height: size
+                        });
+                        bu.send(msg, '', {
+                            name: 'emoji.png',
+                            file: buffer
+                        });
+                    } else {
+                        bu.send(msg, 'Invalid emoji!');
+                    }
                 }
             });
+
         }
     } else {
         bu.send(msg, 'Not enough arguments!');
