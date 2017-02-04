@@ -1009,6 +1009,7 @@ If you are the owner of this server, here are a few things to know.
     });
 
     bot.on('messageUpdate', async function(msg, oldmsg) {
+        logger.verbose(msg);
         if (!msg.guild) return;
         const storedGuild = await bu.getGuild(msg.guild.id);
         if (!oldmsg) {
