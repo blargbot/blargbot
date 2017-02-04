@@ -3,6 +3,7 @@ var e = module.exports = {};
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
 };
+const moment = require('moment');
 
 e.requireCtx = require;
 
@@ -26,7 +27,7 @@ e.execute = async function(msg, words) {
             if (words[1]) {
                 var user = await bu.getUser(msg, words[1]);
                 if (!user) {
-                    bu.send(msg, `I couldn't find that user. Please make sure you're giving me a user id or a mention.`)
+                    bu.send(msg, `I couldn't find that user. Please make sure you're giving me a user id or a mention.`);
                     return;
                 }
                 logger.debug(require('util').inspect(user));
@@ -58,7 +59,7 @@ e.event = async function(args) {
     if (!bu.unbans[args.guild]) bu.unbans[args.guild] = {};
     bu.unbans[args.guild][args.user] = {
         mod: bot.user.id,
-        reason: `Automatically unbanned after ${bu.parseDuration(args.duration).humanize()}.`
+        reason: `Automatically unbanned after ${moment.duration(args.duration).humanize()}.`
     };
     await bot.unbanGuildMember(args.guild, args.user);
 };

@@ -77,6 +77,6 @@ e.event = async function(args) {
             roles: roles,
             mute: voiceMute ? false : undefined
         });
-        bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${bu.parseDuration(args.duration).humanize()}.`);
+        bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${moment.duration(args.duration).humanize()}.`);
     }
 };
