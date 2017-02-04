@@ -183,22 +183,22 @@ bu.settings = {
     },
     greeting: {
         name: 'Greeting Message',
-        desc: `What to say to new users when they join. You can also use the \`greet\` command`,
+        desc: `What to say to new users when they join. You can also use the <code>greet</code> command`,
         type: 'string'
     },
     farewell: {
         name: 'Farewell Message',
-        desc: `What to say when a user leaves. You can also use the \`farewell\` command`,
+        desc: `What to say when a user leaves. You can also use the <code>farewell</code> command`,
         type: 'string'
     },
     prefix: {
         name: 'Custom Prefix',
-        desc: `The custom command prefix. You can also use the \`setprefix\` command`,
+        desc: `The custom command prefix. You can also use the <code>setprefix</code> command`,
         type: 'string'
     },
     modlog: {
         name: 'Modlog Channel',
-        desc: `The id of the modlog channel. You can also use the \`modlog\` command`,
+        desc: `The id of the modlog channel. You can also use the <code>modlog</code> command`,
         type: 'string'
     },
     mutedrole: {
@@ -228,7 +228,7 @@ bu.settings = {
     },
     staffperms: {
         name: 'Staff Permissions',
-        desc: `The numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <https://discordapi.com/permissions.html> for a permission calculator.`,
+        desc: `The numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <a href=https://discordapi.com/permissions.html>here</a> for a permission calculator.`,
         type: 'int'
     },
     kickoverride: {
