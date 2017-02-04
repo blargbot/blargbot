@@ -8,9 +8,9 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'settings [help|set <key>]';
-e.info = 'Gets or sets the settings for the current guild.';
-e.longinfo = '<p>Gets or sets the settings for the current guild.</p>';
+e.usage = 'settings [keys|help|set <key>]';
+e.info = 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.';
+e.longinfo = '<p>Gets or sets the settings for the current guild. For key documentation, go <a href="settings">here</a></p>';
 
 e.execute = async function(msg, words) {
     if (words.length == 1) {
@@ -133,12 +133,15 @@ Greeting Channel : ${greetChan}
         words.shift();
         var key;
         switch (words[0].toLowerCase()) {
-            case 'help':
+            case 'keys':
                 let message = '\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
                 for (key in bu.settings) {
-                    message += '**__' + key.toUpperCase() + '__**' + ' - ' + bu.settings[key].desc + '\n';
+                    message += ' - **' + key.toUpperCase() + '** (' + bu.settings[key].type + ')\n';
                 }
                 bu.send(msg, message);
+                break;
+            case 'help':
+                bu.send(msg, e.info);
                 break;
             case 'set':
                 words.shift();
