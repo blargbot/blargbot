@@ -79,7 +79,7 @@ e.execute = async function(msg, words) {
         let permOverride = settings.permoverride && settings.permoverride != 0 ? true : false;
         let dmHelp = settings.dmhelp && settings.dmhelp != 0 ? true : false;
         let makeLogs = settings.makelogs && settings.makelogs != 0 ? true : false;
-        
+
 
         let staffPerms = settings.staffperms || bu.defaultStaff;
         let kickPerms = settings.kickoverride || 0;
@@ -90,47 +90,49 @@ e.execute = async function(msg, words) {
         let farewellChan = settings.farewellchan ? bot.getChannel(settings.farewellchan) : 'Default';
         if (farewellChan && farewellChan != 'Default') farewellChan = farewellChan.name;
         else farewellChan = 'Undefined';
-        
+        let kickAt = settings.kickat || 'Disabled';
+        let banAt = settings.banat || 'Disabled';
         var message = `\`\`\`prolog
 Settings For ${msg.channel.guild.name}
+
+-- General --
           Prefix : ${prefix}
-       Chat Logs : ${makeLogs}
-   NSFW Channels : ${nsfwMessage}
-     Blacklisted : ${blacklistMessage}  
+     CAH is NSFW : ${cahNsfw}
+         DM Help : ${dmHelp}
+
+-- Messages --
         Greeting : ${greeting}
-Greeting Channel : ${greetChan}
         Farewell : ${farewell}
+      Tableflips : ${tableFlip}        
+
+-- Channels --
 Farewell Channel : ${farewellChan}
+Greeting Channel : ${greetChan}
+   NSFW Channels : ${nsfwMessage}
   Modlog Channel : ${modlogChannel}
+     Blacklisted : ${blacklistMessage}  
+
+-- Moderation --
+       Chat Logs : ${makeLogs}
+    Anti-Mention : ${antiMention}
       Muted Role : ${mutedRole}
    Track Deletes : ${deleteNotif}
-     CAH is NSFW : ${cahNsfw}
-      Tableflips : ${tableFlip}
-    Anti-Mention : ${antiMention}
-         DM Help : ${dmHelp}
+
+-- Permissions --
    Perm Override : ${permOverride}
      Staff Perms : ${staffPerms}
    Kick Override : ${kickPerms}
     Ban Override : ${banPerms}
+
+-- Warnings --
+         Kick At : ${kickAt}
+          Ban At : ${banAt}
 \`\`\``;
         bu.send(msg, message);
     } else {
         words.shift();
         var key;
         switch (words[0].toLowerCase()) {
-            case 'set':
-                words.shift();
-                if (words.length > 0) {
-                    key = words.shift();
-                    let value = words.join(' ');
-                    if (bu.settings[key]) {
-                        await bu.guildSettings.set(msg.channel.guild.id, key, value, bu.settings[key].type);
-                        bu.send(msg, ':ok_hand:');
-                    } else {
-                        bu.send(msg, 'Invalid key!');
-                    }
-                }
-                break;
             case 'help':
                 let message = '\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
                 for (key in bu.settings) {
@@ -138,13 +140,17 @@ Farewell Channel : ${farewellChan}
                 }
                 bu.send(msg, message);
                 break;
+            case 'set':
+                words.shift();
             default:
                 if (words.length > 0) {
                     key = words.shift();
                     let value = words.join(' ');
                     if (bu.settings[key]) {
-                        await bu.guildSettings.set(msg.channel.guild.id, key, value, bu.settings[key].type);
-                        bu.send(msg, ':ok_hand:');
+                        let res = await bu.guildSettings.set(msg.channel.guild.id, key, value, bu.settings[key].type);
+                        if (res == true)
+                            bu.send(msg, ':ok_hand:');
+                        else bu.send(msg, `Failed to set: ${res}`);
                     } else {
                         bu.send(msg, 'Invalid key!');
                     }
@@ -157,17 +163,17 @@ Farewell Channel : ${farewellChan}
 bu.settings = {
     makelogs: {
         name: 'Make Chatlogs',
-        desc: `Whether to record chat logs or not. Set to '0' to disable.`,
+        desc: `Whether to record chat logs or not.`,
         type: 'bool'
     },
     cahnsfw: {
         name: 'Is CAH NSFW',
-        desc: `Whether 'cah' can only be done in nsfw channels or not. Set to '0' to disable.`,
+        desc: `Whether 'cah' can only be done in nsfw channels or not.`,
         type: 'bool'
     },
     deletenotif: {
         name: 'Delete Notifications',
-        desc: `If enabled, notifies you if a user deleted their command. Set to '0' to disable.`,
+        desc: `If enabled, notifies you if a user deleted their command.`,
         type: 'bool'
     },
     greeting: {
@@ -197,7 +203,7 @@ bu.settings = {
     },
     tableflip: {
         name: 'Tableflips',
-        desc: `Whether the bot should respond to tableflips/unflips. Set to '0' to disable.`,
+        desc: `Whether the bot should respond to tableflips/unflips.`,
         type: 'bool'
     },
     antimention: {
@@ -228,6 +234,16 @@ bu.settings = {
     banoverride: {
         name: 'Ban Override',
         desc: `Same as staffperms, but allows users to use the ban/hackban/unban commands regardless of permissions`,
+        type: 'int'
+    },
+    banat: {
+        name: 'Ban At',
+        desc: 'The number of warnings before a ban.',
+        type: 'int'
+    },
+    kickat: {
+        name: 'Kick At',
+        desc: 'The number of warnings before a kick.',
         type: 'int'
     }
 };

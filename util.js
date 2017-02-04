@@ -6,6 +6,8 @@ const loggerModule = require('./logger.js');
 const gm = require('gm');
 const Trello = require('node-trello');
 const path = require('path');
+const safe = require('safe-regex');
+
 var bu = module.exports = {};
 
 bu.CAT_ID = '103347843934212096';
@@ -193,9 +195,35 @@ bu.hasPerm = (msg, perm, quiet) => {
         msg.member.permission.json.administrator) {
         return true;
     }
-    var roles = msg.channel.guild.roles.filter(m => Array.isArray(perm) ?
-        perm.map(q => q.toLowerCase()).indexOf(m.name.toLowerCase()) > -1 :
-        m.name.toLowerCase() == perm.toLowerCase());
+    var roles = msg.channel.guild.roles.filter(m => {
+        if (Array.isArray(perm) ?
+            perm.map(q => q.toLowerCase()).indexOf(m.name.toLowerCase()) > -1 :
+            m.name.toLowerCase() == perm.toLowerCase()) {
+            return true;
+        } else {
+            let role;
+
+            function getId(text) {
+                if (/[0-9]{17,23}/.test(text)) {
+                    return text.match(/([0-9]{17,23})/)[1];
+                } else return null;
+            }
+            if (Array.isArray(perm)) {
+                role = [];
+                for (let i = 0; i < perm.length; i++) {
+                    let id = getId(perm[i]);
+                    if (id !== null) role.push(id);
+                }
+                if (role.length == 0) return false;
+            } else {
+                role = getId(perm);
+                if (role === null) return false;
+            };
+            Array.isArray(role) ?
+                role.indexOf(m.id) > -1 :
+                m.id == role;
+        }
+    });
     for (var i = 0; i < roles.length; i++) {
         if (msg.member.roles.indexOf(roles[i].id) > -1) {
             return true;
@@ -204,6 +232,22 @@ bu.hasPerm = (msg, perm, quiet) => {
     if (!quiet) {
         let permString = Array.isArray(perm) ? perm.map(m => '`' + m + '`').join(', or ') : '`' + perm + '`';
         bu.send(msg, `You need the role ${ permString } in order to use this command!`);
+    }
+    return false;
+};
+
+bu.hasRole = (msg, roles) => {
+    if (!msg.channel.guild) return true;
+    if ((msg.member.id === bu.CAT_ID && bu.catOverrides) ||
+        msg.channel.guild.ownerID == msg.member.id ||
+        msg.member.permission.json.administrator) {
+        return true;
+    }
+    if (!Array.isArray(roles)) roles = [roles];
+    for (var i = 0; i < roles.length; i++) {
+        if (msg.member.roles.indexOf(roles) > -1) {
+            return true;
+        }
     }
     return false;
 };
@@ -297,7 +341,6 @@ bu.send = async function(channel, message, file, embed) {
                 default:
                     logger.error(err.response, err.stack);
                     throw err;
-                    break;
             }
             if (typeof channel == 'string') {
                 throw {
@@ -375,7 +418,7 @@ bu.send = async function(channel, message, file, embed) {
             return null;
         } catch (err2) {
             let errEmbed = {
-                title: err.message,
+                title: err.message.split('\n')[0],
                 description: err.stack,
                 fields: [{
                     name: 'response',
@@ -708,30 +751,35 @@ bu.bans = {};
 
 bu.unbans = {};
 
-bu.getPosition = (member) => {;
+bu.getPosition = (member) => {
     let role = member.guild.roles.get(member.roles.sort((a, b) => member.guild.roles.get(b).position - member.guild.roles.get(a).position)[0]);
     return role ? role.position : 0;
 };
 
-bu.logAction = async function(guild, user, mod, type, reason) {
+bu.isBotHigher = (member) => {
+    let botPos = bu.getPosition(member.guild.members.get(bot.user.id));
+    let memPos = bu.getPosition(member);
+    return botPos > memPos;
+};
+
+bu.logAction = async function(guild, user, mod, type, reason, fields) {
     let isArray = Array.isArray(user);
     if (Array.isArray(reason)) reason = reason.join(' ');
     let val = await bu.guildSettings.get(guild.id, 'modlog');
     if (val) {
         let color = 0x17c484;
         switch (type.toLowerCase()) {
+            case 'auto-ban':
             case 'ban':
+            case 'hack-ban':
+            case 'mass hack-ban':
                 color = 0xcc0c1c;
                 break;
+            case 'softban':
             case 'unban':
-                color = 0x17c914;
+                color = 0x79add1;
                 break;
-            case 'hack-ban':
-                color = 0xb90dbf;
-                break;
-            case 'mass hack-ban':
-                color = 0x710775;
-                break;
+            case 'auto-kick':
             case 'kick':
                 color = 0xdb7b1c;
                 break;
@@ -741,6 +789,12 @@ bu.logAction = async function(guild, user, mod, type, reason) {
             case 'auto-unmute':
             case 'unmute':
                 color = 0x1cdb68;
+                break;
+            case 'warning':
+                color = 0xd1be79;
+                break;
+            case 'pardon':
+                color = 0x79d196;
                 break;
         }
         let storedGuild = await bu.getGuild(guild.id);
@@ -767,6 +821,11 @@ bu.logAction = async function(guild, user, mod, type, reason) {
             }],
             timestamp: moment()
         };
+        if (fields != undefined && Array.isArray(fields)) {
+            for (const field of fields) {
+                embed.fields.push(field);
+            }
+        }
         if (mod) {
             embed.footer = {
                 text: `${bu.getFullName(mod)} (${mod.id})`,
@@ -778,8 +837,8 @@ bu.logAction = async function(guild, user, mod, type, reason) {
         } else {
             embed.author = {
                 name: users,
-                icon_url: user.avatarURL,
-                url: `https://blargbot.xyz/user/${user.id}`
+                icon_url: user.avatarURL
+                // url: `https://blargbot.xyz/user/${user.id}`
             };
         }
         let moderator = mod ? `${mod.username}#${mod.discriminator}` : 'Unknown';
@@ -812,6 +871,59 @@ bu.logAction = async function(guild, user, mod, type, reason) {
     }
 };
 
+bu.issueWarning = async function(user, guild, count, params) {
+    let storedGuild = await bu.getGuild(guild.id);
+    if (count == undefined) count = 1;
+    if (params == undefined) params = {};
+    if (!storedGuild.warnings) storedGuild.warnings = {};
+    if (!storedGuild.warnings.users) storedGuild.warnings.users = {};
+    if (!storedGuild.warnings.users[user.id]) storedGuild.warnings.users[user.id] = 0;
+    let type = 0;
+    storedGuild.warnings.users[user.id] += count;
+    if (storedGuild.warnings.users[user.id] < 0) storedGuild.warnings.users[user.id] = 0;
+    let warningCount = storedGuild.warnings.users[user.id];
+    if (bu.isBotHigher(guild.members.get(user.id)))
+        if (storedGuild.settings.banat && warningCount >= storedGuild.settings.banat) {
+            if (!bu.bans[guild.id])
+                bu.bans[guild.id] = {};
+            bu.bans[guild.id][user.id] = {
+                mod: bot.user,
+                type: 'Auto-Ban',
+                reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`
+            };
+            await guild.banMember(user.id);
+            storedGuild.warnings.users[user.id] = undefined;
+            type = 1;
+        } else if (storedGuild.settings.kickat && warningCount >= storedGuild.settings.kickat) {
+        await bu.logAction(guild, bot.user, user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`);
+        await guild.kickMember(user.id);
+        type = 2;
+    }
+    await r.table('guild').get(guild.id).update({
+        warnings: r.literal(storedGuild.warnings)
+    });
+    return {
+        type,
+        count: warningCount
+    };
+};
+
+bu.issuePardon = async function(user, guild, count, params) {
+    let storedGuild = await bu.getGuild(guild.id);
+    if (count == undefined) count = 1;
+    if (params == undefined) params = {};
+    if (!storedGuild.warnings) storedGuild.warnings = {};
+    if (!storedGuild.warnings.users) storedGuild.warnings.users = {};
+    if (!storedGuild.warnings.users[user.id]) storedGuild.warnings.users[user.id] = 0;
+    storedGuild.warnings.users[user.id] -= count;
+    if (storedGuild.warnings.users[user.id] < 0) storedGuild.warnings.users[user.id] = 0;
+    let warningCount = storedGuild.warnings.users[user.id];
+
+    await r.table('guild').get(guild.id).update({
+        warnings: r.literal(storedGuild.warnings)
+    });
+    return warningCount;
+};
 
 bu.comparePerms = (m, allow) => {
     if (!allow) allow = bu.defaultStaff;
@@ -1215,13 +1327,23 @@ bu.guildSettings = {
     set: async function(guildid, key, value, type) {
         let storedGuild = await bu.getGuild(guildid);
 
+        switch (type) {
+            case 'int':
+                value = parseInt(value);
+                if (isNaN(value)) return 'Not a number.';
+                break;
+            case 'bool':
+                if (value == 1 || value.toLowerCase() == 'true') value = true;
+                else if (value == 0 || value.toLowerCase() == 'false') value = false;
+                else return 'Expected `1`, `0`, `true`, or `false`';
+                break;
+        }
         storedGuild.settings[key] = value;
-
 
         await r.table('guild').get(guildid).update({
             settings: storedGuild.settings
         }).run();
-        return;
+        return true;
     },
     get: async function(guildid, key) {
         let storedGuild = await bu.getGuild(guildid);
@@ -1614,13 +1736,13 @@ const timeKeywords = {
 
 bu.parseDuration = function(text) {
     let duration = moment.duration();
-    if (/([0-9]+) ?(day|days|d)/.test(text))
+    if (/([0-9]+) ?(day|days|d)/i.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(day|days|d)/i)[1]) || 0, 'd');
-    if (/([0-9]+) ?(hours|hour|h)/.test(text))
+    if (/([0-9]+) ?(hours|hour|h)/i.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(hours|hour|h)/i)[1]) || 0, 'h');
-    if (/([0-9]+) ?(minutes|minute|mins|min|m)/.test(text))
+    if (/([0-9]+) ?(minutes|minute|mins|min|m)/i.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(minutes|minute|mins|min|m)/i)[1]) || 0, 'm');
-    if (/([0-9]+) ?(seconds|second|secs|sec|s)/.test(text))
+    if (/([0-9]+) ?(seconds|second|secs|sec|s)/i.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(seconds|second|secs|sec|s)/i)[1]) || 0, 's');
     return duration;
 };
@@ -1803,4 +1925,16 @@ bu.makeSnowflake = function() {
 
 bu.unmakeSnowflake = function(snowflake) {
     return (snowflake / 4194304) + 1420070400000;
+};
+
+bu.createRegExp = function(term) {
+    if (/^\/?.*\/.*/.test(term)) {
+        let regexList = term.match(/^\/?(.*)\/(.*)/);
+        let temp = new RegExp(regexList[1], regexList[2]);
+        if (!safe(temp)) {
+            throw 'Unsafe Regex';
+        }
+        return temp;
+    }
+    throw 'Invalid Regex';
 };
