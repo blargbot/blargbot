@@ -1010,7 +1010,7 @@ If you are the owner of this server, here are a few things to know.
 
     bot.on('messageUpdate', async function(msg, oldmsg) {
         if (!msg.author) {
-            logger.info(msg.id, msg.channel.id, msg.embed);
+            logger.info(msg.id, msg.channel.id, util.inspect(msg.embed));
         }
         if (msg.author) {
             if (!msg.guild) return;
