@@ -1062,7 +1062,7 @@ If you are the owner of this server, here are a few things to know.
                     }).run();
             }
         let oldMsg = oldmsg.content || 'uncached :(';
-        let newMsg = msg.content;
+        let newMsg = msg.content || '""';
         if (oldMsg.length + newMsg.length > 1900) {
             if (oldMsg.length > 900) oldMsg = oldMsg.substring(0, 900) + '... (too long to display)';
             if (newMsg.length > 900) newMsg = newMsg.substring(0, 900) + '... (too long to display)';
