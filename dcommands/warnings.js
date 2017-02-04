@@ -28,10 +28,10 @@ e.execute = async function(msg, words) {
     if (warnings != 0)
         message = `:warning: **${bu.getFullName(user)}** has accumulated ${warnings == 1 ? '1 warning' : warnings + ' warnings'}.`;
     else message = `:tada: **${bu.getFullName(user)}** doesn't have any warnings!`;
-    if (storedGuild.settings.kickat) {
+    if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0) {
         message += `\n - ${storedGuild.settings.kickat - warnings} more warnings before being kicked.`;
     }
-    if (storedGuild.settings.banat) {
+    if (storedGuild.settings.banat && storedGuild.settings.banat > 0) {
         message += `\n - ${storedGuild.settings.banat - warnings} more warnings before being banned.`;
     }
     bu.send(msg, message);

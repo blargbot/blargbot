@@ -150,7 +150,9 @@ Greeting Channel : ${greetChan}
                         let res = await bu.guildSettings.set(msg.channel.guild.id, key, value, bu.settings[key].type);
                         if (res == true)
                             bu.send(msg, ':ok_hand:');
-                        else bu.send(msg, `Failed to set: ${res}`);
+                        else {
+                            bu.send(msg, `Failed to set: ${res}`);
+                        };
                     } else {
                         bu.send(msg, 'Invalid key!');
                     }
@@ -238,12 +240,12 @@ bu.settings = {
     },
     banat: {
         name: 'Ban At',
-        desc: 'The number of warnings before a ban.',
+        desc: 'The number of warnings before a ban. Set to 0 or below to disable.',
         type: 'int'
     },
     kickat: {
         name: 'Kick At',
-        desc: 'The number of warnings before a kick.',
+        desc: 'The number of warnings before a kick. Set to 0 or below to disable.',
         type: 'int'
     }
 };

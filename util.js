@@ -883,7 +883,7 @@ bu.issueWarning = async function(user, guild, count, params) {
     if (storedGuild.warnings.users[user.id] < 0) storedGuild.warnings.users[user.id] = 0;
     let warningCount = storedGuild.warnings.users[user.id];
     if (bu.isBotHigher(guild.members.get(user.id)))
-        if (storedGuild.settings.banat && warningCount >= storedGuild.settings.banat) {
+        if (storedGuild.settings.banat && storedGuild.settings.banat > 0 && warningCount >= storedGuild.settings.banat) {
             if (!bu.bans[guild.id])
                 bu.bans[guild.id] = {};
             bu.bans[guild.id][user.id] = {
@@ -894,7 +894,7 @@ bu.issueWarning = async function(user, guild, count, params) {
             await guild.banMember(user.id);
             storedGuild.warnings.users[user.id] = undefined;
             type = 1;
-        } else if (storedGuild.settings.kickat && warningCount >= storedGuild.settings.kickat) {
+        } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
         await bu.logAction(guild, bot.user, user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`);
         await guild.kickMember(user.id);
         type = 2;
@@ -1326,22 +1326,28 @@ bu.splitInput = (content, noTrim) => {
 bu.guildSettings = {
     set: async function(guildid, key, value, type) {
         let storedGuild = await bu.getGuild(guildid);
-
+        let returnObj = true;
         switch (type) {
             case 'int':
                 value = parseInt(value);
-                if (isNaN(value)) return 'Not a number.';
+                if (isNaN(value)) {
+                    value = undefined;
+                    returnObj = 'Not a number.';
+                };
                 break;
             case 'bool':
                 if (value == 1 || value.toLowerCase() == 'true') value = true;
                 else if (value == 0 || value.toLowerCase() == 'false') value = false;
-                else return 'Expected `1`, `0`, `true`, or `false`';
+                else {
+                    value = undefined;
+                    returnObj = 'Expected `1`, `0`, `true`, or `false`';
+                };
                 break;
         }
         storedGuild.settings[key] = value;
 
         await r.table('guild').get(guildid).update({
-            settings: storedGuild.settings
+            settings: r.literal(storedGuild.settings)
         }).run();
         return true;
     },
