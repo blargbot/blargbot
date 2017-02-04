@@ -11,8 +11,8 @@ e.hidden = false;
 e.usage = 'patch [features] [flags]';
 e.info = 'Makes a patch note';
 var changeChannel = '222199986123833344';
-var roleId = '239399475263700992';
-//var roleId = '268577839639560192'; // temp role for testing
+const roleId = '239399475263700992';
+const betaRoleId = '268577839639560192'; // temp role for testing
 
 e.flags = [{
     flag: 'f',
@@ -31,18 +31,18 @@ e.execute = async function(msg, words) {
     }
     let input = bu.parseInput(e.flags, words, true);
     let channel = await bot.getChannel(changeChannel);
-    let role = channel.guild.roles.get(roleId);
+    let role = channel.guild.roles.get(config.general.isbeta ? betaRoleId : roleId);
     let content = role.mention;
     let embed = {
-        title: `Version ${bu.VERSION}`,
+        author: {
+            name: `Version ${bu.VERSION}`
+        },
         fields: [],
         color: bu.avatarColours[bu.avatarId]
     };
     if (input.undefined.length > 0) {
-        embed.fields.push({
-            name: 'New Features and Changes',
-            value: input.undefined.join(' ')
-        });
+        embed.title = 'New Features and Changes';
+        embed.description = input.undefined.join(' ');
     };
     if (input.f && input.f.length > 0) {
         embed.fields.push({
@@ -60,6 +60,7 @@ e.execute = async function(msg, words) {
     await role.edit({
         mentionable: true
     });
+    logger.info(embed);
     await bu.send(changeChannel, {
         content,
         embed
