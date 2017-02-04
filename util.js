@@ -417,6 +417,7 @@ bu.send = async function(channel, message, file, embed) {
             }
             return null;
         } catch (err2) {
+            logger.error(err2);
             let errEmbed = {
                 title: err.message.split('\n')[0],
                 description: err.stack,
@@ -443,6 +444,10 @@ bu.send = async function(channel, message, file, embed) {
             errEmbed.fields.push({
                 name: 'content',
                 value: content.content || 'empty'
+            });
+            errEmbed.fields.push({
+                name: 'embed',
+                value: content.embed ? JSON.stringify(content.embed) : 'none'
             });
             logger.debug('aaa', errEmbed, embed);
             bu.send('250859956989853696', {
