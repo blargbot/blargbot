@@ -32,9 +32,9 @@ e.execute = async function(params) {
             if (isNaN(start) || (end && isNaN(end))) {
                 replaceString = await bu.tagProcessError(params, '`Invalid start or end`');
             } else {
-                let arguments = [start, end];
-                if (args[4]) arguments = arguments.concat(args.slice(4));
-                let newArray = [].splice.apply(deserialized.v, arguments);
+                let argss = [start, end];
+                if (args[4]) argss = argss.concat(args.slice(4));
+                let newArray = [].splice.apply(deserialized.v, argss);
                 replaceString = bu.serializeTagArray(newArray);
                 await bu.setArray(deserialized, params);
             }
