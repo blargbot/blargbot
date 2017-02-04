@@ -442,7 +442,7 @@ bu.send = async function(channel, message, file, embed) {
             }
             errEmbed.fields.push({
                 name: 'content',
-                value: content.content
+                value: content.content || 'empty'
             });
             logger.debug('aaa', errEmbed, embed);
             bu.send('250859956989853696', {
