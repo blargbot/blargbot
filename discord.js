@@ -1393,120 +1393,123 @@ If you are the owner of this server, here are a few things to know.
         }
 
         if (msg.author.id !== bot.user.id) {
-            let antimention;
-            if (!isDm) antimention = storedGuild.settings.antimention;
-            var parsedAntiMention = parseInt(antimention);
-            if (!(parsedAntiMention == 0 || isNaN(parsedAntiMention))) {
-                if (msg.mentions.length >= parsedAntiMention) {
-                    logger.info('BANN TIME');
-                    if (!bu.bans[msg.channel.guild.id])
-                        bu.bans[msg.channel.guild.id] = {};
-                    bu.bans[msg.channel.guild.id][msg.author.id] = {
-                        mod: bot.user,
-                        type: 'Auto-Ban',
-                        reason: 'Mention spam'
-                    };
-                    try {
-                        await bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1);
-                    } catch (err) {
-                        delete bu.bans[msg.channel.guild.id][msg.author.id];
-                        bu.send(msg, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
+            if (!isDm) {
+                let antimention;
+                antimention = storedGuild.settings.antimention;
+                var parsedAntiMention = parseInt(antimention);
+                if (!(parsedAntiMention == 0 || isNaN(parsedAntiMention))) {
+                    if (msg.mentions.length >= parsedAntiMention) {
+                        logger.info('BANN TIME');
+                        if (!bu.bans[msg.channel.guild.id])
+                            bu.bans[msg.channel.guild.id] = {};
+                        bu.bans[msg.channel.guild.id][msg.author.id] = {
+                            mod: bot.user,
+                            type: 'Auto-Ban',
+                            reason: 'Mention spam'
+                        };
+                        try {
+                            await bot.banGuildMember(msg.channel.guild.id, msg.author.id, 1);
+                        } catch (err) {
+                            delete bu.bans[msg.channel.guild.id][msg.author.id];
+                            bu.send(msg, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
+                        }
+                        return;
                     }
-                    return;
                 }
-            }
 
-            let censor = storedGuild.censor;
-            if (censor && censor.list.length > 0) {
-                //First, let's check exceptions
-                let exceptions = censor.exception;
-                if (!(exceptions.channel.includes(msg.channel.id) ||
-                        exceptions.user.includes(msg.author.id) ||
-                        (exceptions.role.length > 0 && bu.hasRole(msg, exceptions.role)))) { // doesn't have an exception!
-                    for (const cens of censor.list) {
-                        let violation = false;
-                        let term = cens.term;
-                        if (cens.regex) {
-                            try {
-                                let regex = bu.createRegExp(term);
-                                if (regex.test(msg.content)) violation = true;
-                            } catch (err) {}
-                        } else if (msg.content.indexOf(term) > -1) violation = true;
-                        if (violation == true) { // Uh oh, they did a bad!
-                            let res = await bu.issueWarning(msg.author, msg.guild, cens.weight);
-                            await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', 'Said a blacklisted phrase.', [{
-                                name: 'Amount',
-                                value: cens.weight,
-                                inline: true
-                            }, {
-                                name: 'Total Warnings',
-                                value: res.count
-                            }]);
-                            try {
-                                await msg.delete();
-                                let message = '';
-                                switch (res.type) {
-                                    case 0:
-                                        if (cens.deleteMessage) message = cens.deleteMessage;
-                                        else if (censor.rule.deleteMessage) message = censor.rule.deleteMessage;
-                                        else message = bu.commands['censor'].defaultDeleteMessage;
-                                        break;
-                                    case 1:
-                                        if (cens.banMessage) message = cens.banMessage;
-                                        else if (censor.rule.banMessage) message = censor.rule.banMessage;
-                                        else message = bu.commands['censor'].defaultBanMessage;
-                                        break;
-                                    case 2:
-                                        if (cens.kickMessage) message = cens.kickMessage;
-                                        else if (censor.rule.kickMessage) message = censor.rule.kickMessage;
-                                        else message = bu.commands['censor'].defaultKickMessage;
-                                        break;
+                let censor = storedGuild.censor;
+                if (censor && censor.list.length > 0) {
+                    //First, let's check exceptions
+                    let exceptions = censor.exception;
+                    if (!(exceptions.channel.includes(msg.channel.id) ||
+                            exceptions.user.includes(msg.author.id) ||
+                            (exceptions.role.length > 0 && bu.hasRole(msg, exceptions.role)))) { // doesn't have an exception!
+                        for (const cens of censor.list) {
+                            let violation = false;
+                            let term = cens.term;
+                            if (cens.regex) {
+                                try {
+                                    let regex = bu.createRegExp(term);
+                                    if (regex.test(msg.content)) violation = true;
+                                } catch (err) {}
+                            } else if (msg.content.indexOf(term) > -1) violation = true;
+                            if (violation == true) { // Uh oh, they did a bad!
+                                let res = await bu.issueWarning(msg.author, msg.guild, cens.weight);
+                                await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', 'Said a blacklisted phrase.', [{
+                                    name: 'Amount',
+                                    value: cens.weight,
+                                    inline: true
+                                }, {
+                                    name: 'Total Warnings',
+                                    value: res.count
+                                }]);
+                                try {
+                                    await msg.delete();
+                                    let message = '';
+                                    switch (res.type) {
+                                        case 0:
+                                            if (cens.deleteMessage) message = cens.deleteMessage;
+                                            else if (censor.rule.deleteMessage) message = censor.rule.deleteMessage;
+                                            else message = bu.commands['censor'].defaultDeleteMessage;
+                                            break;
+                                        case 1:
+                                            if (cens.banMessage) message = cens.banMessage;
+                                            else if (censor.rule.banMessage) message = censor.rule.banMessage;
+                                            else message = bu.commands['censor'].defaultBanMessage;
+                                            break;
+                                        case 2:
+                                            if (cens.kickMessage) message = cens.kickMessage;
+                                            else if (censor.rule.kickMessage) message = censor.rule.kickMessage;
+                                            else message = bu.commands['censor'].defaultKickMessage;
+                                            break;
+                                    }
+                                    let output = await tags.processTag(msg, message, '', undefined, undefined, true);
+                                    bu.send(msg, output);
+                                    return;
+                                } catch (err) {
+                                    bu.send(msg, `${bu.getFullName(msg.author)} said a blacklisted word, but I was not able to delete it.`);
                                 }
-                                let output = await tags.processTag(msg, message, '', undefined, undefined, true);
-                                bu.send(msg, output);
-                                return;
-                            } catch (err) {
-                                bu.send(msg, `${bu.getFullName(msg.author)} said a blacklisted word, but I was not able to delete it.`);
+                            }
+                        }
+                    }
+                }
+
+                if (storedGuild && storedGuild.roleme) {
+                    let roleme = storedGuild.roleme.filter(m => m.channels.indexOf(msg.channel.id) > -1 || m.channels.length == 0);
+                    if (roleme.length > 0) {
+                        for (let i = 0; i < roleme.length; i++) {
+                            let caseSensitive = roleme[i].casesensitive;
+                            let message = roleme[i].message;
+                            let content = msg.content;
+                            if (!caseSensitive) {
+                                message = message.toLowerCase();
+                                content = content.toLowerCase();
+                            }
+                            if (message == content) {
+                                console.info(`A roleme was triggered > ${msg.guild.name} (${msg.guild.id}) > ${msg.channel.name} (${msg.channel.id}) > ${msg.author.username} (${msg.author.id})`);
+                                let roleList = msg.member.roles;
+                                let add = roleme[i].add;
+                                let del = roleme[i].remove;
+                                for (let ii = 0; ii < add.length; ii++) {
+                                    if (roleList.indexOf(add[ii]) == -1) roleList.push(add[ii]);
+                                }
+                                for (let ii = 0; ii < del.length; ii++) {
+                                    if (roleList.indexOf(del[ii]) > -1) roleList.splice(roleList.indexOf(del[ii]), 1);
+                                }
+                                try {
+                                    await msg.member.edit({
+                                        roles: roleList
+                                    });
+                                    bu.send(msg, 'Your roles have been edited!');
+                                } catch (err) {
+                                    bu.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
+                                }
                             }
                         }
                     }
                 }
             }
 
-            if (storedGuild && storedGuild.roleme) {
-                let roleme = storedGuild.roleme.filter(m => m.channels.indexOf(msg.channel.id) > -1 || m.channels.length == 0);
-                if (roleme.length > 0) {
-                    for (let i = 0; i < roleme.length; i++) {
-                        let caseSensitive = roleme[i].casesensitive;
-                        let message = roleme[i].message;
-                        let content = msg.content;
-                        if (!caseSensitive) {
-                            message = message.toLowerCase();
-                            content = content.toLowerCase();
-                        }
-                        if (message == content) {
-                            console.info(`A roleme was triggered > ${msg.guild.name} (${msg.guild.id}) > ${msg.channel.name} (${msg.channel.id}) > ${msg.author.username} (${msg.author.id})`);
-                            let roleList = msg.member.roles;
-                            let add = roleme[i].add;
-                            let del = roleme[i].remove;
-                            for (let ii = 0; ii < add.length; ii++) {
-                                if (roleList.indexOf(add[ii]) == -1) roleList.push(add[ii]);
-                            }
-                            for (let ii = 0; ii < del.length; ii++) {
-                                if (roleList.indexOf(del[ii]) > -1) roleList.splice(roleList.indexOf(del[ii]), 1);
-                            }
-                            try {
-                                await msg.member.edit({
-                                    roles: roleList
-                                });
-                                bu.send(msg, 'Your roles have been edited!');
-                            } catch (err) {
-                                bu.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
-                            }
-                        }
-                    }
-                }
-            }
             let prefix;
             if (!isDm)
                 prefix = storedGuild.settings.prefix;
