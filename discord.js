@@ -1009,7 +1009,7 @@ If you are the owner of this server, here are a few things to know.
     });
 
     bot.on('messageUpdate', async function(msg, oldmsg) {
-        logger.verbose(util.inspect(msg, {
+        logger.info(util.inspect(msg, {
             depth: 0
         }));
         if (!msg.guild) return;
