@@ -1,8 +1,9 @@
 class Manager {
 
-    constructor(type) {
+    constructor(type, removeListeners) {
         this.list = {};
         this.type = type;
+        this.removeListeners = removeListeners;
         this.init();
     }
 
@@ -22,6 +23,8 @@ class Manager {
 
     load(name) {
         try {
+            if (this.removeListeners)
+                bot.removeAllListeners(name);
             const mod = require(this.constructPath(name));
             this.list[name] = mod;
             return true;
@@ -34,6 +37,8 @@ class Manager {
 
     unload(name) {
         if (this.list.hasOwnProperty(name)) {
+            if (this.removeListeners)
+                bot.removeAllListeners(name);
             delete this.list[name];
             logger.init('Unloaded ' + this.type + ' ' + name);
             return true;
@@ -44,6 +49,8 @@ class Manager {
     reload(name) {
         try {
             if (this.list.hasOwnProperty(name)) {
+                if (this.removeListeners)
+                    bot.removeAllListeners(name);
                 this.list[name] = dep.reload(this.constructPath(name));
                 return true;
             }

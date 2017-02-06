@@ -19,11 +19,11 @@ e.execute = async function(msg, words) {
         if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden) {
             let aliases = '';
             let flags = '';
-            if (bu.commands[CommandManager.commandList[words[1]].name].alias)
-                aliases = `\n**__Aliases__**: [ ${bu.commands[CommandManager.commandList[words[1]].name].alias.join(', ')} ]`;
-            if (bu.commands[CommandManager.commandList[words[1]].name].flags) {
+            if (CommandManager.list[CommandManager.commandList[words[1]].name].alias)
+                aliases = `\n**__Aliases__**: [ ${CommandManager.list[CommandManager.commandList[words[1]].name].alias.join(', ')} ]`;
+            if (CommandManager.list[CommandManager.commandList[words[1]].name].flags) {
                 flags = `**__Flags__**:\n`;
-                for (flag of bu.commands[CommandManager.commandList[words[1]].name].flags) {
+                for (let flag of CommandManager.list[CommandManager.commandList[words[1]].name].flags) {
                     flags += `   \`-${flag.flag}\` or \`--${flag.word}\` - ${flag.desc}\n`;
                 }
             }
@@ -69,16 +69,16 @@ ${flags}`;
         }
         //    logger.debug(modifiedCommands);
         //   logger.debug(otherCommands);
-        for (var command in bu.commands) {
+        for (var command in CommandManager.list) {
             if (modifiedCommands.indexOf(command) == -1)
-                if (!bu.commands[command].hidden) {
-                    if (bu.commands[command].category == bu.CommandType.GENERAL) {
+                if (!CommandManager.list[command].hidden) {
+                    if (CommandManager.list[command].category == bu.CommandType.GENERAL) {
                         if ((await bu.canExecuteCommand(msg, command, true))[0])
                             generalCommands.push(command);
                     } else {
-                        if (!otherCommands[bu.commands[command].category])
-                            otherCommands[bu.commands[command].category] = [];
-                        otherCommands[bu.commands[command].category].push(command);
+                        if (!otherCommands[CommandManager.list[command].category])
+                            otherCommands[CommandManager.list[command].category] = [];
+                        otherCommands[CommandManager.list[command].category].push(command);
                     }
                 }
         }

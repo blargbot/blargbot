@@ -35,7 +35,6 @@ class CommandManager extends Manager {
             }
         }
         return false;
-
     }
 
     unload(name) {

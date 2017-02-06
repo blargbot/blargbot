@@ -204,61 +204,58 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
             return true;
         }
     } else {
-        if (config.discord.commands[words[0]] != null) {
-
-            return true;
-        } else {
-            if (CommandManager.commandList.hasOwnProperty(words[0].toLowerCase())) {
-                let commandName = CommandManager.commandList[words[0].toLowerCase()].name;
-                let val2 = await bu.canExecuteCommand(msg, commandName);
-                if (val2[0]) {
-                    try {
-                        await executeCommand(commandName, msg, words, text);
-                    } catch (err) {
-                        logger.error(err.stack);
-                        bu.send('250859956989853696', {
-                            embed: {
-                                title: err.message.toString(),
-                                color: 0xAD1111,
-                                description: err.stack.toString(),
-                                timestamp: dep.moment(msg.timestamp),
-                                author: {
-                                    name: bu.getFullName(msg.author),
-                                    icon_url: msg.author.avatarURL,
-                                    url: `https://blargbot.xyz/user/${msg.author.id}`
-                                },
-                                footer: {
-                                    text: `MSG: ${msg.id}`
-                                },
-                                fields: [{
-                                    name: msg.guild ? msg.guild.name : 'DM',
-                                    value: msg.guild ? msg.guild.id : 'null',
-                                    inline: true
-                                }, {
-                                    name: msg.channel.name || 'DM',
-                                    value: msg.channel.id,
-                                    inline: true
-                                }, {
-                                    name: 'Command',
-                                    value: commandName,
-                                    inline: true
-                                }, {
-                                    name: 'Complete Command',
-                                    value: text,
-                                    inline: true
-                                }]
-                            }
-                        });
-                    }
+        if (CommandManager.commandList.hasOwnProperty(words[0].toLowerCase())) {
+            let commandName = CommandManager.commandList[words[0].toLowerCase()].name;
+            logger.debug(commandName);
+            let val2 = await bu.canExecuteCommand(msg, commandName);
+            if (val2[0]) {
+                try {
+                    await executeCommand(commandName, msg, words, text);
+                } catch (err) {
+                    logger.error(err.stack);
+                    bu.send('250859956989853696', {
+                        embed: {
+                            title: err.message.toString(),
+                            color: 0xAD1111,
+                            description: err.stack.toString(),
+                            timestamp: dep.moment(msg.timestamp),
+                            author: {
+                                name: bu.getFullName(msg.author),
+                                icon_url: msg.author.avatarURL,
+                                url: `https://blargbot.xyz/user/${msg.author.id}`
+                            },
+                            footer: {
+                                text: `MSG: ${msg.id}`
+                            },
+                            fields: [{
+                                name: msg.guild ? msg.guild.name : 'DM',
+                                value: msg.guild ? msg.guild.id : 'null',
+                                inline: true
+                            }, {
+                                name: msg.channel.name || 'DM',
+                                value: msg.channel.id,
+                                inline: true
+                            }, {
+                                name: 'Command',
+                                value: commandName,
+                                inline: true
+                            }, {
+                                name: 'Complete Command',
+                                value: text,
+                                inline: true
+                            }]
+                        }
+                    });
                 }
-                return val2[0];
-            } else {
-                return false;
             }
+            return val2[0];
+        } else {
+            return false;
         }
     }
 };
 var executeCommand = async function(commandName, msg, words, text) {
+    // logger.debug(commandName);
     r.table('stats').get(commandName).update({
         uses: r.row('uses').add(1),
         lastused: r.epochTime(dep.moment() / 1000)
