@@ -1,6 +1,5 @@
-const express = require('express');
-const router = express.Router();
-const hbs = require('hbs');
+const router = dep.express.Router();
+
 
 router.get('/', (req, res) => {
     res.locals.user = req.user;

@@ -45,30 +45,25 @@
 
 </head>
 <script>
-     $(document).ready(function () {
+	$(document).ready(function () {
          if (window.location.hash) {
 			 setTimeout(function() {
-$('#timeout').html('Loading the logs seems to be taking longer than usual. This could be caused by an invalid or unspecified hash, or by something breaking internally. </p><p>Please make sure that you\'re using a link provided by the bot, and if the problem persists please contact me by using the suggest command.');
+$('#timeout').html('Loading the logs seems to be taking longer than usual. This could be caused by an invalid or unspecified hash, or by something breaking internally. </p><p>Pl s	e that yoin	 provided by the bot, 		roblem persists ple		me by using the suggest command.');
 		 }, 20000);
-             var hash = window.location.hash.substring(1);
-			 
-            var request = $.ajax({
-                url: '/logs',
-                method: 'POST',
-                data: {hash: hash}
-            })
+     		hash = window.location.hash.substring(1);
+					var request = $.ajax({
+                url: 			          method: 'POST',
+                data: {has			      })
             request.done(function(msg) {
-                $('body').html(msg);
-                loaded = true
-            })
-         } else {
-			 $('#loadingheader').html('No keycode provided.')
-			 $('#loaders').html('Please use the <code>logs</code> command to retrieve a valid URL.')
+                $('body		;
+		    loaded = true
+ 	   	     } else 	('#loadingheader').html('No keycode provided.'	
+			 $('#loa	tml('Please use the <code>logs</ code> c		and to retrieve a valid URL.')
 		 }
 			
 			
 	 });
-		 
+
 </script>
 
 <body class="blue-grey">
@@ -191,19 +186,19 @@ $('#timeout').html('Loading the logs seems to be taking longer than usual. This 
 		</div>
 	</footer>
 	<script>
-    init();
+		init();
     function doStuff() {
-        var first = true;
-        var elements = document.getElementsByClassName('time');
-        for (var i = 0; i < elements.length; i++) {
-            var timestamp = elements.item(i).innerHTML;
-            var newTimestamp = moment(parseInt(timestamp));
-            elements.item(i).innerHTML = newTimestamp.format('YYYY/MM/DD h:mm:ss A');
-        }
-        console.log('hi');
+        v			first = true;
+        var elements = doc				t.getElementsByClassName('time');
+        for (var i = 0; i < eleme			.le			h; i++) {
+ 				       var timestamp =			ements.item(i).innerHTML;
+       				  var newTimestamp = dep.moment(parseInt(					tamp));
+            elements.item(i).innerHTML = newTimestamp.format('YYYY/MM/DD h:m				 A'			
+        }       console.log('hi');
     }
     doStuff();
-</script>
+
+	</script>
 
 
 </body>

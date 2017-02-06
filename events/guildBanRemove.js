@@ -1,5 +1,3 @@
-const moment = require('moment');
-
 bot.on('guildBanRemove', async function(guild, user) {
     let storedGuild = await bu.getGuild(guild.id);
     let modlog = storedGuild.modlog || [];
@@ -17,10 +15,10 @@ bot.on('guildBanRemove', async function(guild, user) {
 
         let msg2 = await bot.getMessage(val, lastCase.msgid);
         let embed = msg2.embeds[0];
-        if (embed && (moment() - embed.timestamp) <= 60000) {
+        if (embed && (dep.moment() - embed.timestamp) <= 60000) {
             embed.fields[0].value = 'Softban';
             embed.color = 0xffee02;
-            embed.timestamp = moment(embed.timestamp);
+            embed.timestamp = dep.moment(embed.timestamp);
 
             msg2.edit({
                 content: ' ',

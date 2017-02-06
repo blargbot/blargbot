@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-const moment = require('moment');
+
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
@@ -44,7 +44,7 @@ e.execute = async function(msg, words) {
                 let embed = msg2.embeds[0];
                 if (embed) {
                     embed.fields[1].value = words.join(' ');
-                    embed.timestamp = moment(embed.timestamp);
+                    embed.timestamp = dep.moment(embed.timestamp);
                     embed.footer = {
                         text: `${bu.getFullName(msg.author)} (${msg.author.id})`,
                         icon_url: msg.author.avatarURL

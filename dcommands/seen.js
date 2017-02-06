@@ -1,5 +1,5 @@
 var e = module.exports = {};
-const moment = require('moment');
+
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -21,9 +21,9 @@ e.execute = async function(msg, words) {
     if (user) {
         let storedUser = await r.table('user').get(user.id);
         if (!storedUser) return;
-        let lastSeen = moment(storedUser.lastspoke);
+        let lastSeen = dep.moment(storedUser.lastspoke);
         logger.debug(storedUser.lastspoke, lastSeen.format('llll'));
-        let diff = moment.duration(moment() - lastSeen);
+        let diff = dep.moment.duration(dep.moment() - lastSeen);
         diff = diff.subtract(diff.asMilliseconds() * 2, 'ms');
         bu.send(msg, `I last saw **${bu.getFullName(user)}** ${diff.humanize(true)}`);
     }

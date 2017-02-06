@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var exec = require('child_process').exec;
+
 
 e.init = () => {
     e.category = bu.CommandType.CAT;
@@ -17,7 +17,7 @@ e.execute = (msg, words) => {
     if (msg.author.id === bu.CAT_ID) {
 
         if (!config.general.isbeta) {
-            exec('cd /home/cat/blargjs\ngit pull origin master', (err, stdout, stderr) => {
+            dep.exec('cd /home/cat/blargjs\ngit pull origin master', (err, stdout, stderr) => {
                 var message = '```xl\n';
                 if (err) {
                     message += err + '\n';

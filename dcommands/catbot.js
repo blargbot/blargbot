@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
-const fs = require('fs');
-const path = require('path');
+
+
 
 e.init = () => {
     e.category = bu.CommandType.CAT;
@@ -61,7 +61,7 @@ e.execute = async function(msg, words) {
                 if (message.guildid != '197529405659021322' && message.nsfw == 0)
                     content.push(message.content);
             }
-            fs.writeFile(path.join(__dirname, '..', '..', 'catbot', 'cat.json'),
+            dep.fs.writeFile(dep.path.join(__dirname, '..', '..', 'catbot', 'cat.json'),
                 JSON.stringify(content, null, 2), (err) => {
                     if (err) bu.send(msg, err);
                     bu.send(msg, 'Done!');
@@ -91,7 +91,7 @@ async function genlogs(msg, id, name) {
     if (Array.isArray(id)) userId = id[0];
     else userId = id;
     msg2.edit('Writing file...');
-    fs.writeFile(path.join(__dirname, '..', '..', 'catbot', 'jsons', userId + '.json'),
+    dep.fs.writeFile(dep.path.join(__dirname, '..', '..', 'catbot', 'jsons', userId + '.json'),
         JSON.stringify({
             name: name,
             lines: content

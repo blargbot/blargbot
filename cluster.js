@@ -1,13 +1,13 @@
 process.execArgv[0] = process.execArgv[0].replace('-brk', '');
 
-const util = require('util');
-module.exports = cluster = require('cluster');
-const reload = require('require-reload');
 
-const numCPUs = require('os').cpus().length;
+module.exports = cluster = dep.cluster;
+const reload = dep.reload;
+
+const numCPUs = dep.os.cpus().length;
 
 if (cluster.isMaster) {
-    const Collection = require('eris').Collection;
+    const Collection = dep.Eris.Collection;
     global.workers = new Collection(cluster.Worker);
 
     var i = 0;
@@ -20,14 +20,14 @@ if (cluster.isMaster) {
         let res = cluster.workers[Object.keys(cluster.workers)[i]].send(message);
         i++;
         return res;
-    }
+    };
 
     cluster.reset = function() {
         reload('./worker.js');
         for (const worker of workers) {
             worker[1].kill(0);
         }
-    }
+    };
 
     cluster.setupMaster({
         exec: 'worker.js',
@@ -44,7 +44,7 @@ if (cluster.isMaster) {
                 bu.emitter.emit(msg.code, Buffer.from(msg.buffer, 'base64'));
                 break;
             default:
-                logger.cluster(`Worker ${worker.process.pid} says:\n${util.inspect(msg)}`);
+                logger.cluster(`Worker ${worker.process.pid} says:\n${dep.util.inspect(msg)}`);
                 break;
         }
     });

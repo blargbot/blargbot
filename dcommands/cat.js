@@ -1,7 +1,5 @@
 var e = module.exports = {};
 
-var http = require('http');
-
 e.init = () => {
     e.category = bu.CommandType.IMAGE;
 };
@@ -17,16 +15,7 @@ e.info = '<p>Displays a picture of a cat, taken from <a href="http://random.cat/
 
 e.execute = async function(msg) {
     var output;
-    http.get('http://random.cat/meow', function(res) {
-        var body = '';
-        res.on('data', function(chunk) {
-            body += chunk;
-        });
-
-        res.on('end', function() {
-            logger.debug(body);
-            output = JSON.parse(body);
-            bu.sendFile(msg.channel.id, '', output.file);
-        });
-    });
+    let res = await bu.request('http://random.cat/meow');
+    output = JSON.parse(res.body);
+    bu.sendFile(msg.channel.id, '', output.file);
 };

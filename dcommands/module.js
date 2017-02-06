@@ -1,5 +1,3 @@
-var util = require('util');
-
 var e = module.exports = {};
 
 e.init = () => {
@@ -19,7 +17,7 @@ var confirmDiscord = false;
 e.execute = (msg, words) => {
     if (msg.author.id == bu.CAT_ID) {
         words.shift();
-        logger.debug(util.inspect(words));
+        logger.debug(dep.util.inspect(words));
         if (words.length > 1) {
             switch (words.shift().toLowerCase()) {
                 case 'reload':
@@ -64,7 +62,7 @@ e.execute = (msg, words) => {
                 bu.emitter.emit('reloadBu');
             } else if (words[0] && words[0].toLowerCase() == 'cluster') {
                 cluster.reset();
-                bu.send(msg, `:ok_hand: Reloading the workers. :ok_hand:`)
+                bu.send(msg, `:ok_hand: Reloading the workers. :ok_hand:`);
             }
         }
     }

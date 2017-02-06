@@ -1,17 +1,12 @@
-const express = require('express');
-const request = require('request');
-const moment = require('moment');
-const bodyParser = require('body-parser');
-
 var app;
 var e = module.exports;
 
 var server;
 
 e.init = () => {
-    app = express();
-    app.use(bodyParser.json());
-    server = app.listen(8081, function () {
+    app = dep.express();
+    app.use(dep.bodyParser.json());
+    server = app.listen(8081, function() {
         var host = server.address().address;
         var port = server.address().port;
         logger.init('Interface listening at http://%s:%s', host, port);

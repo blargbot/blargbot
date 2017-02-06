@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var moment = require('moment');
+
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;

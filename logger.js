@@ -1,8 +1,4 @@
 var e = module.exports = {};
-const winston = require('winston');
-const moment = require('moment-timezone');
-const path = require('path');
-const wconfig = require('winston/lib/winston/config');
 
 const levels = {
     killme: 0,
@@ -16,7 +12,7 @@ const levels = {
     worker: 8,
     music: 9,
     shard: 10,
-    ws: 11,        
+    ws: 11,
     info: 12,
     output: 13,
     verbose: 14,
@@ -60,13 +56,13 @@ e.init = () => {
             maxLength = key.length;
         }
     }
-    var logger = e.logger = new(winston.Logger)({
+    var logger = e.logger = new(dep.winston.Logger)({
         levels: levels,
         colors: colors,
         level: 'debug',
         exitOnError: false,
         transports: [
-            new(winston.transports.Console)({
+            new(dep.winston.transports.Console)({
                 prettyPrint: true,
                 colorize: true,
                 name: 'general',
@@ -74,7 +70,7 @@ e.init = () => {
                 handleExceptions: true,
                 stderrLevels: ['error', 'warn'],
                 timestamp: () => {
-                    return `[${moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
+                    return `[${dep.moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
                 },
                 formatter: options => {
                     // Return string will be passed to logger.
@@ -83,18 +79,18 @@ e.init = () => {
                         let message = options.message.split(' ');
                         let level = pad('[' + options.level.toUpperCase() + message[0] + ']', maxLength + 2);
                         message = message.slice(1).join(' ');
-                        return wconfig.colorize('timestamp', options.timestamp()) + wconfig.colorize(options.level, level) + ' ' +
+                        return dep.wconfig.colorize('timestamp', options.timestamp()) + dep.wconfig.colorize(options.level, level) + ' ' +
                             (options.level == 'error' && options.meta && options.meta.stack ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== message ? message : '') +
                                 (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                     }
-                    return wconfig.colorize('timestamp', options.timestamp()) + wconfig.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' ' +
+                    return dep.wconfig.colorize('timestamp', options.timestamp()) + dep.wconfig.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' ' +
                         (options.level == 'error' && options.meta && options.meta.stack ? options.meta.message + ': ' + (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== options.message ? options.message : '') +
                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }
             }),
-            new(winston.transports.File)({
+            new(dep.winston.transports.File)({
                 name: 'file-general',
-                filename: path.join(__dirname, 'logs', 'generallogs.log'),
+                filename: dep.path.join(__dirname, 'logs', 'generallogs.log'),
                 maxsize: 10000000,
                 prettyPrint: true,
                 colorize: true,
@@ -102,7 +98,7 @@ e.init = () => {
                 silent: false,
                 handleExceptions: true,
                 timestamp: () => {
-                    return `[${moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
+                    return `[${dep.moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
                 },
                 formatter: options => {
                     // Return string will be passed to logger.
@@ -114,9 +110,9 @@ e.init = () => {
                                 '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }
             }),
-            new(winston.transports.File)({
+            new(dep.winston.transports.File)({
                 name: 'file-error',
-                filename: path.join(__dirname, 'logs', 'errorlogs.log'),
+                filename: dep.path.join(__dirname, 'logs', 'errorlogs.log'),
                 maxsize: 10000000,
                 prettyPrint: true,
                 colorize: true,
@@ -125,7 +121,7 @@ e.init = () => {
                 json: false,
                 handleExceptions: true,
                 timestamp: () => {
-                    return `[${moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
+                    return `[${dep.moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
                 },
                 formatter: options => {
                     // Return string will be passed to logger.

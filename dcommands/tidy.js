@@ -1,5 +1,4 @@
 var e = module.exports = {};
-const safe = require('safe-regex');
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
@@ -55,7 +54,7 @@ e.execute = async function(msg, words) {
         } else {
             query = new RegExp(queryStr);
         }
-        if (!safe(query)) {
+        if (!dep.safe(query)) {
             bu.send(msg, 'That regex is not safe! Terminating operation.');
             return;
         }

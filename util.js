@@ -1,12 +1,4 @@
-const moment = require('moment-timezone');
-const request = require('request');
-const Eris = require('eris');
-const emoji = require('node-emoji');
 const loggerModule = require('./logger.js');
-const gm = require('gm');
-const Trello = require('node-trello');
-const path = require('path');
-const safe = require('safe-regex');
 
 var bu = module.exports = {};
 
@@ -52,12 +44,12 @@ bu.avatarColours = [
     0x2df952, 0x2df9eb, 0x2d6ef9, 0x852df9, 0xf92dd3, 0xf92d3b, 0xf9b82d, 0xa0f92d
 ];
 
-bu.defaultStaff = Eris.Constants.Permissions.kickMembers +
-    Eris.Constants.Permissions.banMembers +
-    Eris.Constants.Permissions.administrator +
-    Eris.Constants.Permissions.manageChannels +
-    Eris.Constants.Permissions.manageGuild +
-    Eris.Constants.Permissions.manageMessages;
+bu.defaultStaff = dep.Eris.Constants.Permissions.kickMembers +
+    dep.Eris.Constants.Permissions.banMembers +
+    dep.Eris.Constants.Permissions.administrator +
+    dep.Eris.Constants.Permissions.manageChannels +
+    dep.Eris.Constants.Permissions.manageGuild +
+    dep.Eris.Constants.Permissions.manageMessages;
 
 bu.tags = {};
 bu.tagList = {};
@@ -129,7 +121,7 @@ bu.init = () => {
         user: config.db.user,
         port: config.db.port
     });
-    bu.trello = new Trello(config.general.trellokey, config.general.trellotoken);
+    bu.trello = new dep.Trello(config.general.trellokey, config.general.trellotoken);
 };
 
 bu.compareStats = (a, b) => {
@@ -151,7 +143,7 @@ bu.awaitMessage = async function(msg, message, callback, timeout) {
     }
     bu.awaitMessages[msg.channel.id][msg.author.id] = {
         event: event,
-        time: moment(msg.timestamp),
+        time: dep.moment(msg.timestamp),
         botmsg: returnMsg
     };
     bu.emitter.removeAllListeners(event);
@@ -173,7 +165,7 @@ bu.awaitMessage = async function(msg, message, callback, timeout) {
 
             bu.awaitMessages[msg.channel.id][msg.author.id].timer = setTimeout(() => {
                 bu.emitter.removeAllListeners(event);
-                bu.send(msg, `Query canceled after ${moment.duration(timeout).humanize()}.`);
+                bu.send(msg, `Query canceled after ${dep.moment.duration(timeout).humanize()}.`);
                 reject('Request timed out.');
             }, timeout);
         });
@@ -262,7 +254,7 @@ bu.hasRole = (msg, roles) => {
  */
 bu.send = async function(channel, message, file, embed) {
     let channelid = channel;
-    if (channel instanceof Eris.Message) {
+    if (channel instanceof dep.Eris.Message) {
         channelid = channel.channel.id;
     }
     if (!message) message = '';
@@ -279,7 +271,7 @@ bu.send = async function(channel, message, file, embed) {
     }
     if (!content.content) content.content = '';
     if (embed) content.embed = embed;
-    content.content = emoji.emojify(content.content).trim();
+    content.content = dep.emoji.emojify(content.content).trim();
 
     if (content.content.length > 2000) {
         if (!file) file = {
@@ -356,14 +348,14 @@ bu.send = async function(channel, message, file, embed) {
             }
             if (warnMsg) logger.warn(warnMsg, response);
             if (/^\s$/.test(content.content)) content.content == undefined;
-            if (channel instanceof Eris.Message) {
+            if (channel instanceof dep.Eris.Message) {
                 bu.send('250859956989853696', {
                     content: " ",
                     embed: {
                         title: response.code + ' - ' + response.message,
                         color: warnMsg ? 0xe27900 : 0xAD1111,
                         description: warnMsg || err.stack,
-                        timestamp: moment(channel.timestamp),
+                        timestamp: dep.moment(channel.timestamp),
                         author: {
                             name: bu.getFullName(channel.author),
                             icon_url: channel.author.avatarURL,
@@ -399,7 +391,7 @@ bu.send = async function(channel, message, file, embed) {
                         title: response.code + ' - ' + response.message,
                         color: warnMsg ? 0xe27900 : 0xAD1111,
                         description: warnMsg || err.stack,
-                        timestamp: moment(),
+                        timestamp: dep.moment(),
                         fields: [{
                             name: channel.guild ? channel.guild.name : 'DM',
                             value: channel.guild ? channel.guild.id : 'null',
@@ -469,7 +461,7 @@ bu.send = async function(channel, message, file, embed) {
  */
 bu.sendDM = async function(user, message, file) {
     let userid = user;
-    if (user instanceof Eris.Message) {
+    if (user instanceof dep.Eris.Message) {
         userid = user.author.id;
     }
     if (message.length == 0) {
@@ -477,7 +469,7 @@ bu.sendDM = async function(user, message, file) {
         return Error('No content');
     }
     bu.messageStats++;
-    message = emoji.emojify(message);
+    message = dep.emoji.emojify(message);
 
     if (message.length > 2000) {
         message = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
@@ -702,7 +694,7 @@ bu.saveConfig = () => {
 /**
  * Reloads the user list (only for irc)
  */
-reloadUserList = () => {
+bu.reloadUserList = () => {
     bu.emitter.emit('ircUserList');
 };
 
@@ -720,7 +712,7 @@ bu.sendFile = (channelid, message, url) => {
     var i = url.lastIndexOf('/');
     if (i != -1) {
         var filename = url.substring(i + 1, url.length);
-        request({
+        dep.request({
             uri: url,
             encoding: null
         }, function(err, res, body) {
@@ -739,7 +731,7 @@ bu.sendFile = (channelid, message, url) => {
  * @returns {string}
  */
 bu.createTimeDiffString = (moment1, moment2) => {
-    var diff = moment.duration(moment1.diff(moment2));
+    var diff = dep.moment.duration(moment1.diff(moment2));
     return `${diff.days() > 0 ? diff.days() + ' days, ' : ''}${diff.hours() > 0 ? diff.hours() + ' hours, ' : ''}${diff.minutes()} minutes, and ${diff.seconds()} seconds`;
 };
 
@@ -824,7 +816,7 @@ bu.logAction = async function(guild, user, mod, type, reason, fields) {
                 value: reason,
                 inline: true
             }],
-            timestamp: moment()
+            timestamp: dep.moment()
         };
         if (fields != undefined && Array.isArray(fields)) {
             for (const field of fields) {
@@ -932,7 +924,7 @@ bu.issuePardon = async function(user, guild, count, params) {
 
 bu.comparePerms = (m, allow) => {
     if (!allow) allow = bu.defaultStaff;
-    let newPerm = new Eris.Permission(allow);
+    let newPerm = new dep.Eris.Permission(allow);
     for (let key in newPerm.json) {
         if (m.permission.has(key)) {
             return true;
@@ -1706,7 +1698,7 @@ bu.logEvent = async function(guildid, event, fields, embed) {
         let channel = storedGuild.log[event];
         if (!embed) embed = {};
         embed.title = `:information_source: ${eventName}`;
-        embed.timestamp = moment();
+        embed.timestamp = dep.moment();
         embed.fields = fields;
         embed.color = color;
         try {
@@ -1746,7 +1738,7 @@ const timeKeywords = {
 };
 
 bu.parseDuration = function(text) {
-    let duration = moment.duration();
+    let duration = dep.moment.duration();
     if (/([0-9]+) ?(day|days|d)/i.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(day|days|d)/i)[1]) || 0, 'd');
     if (/([0-9]+) ?(hours|hour|h)/i.test(text))
@@ -1812,7 +1804,7 @@ bu.getPerms = function(channelid) {
 
 bu.request = function(options) {
     return new Promise((fulfill, reject) => {
-        request(options, (err, res, body) => {
+        dep.request(options, (err, res, body) => {
             if (err) {
                 reject(err);
                 return;
@@ -1821,59 +1813,6 @@ bu.request = function(options) {
                 res,
                 body
             });
-        });
-    });
-};
-
-bu.createCaption = function(options) {
-    return new Promise((fulfill, reject) => {
-        if (!options.text) {
-            reject(new Error('No text provided'));
-            return;
-        }
-        if (!options.font) {
-            reject(new Error('No font provided'));
-            return;
-        }
-        if (!options.size) {
-            reject(new Error('No size provided'));
-            return;
-        }
-        if (!options.fill) options.fill = 'black';
-        if (!options.gravity) options.gravity = 'Center';
-
-        let image = gm().command('convert');
-
-        image.font(path.join(__dirname, 'img', 'fonts', options.font));
-        image.out('-size').out(options.size);
-        image.out('-background').out('transparent');
-        image.out('-fill').out(options.fill);
-        image.out('-gravity').out(options.gravity);
-        image.out();
-        if (options.stroke) {
-            image.out('-stroke').out(options.stroke);
-            if (options.strokewidth) image.out('-strokewidth').out(options.strokewidth);
-        }
-        image.out(`caption:${options.text}`);
-        if (options.stroke) {
-            image.out('-compose').out('Over');
-            image.out('-size').out(options.size);
-            image.out('-background').out('transparent');
-            image.out('-fill').out(options.fill);
-            image.out('-gravity').out(options.gravity);
-            image.out('-stroke').out('none');
-            image.out(`caption:${options.text}`);
-            image.out('-composite');
-        }
-
-        image.options({
-            imageMagick: true
-        }).toBuffer('PNG', function(err, buf) {
-            if (err) {
-                reject(err);
-                return;
-            }
-            fulfill(buf);
         });
     });
 };
@@ -1931,7 +1870,7 @@ bu.isUserStaff = async function(userId, guildId) {
 };
 
 bu.makeSnowflake = function() {
-    return (moment() - 1420070400000) * 4194304;
+    return (dep.moment() - 1420070400000) * 4194304;
 };
 
 bu.unmakeSnowflake = function(snowflake) {
@@ -1942,7 +1881,7 @@ bu.createRegExp = function(term) {
     if (/^\/?.*\/.*/.test(term)) {
         let regexList = term.match(/^\/?(.*)\/(.*)/);
         let temp = new RegExp(regexList[1], regexList[2]);
-        if (!safe(temp)) {
+        if (!dep.safe(temp)) {
             throw 'Unsafe Regex';
         }
         return temp;
@@ -1955,7 +1894,7 @@ bu.postStats = function() {
     var stats = {
         'server_count': bot.guilds.size
     };
-    request.post({
+    dep.request.post({
         'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
         'headers': {
             'content-type': 'application/json',
@@ -1971,7 +1910,7 @@ bu.postStats = function() {
     if (!config.general.isbeta) {
         logger.info('Posting to matt');
 
-        request.post({
+        dep.request.post({
             'url': 'https://www.carbonitex.net/discord/data/botdata.php',
             'headers': {
                 'content-type': 'application/json'
@@ -1989,7 +1928,7 @@ bu.postStats = function() {
 };
 const stats = {};
 async function updateStats() {
-    let yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
+    let yesterday = dep.moment().subtract(1, 'day').format('YYYY-MM-DD');
     if (!stats[yesterday]) {
         let storedStats = await r.table('vars').get('stats');
         if (!storedStats) {
@@ -2009,7 +1948,7 @@ async function updateStats() {
             };
         }
     }
-    let day = moment().format('YYYY-MM-DD');
+    let day = dep.moment().format('YYYY-MM-DD');
     if (!stats[day]) stats[day] = {};
     stats[day].guilds = bot.guilds.size;
     stats[day].change = stats[day].guilds - stats[yesterday].guilds;

@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-const moment = require('moment');
+
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
@@ -71,7 +71,7 @@ e.execute = async function(msg, words) {
             },
             color: getTopRole(msg.member).color,
             description: message + '\n',
-            timestamp: moment(msg.timestamp),
+            timestamp: dep.moment(msg.timestamp),
             author: {
                 name: 'Announcement',
                 icon_url: 'http://i.imgur.com/zcGyun6.png',
@@ -81,7 +81,7 @@ e.execute = async function(msg, words) {
         let roleMention = role.mention;
         if (role.name == '@everyone')
             roleMention = '@everyone';
-        message = `**:information_source: Announcement [${moment().format('MM/DD/YYYY')}] ${roleMention} :information_source:**
+        message = `**:information_source: Announcement [${dep.moment().format('MM/DD/YYYY')}] ${roleMention} :information_source:**
 **${msg.author.username}#${msg.author.discriminator}** has made the following announcement:
 
 ${message}`;

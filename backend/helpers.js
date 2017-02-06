@@ -1,6 +1,6 @@
 let e = module.exports = {};
-const hbs = require('hbs');
-const path = require('path');
+
+
 
 const commandType = {
     1: "General Commands",
@@ -26,7 +26,7 @@ const tagType = {
 };
 
 e.init = () => {
-    hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
+    hbs.registerPartials(dep.path.join(__dirname, 'views', 'partials'));
 
     hbs.registerHelper('ifCond', function(v1, operator, v2, options) {
 
@@ -215,7 +215,7 @@ e.init = () => {
                 if (flags) {
                     toReturn += `<p>Flags:</p><ul>`;
                     for (let flag of flags) {
-                        toReturn += `<li><code>-${flag.flag}</code>/<code>--${flag.word}</code> - ${flag.desc}</li>`
+                        toReturn += `<li><code>-${flag.flag}</code>/<code>--${flag.word}</code> - ${flag.desc}</li>`;
                     }
                     toReturn += '</ul>';
                 }

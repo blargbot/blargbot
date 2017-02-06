@@ -1,7 +1,5 @@
 var e = module.exports = {};
 
-var wordsearch = require('wordsearch');
-
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
 };
@@ -101,7 +99,7 @@ function initWordSearch(msg, words, size) {
         bu.send(msg, 'The maximum size is 20!');
         return;
     }
-    var search = wordsearch(words, size[0], size[1]);
+    var search = dep.wordsearch(words, size[0], size[1]);
     ongoingSearches[msg.channel.id] = search;
     var line1 = '';
     var line2 = '';

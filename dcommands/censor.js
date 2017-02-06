@@ -1,5 +1,4 @@
 var e = module.exports = {};
-const safe = require('safe-regex');
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;

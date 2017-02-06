@@ -1,5 +1,5 @@
 var e = module.exports = {};
-const moment = require('moment');
+
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
 };
@@ -28,7 +28,7 @@ e.execute = async function(msg, words) {
         if (input.e) {
             choices = input.e;
         }
-        let time = moment.duration(60, 's');
+        let time = dep.moment.duration(60, 's');
         if (input.t) {
             time = bu.parseDuration(input.t.join(' '));
         }
@@ -49,7 +49,7 @@ e.execute = async function(msg, words) {
                 //   logger.error(err);
             }
         }
-        let endTime = moment(msg.timestamp).add(time);
+        let endTime = dep.moment(msg.timestamp).add(time);
         await r.table('events').insert({
             title: title,
             type: 'poll',

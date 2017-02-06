@@ -1,17 +1,13 @@
-const fs = require('fs');
-const util = require('util');
-const Eris = require('eris');
-Object.defineProperty(Eris.Message, "guild", {
+Object.defineProperty(dep.Eris.Message, "guild", {
     get: function guild() {
         return this.channel.guild;
     }
 });
-const moment = require('moment-timezone');
-const path = require('path');
-const https = require('https');
+
+const https = dep.https;
 global.tags = require('./tags.js');
-const reload = require('require-reload')(require);
-const request = require('request');
+const reload = dep.reload(require);
+
 const Promise = require('promise');
 //const webInterface = require('./interface.js');
 var bot;
@@ -30,7 +26,7 @@ e.requireCtx = require;
  */
 async function initCommands() {
     //	await r.table('command').delete().run();
-    var fileArray = fs.readdirSync(path.join(__dirname, 'dcommands'));
+    var fileArray = dep.fs.readdirSync(dep.path.join(__dirname, 'dcommands'));
     for (var i = 0; i < fileArray.length; i++) {
         var commandFile = fileArray[i];
         if (/.+\.js$/.test(commandFile)) {
@@ -164,14 +160,14 @@ e.init = async function(v, em) {
     process.on('unhandledRejection', (reason, p) => {
         logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
     });
-    if (fs.existsSync(path.join(__dirname, 'vars.json'))) {
-        var varsFile = fs.readFileSync(path.join(__dirname, 'vars.json'), 'utf8');
+    if (dep.fs.existsSync(dep.path.join(__dirname, 'vars.json'))) {
+        var varsFile = dep.fs.readFileSync(dep.path.join(__dirname, 'vars.json'), 'utf8');
         vars = JSON.parse(varsFile);
     } else {
         vars = {};
         saveVars();
     }
-    bot = new Eris.Client(config.discord.token, {
+    bot = new dep.Eris.Client(config.discord.token, {
         autoReconnect: true,
         disableEveryone: true,
         disableEvents: {
@@ -230,7 +226,7 @@ e.init = async function(v, em) {
         saveVars();
     });
 
-    bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
+    bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
 
     registerListeners();
 
@@ -248,7 +244,7 @@ e.init = async function(v, em) {
  * Reloads the misc variables object
  */
 function reloadVars() {
-    fs.readFileSync(path.join(__dirname, 'vars.json'), 'utf8', function(err, data) {
+    dep.fs.readFileSync(dep.path.join(__dirname, 'vars.json'), 'utf8', function(err, data) {
         if (err) throw err;
         vars = JSON.parse(data);
     });
@@ -258,7 +254,7 @@ function reloadVars() {
  * Saves the misc variables to a file
  */
 function saveVars() {
-    fs.writeFileSync(path.join(__dirname, 'vars.json'), JSON.stringify(vars, null, 4));
+    dep.fs.writeFileSync(dep.path.join(__dirname, 'vars.json'), JSON.stringify(vars, null, 4));
 }
 
 
@@ -295,7 +291,7 @@ function createLogs(channelid, msgid, times) {
  */
 function saveLogs(name) {
     messageI = 0;
-    fs.writeFile(path.join(__dirname, name), JSON.stringify(messageLogs, null, 4));
+    dep.fs.writeFile(dep.path.join(__dirname, name), JSON.stringify(messageLogs, null, 4));
 }
 
 var lastUserStatsKek;
@@ -416,7 +412,7 @@ ${err.stack}
 
 
 
-var startTime = moment();
+var startTime = dep.moment();
 
 
 /*

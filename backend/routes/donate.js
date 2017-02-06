@@ -1,5 +1,4 @@
-const express = require('express');
-const router = express.Router();
+const router = dep.express.Router();
 
 
 router.get('/', (req, res) => {

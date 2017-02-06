@@ -1,8 +1,8 @@
 var e = module.exports = {};
 
-var util = require('util');
-var Table = require('cli-table');
-var moment = require('moment');
+
+var Table = dep.Table;
+
 
 e.init = () => {
     e.category = bu.CommandType.CAT;
@@ -46,7 +46,7 @@ e.execute = (msg, words) => {
                         let data = [];
                         for (let key in columns) {
                             if (fields[key].type == 12) {
-                                data.push(moment(rows[i][columns[key]]).format('YY/MM HH:mm:ss'));
+                                data.push(dep.moment(rows[i][columns[key]]).format('YY/MM HH:mm:ss'));
                             } else
                                 data.push(rows[i][columns[key]]);
                         }

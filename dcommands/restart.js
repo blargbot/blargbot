@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var exec = require('child_process').exec;
+
 
 e.init = () => {
     e.category = bu.CommandType.CAT;

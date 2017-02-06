@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var https = require('https');
+var https = dep.https;
 
 e.init = () => {
     e.category = bu.CommandType.NSFW;

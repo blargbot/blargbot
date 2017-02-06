@@ -1,8 +1,7 @@
-const express = require('express');
-const router = express.Router();
-const path = require('path');
-const hbs = require('hbs');
-const moment = require('moment');
+const router = dep.express.Router();
+
+
+
 
 router.get('/', (req, res) => {
     res.locals.user = req.user;
@@ -209,7 +208,7 @@ async function logChange(user, action, actionObj) {
                 icon_url: user.avatarURL,
                 url: `https://blargbot.xyz/user/${user.id}`
             },
-            timestamp: moment(),
+            timestamp: dep.moment(),
             footer: {
                 text: 'Web Interface'
             }

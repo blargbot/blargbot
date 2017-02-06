@@ -1,5 +1,3 @@
-var util = require('util');
-
 var e = module.exports = {};
 
 e.init = () => {

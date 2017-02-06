@@ -1,5 +1,5 @@
 var e = module.exports = {};
-const request = require('request');
+
 
 e.init = () => {
     e.category = bu.TagType.COMPLEX;
@@ -30,7 +30,7 @@ e.execute = async function(params) {
         if (amount > 10) amount = 10;
         else if (amount < 1) amount = 1;
         let emojis = await new Promise((resolve, reject) => {
-            request(`https://emoji.getdango.com/api/emoji?q=${q}`, (req, res, body) => {
+            dep.request(`https://emoji.getdango.com/api/emoji?q=${q}`, (req, res, body) => {
                 body = JSON.parse(body);
                 resolve(body.results.map(result => result.text));
             });

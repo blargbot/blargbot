@@ -1,29 +1,23 @@
 var e = module.exports = {};
 
-const path = require('path');
-const http = require('http');
-const express = require('express');
-const fs = require('fs');
-const router = express.Router();
-const app = express();
-const bodyParser = require('body-parser');
-const passport = require('passport');
-const session = require('express-session');
-const Strategy = require('passport-discord').Strategy;
-const hbs = require('hbs');
+const router = dep.express.Router();
+const app = dep.express();
+
+const Strategy = dep.Strategy;
+
 const helpers = require('./helpers');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
+app.use(dep.bodyParser.json());
+app.use(dep.bodyParser.urlencoded({ // to support URL-encoded bodies
     extended: true
 }));
 
 app.set('view engine', 'hbs');
-app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname, 'public')));
+app.set('views', dep.path.join(__dirname, 'views'));
+app.use(dep.express.static(dep.path.join(__dirname, 'public')));
 
 helpers.init();
 
-const server = app.server = http.createServer(app);
+const server = app.server = dep.http.createServer(app);
 require('./websocket.js').init(server);
 
 var scopes = ['identify', 'guilds'];
@@ -40,13 +34,13 @@ e.init = () => {
         return sessionUserMap[sessionId];
     };
 
-    passport.serializeUser(function(user, done) {
+    dep.passport.serializeUser(function(user, done) {
         done(null, user);
     });
-    passport.deserializeUser(function(obj, done) {
+    dep.passport.deserializeUser(function(obj, done) {
         done(null, obj);
     });
-    passport.use(new Strategy({
+    dep.passport.use(new Strategy({
         clientID: config.website.clientid,
         clientSecret: config.website.secret,
         callbackURL: config.website.callback,
@@ -56,7 +50,7 @@ e.init = () => {
             return done(null, profile);
         });
     }));
-    app.use(session({
+    app.use(dep.session({
         secret: config.website.sessionsecret,
         resave: false,
         saveUninitialized: true,
@@ -67,13 +61,13 @@ e.init = () => {
         }
     }));
 
-    app.use(passport.initialize());
-    app.use(passport.session());
-    app.get('/login', passport.authenticate('discord', {
+    app.use(dep.passport.initialize());
+    app.use(dep.passport.session());
+    app.get('/login', dep.passport.authenticate('discord', {
         scope: scopes
     }), function(req, res) {});
     app.get('/callback',
-        passport.authenticate('discord', {
+        dep.passport.authenticate('discord', {
             failureRedirect: '/'
         }),
         function(req, res) {

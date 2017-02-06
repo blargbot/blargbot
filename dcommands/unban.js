@@ -3,7 +3,7 @@ var e = module.exports = {};
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
 };
-const moment = require('moment');
+
 
 e.requireCtx = require;
 
@@ -59,7 +59,7 @@ e.event = async function(args) {
     if (!bu.unbans[args.guild]) bu.unbans[args.guild] = {};
     bu.unbans[args.guild][args.user] = {
         mod: bot.user.id,
-        reason: `Automatically unbanned after ${moment.duration(args.duration).humanize()}.`
+        reason: `Automatically unbanned after ${dep.moment.duration(args.duration).humanize()}.`
     };
     await bot.unbanGuildMember(args.guild, args.user);
 };

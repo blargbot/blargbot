@@ -1,7 +1,6 @@
-const express = require('express');
-const router = express.Router();
-const moment = require('moment');
-const hbs = require('hbs');
+const router = dep.express.Router();
+
+
 
 const types = [{
     name: 'Create',
@@ -66,7 +65,7 @@ router.post('/', async(req, res) => {
                 m.bot = user.bot;
                 m.avatar = user.avatarURL || '/img/default.png';
 
-                m.msgtime = moment.unix(m.msgtime).unix();
+                m.msgtime = dep.moment.unix(m.msgtime).unix();
                 let text = m.content;
 
                 text = hbs.handlebars.Utils.escapeExpression(text);
@@ -104,8 +103,8 @@ router.post('/', async(req, res) => {
             res.locals.guildname = bot.getChannel(logsSpecs.channel).guild.name;
             res.locals.users = logsSpecs.users.join(', ');
             res.locals.types = logsSpecs.types.join(', ');
-            res.locals.firsttime = moment(logsSpecs.firsttime).valueOf();
-            res.locals.lasttime = moment(logsSpecs.lasttime).valueOf();
+            res.locals.firsttime = dep.moment(logsSpecs.firsttime).valueOf();
+            res.locals.lasttime = dep.moment(logsSpecs.lasttime).valueOf();
             res.locals.limit = messages.length;
             res.locals.continue = true;
         }

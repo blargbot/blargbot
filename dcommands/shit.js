@@ -1,11 +1,6 @@
 var e = module.exports = {};
 
-var gm = require('gm');
-var path = require('path');
-var moment = require('moment');
-var util = require('util');
-const reload = require('require-reload');
-const Jimp = reload('jimp');
+const reload = dep.reload;
 
 e.init = () => {
     e.category = bu.CommandType.IMAGE;
@@ -23,7 +18,7 @@ e.flags = [{
     flag: 'p',
     word: 'plural',
     desc: 'Whether or not the text is plural (use ARE instead of IS).'
-}]
+}];
 
 e.execute = async function(msg, words) {
     let input = bu.parseInput(e.flags, words);
@@ -40,7 +35,7 @@ e.execute = async function(msg, words) {
         code: code,
         text: shitText,
         plural: plural
-    });    
+    });
     bu.send(msg, undefined, {
         file: buffer,
         name: 'SHIIIITTTTTT.png'

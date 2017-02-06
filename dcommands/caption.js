@@ -1,11 +1,6 @@
 var e = module.exports = {};
 
-var gm = require('gm');
-var path = require('path');
-var moment = require('moment');
-var util = require('util');
-const reload = require('require-reload');
-const Jimp = reload('jimp');
+const reload = dep.reload;
 
 e.init = () => {
     e.category = bu.CommandType.IMAGE;
@@ -35,7 +30,7 @@ e.flags = [{
     flag: 'l',
     word: 'list',
     desc: 'Lists the available fonts.'
-}]
+}];
 
 const fonts = {
     arcena: 'ARCENA.ttf',
@@ -50,12 +45,12 @@ const fonts = {
     roboto: 'Roboto-Regular.ttf',
     ubuntu: 'Ubuntu-Regular.ttf',
     comicsans: 'comicsans.ttf'
-}
+};
 
 e.execute = async function(msg, words) {
     let input = bu.parseInput(e.flags, words);
     if (input.l) {
-        let availFonts = Object.keys(fonts).sort().map(m => '**' + m.toUpperCase() + '**').join('\n - ')
+        let availFonts = Object.keys(fonts).sort().map(m => '**' + m.toUpperCase() + '**').join('\n - ');
         bu.send(msg, `Currently available fonts:\n - ${availFonts}`);
         return;
     }
@@ -88,7 +83,7 @@ e.execute = async function(msg, words) {
         input: input,
         url,
         font
-    });    
+    });
     bu.send(msg, undefined, {
         file: buffer,
         name: 'caption.jpeg'

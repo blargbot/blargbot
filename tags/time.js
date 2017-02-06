@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var moment = require('moment-timezone');
+
 
 e.init = () => {
     e.category = bu.TagType.COMPLEX;
@@ -31,7 +31,7 @@ e.execute = async function(params) {
     if (args[1])
         formatCode = args[1];
 
-    replaceString = moment.tz('Etc/UTC').format(formatCode);
+    replaceString = dep.moment.tz('Etc/UTC').format(formatCode);
 
     return {
         terminate: params.terminate,

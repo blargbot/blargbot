@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
-var request = require('request');
-var moment = require('moment');
+
+
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -24,43 +24,43 @@ var part = {
 };
 
 e.execute = async function(msg, words) {
-        words.shift();
-        var args = words.join(' ');
-        let vars = await r.table('vars').get('wordapis');
-        if (!vars)
-            vars = {
-                day: moment().format('D'),
-                uses: 0
-            };
+    words.shift();
+    var args = words.join(' ');
+    let vars = await r.table('vars').get('wordapis');
+    if (!vars)
+        vars = {
+            day: dep.moment().format('D'),
+            uses: 0
+        };
 
-        if (vars.day != moment().format('D')) {
-            vars.day = moment().format('D');
-            vars.uses = 0;
+    if (vars.day != dep.moment().format('D')) {
+        vars.day = dep.moment().format('D');
+        vars.uses = 0;
+    }
+    var max = config.general.isbeta ? 250 : 1500;
+    if (vars.uses > max) {
+        bu.send(msg, 'I have used up all of my api queries for today. Sorry!');
+        return;
+    }
+    vars.uses++;
+    await r.table('vars').get('wordapis').update(vars);
+    dep.request({
+        url: `https://wordsapiv1.p.mashape.com/words/${args}`,
+        headers: {
+            'X-Mashape-Key': config.general.mashape,
+            'Accept': 'application/json'
         }
-        var max = config.general.isbeta ? 250 : 1500;
-        if (vars.uses > max) {
-            bu.send(msg, 'I have used up all of my api queries for today. Sorry!');
-            return;
-        }
-        vars.uses++;
-        await r.table('vars').get('wordapis').update(vars);
-        request({
-                    url: `https://wordsapiv1.p.mashape.com/words/${args}`,
-                    headers: {
-                        'X-Mashape-Key': config.general.mashape,
-                        'Accept': 'application/json'
-                    }
-                }, function(error, response, body) {
+    }, function(error, response, body) {
 
-                    if (!error && response.statusCode == 200) {
-                        var res = JSON.parse(body);
-                        var message = `Definitions for ${args}:\n`;
-                        if (res.results) {
-                            message += `\`\`\`xl\n`;
+        if (!error && response.statusCode == 200) {
+            var res = JSON.parse(body);
+            var message = `Definitions for ${args}:\n`;
+            if (res.results) {
+                message += `\`\`\`xl\n`;
 
-                            for (let i = 0; i < res.results.length; i++) {
-                                var type = res.results[i].partOfSpeech;
-                                message += `${res.results.length >= 10 ? (i + 1 < 10 ? ` ${i + 1}` : i + 1) : i + 1}: (${part[type] ? part[type] : type}) ${res.results[i].definition}\n`;
+                for (let i = 0; i < res.results.length; i++) {
+                    var type = res.results[i].partOfSpeech;
+                    message += `${res.results.length >= 10 ? (i + 1 < 10 ? ` ${i + 1}` : i + 1) : i + 1}: (${part[type] ? part[type] : type}) ${res.results[i].definition}\n`;
                 }
                 message += `\`\`\``;
             } else {

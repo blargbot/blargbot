@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var moment = require('moment-timezone');
+
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -30,7 +30,7 @@ e.execute = async function(msg, words) {
     }
     let embeds = {
         color: bu.avatarColours[bu.avatarId],
-        timestamp: moment(),
+        timestamp: dep.moment(),
         description: 'Bot Statistics',
         footer: {
             text: 'blargbot',
@@ -61,7 +61,7 @@ e.execute = async function(msg, words) {
             inline: true
         }, {
             name: 'Uptime',
-            value: bu.createTimeDiffString(moment(), bu.startTime),
+            value: bu.createTimeDiffString(dep.moment(), bu.startTime),
             inline: true
         }, {
             name: 'Messages',
@@ -69,7 +69,7 @@ e.execute = async function(msg, words) {
             inline: true
         }, {
             name: 'Per Minute',
-            value: '' + Math.floor(bu.messageStats / moment.duration(moment() - bu.startTime).asMinutes() * 100) / 100,
+            value: '' + Math.floor(bu.messageStats / dep.moment.duration(dep.moment() - bu.startTime).asMinutes() * 100) / 100,
             inline: true
         }, {
             name: 'Command Used This Session',
@@ -77,7 +77,7 @@ e.execute = async function(msg, words) {
             inline: true
         }, {
             name: 'Commands Per Minute',
-            value: '' + Math.floor(bu.commandUses / moment.duration(moment() - bu.startTime).asMinutes() * 100) / 100,
+            value: '' + Math.floor(bu.commandUses / dep.moment.duration(dep.moment() - bu.startTime).asMinutes() * 100) / 100,
             inline: true
         }, {
             name: 'Cleverbots Used This Session',

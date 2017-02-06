@@ -1,7 +1,7 @@
 var e = module.exports = {};
 const heapdump = require('heapdump');
-const path = require('path');
-const moment = require('moment');
+
+
 
 e.init = () => {
     e.category = bu.CommandType.CAT;
@@ -29,10 +29,10 @@ e.execute = async function(msg, words) {
         }
 
         async function doHeapdump() {
-            startTime = moment();
+            startTime = dep.moment();
             await bu.send(msg, 'Writing snapshot...');
-            heapdump.writeSnapshot(path.join(__dirname, '..', `blargdump${i}.heapsnapshot`), (err, filename) => {
-                let diff = moment.duration(moment() - startTime);
+            heapdump.writeSnapshot(dep.path.join(__dirname, '..', `blargdump${i}.heapsnapshot`), (err, filename) => {
+                let diff = dep.moment.duration(dep.moment() - startTime);
                 bu.send(msg, {
                     content: `${msg.author.mention} Snapshot ${i + 1} complete.`,
                     embed: {

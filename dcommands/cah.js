@@ -1,18 +1,16 @@
 var e = module.exports = {};
-var path = require('path');
-var fs = require('fs');
+
+
 var cah = {};
 var cad = {};
-var Canvas = require('canvas');
-var Image = Canvas.Image;
-var request = require('request');
+
 
 e.init = () => {
-    if (fs.existsSync(path.join(__dirname, '..', 'cah.json'))) {
-        cah = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'cah.json'), 'utf8'));
+    if (dep.fs.existsSync(dep.path.join(__dirname, '..', 'cah.json'))) {
+        cah = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, '..', 'cah.json'), 'utf8'));
     }
 
-    request('https://api.cardcastgame.com/v1/decks/JJDFG/cards', (err, res, body) => {
+    dep.request('https://api.cardcastgame.com/v1/decks/JJDFG/cards', (err, res, body) => {
         try {
             let tempCad = JSON.parse(body);
             cad.black = tempCad.calls.map(m => {
@@ -37,10 +35,10 @@ e.info = 'Generates a set of CAH cards.';
 e.longinfo = '<p>Generates a random set of Cards Against Humanity cards.</p>';
 
 e.execute = async function(msg, words) {
-    let val = await bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw')
+    let val = await bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw');
     let cont = true;
     if (val && val != 0) {
-        cont = await bu.isNsfwChannel(msg.channel.id)
+        cont = await bu.isNsfwChannel(msg.channel.id);
     }
 
     if (cont) {

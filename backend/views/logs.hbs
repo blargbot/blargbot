@@ -44,6 +44,7 @@
 
 </head>
 <script>
+
 </script>
 
 <body class="blue-grey">
@@ -184,25 +185,25 @@
 		</div>
 	</footer>
 	<script>
-        init();
-        
-        function doStuff() {
-            var first = true;
-            var elements = document.getElementsByClassName('time');
-            for (var i = 0; i < elements.length; i++) {
-                var timestamp = elements.item(i).innerHTML;
-                var newTimestamp = moment(parseInt(timestamp));
-                elements.item(i).innerHTML = newTimestamp.format('YYYY/MM/DD h:mm:ss A');
-            }
-            console.log('hi');
-        }
-        doStuff();
-        var clipboard = new Clipboard('.clipboard');
+		init();
+
+		function doStuff() {
+			var first = true;
+			var elements = document.getElementsByClassName('time');
+			for (var i = 0; i < elements.length; i++) {
+				var timestamp = elements.item(i).innerHTML;
+				var newTimestamp = dep.moment(parseInt(timestamp));
+				elements.item(i).innerHTML = newTimestamp.format('YYYY/MM/DD h:mm:ss A');
+			}
+			console.log('hi');
+		}
+		doStuff();
+		var clipboard = new Clipboard('.clipboard');
 		var timer;
-        clipboard.on('success', function(e) {
+		clipboard.on('success', function (e) {
 			var id = e.trigger.attributes['data-user-id'].value;
-            console.log(id);
-			
+			console.log(id);
+
 			var elements = document.getElementsByClassName('mentiontooltip');
 			for (var i = 0; i < elements.length; i++) {
 				elements[i].className = elements[i].className.replace('mentionclicked', '').trim();
@@ -214,16 +215,16 @@
 			}
 			if (timer)
 				clearTimeout(timer);
-			timer = setTimeout(function() {
+			timer = setTimeout(function () {
 				for (i = 0; i < elements.length; i++) {
 					elements[i].className = elements[i].className.replace('mentionclicked', '').trim();
 				}
 			}, 1500)
-			
+
 			//Materialize.toast('Copied \'' + e.trigger.attributes['data-user-id'].value + '\' to clipboard!', 4000) // 4000 is the duration of the toast
-            e.clearSelection();
-        });
-    </script>
+			e.clearSelection();
+		});
+	</script>
 
 
 </body>

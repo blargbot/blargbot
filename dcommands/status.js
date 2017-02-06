@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var request = require('request');
+
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -40,7 +40,7 @@ e.execute = (msg, words, text) => {
     var i = url.lastIndexOf('/');
     if (i != -1) {
         var filename = url.substring(i + 1, url.length);
-        request({
+        dep.request({
             uri: url,
             encoding: null
         }, function(err, res, body) {

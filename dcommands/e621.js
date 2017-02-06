@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
-var xml2js = require('xml2js');
-var https = require('https');
+var xml2js = dep.xml2js;
+var https = dep.https;
 
 e.init = () => {
     e.category = bu.CommandType.NSFW;
@@ -92,7 +92,7 @@ e.execute = (msg, words) => {
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                                     urlList.push(doc.posts.post[i].file_url);
                             }
-                        //    logger.(util.inspect(urlList));
+                        //    logger.(dep.util.inspect(urlList));
                         if (urlList.length == 0) {
                             bu.send(msg, 'No results found!');
                             return;

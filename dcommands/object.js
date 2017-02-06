@@ -1,10 +1,10 @@
 var e = module.exports = {};
-const path = require('path');
-const util = require('util');
-const Jimp = require('jimp');
-const fs = require('fs');
-const GIFEncoder = require('gifencoder');
-const request = require('request');
+
+
+
+
+
+
 
 e.init = () => {
     e.category = bu.CommandType.IMAGE;

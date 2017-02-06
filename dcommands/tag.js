@@ -1,6 +1,6 @@
 var e = module.exports = {};
 var tags = require('./../tags');
-const moment = require('moment');
+
 const results = 100;
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -180,7 +180,7 @@ e.execute = async function(msg, words, text) {
                     name: title,
                     author: msg.author.id,
                     content: content,
-                    lastmodified: r.epochTime(moment() / 1000),
+                    lastmodified: r.epochTime(dep.moment() / 1000),
                     uses: 0
                 }).run();
                 bu.send(msg, `✅ Tag \`${title}\` created. ✅`);
@@ -250,7 +250,7 @@ e.execute = async function(msg, words, text) {
 
                 await r.table('tag').get(title).update({
                     content: content,
-                    lastmodified: r.epochTime(moment() / 1000)
+                    lastmodified: r.epochTime(dep.moment() / 1000)
                 }).run();
                 bu.send(msg, `✅ Tag \`${title}\` edited. ✅`);
                 logChange('Edit', msg, {
@@ -285,7 +285,7 @@ e.execute = async function(msg, words, text) {
                     name: title,
                     author: msg.author.id,
                     content: content,
-                    lastmodified: r.epochTime(moment() / 1000),
+                    lastmodified: r.epochTime(dep.moment() / 1000),
                     uses: tag ? tag.uses : 0
                 }).run();
                 bu.send(msg, `✅ Tag \`${title}\` ${tag ? 'edited' : 'created'}. ✅`);
@@ -371,7 +371,7 @@ ${content}
                 author = await r.table('user').get(tag.author).run();
                 bu.send(msg, `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
-It was last modified **${moment(tag.lastmodified).format('LLLL')}**.
+It was last modified **${dep.moment(tag.lastmodified).format('LLLL')}**.
 It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
                 break;
             case 'search':
@@ -475,7 +475,7 @@ function logChange(action, msg, actionObj) {
                 icon_url: msg.author.avatarURL,
                 url: `https://blargbot.xyz/user/${msg.author.id}`
             },
-            timestamp: moment(msg.timestamp),
+            timestamp: dep.moment(msg.timestamp),
             footer: {
                 text: `MsgID: ${msg.id}`
             }

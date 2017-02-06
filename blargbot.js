@@ -1,16 +1,9 @@
-const babel = require('babel-core');
+global.dep = require('./dep.js');
 
-const fs = require('fs');
-const util = require('util');
-const moment = require('moment-timezone');
-const mkdirp = require('mkdirp');
-const path = require('path');
-const reload = require('require-reload')(require);
-const mysql = require('mysql');
+const reload = dep.reload(require);
 const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
-class BotEmitter extends EventEmitter {}
-const botEmitter = new BotEmitter();
+const botEmitter = new EventEmitter();
 
 const irc = require('./irc.js');
 const discord = require('./discord.js');
@@ -24,7 +17,7 @@ botEmitter.on('reloadDiscord', () => {
     discord.bot.disconnect(false);
     reload.emptyCache(discord.requireCtx);
     discord = reload('./discord.js');
-    discord.init(VERSION, config, botEmitter, db);
+    discord.init(VERSION, config, botEmitter);
 });
 botEmitter.on('reloadIrc', () => {
     irc.bot.disconnect('Reloading!');
@@ -42,8 +35,8 @@ console.log = function() {
 
 
 /** CONFIG STUFF **/
-if (fs.existsSync(path.join(__dirname, 'config.json'))) {
-    var configFile = fs.readFileSync(path.join(__dirname, 'config.json'), 'utf8');
+if (dep.fs.existsSync(dep.path.join(__dirname, 'config.json'))) {
+    var configFile = dep.fs.readFileSync(dep.path.join(__dirname, 'config.json'), 'utf8');
     global.config = JSON.parse(configFile);
 } else {
     global.config = {};
@@ -55,14 +48,14 @@ var VERSION = config.version;
 
 function reloadConfig() {
     logger.info('Attempting to reload config');
-    fs.readFile(path.join(__dirname, 'config.json'), 'utf8', function(err, data) {
+    dep.fs.readFile(dep.path.join(__dirname, 'config.json'), 'utf8', function(err, data) {
         if (err) throw err;
         config = JSON.parse(data);
     });
 }
 
 function saveConfig() {
-    fs.writeFile(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 4));
+    dep.fs.writeFile(dep.path.join(__dirname, 'config.json'), JSON.stringify(config, null, 4));
 }
 
 //db.serialize(function () {

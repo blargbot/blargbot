@@ -1,10 +1,8 @@
-const moment = require('moment');
-
 bot.on('ready', async function() {
     logger.init('Ready!');
     let restart = await r.table('vars').get('restart').run();
     if (restart && restart.varvalue) {
-        bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(moment(), moment(restart.varvalue.time)) + '.');
+        bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(dep.moment(), dep.moment(restart.varvalue.time)) + '.');
         r.table('vars').get('restart').delete().run();
     }
 

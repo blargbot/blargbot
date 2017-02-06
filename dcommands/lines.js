@@ -1,8 +1,8 @@
 var e = module.exports = {};
 
-const exec = require('child_process').exec;
-const path = require('path');
-const Table = require('cli-table');
+
+
+const Table = dep.Table;
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -19,7 +19,7 @@ e.longinfo = `<p>Gets the number of lines the bot is made of.</p>`;
 
 e.execute = (msg) => {
     bot.sendChannelTyping(msg.channel.id);
-    exec(`cloc ${path.join(__dirname, '..')} --exclude-dir=codemirror`, (err, stdout, stderr) => {
+    dep.exec(`cloc ${dep.path.join(__dirname, '..')} --exclude-dir=codemirror`, (err, stdout, stderr) => {
         if (err) {
             logger.error(err);
             bu.send(msg, 'An error has occurred!');

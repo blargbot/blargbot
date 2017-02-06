@@ -1,5 +1,3 @@
-const moment = require('moment');
-
 async function handleDelete(msg, quiet) {
     //   logger.debug('A message was deleted in ' + msg.)
     if (msg.channel.guild == undefined) return;
@@ -57,7 +55,7 @@ async function handleDelete(msg, quiet) {
                     msgid: msg.id,
                     channelid: msg.channel.id,
                     guildid: msg.channel.guild.id,
-                    msgtime: r.epochTime(moment() / 1000),
+                    msgtime: r.epochTime(dep.moment() / 1000),
                     type: 2
                 }).run();
             } catch (err) {

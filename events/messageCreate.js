@@ -1,7 +1,4 @@
-const moment = require('moment');
-const util = require('util');
-const Cleverbot = require('cleverbot-node');
-const cleverbot = new Cleverbot();
+const cleverbot = new dep.Cleverbot();
 
 bot.on('messageCreate', async function(msg) {
     processUser(msg);
@@ -58,7 +55,7 @@ async function handleUserMessage(msg, storedGuild) {
                     if (msg.channel.guild) {
                         r.table('user').get(msg.author.id).update({
                             lastcommand: msg.cleanContent,
-                            lastcommanddate: r.epochTime(moment() / 1000)
+                            lastcommanddate: r.epochTime(dep.moment() / 1000)
                         }).run();
                     }
                 }
@@ -90,10 +87,10 @@ var processUser = async function(msg) {
             username: msg.author.username,
             usernames: [{
                 name: msg.author.username,
-                date: r.epochTime(moment() / 1000)
+                date: r.epochTime(dep.moment() / 1000)
             }],
             isbot: msg.author.bot,
-            lastspoke: r.epochTime(moment() / 1000),
+            lastspoke: r.epochTime(dep.moment() / 1000),
             lastcommand: null,
             lastcommanddate: null,
             messagecount: 1,
@@ -102,7 +99,7 @@ var processUser = async function(msg) {
         }).run();
     } else {
         let newUser = {
-            lastspoke: r.epochTime(moment() / 1000),
+            lastspoke: r.epochTime(dep.moment() / 1000),
             lastchannel: msg.channel.id,
             messagecount: storedUser.messagecount + 1
         };
@@ -111,7 +108,7 @@ var processUser = async function(msg) {
             newUser.usernames = storedUser.usernames;
             newUser.usernames.push({
                 name: msg.author.username,
-                date: r.epochTime(moment() / 1000)
+                date: r.epochTime(dep.moment() / 1000)
             });
         }
         if (storedUser.discriminator != msg.author.discriminator) {
@@ -224,7 +221,7 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
                                 title: err.message.toString(),
                                 color: 0xAD1111,
                                 description: err.stack.toString(),
-                                timestamp: moment(msg.timestamp),
+                                timestamp: dep.moment(msg.timestamp),
                                 author: {
                                     name: bu.getFullName(msg.author),
                                     icon_url: msg.author.avatarURL,
@@ -264,7 +261,7 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
 var executeCommand = async function(commandName, msg, words, text) {
     r.table('stats').get(commandName).update({
         uses: r.row('uses').add(1),
-        lastused: r.epochTime(moment() / 1000)
+        lastused: r.epochTime(dep.moment() / 1000)
     }).run();
     if (bu.commandStats.hasOwnProperty(commandName)) {
         bu.commandStats[commandName]++;
@@ -303,7 +300,7 @@ function insertChatlog(msg) {
             msgid: msg.id,
             channelid: msg.channel.id,
             guildid: msg.guild ? 'DM' : msg.channel.guild.id,
-            msgtime: r.epochTime(moment(msg.timestamp) / 1000),
+            msgtime: r.epochTime(dep.moment(msg.timestamp) / 1000),
             type: 0
         }).run();
     }
@@ -335,7 +332,7 @@ function handleIRCMessage(msg) {
         logger.output(message);
         var attachUrl = '';
         if (msg.attachments.length > 0) {
-            logger.debug(util.inspect(msg.attachments[0]));
+            logger.debug(dep.util.inspect(msg.attachments[0]));
             attachUrl += ` ${msg.attachments[0].url}`;
         }
         sendMessageToIrc(message + attachUrl);
@@ -489,7 +486,7 @@ function logCommand(msg) {
                 icon_url: msg.author.avatarURL,
                 url: `https://blargbot.xyz/user/${msg.author.id}`
             },
-            timestamp: moment(msg.timestamp),
+            timestamp: dep.moment(msg.timestamp),
             footer: {
                 text: `MsgID: ${msg.id}`
             }
@@ -531,7 +528,7 @@ function handleAwaitMessage(msg) {
     if (bu.awaitMessages.hasOwnProperty(msg.channel.id) &&
         bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
         let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
-        if (moment.duration(moment() - firstTime).asMinutes() <= 5) {
+        if (dep.moment.duration(dep.moment() - firstTime).asMinutes() <= 5) {
             bu.emitter.emit(bu.awaitMessages[msg.channel.id][msg.author.id].event, msg);
         }
     }

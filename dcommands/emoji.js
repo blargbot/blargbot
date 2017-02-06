@@ -1,7 +1,6 @@
 var e = module.exports = {};
-const twemoji = require('twemoji');
-const svg2png = require('svg2png');
-const request = require('request');
+const svg2png = dep.svg2png;
+
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -27,7 +26,7 @@ e.execute = async function(msg, words) {
     if (input.undefined[0]) {
         if (/\<\:.+\:\d+\>/.test(input.undefined[0])) {
             let url = `https://cdn.discordapp.com/emojis/${words[1].match(/(\d+)/)[1]}.png`;
-            request({
+            dep.request({
                 uri: url,
                 encoding: null
             }, async function(err, res, body) {
@@ -37,9 +36,9 @@ e.execute = async function(msg, words) {
                 });
             });
         } else {
-            let codePoint = twemoji.convert.toCodePoint(input.undefined[0]);
+            let codePoint = dep.twemoji.convert.toCodePoint(input.undefined[0]);
             let url = `https://raw.githubusercontent.com/twitter/twemoji/gh-pages/2/svg/${codePoint}.svg`;
-            request({
+            dep.request({
                 uri: url,
                 encoding: null
             }, async function(err, res, body) {

@@ -1,9 +1,8 @@
 var e = module.exports = {};
 
 const jsonSpells = require('./../spells.json');
-const Eris = require('eris');
-const util = require('util');
-const spells = new Eris.Collection(Object);
+
+const spells = new dep.Eris.Collection(Object);
 
 for (let key in jsonSpells) {
     let temp = jsonSpells[key];
@@ -18,7 +17,7 @@ const components = {
     F: 'Focus',
     DF: 'Divine Focus',
     XP: 'XP Cost'
-}
+};
 
 const schools = {
     abjuration: 0x5fbae8,
@@ -29,7 +28,7 @@ const schools = {
     illusion: 0x672cf9,
     necromancy: 0x1e0500,
     transmutation: 0xf2f259
-}
+};
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -52,7 +51,7 @@ e.execute = async function(msg, words, text) {
             return m.id.toLowerCase().indexOf(words.slice(1).join(' ').toLowerCase()) > -1;
         });
         if (filteredSpells.length == 0) {
-            bu.send(msg, 'Spell not found!')
+            bu.send(msg, 'Spell not found!');
             return;
         } else if (filteredSpells.length == 1) {
             spell = filteredSpells[0];
@@ -88,11 +87,11 @@ ${spell.description}`,
         }, {
             name: 'Components',
             value: spell.components.split(/,[\s]+/).map(m => {
-                    return (components[m.split(' ')[0]] || m.split(' ')[0]) + ' ' + m.split(' ').slice(1).join(' ')
+                return (components[m.split(' ')[0]] || m.split(' ')[0]) + ' ' + m.split(' ').slice(1).join(' ');
             }).join(', '),
             inline: true
         }]
-    }
+    };
     bu.send(msg, {
         embed
     });

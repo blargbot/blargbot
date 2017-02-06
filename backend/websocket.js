@@ -1,6 +1,6 @@
 const e = module.exports = {};
-const WebSocketServer = require('ws').Server;
-const util = require('util');
+const WebSocketServer = dep.ws.Server;
+
 
 e.init = function(server) {
     global.wss = new WebSocketServer({
@@ -17,7 +17,9 @@ e.init = function(server) {
         logger.ws('A user has connected');
         ws.on('message', function(message) {
             try {
-                logger.ws(util.inspect(message, {depth: 1}));
+                logger.ws(dep.util.inspect(message, {
+                    depth: 1
+                }));
                 message = JSON.parse(message);
                 let userId = bu.getUserFromSession(message.sid);
                 if (!userId) {
@@ -94,7 +96,7 @@ async function displayGuild(ws, message, userId) {
     let guild = bot.guilds.get(message.data.guild);
     if (!guild) {
         sendData(ws, 404, 'Guild not found');
-        return; 
+        return;
     }
     let isStaff = await bu.isUserStaff(userId, guild.id);
     if (!isStaff) {
@@ -102,7 +104,7 @@ async function displayGuild(ws, message, userId) {
         return;
     }
     let storedGuild = await bu.getGuild(guild.id);
-    let owner = bot.users.get(guild.ownerID); 
+    let owner = bot.users.get(guild.ownerID);
     storedGuild.guild = {
         id: guild.id,
         name: guild.name,
@@ -132,7 +134,7 @@ async function displayGuild(ws, message, userId) {
             };
         }).sort((a, b) => {
             return b.position - a.position;
-        }),
+        })
     };
     sendData(ws, 200, {
         guild: storedGuild,

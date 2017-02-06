@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-const moment = require('moment');
+
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -23,11 +23,11 @@ e.flags = [{
     flag: 'c',
     word: 'channel',
     desc: 'If set, this will notify the user in current channel instead of in a DM.'
-}]
+}];
 
 e.execute = async function(msg, words, text) {
     let input = bu.parseInput(e.flags, words);
-    let duration = moment.duration();
+    let duration = dep.moment.duration();
     if (input.t && input.t.length > 0) duration = bu.parseDuration(input.t.join(' '));
     if (duration.asMilliseconds() == 0) {
         await bu.send(msg, `Hey, you didn't give me a period of time to remind you after!
@@ -40,15 +40,15 @@ Example: \`remind Do a thing! -t 1 day, two hours\``);
             user: msg.author.id,
             content: input.undefined.join(' '),
             channel: channel,
-            starttime: r.epochTime(moment().unix()),
-            endtime: r.epochTime(moment().add(duration).unix())
+            starttime: r.epochTime(dep.moment().unix()),
+            endtime: r.epochTime(dep.moment().add(duration).unix())
         });
         await bu.send(msg, `:alarm_clock: Ok! I'll remind you ${channel ? 'here' : 'in a DM'} ${duration.humanize(true)}! :alarm_clock: `);
     }
 };
 
 e.event = async function(args) {
-    let duration = moment.duration(moment() - moment(args.starttime));
+    let duration = dep.moment.duration(dep.moment() - dep.moment(args.starttime));
     duration.subtract(duration * 2);
     if (args.channel) {
         bu.send(args.channel, `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this ${duration.humanize(true)}:

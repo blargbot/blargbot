@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-const moment = require('moment');
+
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
@@ -77,6 +77,6 @@ e.event = async function(args) {
             roles: roles,
             mute: voiceMute ? false : undefined
         });
-        bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${moment.duration(args.duration).humanize()}.`);
+        bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${dep.moment.duration(args.duration).humanize()}.`);
     }
 };

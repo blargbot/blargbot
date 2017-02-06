@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-const moment = require('moment');
+
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
@@ -72,7 +72,7 @@ e.execute = async function(msg, words) {
         if (words[2])
             deletedays = parseInt(words[2]);
         try {
-            await bot.banGuildMember(msg.channel.guild.id, user.id, deletedays)
+            await bot.banGuildMember(msg.channel.guild.id, user.id, deletedays);
             let suffix = '';
             if (input.t && input.t.length > 0) {
                 let duration = bu.parseDuration(input.t.join(' '));
@@ -82,7 +82,7 @@ e.execute = async function(msg, words) {
                         user: user.id,
                         guild: msg.guild.id,
                         duration: duration.toJSON(),
-                        endtime: r.epochTime(moment().add(duration).unix())
+                        endtime: r.epochTime(dep.moment().add(duration).unix())
                     });
                     suffix = `The user will be unbanned ${duration.humanize(true)}.`;
                 } else {

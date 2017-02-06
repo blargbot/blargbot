@@ -1,6 +1,5 @@
-const express = require('express');
-const router = express.Router();
-const hbs = require('hbs');
+const router = dep.express.Router();
+
 
 router.get('/', async function(req, res) {
     if (!req.user) {
@@ -18,7 +17,7 @@ router.get('/', async function(req, res) {
             returnObj.key = k;
             return returnObj;
         });
-      //  logger.debug(settings);
+        //  logger.debug(settings);
         res.locals.gsettings = new hbs.handlebars.SafeString(JSON.stringify(settings).replace(/`/g, '\\`'));
         let guilds = req.user.guilds;
         let firstGuildCount = guilds.length;

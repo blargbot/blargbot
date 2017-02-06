@@ -1,6 +1,5 @@
-const express = require('express');
-const router = express.Router();
-const Jimp = require('jimp');
+const router = dep.express.Router();
+
 
 router.get('/:hex', async function(req, res) {
     if (req.params.hex.length > 6) req.params.hex = req.params.hex.substring(0, 6);
@@ -11,8 +10,8 @@ router.get('/:hex', async function(req, res) {
         });
         return;
     }
-    let img = new Jimp(128, 128, hex);
-    img.getBuffer(Jimp.MIME_JPEG, (err, buf) => {
+    let img = new dep.Jimp(128, 128, hex);
+    img.getBuffer(dep.Jimp.MIME_JPEG, (err, buf) => {
         logger.website(req.params.hex, hex, buf.length);
 
         res.writeHead(200, {

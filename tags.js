@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
-var fs = require('fs');
-var path = require('path');
+
+
 
 
 
@@ -16,7 +16,7 @@ e.init = () => {
  * - hooray for modules!
  */
 function initTags() {
-    var fileArray = fs.readdirSync(path.join(__dirname, 'tags'));
+    var fileArray = dep.fs.readdirSync(dep.path.join(__dirname, 'tags'));
     // r.table('rawtag').delete().run().then(() => {
     for (var i = 0; i < fileArray.length; i++) {
 

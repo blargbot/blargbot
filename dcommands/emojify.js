@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var request = require('request');
+
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -23,7 +23,7 @@ e.execute = (msg, words) => {
             'User-Agent': 'blargbot/1.0 (ratismal)'
         }
     };
-    request(options, (err, res, body) => {
+    dep.request(options, (err, res, body) => {
         if (!err && res.statusCode == 200) {
             var emojis = JSON.parse(body);
             var toSend = '';

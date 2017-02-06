@@ -1,5 +1,3 @@
-var moment = require('moment');
-
 var e = module.exports = {};
 
 e.init = () => {

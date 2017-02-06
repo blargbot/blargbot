@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var moment = require('moment-timezone');
+
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -14,5 +14,5 @@ e.info = 'Tells you how long I have been online.';
 e.longinfo = `<p>Tells you how long the bot has been up for.</p>`;
 
 e.execute = (msg) => {
-    bu.send(msg, `Bot Uptime: ${bu.createTimeDiffString(moment(), bu.startTime)}`);
+    bu.send(msg, `Bot Uptime: ${bu.createTimeDiffString(dep.moment(), bu.startTime)}`);
 };

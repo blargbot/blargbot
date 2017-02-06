@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
-var xml2js = require('xml2js');
-var https = require('https');
+var xml2js = dep.xml2js;
+var https = dep.https;
 
 e.init = () => {
     e.category = bu.CommandType.NSFW;
@@ -27,8 +27,8 @@ e.execute = (msg, words) => {
 
                 tagList[i] = tagList[i].toLowerCase();
             }
-            // listylist = tagList;
-            //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+        // listylist = tagList;
+        //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel) {
             bu.send(msg, config.general.nsfwMessage);
             return;
@@ -69,14 +69,14 @@ e.execute = (msg, words) => {
                         //    parsedXml = doc;
                         //logger.('result: ' + result);
                         var urlList = [];
-                        //   logger.(util.inspect(doc.posts.post[0]))
+                        //   logger.(dep.util.inspect(doc.posts.post[0]))
                         if (doc.posts.post != null)
                             for (let i = 0; i < doc.posts.post.length; i++) {
                                 var imgUrl = doc.posts.post[i].$.file_url;
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                                     urlList.push('http:' + doc.posts.post[i].$.file_url);
                             }
-                            //    logger.(util.inspect(urlList));
+                        //    logger.(dep.util.inspect(urlList));
                         if (urlList.length == 0) {
                             bu.send(msg, 'No results found!');
                             return;

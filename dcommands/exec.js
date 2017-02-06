@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var exec = require('child_process').exec;
+
 e.init = () => {
     e.category = bu.CommandType.CAT;
 };
@@ -22,7 +22,7 @@ e.execute = (msg, words, text) => {
             bu.send(msg, 'No! That\'s dangerous! Do `b!restart` instead.\n\nIt\'s not that I don\'t trust you, it\'s just...\n\nI don\'t trust you.');
             return;
         }
-        exec(commandToProcess, function(err, stdout, stderr) {
+        dep.exec(commandToProcess, function(err, stdout, stderr) {
             if (err) {
                 bu.send(msg, `Error!
 \`\`\`js

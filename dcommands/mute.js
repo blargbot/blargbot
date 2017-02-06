@@ -1,5 +1,5 @@
 var e = module.exports = {};
-const moment = require('moment');
+
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
@@ -130,7 +130,7 @@ Modifying $ {
                                     guild: msg.guild.id,
                                     duration: duration.toJSON(),
                                     role: mutedrole,
-                                    endtime: r.epochTime(moment().add(duration).unix())
+                                    endtime: r.epochTime(dep.moment().add(duration).unix())
                                 });
                                 suffix = `The user will be unmuted ${duration.humanize(true)}.`;
                             } else {

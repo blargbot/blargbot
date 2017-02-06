@@ -1,8 +1,8 @@
 var e = module.exports = {};
-var path = require('path');
-var util = require('util');
-const request = require('request');
-const Jimp = require('jimp');
+
+
+
+
 
 e.init = () => {
     e.category = bu.CommandType.IMAGE;
@@ -27,7 +27,7 @@ e.execute = async function(msg, words) {
     let user = msg.author;
     let url;
     if (msg.attachments.length > 0) {
-        url = msg.attachments[0].url; 
+        url = msg.attachments[0].url;
     } else if (input.I) {
         url = input.I.join(' ');
     } else if (input.undefined.length > 0) {

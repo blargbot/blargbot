@@ -1,5 +1,3 @@
-const moment = require('moment');
-
 bot.on('messageUpdate', async function(msg, oldmsg) {
     if (msg.author) {
         if (!msg.guild) return;
@@ -50,7 +48,7 @@ bot.on('messageUpdate', async function(msg, oldmsg) {
                         msgid: msg.id,
                         channelid: msg.channel.id,
                         guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
-                        msgtime: r.epochTime(moment(msg.editedTimestamp) / 1000),
+                        msgtime: r.epochTime(dep.moment(msg.editedTimestamp) / 1000),
                         type: 1
                     }).run();
             }

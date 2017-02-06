@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
 var t;
-const moment = require('moment');
+
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -86,7 +86,7 @@ e.execute = async function(msg, words) {
                         icon_url: msg.author.avatarURL,
                         url: `https://blargbot.xyz/user/${msg.author.id}`
                     },
-                    timestamp: moment(msg.timestamp),
+                    timestamp: dep.moment(msg.timestamp),
                     footer: {
                         text: 'Case ' + i + ' | ' + msg.id
                     },
@@ -109,7 +109,7 @@ e.execute = async function(msg, words) {
                 channel: msg.channel.id,
                 message: words.slice(1).join(' '),
                 messageid: msg.id,
-                date: r.epochTime(moment().unix()),
+                date: r.epochTime(dep.moment().unix()),
                 cardId: data.id,
                 cardUrl: data.shortUrl
             }).run();

@@ -1,6 +1,5 @@
 var e = module.exports = {};
 
-var http = require('http');
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
@@ -20,7 +19,7 @@ blargbot&gt; @User, 1.0 USD is equivalent to X.X CAD
 
     <p>Currency codes are not case sensitive.</p>`;
 
-e.execute = (msg, words) => {
+e.execute = async function(msg, words) {
     if (words.length < 4) {
         bu.send(msg, 'Incorrect usage!\n`econ \<from> \<to> \<amount>`');
         return;
@@ -31,25 +30,18 @@ e.execute = (msg, words) => {
 
     var url = `http://api.fixer.io/latest?symbols=${to}&base=${from}`;
 
-    http.get(url, function(res) {
-        var body = '';
-        res.on('data', function(chunk) {
-            body += chunk;
-        });
-        res.on('end', function() {
-            var rates = JSON.parse(body);
-            if (rates.error != null && rates.error === 'Invalid base') {
-                bu.send(msg, `Invalid currency ${from}\n\`econ \<from\> \<to\> \<amount\>\``);
-                return;
-            }
-            if (rates.rates[to] == null) {
-                bu.send(msg, `Invalid currency ${to}\n\`econ \<from\> \<to\> \<amount\>\``);
-                return;
-            }
-            var converted = Math.round((convert * rates.rates[to]) * 100.0) / 100;
-            var message = `${convert} ${from} is equivalent to ${converted} ${to}`;
-            bu.send(msg, message);
+    let res = await bu.request(url);
+    var rates = JSON.parse(res.body);
+    if (rates.error != null && rates.error === 'Invalid base') {
+        bu.send(msg, `Invalid currency ${from}\n\`econ \<from\> \<to\> \<amount\>\``);
+        return;
+    }
+    if (rates.rates[to] == null) {
+        bu.send(msg, `Invalid currency ${to}\n\`econ \<from\> \<to\> \<amount\>\``);
+        return;
+    }
+    var converted = Math.round((convert * rates.rates[to]) * 100.0) / 100;
+    var message = `${convert} ${from} is equivalent to ${converted} ${to}`;
+    bu.send(msg, message);
 
-        });
-    });
 };
