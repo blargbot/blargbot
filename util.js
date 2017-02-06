@@ -26,10 +26,6 @@ bu.userCache = {};
 bu.tagCache = {};
 bu.globalVars = {};
 
-// A list of command modules
-bu.commands = {};
-// A list of command names/descriptions for each alias or subcommand
-bu.commandList = {};
 // A list of command usage for the current session
 bu.commandStats = {};
 bu.commandUses = 0;
@@ -1542,8 +1538,8 @@ bu.canExecuteCommand = async function(msg, commandName, quiet) {
                         return [true, commandName];
                     else return [false, commandName];
                 } else if (!command.rolename) {
-                    if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
-                        if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
+                    if (bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
+                        if (!bu.hasPerm(msg, bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
                             return [false, commandName, 1];
                         }
                     }
@@ -1551,15 +1547,15 @@ bu.canExecuteCommand = async function(msg, commandName, quiet) {
                 }
             }
         }
-        if (bu.commandList[commandName] && bu.CommandType.properties[bu.commandList[commandName].category].perm) {
-            if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
+        if (CommandManager.commandList[commandName] && bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
+            if (!bu.hasPerm(msg, bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
                 return [false, commandName, 3];
             }
         }
         return [true, commandName];
     } else {
-        if (bu.CommandType.properties[bu.commandList[commandName].category].perm) {
-            if (!bu.hasPerm(msg, bu.CommandType.properties[bu.commandList[commandName].category].perm, quiet)) {
+        if (bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
+            if (!bu.hasPerm(msg, bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
                 return [false, commandName, 3];
             }
         }

@@ -58,7 +58,7 @@ e.init = () => {
 
     dep.hbs.registerHelper('listcommands', function() {
         let sidebar = '';
-        let commands = bu.commands;
+        let commands = CommandManager.list;
         let lastType = -10;
         let keys = Object.keys(commands);
         keys.sort((a, b) => {
@@ -192,7 +192,7 @@ e.init = () => {
     dep.hbs.registerHelper('commands', function(text, url) {
         let toReturn = '';
         let lastType = -10;
-        let commands = bu.commands;
+        let commands = CommandManager.list;
         let keys = Object.keys(commands);
         keys.sort((a, b) => {
             return ((commands[a].category - commands[b].category) * 1000) + (a > b ? 1 : -1);

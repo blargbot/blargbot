@@ -208,8 +208,8 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
 
             return true;
         } else {
-            if (bu.commandList.hasOwnProperty(words[0].toLowerCase())) {
-                let commandName = bu.commandList[words[0].toLowerCase()].name;
+            if (CommandManager.commandList.hasOwnProperty(words[0].toLowerCase())) {
+                let commandName = CommandManager.commandList[words[0].toLowerCase()].name;
                 let val2 = await bu.canExecuteCommand(msg, commandName);
                 if (val2[0]) {
                     try {
@@ -270,7 +270,7 @@ var executeCommand = async function(commandName, msg, words, text) {
     }
     bu.commandUses++;
     try {
-        await bu.commands[commandName].execute(msg, words, text);
+        await CommandManager.list[commandName].execute(msg, words, text);
     } catch (err) {
         if (err.response) {
             let response = JSON.parse(err.response);
@@ -398,17 +398,17 @@ async function handleCensor(msg, storedGuild) {
                             case 0:
                                 if (cens.deleteMessage) message = cens.deleteMessage;
                                 else if (censor.rule.deleteMessage) message = censor.rule.deleteMessage;
-                                else message = bu.commands['censor'].defaultDeleteMessage;
+                                else message = CommandManager.list['censor'].defaultDeleteMessage;
                                 break;
                             case 1:
                                 if (cens.banMessage) message = cens.banMessage;
                                 else if (censor.rule.banMessage) message = censor.rule.banMessage;
-                                else message = bu.commands['censor'].defaultBanMessage;
+                                else message = CommandManager.list['censor'].defaultBanMessage;
                                 break;
                             case 2:
                                 if (cens.kickMessage) message = cens.kickMessage;
                                 else if (censor.rule.kickMessage) message = censor.rule.kickMessage;
-                                else message = bu.commands['censor'].defaultKickMessage;
+                                else message = CommandManager.list['censor'].defaultKickMessage;
                                 break;
                         }
                         let output = await tags.processTag(msg, message, '', undefined, undefined, true);

@@ -19,132 +19,6 @@ var e = module.exports = {},
 
 e.requireCtx = require;
 
-
-/**
- * Initializes every command found in the dcommands directory
- * - hooray for modules!
- */
-async function initCommands() {
-    //	await r.table('command').delete().run();
-    var fileArray = dep.fs.readdirSync(dep.path.join(__dirname, 'dcommands'));
-    for (var i = 0; i < fileArray.length; i++) {
-        var commandFile = fileArray[i];
-        if (/.+\.js$/.test(commandFile)) {
-            var commandName = commandFile.match(/(.+)\.js$/)[1];
-            loadCommand(commandName);
-            logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading command module ', commandName);
-        } else {
-            logger.init('     Skipping non-command ', commandFile);
-
-        }
-    }
-}
-
-
-/**
- * Reloads a specific command
- * @param commandName - the name of the command to reload (String)
- */
-function reloadCommand(commandName) {
-    if (bu.commands[commandName]) {
-        logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Reloading command module ', commandName);
-        if (bu.commands[commandName].shutdown)
-            bu.commands[commandName].shutdown();
-        bu.commands[commandName] = reload(`./dcommands/${commandName}.js`);
-        buildCommand(commandName);
-    }
-}
-
-/**
- * Unloads a specific command
- * @param commandName - the name of the command to unload (String)
- */
-function unloadCommand(commandName) {
-    if (bu.commands[commandName]) {
-        logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module ', commandName);
-
-        if (bu.commands[commandName].sub) {
-            for (var subCommand in bu.commands[commandName].sub) {
-                logger.init(`    Unloading ${commandName}'s subcommand`, subCommand);
-                delete bu.commandList[subCommand];
-            }
-        }
-        delete bu.commandList[commandName];
-        if (bu.commands[commandName].alias) {
-            for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
-                logger.init(`    Unloading ${commandName}'s alias`, bu.commands[commandName].alias[ii]);
-                delete bu.commandList[bu.commands[commandName].alias[ii]];
-            }
-        }
-    }
-}
-
-/**
- * Loads a specific command
- * @param commandName - the name of the command to load (String)
- */
-function loadCommand(commandName) {
-    try {
-        bu.commands[commandName] = require(`./dcommands/${commandName}.js`);
-        if (bu.commands[commandName].isCommand) {
-            buildCommand(commandName);
-        } else {
-            logger.init('     Skipping non-command ', commandName + '.js');
-            delete bu.commands[commandName];
-        }
-    } catch (err) {
-        logger.error(err);
-        logger.init(`     Failed to load command ${commandName}!`);
-    }
-}
-
-// Refactored a major part of loadCommand and reloadCommand into this
-function buildCommand(commandName) {
-    try {
-        bu.commands[commandName].init();
-        var command = {
-            name: commandName,
-            usage: bu.commands[commandName].usage,
-            info: bu.commands[commandName].info,
-            hidden: bu.commands[commandName].hidden,
-            category: bu.commands[commandName].category
-        };
-        /*
-        if (bu.commands[commandName].longinfo) {
-        r.table('command').insert({
-        name: commandName,
-        usage: command.usage.replace(/</g, '&lt;').replace(/>/g, '&gt;'),
-        info: bu.commands[commandName].longinfo,
-        type: command.category
-        }).run();
-        }
-        */
-        if (bu.commands[commandName].sub) {
-            for (var subCommand in bu.commands[commandName].sub) {
-                logger.init(`    Loading ${commandName}'s subcommand`, subCommand);
-
-                bu.commandList[subCommand] = {
-                    name: commandName,
-                    usage: bu.commands[commandName].sub[subCommand].usage,
-                    info: bu.commands[commandName].sub[subCommand].info,
-                    hidden: bu.commands[commandName].hidden,
-                    category: bu.commands[commandName].category
-                };
-            }
-        }
-        bu.commandList[commandName] = command;
-        if (bu.commands[commandName].alias) {
-            for (var ii = 0; ii < bu.commands[commandName].alias.length; ii++) {
-                logger.init(`    Loading ${commandName}'s alias`, bu.commands[commandName].alias[ii]);
-                bu.commandList[bu.commands[commandName].alias[ii]] = command;
-            }
-        }
-    } catch (err) {
-        logger.error(err);
-    }
-}
-
-
 /**
  * Initializes the bot
  * @param v - the version number (String)
@@ -184,15 +58,7 @@ e.init = async function(v, em) {
     bu.VERSION = v;
     bu.startTime = startTime;
     bu.vars = vars;
-    tags.init();
-    //  webInterface.init(bot, bu);
 
-    /**
-     * EventEmitter stuff
-     */
-    // emitter.on('reloadInterface', () => {
-    //      reloadInterface();
-    //   });
     emitter.on('discordMessage', (message, attachment) => {
         if (attachment)
             bu.send(config.discord.channel, message, attachment);
@@ -213,24 +79,18 @@ e.init = async function(v, em) {
         eval2(msg, text);
     });
 
-    emitter.on('reloadCommand', (commandName) => {
-        reloadCommand(commandName);
-    });
-    emitter.on('loadCommand', (commandName) => {
-        loadCommand(commandName);
-    });
-    emitter.on('unloadCommand', (commandName) => {
-        unloadCommand(commandName);
-    });
     emitter.on('saveVars', () => {
         saveVars();
     });
 
     bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
+    const Manager = require('./Manager.js');
+    global.EventManager = new Manager('events');
+    global.TagManager = new Manager('tags');
 
-    registerListeners();
+    const CommandManagerClass = require('./CommandManager.js');
+    global.CommandManager = new CommandManagerClass();
 
-    initCommands();
     website.init();
 
     registerChangefeed();
@@ -255,12 +115,6 @@ function reloadVars() {
 function saveVars() {
     dep.fs.writeFileSync(dep.path.join(__dirname, 'vars.json'), JSON.stringify(vars, null, 4));
 }
-
-
-
-
-
-
 
 var messageLogs = [];
 var messageI = 0;
@@ -410,11 +264,6 @@ ${err.stack}
 };
 
 var startTime = dep.moment();
-
-function registerListeners() {
-    const EventManagerClass = require('./EventManager.js');
-    global.EventManager = new EventManagerClass();
-}
 
 function filterUrls(input) {
     return input.replace(/https?\:\/\/.+\.[a-z]{1,20}(\/[^\s]*)?/gi, '');

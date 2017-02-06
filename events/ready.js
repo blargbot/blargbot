@@ -142,7 +142,7 @@ function initEvents() {
         });
         for (let event of events) {
             let type = event.type;
-            bu.commands[type].event(event);
+            CommandManager.list[type].event(event);
             r.table('events').get(event.id).delete().run();
         }
     }, 10000);

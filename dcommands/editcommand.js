@@ -81,10 +81,10 @@ e.execute = async function(msg, words) {
                     toSend += `Added custom role requirement to command(s)\n\`\`\`fix\n`;
                 }
                 for (let i = 0; i < commands.length; i++) {
-                    if (bu.commandList.hasOwnProperty(commands[i].toLowerCase())) {
-                        commandName = bu.commandList[commands[i].toLowerCase()].name;
-                        if (bu.commands[commandName].category == bu.CommandType.CAT ||
-                            bu.commands[commandName].category == bu.CommandType.MUSIC) {
+                    if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
+                        commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
+                        if (CommandManager.list[commandName].category == bu.CommandType.CAT ||
+                            CommandManager.list[commandName].category == bu.CommandType.MUSIC) {
                             logger.debug('no ur not allowed');
                         } else {
                             if (words.length == 3) {
@@ -118,10 +118,10 @@ e.execute = async function(msg, words) {
                 let disabledList = [];
                 let enabledList = [];
                 for (let i = 0; i < commands.length; i++) {
-                    if (bu.commandList.hasOwnProperty(commands[i].toLowerCase())) {
-                        commandName = bu.commandList[commands[i].toLowerCase()].name;
-                        if (bu.commands[commandName].category == bu.CommandType.CAT ||
-                            bu.commands[commandName].category == bu.CommandType.MUSIC) {
+                    if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
+                        commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
+                        if (CommandManager.list[commandName].category == bu.CommandType.CAT ||
+                            CommandManager.list[commandName].category == bu.CommandType.MUSIC) {
                             logger.debug('no ur not allowed');
                         } else {
                             logger.debug(commandperms[commandName]);
@@ -159,10 +159,10 @@ e.execute = async function(msg, words) {
                     toSend += `Added custom role requirement to command(s)\n\`\`\`fix\n`;
                 }
                 for (let i = 0; i < commands.length; i++) {
-                    if (bu.commandList.hasOwnProperty(commands[i].toLowerCase())) {
-                        commandName = bu.commandList[commands[i].toLowerCase()].name;
-                        if (bu.commands[commandName].category == bu.CommandType.CAT ||
-                            bu.commands[commandName].category == bu.CommandType.MUSIC) {
+                    if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
+                        commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
+                        if (CommandManager.list[commandName].category == bu.CommandType.CAT ||
+                            CommandManager.list[commandName].category == bu.CommandType.MUSIC) {
                             logger.debug('no ur not allowed');
                         } else {
                             if (words.length == 3) {
