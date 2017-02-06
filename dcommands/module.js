@@ -31,31 +31,30 @@ var confirmDiscord = false;
 e.execute = (msg, words) => {
     if (msg.author.id == bu.CAT_ID) {
         let input = bu.parseInput(e.flags, words);
-        let manager = CommandManager;
-        if (input.e) manager = EventManager;
-        if (input.t) manager = TagManager;
-        if (input.c) manager = CommandManager;
-
-        if (words.length > 1) {
-            switch (words.shift().toLowerCase()) {
+        if (input.undefined.length > 1) {
+            let manager = CommandManager;
+            if (input.e) manager = EventManager;
+            if (input.t) manager = TagManager;
+            if (input.c) manager = CommandManager;
+            switch (input.undefined.shift().toLowerCase()) {
                 case 'reload':
-                    if (manager.reload(words[0]))
-                        bu.send(msg, `:ok_hand: Reloaded ${manager.type} ${words[0]} :ok_hand:`);
-                    else bu.send(msg, `:no_good: Failed to reload ${manager.type} ${words[0]} :no_good:`);
+                    if (manager.reload(input.undefined[0]))
+                        bu.send(msg, `:ok_hand: Reloaded ${manager.type} ${input.undefined[0]} :ok_hand:`);
+                    else bu.send(msg, `:no_good: Failed to reload ${manager.type} ${input.undefined[0]} :no_good:`);
                     break;
                 case 'unload':
-                    if (manager.unload(words[0]))
-                        bu.send(msg, `:ok_hand: Unloaded ${manager.type} ${words[0]} :ok_hand:`);
-                    else bu.send(msg, `:no_good: Failed to unload ${manager.type} ${words[0]} :no_good:`);
+                    if (manager.unload(input.undefined[0]))
+                        bu.send(msg, `:ok_hand: Unloaded ${manager.type} ${input.undefined[0]} :ok_hand:`);
+                    else bu.send(msg, `:no_good: Failed to unload ${manager.type} ${input.undefined[0]} :no_good:`);
                     break;
                 case 'load':
-                    if (manager.load(words[0]))
-                        bu.send(msg, `:ok_hand: Loaded ${manager.type} ${words[0]} :ok_hand:`);
-                    else bu.send(msg, `:no_good: Failed to load ${manager.type} ${words[0]} :no_good:`);
+                    if (manager.load(input.undefined[0]))
+                        bu.send(msg, `:ok_hand: Loaded ${manager.type} ${input.undefined[0]} :ok_hand:`);
+                    else bu.send(msg, `:no_good: Failed to load ${manager.type} ${input.undefined[0]} :no_good:`);
                     break;
             }
         } else {
-            if (words[0] && words[0].toLowerCase() == 'discord') {
+            if (input.undefined[0] && input.undefined[0].toLowerCase() == 'discord') {
                 if (!confirmDiscord) {
                     bu.send(msg, 'I really hope you know what you\'re doing. ' +
                         'Type that command again to confirm.');
@@ -66,7 +65,7 @@ e.execute = (msg, words) => {
                             bu.emitter.emit('reloadDiscord');
                         });
                 }
-            } else if (words[0] && words[0].toLowerCase() == 'irc') {
+            } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'irc') {
                 if (!confirmIrc) {
                     bu.send(msg, `I really hope you know what you're doing. ` +
                         `Type that command again to confirm.`);
@@ -77,9 +76,9 @@ e.execute = (msg, words) => {
                             bu.emitter.emit('reloadIrc');
                         });
                 }
-            } else if (words[0] && words[0].toLowerCase() == 'bu') {
+            } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'bu') {
                 bu.emitter.emit('reloadBu');
-            } else if (words[0] && words[0].toLowerCase() == 'cluster') {
+            } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'cluster') {
                 cluster.reset();
                 bu.send(msg, `:ok_hand: Reloading the workers. :ok_hand:`);
             }
