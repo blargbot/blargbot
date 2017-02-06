@@ -1949,3 +1949,72 @@ bu.createRegExp = function(term) {
     }
     throw 'Invalid Regex';
 };
+
+bu.postStats = function() {
+    updateStats();
+    var stats = {
+        'server_count': bot.guilds.size
+    };
+    request.post({
+        'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
+        'headers': {
+            'content-type': 'application/json',
+            'Authorization': config.general.botlisttoken,
+            'User-Agent': 'blargbot/1.0 (ratismal)'
+        },
+        'json': true,
+        body: stats
+    }, (err) => {
+        if (err) logger.error(err);
+    });
+
+    if (!config.general.isbeta) {
+        logger.info('Posting to matt');
+
+        request.post({
+            'url': 'https://www.carbonitex.net/discord/data/botdata.php',
+            'headers': {
+                'content-type': 'application/json'
+            },
+            'json': true,
+            body: {
+                'key': config.general.carbontoken,
+                'servercount': bot.guilds.size,
+                'logoid': bot.user.avatar
+            }
+        }, (err) => {
+            if (err) logger.error(err);
+        });
+    }
+};
+const stats = {};
+async function updateStats() {
+    let yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
+    if (!stats[yesterday]) {
+        let storedStats = await r.table('vars').get('stats');
+        if (!storedStats) {
+            await r.table('vars').insert({
+                varname: 'stats',
+                stats: {}
+            });
+            storedStats = {
+                stats: {}
+            };
+        }
+        stats[yesterday] = storedStats.stats[yesterday];
+        if (!stats[yesterday]) {
+            stats[yesterday] = {
+                guilds: bot.guilds.size,
+                change: 0
+            };
+        }
+    }
+    let day = moment().format('YYYY-MM-DD');
+    if (!stats[day]) stats[day] = {};
+    stats[day].guilds = bot.guilds.size;
+    stats[day].change = stats[day].guilds - stats[yesterday].guilds;
+
+    await r.table('vars').get('stats').update({
+        stats: stats
+    });
+}
