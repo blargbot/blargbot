@@ -34,7 +34,7 @@ e.execute = async function(params) {
         incrementBy = 1;
     }
     if (args.length <= 2) {
-        let result = await bu.tags['get'].getVar(params, args[1]);
+        let result = await TagManager.list['get'].getVar(params, args[1]);
         if (result == undefined) {
             logger.debug(1);
             replaceString = await bu.tagProcessError(params, '`Variable not defined`');
@@ -44,7 +44,7 @@ e.execute = async function(params) {
                 logger.debug(2);
                 replaceString = await bu.tagProcessError(params, '`Not a number`');
             } else replaceString = result;
-            await bu.tags['set'].setVar(params, args[1], result);
+            await TagManager.list['set'].setVar(params, args[1], result);
         }
     } else if (args.length < 2) {
         logger.debug(2);

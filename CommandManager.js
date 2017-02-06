@@ -4,19 +4,24 @@ class CommandManager extends Manager {
 
     constructor() {
         super('dcommands');
-        this.commandList = {};
+    }
 
-        this.init();
+    init() {
+        this.commandList = {};
+        super.init();
     }
 
     load(name) {
-        super.load(name);
-        if (this.list[name].isCommand) {
-            this.build(name);
-        } else {
-            logger.init('     Skipping non-command ', name + '.js');
-            delete this.list[name];
+        if (super.load(name)) {
+            if (this.list.hasOwnProperty(name) && this.list[name].isCommand) {
+                this.build(name);
+                return true;
+            } else {
+                logger.init('     Skipping non-command ', name + '.js');
+                delete this.list[name];
+            }
         }
+        return false;
     }
 
     reload(name) {

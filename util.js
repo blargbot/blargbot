@@ -47,8 +47,6 @@ bu.defaultStaff = dep.Eris.Constants.Permissions.kickMembers +
     dep.Eris.Constants.Permissions.manageGuild +
     dep.Eris.Constants.Permissions.manageMessages;
 
-bu.tags = {};
-bu.tagList = {};
 bu.TagType = {
     SIMPLE: 1,
     COMPLEX: 2,
@@ -994,7 +992,7 @@ bu.getArray = async function(params, arrName) {
     let obj = bu.deserializeTagArray(arrName);
     if (!obj) {
         try {
-            let arr = await bu.tags['get'].getVar(params, arrName);
+            let arr = await TagManager.list['get'].getVar(params, arrName);
             if (arr != undefined) {
                 obj = bu.deserializeTagArray(bu.serializeTagArray(arr, arrName));
             }
@@ -1006,7 +1004,7 @@ bu.getArray = async function(params, arrName) {
 };
 
 bu.setArray = async function(deserialized, params) {
-    await bu.tags['set'].setVar(params, deserialized.n, deserialized.v);
+    await TagManager.list['set'].setVar(params, deserialized.n, deserialized.v);
 };
 
 bu.setVariable = async function(name, key, value, type, guildId) {
@@ -1168,8 +1166,8 @@ bu.processTag = async function(params) {
         for (let ii = 0; ii < args.length; ii++) {
             args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
-        if (bu.tagList.hasOwnProperty(args[0].toLowerCase())) {
-            replaceObj = await bu.tags[bu.tagList[args[0].toLowerCase()].tagName].execute({
+        if (TagManager.list.hasOwnProperty(args[0].toLowerCase())) {
+            replaceObj = await TagManager.list[TagManager.list[args[0].toLowerCase()].tagName].execute({
                 msg: msg,
                 args: args,
                 fallback: fallback,

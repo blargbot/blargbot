@@ -10,30 +10,49 @@ e.isCommand = true;
 
 e.hidden = false;
 e.usage = 'module <reload|unload|load> <name>';
-e.info = 'Loads, unloads, or reloads a command module';
+e.info = 'Loads, unloads, or reloads a module';
+
+e.flags = [{
+    flag: 'c',
+    word: 'command',
+    desc: 'Do for a command (default)'
+}, {
+    flag: 't',
+    word: 'tag',
+    desc: 'Do for a tag'
+}, {
+    flag: 'e',
+    word: 'event',
+    desc: 'Do for an event'
+}];
 
 var confirmIrc = false;
 var confirmDiscord = false;
 e.execute = (msg, words) => {
     if (msg.author.id == bu.CAT_ID) {
-        words.shift();
-        logger.debug(dep.util.inspect(words));
+        let input = bu.parseInput(e.flags, words);
+        let manager = CommandManager;
+        if (input.e) manager = EventManager;
+        if (input.t) manager = TagManager;
+        if (input.c) manager = CommandManager;
+
         if (words.length > 1) {
             switch (words.shift().toLowerCase()) {
                 case 'reload':
-                    bu.emitter.emit('reloadCommand', words[0]);
-                    bu.send(msg, `:ok_hand: Reloaded command ${words[0]} :ok_hand:`);
+                    if (manager.reload(words[0]))
+                        bu.send(msg, `:ok_hand: Reloaded ${manager.type} ${words[0]} :ok_hand:`);
+                    else bu.send(msg, `:no_good: Failed to reload ${manager.type} ${words[0]} :no_good:`);
                     break;
                 case 'unload':
-                    bu.emitter.emit('unloadCommand', words[0]);
-                    bu.send(msg, `:ok_hand: Unloaded command ${words[0]} :ok_hand:`);
+                    if (manager.unload(words[0]))
+                        bu.send(msg, `:ok_hand: Unloaded ${manager.type} ${words[0]} :ok_hand:`);
+                    else bu.send(msg, `:no_good: Failed to unload ${manager.type} ${words[0]} :no_good:`);
                     break;
                 case 'load':
-                    bu.emitter.emit('loadCommand', words[0]);
-                    bu.send(msg, `:ok_hand: Loaded command ${words[0]} :ok_hand:`);
-
+                    if (manager.load(words[0]))
+                        bu.send(msg, `:ok_hand: Loaded ${manager.type} ${words[0]} :ok_hand:`);
+                    else bu.send(msg, `:no_good: Failed to load ${manager.type} ${words[0]} :no_good:`);
                     break;
-
             }
         } else {
             if (words[0] && words[0].toLowerCase() == 'discord') {

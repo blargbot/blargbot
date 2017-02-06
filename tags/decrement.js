@@ -34,7 +34,7 @@ e.execute = async function(params) {
         decrementBy = 1;
     }
     if (args.length <= 2) {
-        let result = await bu.tags['get'].getVar(params, args[1]);
+        let result = await TagManager.list['get'].getVar(params, args[1]);
         if (result == undefined) {
             replaceString = await bu.tagProcessError(params, '`Variable not defined`');
         } else {
@@ -42,7 +42,7 @@ e.execute = async function(params) {
             if (isNaN(result)) {
                 replaceString = await bu.tagProcessError(params, '`Not a number`');
             } else replaceString = result;
-            await bu.tags['set'].setVar(params, args[1], result);
+            await TagManager.list['set'].setVar(params, args[1], result);
         }
     } else if (args.length < 2) {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');

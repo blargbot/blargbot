@@ -24,10 +24,12 @@ class Manager {
         try {
             const mod = require(this.constructPath(name));
             this.list[name] = mod;
+            return true;
         } catch (err) {
             logger.error(err);
             logger.init('Failed to load ' + this.type + ' ' + name);
         }
+        return false;
     }
 
     unload(name) {
@@ -44,13 +46,11 @@ class Manager {
             if (this.list.hasOwnProperty(name)) {
                 this.list[name] = dep.reload(this.constructPath(name));
                 return true;
-            } else {
-                return false;
             }
         } catch (err) {
             logger.error(err);
-            return false;
         }
+        return false;
     }
 
     constructPath(eventName) {

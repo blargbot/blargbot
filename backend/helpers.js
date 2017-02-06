@@ -79,7 +79,7 @@ e.init = () => {
     dep.hbs.registerHelper('listtags', function() {
         let sidebar = '';
         let lastType = -10;
-        let tags = bu.tags;
+        let tags = TagManager.list;
         let keys = Object.keys(tags);
         keys.sort((a, b) => {
             return ((tags[a].category - tags[b].category) * 1000) + (a > b ? 1 : -1);
@@ -98,7 +98,7 @@ e.init = () => {
     dep.hbs.registerHelper('tags', function(text, url) {
         let toReturn = '';
         let lastType = -10;
-        let tags = bu.tags;
+        let tags = TagManager.list;
         let keys = Object.keys(tags);
         keys.sort((a, b) => {
             return ((tags[a].category - tags[b].category) * 1000) + (a > b ? 1 : -1);
@@ -176,10 +176,10 @@ e.init = () => {
     });
 
     dep.hbs.registerHelper('tagseditor', (text, url) => {
-        let tags = Object.keys(bu.tags).map(m => {
+        let tags = Object.keys(TagManager.list).map(m => {
             return {
                 text: m,
-                displayText: bu.tags[m].usage
+                displayText: TagManager.list[m].usage
             };
         });
         tags.push('dummy');
