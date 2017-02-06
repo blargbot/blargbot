@@ -232,10 +232,9 @@ e.init = async function(v, em) {
 
     initCommands();
     website.init();
-    logger.init('Connecting...');
 
     registerChangefeed();
-
+    logger.init('Connecting...');
     bot.connect();
 };
 
@@ -410,20 +409,11 @@ ${err.stack}
     }
 };
 
-
-
 var startTime = dep.moment();
 
-
-/*
-function reloadInterface() {
-    webInterface.kill();
-    webInterface = reload('./interface.js');
-    webInterface.init(bot, bu);
-}
-*/
 function registerListeners() {
-
+    const EventManagerClass = require('./EventManager.js');
+    global.EventManager = new EventManagerClass();
 }
 
 function filterUrls(input) {

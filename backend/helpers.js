@@ -26,9 +26,9 @@ const tagType = {
 };
 
 e.init = () => {
-    hbs.registerPartials(dep.path.join(__dirname, 'views', 'partials'));
+    dep.hbs.registerPartials(dep.path.join(__dirname, 'views', 'partials'));
 
-    hbs.registerHelper('ifCond', function(v1, operator, v2, options) {
+    dep.hbs.registerHelper('ifCond', function(v1, operator, v2, options) {
 
         switch (operator) {
             case '==':
@@ -56,7 +56,7 @@ e.init = () => {
         }
     });
 
-    hbs.registerHelper('listcommands', function() {
+    dep.hbs.registerHelper('listcommands', function() {
         let sidebar = '';
         let commands = bu.commands;
         let lastType = -10;
@@ -76,7 +76,7 @@ e.init = () => {
         return sidebar;
     });
 
-    hbs.registerHelper('listtags', function() {
+    dep.hbs.registerHelper('listtags', function() {
         let sidebar = '';
         let lastType = -10;
         let tags = bu.tags;
@@ -95,7 +95,7 @@ e.init = () => {
         return sidebar;
     });
 
-    hbs.registerHelper('tags', function(text, url) {
+    dep.hbs.registerHelper('tags', function(text, url) {
         let toReturn = '';
         let lastType = -10;
         let tags = bu.tags;
@@ -175,7 +175,7 @@ e.init = () => {
         return toReturn;
     });
 
-    hbs.registerHelper('tagseditor', (text, url) => {
+    dep.hbs.registerHelper('tagseditor', (text, url) => {
         let tags = Object.keys(bu.tags).map(m => {
             return {
                 text: m,
@@ -189,7 +189,7 @@ e.init = () => {
 
 
 
-    hbs.registerHelper('commands', function(text, url) {
+    dep.hbs.registerHelper('commands', function(text, url) {
         let toReturn = '';
         let lastType = -10;
         let commands = bu.commands;

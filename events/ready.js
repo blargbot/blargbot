@@ -1,5 +1,5 @@
 bot.on('ready', async function() {
-    logger.init('Ready!');
+    logger.init('Ready! Logged in as ' + bot.user.username + '#' + bot.user.discriminator);
     let restart = await r.table('vars').get('restart').run();
     if (restart && restart.varvalue) {
         bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(dep.moment(), dep.moment(restart.varvalue.time)) + '.');

@@ -19,7 +19,7 @@ bot.on('messageCreate', async function(msg) {
 
 async function handleUserMessage(msg, storedGuild) {
     let prefix;
-    if (!msg.guild) {
+    if (msg.guild) {
         handleAntiMention(msg, storedGuild);
         handleCensor(msg, storedGuild);
         handleRoleme(msg, storedGuild);
@@ -50,7 +50,7 @@ async function handleUserMessage(msg, storedGuild) {
             if (wasCommand) {
                 logCommand(msg);
 
-                if (!msg.guild) {
+                if (msg.guild) {
                     handleDeleteNotif(msg, storedGuild);
                     if (msg.channel.guild) {
                         r.table('user').get(msg.author.id).update({
@@ -308,7 +308,7 @@ function insertChatlog(msg) {
 
 function handleOurMessage(msg) {
     if (msg.channel.id != '194950328393793536')
-        if (!msg.guild)
+        if (msg.guild)
             logger.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} ` +
                 `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
         else
@@ -462,7 +462,7 @@ async function handleRoleme(msg, storedGuild) {
 
 async function handleBlacklist(msg, storedGuild, prefix) {
     let blacklisted;
-    if (!msg.guild && storedGuild.channels[msg.channel.id])
+    if (msg.guild && storedGuild.channels[msg.channel.id])
         blacklisted = storedGuild.channels[msg.channel.id].blacklisted;
 
     return (blacklisted && !(await bu.isUserStaff(msg.author.id, msg.guild.id)));
