@@ -1953,19 +1953,13 @@ async function updateStats() {
     });
 }
 
-bu.brainfuck = function(code) {
-    return new Promise((fulfill, reject) => {
-        fulfill(bu.brainfuck2(code));
-    });
-};
-
-bu.brainfuck2 = function(input) {
+bu.brainfuck = async function(code) {
     var stdin;
-    input = input.replace(/[^+-\[\].,<>]/g, '');
+    let input = code.replace(/[^+-\[\].,<>]/g, '');
     if (input.length == 0) throw new Error('No valid input given.');
     let output = '';
 
-    function next(parsed, pointer, array) {
+    async function next(parsed, pointer, array) {
         var char = input.charAt(parsed),
             f = null,
             i = array[pointer] - 1;
@@ -1988,10 +1982,10 @@ bu.brainfuck2 = function(input) {
             case ',':
                 stdin = stdin || process.openStdin();
                 stdin.setEncoding('ascii');
-                stdin.on('data', function(chunk) {
+                stdin.on('data', async function(chunk) {
                     array[pointer] = chunk.slice(0, -1).charCodeAt(0);
                     stdin.removeListener('data', arguments.callee);
-                    next(parsed, pointer, array);
+                    await next(parsed, pointer, array);
                 });
                 return parsed;
             case '.':
@@ -2000,7 +1994,7 @@ bu.brainfuck2 = function(input) {
             case '[':
                 if (i >= 0) {
                     for (; i >= 0; i -= 1) {
-                        f = next(parsed, pointer, array);
+                        f = await next(parsed, pointer, array);
                         parsed = (i === 0 ? f : parsed);
                     }
                 }
@@ -2012,11 +2006,11 @@ bu.brainfuck2 = function(input) {
         }
 
         if (input.length > parsed) {
-            return next(parsed, pointer, array);
+            return await next(parsed, pointer, array);
         } else {
             return output;
         }
     }
-    next(0, 0, [0]);
+    await next(0, 0, [0]);
     return output;
 };
