@@ -1961,8 +1961,8 @@ bu.brainfuck = function(code) {
 
 bu.brainfuck2 = function(input) {
     var stdin;
-    input = input.replace(/[^+-\[\].,<>]+/, '');
-    if (input.length == 0 ) throw new Error('No valid input given.');
+    input = input.replace(/[^+-\[\].,<>]/g, '');
+    if (input.length == 0) throw new Error('No valid input given.');
     let output = '';
 
     function next(parsed, pointer, array) {
@@ -1971,13 +1971,12 @@ bu.brainfuck2 = function(input) {
             i = array[pointer] - 1;
 
         parsed += 1;
-
         switch (char) {
             case '+':
-                array[pointer] = (array[pointer] + 1) % 255;
+                array[pointer] = (array[pointer] + 1);
                 break;
             case '-':
-                array[pointer] = (array[pointer] - 1) % 255;
+                array[pointer] = (array[pointer] - 1);
                 break;
             case '>':
                 pointer += 1;
@@ -1996,7 +1995,7 @@ bu.brainfuck2 = function(input) {
                 });
                 return parsed;
             case '.':
-                output += (String.fromCharCode(array[pointer]));
+                //output += (String.fromCharCode(array[pointer]));
                 break;
             case '[':
                 if (i >= 0) {
@@ -2009,7 +2008,7 @@ bu.brainfuck2 = function(input) {
             case ']':
                 return parsed;
             default:
-                throw new Error("Invalid operator: " + char);
+                throw new Error("Unexpected operator: '" + char + "'");
         }
 
         if (input.length > parsed) {
