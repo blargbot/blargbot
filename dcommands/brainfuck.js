@@ -21,7 +21,8 @@ e.execute = async function(msg, words) {
         bu.send(msg, output);
     } catch (err) {
         logger.error(err);
-        bu.send(msg, `Something went wrong!`);
+        bu.send(msg, `Something went wrong!
+Error: \`${err.message}\``);
     }
 
 };
