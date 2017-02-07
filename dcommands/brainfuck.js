@@ -15,6 +15,7 @@ e.longinfo = `<p>Executes brainfuck code.</p>`;
 e.execute = async function(msg, words) {
     if (words.length == 1) {
         bu.send(msg, 'Not enough parameters! Do `b!help brainfuck` for more details.');
+        return;
     }
     try {
         let output = await bu.brainfuck(words.slice(1).join(' '));
