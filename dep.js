@@ -6,6 +6,7 @@ var e = module.exports = {
     fs: require('fs'),
     hbs: require('hbs'),
     'child_process': require('child_process'),
+    exec: require('child_process').exec,
     Jimp: require('jimp'),
     express: require('express'),
     passport: require('passport'),
