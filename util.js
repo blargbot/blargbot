@@ -1995,7 +1995,7 @@ bu.brainfuck2 = function(input) {
                 });
                 return parsed;
             case '.':
-                //output += (String.fromCharCode(array[pointer]));
+                output += (String.fromCharCode(array[pointer]));
                 break;
             case '[':
                 if (i >= 0) {
