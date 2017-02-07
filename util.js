@@ -1951,3 +1951,15 @@ async function updateStats() {
         stats: stats
     });
 }
+
+bu.brainfuck = function(code) {
+    return new Promise((fulfill, reject) => {
+        dep.brainfuck.exec(code, function(err, out) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            fulfill(out);
+        });
+    });
+};
