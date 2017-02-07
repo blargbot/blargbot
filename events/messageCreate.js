@@ -521,6 +521,7 @@ function handleCleverbot(msg) {
     });
 }
 
+
 function handleAwaitMessage(msg) {
     if (bu.awaitMessages.hasOwnProperty(msg.channel.id) &&
         bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
