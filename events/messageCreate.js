@@ -505,7 +505,7 @@ function handleDeleteNotif(msg, storedGuild) {
 }
 
 function handleCleverbot(msg) {
-    Cleverbot.prepare(function() {
+    dep.Cleverbot.prepare(function() {
         var username = msg.channel.guild.members.get(bot.user.id).nick ?
             msg.channel.guild.members.get(bot.user.id).nick :
             bot.user.username;
