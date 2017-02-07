@@ -1955,12 +1955,69 @@ async function updateStats() {
 
 bu.brainfuck = function(code) {
     return new Promise((fulfill, reject) => {
-        dep.brainfuck.exec(code, function(err, out) {
-            if (err) {
-                reject(err);
-                return;
-            }
-            fulfill(out);
-        });
+        fulfill(bu.brainfuck2(code));
     });
+};
+
+bu.brainfuck2 = function(input) {
+    var stdin;
+    input = input.replace(/[^+-\[\].,<>]+/, '');
+    if (input.length == 0 ) throw new Error('No valid input given.');
+    let output = '';
+
+    function next(parsed, pointer, array) {
+        var char = input.charAt(parsed),
+            f = null,
+            i = array[pointer] - 1;
+
+        parsed += 1;
+
+        switch (char) {
+            case '+':
+                array[pointer] = (array[pointer] + 1) % 255;
+                break;
+            case '-':
+                array[pointer] = (array[pointer] - 1) % 255;
+                break;
+            case '>':
+                pointer += 1;
+                array[pointer] = array[pointer] || 0;
+                break;
+            case '<':
+                pointer -= 1;
+                break;
+            case ',':
+                stdin = stdin || process.openStdin();
+                stdin.setEncoding('ascii');
+                stdin.on('data', function(chunk) {
+                    array[pointer] = chunk.slice(0, -1).charCodeAt(0);
+                    stdin.removeListener('data', arguments.callee);
+                    next(parsed, pointer, array);
+                });
+                return parsed;
+            case '.':
+                output += (String.fromCharCode(array[pointer]));
+                break;
+            case '[':
+                if (i >= 0) {
+                    for (; i >= 0; i -= 1) {
+                        f = next(parsed, pointer, array);
+                        parsed = (i === 0 ? f : parsed);
+                    }
+                }
+                break;
+            case ']':
+                return parsed;
+            default:
+                throw new Error("Invalid operator: " + char);
+        }
+
+        if (input.length > parsed) {
+            return next(parsed, pointer, array);
+        } else {
+            return output;
+        }
+    }
+    next(0, 0, [0]);
+    return output;
 };

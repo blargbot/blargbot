@@ -36,6 +36,5 @@ var e = module.exports = {
     winston: require('winston'),
     wconfig: require('winston/lib/winston/config'),
     Trello: require('node-trello'),
-    babel: require('babel-core'),
-    brainfuck: require('brainfuck')
+    babel: require('babel-core')
 };

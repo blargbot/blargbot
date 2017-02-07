@@ -18,7 +18,7 @@ e.execute = async function(msg, words) {
     }
     try {
         let output = await bu.brainfuck(words.slice(1).join(' '));
-        bu.send(msg, output);
+        bu.send(msg, output.length == 0 ? 'No output...' : output);
     } catch (err) {
         logger.error(err);
         bu.send(msg, `Something went wrong!
