@@ -1279,6 +1279,7 @@ bu.splitInput = (content, noTrim) => {
     let words = [];
     let inQuote = false;
     let quoted = '';
+
     for (let i in input) {
         if (!inQuote) {
             if (input[i].startsWith('"') && !input[i].startsWith('\\"')) {
