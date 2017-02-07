@@ -26,6 +26,7 @@ class Manager {
             if (this.removeListeners)
                 bot.removeAllListeners(name);
             const mod = require(this.constructPath(name));
+            if (typeof mod.init == 'function') mod.init();
             this.list[name] = mod;
             return true;
         } catch (err) {
@@ -52,6 +53,8 @@ class Manager {
                 if (this.removeListeners)
                     bot.removeAllListeners(name);
                 this.list[name] = dep.reload(this.constructPath(name));
+                if (typeof this.list[name].init == 'function') this.list[name].init();
+
                 return true;
             }
         } catch (err) {

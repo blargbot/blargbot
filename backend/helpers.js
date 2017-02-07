@@ -106,6 +106,7 @@ e.init = () => {
         // logger.debug(tags);
         for (let i = 0; i < keys.length; i++) {
             if (tags[keys[i]].category != lastType) {
+                logger.debug(tags[keys[i]]);
                 lastType = tags[keys[i]].category;
                 if (lastType == 1) {
                     toReturn += `
@@ -143,6 +144,8 @@ e.init = () => {
         <div class="col s12 m10 offset-m1 l10 offset-l1">`;
                 } else {
                     toReturn += '</div></div>';
+                    logger.debug(lastType, bu.TagType.properties);
+
                     toReturn += `<div class='row'>
         <h3 class='centre' id='${lastType}'>${bu.TagType.properties[lastType].name}</h3>
         <p class='flow-text centre'>${bu.TagType.properties[lastType].desc}</p>
