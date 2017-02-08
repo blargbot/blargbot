@@ -1195,7 +1195,7 @@ bu.processTag = async function(params) {
             fallback = replaceObj.fallback;
         }
         if (replaceObj.terminate) {
-            result.contents = result.contents.substring(0, coords[i][1]);
+            result.contents = result.contents.substring(0, result.contents.indexOf(tagBrackets) + tagBrackets.length);
             result.terminate = true;
         }
         if (replaceObj == '') {
@@ -1226,6 +1226,7 @@ bu.processTag = async function(params) {
         }
         if (result.terminate) break;
     }
+    logger.debug(result);
     return result;
 };
 
