@@ -24,6 +24,10 @@ e.flags = [{
     flag: 'e',
     word: 'event',
     desc: 'Do for an event'
+}, {
+    flag: 'u',
+    word: 'utils',
+    desc: 'Do for a util module'
 }];
 
 var confirmIrc = false;
@@ -33,6 +37,7 @@ e.execute = (msg, words) => {
         let input = bu.parseInput(e.flags, words);
         if (input.undefined.length > 1) {
             let manager = CommandManager;
+            if (input.u) manager = UtilManager;
             if (input.e) manager = EventManager;
             if (input.t) manager = TagManager;
             if (input.c) manager = CommandManager;
