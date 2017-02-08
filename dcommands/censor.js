@@ -14,7 +14,14 @@ Commands:
    EXCEPTION <add | remove> [flags] - Adds or removes an exception.
    RULE [flags] - Sets the censorship rules.
    INFO - Displays information about censors.`;
-e.longinfo = `<p>Blacklists the current channel. The bot will not respond until you do the command again.</p>`;
+e.longinfo = `<p>Creates message censorships. Subcommands:</p>
+<ul>
+<li>ADD <text> [flags] - Adds a censor with for the provided text.</li>
+<li>REMOVE - Brings up a menu to remove a censor</li>
+<li>EXCEPTION <add | remove> [flags] - Adds or removes an exception.</li>
+<li>RULE [flags] - Sets the censorship rules.</li>
+<li>INFO - Displays information about censors.</li>
+</ul>`;
 
 e.flags = [{
     flag: 'R',
