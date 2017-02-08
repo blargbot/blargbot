@@ -1,6 +1,11 @@
 bot.on('messageUpdate', async function(msg, oldmsg) {
+    if (msg.channel.guild == undefined) {
+        if (bot.channelGuildMap.hasOwnProperty(msg.channel.id)) {
+            msg.channel.guild = bot.guilds.get(bot.channelGuildMap[msg.channel.id]);
+            msg.guild = msg.channel.guild;
+        } else return; // Don't handle DM
+    }
     if (msg.author) {
-        if (!msg.guild) return;
         const storedGuild = await bu.getGuild(msg.guild.id);
         if (!oldmsg) {
             let storedMsg = await r.table('chatlogs')
@@ -40,17 +45,7 @@ bot.on('messageUpdate', async function(msg, oldmsg) {
             if (msg.channel.id != '204404225914961920') {
                 var nsfw = await bu.isNsfwChannel(msg.channel.id);
                 if (msg.author)
-                    r.table('chatlogs').insert({
-                        id: bu.makeSnowflake(),
-                        content: msg.content,
-                        attachment: msg.attachments && msg.attachments.length > 0 ? msg.attachments[0].url : undefined,
-                        userid: msg.author.id,
-                        msgid: msg.id,
-                        channelid: msg.channel.id,
-                        guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
-                        msgtime: r.epochTime(dep.moment(msg.editedTimestamp) / 1000),
-                        type: 1
-                    }).run();
+                    bu.insertChatlog(msg, 1);
             }
         let oldMsg = oldmsg.content || 'uncached :(';
         let newMsg = msg.content || '""';

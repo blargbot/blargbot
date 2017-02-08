@@ -2014,3 +2014,19 @@ bu.brainfuck = async function(code) {
     await next(0, 0, [0]);
     return output;
 };
+
+bu.insertChatlog = function(msg, type) {
+    if (msg.channel.id != '204404225914961920') {
+        r.table('chatlogs').insert({
+            id: bu.makeSnowflake(),
+            content: msg.content,
+            attachment: msg.attachments[0] ? msg.attachments[0].url : undefined,
+            userid: msg.author.id,
+            msgid: msg.id,
+            channelid: msg.channel.id,
+            guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
+            msgtime: r.epochTime(dep.moment(msg.timestamp) / 1000),
+            type: type
+        }).run();
+    }
+};

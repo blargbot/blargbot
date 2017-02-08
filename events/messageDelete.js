@@ -1,6 +1,10 @@
 async function handleDelete(msg, quiet) {
-    //   logger.debug('A message was deleted in ' + msg.)
-    if (msg.channel.guild == undefined) return;
+    if (msg.channel.guild == undefined) {
+        if (bot.channelGuildMap.hasOwnProperty(msg.channel.id)) {
+            msg.channel.guild = bot.guilds.get(bot.channelGuildMap[msg.channel.id]);
+            msg.guild = msg.channel.guild;
+        } else return; // Don't handle DM
+    }
     const storedGuild = await bu.getGuild(msg.channel.guild.id);
     if (!msg.author || !msg.channel) {
         let storedMsg = await r.table('chatlogs')
@@ -47,17 +51,7 @@ async function handleDelete(msg, quiet) {
     if (storedGuild.settings.makelogs)
         if (msg.channel.id != '204404225914961920') {
             try {
-                await r.table('chatlogs').insert({
-                    id: bu.makeSnowflake(),
-                    content: msg.content,
-                    attachment: msg.attachments && msg.attachments[0] ? msg.attachments[0].url : undefined,
-                    userid: msg.author.id,
-                    msgid: msg.id,
-                    channelid: msg.channel.id,
-                    guildid: msg.channel.guild.id,
-                    msgtime: r.epochTime(dep.moment() / 1000),
-                    type: 2
-                }).run();
+                bu.insertChatlog(msg, 2);
             } catch (err) {
                 logger.error(err);
             }

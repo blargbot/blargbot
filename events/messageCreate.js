@@ -6,7 +6,7 @@ bot.on('messageCreate', async function(msg) {
     let storedGuild;
     if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
     if (storedGuild && storedGuild.settings.makelogs)
-        insertChatlog(msg);
+        bu.insertChatlog(msg, 0);
 
     if (msg.author.id == bot.user.id) handleOurMessage(msg);
 
@@ -287,21 +287,7 @@ var executeCommand = async function(commandName, msg, words, text) {
     return true;
 };
 
-function insertChatlog(msg) {
-    if (msg.channel.id != '204404225914961920') {
-        r.table('chatlogs').insert({
-            id: bu.makeSnowflake(),
-            content: msg.content,
-            attachment: msg.attachments[0] ? msg.attachments[0].url : undefined,
-            userid: msg.author.id,
-            msgid: msg.id,
-            channelid: msg.channel.id,
-            guildid: msg.guild ? 'DM' : msg.channel.guild.id,
-            msgtime: r.epochTime(dep.moment(msg.timestamp) / 1000),
-            type: 0
-        }).run();
-    }
-}
+
 
 function handleOurMessage(msg) {
     if (msg.channel.id != '194950328393793536')
