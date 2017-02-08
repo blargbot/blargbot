@@ -149,6 +149,7 @@ bu.processTagInner = async function(params, i) {
     return result.contents;
 };
 
+
 bu.processTag = async function(params) {
     let msg = params.msg,
         words = params.words,
@@ -342,3 +343,8 @@ bu.tagProcessError = async function(params, errormessage) {
     if (returnMessage.terminate) params.terminate = true;
     return returnMessage.contents;
 };
+
+function setCharAt(str, index, chr) {
+    if (index > str.length - 1) return str;
+    return str.substr(0, index) + chr + str.substr(index + 1);
+}

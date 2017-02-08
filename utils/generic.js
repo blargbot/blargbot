@@ -808,13 +808,6 @@ bu.comparePerms = (m, allow) => {
     return false;
 };
 
-bu.debug = false;
-
-function setCharAt(str, index, chr) {
-    if (index > str.length - 1) return str;
-    return str.substr(0, index) + chr + str.substr(index + 1);
-}
-
 bu.splitInput = (content, noTrim) => {
     let input;
     if (!noTrim) input = content.replace(/ +/g, ' ').split(' ');

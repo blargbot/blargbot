@@ -15,3 +15,5 @@ bu.messageStats = 0;
 bu.awaitMessages = {};
 
 bu.catOverrides = true;
+
+bu.debug = false;
