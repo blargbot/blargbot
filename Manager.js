@@ -27,6 +27,7 @@ class Manager {
                 bot.removeAllListeners(name);
             const mod = require(this.constructPath(name));
             if (typeof mod.init == 'function') mod.init();
+            if (mod.name !== undefined) name = mod.name;
             this.list[name] = mod;
             return true;
         } catch (err) {
