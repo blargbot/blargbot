@@ -14,7 +14,7 @@ router.get('/settings', (req, res) => {
     res.locals.botsettings = Object.keys(bu.settings).map(k => {
         let settings = bu.settings[k];
         settings.key = k.toUpperCase();
-        settings.desc = new hbs.handlebars.SafeString(settings.desc);
+        settings.desc = new dep.hbs.handlebars.SafeString(settings.desc);
         return settings;
     });
     res.render('settings');
