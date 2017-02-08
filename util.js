@@ -782,6 +782,7 @@ bu.logAction = async function(guild, user, mod, type, reason, fields) {
                 color = 0x1cdb68;
                 break;
             case 'warning':
+            case 'auto-warning':
                 color = 0xd1be79;
                 break;
             case 'pardon':
