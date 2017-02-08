@@ -13,7 +13,6 @@ Commands:
    REMOVE - Brings up a menu to remove a censor
    EXCEPTION <add | remove> [flags] - Adds or removes an exception.
    RULE [flags] - Sets the censorship rules.
-   PARDON <user> - Pardons a user.
    INFO - Displays information about censors.`;
 e.longinfo = `<p>Blacklists the current channel. The bot will not respond until you do the command again.</p>`;
 
@@ -259,20 +258,6 @@ e.execute = async function(msg, words) {
             }
             await saveGuild();
             bu.send(msg, `Updated ${changes} rules.`);
-            break;
-        case 'pardon':
-            if (input.undefined[1]) {
-                let user = await bu.getUser(msg, input.undefined.slice(1).join(' '));
-                if (!user) return;
-                if (storedGuild.censor.cases[user.id] && storedGuild.censor.cases[user.id] > 0) {
-                    storedGuild.censor.cases[user.id]--;
-                    bu.send(msg, `${bu.getFullName(user)} has been issued a pardon. They are now at ${storedGuild.censor.cases[user.id]} incidents.`);
-                } else {
-                    bu.send(msg, `${bu.getFullName(user)} has no incidents to be pardoned for!`);
-                }
-            } else {
-                bu.send(`You must provide a user to pardon.`);
-            }
             break;
         case 'info':
             if (!storedGuild.censor.list || storedGuild.censor.list.length == 0) {
