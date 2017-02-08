@@ -87,7 +87,6 @@ e.init = async function(v, em) {
     const Manager = require('./Manager.js');
     global.EventManager = new Manager('events', true);
     global.TagManager = new Manager('tags');
-    global.UtilManager = new Manager('utils');
 
     const CommandManagerClass = require('./CommandManager.js');
     global.CommandManager = new CommandManagerClass();

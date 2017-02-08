@@ -1241,10 +1241,9 @@ bu.postStats = function() {
         });
     }
 };
-const stats = {};
 async function updateStats() {
     let yesterday = dep.moment().subtract(1, 'day').format('YYYY-MM-DD');
-    if (!stats[yesterday]) {
+    if (!bu.stats[yesterday]) {
         let storedStats = await r.table('vars').get('stats');
         if (!storedStats) {
             await r.table('vars').insert({
@@ -1255,21 +1254,21 @@ async function updateStats() {
                 stats: {}
             };
         }
-        stats[yesterday] = storedStats.stats[yesterday];
-        if (!stats[yesterday]) {
-            stats[yesterday] = {
+        bu.stats[yesterday] = storedStats.stats[yesterday];
+        if (!bu.stats[yesterday]) {
+            bu.stats[yesterday] = {
                 guilds: bot.guilds.size,
                 change: 0
             };
         }
     }
     let day = dep.moment().format('YYYY-MM-DD');
-    if (!stats[day]) stats[day] = {};
-    stats[day].guilds = bot.guilds.size;
-    stats[day].change = stats[day].guilds - stats[yesterday].guilds;
+    if (!bu.stats[day]) bu.stats[day] = {};
+    bu.stats[day].guilds = bot.guilds.size;
+    bu.stats[day].change = bu.stats[day].guilds - bu.stats[yesterday].guilds;
 
     await r.table('vars').get('stats').update({
-        stats: stats
+        stats: bu.stats
     });
 }
 

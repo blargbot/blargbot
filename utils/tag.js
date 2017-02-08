@@ -1,3 +1,8 @@
+function setCharAt(str, index, chr) {
+    if (index > str.length - 1) return str;
+    return str.substr(0, index) + chr + str.substr(index + 1);
+}
+
 bu.serializeTagArray = function(array, varName) {
     if (!varName)
         return JSON.stringify(array);
@@ -202,6 +207,8 @@ bu.processTag = async function(params) {
         for (let ii = 0; ii < args.length; ii++) {
             args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
+        logger.info(args[0].toLowerCase());
+
         if (TagManager.list.hasOwnProperty(args[0].toLowerCase())) {
             replaceObj = await TagManager.list[args[0].toLowerCase()].execute({
                 msg: msg,
@@ -213,6 +220,8 @@ bu.processTag = async function(params) {
                 ccommand: params.ccommand,
                 terminate
             });
+            logger.info('true');
+
         } else {
             replaceObj.replaceString = await bu.tagProcessError({
                 msg: msg,
@@ -224,7 +233,9 @@ bu.processTag = async function(params) {
                 ccommand: params.ccommand,
                 terminate
             }, fallback, '`Tag doesn\'t exist`');
+            logger.info('false');
         }
+        logger.info(replaceObj);
 
         if (replaceObj.fallback !== undefined) {
             fallback = replaceObj.fallback;
@@ -343,8 +354,3 @@ bu.tagProcessError = async function(params, errormessage) {
     if (returnMessage.terminate) params.terminate = true;
     return returnMessage.contents;
 };
-
-function setCharAt(str, index, chr) {
-    if (index > str.length - 1) return str;
-    return str.substr(0, index) + chr + str.substr(index + 1);
-}

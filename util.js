@@ -15,4 +15,6 @@ bu.init = () => {
         port: config.db.port
     });
     bu.trello = new dep.Trello(config.general.trellokey, config.general.trellotoken);
+    const Manager = require('./Manager.js');
+    global.UtilManager = new Manager('utils');
 };
