@@ -111,7 +111,7 @@ bu.hasRole = (msg, roles) => {
     }
     if (!Array.isArray(roles)) roles = [roles];
     for (var i = 0; i < roles.length; i++) {
-        if (msg.member.roles.indexOf(roles) > -1) {
+        if (msg.member.roles.indexOf(roles[i]) > -1) {
             return true;
         }
     }
