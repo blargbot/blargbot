@@ -1324,7 +1324,7 @@ bu.brainfuck = async function(code) {
             case '[':
                 if (i >= 0) {
                     let loops = 0;
-                    while (i > 0) {
+                    while (i != 0) {
                         i = array[pointer];
                         f = await next(parsed, pointer, array);
                         parsed = (i === 0 ? f : parsed);
@@ -1337,6 +1337,7 @@ bu.brainfuck = async function(code) {
             default:
                 throw new Error("Unexpected operator: '" + char + "'");
         }
+        if (array[pointer] < 0) array[pointer] += 255;
 
         if (input.length > parsed) {
             return await next(parsed, pointer, array);
