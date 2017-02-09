@@ -1288,6 +1288,7 @@ bu.brainfuck = async function(code) {
     if (openLoopCount !== closeLoopCount) throw new Error('Unmatched loop');
 
     let output = '';
+    let array = [0];
 
     async function next(parsed, pointer, array) {
         var char = input.charAt(parsed),
@@ -1343,12 +1344,14 @@ bu.brainfuck = async function(code) {
         if (input.length > parsed) {
             return await next(parsed, pointer, array);
         } else {
-            output += `\n\n[${array.join(', ')}]`;
             return output;
         }
     }
-    await next(0, 0, [0]);
-    return output;
+    await next(0, 0, array);
+    return {
+        output,
+        array
+    };
 };
 
 bu.fixContent = (content) => {
