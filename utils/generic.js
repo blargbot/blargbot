@@ -132,10 +132,7 @@ bu.send = async function(channel, message, file, embed) {
         channelid = channel.channel.id;
     }
     if (!message) message = '';
-    if (message.length <= 0 && !file && !embed) {
-        logger.info('Tried to send a message with no content.');
-        return Error('No content');
-    }
+
     bu.messageStats++;
     let content = {};
     if (typeof message === "string") {
@@ -144,6 +141,11 @@ bu.send = async function(channel, message, file, embed) {
         content = message;
     }
     if (!content.content) content.content = '';
+    content.content = content.content.trim();
+    if (content.content.length <= 0 && !file && !embed) {
+        logger.info('Tried to send a message with no content.');
+        return Error('No content');
+    }
     if (embed) content.embed = embed;
     content.content = dep.emoji.emojify(content.content).trim();
 
@@ -166,7 +168,12 @@ bu.send = async function(channel, message, file, embed) {
         };
         let warnMsg;
         try {
-            let response = JSON.parse(err.response);
+            let response;
+            if (err.response)
+                response = JSON.parse(err.response);
+            else {
+                response = {};
+            }
             logger.debug(response);
             let dmMsg;
             switch (response.code) {
@@ -1275,7 +1282,11 @@ async function updateStats() {
 bu.brainfuck = async function(code) {
     var stdin;
     let input = code.replace(/[^+-\[\].,<>]/g, '');
-    if (input.length == 0) throw new Error('No valid input given.');
+    if (input.length == 0) throw new Error('No valid input given');
+    let openLoopCount = (input.match(/\[/g) || []).length;
+    let closeLoopCount = (input.match(/\]/g) || []).length;
+    if (openLoopCount !== closeLoopCount) throw new Error('Unmatched loop');
+
     let output = '';
 
     async function next(parsed, pointer, array) {
@@ -1286,10 +1297,10 @@ bu.brainfuck = async function(code) {
         parsed += 1;
         switch (char) {
             case '+':
-                array[pointer] = (array[pointer] + 1);
+                array[pointer] = (array[pointer] + 1) % 255;
                 break;
             case '-':
-                array[pointer] = (array[pointer] - 1);
+                array[pointer] = (array[pointer] - 1) % 255;
                 break;
             case '>':
                 pointer += 1;
