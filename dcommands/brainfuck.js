@@ -12,11 +12,11 @@ e.usage = 'brainfuck <code>';
 e.info = 'Executes brainfuck code.';
 e.longinfo = `<p>Executes brainfuck code.</p>`;
 e.alias = ['rainfuck', 'bf'];
-e.flags = {
+e.flags = [{
     flag: 'p',
     word: 'pointers',
     desc: 'Shows a list of pointers after the execution.'
-};
+}];
 e.execute = async function(msg, words) {
     if (words[1] && /^-[-+<>\.,\[\]]/.test(words[1]))
         words[1] = '\\' + words[1];
