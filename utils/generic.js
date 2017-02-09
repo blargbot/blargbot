@@ -1309,6 +1309,10 @@ bu.brainfuck = async function(code) {
                 break;
             case '<':
                 pointer -= 1;
+                if (pointer < 0) {
+                    pointer = 0;
+                    array.splice(0, 0, 0);
+                }
                 array[pointer] = array[pointer] || 0;
                 break;
             case ',':

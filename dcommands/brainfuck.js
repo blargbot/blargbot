@@ -18,6 +18,8 @@ e.flags = {
     desc: 'Shows a list of pointers after the execution.'
 };
 e.execute = async function(msg, words) {
+    if (words[1] && /^-[-+<>\.,\[\]]/.test(words[1]))
+        words[1] = '\\' + words[1];
     let input = bu.parseInput(e.flags, words);
     if (input.undefined.length == 0) {
         bu.send(msg, 'Not enough parameters! Do `b!help brainfuck` for more details.');
