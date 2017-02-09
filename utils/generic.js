@@ -1323,11 +1323,11 @@ bu.brainfuck = async function(code) {
                 output += (String.fromCharCode(array[pointer]));
                 break;
             case '[':
-                if (i >= 0) {
+                if (i != 0) {
                     let loops = 0;
                     while (i != 0) {
-                        i = array[pointer];
                         f = await next(parsed, pointer, array);
+                        i = array[pointer];
                         parsed = (i === 0 ? f : parsed);
                         if (++loops == 512) throw new Error(`Too many loops (${loops} reached)`);
                     }
@@ -1343,6 +1343,7 @@ bu.brainfuck = async function(code) {
         if (input.length > parsed) {
             return await next(parsed, pointer, array);
         } else {
+            output += `\n\n[${array.join(', ')}]`;
             return output;
         }
     }
