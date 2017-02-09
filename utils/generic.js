@@ -1292,7 +1292,7 @@ bu.brainfuck = async function(code) {
     async function next(parsed, pointer, array) {
         var char = input.charAt(parsed),
             f = null,
-            i = array[pointer] - 1;
+            i = array[pointer];
 
         parsed += 1;
         switch (char) {
@@ -1323,9 +1323,12 @@ bu.brainfuck = async function(code) {
                 break;
             case '[':
                 if (i >= 0) {
-                    for (; i >= 0; i -= 1) {
+                    let loops = 0;
+                    while (i > 0) {
+                        i = array[pointer];
                         f = await next(parsed, pointer, array);
                         parsed = (i === 0 ? f : parsed);
+                        if (++loops == 256) throw new Error(`Too many loops (${loops} reached)`);
                     }
                 }
                 break;
