@@ -147,7 +147,7 @@ Greeting Channel : ${greetChan}
                 words.shift();
             default:
                 if (words.length > 0) {
-                    key = words.shift();
+                    key = words.shift().toLowerCase();
                     let value = words.join(' ');
                     if (bu.settings[key]) {
                         let res = await bu.guildSettings.set(msg.channel.guild.id, key, value, bu.settings[key].type);
