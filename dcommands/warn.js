@@ -46,6 +46,6 @@ e.execute = async function(msg, words) {
         name: 'Total Warnings',
         value: res.count
     }]);
-    bu.send(msg, `:ok_hand: **${bu.getFullName(user)}** has been given ${count == 1 ? 'a warning' : count + ' warnings'}. They now have ${res.count} warnings.`);
+    bu.send(msg, `:ok_hand: **${bu.getFullName(user)}** has been given ${count == 1 ? 'a warning' : count + ' warnings'}. They now have ${res.count} warning${res.count == 1 ? '' : 's'}.`);
 
 };
