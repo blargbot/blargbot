@@ -1297,10 +1297,10 @@ bu.brainfuck = async function(code) {
         parsed += 1;
         switch (char) {
             case '+':
-                array[pointer] = (array[pointer] + 1) % 255;
+                array[pointer] = (array[pointer] + 1) % 256;
                 break;
             case '-':
-                array[pointer] = (array[pointer] - 1) % 255;
+                array[pointer] = (array[pointer] - 1) % 256;
                 break;
             case '>':
                 pointer += 1;
@@ -1308,6 +1308,7 @@ bu.brainfuck = async function(code) {
                 break;
             case '<':
                 pointer -= 1;
+                array[pointer] = array[pointer] || 0;
                 break;
             case ',':
                 stdin = stdin || process.openStdin();
@@ -1328,7 +1329,7 @@ bu.brainfuck = async function(code) {
                         i = array[pointer];
                         f = await next(parsed, pointer, array);
                         parsed = (i === 0 ? f : parsed);
-                        if (++loops == 256) throw new Error(`Too many loops (${loops} reached)`);
+                        if (++loops == 512) throw new Error(`Too many loops (${loops} reached)`);
                     }
                 }
                 break;
@@ -1337,7 +1338,7 @@ bu.brainfuck = async function(code) {
             default:
                 throw new Error("Unexpected operator: '" + char + "'");
         }
-        if (array[pointer] < 0) array[pointer] += 255;
+        if (array[pointer] < 0) array[pointer] += 256;
 
         if (input.length > parsed) {
             return await next(parsed, pointer, array);
