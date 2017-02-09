@@ -142,12 +142,14 @@ bu.send = async function(channel, message, file, embed) {
     }
     if (!content.content) content.content = '';
     content.content = content.content.trim();
-    if (content.content.length <= 0 && !file && !embed) {
+
+    if (embed) content.embed = embed;
+    content.content = dep.emoji.emojify(content.content).trim();
+
+    if (content.content.length <= 0 && !file && !embed && !content.embed) {
         logger.info('Tried to send a message with no content.');
         return Error('No content');
     }
-    if (embed) content.embed = embed;
-    content.content = dep.emoji.emojify(content.content).trim();
 
     if (content.content.length > 2000) {
         if (!file) file = {
