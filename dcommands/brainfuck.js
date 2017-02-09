@@ -11,6 +11,7 @@ e.hidden = false;
 e.usage = 'brainfuck <code>';
 e.info = 'Executes brainfuck code.';
 e.longinfo = `<p>Executes brainfuck code.</p>`;
+e.alias = ['rainfuck', 'bf'];
 
 e.execute = async function(msg, words) {
     if (words.length == 1) {
