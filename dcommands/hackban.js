@@ -29,15 +29,15 @@ e.execute = async function(msg, words, text) {
         bu.send(msg, `You don't have permission to ban users!`);
         return;
     }
-    let parsedList = words.splice(1).join(' ').split(/ +/);
+    let input = bu.parseInput(e.flags, words);
     let userList = [];
     let days = 1;
-    for (let i = 0; i < parsedList.length; i++) {
-        if (parsedList[i]) {
-            if (/[0-9]{17,21}/.test(parsedList[i])) {
-                userList.push(parsedList[i].match(/([0-9]{17,21})/)[1]);
-            } else if (i == parsedList.length - 1) {
-                days = parseInt(parsedList[i]);
+    for (let i = 0; i < input.undefined.length; i++) {
+        if (input.undefined[i]) {
+            if (/[0-9]{17,21}/.test(input.undefined[i])) {
+                userList.push(input.undefined[i].match(/([0-9]{17,21})/)[1]);
+            } else if (i == input.undefined.length - 1) {
+                days = parseInt(input.undefined[i]);
                 if (isNaN(days)) {
                     days = 1;
                 }
@@ -47,7 +47,7 @@ e.execute = async function(msg, words, text) {
 
     if (!bu.bans[msg.channel.guild.id])
         bu.bans[msg.channel.guild.id] = {};
-    let input = bu.parseInput(e.flags, words);
+    logger.verbose(userList);
     if (userList.length == 1)
         bu.bans[msg.channel.guild.id][userList[0]] = {
             mod: msg.author,
@@ -62,7 +62,7 @@ e.execute = async function(msg, words, text) {
             newUsers: [],
             reason: input.r
         };
-
+    console.dir(bu.bans[msg.channel.guild.id]);
     userList.forEach(m => {
         bot.banGuildMember(msg.channel.guild.id, m, days).then(() => {
             return;
