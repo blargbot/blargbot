@@ -92,7 +92,7 @@ e.execute = async function(msg, words) {
         let deleted = {
             total: 0
         };
-        let num = await bot.purgeChannel(msg.channel.id, -1, message => {
+        let num = await bot.purgeChannel(msg.channel.id, limit * 2, message => {
             let verdict = true;
             if (deleted.total == limit) return false;
             if (message.id == msg.id) return true;
