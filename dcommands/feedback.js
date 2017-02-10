@@ -25,6 +25,46 @@ e.longinfo = `<p>This command has three different functions for varying purposes
 
 e.execute = async function(msg, words) {
     if (words.length > 1) {
+        let blacklist = await r.table('vars').get('blacklist');
+        if (blacklist.users.indexOf(msg.author.id) > -1) {
+            bu.send(msg, 'Sorry, you have been blacklisted from the use of the `feedback`, `suggest`, and `report` commands. If you wish to appeal this, please join my support guild. You can find a link by doing `b!invite`.');
+            return;
+        } else if (blacklist.guilds.indexOf(msg.guild.id) > -1) {
+            bu.send(msg, 'Sorry, your guild has been blacklisted from the use of the `feedback`, `suggest`, and `report` commands. If you wish to appeal this, please join my support guild. You can find a link by doing `b!invite`.');
+            return;
+        }
+        if (words.length > 3 && msg.author.id == bu.CAT_ID) {
+            switch (words[1].toLowerCase()) {
+                case 'blacklist':
+                    switch (words[2].toLowerCase()) {
+                        case 'guild':
+                            if (blacklist.guilds.indexOf(words[3]) == -1) blacklist.guilds.push(words[3]);
+                            break;
+                        case 'user':
+                            if (blacklist.users.indexOf(words[3]) == -1) blacklist.users.push(words[3]);
+                            break;
+                    }
+                    break;
+                case 'unblacklist':
+                    let index;
+                    switch (words[2].toLowerCase()) {
+                        case 'guild':
+                            while (index = blacklist.guilds.indexOf(words[3]) > -1) {
+                                blacklist.guilds.splice(index, 1);
+                            }
+                            break;
+                        case 'user':
+                            while (index = blacklist.users.indexOf(words[3]) > -1) {
+                                blacklist.users.splice(index, 1);
+                            }
+                            break;
+                    }
+                    break;
+            }
+            await r.table('vars').get('blacklist').replace(blacklist);
+            await bu.send(msg, 'Done');
+            return;
+        }
         let i = 0;
         let lastSuggestion = await r.table('suggestion').orderBy({
             index: r.desc('id')
