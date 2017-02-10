@@ -20,35 +20,35 @@ const logger = {
             cmd: 'log',
             level: 'cluster',
             msg
-        })
+        });
     },
     debug: function(msg) {
         process.send({
             cmd: 'log',
             level: 'debug',
             msg
-        })
+        });
     },
     warn: function(msg) {
         process.send({
             cmd: 'log',
             level: 'warn',
             msg
-        })
+        });
     },
     error: function(msg) {
         process.send({
             cmd: 'log',
             level: 'error',
             msg
-        })
+        });
     },
     worker: function(msg) {
         process.send({
             cmd: 'log',
             level: 'worker',
             msg
-        })
+        });
     }
 };
 
@@ -279,7 +279,7 @@ const functions = {
         if (msg.blur) avatar.blur(10);
         if (msg.greyscale) avatar.greyscale();
 
-        let triggered = await Jimp.read(path.join(__dirname, 'img', `triggered.png`))
+        let triggered = await Jimp.read(path.join(__dirname, 'img', `triggered.png`));
         triggered.resize(280, 60);
         triggered.opacity(0.8);
         let overlay = await Jimp.read(path.join(__dirname, 'img', `red.png`));
@@ -432,9 +432,9 @@ function getBufferFromJimp(img) {
                 reject(err);
                 return;
             }
-            fulfill(buffer)
+            fulfill(buffer);
         });
-    })
+    });
 }
 
 
@@ -470,7 +470,7 @@ function createCaption(options) {
         }
         image.out(`caption:${options.text}`);
         if (options.stroke) {
-            image.out('-compose').out('Over')
+            image.out('-compose').out('Over');
             image.out('-size').out(options.size);
             image.out('-background').out('transparent');
             image.out('-fill').out(options.fill);
@@ -503,6 +503,11 @@ function getRandomInt(min, max) {
 
 function getResource(url) {
     return new Promise(async function(fulfill, reject) {
+        url = url.trim();
+        if (url.startsWith('<') && url.endsWith('>')) {
+            url = url.substring(1, url.length - 1);
+        }
+        logger.debug(url);
         let r = await aRequest({
             uri: url
         });
