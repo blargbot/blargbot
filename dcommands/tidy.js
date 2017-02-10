@@ -40,6 +40,10 @@ e.flags = [{
     flag: 'q',
     word: 'query',
     desc: 'Removes messages that match the regex query. You can also use regex.'
+}, {
+    flag: 'I',
+    word: 'invert',
+    desc: 'Reverses the effects of all the flag filters.'
 }];
 
 e.execute = async function(msg, words) {
@@ -85,20 +89,45 @@ e.execute = async function(msg, words) {
     }
     logger.debug(limit);
     try {
-        let num = await bot.purgeChannel(msg.channel.id, limit, message => {
-            if (input.b && !message.author.bot) return false;
-            if (input.i && !/discord\.gg\/[\d\w]+/.test(message.content)) return false;
-            if (input.l && !/https?:\/\/.*\..*/.test(message.content)) return false;
-            if (input.e && message.embeds.length == 0) return false;
-            if (input.a && message.attachments.length == 0) return false;
-            if (userList && userList.length > 0 && !userList.includes(message.author.id)) return false;
-            if (input.q && !query.test(message.content)) return false;
-            return true;
+        let deleted = {
+            total: 0
+        };
+        let num = await bot.purgeChannel(msg.channel.id, -1, message => {
+            let verdict = true;
+            if (deleted.total == limit) return false;
+            if (message.id == msg.id) return true;
+            if (input.b && !message.author.bot) verdict = false;
+            if (input.i && !/discord\.gg\/[\d\w]+/.test(message.content)) verdict = false;
+            if (input.l && !/https?:\/\/.*\..*/.test(message.content)) verdict = false;
+            if (input.e && message.embeds.length == 0 && message.attachments.length == 0) verdict = false;
+            if (input.a && message.attachments.length == 0) verdict = false;
+            if (userList && userList.length > 0 && !userList.includes(message.author.id)) verdict = false;
+            if (input.q && !query.test(message.content)) verdict = false;
+            if (input.I) verdict = !verdict;
+            if (verdict === true) {
+                if (bu.commandMessages[message.channel.guild.id]) {
+                    let index = bu.commandMessages[message.channel.guild.id].indexOf(message.id);
+                    if (index > -1) {
+                        bu.commandMessages[message.guild.id].splice(index, 1);
+                    }
+                }
+                deleted.total++;
+                if (!deleted[message.author.id]) deleted[message.author.id] = 0;
+                deleted[message.author.id]++;
+            }
+            return verdict;
         });
-        let val = await bu.send(msg, `Deleted ${num} messages.`);
-        setTimeout(function() {
-            bot.deleteMessage(msg.channel.id, val.id).catch(err => logger.error(err));
-        }, 5000);
+        let output = '';
+        for (const key of Object.keys(deleted)) {
+            if (key != 'total') {
+                let user = await bu.getUser(msg, key, false);
+                output += `  **${user.username}#${user.discriminator}** - ${deleted[key]}\n`;
+            }
+        }
+        let val = await bu.send(msg, `Deleted ${deleted.total} messages.\n\n__Breakdown__:\n${output}`);
+        //   setTimeout(function() {
+        //       bot.deleteMessage(msg.channel.id, val.id).catch(err => logger.error(err));
+        //    }, 5000);
     } catch (err) {
         bu.send(msg, 'I need to be able to Manage Messages to do that!');
         logger.error(err);
