@@ -410,7 +410,7 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
                 var command = words.slice(2).join(' ');
                 command = bu.fixContent(command);
 
-                tags.executeTag(msg, words[1], command);
+                tags.executeTag(msg, filterTitle(words[1]), command);
                 break;
         }
     } else {
