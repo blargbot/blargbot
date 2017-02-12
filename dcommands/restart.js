@@ -14,6 +14,7 @@ e.info = '';
 
 e.execute = async function(msg) {
     if (msg.author.id === bu.CAT_ID) {
+        logger.verbose('We should be going for a restart now.');
         await r.table('vars').get('restart').replace({
             varname: 'restart',
             varvalue: {
@@ -21,7 +22,9 @@ e.execute = async function(msg) {
                 time: r.now()
             }
         }).run();
+        logger.verbose('The restart variable has been inserted into the database.');
         await bu.send(msg, 'Ah! You\'ve killed me! D:');
+        logger.verbose('We have sent the message. Calling `process.exit()` now.');
         process.exit();
     }
 };
