@@ -153,7 +153,7 @@ bu.send = async function(channel, message, file, embed) {
 
     if (content.content.length > 2000) {
         if (!file) file = {
-            file: content.content.toString(),
+            file: Buffer.from(content.content.toString()),
             name: 'output.txt'
         };
         content.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
