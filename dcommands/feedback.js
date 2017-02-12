@@ -29,7 +29,7 @@ e.execute = async function(msg, words) {
         if (blacklist.users.indexOf(msg.author.id) > -1) {
             bu.send(msg, 'Sorry, you have been blacklisted from the use of the `feedback`, `suggest`, and `report` commands. If you wish to appeal this, please join my support guild. You can find a link by doing `b!invite`.');
             return;
-        } else if (blacklist.guilds.indexOf(msg.guild.id) > -1) {
+        } else if (msg.guild && blacklist.guilds.indexOf(msg.guild.id) > -1) {
             bu.send(msg, 'Sorry, your guild has been blacklisted from the use of the `feedback`, `suggest`, and `report` commands. If you wish to appeal this, please join my support guild. You can find a link by doing `b!invite`.');
             return;
         }
