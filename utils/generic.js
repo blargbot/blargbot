@@ -162,7 +162,7 @@ bu.send = async function(channel, message, file, embed) {
     try {
         return await bot.createMessage(channelid, content, file);
     } catch (err) {
-        logger.info(file);
+        logger.info(channelid, file);
         if (channelid == '250859956989853696') {
             bot.createMessage('250859956989853696', 'An error occurred logging an error: \n' + err.stack);
             logger.error(err);
