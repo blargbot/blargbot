@@ -159,11 +159,10 @@ bu.send = async function(channel, message, file, embed) {
         content.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
 
     }
-    logger.info(file);
-
     try {
         return await bot.createMessage(channelid, content, file);
     } catch (err) {
+        logger.info(file);
         if (channelid == '250859956989853696') {
             bot.createMessage('250859956989853696', 'An error occurred logging an error: \n' + err.stack);
             logger.error(err);
