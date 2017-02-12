@@ -44,6 +44,8 @@ e.execute = async function(msg, words) {
                             if (blacklist.users.indexOf(words[3]) == -1) blacklist.users.push(words[3]);
                             break;
                     }
+                    await r.table('vars').get('blacklist').replace(blacklist);
+                    await bu.send(msg, 'Done');
                     break;
                 case 'unblacklist':
                     let index;
@@ -59,10 +61,11 @@ e.execute = async function(msg, words) {
                             }
                             break;
                     }
+                    await r.table('vars').get('blacklist').replace(blacklist);
+                    await bu.send(msg, 'Done');
                     break;
             }
-            await r.table('vars').get('blacklist').replace(blacklist);
-            await bu.send(msg, 'Done');
+
             return;
         }
         let i = 0;
