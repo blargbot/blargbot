@@ -156,10 +156,11 @@ bu.send = async function(channel, message, file, embed) {
             file: content.content.toString(),
             name: 'output.txt'
         };
-        logger.verbose(file);
         content.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
 
     }
+    logger.info(file);
+
     try {
         return await bot.createMessage(channelid, content, file);
     } catch (err) {
