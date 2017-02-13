@@ -124,7 +124,12 @@ e.execute = async function(msg, words) {
                 output += `  **${user.username}#${user.discriminator}** - ${deleted[key]}\n`;
             }
         }
-        let val = await bu.send(msg, `Deleted ${deleted.total} messages.\n\n__Breakdown__:\n${output}`);
+        let val;
+        if (deleted.total > 0)
+            val = await bu.send(msg, `Deleted ${deleted.total} messages.\n\n__Breakdown__:\n${output}`);
+        else
+            val = await bu.send(msg, `No messages were deleted.`);
+
         //   setTimeout(function() {
         //       bot.deleteMessage(msg.channel.id, val.id).catch(err => logger.error(err));
         //    }, 5000);
