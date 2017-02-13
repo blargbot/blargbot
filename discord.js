@@ -50,7 +50,8 @@ e.init = async function(v, em) {
         getAllUsers: true,
         maxShards: config.discord.shards || 1,
         restMode: true,
-        avatarType: 'png'
+        avatarType: 'png',
+        messageLimit: 5
     });
     global.bot = bot;
 
