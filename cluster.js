@@ -1,7 +1,8 @@
 process.execArgv[0] = process.execArgv[0].replace('-brk', '');
 
+const cluster = dep.cluster;
+module.exports = cluster;
 
-module.exports = cluster = dep.cluster;
 const reload = dep.reload;
 
 const numCPUs = dep.os.cpus().length;

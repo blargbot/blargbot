@@ -1,4 +1,8 @@
 console.log('Starting with a babel-hook.');
 
-require("babel-register");
+require("babel-register")({
+    "presets": ["latest"]
+});
+require("babel-polyfill");
+
 require("./blargbot.js");

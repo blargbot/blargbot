@@ -6,6 +6,7 @@ const cleverbot = new dep.Cleverbot();
 const http = dep.http;
 var e = module.exports = {};
 e.requireCtx = require;
+var botIrc;
 
 // TODO: Refactor this mess
 

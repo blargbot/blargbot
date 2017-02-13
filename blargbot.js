@@ -5,8 +5,8 @@ const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
 
-const irc = require('./irc.js');
-const discord = require('./discord.js');
+var irc = require('./irc.js');
+var discord = require('./discord.js');
 botEmitter.on('reloadConfig', () => {
     reloadConfig();
 });
