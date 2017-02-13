@@ -169,6 +169,13 @@ bu.processTag = async function(params) {
         terminate: true
     };
 
+    let openBraceCount = (contents.match(/\{/g) || []).length;
+    let closeBraceCount = (contents.match(/\}/g) || []).length;
+    if (openBraceCount !== closeBraceCount) return {
+        contents: `Unmatched Brace`,
+        terminate: true
+    };
+
     let level = 0;
     let lastIndex = 0;
     let coords = [];
