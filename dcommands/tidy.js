@@ -79,7 +79,7 @@ e.execute = async function(msg, words) {
     if (input.undefined.length > 0) {
         limit = parseInt(input.undefined.join(' '));
     }
-    if (limit < 100 || isNaN(limit)) limit = 100;
+    if (limit < 0 || isNaN(limit)) limit = 100;
     if (limit > 100) {
         let msg2 = await bu.awaitMessage(msg, `This operation will clear up to ${limit} messages. There is no way to recover them after deletion. Please type 'yes' to continue, or anything else to cancel. This query will expire in 60 seconds.`, undefined, 60000);
         if (msg2.content.toLowerCase() != 'yes') {
@@ -92,7 +92,7 @@ e.execute = async function(msg, words) {
         let deleted = {
             total: 0
         };
-        let num = await bot.purgeChannel(msg.channel.id, limit * 2, message => {
+        let num = await bot.purgeChannel(msg.channel.id, limit * 2 < 200 ? 200 : limit * 2, message => {
             let verdict = true;
             if (deleted.total == limit) return false;
             if (message.id == msg.id) return true;
