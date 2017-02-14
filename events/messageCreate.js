@@ -366,14 +366,13 @@ async function handleCensor(msg, storedGuild) {
                 } else if (msg.content.indexOf(term) > -1) violation = true;
                 if (violation == true) { // Uh oh, they did a bad!
                     let res = await bu.issueWarning(msg.author, msg.guild, cens.weight);
-                    await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', 'Said a blacklisted phrase.', [{
-                        name: 'Amount',
-                        value: cens.weight,
-                        inline: true
-                    }, {
-                        name: 'Total Warnings',
-                        value: res.count
-                    }]);
+                    if (cens.weight > 0) {
+                        await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', 'Said a blacklisted phrase.', [{
+                            name: 'Warnings',
+                            value: `Assigned: ${cens.weight}\nNew Total: ${res.count}`,
+                            inline: true
+                        }]);
+                    }
                     try {
                         await msg.delete();
                         let message = '';

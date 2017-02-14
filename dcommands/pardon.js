@@ -39,12 +39,9 @@ e.execute = async function(msg, words) {
     }
     let res = await bu.issuePardon(user, msg.guild, count);
     await bu.logAction(msg.guild, user, msg.author, 'Pardon', input.r, [{
-        name: 'Amount',
-        value: count,
+        name: 'Pardons',
+        value: `Assigned: ${count}\nNew Total: ${res.count}`,
         inline: true
-    }, {
-        name: 'Total Warnings',
-        value: res
     }]);
     bu.send(msg, `:ok_hand: **${bu.getFullName(user)}** has been given ${count == 1 ? 'a pardon' : count + ' pardons'}. They now have ${res} warnings.`);
 };

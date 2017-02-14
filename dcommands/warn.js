@@ -39,12 +39,9 @@ e.execute = async function(msg, words) {
     }
     let res = await bu.issueWarning(user, msg.guild, count);
     await bu.logAction(msg.guild, user, msg.author, 'Warning', input.r, [{
-        name: 'Amount',
-        value: count,
+        name: 'Warnings',
+        value: `Assigned: ${count}\nNew Total: ${res.count}`,
         inline: true
-    }, {
-        name: 'Total Warnings',
-        value: res.count
     }]);
     bu.send(msg, `:ok_hand: **${bu.getFullName(user)}** has been given ${count == 1 ? 'a warning' : count + ' warnings'}. They now have ${res.count} warning${res.count == 1 ? '' : 's'}.`);
 
