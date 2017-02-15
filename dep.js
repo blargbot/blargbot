@@ -31,6 +31,7 @@ var e = module.exports = {
     emoji: require('node-emoji'),
     wordsearch: require('wordsearch'),
     Cleverbot: require('cleverbot-node'),
+    cleverbot: require('cleverbot.io'),
     bodyParser: require('body-parser'),
     mkdirp: require('mkdirp'),
     winston: require('winston'),

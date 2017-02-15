@@ -1,5 +1,9 @@
-const cleverbot = new dep.Cleverbot();
-
+const cleverbot = new dep.cleverbot('VsV2xzrKnC0IfNUk', 'tmUmtQFcRwBR3VG3G214F26WiW1T1Vw0');
+cleverbot.setNick('blargbotProd');
+cleverbot.create(function(err, session) {
+    if (err) logger.error(err);
+    logger.init(session);
+});
 bot.on('messageCreate', async function(msg) {
     processUser(msg);
     let isDm = msg.channel.guild == undefined;
@@ -497,10 +501,10 @@ function handleCleverbot(msg) {
         var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
         logger.debug(msgToSend);
         bu.cleverbotStats++;
-        cleverbot.write(msgToSend, function(response) {
+        cleverbot.ask(msgToSend, function(err, response) {
             bot.sendChannelTyping(msg.channel.id);
             setTimeout(function() {
-                bu.send(msg, response.message);
+                bu.send(msg, response);
             }, 1500);
         });
     });
