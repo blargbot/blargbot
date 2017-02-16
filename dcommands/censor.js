@@ -137,9 +137,10 @@ e.execute = async function(msg, words) {
             censorList = "Existing censors:\n```prolog\n";
             suffix = "```\nPlease type the number of the censor you wish to remove, or type 'c' to cancel. This prompt will expire in 5 minutes.";
             for (let i = 0; i < storedGuild.censor.list.length; i++) {
-                let phrase = `${i}. ${storedGuild.censor.list[i].term}${storedGuild.censor.list[i].regex ? ' (regex)' : ''}\n`;
+                let phrase = `${i + 1}. ${storedGuild.censor.list[i].term}${storedGuild.censor.list[i].regex ? ' (regex)' : ''}\n`;
                 if (censorList.length + phrase.length + suffix.length > 1500) {
                     censorList += `...and ${storedGuild.censor.list.length - i} more.\n`;
+                    break;
                 } else {
                     censorList += phrase;
                 }
@@ -148,9 +149,9 @@ e.execute = async function(msg, words) {
             msg2 = await bu.awaitMessage(msg, censorList, m => {
                 if (m.content.toLowerCase() == 'c') return true;
                 let choice = parseInt(m.content);
-                return !isNaN(choice) && choice >= 0 && choice < storedGuild.censor.list.length;
+                return !isNaN(choice) && choice > 0 && choice <= storedGuild.censor.list.length;
             });
-            let removed = storedGuild.censor.list.splice(parseInt(msg2.content), 1);
+            let removed = storedGuild.censor.list.splice(parseInt(msg2.content) - 1, 1);
             await saveGuild();
             bu.send(msg, `Censor \`${removed[0].term}\` removed!`);
             break;
@@ -272,9 +273,9 @@ e.execute = async function(msg, words) {
                 return;
             }
             censorList = "Existing censors:\n```prolog\n";
-            suffix = "```\nPlease type the number of the censor you wish to remove, or type 'c' to cancel. This prompt will expire in 5 minutes.";
+            suffix = "```\nPlease type the number of the censor you wish to view, or type 'c' to cancel. This prompt will expire in 5 minutes.";
             for (let i = 0; i < storedGuild.censor.list.length; i++) {
-                let phrase = `${i}. ${storedGuild.censor.list[i].term}${storedGuild.censor.list[i].regex ? ' (regex)' : ''}\n`;
+                let phrase = `${i + 1}. ${storedGuild.censor.list[i].term}${storedGuild.censor.list[i].regex ? ' (regex)' : ''}\n`;
                 if (censorList.length + phrase.length + suffix.length > 1500) {
                     censorList += `...and ${storedGuild.censor.list.length - i} more.\n`;
                 } else {
@@ -285,9 +286,9 @@ e.execute = async function(msg, words) {
             msg2 = await bu.awaitMessage(msg, censorList, m => {
                 if (m.content.toLowerCase() == 'c') return true;
                 let choice = parseInt(m.content);
-                return !isNaN(choice) && choice >= 0 && choice < storedGuild.censor.list.length;
+                return !isNaN(choice) && choice > 0 && choice <= storedGuild.censor.list.length;
             });
-            let censor = storedGuild.censor.list[parseInt(msg2.content)];
+            let censor = storedGuild.censor.list[parseInt(msg2.content) - 1];
             let triggeredMessages = [];
             if (censor.deleteMessage) triggeredMessages.push('**Delete Message**: ' + censor.deleteMessage);
             if (censor.kickMessage) triggeredMessages.push('**Kick Message**: ' + censor.kickMessage);
@@ -313,8 +314,8 @@ Role Exceptions: ${storedGuild.censor.exception.role.map(r => {
 Channel Exceptions: ${storedGuild.censor.exception.channel.map(c => `<#${c}>`).join(', ')}
 
 **__Settings__**
-Kick At: ${storedGuild.censor.rule.kickAt}
-Ban At: ${storedGuild.censor.rule.banAt}
+Kick At: ${storedGuild.settings.kickat || 'Not set'}
+Ban At: ${storedGuild.settings.banat || 'Not set'}
 Delete Message: ${storedGuild.censor.rule.deleteMessage || 'Default'}
 Kick Message: ${storedGuild.censor.rule.kickMessage || 'Default'}
 Ban Message: ${storedGuild.censor.rule.banMessage || 'Default'}
