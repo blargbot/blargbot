@@ -151,6 +151,10 @@ e.execute = async function(msg, words) {
                 let choice = parseInt(m.content);
                 return !isNaN(choice) && choice > 0 && choice <= storedGuild.censor.list.length;
             });
+            if (msg2.content.toLowerCase() == 'c') {
+                bu.send(msg, 'Query canceled.');
+                return;
+            }
             let removed = storedGuild.censor.list.splice(parseInt(msg2.content) - 1, 1);
             await saveGuild();
             bu.send(msg, `Censor \`${removed[0].term}\` removed!`);
@@ -288,6 +292,10 @@ e.execute = async function(msg, words) {
                 let choice = parseInt(m.content);
                 return !isNaN(choice) && choice > 0 && choice <= storedGuild.censor.list.length;
             });
+            if (msg2.content.toLowerCase() == 'c') {
+                bu.send(msg, 'Query canceled.');
+                return;
+            }
             let censor = storedGuild.censor.list[parseInt(msg2.content) - 1];
             let triggeredMessages = [];
             if (censor.deleteMessage) triggeredMessages.push('**Delete Message**: ' + censor.deleteMessage);
