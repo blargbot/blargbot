@@ -26,5 +26,7 @@ e.execute = async function(msg, words) {
         let diff = dep.moment.duration(dep.moment() - lastSeen);
         diff = diff.subtract(diff.asMilliseconds() * 2, 'ms');
         bu.send(msg, `I last saw **${bu.getFullName(user)}** ${diff.humanize(true)}`);
+    } else {
+        bu.send(msg, `I have never seen that person before!}`);
     }
 };
