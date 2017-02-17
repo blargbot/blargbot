@@ -20,13 +20,14 @@ e.execute = async function(msg, words) {
     let user = await bu.getUser(msg, words.slice(1).join(' '));
     if (user) {
         let storedUser = await r.table('user').get(user.id);
-        if (!storedUser) return;
+        if (!storedUser) {
+            bu.send(msg, `I have never seen **${bu.getFullName(user)}** before!`);
+            return;
+        }
         let lastSeen = dep.moment(storedUser.lastspoke);
         logger.debug(storedUser.lastspoke, lastSeen.format('llll'));
         let diff = dep.moment.duration(dep.moment() - lastSeen);
         diff = diff.subtract(diff.asMilliseconds() * 2, 'ms');
         bu.send(msg, `I last saw **${bu.getFullName(user)}** ${diff.humanize(true)}`);
-    } else {
-        bu.send(msg, `I have never seen that person before!}`);
     }
 };
