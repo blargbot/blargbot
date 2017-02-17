@@ -20,14 +20,14 @@ bot.on('guildCreate', async function(guild) {
         }
         var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you!
 - 💻 For command information, please do \`${config.discord.defaultPrefix}help\`!
-- 📢 For Bot Commander commands, please make sure you have a role titled \`Bot Commander\`.
 - 🛠 For Admin commands, please make sure you have a role titled \`Admin\`.
 If you are the owner of this server, here are a few things to know.
 - 🗨 To enable modlogging, please create a channel for me to log in and do \`${config.discord.defaultPrefix}modlog\`
 - 🙈 To mark channels as NSFW, please go to them and do \`${config.discord.defaultPrefix}nsfw\`.
 - ❗ To change my command prefix, please do \`${config.discord.defaultPrefix}setprefix <anything>\`.
 - 🗄 To enable chatlogs, please do \`${config.discord.defaultPrefix}settings makelogs true\`.
-- ⚙ To receive messages whenever there's an update, do \`b!changelog\` in the desired channel. I need the \`embed links\` permission for this.
+- ⚙ To receive messages whenever there's an update, do \`${config.discord.defaultPrefix}changelog\` in the desired channel. I need the \`embed links\` permission for this.
+- ⚙ Check out my web interface! <https://blargbot.xyz/dashboard/>
 
 ❓ If you have any questions, comments, or concerns, please do \`${config.discord.defaultPrefix}feedback <feedback>\`. Thanks!
 👍 I hope you enjoy my services! 👍`;
