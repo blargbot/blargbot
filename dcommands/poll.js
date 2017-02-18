@@ -121,7 +121,6 @@ e.execute = async function(msg, words) {
         }
         for (let choice of choices) {
             choice = choice.replace(/[<>]/g, '');
-            logger.debug(choice);
             try {
                 await bot.addMessageReaction(msg2.channel.id, msg2.id, choice);
             } catch (err) {
@@ -157,7 +156,6 @@ e.event = async function(args) {
         if (msg3.reactions[key].me) {
             msg3.reactions[key].count--;
         }
-        logger.debug(key);
         if (args.strict == undefined || (args.strict.includes(key) ||
                 (/[0-9]{17,23}/.test(key) ?
                     args.strict.includes(key.match(/([0-9]{17,23})/)[0]) :
