@@ -31,6 +31,10 @@ e.flags = [{
     flag: 'a',
     word: 'announce',
     desc: 'If specified, it will make an announcement. Requires the proper permissions.'
+}, {
+    flag: 's',
+    word: 'strict',
+    desc: 'If specified, only accept reactions that were in the initial list.'
 }];
 
 e.execute = async function(msg, words) {
@@ -132,7 +136,12 @@ e.execute = async function(msg, words) {
             msg: msg2.id,
             endtime: r.epochTime(endTime.unix()),
             color: color,
-            roleId
+            roleId,
+            strict: input.s ? choices.map(m => {
+                if (/[0-9]{17,23}/.test(m))
+                    return m.match(/([0-9]{17,23})/)[0];
+                return m;
+            }) : undefined
         });
     } else {
         bu.send(msg, 'Incorrect usage! Do `b!help poll` for more information.');
@@ -142,32 +151,32 @@ e.execute = async function(msg, words) {
 e.event = async function(args) {
     logger.debug('poll has been triggered');
     let msg3 = await bot.getMessage(args.channel, args.msg);
-    logger.debug(1);
     let reactions = [];
     for (let key in msg3.reactions) {
         msg3.reactions[key].emoji = key;
         if (msg3.reactions[key].me) {
             msg3.reactions[key].count--;
         }
-        reactions.push(msg3.reactions[key]);
+        logger.debug(key);
+        if (args.strict == undefined || (args.strict.includes(key) ||
+                (/[0-9]{17,23}/.test(key) ?
+                    args.strict.includes(key.match(/([0-9]{17,23})/)[0]) :
+                    false)))
+            reactions.push(msg3.reactions[key]);
     }
-    logger.debug(2);
     if (reactions.length == 0) {
         bu.send(args.channel, 'No results were collected!');
         return;
     }
-    logger.debug(3);
     let totalVotes = 0;
     for (let key in reactions) {
         if (/[0-9]{17,23}/.test(reactions[key].emoji))
             reactions[key].emoji = `<:${reactions[key].emoji}>`;
         totalVotes += reactions[key].count;
     }
-    logger.debug(4);
     reactions.sort((a, b) => {
         return b.count - a.count;
     });
-    logger.debug(5);
     let max = reactions[0].count;
     let winners = reactions.filter(r => r.count == max);
     let winnerString = winners.map(r => r.emoji).join(' ');
