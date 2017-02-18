@@ -83,7 +83,11 @@ e.execute = async function(msg, words) {
                     channel = storedGuild.announce.channel;
                     roleId = storedGuild.announce.role;
                     role = msg.guild.roles.get(roleId);
-                    if (role.name == '@everyone') {
+                    if (!role) {
+                        roleId = undefined;
+                        role = undefined;
+                        channel = msg.channel.id;
+                    } else if (role.name == '@everyone') {
                         message.content = '@everyone';
                         message.disableEveryone = false;
                     } else {
