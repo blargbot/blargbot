@@ -14,6 +14,7 @@ bu.messageStats = 0;
 // A map of messages to await for
 bu.awaitMessages = {};
 bu.stats = {};
+bu.cleverStats = {};
 
 
 bu.catOverrides = true;

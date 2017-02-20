@@ -506,7 +506,7 @@ async function handleCleverbot(msg) {
         bot.user.username;
     var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
     bu.cleverbotStats++;
-
+    updateStats();
     let options = undefined;
     if (cleverCache[msg.channel.id])
         options = {
@@ -526,6 +526,36 @@ async function handleCleverbot(msg) {
             bu.send(msg, response);
         });
     }
+}
+
+async function updateStats() {
+    let today = dep.moment().format('YYYY-MM-DD');
+    if (!bu.cleverStats[today]) {
+        let storedStats = await r.table('vars').get('cleverstats');
+        if (!storedStats) {
+            await r.table('vars').insert({
+                varname: 'cleverstats',
+                stats: {}
+            });
+            storedStats = {
+                stats: {}
+            };
+        }
+        bu.cleverStats[today] = storedStats.stats[today];
+        if (!bu.cleverStats[today]) {
+            bu.cleverStats[today] = {
+                uses: 0
+            };
+        }
+    }
+    if (!bu.cleverStats[today]) bu.cleverStats[today] = {
+        uses: 0
+    };
+    bu.cleverStats[today].uses++;
+
+    await r.table('vars').get('cleverstats').update({
+        stats: bu.cleverStats
+    });
 }
 
 
