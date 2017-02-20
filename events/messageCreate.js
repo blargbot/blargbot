@@ -520,6 +520,7 @@ async function handleCleverbot(msg) {
         await bu.sleep(1500);
         bu.send(msg, response.output);
     } catch (e) { // Couldn't use cleverbot api, default to cleverbot.io
+        logger.error(e);
         cleverbotIo.ask(msgToSend, async function(err, response) {
             await bot.sendChannelTyping(msg.channel.id);
             await bu.sleep(1500);
