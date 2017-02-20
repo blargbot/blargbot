@@ -13,6 +13,7 @@ e.hidden = false;
 e.usage = 'shit <text> [flags]';
 e.info = `Tells everyone what's shit.`;
 e.longinfo = `<p>Tells everyone what's shit. Use <code>-p</code> as the first argument to specify the text as plural.</p>`;
+e.alias = ['heck'];
 
 e.flags = [{
     flag: 'p',
