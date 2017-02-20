@@ -2,7 +2,7 @@ var irc = require('irc');
 
 var freefreefree = require('./dcommands/free.js');
 
-const cleverbot = new dep.Cleverbot();
+const cleverbot = new dep.cleverbotIo();
 const http = dep.http;
 var e = module.exports = {};
 e.requireCtx = require;
@@ -86,22 +86,7 @@ e.init = (v, em) => {
             } catch (err) {
                 logger.irc(err.stack);
             }
-        } else if (text.startsWith('blargbot, ')) {
-            //logger.irc(message);
-            logger.irc(text);
-            var messageForCleverbot = text.replace('blargbot, ');
-            Cleverbot.prepare(function() {
-                cleverbot.write(messageForCleverbot, function(response) {
-                    logger.irc(messageForCleverbot);
-                    logger.irc(response);
-                    ///botIrc.sendChannelTyping(msg.channel.id);
-                    setTimeout(function() {
-                        sendIrcCommandMessage(to, response.message);
-                        //   botIrc.sendChannelTyping(msg.channel.id);
-                    }, 1500);
-                });
-            });
-        }
+        } else if (text.startsWith('blargbot, ')) {}
     });
 
     botIrc.addListener('join', function(channel, nick, message) {

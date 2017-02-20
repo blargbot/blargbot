@@ -1368,3 +1368,10 @@ bu.fixContent = (content) => {
     }
     return tempContent.join('\n');
 };
+
+bu.sleep = function(time) {
+    return new Promise(fulfill => {
+        if (!time) time = 1000;
+        setTimeout(() => fulfill(), time);
+    });
+};

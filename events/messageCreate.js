@@ -1,9 +1,14 @@
-const cleverbot = new dep.cleverbot('VsV2xzrKnC0IfNUk', 'tmUmtQFcRwBR3VG3G214F26WiW1T1Vw0');
-cleverbot.setNick('blargbotProd');
-cleverbot.create(function(err, session) {
+const cleverbotIo = new dep.cleverbotIo(config.cleverbot.ioid, config.cleverbot.iokey);
+cleverbotIo.setNick('blargbotProd');
+cleverbotIo.create(function(err, session) {
     if (err) logger.error(err);
     logger.init(session);
 });
+
+const cleverbot = new dep.cleverbot({
+    key: config.cleverbot.key
+});
+
 bot.on('messageCreate', async function(msg) {
     processUser(msg);
     let isDm = msg.channel.guild == undefined;
@@ -493,21 +498,34 @@ function handleDeleteNotif(msg, storedGuild) {
     }
 }
 
-function handleCleverbot(msg) {
-    dep.Cleverbot.prepare(function() {
-        var username = msg.channel.guild.members.get(bot.user.id).nick ?
-            msg.channel.guild.members.get(bot.user.id).nick :
-            bot.user.username;
-        var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
-        logger.debug(msgToSend);
-        bu.cleverbotStats++;
-        cleverbot.ask(msgToSend, function(err, response) {
-            bot.sendChannelTyping(msg.channel.id);
-            setTimeout(function() {
-                bu.send(msg, response);
-            }, 1500);
+const cleverCache = {};
+
+async function handleCleverbot(msg) {
+    var username = msg.channel.guild.members.get(bot.user.id).nick ?
+        msg.channel.guild.members.get(bot.user.id).nick :
+        bot.user.username;
+    var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
+    bu.cleverbotStats++;
+
+    let options = undefined;
+    if (cleverCache[msg.channel.id])
+        options = {
+            cs: cleverCache[msg.channel.id]
+        };
+
+    try {
+        let response = await cleverbot.query(msgToSend, options);
+        cleverCache[msg.channel.id] = response.cs;
+        await bot.sendChannelTyping(msg.channel.id);
+        await bu.sleep(1500);
+        bu.send(msg, response.output);
+    } catch (e) { // Couldn't use cleverbot api, default to cleverbot.io
+        cleverbotIo.ask(msgToSend, async function(err, response) {
+            await bot.sendChannelTyping(msg.channel.id);
+            await bu.sleep(1500);
+            bu.send(msg, response);
         });
-    });
+    }
 }
 
 
