@@ -37,7 +37,7 @@ async function handleUserMessage(msg, storedGuild) {
         prefix = config.discord.defaultPrefix;
     }
 
-    if (!handleBlacklist(msg, storedGuild)) return;
+    if (await handleBlacklist(msg, storedGuild)) return;
 
     var doCleverbot = false;
     if (msg.content.startsWith(`<@${bot.user.id}>`) || msg.content.startsWith(`<@!${bot.user.id}>`)) {
