@@ -20,7 +20,12 @@ bot.on('guildMemberAdd', async function(guild, member) {
     }
     bu.logEvent(guild.id, 'memberjoin', [{
         name: 'User',
-        value: bu.getFullName(member.user) + ` (${member.user.id})`,
+        value: bu.getFullName(member.user) + ` (${member.user.id})\nMember #${guild.memberCount}`,
         inline: true
+    }, {
+        name: 'Created',
+        value: dep.moment(member.user.createdAt).tz('Etc/GMT').format('llll') +
+            ` GMT\n(${dep.moment.duration(-1 * (dep.moment() - dep.moment(member.user.createdAt))).humanize(true)})`,
+        inline: false
     }]);
 });
