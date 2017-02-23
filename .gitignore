@@ -26,6 +26,7 @@ servers.json
 *.psd
 *.sql
 *.diff
+*.log
 eeek/*
 out.png
 music/*
