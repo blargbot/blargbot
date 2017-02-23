@@ -39,3 +39,9 @@ var e = module.exports = {
     Trello: require('node-trello'),
     babel: require('babel-core')
 };
+
+Object.defineProperty(e.Eris.Message.prototype, "guild", {
+    get: function guild() {
+        return this.channel.guild;
+    }
+});
