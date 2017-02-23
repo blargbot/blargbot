@@ -18,7 +18,7 @@ e.longinfo = `<p>Returns the command prefix for the current guild.</p>`;
 e.execute = (msg) => {
     bu.guildSettings.get(msg.channel.guild.id, 'prefix').then(prefix => {
         if (prefix !== undefined)
-            bu.send(msg, `My prefix on ${msg.channel.guild.name} is \` ${prefix}\`.
+            bu.send(msg, `My prefix on ${msg.channel.guild.name} is \`${prefix === "" ? "\u200b" : prefix} \`.
 You can also use \`${config.discord.defaultPrefix}\`, \`blargbot\`, or mentions.`);
         else
             bu.send(msg, `I have no custom prefix on ${msg.channel.guild.name}.
