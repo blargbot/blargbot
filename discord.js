@@ -1,9 +1,3 @@
-Object.defineProperty(dep.Eris.Message, "guild", {
-    get: function guild() {
-        return this.channel.guild;
-    }
-});
-
 const https = dep.https;
 global.tags = require('./tags.js');
 const reload = dep.reload(require);
@@ -31,6 +25,7 @@ e.init = async function(v, em) {
     VERSION = v;
     emitter = em;
     logger.debug('HELLOOOOO?');
+
     process.on('unhandledRejection', (reason, p) => {
         logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
     });
@@ -50,7 +45,8 @@ e.init = async function(v, em) {
         getAllUsers: true,
         maxShards: config.discord.shards || 1,
         restMode: true,
-        avatarType: 'png',
+        defaultImageFormat: 'png',
+        defaultImageSize: 512,
         messageLimit: 5
     });
     global.bot = bot;
