@@ -32,8 +32,8 @@ e.execute = async function(msg, words) {
     if (!user) {
         return;
     }
-    let format = 'png',
-        size = 512;
+    let format,
+        size;
     if (input.f && input.f.length > 0) format = input.f.join(' ');
     if (input.s && input.s.length > 0) size = parseInt(input.s.join(' '));
     logger.debug(format, size);
