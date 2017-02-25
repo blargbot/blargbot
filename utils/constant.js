@@ -21,6 +21,7 @@ bu.TagType = {
     SIMPLE: 1,
     COMPLEX: 2,
     ARRAY: 3,
+    CCOMMAND: 4,
     properties: {
         1: {
             name: 'Simple'
@@ -32,6 +33,10 @@ bu.TagType = {
         3: {
             name: 'Array',
             desc: 'Functions designed specifically for arrays.'
+        },
+        4: {
+            name: 'Custom Command',
+            desc: 'Functions that only work in custom commands (not tags).'
         }
     }
 };

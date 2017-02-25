@@ -2,14 +2,13 @@ bot.on('guildBanRemove', async function(guild, user) {
     let storedGuild = await bu.getGuild(guild.id);
     let modlog = storedGuild.modlog || [];
     let lastCase = modlog[modlog.length - 1];
-    var mod;
-    let reason;
+    let mod, reason, type;
     if (bu.unbans[guild.id] && bu.unbans[guild.id][user.id]) {
         mod = bot.users.get(bu.unbans[guild.id][user.id].mod);
         reason = bu.unbans[guild.id][user.id].reason;
+        type = bu.unbans[guild.id][user.id].type;
         delete bu.unbans[guild.id][user.id];
     }
-    logger.debug(reason);
     if (lastCase && lastCase.userid == user.id) {
         let val = await bu.guildSettings.get(guild.id, 'modlog');
 
@@ -25,10 +24,10 @@ bot.on('guildBanRemove', async function(guild, user) {
                 embed: embed
             });
         } else {
-            bu.logAction(guild, user, mod, 'Unban', reason);
+            bu.logAction(guild, user, mod, type || 'Unban', reason);
         }
     } else {
-        bu.logAction(guild, user, mod, 'Unban', reason);
+        bu.logAction(guild, user, mod, type || 'Unban', reason);
     }
     bu.logEvent(guild.id, 'memberunban', [{
         name: 'User',

@@ -656,28 +656,35 @@ bu.logAction = async function(guild, user, mod, type, reason, fields) {
             case 'ban':
             case 'hack-ban':
             case 'mass hack-ban':
+            case 'tag ban':
                 color = 0xcc0c1c;
                 break;
             case 'softban':
             case 'unban':
+            case 'tag unban':
                 color = 0x79add1;
                 break;
             case 'auto-kick':
             case 'kick':
+            case 'tag kick':
                 color = 0xdb7b1c;
                 break;
             case 'mute':
+            case 'tag mute':
                 color = 0xd80f66;
                 break;
             case 'auto-unmute':
             case 'unmute':
+            case 'tag unmute':
                 color = 0x1cdb68;
                 break;
             case 'warning':
             case 'auto-warning':
+            case 'tag warning':
                 color = 0xd1be79;
                 break;
             case 'pardon':
+            case 'tag pardon':
                 color = 0x79d196;
                 break;
         }

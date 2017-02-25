@@ -21,37 +21,40 @@ e.flags = [{
 }];
 
 e.execute = async function(msg, words) {
+    let input = bu.parseInput(e.flags, words);
+    if (input.undefined.length > 0) {
+        var user = await bu.getUser(msg, words[1]);
+        if (!user) {
+            bu.send(msg, `I couldn't find that user. Please make sure you're giving me a user id or a mention.`);
+            return;
+        }
+        let response = await e.unban(msg, user, input.r);
+        bu.send(msg, response[0]);
+    }
+};
+
+e.unban = async function(msg, user, reason, tag = false, noPerms = false) {
     if (msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
         let banPerms = await bu.guildSettings.get(msg.guild.id, 'banoverride') || 0;
-        if (bu.comparePerms(msg.member, banPerms) || msg.member.permission.json.banMembers) {
-            if (words[1]) {
-                var user = await bu.getUser(msg, words[1]);
-                if (!user) {
-                    bu.send(msg, `I couldn't find that user. Please make sure you're giving me a user id or a mention.`);
-                    return;
-                }
-                logger.debug(require('util').inspect(user));
-
-                if (!bu.unbans[msg.channel.guild.id])
-                    bu.unbans[msg.channel.guild.id] = {};
-                let input = bu.parseInput(e.flags, words);
-                bu.unbans[msg.channel.guild.id][user.id] = {
-                    mod: msg.author.id,
-                    reason: input.r
-                };
-                try {
-                    await bot.unbanGuildMember(msg.channel.guild.id, user.id);
-                    bu.send(msg, ':ok_hand:');
-                } catch (err) {
-                    bu.send(msg, `Failed to unban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``);
-                    throw err;
-                }
+        if (noPerms || (bu.comparePerms(msg.member, banPerms) || msg.member.permission.json.banMembers)) {
+            if (!bu.unbans[msg.channel.guild.id])
+                bu.unbans[msg.channel.guild.id] = {};
+            bu.unbans[msg.channel.guild.id][user.id] = {
+                mod: noPerms ? bot.user : msg.author,
+                type: tag ? 'Tag Unban' : 'Unban',
+                reason: reason
+            };
+            try {
+                await bot.unbanGuildMember(msg.channel.guild.id, user.id);
+                return [':ok_hand:', 'Success'];
+            } catch (err) {
+                return [`Failed to unban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, '`Couldn\'t unban user`'];
             }
         } else {
-            bu.send(msg, `You don't have permission to unban users!`);
+            return [`You don't have permission to unban users!`, '`User has no permissions`'];
         }
     } else {
-        bu.send(msg, `I don't have permission to unban users!`);
+        return [`I don't have permission to unban users!`, '`Bot has no permissions`'];
     }
 };
 
