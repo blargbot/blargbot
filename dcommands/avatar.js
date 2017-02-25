@@ -2,7 +2,8 @@ var e = module.exports = {};
 
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
-};
+}; // git why are you so slow
+
 e.requireCtx = require;
 
 e.isCommand = true;
