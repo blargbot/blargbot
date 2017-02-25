@@ -441,7 +441,11 @@ async function handleRoleme(msg, storedGuild) {
                         await msg.member.edit({
                             roles: roleList
                         });
-                        bu.send(msg, 'Your roles have been edited!');
+                        logger.verbose(roleme[i].output);
+                        let output = roleme[i].output ?
+                            await tags.processTag(msg, roleme[i].output, '', undefined, undefined, true) :
+                            'Your roles have been edited!';
+                        bu.send(msg, output);
                     } catch (err) {
                         bu.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
                     }
