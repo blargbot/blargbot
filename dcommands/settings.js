@@ -92,6 +92,7 @@ e.execute = async function(msg, words) {
         else farewellChan = 'Undefined';
         let kickAt = settings.kickat || 'Disabled';
         let banAt = settings.banat || 'Disabled';
+        let adminRoleName = settings.adminrole || 'Admin';
         var message = `\`\`\`prolog
 Settings For ${msg.channel.guild.name}
 
@@ -117,6 +118,7 @@ Greeting Channel : ${greetChan}
     Anti-Mention : ${antiMention}
       Muted Role : ${mutedRole}
    Track Deletes : ${deleteNotif}
+ Admin Role Name : ${adminRoleName}
 
 -- Permissions --
    Perm Override : ${permOverride}
@@ -250,5 +252,10 @@ bu.settings = {
         name: 'Kick At',
         desc: 'The number of warnings before a kick. Set to 0 or below to disable.',
         type: 'int'
+    },
+    adminrole: {
+        name: 'Admin Role Name',
+        desc: 'The name of the Admin role.',
+        type: 'string'
     }
 };

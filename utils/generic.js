@@ -47,6 +47,12 @@ bu.awaitMessage = async function(msg, message, callback, timeout) {
     return await registerEvent();
 };
 
+
+function getId(text) {
+    if (/[0-9]{17,23}/.test(text)) {
+        return text.match(/([0-9]{17,23})/)[1];
+    } else return null;
+}
 /**
  * Checks if a user has a role with a specific name
  * @param msg - the message (Message)
@@ -61,6 +67,7 @@ bu.hasPerm = (msg, perm, quiet) => {
         msg.member.permission.json.administrator) {
         return true;
     }
+
     var roles = msg.channel.guild.roles.filter(m => {
         if (Array.isArray(perm) ?
             perm.map(q => q.toLowerCase()).indexOf(m.name.toLowerCase()) > -1 :
@@ -69,11 +76,6 @@ bu.hasPerm = (msg, perm, quiet) => {
         } else {
             let role;
 
-            function getId(text) {
-                if (/[0-9]{17,23}/.test(text)) {
-                    return text.match(/([0-9]{17,23})/)[1];
-                } else return null;
-            }
             if (Array.isArray(perm)) {
                 role = [];
                 for (let i = 0; i < perm.length; i++) {
@@ -880,15 +882,15 @@ bu.canExecuteCcommand = async function(msg, commandName, quiet) {
 bu.canExecuteCommand = async function(msg, commandName, quiet) {
     if (msg.author.id == bu.CAT_ID && bu.catOverrides) return [true, commandName];
     if (msg.channel.guild) {
-        let permoverride, staffperms, storedGuild;
+        let permoverride, staffperms, storedGuild, adminrole;
         storedGuild = await bu.getGuild(msg.guild.id);
         let val = storedGuild.settings.permoverride,
             val1 = storedGuild.settings.staffperms;
+        logger.debug(storedGuild.settings.adminrole);
 
-        let command;
-        if (storedGuild) {
-            command = storedGuild.commandperms[commandName];
-        }
+        let command = storedGuild.commandperms[commandName];
+        if (storedGuild.settings.adminrole !== undefined && storedGuild.settings.adminrole !== "")
+            adminrole = storedGuild.settings.adminrole;
         if (command && command.disabled) {
             return [false, commandName];
         }
@@ -915,7 +917,7 @@ bu.canExecuteCommand = async function(msg, commandName, quiet) {
                     else return [false, commandName];
                 } else if (!command.rolename) {
                     if (bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
-                        if (!bu.hasPerm(msg, bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
+                        if (!bu.hasPerm(msg, adminrole || bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
                             return [false, commandName, 1];
                         }
                     }
@@ -924,7 +926,7 @@ bu.canExecuteCommand = async function(msg, commandName, quiet) {
             }
         }
         if (CommandManager.commandList[commandName] && bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
-            if (!bu.hasPerm(msg, bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
+            if (!bu.hasPerm(msg, adminrole || bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
                 return [false, commandName, 3];
             }
         }
