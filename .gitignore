@@ -35,7 +35,7 @@ img/avatars-old/*
 img/avatars-ol/*
 backend/public/codemirror/*
 backend/public/fonts/*
-avatar.js
+/avatar.js
 ratelimit.js
 command.js
 testkek1.js
