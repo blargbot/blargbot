@@ -46,11 +46,12 @@ ${flags}`;
         var generalCommands = [];
         var otherCommands = {};
         var modifiedCommands = [];
-        let storedGuild, permOverride, staffPerms;
+        let storedGuild, permOverride, staffPerms, adminRole;
         if (msg.channel.guild) {
             storedGuild = await bu.getGuild(msg.guild.id);
             permOverride = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
             staffPerms = await bu.guildSettings.get(msg.channel.guild.id, 'staffPerms');
+            adminRole = storedGuild.settings.adminrole;
             let customizedCommands = storedGuild.commandperms;
             //    logger.debug(customizedCommands);
             for (let key in customizedCommands) {
@@ -76,6 +77,7 @@ ${flags}`;
                         if ((await bu.canExecuteCommand(msg, command, true))[0])
                             generalCommands.push(command);
                     } else {
+                        let category = CommandManager.list[command].category;
                         if (!otherCommands[CommandManager.list[command].category])
                             otherCommands[CommandManager.list[command].category] = [];
                         otherCommands[CommandManager.list[command].category].push(command);
@@ -125,9 +127,13 @@ ${flags}`;
                 bu.CommandType.properties[category].requirement(msg)) {
                 if (completeCommandList.length > 0) {
                     completeCommandList.sort();
-                    commandsString += `\n${bu.CommandType.properties.hasOwnProperty(category)
-                        ? bu.CommandType.properties[category].name
-                        : category.charAt(0).toUpperCase() + category.slice(1)} Commands:\n  `;
+                    let categoryString = '';
+                    if (bu.CommandType.properties.hasOwnProperty(category)) {
+                        if (category == bu.CommandType.ADMIN && adminRole)
+                            categoryString = adminRole;
+                        else categoryString = bu.CommandType.properties[category].name;
+                    } else categoryString = category;
+                    commandsString += `\n${categoryString.charAt(0).toUpperCase() + categoryString.slice(1)} Commands:\n  `;
                     commandsString += completeCommandList.join(', ');
                 }
             }
