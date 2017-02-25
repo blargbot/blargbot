@@ -601,7 +601,7 @@ bu.sendFile = (channelid, message, url) => {
             encoding: null
         }, function(err, res, body) {
             bu.send(channelid, message, {
-                name: filename,
+                name: filename.split('size')[0],
                 file: body
             });
         });
