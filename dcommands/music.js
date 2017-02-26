@@ -350,16 +350,16 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
                             sendMessage(msg.channel.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
                                 shuffle(suits);
                                 setTimeout(() => {
-                                    bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
+                                    bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
                                         shuffle(suits);
                                         setTimeout(() => {
-                                            bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
+                                            bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
                                                 shuffle(suits);
                                                 setTimeout(() => {
-                                                    bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
+                                                    bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Shuffling! ${suits[1]}`).then(msg2 => {
                                                         shuffle(suits);
                                                         setTimeout(() => {
-                                                            bu.bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Queue shuffled! ${suits[1]}`);
+                                                            bot.editMessage(msg2.channel.id, msg2.id, `${suits[0]} Queue shuffled! ${suits[1]}`);
                                                         }, 1500);
                                                     });
                                                 }, 1500);
@@ -799,7 +799,7 @@ function nextSong(msg) {
                     bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID).name} - requested by **${requester}** :musical_note: `)
                     .then(msg2 => {
                         setTimeout(() => {
-                            bu.bot.deleteMessage(channel, msg2.id);
+                            bot.deleteMessage(channel, msg2.id);
                         }, 60000);
                     });
 
@@ -993,9 +993,9 @@ function addPlaylistToQueue(msg, id, res) {
                     queue[msg.channel.guild.id] = [];
                 queue[msg.channel.guild.id].push(newQueue[i]);
             }
-            bu.bot.editMessage(msg2.channel.id, msg2.id, `:heavy_check_mark: Added **${newQueue.length}** items to the queue :heavy_check_mark:`);
+            bot.editMessage(msg2.channel.id, msg2.id, `:heavy_check_mark: Added **${newQueue.length}** items to the queue :heavy_check_mark:`);
             setTimeout(() => {
-                bu.bot.deleteMessage(msg2.channel.id, msg2.id);
+                bot.deleteMessage(msg2.channel.id, msg2.id);
             }, 15000);
             if (!current[msg.channel.guild.id]) {
                 nextSong(msg);
@@ -1019,7 +1019,7 @@ function addPlaylistToQueue(msg, id, res) {
 function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, callback) {
     var onComplete = function(newsubqueue, newpagetoken) {
         logger.music('done a batch', newsubqueue.length, '/', playlist.contentDetails.itemCount);
-        if (newsubqueue.length == playlist.contentDetails.itemCount) {
+        if (newsubqueue.length >= playlist.contentDetails.itemCount) {
             callback(newsubqueue);
         } else {
             processPlaylist(newsubqueue, requesterid, id, playlist, newpagetoken, callback);
