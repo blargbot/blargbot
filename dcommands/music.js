@@ -307,7 +307,7 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
                         });
 
                     } else {
-                        voice = voiceConnections.get(msg.channel.guild.id);
+                        let voice = voiceConnections.get(msg.channel.guild.id);
                         if (voice.channelID != msg.member.voiceState.channelID) {
                             //     sendMessage(msg.channel.id, 'I\'m coming!')
                             sendMessage(msg.channel.id, `I'm here!`);
@@ -404,7 +404,7 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
 };
 
 function sendQueue(msg) {
-    messageToSend = ':musical_score: Current Queue: :musical_score:\n```css\n';
+    let messageToSend = ':musical_score: Current Queue: :musical_score:\n```css\n';
     var requester, requesterMember, line, oddApo;
     if (current[msg.channel.guild.id]) {
         var currentSong = current[msg.channel.guild.id];
@@ -1029,7 +1029,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
     function doThing(err, res2) {
         if (err) {
             logger.music(err);
-            bu.send(msg, 'An internal API error occurred.');
+            //bu.send(msg, 'An internal API error occurred.');
             return;
         }
         subqueue.push({
@@ -1063,7 +1063,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
 
             if (err) {
                 logger.music(err);
-                bu.send(msg, 'An internal API error occurred.');
+                //    bu.send(msg, 'An internal API error occurred.');
                 return;
             }
             if (--tasksToGo === 0) {
