@@ -24,11 +24,11 @@ e.execute = async function(params) {
         params.args[1] = await bu.processTagInner(params, 1);
         let args1 = params.args[1];
         let deserialized = await bu.getArray(params, args1);
-        
+
         if (deserialized && Array.isArray(deserialized.v)) {
             replaceString = deserialized.v.shift();
             if (deserialized.n) {
-                await bu.setArray(deserialized, params);
+                await bu.setArray(params, deserialized);
             }
         } else {
             replaceString = await bu.tagProcessError(params, '`Not an array`');

@@ -28,7 +28,7 @@ e.execute = async function(params) {
         if (deserialized && Array.isArray(deserialized.v)) {
             replaceString = deserialized.v.pop();
             if (deserialized.n) {
-                await bu.setArray(deserialized, params);
+                await bu.setArray(params, deserialized);
             }
         } else {
             replaceString = await bu.tagProcessError(params, '`Not an array`');

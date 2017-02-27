@@ -7,30 +7,29 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `push`;
-e.args = `&lt;array&gt; &lt;values&gt;...`;
-e.usage = `{push;array;values...}`;
-e.desc = `Pushes values into an array. If used with {get} or {aget}, this will update the original variable. Otherwise, it will simply output the new array.`;
-e.exampleIn = `{push;["this", "is", "an"];array}`;
-e.exampleOut = `["this","is","an","array"]`;
+e.name = `sort`;
+e.args = `&lt;array&gt; [descending]`;
+e.usage = `{sort;array[;descending]}`;
+e.desc = `Sorts the provided array in ascending order. If descending is provided, sorts in descending order. If {get} or {aget} are used, will modify the original array.`;
+e.exampleIn = `{sort;[3, 2, 5, 1, 4]}`;
+e.exampleOut = `[1,2,3,4,5]`;
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
-    let replaceContent = false;
-    let replaceString;
-    if (params.args.length >= 3) {
-        params.args[1] = await bu.processTagInner(params, 1);
-        let args1 = params.args[1];
-        let deserialized = await bu.getArray(params, args1);
-        
+    let words = params.words;
+    var replaceString = '';
+    var replaceContent = false;
+    let args = params.args;
+    if (params.args[1]) {
+        let deserialized = await bu.getArray(params, args[1]);
+
         if (deserialized && Array.isArray(deserialized.v)) {
-            let toPush = params.args.slice(2);
-            for (const val of toPush)
-                deserialized.v.push(val);
+            deserialized.v.sort();
+            if (args[2]) deserialized.v.reverse();
             if (deserialized.n) {
-                await bu.setArray(deserialized, params);
+                await bu.setArray(params, deserialized);
             } else replaceString = bu.serializeTagArray(deserialized.v);
         } else {
             replaceString = await bu.tagProcessError(params, '`Not an array`');
@@ -38,7 +37,6 @@ e.execute = async function(params) {
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
-
     return {
         terminate: params.terminate,
         replaceString: replaceString,

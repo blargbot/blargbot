@@ -1,18 +1,20 @@
 var e = module.exports = {};
 
 e.init = () => {
-    e.category = bu.TagType.ARRAY;
+    e.category = bu.TagType.COMPLEX;
 };
 
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `sort`;
-e.args = `&lt;array&gt; [descending]`;
-e.usage = `{sort;array[;descending]}`;
-e.desc = `Sorts the provided array in ascending order. If descending is provided, sorts in descending order. If {get} or {aget} are used, will modify the original array.`;
-e.exampleIn = `{sort;[3, 2, 5, 1, 4]}`;
-e.exampleOut = `[1,2,3,4,5]`;
+e.array = true;
+
+e.name = `reverse`;
+e.args = `&lt;text&gt;`;
+e.usage = `{reverse;text}`;
+e.desc = `Reverses the order of text or an array. If {get} or {aget} are used with an array, will modify the original array.`;
+e.exampleIn = `{sort;text}`;
+e.exampleOut = `txet`;
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
@@ -23,16 +25,15 @@ e.execute = async function(params) {
     var replaceContent = false;
     let args = params.args;
     if (params.args[1]) {
-        let deserialized = await bu.getArray(params, args[1]);
+        let deserialized = bu.deserializeTagArray(args[1]);
 
         if (deserialized && Array.isArray(deserialized.v)) {
-            deserialized.v.sort();
-            if (args[2]) deserialized.v.reverse();
+            deserialized.v.reverse();
             if (deserialized.n) {
-                await bu.setArray(deserialized, params);
-            } else replaceString = bu.serializeTagArray(deserialized.v)
+                await bu.setArray(params, deserialized);
+            } else replaceString = bu.serializeTagArray(deserialized.v);
         } else {
-            replaceString = await bu.tagProcessError(params, '`Not an array`');
+            replaceString = args[1].split('').reverse().join('');
         }
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');

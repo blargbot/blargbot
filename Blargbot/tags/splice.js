@@ -36,7 +36,7 @@ e.execute = async function(params) {
                 if (args[4]) argss = argss.concat(args.slice(4));
                 let newArray = [].splice.apply(deserialized.v, argss);
                 replaceString = bu.serializeTagArray(newArray);
-                await bu.setArray(deserialized, params);
+                await bu.setArray(params, deserialized);
             }
         } else {
             replaceString = await bu.tagProcessError(params, '`Not an array`');

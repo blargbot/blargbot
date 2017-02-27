@@ -43,7 +43,7 @@ bu.getArray = async function(params, arrName) {
     return obj;
 };
 
-bu.setArray = async function(deserialized, params) {
+bu.setArray = async function(params, deserialized) {
     await TagManager.list['set'].setVar(params, deserialized.n, deserialized.v);
 };
 

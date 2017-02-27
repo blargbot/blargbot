@@ -537,7 +537,7 @@ function init() {
         var keysFile = dep.fs.readFileSync(dep.path.join(__dirname, '..', 'keys.json'), 'utf8');
         keys = JSON.parse(keysFile);
     }
-    if (!dep.fs.existsSync(dep.path.join(__dirname, '..', 'cache'))) {
+    if (!dep.fs.existsSync(dep.path.join(__dirname, '..', '..', 'cache'))) {
         dep.fs.mkdirSync(dep.path.join(__dirname, '..', 'cache'));
     }
     if (!dep.fs.existsSync(dep.path.join(__dirname, '..', 'cache', 'yt'))) {

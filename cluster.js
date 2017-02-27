@@ -5,7 +5,7 @@ module.exports = cluster;
 
 const reload = dep.reload;
 
-const numCPUs = dep.os.cpus().length;
+const numCPUs = 1; // number of workers to spawn
 
 if (cluster.isMaster) {
     const Collection = dep.Eris.Collection;

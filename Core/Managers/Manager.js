@@ -65,7 +65,7 @@ class Manager {
     }
 
     constructPath(eventName) {
-        return './' + this.type + '/' + eventName;
+        return '../' + this.type + '/' + eventName;
     }
 }
 
