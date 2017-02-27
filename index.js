@@ -3,8 +3,8 @@
  * made by stupid cat and stuff
  * yeah
  */
-
+global._dep = require('./Dependencies');
 const Core = require('./Core');
 
-global.config = require('./Data/config.json');
-config.avatars = require(config.general.isbeta ? './Data/avatarsBeta.json' : './Data/avatars.json');
+global._config = require('./Data/config.json');
+config.avatars = require(_config.general.isbeta ? './Data/avatarsBeta.json' : './Data/avatars.json');
