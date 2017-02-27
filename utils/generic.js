@@ -61,14 +61,20 @@ function getId(text) {
  * @returns {boolean}
  */
 bu.hasPerm = (msg, perm, quiet) => {
-    if (!msg.channel.guild) return true;
-    if ((msg.member.id === bu.CAT_ID && bu.catOverrides) ||
-        msg.channel.guild.ownerID == msg.member.id ||
-        msg.member.permission.json.administrator) {
+    let member;
+    if (msg instanceof dep.Eris.Member) {
+        member = msg;
+    } else {
+        if (!msg.channel.guild) return true;
+        member = msg.member;
+    }
+    if ((member.id === bu.CAT_ID && bu.catOverrides) ||
+        member.guild.ownerID == member.id ||
+        member.permission.json.administrator) {
         return true;
     }
 
-    var roles = msg.channel.guild.roles.filter(m => {
+    var roles = member.guild.roles.filter(m => {
         if (Array.isArray(perm) ?
             perm.map(q => q.toLowerCase()).indexOf(m.name.toLowerCase()) > -1 :
             m.name.toLowerCase() == perm.toLowerCase()) {
@@ -93,7 +99,7 @@ bu.hasPerm = (msg, perm, quiet) => {
         }
     });
     for (var i = 0; i < roles.length; i++) {
-        if (msg.member.roles.indexOf(roles[i].id) > -1) {
+        if (member.roles.indexOf(roles[i].id) > -1) {
             return true;
         }
     }
@@ -105,16 +111,23 @@ bu.hasPerm = (msg, perm, quiet) => {
 };
 
 bu.hasRole = (msg, roles) => {
-    if (!msg.channel.guild) return true;
-    if (!msg.member) return false;
-    if ((msg.member.id === bu.CAT_ID && bu.catOverrides) ||
-        msg.channel.guild.ownerID == msg.member.id ||
-        msg.member.permission.json.administrator) {
+    let member;
+    if (msg instanceof dep.Eris.Member) {
+        member = msg;
+    } else {
+        if (!msg.channel.guild) return true;
+        if (!msg.member) return false;
+        member = msg.member;
+    }
+
+    if ((member.id === bu.CAT_ID && bu.catOverrides) ||
+        member.guild.ownerID == msg.member.id ||
+        member.permission.json.administrator) {
         return true;
     }
     if (!Array.isArray(roles)) roles = [roles];
     for (var i = 0; i < roles.length; i++) {
-        if (msg.member.roles.indexOf(roles[i]) > -1) {
+        if (member.roles.indexOf(roles[i]) > -1) {
             return true;
         }
     }

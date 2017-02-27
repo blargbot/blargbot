@@ -81,7 +81,7 @@ e.init = async function(v, em) {
         saveVars();
     });
 
-    bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, `avatars${config.general.isbeta ? '' : 2}.json`), 'utf8'));
+    bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, `avatars${config.general.isbeta ? 'Beta' : ''}.json`), 'utf8'));
     const Manager = require('./Manager.js');
     global.EventManager = new Manager('events', true);
     global.TagManager = new Manager('tags');
