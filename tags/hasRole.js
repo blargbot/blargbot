@@ -43,7 +43,7 @@ e.execute = async function(params) {
         }
         let deserialized = bu.deserializeTagArray(args[1]);
         if (deserialized && Array.isArray(deserialized.v)) {
-            replaceString = bu.hasPerm(member, deserialized, true);
+            replaceString = bu.hasPerm(member, deserialized.v, true);
         } else {
             replaceString = bu.hasPerm(member, args[1], true);
         }

@@ -47,7 +47,7 @@ e.init = async function(v, em) {
         restMode: true,
         defaultImageFormat: 'png',
         defaultImageSize: 512,
-        messageLimit: 5
+        messageLimit: 1
     });
     global.bot = bot;
 
