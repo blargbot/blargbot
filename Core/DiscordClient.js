@@ -1,6 +1,32 @@
-class DiscordClient {
-    constructor(options) {
+class DiscordClient extends dep.Eris.Client {
+    constructor() {
 
+        super(config.discord.token, {
+            autoReconnect: true,
+            disableEveryone: true,
+            disableEvents: {
+                TYPING_START: true
+            },
+            getAllUsers: true,
+            maxShards: config.discord.shards || 1,
+            restMode: true,
+            defaultImageFormat: 'png',
+            defaultImageSize: 512,
+            messageLimit: 1
+        });
+
+        _client.Emitter.on('discordMessage', (message, attachment) => {
+            if (attachment)
+                bu.send(config.discord.channel, message, attachment);
+            else
+                bu.send(config.discord.channel, message);
+        });
+
+        _client.Emitter.on('discordTopic', (topic) => {
+            this.editChannel(config.discord.channel, {
+                topic: topic
+            });
+        });
     }
 }
 
@@ -8,10 +34,8 @@ const https = dep.https;
 global.tags = require('./tags.js');
 const reload = dep.reload(require);
 
-const Promise = require('promise');
 //const webInterface = require('./interface.js');
 var bot;
-const website = require('./backend/main');
 
 
 var e = module.exports = {},
@@ -35,13 +59,7 @@ e.init = async function(v, em) {
     process.on('unhandledRejection', (reason, p) => {
         logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
     });
-    if (dep.fs.existsSync(dep.path.join(__dirname, 'vars.json'))) {
-        var varsFile = dep.fs.readFileSync(dep.path.join(__dirname, 'vars.json'), 'utf8');
-        vars = JSON.parse(varsFile);
-    } else {
-        vars = {};
-        saveVars();
-    }
+
     bot = new dep.Eris.Client(config.discord.token, {
         autoReconnect: true,
         disableEveryone: true,
@@ -63,12 +81,7 @@ e.init = async function(v, em) {
     bu.startTime = startTime;
     bu.vars = vars;
 
-    emitter.on('discordMessage', (message, attachment) => {
-        if (attachment)
-            bu.send(config.discord.channel, message, attachment);
-        else
-            bu.send(config.discord.channel, message);
-    });
+
 
     emitter.on('discordTopic', (topic) => {
         bot.editChannel(config.discord.channel, {
@@ -78,9 +91,6 @@ e.init = async function(v, em) {
 
     emitter.on('eval', (msg, text) => {
         eval1(msg, text);
-    });
-    emitter.on('eval2', (msg, text) => {
-        eval2(msg, text);
     });
 
     emitter.on('saveVars', () => {
@@ -272,7 +282,6 @@ var startTime = dep.moment();
 function filterUrls(input) {
     return input.replace(/https?\:\/\/.+\.[a-z]{1,20}(\/[^\s]*)?/gi, '');
 }
-
 
 var changefeed;
 
