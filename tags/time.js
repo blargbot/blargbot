@@ -10,12 +10,14 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `time`;
-e.args = `[format]`;
-e.usage = `{time}`;
+e.args = `[format] [time] [parseformat]`;
+e.usage = `{time[;format[;time[;parseformat]]]}`;
 e.desc = `Returns the current time, in UTC+0. If a <code>format</code> code is specified,
 the date is formatted accordingly. Leave blank for default formatting. See the <a
 href="http://momentjs.com/docs/#/displaying/format/">moment
-documentation</a> for more information.`;
+documentation</a> for more information.<br>Additionally, you can specify another
+time to display, and a format to parse it with. See
+<a href="http://momentjs.com/docs/#/parsing/">here</a> for parsing documentation.`;
 e.exampleIn = `It's currently {time;YYYY/MM/DD HH:mm:ss}`;
 e.exampleOut = `It's currently 2016/01/01 01:00:00`;
 
@@ -30,8 +32,11 @@ e.execute = async function(params) {
     var formatCode = '';
     if (args[1])
         formatCode = args[1];
-
-    replaceString = dep.moment.tz('Etc/UTC').format(formatCode);
+    let date = dep.moment(args[2], args[3]);
+    if (!date.isValid()) {
+        replaceString = await bu.tagProcessError(params, '`Invalid date`');
+    } else
+        replaceString = date.tz('Etc/UTC').format(formatCode);
 
     return {
         terminate: params.terminate,
