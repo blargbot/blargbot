@@ -14,8 +14,10 @@ e.info = `Gets a list of mods.`;
 e.longinfo = `<p>Gets a list of mods on the guild.</p>`;
 
 e.execute = (msg, words) => {
+    logger.debug('a');
     try {
         bu.guildSettings.get(msg.channel.guild.id, 'staffperms').then(val => {
+            logger.debug('aa');
             var allow = val || bu.defaultStaff;
             let status = 0;
             if (words[1])
@@ -50,7 +52,6 @@ e.execute = (msg, words) => {
                     maxLength = getName(m).length;
                 }
             });
-            var message = '';
             let online = [];
             if (status == 0 || status == 1)
                 mods.filter(m => m.status == 'online').forEach(m => {
@@ -71,36 +72,17 @@ e.execute = (msg, words) => {
                 mods.filter(m => m.status == 'offline').forEach(m => {
                     offline.push(`<:vpOffline:212790005943369728> **${getName(m)}** (${m.user.id})`);
                 });
+            let message = `Mods on **${msg.guild.name}**`;
 
-            let embed = {
-                title: `Mods on **${msg.guild.name}**`,
-                fields: [],
-                color: bu.avatarColours[bu.avatarId],
-                description: `Here's a list of mods:`
+            let subMessage = '';
+            if (online.length > 0) subMessage += `\n${online.join('\n')}`;
+            if (away.length > 0) subMessage += `\n${away.join('\n')}`;
+            if (dnd.length > 0) subMessage += `\n${dnd.join('\n')}`;
+            if (offline.length > 0) subMessage += `\n${offline.join('\n')}`;
+            if (subMessage.length == 0) {
+                message = 'Whoops! There are no mods with that status!';
             }
-            if (online.length > 0) embed.fields.push({
-                name: 'Online',
-                value: online.join('\n')
-            });
-            if (away.length > 0) embed.fields.push({
-                name: 'Away',
-                value: away.join('\n')
-            });
-            if (dnd.length > 0) embed.fields.push({
-                name: 'Do Not Disturb',
-                value: dnd.join('\n')
-            });
-            if (offline.length > 0) embed.fields.push({
-                name: 'Offline',
-                value: offline.join('\n')
-            });
-            logger.debug(embed.fields);
-            if (embed.fields.length == 0) {
-                embed.description = 'Whoops! There are no mods with that status!';
-            }
-            bu.send(msg, {
-                embed: embed
-            });
+            bu.send(msg, message + subMessage);
         });
 
     } catch (err) {
