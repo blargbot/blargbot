@@ -22,7 +22,7 @@ e.exampleIn = `Your account joined this guild on {userjoinedat;YYYY/MM/DD HH:mm:
 e.exampleOut = `Your account joined this guild on 2016/01/01 01:00:00`;
 
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -34,12 +34,17 @@ e.execute = async function(params) {
     var obtainedUser = await bu.getTagUser(msg, args, 2);
 
     if (obtainedUser) {
-        var createdDate = msg.channel.guild.members.get(obtainedUser.id).joinedAt;
-        var formatCode = '';
-        if (args[1])
-            formatCode = args[1];
+        let member = msg.channel.guild.members.get(obtainedUser.id);
+        if (member) {
+            var createdDate = member.joinedAt;
+            var formatCode = '';
+            if (args[1])
+                formatCode = args[1];
 
-        replaceString = dep.moment(createdDate).format(formatCode);
+            replaceString = dep.moment(createdDate).format(formatCode);
+        } else {
+            replaceString = await bu.tagProcessError(params, '`User not part of guild`');
+        }
     } else if (!args[3])
         return '';
     else
