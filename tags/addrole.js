@@ -26,7 +26,7 @@ e.execute = async function(params) {
         if (params.args.length > 1) {
             let member = params.msg.member;
             if (params.args[2]) {
-                let user = await bu.getUser(params.msg, params.args[1], true);
+                let user = await bu.getUser(params.msg, params.args[2], true);
                 if (user) member = params.msg.guild.members.get(user.id);
             }
             if (member) {
@@ -46,6 +46,7 @@ e.execute = async function(params) {
                             await member.addRole(role.id);
                             replaceString = 'true';
                         } catch (err) {
+                            logger.error(err);
                             replaceString = 'false';
                         }
                     }
