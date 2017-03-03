@@ -4,8 +4,8 @@ class PingCommand extends GeneralCommand {
     constructor() {
         super({
             name: 'ping',
-            usage: 'ping',
-            info: 'Pong!\nFind the command latency.'
+            usage: _constants.Messages.Command.ping.usage(),
+            info: _constants.Messages.Command.ping.info()
         });
     }
 
