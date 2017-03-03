@@ -10,9 +10,9 @@ e.isTag = true;
 e.array = true;
 
 e.name = 'hasrole';
-e.args = '&lt;rolenames&gt [user]';
-e.usage = '{hasrole;rolename;user}';
-e.desc = `Checks if a user has a role with the same name as the provided argument, and returns either 'true' or 'false'. rolename can also be an array of role names. If a user is provided, check that user.`;
+e.args = '&lt;roleids&gt [user]';
+e.usage = '{hasrole;roleid...;user}';
+e.desc = `Checks if a user has a role with the same id as the provided argument, and returns either 'true' or 'false'. rolename can also be an array of role names. If a user is provided, check that user.`;
 e.exampleIn = 'You are a moderator: {hasrole;moderator}';
 e.exampleOut = 'You are a moderator: false';
 
@@ -42,14 +42,25 @@ e.execute = async function(params) {
             }
         }
         let deserialized = bu.deserializeTagArray(args[1]);
+        let rawRoles = [];
+        let roles = [];
         if (deserialized && Array.isArray(deserialized.v)) {
-            replaceString = bu.hasPerm(member, deserialized.v, true);
+            rawRoles = deserialized.v;
         } else {
-            replaceString = bu.hasPerm(member, args[1], true);
+            rawRoles.push(args[1]);
+        }
+        for (let i = 0; i < rawRoles.length; i++) {
+            let regexp = /(\d{17,23})/;
+            if (regexp.test(rawRoles[i]))
+                roles.push(rawRoles[i].match(regexp)[1]);
+        }
+        if (roles.length == 0) {
+            replaceString = await bu.tagProcessError(params, '`No valid roles`');
+        } else {
+            replaceString = bu.hasRole(params.msg, roles, false);
         }
     } else
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-
 
     return {
         terminate: params.terminate,

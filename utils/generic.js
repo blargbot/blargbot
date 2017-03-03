@@ -60,7 +60,7 @@ function getId(text) {
  * @param quiet - if true, won't output an error (Boolean)
  * @returns {boolean}
  */
-bu.hasPerm = (msg, perm, quiet) => {
+bu.hasPerm = (msg, perm, quiet, override) => {
     let member;
     if (msg instanceof dep.Eris.Member) {
         member = msg;
@@ -68,9 +68,9 @@ bu.hasPerm = (msg, perm, quiet) => {
         if (!msg.channel.guild) return true;
         member = msg.member;
     }
-    if ((member.id === bu.CAT_ID && bu.catOverrides) ||
-        member.guild.ownerID == member.id ||
-        member.permission.json.administrator) {
+    if (override && ((member.id === bu.CAT_ID && bu.catOverrides) ||
+            member.guild.ownerID == member.id ||
+            member.permission.json.administrator)) {
         return true;
     }
 
@@ -110,7 +110,7 @@ bu.hasPerm = (msg, perm, quiet) => {
     return false;
 };
 
-bu.hasRole = (msg, roles) => {
+bu.hasRole = (msg, roles, override) => {
     let member;
     if (msg instanceof dep.Eris.Member) {
         member = msg;
@@ -120,9 +120,9 @@ bu.hasRole = (msg, roles) => {
         member = msg.member;
     }
 
-    if ((member.id === bu.CAT_ID && bu.catOverrides) ||
-        member.guild.ownerID == msg.member.id ||
-        member.permission.json.administrator) {
+    if (override && ((member.id === bu.CAT_ID && bu.catOverrides) ||
+            member.guild.ownerID == msg.member.id ||
+            member.permission.json.administrator)) {
         return true;
     }
     if (!Array.isArray(roles)) roles = [roles];

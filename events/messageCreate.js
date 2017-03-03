@@ -402,7 +402,7 @@ async function handleCensor(msg, storedGuild) {
                                 else message = CommandManager.list['censor'].defaultKickMessage;
                                 break;
                         }
-                        let output = await tags.processTag(msg, message, '', undefined, undefined, true);
+                        let output = await tags.processTag(msg, message, msg.content, undefined, undefined, true);
                         bu.send(msg, output);
                         return;
                     } catch (err) {
