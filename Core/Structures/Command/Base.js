@@ -1,6 +1,6 @@
-class Command {
+class BaseCommand {
     constructor(options) {
-        if (this.constructor === Command) {
+        if (this.constructor === BaseCommand) {
             throw new Error("Can't instantiate an abstract class!");
         }
         this.hidden = options.hidden || false;
@@ -17,7 +17,13 @@ class Command {
 
     }
 
+    async send(msg, content, file) {
+        await _client.Helpers.Message.send(msg, content, file);
+    }
+
     async canExecute(msg) {
         return true;
     }
 }
+
+module.exports = BaseCommand;

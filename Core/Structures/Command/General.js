@@ -1,15 +1,18 @@
 const Constants = require('../Constants');
+const Base = require('./Base');
 
-class CatCommand {
+class GeneralCommand extends Base {
     constructor(options) {
         super(options);
-        if (this.constructor === CatCommand) {
+        if (this.constructor === GeneralCommand) {
             throw new Error("Can't instantiate an abstract class!");
         }
-        this.category = 'CATZ MEOW MEOW';
+        this.category = 'General';
     }
 
     async canExecute(msg) {
-        return msg.author.id == Constants.CAT_ID;
+        return true;
     }
 }
+
+module.exports = GeneralCommand;
