@@ -9,8 +9,9 @@ class PingCommand extends GeneralCommand {
         });
     }
 
-    async execute() {
-
+    async execute(ctx) {
+        await super.execute(ctx);
+        await this.send(ctx.msg, 'Pong!');
     }
 }
 

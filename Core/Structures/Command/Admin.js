@@ -10,7 +10,7 @@ class GeneralCommand extends Base {
         this.category = 'Admin';
     }
 
-    async canExecute(msg) {
+    async canExecute(ctx) {
         return true;
     }
 }

@@ -1,3 +1,5 @@
+const {CommandManager} = require('./Managers');
+
 class DiscordClient extends _dep.Eris.Client {
     constructor(shardId) {
         super(_config.discord.token, {
@@ -8,14 +10,15 @@ class DiscordClient extends _dep.Eris.Client {
             },
             getAllUsers: true,
             maxShards: 1,
-            firstShardId: shardId,
-            lastShardId: shardId,
+            firstShardId: shardId || 0,
+            lastShardId: shardId || 0,
             restMode: true,
             defaultImageFormat: 'png',
             defaultImageSize: 512,
             messageLimit: 1
         });
 
-
+        this.CommandManager = new CommandManager;
+        this.CommandManager.init();
     }
 }

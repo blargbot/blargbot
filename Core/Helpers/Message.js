@@ -1,13 +1,13 @@
-async function send(input, content, file) {
+async function send(dest, content, file) {
     let channelId;
     let senderId;
-    if (input instanceof _dep.Eris.Message) {
-        channelId = input.channel.id;
-        senderId = input.author.id;
-    } else if (input instanceof _dep.Eris.Channel) {
-        channelId = input.id;
-    } else if (input instanceof _dep.Eris.User) {
-        channelId = (await input.getDMCHannel()).id;
+    if (dest instanceof _dep.Eris.Message) {
+        channelId = dest.channel.id;
+        senderId = dest.author.id;
+    } else if (dest instanceof _dep.Eris.Channel) {
+        channelId = dest.id;
+    } else if (dest instanceof _dep.Eris.User) {
+        channelId = (await dest.getDMCHannel()).id;
     }
     const channel = bot.getChannel(channelId);
     if (channel == undefined) throw new Error('No such channel');
@@ -30,7 +30,7 @@ async function send(input, content, file) {
         if (err.response) {
             try {
                 response = JSON.parse(err.response);
-            } catch (err) {}
+            } catch (err) { }
         }
         let Embed = {
             title: response !== undefined ? `${err.name}: ${response.code} - ${response.message}` : err.name,
@@ -60,9 +60,9 @@ async function send(input, content, file) {
         await bot.createMessage(_constants.ERROR_CHANNEL, {
             embed: Embed
         }, {
-            file: JSON.stringify(content, null, 2),
-            name: 'error-output.json'
-        });
+                file: JSON.stringify(content, null, 2),
+                name: 'error-output.json'
+            });
         throw err;
     }
 }

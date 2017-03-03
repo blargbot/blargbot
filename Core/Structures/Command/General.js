@@ -10,8 +10,8 @@ class GeneralCommand extends Base {
         this.category = 'General';
     }
 
-    async canExecute(msg) {
-        return true;
+    async canExecute(ctx) {
+        return await super.canExecute(ctx);
     }
 }
 

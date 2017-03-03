@@ -10,8 +10,8 @@ class CatCommand extends Base {
         this.category = 'CATZ MEOW MEOW';
     }
 
-    async canExecute(msg) {
-        return msg.author.id == Constants.CAT_ID;
+    async canExecute(ctx) {
+        return ctx.msg.author.id == Constants.CAT_ID;
     }
 }
 
