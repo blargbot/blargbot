@@ -60,7 +60,7 @@ function getId(text) {
  * @param quiet - if true, won't output an error (Boolean)
  * @returns {boolean}
  */
-bu.hasPerm = (msg, perm, quiet, override) => {
+bu.hasPerm = (msg, perm, quiet, override = true) => {
     let member;
     if (msg instanceof dep.Eris.Member) {
         member = msg;
@@ -110,7 +110,7 @@ bu.hasPerm = (msg, perm, quiet, override) => {
     return false;
 };
 
-bu.hasRole = (msg, roles, override) => {
+bu.hasRole = (msg, roles, override = true) => {
     let member;
     if (msg instanceof dep.Eris.Member) {
         member = msg;
