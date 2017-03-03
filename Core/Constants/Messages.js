@@ -8,6 +8,13 @@ const Generic = {
     MessageTooLong: () => 'Whoops! I tried to send a message that was too long. If you think this is a bug, please report it!'
 };
 
+const Command = {
+    ping: {
+        usage: () => 'ping',
+        info: () => 'Pong!\nFinds the command latency.'
+    }
+};
+
 module.exports = {
     Generic
 };

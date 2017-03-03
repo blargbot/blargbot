@@ -1,6 +1,6 @@
 module.exports = {
-    Base: require('./Base'),
-    Cat: require('./Cat'),
-    General: require('./General'),
-    Admin: require('./Admin')
+    BaseCommand: require('./Base'),
+    CatCommand: require('./Cat'),
+    GeneralCommand: require('./General'),
+    AdminCommand: require('./Admin')
 };

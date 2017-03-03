@@ -6,7 +6,15 @@ class BaseCommand {
         this.hidden = options.hidden || false;
         this.usage = options.usage || '';
         this.info = options.info || '';
-        this.longinfo = options.longinfo || '';
+        this.name = options.name || this.constructor.name;
+    }
+
+    get webInfo() {
+        let paragraphs = this.info.replace(/\n+/g, '\n').split('\n');
+        let output;
+        for (const line of paragraphs) {
+
+        }
     }
 
     async execute(msg, words) {
