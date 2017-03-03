@@ -12,7 +12,7 @@ e.array = true;
 e.name = 'hasrole';
 e.args = '&lt;roleids&gt [user]';
 e.usage = '{hasrole;roleid...;user}';
-e.desc = `Checks if a user has a role with the same id as the provided argument, and returns either 'true' or 'false'. rolename can also be an array of role names. If a user is provided, check that user.`;
+e.desc = `Checks if a user has a role with the same id as the provided argument, and returns either 'true' or 'false'. roleid can also be an array of role ids. You can find a list of roles and their ids by doing \`b!roles\`. If a user is provided, check that user.`;
 e.exampleIn = 'You are a moderator: {hasrole;moderator}';
 e.exampleOut = 'You are a moderator: false';
 

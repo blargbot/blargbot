@@ -10,7 +10,7 @@ e.isTag = true;
 e.name = `addrole`;
 e.args = `&lt;role&gt; [user]`;
 e.usage = `{addrole;role[;user]}`;
-e.desc = `Gives a user a role, where role is a role ID or mention. Returns true if a role was given, and false otherwise.`;
+e.desc = `Gives a user a role, where role is a role ID or mention. You can find a list of roles and their ids by doing \`b!roles\`. Returns true if a role was given, and false otherwise.`;
 e.exampleIn = `Have a role! {addrole;11111111111111111}`;
 e.exampleOut = `Have a role! true`;
 

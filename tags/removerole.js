@@ -10,7 +10,7 @@ e.isTag = true;
 e.name = `removerole`;
 e.args = `&lt;role&gt; [user]`;
 e.usage = `{removerole;role[;user]}`;
-e.desc = `Removes a role from a user, where role is a role ID or mention. Returns true if a role was removed, and false otherwise.`;
+e.desc = `Removes a role from a user, where role is a role ID or mention. You can find a list of roles and their ids by doing \`b!roles\`. Returns true if a role was removed, and false otherwise.`;
 e.exampleIn = `No more role! {giverole;11111111111111111}`;
 e.exampleOut = `No more role! true`;
 
