@@ -5,8 +5,8 @@
  */
 global._dep = require('./Dependencies');
 global._core = require('./Core');
-global._config = require('./Data/config.json');
+global._config = require('./config.json');
 global._constants = _core.Constants;
-config.avatars = require(_config.general.isbeta ? './Data/avatarsBeta.json' : './Data/avatars.json');
+//_config.avatars = require(_config.general.isbeta ? './Data/avatarsBeta.json' : './Data/avatars.json');
 
 global._client = new _core.Client();

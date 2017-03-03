@@ -1,4 +1,4 @@
-const {CommandManager} = require('./Managers');
+const { CommandManager, EventManager } = require('./Managers/index.js');
 
 class DiscordClient extends _dep.Eris.Client {
     constructor(shardId) {
@@ -18,7 +18,12 @@ class DiscordClient extends _dep.Eris.Client {
             messageLimit: 1
         });
 
-        this.CommandManager = new CommandManager;
+        this.CommandManager = new CommandManager(this);
         this.CommandManager.init();
+
+        this.EventManager = new EventManager(this);
+        this.EventManager.init();
     }
 }
+
+module.exports = DiscordClient;

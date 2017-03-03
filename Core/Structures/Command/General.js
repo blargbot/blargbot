@@ -1,4 +1,3 @@
-const Constants = require('../Constants');
 const Base = require('./Base');
 
 class GeneralCommand extends Base {

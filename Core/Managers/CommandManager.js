@@ -1,36 +1,28 @@
 const Manager = require('./Manager');
-const {Base} = require('../Structures/Command');
+const Base = require('../Structures/Command/Base');
 
 class CommandManager extends Manager {
-    constructor() {
-        super('Commands', Base);
+    constructor(client) {
+        super('Commands', Base, client);
         this.fullList = {};
     }
 
-    load(name) {
-        super.load(name);
-    }
-
     unload(name) {
-        if (this.list[name].aliases.length > 0) {
-            for (const alias of this.list[name].aliases) {
-                delete this.fullList[alias];
+        if (this.builtList[name].aliases.length > 0) {
+            for (const alias of this.builtList[name].aliases) {
+                delete this.builtList[alias];
             }
         }
         super.unload(name);
     }
 
-    reload(name) {
-        super.reload(name);
-    }
-
     build(name) {
         if (super.build(name)) {
-            if (this.list[name].aliases.length > 0) {
-                for (const alias of this.list[name].aliases) {
-                    this.fullList[alias] = this.list[name];
+            if (this.builtList[name].aliases.length > 0) {
+                for (const alias of this.builtList[name].aliases) {
+                    this.builtList[alias] = this.builtList[name];
                 }
-                this.fullList[name] == this.list[name];
+                this.builtList[name] == this.builtList[name];
             }
         }
     }

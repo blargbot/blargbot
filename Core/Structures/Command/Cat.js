@@ -1,4 +1,3 @@
-const Constants = require('../Constants');
 const Base = require('./Base');
 
 class CatCommand extends Base {
@@ -11,7 +10,7 @@ class CatCommand extends Base {
     }
 
     async canExecute(ctx) {
-        return ctx.msg.author.id == Constants.CAT_ID;
+        return ctx.msg.author.id == _constants.CAT_ID;
     }
 }
 

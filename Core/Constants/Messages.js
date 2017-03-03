@@ -16,5 +16,6 @@ const Command = {
 };
 
 module.exports = {
-    Generic
+    Generic,
+    Command
 };
