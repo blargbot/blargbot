@@ -3,7 +3,7 @@ function setCharAt(str, index, chr) {
     return str.substr(0, index) + chr + str.substr(index + 1);
 }
 
-bu.serializeTagArray = function(array, varName) {
+bu.serializeTagArray = function (array, varName) {
     if (!varName)
         return JSON.stringify(array);
 
@@ -14,7 +14,7 @@ bu.serializeTagArray = function(array, varName) {
     return JSON.stringify(obj);
 };
 
-bu.deserializeTagArray = function(value) {
+bu.deserializeTagArray = function (value) {
     try {
         let obj = JSON.parse(value
             .replace(new RegExp(bu.specialCharBegin + 'LB' + bu.specialCharEnd, "g"), '{')
@@ -28,7 +28,7 @@ bu.deserializeTagArray = function(value) {
     }
 };
 
-bu.getArray = async function(params, arrName) {
+bu.getArray = async function (params, arrName) {
     let obj = bu.deserializeTagArray(arrName);
     if (!obj) {
         try {
@@ -43,11 +43,11 @@ bu.getArray = async function(params, arrName) {
     return obj;
 };
 
-bu.setArray = async function(deserialized, params) {
+bu.setArray = async function (deserialized, params) {
     await TagManager.list['set'].setVar(params, deserialized.n, deserialized.v);
 };
 
-bu.setVariable = async function(name, key, value, type, guildId) {
+bu.setVariable = async function (name, key, value, type, guildId) {
     let vars = {};
     let updateObj = {};
     vars[key] = value;
@@ -100,7 +100,7 @@ bu.setVariable = async function(name, key, value, type, guildId) {
     }
 };
 
-bu.getVariable = async function(name, key, type, guildId) {
+bu.getVariable = async function (name, key, type, guildId) {
     let storedThing;
     let returnVar;
     switch (type) {
@@ -143,7 +143,7 @@ bu.getVariable = async function(name, key, type, guildId) {
     return returnVar;
 };
 
-bu.processTagInner = async function(params, i) {
+bu.processTagInner = async function (params, i) {
     if (i)
         params.content = params.args[i];
     let result = await bu.processTag(params);
@@ -155,7 +155,7 @@ bu.processTagInner = async function(params, i) {
 };
 
 
-bu.processTag = async function(params) {
+bu.processTag = async function (params) {
     let msg = params.msg,
         words = params.words,
         contents = params.content || params.contents || '',
@@ -324,12 +324,12 @@ bu.processSpecial = (contents, final) => {
 
 
 
-bu.getTagUser = async function(msg, args, index) {
+bu.getTagUser = async function (msg, args, index) {
     var obtainedUser;
     if (!index) index = 1;
 
     msg.content = bu.processSpecial(msg.content);
-    if (args.length == index) {
+    if (args.length <= index) {
         obtainedUser = msg.author;
     } else {
         if (args[index + 1]) {
@@ -346,7 +346,7 @@ bu.tagGetFloat = (arg) => {
     return parseFloat(arg) ? parseFloat(arg) : NaN;
 };
 
-bu.tagProcessError = async function(params, errormessage) {
+bu.tagProcessError = async function (params, errormessage) {
     let fallback = params.fallback;
     let returnMessage = {};
     params.content = fallback;
