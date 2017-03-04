@@ -1,6 +1,6 @@
 const cleverbotIo = new dep.cleverbotIo(config.cleverbot.ioid, config.cleverbot.iokey);
 cleverbotIo.setNick('blargbotProd');
-cleverbotIo.create(function(err, session) {
+cleverbotIo.create(function (err, session) {
     if (err) logger.error(err);
     logger.init(session);
 });
@@ -9,7 +9,7 @@ const cleverbot = new dep.cleverbot({
     key: config.cleverbot.key
 });
 
-bot.on('messageCreate', async function(msg) {
+bot.on('messageCreate', async function (msg) {
     processUser(msg);
     let isDm = msg.channel.guild == undefined;
     let storedGuild;
@@ -87,7 +87,8 @@ async function handleUserMessage(msg, storedGuild) {
  * Processes a user into the database
  * @param msg - message (Message)
  */
-var processUser = async function(msg) {
+var processUser = async function (msg) {
+    if (msg.author.discriminator == '0000') return;
     let storedUser = await r.table('user').get(msg.author.id).run();
     if (!storedUser) {
         logger.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
@@ -165,7 +166,7 @@ var tables = {
     }
 };
 
-var flipTables = async function(msg, unflip) {
+var flipTables = async function (msg, unflip) {
     let tableflip = await bu.guildSettings.get(msg.channel.guild.id, 'tableflip');
     if (tableflip && tableflip != 0) {
         var seed = bu.getRandomInt(0, 3);
@@ -174,7 +175,7 @@ var flipTables = async function(msg, unflip) {
     }
 };
 
-var handleDiscordCommand = async function(channel, user, text, msg) {
+var handleDiscordCommand = async function (channel, user, text, msg) {
     let words = bu.splitInput(text);
     if (msg.channel.guild)
         logger.command(`Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
@@ -263,7 +264,7 @@ var handleDiscordCommand = async function(channel, user, text, msg) {
         }
     }
 };
-var executeCommand = async function(commandName, msg, words, text) {
+var executeCommand = async function (commandName, msg, words, text) {
     // logger.debug(commandName);
     r.table('stats').get(commandName).update({
         uses: r.row('uses').add(1),
@@ -313,7 +314,7 @@ function handleIRCMessage(msg) {
         var message;
         if (msg.content.startsWith('_') && msg.content.endsWith('_'))
             message = ` * ${msg.member && msg.member.nick ? msg.member.nick : msg.author.username} ${msg.cleanContent
-.substring(1, msg.cleanContent.length - 1)}`;
+                .substring(1, msg.cleanContent.length - 1)}`;
         else {
             if (msg.author.id == bot.user.id) {
                 message = `${msg.cleanContent}`;
@@ -362,8 +363,8 @@ async function handleCensor(msg, storedGuild) {
         //First, let's check exceptions
         let exceptions = censor.exception;
         if (!(exceptions.channel.includes(msg.channel.id) ||
-                exceptions.user.includes(msg.author.id) ||
-                (exceptions.role.length > 0 && bu.hasRole(msg, exceptions.role)))) { // doesn't have an exception!
+            exceptions.user.includes(msg.author.id) ||
+            (exceptions.role.length > 0 && bu.hasRole(msg, exceptions.role)))) { // doesn't have an exception!
             for (const cens of censor.list) {
                 let violation = false;
                 let term = cens.term;
@@ -371,7 +372,7 @@ async function handleCensor(msg, storedGuild) {
                     try {
                         let regex = bu.createRegExp(term);
                         if (regex.test(msg.content)) violation = true;
-                    } catch (err) {}
+                    } catch (err) { }
                 } else if (msg.content.indexOf(term) > -1) violation = true;
                 if (violation == true) { // Uh oh, they did a bad!
                     let res = await bu.issueWarning(msg.author, msg.guild, cens.weight);
@@ -525,7 +526,7 @@ async function handleCleverbot(msg) {
         bu.send(msg, response.output);
     } catch (e) { // Couldn't use cleverbot api, default to cleverbot.io
         logger.error(e);
-        cleverbotIo.ask(msgToSend, async function(err, response) {
+        cleverbotIo.ask(msgToSend, async function (err, response) {
             await bot.sendChannelTyping(msg.channel.id);
             await bu.sleep(1500);
             bu.send(msg, response);
