@@ -379,7 +379,7 @@ async function handleCensor(msg, storedGuild) {
                     if (cens.weight > 0) {
                         await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', 'Said a blacklisted phrase.', [{
                             name: 'Warnings',
-                            value: `Assigned: ${cens.weight}\nNew Total: ${res.count}`,
+                            value: `Assigned: ${cens.weight}\nNew Total: ${res.count || 0}`,
                             inline: true
                         }]);
                     }

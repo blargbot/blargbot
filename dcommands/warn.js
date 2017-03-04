@@ -24,7 +24,7 @@ e.flags = [{
     desc: 'The number of warnings that will be issued.'
 }];
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words);
     if (input.undefined.length == 0) {
         bu.send(msg, 'Not enough input. Do `b!help warn` for usage instructions.');
@@ -40,7 +40,7 @@ e.execute = async function(msg, words) {
     let res = await bu.issueWarning(user, msg.guild, count);
     await bu.logAction(msg.guild, user, msg.author, 'Warning', input.r, [{
         name: 'Warnings',
-        value: `Assigned: ${count}\nNew Total: ${res.count}`,
+        value: `Assigned: ${count}\nNew Total: ${res.count || 0}`,
         inline: true
     }]);
     bu.send(msg, `:ok_hand: **${bu.getFullName(user)}** has been given ${count == 1 ? 'a warning' : count + ' warnings'}. They now have ${res.count} warning${res.count == 1 ? '' : 's'}.`);
