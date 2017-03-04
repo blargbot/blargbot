@@ -1,15 +1,21 @@
+const Context = require('../Structures/Context');
+
 async function send(dest, content, file) {
-    let channelId;
+    let channel;
     let senderId;
     if (dest instanceof _dep.Eris.Message) {
-        channelId = dest.channel.id;
+        channel = dest.channel;
         senderId = dest.author.id;
     } else if (dest instanceof _dep.Eris.Channel) {
-        channelId = dest.id;
+        channel = dest;
     } else if (dest instanceof _dep.Eris.User) {
-        channelId = (await dest.getDMCHannel()).id;
+        channel = await dest.getDMCHannel();
+    } else if (dest instanceof String) {
+        channel = _discord.getChannel(dest);
+    } else if (dest instanceof Context) {
+        channel = dest.msg.channel;
+        senderId = dest.msg.author.id;
     }
-    const channel = bot.getChannel(channelId);
     if (channel == undefined) throw new Error('No such channel');
     if (content instanceof String) {
         content = {
@@ -49,6 +55,10 @@ async function send(dest, content, file) {
             name: 'Channel',
             value: `${channel.name}\n${channel.id}`
         });
+        Embed.fields.push({
+            name: 'Content',
+            value: `${content.content.substring(0, 100)}`
+        });
         if (senderId) {
             let user = bot.users.get(senderId);
             if (user != undefined)
@@ -57,7 +67,7 @@ async function send(dest, content, file) {
                     icon_url: user.avatarURL
                 };
         }
-        await bot.createMessage(_constants.ERROR_CHANNEL, {
+        await _discord.createMessage(_constants.ERROR_CHANNEL, {
             embed: Embed
         }, {
                 file: JSON.stringify(content, null, 2),

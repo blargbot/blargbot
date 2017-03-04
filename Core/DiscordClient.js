@@ -18,10 +18,13 @@ class DiscordClient extends _dep.Eris.Client {
             messageLimit: 1
         });
 
-        this.CommandManager = new CommandManager(this);
+        global._discord = this;
+        this.Core = require('./index.js');
+
+        this.CommandManager = new CommandManager();
         this.CommandManager.init();
 
-        this.EventManager = new EventManager(this);
+        this.EventManager = new EventManager();
         this.EventManager.init();
     }
 }

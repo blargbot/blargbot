@@ -1,9 +1,8 @@
 class Manager {
-    constructor(name, base, client) {
+    constructor(name, base) {
         if (this.constructor === Manager) {
             throw new Error("Can't instantiate an abstract class!");
         }
-        this._client = client;
         this.name = name;
         this.list = {};
         this.builtList = {};

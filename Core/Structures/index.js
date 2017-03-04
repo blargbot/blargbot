@@ -1,4 +1,5 @@
 module.exports = {
     Command: require('./Command'),
-    Event: require('./Event')
+    Event: require('./Event'),
+    Context: require('./Context')
 };

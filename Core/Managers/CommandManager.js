@@ -2,8 +2,8 @@ const Manager = require('./Manager');
 const Base = require('../Structures/Command/Base');
 
 class CommandManager extends Manager {
-    constructor(client) {
-        super('Commands', Base, client);
+    constructor() {
+        super('Commands', Base);
         this.fullList = {};
     }
 
@@ -30,6 +30,7 @@ class CommandManager extends Manager {
     async execute(name, ctx) {
         const command = this.list[name];
         if (command !== undefined) {
+            console.dir(command, { depth: 1 });
             if (command.canExecute(ctx)) {
                 try {
                     let response = await command.execute(ctx);
@@ -41,6 +42,10 @@ class CommandManager extends Manager {
                 }
             }
         }
+    }
+
+    has(name) {
+        return this.builtList.hasOwnProperty(name);
     }
 }
 

@@ -1,4 +1,4 @@
-const { Event } = _core.Structures;
+const { Event } = _discord.Core.Structures;
 
 class ReadyEvent extends Event {
     constructor() {
