@@ -23,7 +23,7 @@ e.longinfo = `<p>This command has three different functions for varying purposes
 <ul><li>feedback - give me feedback about the bot</li><li>suggest - tell me something you want added or changed</li><li>report - let me know about a bug you found</li></ul>
 <p>Thank you for your support. It means a lot to me!</p>`;
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (words.length > 1) {
         let blacklist = await r.table('vars').get('blacklist');
         if (blacklist.users.indexOf(msg.author.id) > -1) {
@@ -46,7 +46,7 @@ e.execute = async function(msg, words) {
                     }
                     await r.table('vars').get('blacklist').replace(blacklist);
                     await bu.send(msg, 'Done');
-                    break;
+                    return;
                 case 'unblacklist':
                     let index;
                     switch (words[2].toLowerCase()) {
@@ -63,10 +63,8 @@ e.execute = async function(msg, words) {
                     }
                     await r.table('vars').get('blacklist').replace(blacklist);
                     await bu.send(msg, 'Done');
-                    break;
+                    return;
             }
-
-            return;
         }
         let i = 0;
         let lastSuggestion = await r.table('suggestion').orderBy({
