@@ -63,7 +63,7 @@ async function renderEditor(req, res) {
         if (destination && await bu.isUserStaff(req.user.id, destination)) {
             storedGuild = await bu.getGuild(destination);
         }
-        title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
+        title = (req.body.tagName || '').replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
 
         async function saveCcommand(tag, name) {
             storedGuild.ccommands[name || title] = tag;
