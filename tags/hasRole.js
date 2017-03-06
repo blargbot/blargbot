@@ -16,7 +16,7 @@ e.desc = `Checks if a user has a role with the same id as the provided argument,
 e.exampleIn = 'You are a moderator: {hasrole;moderator}';
 e.exampleOut = 'You are a moderator: false';
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -57,7 +57,7 @@ e.execute = async function(params) {
         if (roles.length == 0) {
             replaceString = await bu.tagProcessError(params, '`No valid roles`');
         } else {
-            replaceString = bu.hasRole(params.msg, roles, false);
+            replaceString = bu.hasRole(member, roles, false);
         }
     } else
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
