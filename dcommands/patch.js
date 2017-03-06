@@ -25,7 +25,7 @@ e.flags = [{
 }];
 
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (msg.author.id != bu.CAT_ID) {
         return;
     }
@@ -75,11 +75,11 @@ e.execute = async function(msg, words) {
             const channel = bot.getChannel(channelId);
             if (channel != undefined) {
                 if (channel.permissionsOf(bot.user.id).has('embedLinks')) {
-                    bu.send(channelId, {
+                    await bu.send(channelId, {
                         embed
                     });
                 } else {
-                    bu.send(channelId, `There was a changelog update, but I need to be able to embed links to post it! Please give me the 'embed links' permission for next time.`);
+                    await bu.send(channelId, `There was a changelog update, but I need to be able to embed links to post it! Please give me the 'embed links' permission for next time.`);
                 }
             }
         }
