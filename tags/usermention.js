@@ -1,7 +1,7 @@
 var e = module.exports = {};
 
 e.init = () => {
-    e.category = bu.TagType.CHANNEL;
+    e.category = bu.TagType.CCOMMAND;
 };
 
 e.requireCtx = require;
