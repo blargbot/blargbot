@@ -43,7 +43,7 @@
     <script src="/codemirror/addon/edit/closebrackets.js"></script>
     <script src="/codemirror/addon/edit/matchtags.js"></script>
     <script src="/codemirror/addon/hint/show-hint.js"></script>
-    <script src="/codemirror/addon/hint/cattag-hint.js"></script>
+    <script src="/js/cattag-hint.js"></script>
     <link rel="stylesheet" href="/codemirror/addon/hint/show-hint.css">
 
     <!-- OpenGraph -->
@@ -97,28 +97,22 @@
                                 CodeMirror.defineSimpleMode("cattag", {
                                     start: [
                                         { regex: /\d/, token: 'number' },
-                                        { regex: /\{\/\//, token: 'comment', next: 'comment' },
-                                        { regex: /\{/, token: brace, next: 'outerTag', indent: true },
+                                        { regex: /\{\/\//, token: 'comment', push: 'comment' },
+                                        { regex: /\{/, token: brace, push: 'innerTag', indent: true },
+                                        { regex: /[;}]/, token: brace },
                                         { regex: /[^\{};]*/, token: 'bracket' }
                                     ],
                                     comment: [
-                                        { regex: /.*?\}/, token: 'comment', next: 'start' },
-                                        { regex: /.*/, token: 'comment' }
-                                    ],
-                                    outerTag: [
-                                        { regex: /\{/, token: brace, push: 'innerTag', indent: true },
-                                        { regex: /\}/, token: brace, next: 'start', dedent: true },
-                                        { regex: /([^{}; ]+)/, token: 'keyword' },
-                                        { regex: /(;+)(\{)/, token: [semiColon, brace], push: 'innerTag', indent: true },
-                                        { regex: /(;+)(})/, token: [semiColon, brace], next: 'start', dedent: true },
-                                        { regex: /(;+)$/, token: [semiColon] },
-                                        { regex: /(;+)(\d*)?([^{};]*)?/, token: [semiColon, 'number', 'string'] },
-                                        { regex: /^(\d*)?([^{};]*)?/, token: ['number', 'string'] }
+                                        { regex: /\}/, token: 'comment', pop: true },
+                                        { regex: /\{/, token: 'comment', push: 'comment' },
+                                        { regex: /[^\{}]*/, token: 'comment' }
                                     ],
                                     innerTag: [
+                                        { regex: /\{\/\//, token: 'comment', push: 'comment' },                                    
                                         { regex: /\{/, token: brace, push: 'innerTag', indent: true },
                                         { regex: /\}/, token: brace, pop: true, dedent: true },
                                         { regex: /([^{}; ]+)/, token: 'keyword' },
+                                        { regex: /(;+)(\{\/\/)/, token: [semiColon, 'comment'], push: 'comment'},
                                         { regex: /(;+)(\{)/, token: [semiColon, brace], push: 'innerTag', indent: true },
                                         { regex: /(;+)(})/, token: [semiColon, brace], pop: true, dedent: true },
                                         { regex: /(;+)$/, token: [semiColon] },
@@ -126,6 +120,7 @@
                                         { regex: /^(\d*)?([^{};]*)?/, token: ['number', 'string'] }
                                     ],
                                     args: [
+                                        { regex: /\{\/\//, token: 'comment', push: 'comment' },                                                                        
                                         { regex: /\{/, token: brace, push: 'innerTag', indent: true },
                                         { regex: /\}/, token: brace, pop: true, dedent: true },
                                         { regex: /;/, token: semiColon },
@@ -134,121 +129,139 @@
                                     meta: {}
                                 });
                             </script>
-<style>
-								.CodeMirror {
-									height: 100%;
-								}
-							</style>
-{{#if message}}
-<p>{{message}}</p>
-{{/if}} {{#if error}}
-<p class='red-text accent-3'>{{error}}</p>
-{{/if}}
-<form style="margin: 0" method="post">
-<div class='row' style='margin-bottom: 0'>
-<div class="input-field col s6">
-    <input id='tagname' type="text" name="tagName" {{#if tagName}}value='{{tagName}}' {{/if}}>
-    <label for='tagname'>Tag Name</label>
-</div>
-<div class='col s3'>
-    <button type="submit" name="action" value='load' class="cyan accent-3 white-text btn waves-effect waves-light full">
+                            <style>
+                                .CodeMirror {
+                                    height: 100%;
+                                }
+                            </style>
+                            {{#if message}}
+                            <p>{{message}}</p>
+                            {{/if}} {{#if error}}
+                            <p class='red-text accent-3'>{{error}}</p>
+                            {{/if}}
+                            <form style="margin: 0" method="post">
+                                <div class='row' style='margin-bottom: 0'>
+
+                                    <div class="input-field col s3">
+                                        <input id='tagname' type="text" name="tagName" {{#if tagName}}value='{{tagName}}' {{/if}}>
+                                        <label for='tagname'>Tag Name</label>
+                                    </div>
+                                    <div class='input-field col s3'>
+                                        <input id='newname' type="text" name="newname" {{#if user}}{{else}}disabled{{/if}}>
+                                        <label for='newname'>New Name</label>
+                                    </div>
+                                    <div class='col s3'>
+                                        <button type="submit" name="action" value='load' class="cyan accent-3 white-text btn waves-effect waves-light full">
 										Load
 										</button>
-</div>
-<div class='col s3'>
-    <button type="submit" name="action" value='save' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
-        {{#if user}}{{else}}disabled{{/if}}>
+                                    </div>
+                                    <div class='col s3'>
+                                        <button type="submit" name="action" value='save' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
+                                            {{#if user}}{{else}}disabled{{/if}}>
 										 Save
 										 </button>
-</div>
-</div>
-<div class='row' style='margin-top: 0px'>
-    <div class='input-field col s3'>
-    <input id='fontsize' type="number" name="fontsize" value=20 onchange="setFontSize(event.target.value)">
-    <label for='fontsize'>Font Size</label>
-</div>
-<div class='input-field col s3'>
-    <input id='newname' type="text" name="newname" {{#if user}}{{else}}disabled{{/if}}>
-    <label for='newname'>New Name</label>
-</div>
-<div class='col s3'>
-    <button type="submit" name="action" value='rename' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
-        {{#if user}}{{else}}disabled{{/if}}>
+                                    </div>
+                                </div>
+                                <div class='row' style='margin-top: 0px'>
+                                    <div class="input-field col s3">
+                                        <select id="destSelect" name="destination">
+                                            {{#if destination}}
+                                            <option value="">Tag</option>                                            
+                                            {{else}}
+                                            <option value="" selected>Tag</option>
+                                            {{/if}}
+                                            {{#each guilds}}
+                                            <option value="{{id}}" {{#ifCond id '==' ../destination}}selected{{/ifCond}}>{{name}}</option>
+                                            {{/each}}
+                                        </select>
+                                        <label for="destSelect">Destination</label>
+                                    </div>
+                                    <div class='input-field col s3'>
+                                        <input id='fontsize' type="number" name="fontsize" value=20 onchange="setFontSize(event.target.value)">
+                                        <label for='fontsize'>Font Size</label>
+                                    </div>
+
+                                    <div class='col s3'>
+                                        <button type="submit" name="action" value='rename' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
+                                            {{#if user}}{{else}}disabled{{/if}}>
 										Rename
 										</button>
-</div>
-<div class='col s3'>
-    <button type="submit" name="action" value='delete' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
-        {{#if user}}{{else}}disabled{{/if}}>
+                                    </div>
+                                    <div class='col s3'>
+                                        <button type="submit" name="action" value='delete' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
+                                            {{#if user}}{{else}}disabled{{/if}}>
 										<i class="large material-icons">delete</i>Delete
 										</button>
-</div>
-</div>
-<textarea id="yayEditor" style="height: 100%; font-size: 20px" name='content' >{{startText}}</textarea>
-<script>
-var words = {{#tagseditor}}{{/tagseditor}};
-words.length--;
-var editor = CodeMirror.fromTextArea(document.getElementById("yayEditor"), {
-    mode: 'cattag',
-    lineNumbers: true,
-    indentWithTabs: false,
-    styleActiveLine: true,
-    matchBrackets: true,
-    smartIndent: true,
-    autoCloseBrackets: false,
-    theme: 'monokai',
-    electricChars: true,
-    lineWrapping: true,
-    hintOptions: {
-        words: words
-    }
-});
+                                    </div>
+                                </div>
+                                <textarea id="yayEditor" style="height: 100%; font-size: 20px" name='content'>{{startText}}</textarea>
+                                <script> 
+                                    var words = {{#tagseditor}}{{/tagseditor}};
+                                    words.length--;
+                                    var editor = CodeMirror.fromTextArea(document.getElementById("yayEditor"), {
+                                        mode: 'cattag',
+                                        lineNumbers: true,
+                                        indentWithTabs: false,
+                                        styleActiveLine: true,
+                                        matchBrackets: true,
+                                        smartIndent: true,
+                                        autoCloseBrackets: false,
+                                        theme: 'monokai',
+                                        electricChars: true,
+                                        lineWrapping: true,
+                                        hintOptions: {
+                                            words: words
+                                        }
+                                    });
 
-editor.on("inputRead", function (editor, change) {
-    if (change.text[0] == '{') {
-        editor.showHint();
-    }
-    editor.save();
-});
+                                    editor.on("inputRead", function (editor, change) {
+                                        if (change.text[0] == '{') {
+                                            editor.showHint();
+                                        }
+                                        editor.save();
+                                    });
 
-function setFontSize(val) {
-    var parsedVal = parseInt(val);
-    if (!isNaN(parsedVal)) {
-        document.getElementsByClassName("CodeMirror")[0].style.fontSize = parsedVal + 'px';
-    }
-}
-
-
-setFontSize(20);
-</script><br>
-<!--	<input type="submit" value="Load" class="cyan accent-3 white-text btn waves-effect waves-light">-->
-
-</form>
-
-</div>
-</div>
-</div>
-</div>
-
-</div>
+                                    function setFontSize(val) {
+                                        var parsedVal = parseInt(val);
+                                        if (!isNaN(parsedVal)) {
+                                            document.getElementsByClassName("CodeMirror")[0].style.fontSize = parsedVal + 'px';
+                                        }
+                                    }
 
 
-<!-- Menu Toggle Script -->
-<script>
-                                        init();
-</script>
-</main>
-<footer class="page-footer blue-grey darken-2">
-    <div class="section">
-        <div class="rows">
-            <div class="col s12 m10 offset-m1 l6 offset-l3">
-                <p class="centre">
-                    &copy; 2016 - Ratismal (stupid cat)
-                </p>
+                                    setFontSize(20);
+                                </script><br>
+                                <!--	<input type="submit" value="Load" class="cyan accent-3 white-text btn waves-effect waves-light">-->
+
+                            </form>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Menu Toggle Script -->
+        <script>
+            init();
+             $(document).ready(function() {
+    $('select').material_select();
+  });
+        </script>
+    </main>
+    <footer class="page-footer blue-grey darken-2">
+        <div class="section">
+            <div class="rows">
+                <div class="col s12 m10 offset-m1 l6 offset-l3">
+                    <p class="centre">
+                        &copy; 2016 - Ratismal (stupid cat)
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
 </body>
 

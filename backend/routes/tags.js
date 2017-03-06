@@ -1,8 +1,5 @@
 const router = dep.express.Router();
 
-
-
-
 router.get('/', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/tags' + req.path;
@@ -45,87 +42,162 @@ async function renderEditor(req, res) {
         res.redirect('/login');
         return;
     }
+    let guilds = req.user.guilds;
+
+    guilds = guilds.filter(g => {
+        return bot.guilds.get(g.id) != undefined;
+    });
+    guilds = await Promise.filter(guilds, async function (g) {
+        return await bu.isUserStaff(req.user.id, g.id);
+    });
+    res.locals.guilds = guilds.map(g => {
+        return { name: g.name, id: g.id };
+    });
+
+
+
     if (req.body && req.body.action) {
-        logger.website('Tag editor:', req.body);
-        let title, storedTag;
+        let destination = req.body.destination || false;
+        res.locals.destination = req.body.destination;
+        let title, storedTag, storedGuild;
+        if (destination && await bu.isUserStaff(req.user.id, destination)) {
+            storedGuild = await bu.getGuild(destination);
+        }
+        title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
+
+        async function saveCcommand(tag, name) {
+            storedGuild.ccommands[name || title] = tag;
+            await r.table('guild').get(destination).update({
+                ccommands: r.literal(storedGuild.ccommands)
+            });
+        }
+
         switch (req.body.action) {
             case 'load':
-                logger.website(req.body);
-                let tagName = req.body.tagName;
-                if (tagName) {
-                    let tag = await r.table('tag').get(tagName).run();
-                    logger.website(tag);
-                    if (tag) res.locals.startText = tag.content;
+                if (title) {
+                    if (!storedGuild)
+                        storedTag = await r.table('tag').get(title).run();
+                    else {
+                        storedTag = storedGuild.ccommands[title];
+                        if (storedTag && typeof storedTag == 'string')
+                            storedTag = {
+                                content: storedTag
+                            };
+                    }
+                    if (storedTag) res.locals.startText = storedTag.content;
                 }
-                res.locals.tagName = req.body.tagName;
+                res.locals.tagName = title;
                 break;
             case 'save':
                 res.locals.startText = req.body.content;
-                res.locals.tagName = req.body.tagName;
-                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
+                res.locals.tagName = title;
                 if (title == '') {
                     res.locals.error = 'Blank is not a name!';
                 } else {
-                    storedTag = await r.table('tag').get(title).run();
+                    if (!storedGuild) {
+                        storedTag = await r.table('tag').get(title).run();
+                    } else {
+                        storedTag = storedGuild.ccommands[title];
+                        if (storedTag && typeof storedTag == 'string')
+                            storedTag = {
+                                content: storedTag
+                            };
+                    }
                     if (storedTag) {
-                        if (storedTag.author != req.user.id)
+                        if (!storedGuild && storedTag.author != req.user.id)
                             res.locals.error = 'You do not own this tag!';
                         else {
-                            await r.table('tag').get(title).update({
+                            if (!storedGuild) {
+                                await r.table('tag').get(title).update({
+                                    content: req.body.content,
+                                    lastmodified: r.now()
+                                }).run();
+                                res.locals.message = 'Your tag has been edited! It has been saved as \'' + title + '\'.';
+                                logChange(req.user, 'Edit (WI)', {
+                                    user: `${req.user.username} (${req.user.id})`,
+                                    tag: title,
+                                    content: req.body.content
+                                });
+                            } else {
+                                await saveCcommand({
+                                    content: req.body.content,
+                                    author: req.user.id
+                                });
+                                res.locals.message = 'Your custom command has been edited! It has been saved as \'' + title + '\'.';
+
+                            }
+                        }
+                    } else {
+                        if (!storedGuild) {
+                            await r.table('tag').get(title).replace({
+                                name: title,
+                                author: req.user.id,
                                 content: req.body.content,
-                                lastmodified: r.now()
+                                lastmodified: r.now(),
+                                uses: 0
                             }).run();
-                            res.locals.message = 'Your tag has been edited! It has been saved as \'' + title + '\'.';
-                            logChange(req.user, 'Edit (WI)', {
+                            res.locals.message = 'Your tag has been created! It has been saved as \'' + title + '\'.';
+                            logChange(req.user, 'Create (WI)', {
                                 user: `${req.user.username} (${req.user.id})`,
                                 tag: title,
                                 content: req.body.content
                             });
+                        } else {
+                            await saveCcommand({
+                                content: req.body.content,
+                                author: req.user.id
+                            });
+                            res.locals.message = 'Your custom command has been created! It has been saved as \'' + title + '\'.';
                         }
-                    } else {
-                        await r.table('tag').get(title).replace({
-                            name: title,
-                            author: req.user.id,
-                            content: req.body.content,
-                            lastmodified: r.now(),
-                            uses: 0
-                        }).run();
-                        res.locals.message = 'Your tag has been created! It has been saved as \'' + title + '\'.';
-                        logChange(req.user, 'Create (WI)', {
-                            user: `${req.user.username} (${req.user.id})`,
-                            tag: title,
-                            content: req.body.content
-                        });
                     }
                 }
                 break;
             case 'rename':
                 res.locals.startText = req.body.content;
-                res.locals.tagName = req.body.tagName;
-                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
+                res.locals.tagName = title;
                 let newTitle = req.body.newname.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
                 if (newTitle == '') {
                     res.locals.error = 'Blank is not a name!';
                 } else {
-                    storedTag = await r.table('tag').get(title).run();
+                    if (!storedGuild)
+                        storedTag = await r.table('tag').get(title).run();
+                    else {
+                        storedTag = storedGuild.ccommands[title];
+                        if (storedTag && typeof storedTag == 'string')
+                            storedTag = {
+                                content: storedTag,
+                                author: req.user.id
+                            };
+                    }
                     if (storedTag) {
-                        if (storedTag.author != req.user.id)
-                            res.locals.error = 'You do not own this tag!';
-                        else {
-                            let otherStoredTag = await r.table('tag').get(newTitle).run();
-                            if (otherStoredTag)
-                                res.locals.error = 'There is already a tag with that name!';
+                        if (!storedGuild) {
+                            if (storedTag.author != req.user.id)
+                                res.locals.error = 'You do not own this tag!';
                             else {
-                                storedTag.name = newTitle;
-                                await r.table('tag').insert(storedTag).run();
-                                await r.table('tag').get(title).delete().run();
-                                res.locals.message = 'Tag successfully renamed to \'' + newTitle + '\'. Note: Only the name has changed. You still need to save if you made changes to the contents.';
-                                res.locals.tagName = newTitle;
-                                logChange(req.user, 'Rename (WI)', {
-                                    user: `${req.user.username} (${req.user.id})`,
-                                    oldName: title,
-                                    newName: newTitle
-                                });
+                                let otherStoredTag = await r.table('tag').get(newTitle).run();
+                                if (otherStoredTag)
+                                    res.locals.error = 'There is already a tag with that name!';
+                                else {
+                                    storedTag.name = newTitle;
+                                    await r.table('tag').insert(storedTag).run();
+                                    await r.table('tag').get(title).delete().run();
+                                    res.locals.message = 'Tag successfully renamed to \'' + newTitle + '\'. Note: Only the name has changed. You still need to save if you made changes to the contents.';
+                                    res.locals.tagName = newTitle;
+                                    logChange(req.user, 'Rename (WI)', {
+                                        user: `${req.user.username} (${req.user.id})`,
+                                        oldName: title,
+                                        newName: newTitle
+                                    });
+                                }
+                            }
+                        } else {
+                            let storedGuild = await bu.getGuild(destination);
+                            if (storedGuild.ccommands[newTitle] != undefined) {
+                                res.locals.error = 'There is already a custom command with that name!';
+                            } else {
+                                await saveCcommand(undefined);
+                                await saveCcommand(storedTag, newTitle);
+                                res.locals.message = 'Custom command successfully renamed to \'' + newTitle + '\'. Note: Only the name has changed. You still need to save if you made changes to the contents.';
                             }
                         }
                     } else {
@@ -135,42 +207,45 @@ async function renderEditor(req, res) {
                 break;
             case 'delete':
                 res.locals.startText = req.body.content;
-                res.locals.tagName = req.body.tagName;
-                title = req.body.tagName.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
+                res.locals.tagName = title;
 
-                storedTag = await r.table('tag').get(title).run();
+                if (!storedGuild)
+                    storedTag = await r.table('tag').get(title).run();
+                else {
+                    storedTag = storedGuild.ccommands[title];
+                    if (storedTag && typeof storedTag == 'string')
+                        storedTag = {
+                            content: storedTag,
+                            author: req.user.id
+                        };
+                }
                 if (storedTag) {
-                    if (storedTag.author != req.user.id)
-                        res.locals.error = 'You do not own this tag!';
-                    else {
-                        await r.table('tag').get(title).delete().run();
-                        res.locals.startText = '';
-                        res.locals.tagName = '';
-                        res.locals.message = 'Tag successfully deleted! It\'s gone forever!';
-                        logChange(req.user, 'Delete (WI)', {
-                            user: `${req.user.username} (${req.user.id})`,
-                            tag: title,
-                            content: req.body.content
-                        });
+                    if (!storedGuild) {
+                        if (storedTag.author != req.user.id)
+                            res.locals.error = 'You do not own this tag!';
+                        else {
+                            await r.table('tag').get(title).delete().run();
+                            res.locals.startText = '';
+                            res.locals.tagName = '';
+                            res.locals.message = 'Tag successfully deleted! It\'s gone forever!';
+                            logChange(req.user, 'Delete (WI)', {
+                                user: `${req.user.username} (${req.user.id})`,
+                                tag: title,
+                                content: req.body.content
+                            });
+                        }
+                    } else {
+                        await saveCcommand(undefined);
+                        res.locals.message = 'Custom command successfully deleted! It\'s gone forever!';
                     }
                 } else {
                     res.locals.error = 'You cannot delete a tag that doesn\'t exist!';
                 }
                 break;
         }
-
     }
     res.render('editor');
 }
-
-/*function logChange(req.user, action, actionObj) {
-    let output = `**__${action}__**\n`;
-    let actionArray = [];
-    for (let key in actionObj) {
-        actionArray.push(`  **${key}**: ${actionObj[key]}`);
-    }
-    bu.send('230810364164440065', output + actionArray.join('\n'));
-}*/
 
 async function logChange(user, action, actionObj) {
     user = await bot.getRESTUser(user.id);
