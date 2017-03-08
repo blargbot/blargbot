@@ -73,7 +73,7 @@ e.execute = async function (msg, words) {
     if (changelogs) {
         for (const channelId of Object.values(changelogs.guilds)) {
             const channel = bot.getChannel(channelId);
-            if (channel != undefined) {
+            if (channel != undefined && channel.permissionsOf(bot.user.id).has('sendMessages')) {
                 if (channel.permissionsOf(bot.user.id).has('embedLinks')) {
                     await bu.send(channelId, {
                         embed
@@ -81,6 +81,8 @@ e.execute = async function (msg, words) {
                 } else {
                     await bu.send(channelId, `There was a changelog update, but I need to be able to embed links to post it! Please give me the 'embed links' permission for next time.`);
                 }
+            } else {
+                logger.warn('Skipping channel ' + channelId);
             }
         }
     }
