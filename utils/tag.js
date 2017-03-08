@@ -214,8 +214,11 @@ bu.processTag = async function (params) {
         for (let ii = 0; ii < args.length; ii++) {
             args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
-        if (TagManager.list.hasOwnProperty(args[0].toLowerCase())) {
-            replaceObj = await TagManager.list[args[0].toLowerCase()].execute({
+        let title = (await bu.processTag({
+            msg, words, contents: args[0], fallback, author, tagName, terminate
+        })).contents.toLowerCase();
+        if (TagManager.list.hasOwnProperty(title)) {
+            replaceObj = await TagManager.list[title].execute({
                 msg: msg,
                 args: args,
                 fallback: fallback,
