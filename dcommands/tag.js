@@ -72,15 +72,18 @@ const tagNameMsg = 'Enter the name of the tag:';
 const tagContentsMsg = 'Enter the tag\'s contents:';
 
 
-var searchTags = async function(msg, originalTagList, query, page, deleteMsg) {
+var searchTags = async function (msg, originalTagList, query, page, deleteMsg) {
     let tagList = originalTagList.map(m => m.name);
     let maxPages = Math.floor(originalTagList.length / results) + 1;
     tagList.sort();
     tagList = tagList.slice((page - 1) * results, ((page - 1) * results) + results);
     if (tagList.length != 0) {
         if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
-        var message = `Found ${tagList.length}/${originalTagList.length} tags matching '${query}'.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.join(', ').trim()}\n\`\`\`\nType a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to perform another search.`;
-        let newPage = (await bu.awaitMessage(msg, message)).content;
+        var message = `Found ${tagList.length}/${originalTagList.length} tags matching '${query}'.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.join(', ').trim()}\n\`\`\`\nType a number between 1-${maxPages} to view that page, or type \`c\` to cancel.`;
+        let newPage = (await bu.awaitMessage(msg, message, m => {
+            let page = parseInt(m.content);
+            return m.content.toLowerCase() == 'c' || (!isNaN(page) && page <= maxPages);
+        })).content;
         if (newPage.toLowerCase() == 'c') {
             bu.send(msg, 'I hope you found what you were looking for!');
             return;
@@ -105,7 +108,7 @@ var searchTags = async function(msg, originalTagList, query, page, deleteMsg) {
     }
 };
 
-var listTags = async function(msg, originalTagList, page, author, deleteMsg) {
+var listTags = async function (msg, originalTagList, page, author, deleteMsg) {
     let tagList = [];
     if (originalTagList.length == 0) {
         bu.send(msg, 'No results found!');
@@ -118,9 +121,12 @@ var listTags = async function(msg, originalTagList, page, author, deleteMsg) {
     tagList = tagList.slice((page - 1) * results, ((page - 1) * results) + results);
     if (tagList.length != 0) {
         if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
-        let message = `Found ${tagList.length}/${originalTagList.length} tags${author ? ' made by **' + bu.getFullName(author) + '**' : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, type \`c\` to cancel, or type anything else to look up tags made by a specific user.`;
+        let message = `Found ${tagList.length}/${originalTagList.length} tags${author ? ' made by **' + bu.getFullName(author) + '**' : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, or type \`c\` to cancel.`;
         logger.debug(message, message.length);
-        let newPage = (await bu.awaitMessage(msg, message)).content;
+        let newPage = (await bu.awaitMessage(msg, message, m => {
+            let page = parseInt(m.content);
+            return m.content.toLowerCase() == 'c' || (!isNaN(page) && page <= maxPages);
+        })).content;
         if (newPage.toLowerCase() == 'c') {
             bu.send(msg, 'I hope you found what you were looking for!');
             return;
@@ -129,19 +135,6 @@ var listTags = async function(msg, originalTagList, page, author, deleteMsg) {
         deleteMsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
         if (!isNaN(choice) && choice >= 1 && choice <= maxPages) {
             return listTags(msg, originalTagList, choice, author, deleteMsg);
-        } else {
-            author = await bu.getUser(msg, newPage);
-            if (author)
-                originalTagList = await r.table('tag').getAll(author.id, {
-                    index: 'author'
-                }).run();
-            else
-                originalTagList = await r.table('tag').run();
-            if (originalTagList.length == 0) {
-                bu.send(msg, 'No results found!');
-                return;
-            }
-            return listTags(msg, originalTagList, 1, newPage, deleteMsg);
         }
     } else {
         bu.send(msg, 'No results found!');
@@ -153,7 +146,7 @@ function filterTitle(title) {
     return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@]/gi, '');
 }
 
-e.execute = async function(msg, words, text) {
+e.execute = async function (msg, words, text) {
     let page = 0;
     let title, content, tag, author, originalTagList;
     if (words[1]) {
@@ -391,12 +384,10 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
 
                 searchTags(msg, originalTagList, query, page);
                 break;
-
             case 'list':
                 let user;
                 if (words[2]) {
                     user = await bu.getUser(msg, words[2]);
-
                 }
                 if (user)
                     originalTagList = await r.table('tag').getAll(user.id, {
