@@ -13,7 +13,7 @@ if (_config.general.isbeta) {
 
 class MessageCreateEvent extends Event {
     constructor() {
-        super('messageCreate');
+        super('MessageCreate', 'messageCreate');
     }
 
     async execute(msg) {

@@ -10,14 +10,14 @@ async function send(dest, content, file) {
         channel = dest;
     } else if (dest instanceof _dep.Eris.User) {
         channel = await dest.getDMCHannel();
-    } else if (dest instanceof String) {
+    } else if (typeof dest == 'string') {
         channel = _discord.getChannel(dest);
     } else if (dest instanceof Context) {
         channel = dest.msg.channel;
         senderId = dest.msg.author.id;
     }
     if (channel == undefined) throw new Error('No such channel');
-    if (content instanceof String) {
+    if (typeof content == 'string') {
         content = {
             content
         };
@@ -57,10 +57,10 @@ async function send(dest, content, file) {
         });
         Embed.fields.push({
             name: 'Content',
-            value: `${content.content.substring(0, 100)}`
+            value: `${(content.content || '[]').substring(0, 100)}`
         });
         if (senderId) {
-            let user = bot.users.get(senderId);
+            let user = _discord.users.get(senderId);
             if (user != undefined)
                 Embed.author = {
                     name: user.fullNameId,

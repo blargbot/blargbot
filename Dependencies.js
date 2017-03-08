@@ -5,7 +5,7 @@ module.exports = {
     request: require('request'),
     fs: require('fs'),
     hbs: require('hbs'),
-    'child_process': require('child_process'),
+    childProcess: require('child_process'),
     exec: require('child_process').exec,
     Jimp: require('jimp'),
     express: require('express'),
@@ -38,7 +38,8 @@ module.exports = {
     wconfig: require('winston/lib/winston/config'),
     Trello: require('node-trello'),
     babel: require('babel-core'),
-    EventEmitter: require('eventemitter3')
+    EventEmitter: require('eventemitter3'),
+    irc: require('irc')
 };
 
 Object.defineProperty(module.exports.Eris.Message.prototype, "guild", {

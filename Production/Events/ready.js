@@ -2,7 +2,7 @@ const { Event } = _discord.Core.Structures;
 
 class ReadyEvent extends Event {
     constructor() {
-        super('ready');
+        super('Ready', 'ready');
     }
 
     async execute() {

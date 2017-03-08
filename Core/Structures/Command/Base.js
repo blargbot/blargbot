@@ -40,7 +40,7 @@ class BaseCommand {
     }
 
     async send(dest, content, file) {
-        await _client.Helpers.Message.send(dest, content, file);
+        await _discord.Core.Helpers.Message.send(dest, content, file);
     }
 
     async canExecute(ctx) {
@@ -50,7 +50,7 @@ class BaseCommand {
     parseInput(ctx) {
         let words = ctx.words;
         let output = {
-            undefined: []
+            _: []
         };
         let currentFlag = '';
         for (let i = 0; i < words.length; i++) {

@@ -28,9 +28,8 @@ class CommandManager extends Manager {
     }
 
     async execute(name, ctx) {
-        const command = this.list[name];
+        const command = this.builtList[name];
         if (command !== undefined) {
-            console.dir(command, { depth: 1 });
             if (command.canExecute(ctx)) {
                 try {
                     let response = await command.execute(ctx);
@@ -38,6 +37,7 @@ class CommandManager extends Manager {
                         await command.send(response);
                     }
                 } catch (err) {
+                    console.error(err.stack);
                     // TO-DO
                 }
             }
