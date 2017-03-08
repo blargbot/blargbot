@@ -6,7 +6,7 @@ bu.compareStats = (a, b) => {
     return 0;
 };
 
-bu.awaitMessage = async function(msg, message, callback, timeout) {
+bu.awaitMessage = async function (msg, message, callback, timeout) {
     let returnMsg = await bu.send(msg, message);
     if (!timeout) timeout = 300000;
     if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
@@ -24,7 +24,7 @@ bu.awaitMessage = async function(msg, message, callback, timeout) {
 
     function registerEvent() {
         return new Promise((fulfill, reject) => {
-            bu.emitter.on(event, async function(msg2) {
+            bu.emitter.on(event, async function (msg2) {
                 let response;
                 if (callback) {
                     response = await callback(msg2);
@@ -69,8 +69,8 @@ bu.hasPerm = (msg, perm, quiet, override = true) => {
         member = msg.member;
     }
     if (override && ((member.id === bu.CAT_ID && bu.catOverrides) ||
-            member.guild.ownerID == member.id ||
-            member.permission.json.administrator)) {
+        member.guild.ownerID == member.id ||
+        member.permission.json.administrator)) {
         return true;
     }
 
@@ -105,7 +105,7 @@ bu.hasPerm = (msg, perm, quiet, override = true) => {
     }
     if (!quiet) {
         let permString = Array.isArray(perm) ? perm.map(m => '`' + m + '`').join(', or ') : '`' + perm + '`';
-        bu.send(msg, `You need the role ${ permString } in order to use this command!`);
+        bu.send(msg, `You need the role ${permString} in order to use this command!`);
     }
     return false;
 };
@@ -121,8 +121,8 @@ bu.hasRole = (msg, roles, override = true) => {
     }
 
     if (override && ((member.id === bu.CAT_ID && bu.catOverrides) ||
-            member.guild.ownerID == msg.member.id ||
-            member.permission.json.administrator)) {
+        member.guild.ownerID == msg.member.id ||
+        member.permission.json.administrator)) {
         return true;
     }
     if (!Array.isArray(roles)) roles = [roles];
@@ -142,7 +142,7 @@ bu.hasRole = (msg, roles, override = true) => {
  * @param embed - the message embed
  * @returns {Message}
  */
-bu.send = async function(channel, message, file, embed) {
+bu.send = async function (channel, message, file, embed) {
     let channelid = channel;
     if (channel instanceof dep.Eris.Message) {
         channelid = channel.channel.id;
@@ -358,7 +358,7 @@ bu.send = async function(channel, message, file, embed) {
  * @param file - the file to send (Object|null)
  * @returns {Message}
  */
-bu.sendDM = async function(user, message, file) {
+bu.sendDM = async function (user, message, file) {
     let userid = user;
     if (user instanceof dep.Eris.Message) {
         userid = user.author.id;
@@ -391,7 +391,7 @@ bu.sendDM = async function(user, message, file) {
  * @param quiet - if true, won't respond with multiple users found(Boolean)
  * @returns {User|null}
  */
-bu.getUser = async function(msg, name, quiet) {
+bu.getUser = async function (msg, name, quiet) {
     var userList;
     var userId;
     var discrim;
@@ -413,13 +413,13 @@ bu.getUser = async function(msg, name, quiet) {
     }
     //userList =
     userList = msg.channel.guild.members.filter(m => (m.user.username &&
-            m.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-            (discrim != undefined ? m.user.discriminator == discrim : true)) ||
+        m.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+        (discrim != undefined ? m.user.discriminator == discrim : true)) ||
         ((m.nick) &&
             m.nick.toLowerCase().indexOf(name) > -1 &&
             (discrim != undefined ? m.user.discriminator == discrim : true)));
 
-    userList.sort(function(a, b) {
+    userList.sort(function (a, b) {
         let thingy = 0;
         if (a.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.user.username.startsWith(name)) {
             thingy += 100;
@@ -479,7 +479,7 @@ bu.getUser = async function(msg, name, quiet) {
                 newUserList.push(userList[i]);
             }
             for (let i = 0; i < newUserList.length; i++) {
-                userListString += `${i + 1 < 10 ? ' ' +  (i + 1) : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator}\n`;
+                userListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator}\n`;
             }
             let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
             let resMsg = await bu.awaitMessage(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
@@ -509,7 +509,7 @@ C.cancel query
     }
 };
 
-bu.getRole = async function(msg, name, quiet) {
+bu.getRole = async function (msg, name, quiet) {
     if (msg.channel.guild.roles.get(name)) {
         return msg.channel.guild.roles.get(name);
     }
@@ -517,7 +517,7 @@ bu.getRole = async function(msg, name, quiet) {
     let roleList = msg.channel.guild.roles.filter(m => (m.name &&
         m.name.toLowerCase().indexOf(name.toLowerCase()) > -1));
 
-    roleList.sort(function(a, b) {
+    roleList.sort(function (a, b) {
         let thingy = 0;
         if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.name.startsWith(name)) {
             thingy += 100;
@@ -565,10 +565,10 @@ ${roleListString}${moreRoleString}--------------------
 C. cancel query
 \`\`\`
 **${bu.getFullName(msg.author)}**, please type the number of the role you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`, (msg2) => {
-                if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
-                    return true;
-                } else return false;
-            });
+                    if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
+                        return true;
+                    } else return false;
+                });
             if (resMsg.content.toLowerCase() == 'c') {
                 bu.send(msg, 'Query canceled.');
                 return null;
@@ -614,7 +614,7 @@ bu.sendFile = (channelid, message, url) => {
         dep.request({
             uri: url,
             encoding: null
-        }, function(err, res, body) {
+        }, function (err, res, body) {
             bu.send(channelid, message, {
                 name: filename.split('size')[0],
                 file: body
@@ -658,7 +658,7 @@ bu.isBotHigher = (member) => {
     return botPos > memPos;
 };
 
-bu.logAction = async function(guild, user, mod, type, reason, fields) {
+bu.logAction = async function (guild, user, mod, type, reason, fields) {
     let isArray = Array.isArray(user);
     if (Array.isArray(reason)) reason = reason.join(' ');
     let val = await bu.guildSettings.get(guild.id, 'modlog');
@@ -775,7 +775,7 @@ bu.logAction = async function(guild, user, mod, type, reason, fields) {
     }
 };
 
-bu.issueWarning = async function(user, guild, count, params) {
+bu.issueWarning = async function (user, guild, count, params) {
     let storedGuild = await bu.getGuild(guild.id);
     if (count == undefined) count = 1;
     if (params == undefined) params = {};
@@ -799,10 +799,10 @@ bu.issueWarning = async function(user, guild, count, params) {
             storedGuild.warnings.users[user.id] = undefined;
             type = 1;
         } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
-        await bu.logAction(guild, bot.user, user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`);
-        await guild.kickMember(user.id);
-        type = 2;
-    }
+            await bu.logAction(guild, bot.user, user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`);
+            await guild.kickMember(user.id);
+            type = 2;
+        }
     await r.table('guild').get(guild.id).update({
         warnings: r.literal(storedGuild.warnings)
     });
@@ -812,7 +812,7 @@ bu.issueWarning = async function(user, guild, count, params) {
     };
 };
 
-bu.issuePardon = async function(user, guild, count, params) {
+bu.issuePardon = async function (user, guild, count, params) {
     let storedGuild = await bu.getGuild(guild.id);
     if (count == undefined) count = 1;
     if (params == undefined) params = {};
@@ -883,7 +883,7 @@ bu.splitInput = (content, noTrim) => {
 
 
 
-bu.canExecuteCcommand = async function(msg, commandName, quiet) {
+bu.canExecuteCcommand = async function (msg, commandName, quiet) {
     let val = await bu.ccommand.get(msg.guild ? msg.guild.id : '', commandName);
     if (val && typeof val == "object") {
         let roles = val.roles;
@@ -899,7 +899,7 @@ bu.canExecuteCcommand = async function(msg, commandName, quiet) {
     return false;
 };
 
-bu.canExecuteCommand = async function(msg, commandName, quiet) {
+bu.canExecuteCommand = async function (msg, commandName, quiet) {
     if (msg.author.id == bu.CAT_ID && bu.catOverrides) return [true, commandName];
     if (msg.channel.guild) {
         let permoverride, staffperms, storedGuild, adminrole;
@@ -961,7 +961,7 @@ bu.canExecuteCommand = async function(msg, commandName, quiet) {
     }
 };
 
-bu.isUserStaff = async function(userId, guildId) {
+bu.isUserStaff = async function (userId, guildId) {
     let guild = bot.guilds.get(guildId);
     if (!guild) return false;
     let member = guild.members.get(userId);
@@ -1001,7 +1001,7 @@ bu.padRight = (value, length) => {
     return (value.toString().length < length) ? bu.padRight(value + ' ', length) : value;
 };
 
-bu.logEvent = async function(guildid, event, fields, embed) {
+bu.logEvent = async function (guildid, event, fields, embed) {
     let storedGuild = await bu.getGuild(guildid);
     if (!storedGuild.hasOwnProperty('log'))
         storedGuild.log = {};
@@ -1064,11 +1064,11 @@ bu.logEvent = async function(guildid, event, fields, embed) {
     }
 };
 
-bu.getFullName = function(user) {
+bu.getFullName = function (user) {
     return `${user.username}#${user.discriminator}`;
 };
 
-bu.filterMentions = async function(message) {
+bu.filterMentions = async function (message) {
     while (/<@!?[0-9]{17,21}>/.test(message)) {
         let id = message.match(/<@!?([0-9]{17,21})>/)[1];
         try {
@@ -1088,7 +1088,7 @@ const timeKeywords = {
     seconds: ['seconds', 'second', 'sec', 'secs', 's']
 };
 
-bu.parseDuration = function(text) {
+bu.parseDuration = function (text) {
     let duration = dep.moment.duration();
     if (/([0-9]+) ?(day|days|d)/i.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(day|days|d)/i)[1]) || 0, 'd');
@@ -1101,7 +1101,7 @@ bu.parseDuration = function(text) {
     return duration;
 };
 
-bu.parseInput = function(map, text, noTrim) {
+bu.parseInput = function (map, text, noTrim) {
     let words;
     if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
     else words = bu.splitInput(text, noTrim);
@@ -1138,7 +1138,7 @@ bu.parseInput = function(map, text, noTrim) {
     return output;
 };
 
-bu.getPerms = function(channelid) {
+bu.getPerms = function (channelid) {
     let channel = bot.getChannel(channelid);
     if (channel) {
         let permission = channel.permissionsOf(bot.user.id);
@@ -1148,7 +1148,7 @@ bu.getPerms = function(channelid) {
     }
 };
 
-bu.request = function(options) {
+bu.request = function (options) {
     return new Promise((fulfill, reject) => {
         dep.request(options, (err, res, body) => {
             if (err) {
@@ -1165,7 +1165,7 @@ bu.request = function(options) {
 
 
 const tokenChoices = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
-bu.genToken = function(length) {
+bu.genToken = function (length) {
     if (!length) length = 7;
     let output = '';
     for (let i = 0; i < length; i++) {
@@ -1174,14 +1174,14 @@ bu.genToken = function(length) {
     return output;
 };
 
-bu.awaitEvent = function(obj) {
+bu.awaitEvent = function (obj) {
     return new Promise((fulfill, reject) => {
         cluster.send(obj);
         bu.emitter.once(obj.code, fulfill);
     });
 };
 
-bu.genEventCode = function() {
+bu.genEventCode = function () {
     let code = bu.genToken(15);
     while (bu.emitter.listeners(code, true)) {
         code = bu.genToken(15);
@@ -1189,7 +1189,7 @@ bu.genEventCode = function() {
     return code;
 };
 
-bu.getAuthor = function(user) {
+bu.getAuthor = function (user) {
     return {
         name: bu.getFullName(user),
         url: `https://blargbot.xyz/user/${user.id}`,
@@ -1197,7 +1197,7 @@ bu.getAuthor = function(user) {
     };
 };
 
-bu.isUserStaff = async function(userId, guildId) {
+bu.isUserStaff = async function (userId, guildId) {
     let guild = bot.guilds.get(guildId);
     if (!guild) return false;
     let member = guild.members.get(userId);
@@ -1216,15 +1216,15 @@ bu.isUserStaff = async function(userId, guildId) {
     return false;
 };
 
-bu.makeSnowflake = function() {
+bu.makeSnowflake = function () {
     return (dep.moment() - 1420070400000) * 4194304;
 };
 
-bu.unmakeSnowflake = function(snowflake) {
+bu.unmakeSnowflake = function (snowflake) {
     return (snowflake / 4194304) + 1420070400000;
 };
 
-bu.createRegExp = function(term) {
+bu.createRegExp = function (term) {
     if (/^\/?.*\/.*/.test(term)) {
         let regexList = term.match(/^\/?(.*)\/(.*)/);
         let temp = new RegExp(regexList[1], regexList[2]);
@@ -1236,7 +1236,7 @@ bu.createRegExp = function(term) {
     throw 'Invalid Regex';
 };
 
-bu.postStats = function() {
+bu.postStats = function () {
     updateStats();
     var stats = {
         'server_count': bot.guilds.size
@@ -1304,21 +1304,24 @@ async function updateStats() {
     });
 }
 
-bu.brainfuck = async function(code) {
-    var stdin;
-    let input = code.replace(/[^+-\[\].,<>]/g, '');
-    if (input.length == 0) throw new Error('No valid input given');
-    let openLoopCount = (input.match(/\[/g) || []).length;
-    let closeLoopCount = (input.match(/\]/g) || []).length;
+bu.brainfuck = async function (code, input = '') {
+    const MaxLoops = 512;
+    const MaxSteps = 100000;
+    code = code.replace(/[^+-\[\].,<>]/gim, '');
+    if (code.length == 0) throw new Error('No valid input given');
+    let openLoopCount = (code.match(/\[/g) || []).length;
+    let closeLoopCount = (code.match(/\]/g) || []).length;
     if (openLoopCount !== closeLoopCount) throw new Error('Unmatched loop');
 
     let output = '';
-    let array = [0];
-
-    async function next(parsed, pointer, array) {
-        var char = input.charAt(parsed),
+    let array = [0], pointer = 0, parsed = 0;
+    let totalLoops = 0;
+    input = input.split('').map(c => c.charCodeAt(0) % 256);
+    let steps = 0;
+    async function next(parsed) {
+        let char = code.charAt(parsed),
             f = null,
-            i = array[pointer];
+            i = array[pointer] || 0;
 
         parsed += 1;
         switch (char) {
@@ -1341,42 +1344,59 @@ bu.brainfuck = async function(code) {
                 array[pointer] = array[pointer] || 0;
                 break;
             case ',':
-                stdin = stdin || process.openStdin();
-                stdin.setEncoding('ascii');
-                stdin.on('data', async function(chunk) {
-                    array[pointer] = chunk.slice(0, -1).charCodeAt(0);
-                    stdin.removeListener('data', arguments.callee);
-                    await next(parsed, pointer, array);
-                });
-                return parsed;
+                //logger.debug(input);
+                if (input.length > 0)
+                    array[pointer] = input.shift();
+                else array[pointer] = 0;
             case '.':
                 output += (String.fromCharCode(array[pointer]));
                 break;
             case '[':
                 if (i != 0) {
                     let loops = 0;
+                    let tempParsed = parsed;
                     while (i != 0) {
-                        f = await next(parsed, pointer, array);
+                        f = await next(parsed);
                         i = array[pointer];
-                        parsed = (i === 0 ? f : parsed);
-                        if (++loops == 512) throw new Error(`Too many loops (${loops} reached)`);
+                        parsed = (i === 0 ? f : tempParsed);
+                        if (++loops >= MaxLoops) throw new Error(`Too many loops (${loops} reached)`);
+                        //if (++totalLoops >= 65536) throw new Error(`Too many loops (${totalLoops} reached)`);
                     }
+                } else {
+                    let cont = true;
+                    let tempParsed = parsed;
+                    let level = 0;
+                    while (cont) {
+                        tempParsed++;
+                        let char2 = code.charAt(tempParsed);
+                        switch (char2) {
+                            case '[':
+                                level++;
+                                break;
+                            case ']':
+                                if (level > 0) level--;
+                                else {
+                                    cont = false;
+                                }
+                                break;
+                        }
+                    }
+                    parsed = tempParsed + 1;
                 }
                 break;
             case ']':
-                return parsed;
+                return;
             default:
                 throw new Error("Unexpected operator: '" + char + "'");
         }
         if (array[pointer] < 0) array[pointer] += 256;
-
-        if (input.length > parsed) {
-            return await next(parsed, pointer, array);
-        } else {
-            return output;
-        }
+        if (++steps > MaxSteps) throw new Error(`Too many steps (${steps} reached)`);
+        if (code.length > parsed) {
+            return await next(parsed);
+        } else return parsed;
     }
-    await next(0, 0, array);
+    await next();
+    logger.debug(totalLoops);
     return {
         output,
         array
@@ -1391,7 +1411,7 @@ bu.fixContent = (content) => {
     return tempContent.join('\n');
 };
 
-bu.sleep = function(time) {
+bu.sleep = function (time) {
     return new Promise(fulfill => {
         if (!time) time = 1000;
         setTimeout(() => fulfill(), time);

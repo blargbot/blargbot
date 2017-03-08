@@ -16,8 +16,13 @@ e.flags = [{
     flag: 'p',
     word: 'pointers',
     desc: 'Shows a list of pointers after the execution.'
+}, {
+    flag: 'i',
+    word: 'input',
+    desc: 'Specifies the input for the , operator.'
 }];
-e.execute = async function(msg, words) {
+
+e.execute = async function (msg, words) {
     if (words[1] && /^-[-+<>\.,\[\]]/.test(words[1]))
         words[1] = '\\' + words[1];
     let input = bu.parseInput(e.flags, words);
@@ -26,8 +31,8 @@ e.execute = async function(msg, words) {
         return;
     }
     try {
-        let output = await bu.brainfuck(input.undefined.join(' '));
-        bu.send(msg, output.output.length == 0 ? 'No output...' : `Output:\n${output.output}${input.p ? '\n\n[' + output.array.join(', ') + ']' : ''}`);
+        let output = dep.brainfuck.execute(input.undefined.join(' '), (input.i || []).join(' '));
+        bu.send(msg, output.output.length == 0 ? 'No output...' : `Output:\n${output.output}${input.p ? '\n\n[' + output.memory.list.join(', ') + ']\nPointer: ' + output.memory.pointer : ''}`);
     } catch (err) {
         logger.error(err);
         bu.send(msg, `Something went wrong!

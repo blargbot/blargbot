@@ -37,7 +37,8 @@ var e = module.exports = {
     winston: require('winston'),
     wconfig: require('winston/lib/winston/config'),
     Trello: require('node-trello'),
-    babel: require('babel-core')
+    babel: require('babel-core'),
+    brainfuck: new (require('brainfuck-node'))()
 };
 
 Object.defineProperty(e.Eris.Message.prototype, "guild", {
