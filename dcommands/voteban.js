@@ -76,11 +76,15 @@ ${reason ? '**Reason:** ' + reason : ''}`);
                 votes: votebans[key].length
             });
         }
+        votebanStats = votebanStats.filter(v => v.votes > 0);
         votebanStats.sort((a, b) => {
             return b.votes - a.votes;
         });
         votebanStats = votebanStats.slice(0, 10);
-        let returnMsg = `The **__Top ${votebanStats.length}__** most wanted!\n`;
+        let returnMsg = '';
+        if (votebanStats.length > 0)
+            returnMsg = `The **__Top ${votebanStats.length}__** most wanted!\n`;
+        else returnMsg = `There's nobody here to ban.`;
         let i = 1;
         for (let stat of votebanStats) {
             let user = bot.users.get(stat.id) || await bot.getRESTUser(stat.id);
