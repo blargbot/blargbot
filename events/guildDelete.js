@@ -12,10 +12,10 @@ bot.on('guildDelete', async function(guild) {
 
     r.table('guild').get(guild.id).update({
         active: false
-    }).run();
+    }).run();/*
     let channel = await bot.getDMChannel(guild.ownerID);
     bu.send(channel.id, `Hi!
 I see I was removed from your guild **${guild.name}**, and I'm sorry I wasn't able to live up to your expectations.
 If it's not too much trouble, could you please tell me why you decided to remove me, what you didn't like about me, or what you think could be improved? It would be very helpful.
-You can do this by typing \`feedback <your feedback here>\` right in this DM (don't include the <>). Thank you for your time!`);
+You can do this by typing \`feedback <your feedback here>\` right in this DM (don't include the <>). Thank you for your time!`);*/
 });
