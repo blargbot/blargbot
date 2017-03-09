@@ -8,12 +8,12 @@ e.isCommand = true;
 
 e.requireCtx = require;
 e.hidden = false;
-e.usage = 'cat <tags>';
+e.usage = 'cat';
 e.info = 'Gets a picture of a cat.';
-e.info = '<p>Displays a picture of a cat, taken from <a href="http://random.cat/">random.cat</a></p>';
+e.longinfo = '<p>Displays a picture of a cat, taken from <a href="http://random.cat/">random.cat</a></p>';
 
 
-e.execute = async function(msg) {
+e.execute = async function (msg) {
     var output;
     let res = await bu.request('http://random.cat/meow');
     output = JSON.parse(res.body);
