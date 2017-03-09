@@ -21,7 +21,7 @@ e.execute = async function (msg, words, text) {
     let input = bu.parseInput(e.flags, words);
     if (input.a) {
         let msg2 = await bu.awaitMessage(msg, 'This will remove all the votebans on this guild. Type `yes` to confirm, or anything else to cancel.');
-        if (msg2.content.toLowerCase() == 'yes' && msg2.content.toLowerCase() == 'y') {
+        if (msg2.content.toLowerCase() == 'yes' || msg2.content.toLowerCase() == 'y') {
             await r.table('guild').get(msg.guild.id).update({
                 votebans: r.literal({})
             });
@@ -37,5 +37,7 @@ e.execute = async function (msg, words, text) {
             votebans: r.literal(votebans)
         });
         await bu.send(msg, 'Removed all of the petitions against **' + bu.getFullName(user) + '**!');
+    } else {
+        await bu.send(msg, 'Not enough arguments! Do `b!help rvoteban` for more details.');
     }
 };

@@ -440,10 +440,12 @@ It has been favourited **${tag.favourites || 0} times**!`);
                     });
                     await bu.send(msg, output);
                 } else {
-                    let user = r.table('user').get(msg.author.id);
+                    let user = await r.table('user').get(msg.author.id);
+                    if (!user.favourites) user.favourites = {};
                     let output = `You have ${Object.keys(user.favourites).length} favourite tags. \`\`\`fix
 ${Object.keys(user.favourites).join(', ')}              
 \`\`\` `;
+                    await bu.send(msg, output);
                 }
 
                 break;
