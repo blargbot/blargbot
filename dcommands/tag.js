@@ -9,7 +9,7 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'tag [<name> | create | rename | edit | delete | raw | author | search | list | help]';
+e.usage = 'tag [<name> | create | rename | edit | delete | raw | author | search | list | test | favorite | help]';
 
 e.info = `Tags are a system of public commands that anyone can create or run, using the BBTag language.
 
@@ -26,6 +26,8 @@ __**Usage:**__
 **tag author <tag>** - displays the name of who made the tag
 **tag search [page] <name>** - searches for a tag based on the provided name
 **tag list [page] [author]** - lists all tags, or tags made by a specific author
+**tag test <code>** - executes code
+**tag favorite [tag]** - adds a tag to your favourite list, or displays your favourite tags
 **tag help** - shows this message
 
 NOTE: Any NSFW tags must contain \`{nsfw}\` somewhere in their body, or they will be deleted and you will be blacklisted.
@@ -64,6 +66,10 @@ Creates a tag with the given name and content. The name must be unique.
 <p>Searches for tags with given name</p>
 <pre><code>tag list</code></pre>
 <p>Lists all tags</p>
+<pre><code>tag test &lt;code&gt;</code></pre>
+<p>Executes code.</p>
+<pre><code>tag favorite [tag]</code></pre>
+<p>Displays your favourite tags, or adds one to your favourites.</p>
 <pre><code>help tag</code></pre>
 <p>Gets basic help tag.</p>`;
 e.alias = ['t'];
@@ -365,7 +371,8 @@ ${content}
                 bu.send(msg, `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
 It was last modified **${dep.moment(tag.lastmodified).format('LLLL')}**.
-It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
+It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!
+It has been favourited **${tag.favourites || 0} times**!`);
                 break;
             case 'search':
                 let query;
@@ -397,6 +404,49 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!`);
 
                 listTags(msg, originalTagList, 1, user);
                 break;
+            case 'test':
+                if (words.length > 2) {
+                    let output = await tags.processTag(msg, words.slice(2).join(' '), '', 'test', msg.author.id);
+                    await bu.send(msg, `Test Output:\n${output}`);
+                }
+                break;
+            case 'favourite':
+            case 'favorite':
+                if (words.length > 2) {
+                    title = filterTitle(words[2]);
+                    tag = await r.table('tag').get(words[2]).run();
+                    if (!tag) {
+                        bu.send(msg, `❌ That tag doesn't exist! ❌`);
+                        break;
+                    }
+                    if (!tag.favourites) tag.favourites = 0;
+                    let user = await r.table('user').get(msg.author.id).run();
+                    if (!user.favourites) user.favourites = {};
+                    let output;
+                    if (!user.favourites[title]) {
+                        user.favourites[title] = true;
+                        tag.favourites++;
+                        output = `The tag \`${title}\` is now on your favourites list!`;
+                    } else {
+                        user.favourites[title] = undefined;
+                        tag.favourites--;
+                        output = `The tag \`${title}\` is no longer on your favourites list!`;
+                    }
+                    await r.table('tag').get(title).update({
+                        favourites: r.literal(tag.favourites)
+                    });
+                    await r.table('user').get(msg.author.id).update({
+                        favourites: r.literal(user.favourites)
+                    });
+                    await bu.send(msg, output);
+                } else {
+                    let user = r.table('user').get(msg.author.id);
+                    let output = `You have ${Object.keys(user.favourites).length} favourite tags. \`\`\`fix
+${Object.keys(user.favourites).join(', ')}              
+\`\`\` `;
+                }
+
+                break;
             default:
                 var command = words.slice(2).join(' ');
                 command = bu.fixContent(command);
@@ -421,11 +471,12 @@ Tag Raw <name> - displays the raw code of a tag
 Tag Author <tag> - displays the name of who made the tag
 Tag Search [page] <name> - searches for a tag based on the provided name
 Tag List [page] [author] - lists all tags, or tags made by a specific author
-help tag - shows this message
+Tag Test <code> - executes code
+Tag Favorite [tag] - adds a tag to your favourite list, or displays your favourite tags
+Help Tag - shows this message
 NOTE: Any NSFW tags must contain '{nsfw}' somewhere in their body, or they will be deleted and you will be blacklisted.
 \`\`\`
 For more information about tags, visit https://blargbot.xyz/tags`;
-
 
 function escapeRegex(str) {
     return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
