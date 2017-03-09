@@ -10,9 +10,9 @@ e.hidden = false;
 e.usage = 'voteban [info <user> | <user> [reason]]';
 e.info = 'Sign a petition to ban somebody, or check the status of a petition. If no arguments are provided, get the most signed petitions.';
 e.longinfo = '<p>Sign a petition to ban somebody, or check the status of a petition.</p>';
-e.alias = ['pollban'];
+e.alias = ['pollban', 'vb', 'pb'];
 
-e.execute = async function(msg, words, text) {
+e.execute = async function (msg, words, text) {
     let storedGuild = await bu.getGuild(msg.guild.id);
     let votebans = storedGuild.votebans || {};
     if (words.length > 1) {
@@ -36,8 +36,8 @@ e.execute = async function(msg, words, text) {
                 }
                 bu.send(msg, `**${userList.length}** ${userList.length == 1 ? 'person has' : 'people have'} signed to ban **${bu.getFullName(user)}**.
 ${userList.map(u => {
-return ' - ' + u;
-}).join('\n')}`);
+                        return ' - ' + u;
+                    }).join('\n')}`);
             }
         } else {
             let user = await bu.getUser(msg, words[1]);
