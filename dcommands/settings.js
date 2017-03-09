@@ -12,7 +12,7 @@ e.usage = 'settings [keys|help|set <key>]';
 e.info = 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.';
 e.longinfo = '<p>Gets or sets the settings for the current guild. For key documentation, go <a href="/commands/settings">here</a>.</p>';
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (words.length == 1) {
         //do settings shit
         let storedGuild = await bu.getGuild(msg.guild.id);
@@ -86,10 +86,10 @@ e.execute = async function(msg, words) {
         let banPerms = settings.banoverride || 0;
         let greetChan = settings.greetchan ? bot.getChannel(settings.greetchan) : 'Default';
         if (greetChan && greetChan != 'Default') greetChan = greetChan.name;
-        else greetChan = 'Undefined';
+        else greetChan = 'Default Channel';
         let farewellChan = settings.farewellchan ? bot.getChannel(settings.farewellchan) : 'Default';
         if (farewellChan && farewellChan != 'Default') farewellChan = farewellChan.name;
-        else farewellChan = 'Undefined';
+        else farewellChan = 'Default Channel';
         let kickAt = settings.kickat || 'Disabled';
         let banAt = settings.banat || 'Disabled';
         let adminRoleName = settings.adminrole || 'Admin';
