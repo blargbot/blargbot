@@ -385,6 +385,39 @@ const functions = {
             }
             encoder.finish();
         });
+    },
+    delete: async function (msg) {
+        let buf = await createCaption({
+            text: msg.input,
+            font: 'whitneybold.ttf',
+            size: '512x24',
+            gravity: 'South',
+            fill: '#f8f8f8'
+        });
+
+        let text = await Jimp.read(buf);
+        text.autocrop();
+        let iterations = Math.ceil(text.bitmap.width / 64);
+        logger.debug(text.bitmap.width);
+        let delete1 = await Jimp.read(path.join(__dirname, 'img', 'delete1.png'));
+        let delete2 = await Jimp.read(path.join(__dirname, 'img', 'delete2.png'));
+        let delete3 = await Jimp.read(path.join(__dirname, 'img', 'delete3.png'));
+        let cursor = await Jimp.read(path.join(__dirname, 'img', 'cursor.png'));
+        let width = 128 + (iterations * 64);
+        let workspace = new Jimp(width, 84);
+        workspace.composite(delete1, 0, 0);
+        workspace.composite(delete3, width - 64, 0);
+        for (let i = 0; i < iterations; i++) {
+            workspace.composite(delete2, (i + 1) * 64, 0);
+        }
+        workspace.composite(text, 64 + ((iterations * 64 - text.bitmap.width + 32) / 2), 14 + ((48 - text.bitmap.height) / 2));
+        workspace.composite(cursor, 64 + ((iterations * 64 - cursor.bitmap.width + 32) / 2), 48);
+        //let img = await Jimp.read(path.join(__dirname, 'img', `SHIT${msg.plural ? 'S' : ''}.png`));
+        //img.composite(text, 810, 31);
+
+        workspace.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            submitBuffer(msg.code, buffer);
+        });
     }
 };
 
