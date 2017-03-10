@@ -16,6 +16,8 @@ e.execute = async function(msg, words) {
     if (words.length > 1) {
         let input = words.slice(1).join('\n').replace(/\n/gim, ' ').substring(0, 256);
         let code = bu.genEventCode();
+        bot.sendChannelTyping(msg.channel.id);
+
         let buffer = await bu.awaitEvent({
             cmd: 'img',
             command: 'delete',
