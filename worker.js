@@ -396,7 +396,7 @@ const functions = {
         });
 
         let text = await Jimp.read(buf);
-        text.autocrop();
+        text.autocrop().autocrop();
         let iterations = Math.ceil(text.bitmap.width / 64);
         logger.debug(text.bitmap.width);
         let delete1 = await Jimp.read(path.join(__dirname, 'img', 'delete1.png'));

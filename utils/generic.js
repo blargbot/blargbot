@@ -1068,7 +1068,7 @@ bu.getFullName = function (user) {
     return `${user.username}#${user.discriminator}`;
 };
 
-bu.filterMentions = async function (message) {
+bu.filterMentions = async function (message, guild) {
     while (/<@!?[0-9]{17,21}>/.test(message)) {
         let id = message.match(/<@!?([0-9]{17,21})>/)[1];
         try {
@@ -1078,6 +1078,25 @@ bu.filterMentions = async function (message) {
             message = message.replace(new RegExp(`<@!?${id}>`), `<@\u200b${id}>`);
         }
     }
+    while (/<#[0-9]{17,21}>/.test(message)) {
+        let id = message.match(/<#([0-9]{17,21})>/)[1];
+        let channel = bot.getChannel(id);
+        if (channel) {
+            message = message.replace(new RegExp(`<#${id}>`), `#${channel.name}`);
+        } else {
+            message = message.replace(new RegExp(`<#${id}>`), `<#\u200b${id}>`);
+        }
+    }
+    if (guild)
+        while (/<@&[0-9]{17,21}>/.test(message)) {
+            let id = message.match(/<@&([0-9]{17,21})>/)[1];
+            let role = guild.roles.get(id);
+            if (role) {
+                message = message.replace(new RegExp(`<@&${id}>`), `${role.name}`);
+            } else {
+                message = message.replace(new RegExp(`<@&${id}>`), `<@&\u200b${id}>`);
+            }
+        }
     return message;
 };
 
