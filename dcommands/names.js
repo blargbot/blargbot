@@ -8,7 +8,7 @@ e.init = () => {
 
 e.requireCtx = require;
 
-e.isCommand = false;
+e.isCommand = true;
 
 e.hidden = false;
 e.usage = 'names [user] [flags]';
@@ -42,5 +42,43 @@ e.execute = async function(msg, words) {
     let storedUser = await bu.getCachedUser(user.id);
     let usernames = storedUser.usernames;
 
-
+    let output = `Usernames for **${bu.getFullName(user)}**`;
+    if (!input.a) {
+        usernames = usernames.filter(n => {
+            return dep.moment.duration(Date.now() - n.date).asDays() < 30;
+        });
+    } else {
+        output += ' in the last 30 days';
+    }
+    output += ':\n';
+    
+    if (input.v) {
+        usernames = usernames.map(n => {
+            return `${n.name} - ${dep.moment(n.date).format('llll')}`;
+        });
+    } else {
+        usernames = usernames.map(n => {
+            return n.name;
+        });
+    }
+    if (usernames.length > 0) {
+        let i = 0;
+        for (const username of usernames) {
+            let temp = output;
+            if (input.v) {
+                temp += username + '\n';
+            } else {
+                temp += username + ', ';
+            }
+            if (temp.length > 1800) {
+                output += `\n...and ${usernames.length - i} more!`;
+                break;
+            }
+            output = temp;
+            i++;
+        }
+    } else {
+        output += 'No usernames found.';
+    }    
+    await bu.send(msg, output);
 };
