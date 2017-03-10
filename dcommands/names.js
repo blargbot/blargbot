@@ -40,6 +40,7 @@ e.execute = async function(msg, words) {
     if (!user) return;
 
     let storedUser = await bu.getCachedUser(user.id);
+    if (!storedUser) storedUser = { usernames: [] };
     let usernames = storedUser.usernames;
 
     let output = `Usernames for **${bu.getFullName(user)}**`;
@@ -47,7 +48,6 @@ e.execute = async function(msg, words) {
         usernames = usernames.filter(n => {
             return dep.moment.duration(Date.now() - n.date).asDays() < 30;
         });
-    } else {
         output += ' in the last 30 days';
     }
     output += ':\n';
@@ -66,7 +66,7 @@ e.execute = async function(msg, words) {
         for (const username of usernames) {
             let temp = output;
             if (input.v) {
-                temp += username + '\n';
+                temp += username + ' \n';
             } else {
                 temp += username + ', ';
             }
@@ -77,6 +77,7 @@ e.execute = async function(msg, words) {
             output = temp;
             i++;
         }
+        output = output.substring(0, output.length - 1);
     } else {
         output += 'No usernames found.';
     }    
