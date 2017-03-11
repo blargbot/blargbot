@@ -395,8 +395,10 @@ const functions = {
             fill: '#f8f8f8'
         });
 
-        let text = await Jimp.read(buf);
-        text.autocrop().autocrop();
+        let originalText = await Jimp.read(buf);
+        let text = new Jimp(originalText.bitmap.width, originalText.bitmap.height + 8);
+        text.composite(originalText, 0, 4);
+        text.autocrop();
         let iterations = Math.ceil(text.bitmap.width / 64);
         logger.debug(text.bitmap.width);
         let delete1 = await Jimp.read(path.join(__dirname, 'img', 'delete1.png'));
