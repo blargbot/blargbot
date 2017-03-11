@@ -71,13 +71,14 @@ e.execute = async function(msg, words) {
                 temp += username + ', ';
             }
             if (temp.length > 1800) {
-                output += `\n...and ${usernames.length - i} more!`;
+                output = output.substring(0, output.length - 2);
+                output += `\n...and ${usernames.length - i} more!  `;
                 break;
             }
             output = temp;
             i++;
         }
-        output = output.substring(0, output.length - 1);
+        output = output.substring(0, output.length - 2);
     } else {
         output += 'No usernames found.';
     }    
