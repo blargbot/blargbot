@@ -1,0 +1,60 @@
+{
+    "env": {
+        "browser": false,
+        "node": true,
+        "es6": true,
+        "jest": false,
+        "jquery": false
+    },
+    "parserOptions": {
+        "ecmaVersion": 8,
+        "sourceType": "module",
+        "ecmaFeatures": {
+            "arrowFunctions": true,
+            "binaryLiterals": true,
+            "blockBindings": true,
+            "classes": true,
+            "defaultParams": true,
+            "destructuring": true,
+            "forOf": true,
+            "generators": true,
+            "modules": true,
+            "objectLiteralComputedProperties": true,
+            "objectLiteralDuplicateProperties": true,
+            "objectLiteralShorthandMethods": true,
+            "objectLiteralShorthandProperties": true,
+            "octalLiterals": true,
+            "regexUFlag": true,
+            "regexYFlag": true,
+            "spread": true,
+            "superInFunctions": true,
+            "templateStrings": true,
+            "unicodeCodePointEscapes": true,
+            "globalReturn": true,
+            "experimentalObjectRestSpread": true
+        }
+    },
+    "plugins": [],
+    "rules": {
+        "strict": 0,
+        "semi": "warn",
+        "indent": [
+            0,
+            4
+        ],
+        "no-undef": 1,
+        "no-global-assign": 1,
+        "comma-dangle": "warn"
+    },
+    "globals": {
+        "bot": false,
+        "config": false,
+        "dep": false,
+        "_dep": false,
+        "_client": false,
+        "_constants": false,
+        "_config": false,
+        "_core": false,
+        "_discord": false
+    }
+}
