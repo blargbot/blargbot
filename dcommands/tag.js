@@ -461,6 +461,15 @@ ${Object.keys(user.favourites).join(', ')}
     }
 };
 
+e.event = async function (args) {
+    let msg = await bot.getMessage(args.channel, args.params.msg);
+    let params = args.params;
+    params.msg = msg;
+    params.msg.didTimer = true;
+    let output = await bu.processTagInner(params, 1);
+    bu.send(params.msg.channel.id, output);
+};
+
 
 var tagHelp = `\`\`\`prolog
 Tag Usage
