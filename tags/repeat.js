@@ -51,6 +51,11 @@ e.execute = async function(params) {
         }
         replaceString = '';
         for (let i = 0; i < args2; i++) {
+            params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
+            if (params.msg.repeats > 1500) {
+                replaceString += await bu.tagProcessError(params, '`Too Many Loops`');
+                break;
+            };            
             replaceString += await bu.processTagInner(params, 1);
         }
     } else {
