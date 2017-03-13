@@ -51,6 +51,7 @@
         "bot": false,
         "config": false,
         "dep": false,
+        "tags": false,
         "_dep": false,
         "_client": false,
         "_constants": false,

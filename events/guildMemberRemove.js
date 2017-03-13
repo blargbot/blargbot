@@ -16,7 +16,10 @@ bot.on('guildMemberRemove', async function(guild, member) {
             member: member,
             guild: guild
         }, ccommandContent, '', undefined, author, true);
-        bu.send(chan || guild.defaultChannel.id, message);
+        bu.send(chan || guild.defaultChannel.id, {
+            content: message,
+            disableEveryone: false
+        });
     }
     bu.logEvent(guild.id, 'memberleave', [{
         name: 'User',

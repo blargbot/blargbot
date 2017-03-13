@@ -55,7 +55,7 @@ e.execute = async function(params) {
             if (params.msg.repeats > 1500) {
                 replaceString += await bu.tagProcessError(params, '`Too Many Loops`');
                 break;
-            };            
+            }
             replaceString += await bu.processTagInner(params, 1);
         }
     } else {

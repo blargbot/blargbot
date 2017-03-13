@@ -467,7 +467,10 @@ e.event = async function (args) {
     params.msg = msg;
     params.msg.didTimer = true;
     let output = await bu.processTagInner(params, 1);
-    bu.send(params.msg.channel.id, output);
+    bu.send(params.msg.channel.id, {
+        content: output,
+        disableEveryone: false
+    });
 };
 
 

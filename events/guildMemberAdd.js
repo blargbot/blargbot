@@ -1,4 +1,4 @@
-bot.on('guildMemberAdd', async function(guild, member) {
+bot.on('guildMemberAdd', async function (guild, member) {
     let val = await bu.guildSettings.get(guild.id, 'greeting');
     let chan = await bu.guildSettings.get(guild.id, 'greetchan');
     if (val) {
@@ -16,7 +16,10 @@ bot.on('guildMemberAdd', async function(guild, member) {
             member: member,
             guild: guild
         }, ccommandContent, '', undefined, author, true);
-        bu.send(chan || guild.defaultChannel.id, message);
+        bu.send(chan || guild.defaultChannel.id, {
+            content: message,
+            disableEveryone: false
+        });
     }
     bu.logEvent(guild.id, 'memberjoin', [{
         name: 'User',
@@ -25,7 +28,7 @@ bot.on('guildMemberAdd', async function(guild, member) {
     }, {
         name: 'Created',
         value: dep.moment(member.user.createdAt).tz('Etc/GMT').format('llll') +
-            ` GMT\n(${dep.moment.duration(-1 * (dep.moment() - dep.moment(member.user.createdAt))).humanize(true)})`,
+        ` GMT\n(${dep.moment.duration(-1 * (dep.moment() - dep.moment(member.user.createdAt))).humanize(true)})`,
         inline: false
     }]);
 });
