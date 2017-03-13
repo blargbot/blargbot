@@ -1337,3 +1337,7 @@ bu.sleep = function (time) {
         setTimeout(() => fulfill(), time);
     });
 };
+
+bu.escapeHTML = function (text) {
+    return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+};

@@ -9,69 +9,114 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'tag [<name> | create | rename | edit | delete | raw | author | search | list | test | favorite | help]';
+
+const subcommands = [
+    {
+        name: '<name>',
+        args: '<args>',
+        desc: 'Executes a tag with the given name'
+    },
+    {
+        name: 'create',
+        args: '<name> <content>',
+        desc: 'Creates a new tag with the given name and content'
+    },
+    {
+        name: 'edit',
+        args: '<name> <content>',
+        desc: 'Edits an existing tag with given content, provided that you were the one who created it'
+    },
+    {
+        name: 'delete',
+        args: '<name>',
+        desc: 'Deletes the tag with the given name, provided that you were the one who created it'
+    },
+    {
+        name: 'rename',
+        args: '<tag> <name>',
+        desc: 'Renames the tag with the name of of the provided tag to the given name'
+    },
+    {
+        name: 'raw',
+        args: '<name>',
+        desc: 'Displays the raw code of a tag'
+    },
+    {
+        name: 'info',
+        args: '<name>',
+        desc: 'Displays information about a tag'
+    },
+    {
+        name: 'top',
+        args: '',
+        desc: 'Displays the top 5 tags'
+    },
+    {
+        name: 'author',
+        args: '<tag>',
+        desc: 'Displays the name of the tag\'s author'
+    },
+    {
+        name: 'search',
+        args: '<name>',
+        desc: 'Searches for a tag based on the provided name'
+    },
+    {
+        name: 'list',
+        args: '[author]',
+        desc: 'Lists all tags, or tags made by a specific author'
+    },
+    {
+        name: 'favorite',
+        alias: 'favourite',
+        args: '[tag]',
+        desc: 'Adds a tag to your favourite list, or displays your favourite tags'
+    },
+    {
+        name: 'report',
+        args: '<tag>',
+        desc: 'Reports a tag as violating the ToS'
+    },
+    {
+        name: 'test',
+        args: '<code>',
+        desc: 'Executes code in a tag sandbox'
+    },
+    {
+        name: 'help',
+        args: '[command]',
+        desc: 'Returns general help, or help for the specified subcommand.'
+    }
+];
+
+e.usage = `tag [${subcommands.map(s => s.name).join(' | ')}]`;
+
 
 e.info = `Tags are a system of public commands that anyone can create or run, using the BBTag language.
 
-__**Usage:**__
-**tag <name>** - executes tag with given name
-**tag create <name> <content>** - creates a new tag with given name and content
-**tag edit <name> <content>** - edits an existing tag with given content, provided that you were the one who created it
-**tag set <name> <content>** - provides the functionality of \`create\` and \`edit\` in a single command
-**tag delete <name>** - deletes the tag with given name, provided that you own it
-**tag rename <tag1> <tag2>** - renames the tag by the name of \`tag1\` to \`tag2\`
-**tag raw <name>** - displays the raw code of a tag
-**tag info <name>** - displays information about a tag
-**tag top** - displays information about the top 5 tags
-**tag author <tag>** - displays the name of who made the tag
-**tag search [page] <name>** - searches for a tag based on the provided name
-**tag list [page] [author]** - lists all tags, or tags made by a specific author
-**tag test <code>** - executes code
-**tag favorite [tag]** - adds a tag to your favourite list, or displays your favourite tags
-**tag help** - shows this message
+**Subcommands**:
+${subcommands.map(s => {
+        return '**' + s.name + '**';
+    }).join(', ')}
 
-NOTE: Any NSFW tags must contain \`{nsfw}\` somewhere in their body, or they will be deleted and you will be blacklisted.
-
-For more information about BBTag, visit https://blargbot.xyz/tags`;
+For more information about a subcommand, do \`b!tag help <subcommand>\`
+For more information about BBTag, visit <https://blargbot.xyz/tags>
+By creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)`;
 e.longinfo = `<p>
 Tags are like public custom commands. You can create them on one guild, and use them on another. Anyone is
 capable of making tags. Tags use a <a href="/tags/">tagging system</a>, so they can can range from simple to
-complex. See the <a href="/tags/">tag</a> page for more details.
-</p>
-<pre><code>tag &lt;name&gt;</code></pre>
-<p>
-Executes a tag with the given name.
-</p>
-<pre><code>tag create &lt;name&gt; &lt;content&gt;</code></pre>
-<p>
-Creates a tag with the given name and content. The name must be unique.
-</p>
-<pre><code>tag edit &lt;name&gt; &lt;content&gt;</code></pre>
-<p>Edits an existing tag. You must own it to edit it!</p>
-<pre><code>tag set &lt;name&gt; &lt;content&gt;</code></pre>
-<p>Provides the functionality of create and edit in a single command.</p>
-<pre><code>tag delete &lt;name&gt;</code></pre>
-<p>Deletes the specified tag. You must own it to delete it!</p>
-<pre><code>tag rename &lt;name&gt; &lt;new name&gt;</code></pre>    
-<p>Renames an existing tag to something else. You must own it to rename it!<p>
-<pre><code>tag raw &lt;name&gt;</code></pre>
-<p>Displays the raw code of a given tag.</p>
-<pre><code>tag info &lt;name&gt;</code></pre>
-<p>Displays information about a given tag.</p>
-<pre><code>tag top</code></pre>
-<p>Displays information about the top 5 tags.</p>
-<pre><code>tag author &lt;name&gt;</code></pre>
-<p>Tells you who made the specified tag</p>
-<pre><code>tag search &lt;name&gt;</code></pre>
-<p>Searches for tags with given name</p>
-<pre><code>tag list</code></pre>
-<p>Lists all tags</p>
-<pre><code>tag test &lt;code&gt;</code></pre>
-<p>Executes code.</p>
-<pre><code>tag favorite [tag]</code></pre>
-<p>Displays your favourite tags, or adds one to your favourites.</p>
-<pre><code>help tag</code></pre>
-<p>Gets basic help tag.</p>`;
+complex. See the <a href="/tags/">documentation</a> page for more details.</p>
+
+<p>By creating a tag, you acknowledge that you agree to the <a href="/tags/tos">Terms of Service</a>.</p>
+
+<p>Subcommands:</p>
+${subcommands.map(s => {
+        let output = '';
+        output += '<pre><code>' + bu.escapeHTML(s.name) + ' ' + bu.escapeHTML(s.args) + '</code></pre>';
+        output += bu.escapeHTML(s.desc);
+        return output;
+    }).join('')}
+`;
 e.alias = ['t'];
 
 const tagNameMsg = 'Enter the name of the tag:';
@@ -316,7 +361,20 @@ e.execute = async function (msg, words, text) {
                 });
                 break;
             case 'help':
-                bu.send(msg, e.info);
+                if (words.length > 2) {
+                    let command = subcommands.filter(s => {
+                        return s.name == words[2].toLowerCase() || s.alias == words[2].toLowerCase();
+                    });
+                    if (command.length > 0) {
+                        await bu.send(msg, `Subcommand: **${command[0].name}**
+Args: \`${command[0].args}\`
+
+${command[0].desc}`);
+                    } else {
+                        await bu.send(msg, 'That subcommand was not found!');
+                    }
+                } else
+                    await bu.send(msg, e.info);
                 break;
             case 'raw':
                 if (words[2]) title = words[2];
@@ -457,7 +515,7 @@ ${Object.keys(user.favourites).join(', ')}
                 break;
         }
     } else {
-        bu.send(msg, tagHelp);
+        bu.send(msg, e.info);
     }
 };
 
@@ -472,25 +530,6 @@ e.event = async function (args) {
         disableEveryone: false
     });
 };
-
-
-var tagHelp = `\`\`\`prolog
-Tag Usage
-Tag <name> - executes tag with given name
-Tag Create <name> <content> - creates a new tag with given name and content
-Tag Rename <tag1> <tag2> - renames the tag by the name of \`tag1\` to \`tag2\`
-Tag Edit <name> <content> - edits an existing tag with given content, provided that you were the one who created it
-Tag Delete <name> - deletes the tag with given name, provided that you own it
-Tag Raw <name> - displays the raw code of a tag
-Tag Author <tag> - displays the name of who made the tag
-Tag Search [page] <name> - searches for a tag based on the provided name
-Tag List [page] [author] - lists all tags, or tags made by a specific author
-Tag Test <code> - executes code
-Tag Favorite [tag] - adds a tag to your favourite list, or displays your favourite tags
-Help Tag - shows this message
-NOTE: Any NSFW tags must contain '{nsfw}' somewhere in their body, or they will be deleted and you will be blacklisted.
-\`\`\`
-For more information about tags, visit https://blargbot.xyz/tags`;
 
 function escapeRegex(str) {
     return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
