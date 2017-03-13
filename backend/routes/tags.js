@@ -18,6 +18,12 @@ router.get('/arrays', (req, res) => {
     res.render('arrays');
 });
 
+router.get('/tos', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = '/tags' + req.path;
+    res.render('tagtos');
+});
+
 
 router.get('/editor', (req, res) => {
     res.locals.user = req.user;
