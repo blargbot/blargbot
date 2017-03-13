@@ -10,6 +10,8 @@ e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
 
+const reportChannel = '290890240011534337';
+
 const subcommands = [
     {
         name: '<name>',
@@ -211,7 +213,10 @@ e.execute = async function (msg, words, text) {
                 title = filterTitle(title);
                 tag = await r.table('tag').get(title).run();
                 if (tag) {
-                    bu.send(msg, `❌ That tag already exists! ❌`);
+                    if (tag.deleted) {
+                        bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
+                    } else
+                        bu.send(msg, `❌ That tag already exists! ❌`);
                     break;
                 }
 
@@ -244,6 +249,10 @@ e.execute = async function (msg, words, text) {
                 let oldTag = await r.table('tag').get(oldTagName).run();
                 if (!oldTag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
+                    break;
+                }
+                if (oldTag.deleted) {
+                    bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
                     break;
                 }
                 if (oldTag.author != msg.author.id) {
@@ -282,6 +291,10 @@ e.execute = async function (msg, words, text) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
+                if (tag.deleted) {
+                    bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
+                    break;
+                }
                 if (tag.author != msg.author.id) {
                     bu.send(msg, `❌ You don't own this tag! ❌`);
                     break;
@@ -313,10 +326,15 @@ e.execute = async function (msg, words, text) {
 
                 title = filterTitle(title);
                 tag = await r.table('tag').get(title).run();
+                if (tag && tag.deleted) {
+                    bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
+                    break;
+                }
                 if (tag && tag.author != msg.author.id) {
                     bu.send(msg, `❌ You don't own this tag! ❌`);
                     break;
                 }
+
 
                 if (!content)
                     content = (await bu.awaitMessage(msg, tagContentsMsg)).content;
@@ -346,6 +364,10 @@ e.execute = async function (msg, words, text) {
                 tag = await r.table('tag').get(title).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
+                    break;
+                }
+                if (tag.deleted) {
+                    bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
                     break;
                 }
                 if (tag.author != msg.author.id && msg.author.id != bu.CAT_ID) {
@@ -385,7 +407,10 @@ ${command[0].desc}`);
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
-
+                if (tag.deleted) {
+                    bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
+                    break;
+                }
                 let lang = '';
                 if (/\{lang;.*?}/i.test(tag.content)) {
                     lang = tag.content.match(/\{lang;(.*?)}/i)[1];
@@ -403,6 +428,10 @@ ${content}
                 tag = await r.table('tag').get(words[2]).run();
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
+                    break;
+                }
+                if (tag.deleted) {
+                    bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
                     break;
                 }
                 author = await r.table('user').get(tag.author).run();
@@ -425,12 +454,19 @@ ${content}
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
                 }
+                if (tag.deleted) {
+                    bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
+                    break;
+                }
                 author = await r.table('user').get(tag.author).run();
-                bu.send(msg, `__**Tag | ${title}** __
+                let output = `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
 It was last modified **${dep.moment(tag.lastmodified).format('LLLL')}**.
 It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!
-It has been favourited **${tag.favourites || 0} times**!`);
+It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1 ? '' : 's'}**!`;
+                if (tag.reports && tag.reports > 0)
+                    output += `\n:warning: It has been reported ${tag.reports || 0} **time${(tag.reports == 1 || 0) ? '' : 's'}**!`;
+                bu.send(msg, output);
                 break;
             case 'search':
                 let query;
@@ -465,7 +501,7 @@ It has been favourited **${tag.favourites || 0} times**!`);
             case 'test':
                 if (words.length > 2) {
                     let output = await tags.processTag(msg, words.slice(2).join(' '), '', 'test', msg.author.id);
-                    await bu.send(msg, `Test Output:\n${output}`);
+                    await bu.send(msg, `Test Output:\n${output} `);
                 }
                 break;
             case 'favourite':
@@ -475,6 +511,10 @@ It has been favourited **${tag.favourites || 0} times**!`);
                     tag = await r.table('tag').get(words[2]).run();
                     if (!tag) {
                         bu.send(msg, `❌ That tag doesn't exist! ❌`);
+                        break;
+                    }
+                    if (tag.deleted) {
+                        bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
                         break;
                     }
                     if (!tag.favourites) tag.favourites = 0;
@@ -506,6 +546,73 @@ ${Object.keys(user.favourites).join(', ')}
                     await bu.send(msg, output);
                 }
 
+                break;
+            case 'report':
+                if (words.length > 2) {
+                    title = filterTitle(words[2]);
+                    tag = await r.table('tag').get(words[2]).run();
+                    if (!tag) {
+                        bu.send(msg, `❌ That tag doesn't exist! ❌`);
+                        break;
+                    }
+                    if (tag.deleted) {
+                        bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
+                        break;
+                    }
+                    if (!tag.reports) tag.reports = 0;
+                    let user = await r.table('user').get(msg.author.id).run();
+                    if (!user.reports) user.reports = {};
+                    let output;
+                    if (words.length > 3) {
+                        if (user.reports[title] == undefined)
+                            tag.reports++;
+                        user.reports[title] = words.slice(3).join(' ');
+                        output = `The tag \`${title}\` has been reported.`;
+                        await bu.send(reportChannel, `**${bu.getFullName(msg.author)}** has reported the tag: ${title}
+
+${user.reports[title]}`);
+                    } else if (user.reports[title] != undefined) {
+                        user.reports[title] = undefined;
+                        tag.reports--;
+                        output = `The tag \`${title}\` is no longer being reported by you.`;
+                        await bu.send(reportChannel, `**${bu.getFullName(msg.author)}** is no longer reporting the tag: ${title}`);
+                    } else {
+                        output = `Please provide a reason for your report.`;
+                    }
+                    await r.table('tag').get(title).update({
+                        reports: r.literal(tag.reports)
+                    });
+                    await r.table('user').get(msg.author.id).update({
+                        reports: r.literal(user.reports)
+                    });
+                    await bu.send(msg, output);
+                } else {
+                    let user = await r.table('user').get(msg.author.id);
+                    if (!user.favourites) user.favourites = {};
+                    let output = `You have ${Object.keys(user.favourites).length} favourite tags. \`\`\`fix
+${Object.keys(user.favourites).join(', ')}              
+\`\`\` `;
+                    await bu.send(msg, output);
+                }
+
+                break;
+            case 'permdelete':
+                if (msg.author.id == bu.CAT_ID)
+                    if (words.length > 3) {
+                        title = filterTitle(words[2]);
+                        tag = await r.table('tag').get(words[2]).run();
+                        if (!tag) {
+                            bu.send(msg, `❌ That tag doesn't exist! ❌`);
+                            break;
+                        }
+                        tag.deleter = msg.author.id;
+                        tag.reason = words.slice(3).join(' ');
+                        tag.deleted = true;
+                        await r.table('tag').get(title).replace(tag);
+                        await bu.send(msg, 'The tag has been deleted.');
+                    } else {
+                        await bu.send(msg, 'You must provide a reason.');
+                    }
                 break;
             default:
                 var command = words.slice(2).join(' ');

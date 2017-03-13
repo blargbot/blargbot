@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-e.processTag = async function(msg, contents, command, tagName, author, isCcommand) {
+e.processTag = async function (msg, contents, command, tagName, author, isCcommand) {
     try {
         author = author || msg.channel.guild.id;
         logger.debug(command);
@@ -26,11 +26,17 @@ e.processTag = async function(msg, contents, command, tagName, author, isCcomman
     return contents;
 };
 
-e.executeTag = async function(msg, tagName, command) {
+e.executeTag = async function (msg, tagName, command) {
     let tag = await r.table('tag').get(tagName).run();
     if (!tag)
         bu.send(msg, `❌ That tag doesn't exist! ❌`);
     else {
+        if (tag.deleted === true) {
+            await bu.send(msg, `❌ That tag has been permanently deleted by **${bu.getFullName(bot.users.get(tag.deleter))}**
+
+Reason: ${tag.reason}`);
+            return;
+        }
         if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
             let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
             if (!nsfwChan) {
