@@ -76,7 +76,7 @@ const subcommands = [
     },
     {
         name: 'report',
-        args: '<tag>',
+        args: '<tag> <reason>',
         desc: 'Reports a tag as violating the ToS'
     },
     {
