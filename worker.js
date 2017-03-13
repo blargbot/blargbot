@@ -15,35 +15,35 @@ const Canvas = require('canvas'),
     Image = Canvas.Image;
 
 const logger = {
-    cluster: function(msg) {
+    cluster: function (msg) {
         process.send({
             cmd: 'log',
             level: 'cluster',
             msg
         });
     },
-    debug: function(msg) {
+    debug: function (msg) {
         process.send({
             cmd: 'log',
             level: 'debug',
             msg
         });
     },
-    warn: function(msg) {
+    warn: function (msg) {
         process.send({
             cmd: 'log',
             level: 'warn',
             msg
         });
     },
-    error: function(msg) {
+    error: function (msg) {
         process.send({
             cmd: 'log',
             level: 'error',
             msg
         });
     },
-    worker: function(msg) {
+    worker: function (msg) {
         process.send({
             cmd: 'log',
             level: 'worker',
@@ -53,7 +53,7 @@ const logger = {
 };
 
 const functions = {
-    free: async function(msg) {
+    free: async function (msg) {
         let topCaption = await Jimp.read(await createCaption({
             text: msg.top,
             font: 'impact.ttf',
@@ -82,10 +82,10 @@ const functions = {
         let encoder = new GIFEncoder(400, 300);
         let stream = encoder.createReadStream();
 
-        stream.on('data', function(buffer) {
+        stream.on('data', function (buffer) {
             buffers.push(buffer);
         });
-        stream.on('end', function() {
+        stream.on('end', function () {
             submitBuffer(msg.code, Buffer.concat(buffers));
         });
 
@@ -105,7 +105,7 @@ const functions = {
         for (let frame of frames) encoder.addFrame(frame);
         encoder.finish();
     },
-    caption: async function(msg) {
+    caption: async function (msg) {
         let img = await Jimp.read(await getResource(msg.url));
         let height = img.bitmap.height;
         let width = img.bitmap.width;
@@ -145,7 +145,7 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
-    cah: async function(msg) {
+    cah: async function (msg) {
         let blackCard = await Jimp.read(path.join(__dirname, 'img', 'blackcard.png'));
         let whiteCard = await Jimp.read(path.join(__dirname, 'img', 'whitecard.png'));
 
@@ -176,7 +176,7 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
-    retarded: async function(msg) {
+    retarded: async function (msg) {
         let buf = await createCaption({
             font: 'ARCENA.ttf',
             fill: 'black',
@@ -202,7 +202,7 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
-    shit: async function(msg) {
+    shit: async function (msg) {
         let buf = await createCaption({
             text: msg.text,
             font: 'animeace.ttf',
@@ -218,7 +218,7 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
-    art: async function(msg) {
+    art: async function (msg) {
         let avatar = await Jimp.read(await getResource(msg.avatar));
         avatar.resize(370, 370);
         let foreground = await Jimp.read(path.join(__dirname, 'img', `art.png`));
@@ -231,7 +231,7 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
-    clint: async function(msg) {
+    clint: async function (msg) {
         let avatar = await Jimp.read(await getResource(msg.avatar));
         avatar.resize(700, 700);
         let bgImg = im(await getBufferFromJimp(avatar));
@@ -251,7 +251,7 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
-    pixelate: async function(msg) {
+    pixelate: async function (msg) {
         let image = await Jimp.read(await getResource(msg.url));
         let img;
         let scale = msg.scale;
@@ -267,7 +267,7 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
-    triggered: async function(msg) {
+    triggered: async function (msg) {
         let frameCount = 8;
         let frames = [];
         let avatar = await Jimp.read(await getResource(msg.avatar));
@@ -288,10 +288,10 @@ const functions = {
         let encoder = new GIFEncoder(256, 256);
         let stream = encoder.createReadStream();
 
-        stream.on('data', function(buffer) {
+        stream.on('data', function (buffer) {
             buffers.push(buffer);
         });
-        stream.on('end', function() {
+        stream.on('end', function () {
             let buffer = Buffer.concat(buffers);
             submitBuffer(msg.code, buffer);
         });
@@ -326,7 +326,7 @@ const functions = {
         for (let frame of frames) encoder.addFrame(frame);
         encoder.finish();
     },
-    thesearch: async function(msg) {
+    thesearch: async function (msg) {
         let buf = await createCaption({
             text: msg.text,
             fill: '#393b3e',
@@ -342,7 +342,7 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
-    objection: async function(msg) {
+    objection: async function (msg) {
         let frameCount = 6;
         let frames = [];
 
@@ -351,14 +351,14 @@ const functions = {
         let stream = encoder.createReadStream();
         let objectStream = fs.createReadStream(path.join(__dirname, 'img', 'objection.gif'));
         let writeStream = encoder.createWriteStream();
-        stream.on('data', function(buffer) {
+        stream.on('data', function (buffer) {
             buffers.push(buffer);
         });
-        stream.on('end', function() {
+        stream.on('end', function () {
             submitBuffer(msg.code, Buffer.concat(buffers));
         });
         objectStream.pipe(writeStream);
-        objectStream.on('end', async function() {
+        objectStream.on('end', async function () {
             encoder.firstFrame = false;
             let output = '';
             let i = 0;
@@ -420,10 +420,34 @@ const functions = {
         workspace.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
             submitBuffer(msg.code, buffer);
         });
+    },
+    starvstheforcesof: async function (msg) {
+        let avatar = await Jimp.read(await getResource(msg.avatar));
+        avatar.resize(700, 700);
+        let bgImg = im(await getBufferFromJimp(avatar));
+        bgImg.command('convert');
+        bgImg.out('-matte').out('-virtual-pixel').out('transparent');
+        bgImg.out('-extent');
+        bgImg.out('1468x1656');
+        bgImg.out('-distort');
+        bgImg.out('Perspective');
+        bgImg.out("0,0,0,208  700,0,1468,0  0,700,0,1326  700,700,1468,1656");
+
+        let jBgImg = await Jimp.read(await getBufferFromIM(bgImg));
+        let foreground = await Jimp.read(path.join(__dirname, 'img', `starvstheforcesof.png`));
+        let img = new Jimp(1920, 1080);
+        jBgImg.crop(0, 208, 1200, 1080);
+        img.composite(jBgImg, 860, 0);
+
+        img.composite(foreground, 0, 0);
+
+        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            submitBuffer(msg.code, buffer);
+        });
     }
 };
 
-process.on('message', async function(msg, handle) {
+process.on('message', async function (msg, handle) {
     switch (msg.cmd) {
         case 'img':
             let command = msg.command;
@@ -450,7 +474,7 @@ async function submitBuffer(code, buffer) {
 
 function getBufferFromIM(img) {
     return new Promise((fulfill, reject) => {
-        img.setFormat('png').toBuffer(function(err, buffer) {
+        img.setFormat('png').toBuffer(function (err, buffer) {
             if (err) {
                 reject(err);
                 return;
@@ -515,7 +539,7 @@ function createCaption(options) {
             image.out('-composite');
         }
         image.setFormat('png');
-        image.toBuffer(function(err, buf) {
+        image.toBuffer(function (err, buf) {
             if (err) {
                 logger.error(`Failed to generate a caption: '${options.text}'`);
                 reject(err);
@@ -537,7 +561,7 @@ function getRandomInt(min, max) {
 };
 
 function getResource(url) {
-    return new Promise(async function(fulfill, reject) {
+    return new Promise(async function (fulfill, reject) {
         url = url.trim();
         if (url.startsWith('<') && url.endsWith('>')) {
             url = url.substring(1, url.length - 1);
@@ -547,7 +571,7 @@ function getResource(url) {
             uri: url
         });
         if (r.res.headers['content-type'] == 'image/gif') {
-            gm(r.body, 'temp.gif').selectFrame(0).setFormat('png').toBuffer(function(err, buffer) {
+            gm(r.body, 'temp.gif').selectFrame(0).setFormat('png').toBuffer(function (err, buffer) {
                 if (err) {
                     logger.error('Error converting gif');
                     reject(err);

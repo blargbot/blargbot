@@ -8,9 +8,10 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'clint [user]';
-e.info = `I don't even know, to be honest.`;
-e.longinfo = `<p>I don't even know, to be honest.</p>`;
+e.usage = 'starvstheforcesof [user]';
+e.info = `WHO IS STAR BATTLING THIS EPISODE?`;
+e.longinfo = `<p>WHO IS STAR BATTLING THIS EPISODE?</p>`;
+e.alias = ['svtfo'];
 
 e.flags = [{
     flag: 'I',
@@ -38,13 +39,13 @@ e.execute = async function (msg, words) {
 
     let buffer = await bu.awaitEvent({
         cmd: 'img',
-        command: 'clint',
+        command: 'starvstheforcesof',
         code: code,
         avatar: url
     });
 
     bu.send(msg, undefined, {
         file: buffer,
-        name: 'clint.png'
+        name: 'starvstheforcesof.png'
     });
 };
