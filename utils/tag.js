@@ -168,7 +168,6 @@ bu.processTag = async function (params) {
         contents: contents,
         terminate: true
     };
-
     let openBraceCount = (contents.match(/\{/g) || []).length;
     let closeBraceCount = (contents.match(/\}/g) || []).length;
     if (openBraceCount !== closeBraceCount) return {
