@@ -457,6 +457,27 @@ const functions = {
         img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
             submitBuffer(msg.code, buffer);
         });
+    },
+    distort: async function (msg) {
+        // 344x410
+        // 28 - 70
+        // 400x620
+        let avatar = await Jimp.read(await getResource(msg.avatar));
+        const filters = [
+            { apply: getRandomInt(0, 1) == 1 ? 'desaturate' : 'saturate', params: [getRandomInt(40, 80)] },
+            { apply: 'spin', params: [getRandomInt(10, 350)] }
+        ];
+        avatar.color(filters);
+        let bgImg = im(await getBufferFromJimp(avatar));
+        let horizRoll = getRandomInt(0, avatar.bitmap.width),
+            vertiRoll = getRandomInt(0, avatar.bitmap.height);
+        bgImg.out('-implode').out(`-${getRandomInt(3, 10)}`);
+        bgImg.out('-roll').out(`+${horizRoll}+${vertiRoll}`);
+        bgImg.out('-swirl').out(`${getRandomInt(0, 1) == 1 ? '+' : '-'}${getRandomInt(120, 180)}`);
+
+        let buffer = await getBufferFromIM(bgImg);
+
+        submitBuffer(msg.code, buffer);
     }
 };
 
