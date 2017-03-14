@@ -14,6 +14,8 @@ const fs = require('fs');
 const Canvas = require('canvas'),
     Image = Canvas.Image;
 
+const colorThief = require('color-thief-jimp');
+
 const logger = {
     cluster: function (msg) {
         process.send({
@@ -424,6 +426,11 @@ const functions = {
     starvstheforcesof: async function (msg) {
         let avatar = await Jimp.read(await getResource(msg.avatar));
         avatar.resize(700, 700);
+        let color = colorThief.getColor(avatar);
+        //color = color.map(a => a / 2);
+        let lowest = Math.min(color[0], color[1], color[2]);
+        color = color.map(a => Math.min(a - lowest, 32));
+        logger.debug(color);
         let bgImg = im(await getBufferFromJimp(avatar));
         bgImg.command('convert');
         bgImg.out('-matte').out('-virtual-pixel').out('transparent');
@@ -432,13 +439,19 @@ const functions = {
         bgImg.out('-distort');
         bgImg.out('Perspective');
         bgImg.out("0,0,0,208  700,0,1468,0  0,700,0,1326  700,700,1468,1656");
-
         let jBgImg = await Jimp.read(await getBufferFromIM(bgImg));
-        let foreground = await Jimp.read(path.join(__dirname, 'img', `starvstheforcesof.png`));
-        let img = new Jimp(1920, 1080);
-        jBgImg.crop(0, 208, 1200, 1080);
-        img.composite(jBgImg, 860, 0);
+        jBgImg.resize(734, 828);
 
+        let foreground = await Jimp.read(path.join(__dirname, 'img', `starvstheforcesof.png`));
+        foreground.resize(960, 540);
+        let actions = [];
+        if (color[0] > 0) actions.push({ apply: 'red', params: [color[0]] });
+        if (color[1] > 0) actions.push({ apply: 'green', params: [color[1]] });
+        if (color[2] > 0) actions.push({ apply: 'blue', params: [color[2]] });
+        foreground.color(actions);
+        let img = new Jimp(960, 540);
+        jBgImg.crop(0, 104, 600, 540);
+        img.composite(jBgImg, 430, 0);
         img.composite(foreground, 0, 0);
 
         img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
