@@ -11,10 +11,10 @@ e.name = `pop`;
 e.args = `&lt;pop&gt;`;
 e.usage = `{pop;array}`;
 e.desc = `Returns the last element in an array. If used with {get} or {aget}, this will remove the last element from the array as well.`;
-e.exampleIn = `{shift;["this", "is", "an", "array"]}`;
-e.exampleOut = `this`;
+e.exampleIn = `{pop;["this", "is", "an", "array"]}`;
+e.exampleOut = `array`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
