@@ -24,7 +24,7 @@ class Manager {
     }
 
     load(name) {
-        console.log('Loading ' + this.name + ': ' + name);
+        _logger.init('Loading ' + this.name + ': ' + name);
         this.list[name] = require(this.constructPath(name));
         this.build(name);
     }

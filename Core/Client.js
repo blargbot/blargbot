@@ -9,14 +9,23 @@ class Client {
         });
         //this.irc = new IrcClient();
         this.Helpers = require('./Helpers');
+
+        // A discord client that *doesn't* connect to the gateway
+        this.discord = new _dep.Eris(_config.discord.token);
     }
 
     async init() {
-        this.spawner.spawnAll();        
-        await this.spawner.awaitBroadcast('construct');
-        console.log('Shards constructed');
+        await this.spawner.spawnAll();
+        _logger.init('All shards have spawned. Connecting...');
         await this.spawner.awaitBroadcast('connect');
-        console.log('Shards connected');
+        _logger.init('Shards connected');
+
+        let statuses = await this.spawner.awaitBroadcast('shardStatus');
+        _logger.debug(statuses);
+        setTimeout(async () => {
+            let statuses = await this.spawner.awaitBroadcast('shardStatus');
+            _logger.debug(statuses);
+        }, 10000);
     }
 }
 

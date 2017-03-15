@@ -20,16 +20,17 @@ global._logger = new _core.Logger();
 
 class DiscordClient extends _dep.Eris.Client {
     constructor() {
+        _logger.debug('Max:', process.env.SHARD_MAX, 'ID:', process.env.SHARD_ID);
         super(_config.discord.token, {
-            autoReconnect: true,
+            autoreconnect: true,
             disableEveryone: true,
             disableEvents: {
                 TYPING_START: true
             },
             getAllUsers: true,
-            maxShards: process.env.SHARD_MAX,
-            firstShardId: process.env.SHARD_ID,
-            lastShardId: process.env.SHARD_ID,
+            maxShards: parseInt(process.env.SHARD_MAX),
+            firstShardID: parseInt(process.env.SHARD_ID),
+            lastShardID: parseInt(process.env.SHARD_ID),
             restMode: true,
             defaultImageFormat: 'png',
             defaultImageSize: 512,
@@ -55,7 +56,8 @@ class DiscordClient extends _dep.Eris.Client {
     }
 }
 
-var discord;
+var discord = new DiscordClient();
+discord.sender.send('threadReady', process.env.SHARD_ID);
 
 process.on('message', async msg => {
     const message = JSON.parse(msg);
@@ -63,14 +65,22 @@ process.on('message', async msg => {
         case 'await':
             const eventKey = 'await:' + message.data.key;
             switch (message.data.message) {
-                case 'construct':
-                    discord = new DiscordClient();
-                    discord.sender.send(eventKey, true);
-                    break;
                 case 'connect':
-                    discord.on('ready', () => console.log('Ready, but not through the event system.'));
+                    discord.on('ready', () => _logger.init('Ready, but not through the event system.'));
+                    discord.on('error', (err) => _logger.error(err));
+                    _logger.init('Connecting');
                     await discord.connect();
                     discord.sender.send(eventKey, true);
+                    break;
+                case 'shardStatus':
+                    let shards = discord.shards.map(s => {
+                        return { id: s.id, status: s.status };
+                    });
+                    discord.sender.send(eventKey, {
+                        guilds: discord.guilds.size,
+                        shards,
+                        id: process.env.SHARD_ID
+                    });
                     break;
             }
             break;

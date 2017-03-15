@@ -35,7 +35,7 @@ module.exports = {
     cleverbotIo: require('cleverbot.io'),
     bodyParser: require('body-parser'),
     mkdirp: require('mkdirp'),
-    winston: require('winston'),
+    Winston: require('winston'),
     wconfig: require('winston/lib/winston/config'),
     Trello: require('node-trello'),
     babel: require('babel-core'),
