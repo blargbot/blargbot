@@ -84,6 +84,10 @@ e.execute = async function (msg, words, text) {
                 break;
             case 'create':
                 if (words.length > 3) {
+                    if (words[2] == 'cc' || words[2] == 'ccommand') {
+                        bu.send(msg, 'You cannot overwrite the `ccommand` command!');
+                        break;
+                    }
                     storedTag = await bu.ccommand.get(msg.channel.guild.id, words[2]);
                     if (storedTag) {
                         bu.send(msg, 'That ccommand already exists!');
@@ -118,6 +122,10 @@ e.execute = async function (msg, words, text) {
                 break;
             case 'set':
                 if (words.length > 3) {
+                    if (words[2] == 'cc' || words[2] == 'ccommand') {
+                        bu.send(msg, 'You cannot overwrite the `ccommand` command!');
+                        break;
+                    }
                     content = bu.splitInput(text, true).slice(3).join(' ');
                     await bu.ccommand.set(msg.channel.guild.id, words[2], {
                         content,
