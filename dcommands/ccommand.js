@@ -10,7 +10,7 @@ e.hidden = false;
 e.usage = 'ccommand <command name> <command content>';
 e.info = `Creates a custom command, using the BBTag language.
 
-Custom commands take precedent over all other commands. As such, you can use it to overwrite commands, or disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the 'ccommand' command. For more in-depth command customization, see the \`commandperm\` command.
+Custom commands take precedent over all other commands. As such, you can use it to overwrite commands, or disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the 'ccommand' command. For more in-depth command customization, see the \`editcommand\` command.
 
 __**Usage:**__
   **cc create <name> <content>** - creates a ccommand with given name and content
@@ -36,7 +36,7 @@ blargbot&gt; Hello, User. This is a test command.
   <p>Custom commands take precedent over all other commands. As such, you can use it to overwrite commands,
         or disable them entirely. If the command content is "null" (without the quotations), blargbot will have no
         output whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the 'ccommand'
-        command. For more in-depth command customization, see the <code>commandperm</code> command.</p>
+        command. For more in-depth command customization, see the <code>editcommand</code> command.</p>
 
 <p>Commands:</p>
 <pre><code>cc create &lt;name&gt; &lt;content&gt;</code></pre>
@@ -60,7 +60,7 @@ blargbot&gt; Hello, User. This is a test command.
     <pre><code>cc sethelp &lt;name&gt; &#91;help text&#93;</code></pre>
     <p>sets the help message for the given ccommand</p>`;
 e.alias = ['cc'];
-e.execute = async function(msg, words, text) {
+e.execute = async function (msg, words, text) {
     logger.debug('Text:', text);
     if (words[1]) {
         let storedTag;
@@ -77,7 +77,7 @@ e.execute = async function(msg, words, text) {
                         content: storedTag.content || storedTag,
                         roles: words.slice(3)
                     });
-                    bu.send(msg, `Set the custom role requirements of '${words[2]}' to \`\`\`fix\n${words.slice(3).join(', ')}\n\`\`\` `)
+                    bu.send(msg, `Set the custom role requirements of '${words[2]}' to \`\`\`fix\n${words.slice(3).join(', ')}\n\`\`\` `);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
@@ -179,11 +179,11 @@ e.execute = async function(msg, words, text) {
                 break;
             case 'list':
                 let storedGuild = await bu.getGuild(msg.guild.id);
-                bu.send(msg, `Here are a list of the custom commands on this guild:\`\`\`${Object.keys(storedGuild.ccommands).join(', ')}\`\`\` `)
+                bu.send(msg, `Here are a list of the custom commands on this guild:\`\`\`${Object.keys(storedGuild.ccommands).join(', ')}\`\`\` `);
                 break;
             case 'sethelp':
                 if (words.length > 3) {
-                    content = bu.splitInput(text, true).slice(3).join(' ')
+                    content = bu.splitInput(text, true).slice(3).join(' ');
                     var message = "";
                     if (await bu.ccommand.sethelp(msg.channel.guild.id, words[2], content)) {
                         message = `✅ Help for custom command \`${words[2]}\` set. ✅`;
