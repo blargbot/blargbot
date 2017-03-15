@@ -7,10 +7,16 @@
 process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Promise Rejection:', reason || p);
 });
+process.env.SHARD_ID = -1;
+
 global.Promise = require('bluebird');
 global._dep = require('./Dependencies');
-global._core = require('./Core');
 global._config = require('./config.json');
+
+global._r = _dep.rethinkdbdash(_config.db);
+
+global._core = require('./Core');
+
 global._constants = _core.Constants;
 global._logger = new _core.Logger();
 //_config.avatars = require(_config.general.isbeta ? './Data/avatarsBeta.json' : './Data/avatars.json');

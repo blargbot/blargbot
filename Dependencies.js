@@ -1,4 +1,5 @@
 module.exports = {
+    rethinkdbdash: require('rethinkdbdash'),
     moment: require('moment-timezone'),
     util: require('util'),
     path: require('path'),
@@ -41,21 +42,3 @@ module.exports = {
     EventEmitter: require('eventemitter3'),
     irc: require('irc')
 };
-
-Object.defineProperty(module.exports.Eris.Message.prototype, "guild", {
-    get: function guild() {
-        return this.channel.guild;
-    }
-});
-
-Object.defineProperty(module.exports.Eris.User.prototype, "fullName", {
-    get: function fullName() {
-        return `${this.username}#${this.discriminator}`;
-    }
-});
-
-Object.defineProperty(module.exports.Eris.User.prototype, "fullNameId", {
-    get: function fullNameId() {
-        return `${this.username}#${this.discriminator} (${this.id})`;
-    }
-});

@@ -4,5 +4,6 @@ module.exports = {
     Context: require('./Context'),
     Locale: require('./Locale'),
     Shard: require('./Shard'),
-    Sender: require('./Sender')
+    Sender: require('./Sender'),
+    Cache: require('./Cache')
 };
