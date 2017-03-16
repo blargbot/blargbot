@@ -13,11 +13,12 @@ cache*
 img/generated/*
 chocobot/*
 config.json
+voiceSettings.json
+vars.json
 servers.json
 *.html
 *.ttf
 *.jpg
-*.json
 *.gif
 *.db
 *.db-journal

@@ -1,0 +1,32 @@
+{
+    "generic": {
+        "messagetoolong": "Whoops! I tried to send a message that was too long. If you think this is an error, please report it!"
+    },
+    "command": {
+        "general": {
+            "ping": {
+                "info": "Pong!\nFinds the command latency.",
+                "usage": "ping",
+                "randmsg": [
+                    "Existence is a lie.",
+                    "You're going to die some day, perhaps soon.",
+                    "Nothing matters.",
+                    "Where do you get off?",
+                    "There is nothing out there.",
+                    "You are alone in an infinite void.",
+                    "Truth is false.",
+                    "Forsake everything.",
+                    "Your existence is pitiful.",
+                    "We are all already dead.",
+                    "Meow.",
+                    "Fear is freedom.",
+                    "Subjugation is liberation.",
+                    "Contradiction is truth.",
+                    "Would you like to make a contract?",
+                    "Let it go, and move on."
+                ],
+                "final": "Pong! ({{time}}ms)"
+            }
+        }
+    }
+}
