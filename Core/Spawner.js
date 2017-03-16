@@ -17,7 +17,6 @@ class Spawner extends _dep.EventEmitter {
                 this.shards.delete(id);
             this.shards.set(id, shard);
             this.once('threadReady' + id, () => {
-                _logger.init('Resolving spawn for threadReady' + id);
                 resolve(shard);
             });
         });
@@ -68,7 +67,6 @@ class Spawner extends _dep.EventEmitter {
                 }
             break;
             case 'threadReady':
-                _logger.init('thread is ready', data);
                 this.emit('threadReady' + data.message);
                 break;
         }

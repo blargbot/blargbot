@@ -19,13 +19,6 @@ class Client {
         _logger.init('All shards have spawned. Connecting...');
         await this.spawner.awaitBroadcast('connect');
         _logger.init('Shards connected');
-
-        let statuses = await this.spawner.awaitBroadcast('shardStatus');
-        _logger.debug(statuses);
-        setTimeout(async () => {
-            let statuses = await this.spawner.awaitBroadcast('shardStatus');
-            _logger.debug(statuses);
-        }, 10000);
     }
 }
 

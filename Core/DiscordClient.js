@@ -61,6 +61,12 @@ class DiscordClient extends _dep.Eris.Client {
     async decodeLocale(dest, key, args) {
         await this.Core.Helpers.Message.decode(dest, key, args);
     }
+    
+    async doEval(ctx, code) {
+        const str = `var func = async function() {\n    ${code}\n}.bind(this)\nfunc`;
+        const toExecute = eval(str);
+        return await toExecute();
+    }
 }
 
 var discord = new DiscordClient();
@@ -93,16 +99,6 @@ process.on('message', async msg => {
             break;
     }
 });
-
-async function doEval(channelId, code) {
-    const toExecute = eval(`async function() {
-        ${code}
-    }`);
-    const response = await toExecute();
-    return await _discord.Core.Helpers.Message.send(channelId,
-        _dep.util.inspect(response, { depth: 1 }));
-}
-
 
 
 module.exports = DiscordClient;
