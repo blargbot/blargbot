@@ -39,7 +39,7 @@ class DiscordClient extends _dep.Eris.Client {
 
         global._discord = this;
         this.Core = require('./index.js');
-        
+
         this.LocaleManager = new LocaleManager();
         this.LocaleManager.init();
 
@@ -52,16 +52,12 @@ class DiscordClient extends _dep.Eris.Client {
         this.sender = new _core.Structures.Sender(process);
 
         this.emitter = new _dep.EventEmitter();
-
-        this.emitter.on('eval', (channelId, code) => {
-            doEval(channelId, code);
-        });
     }
-    
+
     async decodeLocale(dest, key, args) {
         await this.Core.Helpers.Message.decode(dest, key, args);
     }
-    
+
     async doEval(ctx, code) {
         const str = `var func = async function() {\n    ${code}\n}.bind(this)\nfunc`;
         const toExecute = eval(str);
@@ -73,19 +69,22 @@ var discord = new DiscordClient();
 discord.sender.send('threadReady', process.env.SHARD_ID);
 
 process.on('message', async msg => {
-    const message = JSON.parse(msg);
-    switch (message.code) {
+    const { data, code } = JSON.parse(msg);
+    if (code.startsWith('await:')) {
+        _discord.sender.emit(code, data);
+        return;
+    }
+    switch (code) {
         case 'await':
-            const eventKey = 'await:' + message.data.key;
-            switch (message.data.message) {
+            const eventKey = 'await:' + data.key;
+            switch (data.message) {
                 case 'connect':
-                    _logger.init('Connecting');
                     await discord.connect();
                     discord.sender.send(eventKey, true);
                     break;
                 case 'shardStatus':
                     let shards = discord.shards.map(s => {
-                        return { id: s.id, status: s.status };
+                        return { id: s.id, status: s.status, guilds: discord.guilds.filter(g => g.shard.id == s.id).length };
                     });
                     discord.sender.send(eventKey, {
                         guilds: discord.guilds.size,
@@ -96,6 +95,7 @@ process.on('message', async msg => {
             }
             break;
         default:
+            discord.emitter.emit((code, { data, code }));
             break;
     }
 });

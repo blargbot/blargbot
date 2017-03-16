@@ -5,7 +5,7 @@ class Client {
         this.Emitter = new _dep.EventEmitter();
         //this.discord = new DiscordClient();
         this.spawner = new Spawner({
-            max: 2
+            max: _config.discord.shards
         });
         //this.irc = new IrcClient();
         this.Helpers = require('./Helpers');

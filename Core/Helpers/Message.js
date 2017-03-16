@@ -23,7 +23,7 @@ async function decode(dest, key, args = {}) {
     let localeName;
     if (guild) {
         // TODO: get guild locale
-    } 
+    }
     if (author) {
         // TODO: get author locale
     }
@@ -31,15 +31,24 @@ async function decode(dest, key, args = {}) {
         localeName = 'en_US';
     }
     let template = _discord.LocaleManager.getTemplate(localeName, key);
+    if (template === null) {
+        return await decode(dest, 'error.keyundef', { key });
+    }
+
+    let recursiveRegex = /\[\[(.+?)\]\]/, match;
+    while ((match = recursiveRegex.exec(template)) != null) {
+        template = template.replace(new RegExp('\\[\\[' + match[1] + '\\]\\]', 'g'), await decode(dest, match[1], args));
+    };
+
     if (Array.isArray(template)) {
         template = template[_discord.Core.Helpers.Random.getRandomInt(0, template.length - 1)];
     }
-    
+
     for (const arg of Object.keys(args)) {
         let regexp = new RegExp('\{\{' + arg + '\}\}', 'g');
         template = template.replace(regexp, args[arg]);
     }
-    
+
     return template;
 }
 
@@ -65,13 +74,14 @@ async function send(dest, content = '', file) {
             content
         };
     }
+    if (content.content == undefined) content.content = '';
     try {
         if (content.content.length > 2000) {
-            return await channel.createMessage(await decode(dest, 'generic.messagetoolong'), {
+            return await channel.createMessage(await decode(dest, 'error.messagetoolong'), {
                 file: JSON.stringify(content, null, 2),
                 name: 'output.json'
             });
-        } else if (content.content.length > 0) {
+        } else if (content.content.length >= 0) {
             return await channel.createMessage(content, file);
         }
     } catch (err) {

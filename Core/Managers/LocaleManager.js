@@ -8,12 +8,14 @@ class LocaleManager extends Manager {
     build(name) {
         // no-op
     }
-    
-    getTemplate(locale, key) {
+
+    getTemplate(locale = 'en_US', key = '') {
         let segments = key.split('.');
         let temp = this.list[locale];
         for (const segment of segments) {
-            temp = temp[segment];
+            if (temp.hasOwnProperty(segment))
+                temp = temp[segment];
+            else return null;
         }
         return temp;
     }

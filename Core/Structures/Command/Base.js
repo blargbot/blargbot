@@ -8,13 +8,13 @@ class BaseCommand {
         this.flags = options.flags || [];
         this.aliases = options.aliases || [];
     }
-    
+
     async getInfo(dest) {
         return await this.decode(dest, `${this.base}.info`);
     }
-    
+
     async getUsage(dest) {
-        return await this.decode(dest, `${this.base}.usage`); 
+        return await this.decode(dest, `${this.base}.usage`);
     }
 
     get webInfo() {
@@ -48,13 +48,26 @@ class BaseCommand {
     async send(dest, content, file) {
         await _discord.Core.Helpers.Message.send(dest, content, file);
     }
-    
+
     async decode(dest, key, args) {
         await _discord.Core.Helpers.Message.decode(dest, key, args);
     }
 
     async canExecute(ctx) {
         return true;
+    }
+
+    async notEnoughParameters(ctx) {
+        return await ctx.send(await ctx.decode('error.notenoughparams', {
+            name: this.name,
+            prefix: 'b!'
+        }));
+    }
+
+    async genericError(ctx, message) {
+        return await ctx.send(await ctx.decode('error.generic', {
+            message
+        }));
     }
 
     parseInput(ctx) {
@@ -74,11 +87,20 @@ class BaseCommand {
                 }
             } else if (words[i].startsWith('-')) {
                 let tempFlag = words[i].substring(1);
-                for (let char of tempFlag) {
-                    currentFlag = char;
-                    output[currentFlag] = [];
-                }
+                let parseFlags = this.flags.map(f => f.flag);
+                let oldFlag = currentFlag, oldOutput = output;
                 pushFlag = false;
+                for (const char of tempFlag) {
+                    if (parseFlags.includes(char)) {
+                        currentFlag = char;
+                        output[currentFlag] = [];
+                    } else {
+                        output = oldOutput;
+                        currentFlag = oldFlag;
+                        pushFlag = true;
+                        break;
+                    }
+                }
             }
             if (pushFlag) {
                 if (currentFlag != '') {
@@ -91,7 +113,7 @@ class BaseCommand {
         }
         ctx.input = output;
     };
-    
+
     get base() {
         return `command.${this.category}.${this.name}`;
     }

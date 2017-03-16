@@ -24,7 +24,7 @@ class Shard extends Sender {
         this.process.on('message', msg => {
             const message = JSON.parse(msg);
             if (message.code.startsWith('await:')) {
-                this.process.emit(message.code, message.data);
+                this.emit(message.code, message.data);
             } else
                 this.manager.handleMessage(this, message.code, message.data);
         });

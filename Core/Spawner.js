@@ -62,10 +62,13 @@ class Spawner extends _dep.EventEmitter {
                 switch (data.message) {
                     case 'shardStatus':
                         let statuses = await this.awaitBroadcast('shardStatus');
-                        shard.send('shardStatus', {message: statuses});
-                        break;        
+                        await shard.send(eventKey, { message: statuses });
+                        break;
+                    default:
+                        await shard.send(eventKey, 'Unknown await key: ' + data.message);
+                        break;
                 }
-            break;
+                break;
             case 'threadReady':
                 this.emit('threadReady' + data.message);
                 break;

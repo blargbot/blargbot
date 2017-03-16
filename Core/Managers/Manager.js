@@ -34,7 +34,7 @@ class Manager {
 
     reload(name) {
         this.unload(name);
-        this.list[name] = _dep.reload(this.constructPath(name));
+        this.list[name] = _dep.reload(this.constructReloadPath(name));
         this.build(name);
     }
 
@@ -49,12 +49,20 @@ class Manager {
         }
     }
 
+    get topPath() {
+        return `./Production/${this.name}/`;
+    }
+
     get path() {
-        return `../../Production/${this.name}/`;
+        return `../.${this.topPath}`;
     }
 
     constructPath(name) {
         return this.path + name;
+    }
+
+    constructReloadPath(name) {
+        return this.topPath + name;
     }
 }
 

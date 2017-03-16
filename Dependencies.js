@@ -3,7 +3,7 @@ module.exports = {
     moment: require('moment-timezone'),
     util: require('util'),
     path: require('path'),
-    request: require('request'),
+    request: require('superagent'),
     fs: require('fs'),
     hbs: require('hbs'),
     childProcess: require('child_process'),
@@ -15,7 +15,7 @@ module.exports = {
     Strategy: require('passport-discord').Strategy,
     ws: require('ws'),
     cluster: require('cluster'),
-    reload: require('require-reload'),
+    reload: require('require-reload')(require),
     os: require('os'),
     Eris: require('eris'),
     xml2js: require('xml2js'),
@@ -40,5 +40,6 @@ module.exports = {
     Trello: require('node-trello'),
     babel: require('babel-core'),
     EventEmitter: require('eventemitter3'),
-    irc: require('irc')
+    irc: require('irc'),
+    brainfuck: new (require('brainfuck-node'))()
 };

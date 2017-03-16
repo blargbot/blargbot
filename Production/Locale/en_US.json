@@ -1,6 +1,33 @@
 {
+    "specs": {
+        "lang": "en_US",
+        "contributors": [
+            "stupid cat"
+        ]
+    },
+    "comments": [
+        "This is a locale file for blargbot.",
+        "For contribution, please use the following guidelines:",
+        "1. Arguments are passed into templates using {{name}}. Do not modify these.",
+        "2. Templates are used in templates by using [[path.to.key]]. Do not modify these.",
+        "3. All commands must contain an 'info' and 'usage' property.",
+        "4. For random outputs, phrases are placed in an array []. You may contribute random outputs as needed.",
+        "For contribution, please use the following regulations:",
+        "1. Keep translations civil.",
+        "2. Do not modify the structure of this file.",
+        "3. For credit, please add your name to the 'contributors' field in the above 'specs' property.",
+        "Thank you!"
+    ],
     "generic": {
-        "messagetoolong": "Whoops! I tried to send a message that was too long. If you think this is an error, please report it!"
+        "output": "Output:\n{{output}}",
+        "nooutput": "No output..."
+    },
+    "error": {
+        "keyundef": "No such locale entry was found: '{{key}}'",
+        "pleasereport": "If you think this is an error, please report it!",
+        "generic": "Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+        "messagetoolong": "Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
+        "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details."
     },
     "command": {
         "general": {
@@ -26,6 +53,18 @@
                     "Let it go, and move on."
                 ],
                 "final": "Pong! ({{time}}ms)"
+            },
+            "brainfuck": {
+                "info": "Executes brainfuck code.",
+                "usage": "brainfuck <code>",
+                "flags": {
+                    "p": "Shows a list of pointers after the execution.",
+                    "i": "Specifies the input for the , operator."
+                }
+            },
+            "cat": {
+                "info": "Gets a picture of a cat.",
+                "usage": "cat"
             }
         }
     }

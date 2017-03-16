@@ -3,7 +3,7 @@ class Sender extends _dep.EventEmitter {
         super();
         this.process = process || undefined;
     }
-    
+
     send(code, data) {
         if (!data) {
             data = code;
@@ -40,7 +40,7 @@ class Sender extends _dep.EventEmitter {
                 this.process.removeAllListeners(event);
                 reject(new Error('Rejected message after 60 seconds'));
             }, 60000);
-            this.process.once(event, data => {
+            this.once(event, data => {
                 clearTimeout(timer);
                 fulfill(data);
             });
