@@ -4,11 +4,17 @@ class BaseCommand {
             throw new Error("Can't instantiate an abstract class!");
         }
         this.hidden = options.hidden || false;
-        this.usage = options.usage || '';
-        this.info = options.info || '';
         this.name = options.name || this.constructor.name;
         this.flags = options.flags || [];
         this.aliases = options.aliases || [];
+    }
+    
+    async getInfo(dest) {
+        return await this.decode(dest, `${this.base}.info`);
+    }
+    
+    async getUsage(dest) {
+        return await this.decode(dest, `${this.base}.usage`); 
     }
 
     get webInfo() {
@@ -41,6 +47,10 @@ class BaseCommand {
 
     async send(dest, content, file) {
         await _discord.Core.Helpers.Message.send(dest, content, file);
+    }
+    
+    async decode(dest, key, args) {
+        await _discord.Core.Helpers.Message.decode(dest, key, args);
     }
 
     async canExecute(ctx) {
@@ -81,6 +91,10 @@ class BaseCommand {
         }
         ctx.input = output;
     };
+    
+    get base() {
+        return `command.${this.category}.${this.name}`;
+    }
 }
 
 module.exports = BaseCommand;

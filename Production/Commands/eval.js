@@ -3,9 +3,7 @@ const { CatCommand } = _core.Structures.Command;
 class EvalCommand extends CatCommand {
     constructor() {
         super({
-            name: 'eval',
-            usage: _constants.Messages.Command.ping.usage(),
-            info: _constants.Messages.Command.ping.info()
+            name: 'eval'
         });
     }
 

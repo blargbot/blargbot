@@ -1,6 +1,6 @@
 global._dep = require('../Dependencies');
 
-const { CommandManager, EventManager } = require('./Managers');
+const { CommandManager, EventManager, LocaleManager } = require('./Managers');
 const { Cache } = require('./Structures');
 
 global.Promise = require('bluebird');
@@ -39,6 +39,9 @@ class DiscordClient extends _dep.Eris.Client {
 
         global._discord = this;
         this.Core = require('./index.js');
+        
+        this.LocaleManager = new LocaleManager();
+        this.LocaleManager.init();
 
         this.CommandManager = new CommandManager();
         this.CommandManager.init();
@@ -54,6 +57,10 @@ class DiscordClient extends _dep.Eris.Client {
             doEval(channelId, code);
         });
     }
+    
+    async decodeLocale(dest, key, args) {
+        await this.Core.Helpers.Message.decode(dest, key, args);
+    }
 }
 
 var discord = new DiscordClient();
@@ -66,8 +73,6 @@ process.on('message', async msg => {
             const eventKey = 'await:' + message.data.key;
             switch (message.data.message) {
                 case 'connect':
-                    discord.on('ready', () => _logger.init('Ready, but not through the event system.'));
-                    discord.on('error', (err) => _logger.error(err));
                     _logger.init('Connecting');
                     await discord.connect();
                     discord.sender.send(eventKey, true);
@@ -83,6 +88,8 @@ process.on('message', async msg => {
                     });
                     break;
             }
+            break;
+        default:
             break;
     }
 });

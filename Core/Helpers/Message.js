@@ -1,6 +1,49 @@
 const Context = require('../Structures/Context');
 
-async function send(dest, content, file) {
+async function decodeAndSend(dest, key, args, file) {
+    let output = await decode(dest, key, args);
+    return await send(dest, output, file);
+}
+
+async function decode(dest, key, args = {}) {
+    let author, guild;
+    if (dest instanceof _dep.Eris.Message) {
+        author = dest.author;
+        guild = dest.guild;
+    } else if (dest instanceof _dep.Eris.User) {
+        author = dest;
+    } else if (dest instanceof _dep.Eris.Channel) {
+        guild = dest.guild;
+    } else if (dest instanceof Context) {
+        guild = dest.guild;
+        author = dest.author;
+    } else if (typeof dest == 'string') {
+        guild = _discord.getChannel(dest).guild;
+    }
+    let localeName;
+    if (guild) {
+        // TODO: get guild locale
+    } 
+    if (author) {
+        // TODO: get author locale
+    }
+    if (!localeName) {
+        localeName = 'en_US';
+    }
+    let template = _discord.LocaleManager.getTemplate(localeName, key);
+    if (Array.isArray(template)) {
+        template = template[_discord.Core.Helpers.Random.getRandomInt(0, template.length - 1)];
+    }
+    
+    for (const arg of Object.keys(args)) {
+        let regexp = new RegExp('\{\{' + arg + '\}\}', 'g');
+        template = template.replace(regexp, args[arg]);
+    }
+    
+    return template;
+}
+
+async function send(dest, content = '', file) {
     let channel;
     let senderId;
     if (dest instanceof _dep.Eris.Message) {
@@ -24,7 +67,7 @@ async function send(dest, content, file) {
     }
     try {
         if (content.content.length > 2000) {
-            return await channel.createMessage(_constants.Message.Generic.MessageTooLong(), {
+            return await channel.createMessage(await decode(dest, 'generic.messagetoolong'), {
                 file: JSON.stringify(content, null, 2),
                 name: 'output.json'
             });
@@ -78,5 +121,5 @@ async function send(dest, content, file) {
 }
 
 module.exports = {
-    send
+    send, decode
 };

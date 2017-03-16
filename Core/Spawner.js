@@ -56,12 +56,17 @@ class Spawner extends _dep.EventEmitter {
         });
     }
 
-    async handleMessage(code, data) {
+    async handleMessage(shard, code, data) {
         switch (code) {
-            case 'shardStatus':
-                let statuses = await this.awaitBroadcast('shardStatus');
-                _logger.debug(statuses);
-                break;
+            case 'await':
+                const eventKey = 'await:' + data.key;
+                switch (data.message) {
+                    case 'shardStatus':
+                        let statuses = await this.awaitBroadcast('shardStatus');
+                        shard.send('shardStatus', {message: statuses});
+                        break;        
+                }
+            break;
             case 'threadReady':
                 _logger.init('thread is ready', data);
                 this.emit('threadReady' + data.message);

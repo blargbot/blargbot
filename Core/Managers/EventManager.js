@@ -30,10 +30,13 @@ class EventManager extends Manager {
             this.eventList[eventName][name] = this.builtList[name];
             if (!this.events.hasOwnProperty(eventName)) {
                 this.events[eventName] = async function (...args) {
-                    console.log('An event was triggered.');
                     for (const event of Object.keys(this.eventList[eventName]).map(k => this.eventList[eventName][k])) {
-                        let res = await event.execute(...args);
-                        if (res === false) break;
+                        try {
+                            let res = await event.execute(...args);
+                            if (res === false) break;
+                        } catch (err) {
+                            _logger.error(err);
+                        }
                     }
                 }.bind(this);
                 _discord.on(eventName, this.events[eventName]);

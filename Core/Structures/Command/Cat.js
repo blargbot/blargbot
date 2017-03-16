@@ -6,7 +6,15 @@ class CatCommand extends Base {
         if (this.constructor === CatCommand) {
             throw new Error("Can't instantiate an abstract class!");
         }
-        this.category = 'CATZ MEOW MEOW';
+        this.category = 'cat';
+    }
+
+    async getInfo() {
+        return 'meow meow meow';
+    }
+    
+    async getUsage() {
+        return 'meow meow meow';
     }
 
     async canExecute(ctx) {

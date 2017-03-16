@@ -1,17 +1,17 @@
 const Base = require('./Base');
 
-class GeneralCommand extends Base {
+class ImageCommand extends Base {
     constructor(options) {
         super(options);
-        if (this.constructor === GeneralCommand) {
+        if (this.constructor === ImageCommand) {
             throw new Error("Can't instantiate an abstract class!");
         }
-        this.category = 'admin';
+        this.category = 'image';
     }
 
     async canExecute(ctx) {
-        return true;
+        return await super.canExecute(ctx);
     }
 }
 
-module.exports = GeneralCommand;
+module.exports = ImageCommand;

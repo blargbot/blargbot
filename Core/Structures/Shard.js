@@ -26,7 +26,7 @@ class Shard extends Sender {
             if (message.code.startsWith('await:')) {
                 this.process.emit(message.code, message.data);
             } else
-                this.manager.handleMessage(message.code, message.data);
+                this.manager.handleMessage(this, message.code, message.data);
         });
 
         this.process.once('kill', code => {

@@ -1,5 +1,5 @@
 class Manager {
-    constructor(name, base) {
+    constructor(name, base, extension) {
         if (this.constructor === Manager) {
             throw new Error("Can't instantiate an abstract class!");
         }
@@ -7,18 +7,17 @@ class Manager {
         this.list = {};
         this.builtList = {};
         this.base = base;
+        this.extension = extension || 'js';
     }
 
     init() {
         var fileArray = _dep.fs.readdirSync(_dep.path.join(__dirname, this.path));
+        const regexp = new RegExp("(.+)\." + this.extension)
         for (var i = 0; i < fileArray.length; i++) {
             var file = fileArray[i];
-            if (/.+\.js$/.test(file)) {
-                var name = file.match(/(.+)\.js$/)[1];
+            if (regexp.test(file)) {
+                var name = file.match(regexp)[1];
                 this.load(name);
-                //logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading ' + this.type + ' module ', name);
-            } else {
-                //logger.init('     Skipping non-script ', file);
             }
         }
     }

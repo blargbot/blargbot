@@ -6,7 +6,7 @@ class ReadyEvent extends Event {
     }
 
     async execute() {
-        console.log('Ready!');
+        _logger.init('Ready!');
     }
 }
 

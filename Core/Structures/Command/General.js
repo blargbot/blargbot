@@ -6,7 +6,7 @@ class GeneralCommand extends Base {
         if (this.constructor === GeneralCommand) {
             throw new Error("Can't instantiate an abstract class!");
         }
-        this.category = 'General';
+        this.category = 'general';
     }
 
     async canExecute(ctx) {
