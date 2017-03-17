@@ -1,4 +1,5 @@
 const Context = require('../Structures/Context');
+const Resolve = require('./Resolve');
 
 async function decodeAndSend(dest, key, args, file) {
     let output = await decode(dest, key, args);
@@ -6,25 +7,12 @@ async function decodeAndSend(dest, key, args, file) {
 }
 
 async function decode(dest, key, args = {}) {
-    let author, guild;
-    if (dest instanceof _dep.Eris.Message) {
-        author = dest.author;
-        guild = dest.guild;
-    } else if (dest instanceof _dep.Eris.User) {
-        author = dest;
-    } else if (dest instanceof _dep.Eris.Channel) {
-        guild = dest.guild;
-    } else if (dest instanceof Context) {
-        guild = dest.guild;
-        author = dest.author;
-    } else if (typeof dest == 'string') {
-        guild = _discord.getChannel(dest).guild;
-    }
+    let { user, guild } = Resolve.generic(dest);
     let localeName;
     if (guild) {
         // TODO: get guild locale
     }
-    if (author) {
+    if (user) {
         // TODO: get author locale
     }
     if (!localeName) {
@@ -53,21 +41,11 @@ async function decode(dest, key, args = {}) {
 }
 
 async function send(dest, content = '', file) {
-    let channel;
-    let senderId;
-    if (dest instanceof _dep.Eris.Message) {
-        channel = dest.channel;
-        senderId = dest.author.id;
-    } else if (dest instanceof _dep.Eris.Channel) {
-        channel = dest;
-    } else if (dest instanceof _dep.Eris.User) {
-        channel = await dest.getDMCHannel();
-    } else if (typeof dest == 'string') {
-        channel = _discord.getChannel(dest);
-    } else if (dest instanceof Context) {
-        channel = dest.msg.channel;
-        senderId = dest.msg.author.id;
-    }
+    let { channel, user, guild } = Resolve.generic(dest);
+    let destination = await Resolve.destination(dest);
+
+    if (channel == undefined && guild == undefined) throw new Error('No such channel or guild');
+    else if (channel == undefined && guild != undefined) channel = _discord.getChannel(guild.id);
     if (channel == undefined) throw new Error('No such channel');
     if (typeof content == 'string') {
         content = {
@@ -77,12 +55,12 @@ async function send(dest, content = '', file) {
     if (content.content == undefined) content.content = '';
     try {
         if (content.content.length > 2000) {
-            return await channel.createMessage(await decode(dest, 'error.messagetoolong'), {
-                file: JSON.stringify(content, null, 2),
+            return await destination.createMessage(await decode(dest, 'error.messagetoolong'), {
+                file: (content.content || '') + '\n\n' + JSON.stringify(content.embed || {}, null, 2),
                 name: 'output.json'
             });
         } else if (content.content.length >= 0) {
-            return await channel.createMessage(content, file);
+            return await destination.createMessage(content, file);
         }
     } catch (err) {
         let response;
@@ -112,13 +90,11 @@ async function send(dest, content = '', file) {
             name: 'Content',
             value: `${(content.content || '[]').substring(0, 100)}`
         });
-        if (senderId) {
-            let user = _discord.users.get(senderId);
-            if (user != undefined)
-                Embed.author = {
-                    name: user.fullNameId,
-                    icon_url: user.avatarURL
-                };
+        if (user) {
+            Embed.author = {
+                name: user.fullNameId,
+                icon_url: user.avatarURL
+            };
         }
         await _discord.createMessage(_constants.ERROR_CHANNEL, {
             embed: Embed
@@ -130,6 +106,42 @@ async function send(dest, content = '', file) {
     }
 }
 
+function awaitMessage(ctx, callback, timeout) {
+    return new Promise((resolve, reject) => {
+        if (_discord.awaitedMessages[ctx.channel.id] == undefined)
+            _discord.awaitedMessages[ctx.channel.id] = {};
+
+        callback = callback || function (msg2) {
+            return msg2.author.id == ctx.author.id;
+        };
+
+        timeout = timeout || 300000;
+        let timer;
+        if (timeout > 0)
+            timer = setTimeout(function () {
+                delete _discord.awaitedMessages[ctx.channel.id][ctx.author.id];
+                reject(new Error('Await timed out after ' + timeout + 'ms'));
+            }, timeout);
+
+        if (_discord.awaitedMessages[ctx.channel.id][ctx.author.id] != undefined) {
+            _discord.awaitedMessages[ctx.channel.id][ctx.author.id].kill();
+        }
+
+        _discord.awaitedMessages[ctx.channel.id][ctx.author.id] = {
+            callback,
+            execute: function (msg2) {
+                if (timer != undefined) clearTimeout(timer);
+                resolve(msg2);
+            },
+            kill: function () {
+                if (timer != undefined) clearTimeout(timer);
+                reject(new Error('Got overwritten by same channel-author pair'));
+            }
+        };
+    });
+
+}
+
 module.exports = {
-    send, decode
+    send, decode, awaitMessage
 };

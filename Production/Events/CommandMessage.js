@@ -11,13 +11,14 @@ if (_config.general.isbeta) {
     prefixes.push('<@!134133271750639616>');
 }
 
-class MessageCreateEvent extends Event {
+class CommandMessageEvent extends Event {
     constructor() {
-        super('MessageCreate', 'messageCreate');
+        super('messageCreate');
     }
 
     async execute(msg) {
         let prefix = false;
+        let shouldBreak = false;
         for (const pref of prefixes) {
             if (msg.content.startsWith(pref)) {
                 prefix = pref;
@@ -26,15 +27,21 @@ class MessageCreateEvent extends Event {
         }
         if (prefix !== false) {
             const ctx = new Context(msg, msg.content.substring(prefix.length));
-            this.handleCommand(ctx);
+            shouldBreak = await this.handleCommand(ctx);
         }
+        return shouldBreak;
     }
 
     async handleCommand(ctx) {
         let commandName = ctx.words[0].toLowerCase();
-        if (_discord.CommandManager.has(commandName))
+        let didCommand = false;
+        if (_discord.CommandManager.has(commandName)) {
+            didCommand = true;
             _discord.CommandManager.execute(commandName, ctx);
+        }
+
+        return didCommand;
     }
 }
 
-module.exports = MessageCreateEvent;
+module.exports = CommandMessageEvent;

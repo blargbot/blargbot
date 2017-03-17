@@ -5,18 +5,19 @@ const { Cache } = require('./Structures');
 
 global.Promise = require('bluebird');
 global._config = require('../config.json');
+
 global._r = _dep.rethinkdbdash(_config.db);
 require('../Prototypes');
 global._core = require('../Core');
+global._logger = new _core.Logger();
 
 global._cache = {
-    User: new Cache('user'),
-    Guild: new Cache('guild'),
-    Tag: new Cache('tag')
+    User: new Cache('user', 'userid'),
+    Guild: new Cache('guild', 'guildid'),
+    Tag: new Cache('tag', 'name')
 };
 
 global._constants = _core.Constants;
-global._logger = new _core.Logger();
 
 class DiscordClient extends _dep.Eris.Client {
     constructor() {
@@ -52,6 +53,8 @@ class DiscordClient extends _dep.Eris.Client {
         this.sender = new _core.Structures.Sender(process);
 
         this.emitter = new _dep.EventEmitter();
+
+        this.awaitedMessages = {};
     }
 
     async decodeLocale(dest, key, args) {

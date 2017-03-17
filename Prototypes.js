@@ -26,12 +26,12 @@ Object.defineProperties(_dep.Eris.User.prototype, {
     database: {
         get: async function getDatabaseEntry() {
             return await _cache.User.get(this.id);
-        },
-        set: async function (data) {
-            return await _cache.User.set(this.id, data);
         }
     }
 });
+_dep.Eris.User.prototype.setDatabase = async function (data) {
+    return await _cache.User.set(this.id, data);
+};
 
 /**
  * Defining prototypes for Guild
@@ -41,9 +41,6 @@ Object.defineProperties(_dep.Eris.Guild.prototype, {
     database: {
         get: async function getDatabaseEntry() {
             return await _cache.Guild.get(this.id);
-        },
-        set: async function (data) {
-            return await _cache.Guild.set(this.id, data);
         }
     },
     botMember: {
@@ -52,3 +49,6 @@ Object.defineProperties(_dep.Eris.Guild.prototype, {
         }
     }
 });
+_dep.Eris.Guild.prototype.setDatabase = async function (data) {
+    return await _cache.Guild.set(this.id, data);
+};

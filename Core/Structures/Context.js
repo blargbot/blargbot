@@ -8,7 +8,7 @@ class Context {
     async send(content, file) {
         return await _discord.Core.Helpers.Message.send(this, content, file);
     }
-    
+
     async decode(key, args) {
         return await _discord.Core.Helpers.Message.decode(this, key, args);
     }
@@ -16,7 +16,7 @@ class Context {
     get channel() {
         return this.msg.channel;
     }
-    
+
     get author() {
         return this.msg.author;
     }

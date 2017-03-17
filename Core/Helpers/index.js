@@ -1,4 +1,5 @@
 module.exports = {
     Message: require('./Message'),
-    Random: require('./Random')
+    Random: require('./Random'),
+    Resolve: require('./Resolve')
 };

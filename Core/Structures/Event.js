@@ -1,11 +1,12 @@
 class Event {
 
-    constructor(name, eventName) {
+    constructor(eventName, priority) {
         if (this.constructor === Event) {
             throw new Error("Can't instantiate an abstract class!");
         }
-        this.name = name || this.constructor.name;
+        this.name = this.constructor.name;
         this.eventName = eventName || this.constructor.name;
+        this.priority = priority || 5;
     }
 
     async execute() {

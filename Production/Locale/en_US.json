@@ -65,6 +65,12 @@
             "cat": {
                 "info": "Gets a picture of a cat.",
                 "usage": "cat"
+            },
+            "ship": {
+                "info": "Gives you the ship name for two users.",
+                "usage": "ship <user1> <user2>",
+                "final": "Your shipname is **{{name}}**!",
+                "notenough": "You have to tell me who to ship!"
             }
         }
     }
