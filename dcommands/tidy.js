@@ -39,7 +39,7 @@ e.flags = [{
 }, {
     flag: 'q',
     word: 'query',
-    desc: 'Removes messages that match the regex query. You can also use regex.'
+    desc: 'Removes messages that match the provided query. You can also use /regex/.'
 }, {
     flag: 'I',
     word: 'invert',

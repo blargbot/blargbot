@@ -11,7 +11,7 @@ e.name = `brainfuck`;
 e.args = `&lt;code&gt; [input]`;
 e.usage = `{brainfuck;code[;input]}`;
 e.desc = `Interprets brainfuck input.`;
-e.exampleIn = `{abs;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}`;
+e.exampleIn = `{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}`;
 e.exampleOut = `Hello World!`;
 
 e.execute = async function (params) {

@@ -26,7 +26,7 @@ e.longinfo = `<p>Creates message censorships. Subcommands:</p>
 e.flags = [{
     flag: 'R',
     word: 'regex',
-    desc: 'Add: If specified, parse as regex rather than plaintext.'
+    desc: 'Add: If specified, parse as /regex/ rather than plaintext.'
 }, {
     flag: 'w',
     word: 'weight',
