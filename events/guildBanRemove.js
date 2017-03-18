@@ -14,9 +14,10 @@ bot.on('guildBanRemove', async function (guild, user) {
 
         let msg2 = await bot.getMessage(val, lastCase.msgid);
         let embed = msg2.embeds[0];
-        if (embed && (dep.moment() - embed.timestamp) <= 60000) {
+
+        if (embed && (Date.now() - Date.now() - dep.moment(embed.timestamp).format('x')) <= 60000) {
             embed.fields[0].value = 'Softban';
-            embed.color = 0xffee02;
+            embed.color = bu.ModLogColour.SOFTBAN;
             embed.timestamp = dep.moment(embed.timestamp);
 
             msg2.edit({

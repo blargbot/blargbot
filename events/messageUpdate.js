@@ -1,4 +1,4 @@
-bot.on('messageUpdate', async function(msg, oldmsg) {
+bot.on('messageUpdate', async function (msg, oldmsg) {
     if (msg.channel.guild == undefined) {
         if (bot.channelGuildMap.hasOwnProperty(msg.channel.id)) {
             msg.channel.guild = bot.guilds.get(bot.channelGuildMap[msg.channel.id]);
