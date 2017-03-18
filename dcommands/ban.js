@@ -43,7 +43,7 @@ e.execute = async function(msg, words) {
         if (input.t && input.t.length > 0) {
             duration = bu.parseDuration(input.t.join(' '));
         }
-        bu.send(msg, (await e.ban(msg, user, parseInt(input.undefined[input.undefined.length - 1]), input.r, duration))[0]);
+        bu.send(msg, (await e.ban(msg, user, parseInt(input.undefined.length > 1 ? input.undefined[input.undefined.length - 1] : 0), input.r, duration))[0]);
     }
 };
 
