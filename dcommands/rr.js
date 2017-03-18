@@ -41,7 +41,7 @@ var liveMsg = [
 ];
 
 e.execute = (msg, words) => {
-    let bullets = parseInt(words[1]) || 1;
+    let bullets = parseInt(words[1]);
     if (isNaN(bullets)) {
         bullets = 1;
     }
