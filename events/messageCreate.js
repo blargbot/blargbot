@@ -377,7 +377,7 @@ async function handleCensor(msg, storedGuild) {
                 if (violation == true) { // Uh oh, they did a bad!
                     let res = await bu.issueWarning(msg.author, msg.guild, cens.weight);
                     if (cens.weight > 0) {
-                        await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', 'Said a blacklisted phrase.', [{
+                        await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', 'Said a blacklisted phrase.', bu.ModLogColour.WARN, [{
                             name: 'Warnings',
                             value: `Assigned: ${cens.weight}\nNew Total: ${res.count || 0}`,
                             inline: true

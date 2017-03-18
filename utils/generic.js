@@ -658,49 +658,11 @@ bu.isBotHigher = (member) => {
     return botPos > memPos;
 };
 
-bu.logAction = async function (guild, user, mod, type, reason, fields) {
+bu.logAction = async function (guild, user, mod, type, reason, color = 0x17c484, fields) {
     let isArray = Array.isArray(user);
     if (Array.isArray(reason)) reason = reason.join(' ');
     let val = await bu.guildSettings.get(guild.id, 'modlog');
     if (val) {
-        let color = 0x17c484;
-        switch (type.toLowerCase()) {
-            case 'auto-ban':
-            case 'ban':
-            case 'hack-ban':
-            case 'mass hack-ban':
-            case 'tag ban':
-                color = 0xcc0c1c;
-                break;
-            case 'softban':
-            case 'unban':
-            case 'tag unban':
-                color = 0x79add1;
-                break;
-            case 'auto-kick':
-            case 'kick':
-            case 'tag kick':
-                color = 0xdb7b1c;
-                break;
-            case 'mute':
-            case 'tag mute':
-                color = 0xd80f66;
-                break;
-            case 'auto-unmute':
-            case 'unmute':
-            case 'tag unmute':
-                color = 0x1cdb68;
-                break;
-            case 'warning':
-            case 'auto-warning':
-            case 'tag warning':
-                color = 0xd1be79;
-                break;
-            case 'pardon':
-            case 'tag pardon':
-                color = 0x79d196;
-                break;
-        }
         let storedGuild = await bu.getGuild(guild.id);
         let caseid = 0;
         if (storedGuild.modlog.length > 0) {
@@ -799,7 +761,7 @@ bu.issueWarning = async function (user, guild, count, params) {
             storedGuild.warnings.users[user.id] = undefined;
             type = 1;
         } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
-            await bu.logAction(guild, bot.user, user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`);
+            await bu.logAction(guild, bot.user, user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`, bu.ModLogColour.KICK);
             await guild.kickMember(user.id);
             type = 2;
         }

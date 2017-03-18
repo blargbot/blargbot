@@ -110,3 +110,13 @@ bu.TagVariableType = {
         }
     }
 };
+
+bu.ModLogColour = {
+    BAN: 0xcc0c1c,
+    UNBAN: 0x79add1,
+    KICK: 0xdb7b1c,
+    UNMUTE: 0xd80f66,
+    MUTE: 0x1cdb68,
+    WARN: 0xd1be79,
+    PARDON: 0x79d196
+};

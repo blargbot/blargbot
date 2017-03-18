@@ -162,7 +162,8 @@ bu.processTag = async function (params) {
         fallback = params.fallback,
         author = params.author,
         tagName = params.tagName,
-        terminate = params.terminate;
+        terminate = params.terminate,
+        isStaff = params.isStaff || await bu.isUserStaff(author, msg.guild.id);
 
     if (terminate) return {
         contents: contents,
@@ -225,7 +226,8 @@ bu.processTag = async function (params) {
                 author: author,
                 tagName: tagName,
                 ccommand: params.ccommand,
-                terminate
+                terminate,
+                isStaff
             });
 
         } else {
@@ -237,7 +239,8 @@ bu.processTag = async function (params) {
                 author: author,
                 tagName: tagName,
                 ccommand: params.ccommand,
-                terminate
+                terminate,
+                isStaff
             }, fallback, '`Tag doesn\'t exist`');
         }
 

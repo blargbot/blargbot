@@ -19,7 +19,7 @@ e.flags = [{
     desc: 'The reason for the kick.'
 }];
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.kickMembers) {
         bu.send(msg, `I don't have permission to kick users!`);
         return;
@@ -58,7 +58,7 @@ e.execute = async function(msg, words) {
         try {
             await bot.kickGuildMember(msg.channel.guild.id, user.id);
             let input = bu.parseInput(e.flags, words);
-            bu.logAction(msg.channel.guild, user, msg.author, 'Kick', input.r);
+            bu.logAction(msg.channel.guild, user, msg.author, 'Kick', input.r, bu.ModLogColour.KICK);
             bu.send(msg, ':ok_hand:');
         } catch (err) {
             bu.send(msg, `Failed to kick the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``);

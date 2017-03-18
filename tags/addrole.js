@@ -14,7 +14,7 @@ e.desc = `Gives a user a role, where role is a role ID or mention. You can find 
 e.exampleIn = `Have a role! {addrole;11111111111111111}`;
 e.exampleOut = `Have a role! true`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -23,7 +23,9 @@ e.execute = async function(params) {
     if (!params.ccommand) {
         replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
     } else {
-        if (params.args.length > 1) {
+        if (!params.isStaff) {
+            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
+        } else if (params.args.length > 1) {
             let member = params.msg.member;
             if (params.args[2]) {
                 let user = await bu.getUser(params.msg, params.args[2], true);

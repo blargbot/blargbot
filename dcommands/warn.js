@@ -38,7 +38,7 @@ e.execute = async function (msg, words) {
         if (!isNaN(tempCount)) count = tempCount;
     }
     let res = await bu.issueWarning(user, msg.guild, count);
-    await bu.logAction(msg.guild, user, msg.author, 'Warning', input.r, [{
+    await bu.logAction(msg.guild, user, msg.author, 'Warning', input.r, bu.ModLogColour.WARN, [{
         name: 'Warnings',
         value: `Assigned: ${count}\nNew Total: ${res.count || 0}`,
         inline: true

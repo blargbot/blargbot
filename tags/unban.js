@@ -14,7 +14,7 @@ e.desc = `Unbans a user. This functions the same as the unban command. If noperm
 e.exampleIn = `{unban;@user;0;This is a test unban}@user was unbanned!`;
 e.exampleOut = `@user was unbanned!`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -23,7 +23,9 @@ e.execute = async function(params) {
     if (!params.ccommand) {
         replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
     } else {
-        if (params.args.length > 1) {
+        if (!params.isStaff) {
+            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
+        } else if (params.args.length > 1) {
             let user = await bu.getUser(params.msg, params.args[1], true);
             if (user) {
                 let noPerms = params.args[3] ? true : false;

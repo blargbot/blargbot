@@ -1,4 +1,4 @@
-bot.on('guildBanRemove', async function(guild, user) {
+bot.on('guildBanRemove', async function (guild, user) {
     let storedGuild = await bu.getGuild(guild.id);
     let modlog = storedGuild.modlog || [];
     let lastCase = modlog[modlog.length - 1];
@@ -24,10 +24,10 @@ bot.on('guildBanRemove', async function(guild, user) {
                 embed: embed
             });
         } else {
-            bu.logAction(guild, user, mod, type || 'Unban', reason);
+            bu.logAction(guild, user, mod, type || 'Unban', reason, bu.ModLogColour.UNBAN);
         }
     } else {
-        bu.logAction(guild, user, mod, type || 'Unban', reason);
+        bu.logAction(guild, user, mod, type || 'Unban', reason, bu.ModLogColour.UNBAN);
     }
     bu.logEvent(guild.id, 'memberunban', [{
         name: 'User',

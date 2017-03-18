@@ -23,7 +23,9 @@ e.execute = async function (params) {
     if (!params.ccommand) {
         replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
     } else {
-        if (params.args.length > 1) {
+        if (!params.isStaff) {
+            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
+        } else if (params.args.length > 1) {
             let member = params.msg.member;
             if (params.args[2]) {
                 let user = await bu.getUser(params.msg, params.args[2], true);

@@ -14,7 +14,7 @@ e.desc = `Sends the output to a specific channel. Only works in custom commands.
 e.exampleIn = `{channel;#channel}Hello!`;
 e.exampleOut = `In #channel: Hello!`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -23,26 +23,29 @@ e.execute = async function(params) {
     if (!params.ccommand) {
         replaceString = await bu.tagProcessError(params, '`Can only set channel in CCommands`');
     } else {
-        if (/([0-9]{17,23})/.test(params.args[1])) {
-            let channelid = params.args[1].match(/([0-9]{17,23})/)[1];
-            let channel = bot.getChannel(channelid);
-            if (channel) {
-                if (channel.guild.id == params.msg.guild.id) {
-                    if (params.args[2]) {
-                        bu.send(channel.id, {
-                            content: params.args[2],
-                            disableEveryone: false
-                        });
-                    } else params.msg.channel = channel;
+        if (!params.isStaff) {
+            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
+        } else
+            if (/([0-9]{17,23})/.test(params.args[1])) {
+                let channelid = params.args[1].match(/([0-9]{17,23})/)[1];
+                let channel = bot.getChannel(channelid);
+                if (channel) {
+                    if (channel.guild.id == params.msg.guild.id) {
+                        if (params.args[2]) {
+                            bu.send(channel.id, {
+                                content: params.args[2],
+                                disableEveryone: false
+                            });
+                        } else params.msg.channel = channel;
+                    } else {
+                        replaceString = await bu.tagProcessError(params, '`Channel must be in guild`');
+                    }
                 } else {
-                    replaceString = await bu.tagProcessError(params, '`Channel must be in guild`');
+                    replaceString = await bu.tagProcessError(params, '`Channel not found`');
                 }
             } else {
-                replaceString = await bu.tagProcessError(params, '`Channel not found`');
+                replaceString = await bu.tagProcessError(params, '`Invalid channel`');
             }
-        } else {
-            replaceString = await bu.tagProcessError(params, '`Invalid channel`');
-        }
     }
     params.fallback = params.args[1];
 

@@ -38,7 +38,7 @@ e.execute = async function (msg, words) {
         if (!isNaN(tempCount)) count = tempCount;
     }
     let res = await bu.issuePardon(user, msg.guild, count);
-    await bu.logAction(msg.guild, user, msg.author, 'Pardon', input.r, [{
+    await bu.logAction(msg.guild, user, msg.author, 'Pardon', input.r, bu.ModLogColour.PARDON, [{
         name: 'Pardons',
         value: `Assigned: ${count}\nNew Total: ${res.count || 0}`,
         inline: true

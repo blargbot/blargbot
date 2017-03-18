@@ -1,4 +1,4 @@
-bot.on('guildBanAdd', async function(guild, user) {
+bot.on('guildBanAdd', async function (guild, user) {
 
     let storedGuild = await bu.getGuild(guild.id);
     let votebans = storedGuild.votebans || {};
@@ -24,7 +24,7 @@ bot.on('guildBanAdd', async function(guild, user) {
             mod = bu.bans[guild.id].mass.mod;
             type = bu.bans[guild.id].mass.type;
             reason = bu.bans[guild.id].mass.reason;
-            bu.logAction(guild, bu.bans[guild.id].mass.newUsers, mod, type, reason);
+            bu.logAction(guild, bu.bans[guild.id].mass.newUsers, mod, type, reason, bu.ModLogColour.BAN);
         }
         return;
     } else if (bu.bans[guild.id][user.id]) {
@@ -33,7 +33,7 @@ bot.on('guildBanAdd', async function(guild, user) {
         reason = bu.bans[guild.id][user.id].reason;
         delete bu.bans[guild.id][user.id];
     }
-    bu.logAction(guild, user, mod, type, reason);
+    bu.logAction(guild, user, mod, type, reason, bu.ModLogColour.BAN);
     bu.logEvent(guild.id, 'memberban', [{
         name: 'User',
         value: bu.getFullName(user) + ` (${user.id})`,

@@ -32,7 +32,7 @@ e.flags = [{
     desc: `The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`
 }];
 
-e.execute = async function(msg, words, text) {
+e.execute = async function (msg, words, text) {
     let mutedrole = await bu.guildSettings.get(msg.channel.guild.id, 'mutedrole');
 
     if (!mutedrole) {
@@ -119,7 +119,7 @@ Modifying $ {
                         let input = bu.parseInput(e.flags, words);
                         let reason;
                         if (input.r) reason = input.r.join(' ');
-                        bu.logAction(msg.channel.guild, user, msg.author, 'Mute', reason);
+                        bu.logAction(msg.channel.guild, user, msg.author, 'Mute', reason, bu.ModLogColour.MUTE);
                         let suffix = '';
                         if (input.t) {
                             let duration = bu.parseDuration(input.t.join(' '));

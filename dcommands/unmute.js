@@ -21,7 +21,7 @@ e.flags = [{
     desc: 'The reason for the unmute.'
 }];
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let mutedrole = await bu.guildSettings.get(msg.channel.guild.id, 'mutedrole');
 
     if (!mutedrole) {
@@ -50,7 +50,7 @@ e.execute = async function(msg, words) {
                             mute: voiceMute ? false : undefined
                         });
                         let input = bu.parseInput(e.flags, words);
-                        bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', input.r);
+                        bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', input.r, bu.ModLogColour.UNMUTE);
                         bu.send(msg, ':ok_hand:');
                     } catch (err) {
                         bu.send(msg, `Failed to remove the muted role! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``);
@@ -64,7 +64,7 @@ e.execute = async function(msg, words) {
     }
 };
 
-e.event = async function(args) {
+e.event = async function (args) {
     let guild = bot.guilds.get(args.guild);
     if (!guild || !guild.members.get(args.user)) return;
     let member = guild.members.get(args.user);
@@ -77,6 +77,6 @@ e.event = async function(args) {
             roles: roles,
             mute: voiceMute ? false : undefined
         });
-        bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${dep.moment.duration(args.duration).humanize()}.`);
+        bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${dep.moment.duration(args.duration).humanize()}.`, bu.ModLogColour.UNMUTE);
     }
 };
