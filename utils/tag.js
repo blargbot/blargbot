@@ -163,7 +163,7 @@ bu.processTag = async function (params) {
         author = params.author,
         tagName = params.tagName,
         terminate = params.terminate,
-        isStaff = params.isStaff || (author ? await bu.isUserStaff(author, msg.guild.id) : true);
+        isStaff = params.isStaff || (author != params.msg.guild.id ? await bu.isUserStaff(author, msg.guild.id) : true);
 
     if (terminate) return {
         contents: contents,
