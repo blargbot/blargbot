@@ -12,7 +12,7 @@ e.args = `&lt;action&gt; &lt;user&gt; [mod] [reason] [color]`;
 e.usage = `{modlog;action;user[;mod[;reason[;color]]]}`;
 e.desc = `Creates a custom modlog entry for the given action and user. A color is a 6-digit hex code preceded by #.`;
 e.exampleIn = `You did a bad! {modlog;Bad;{userid};;They did a bad;#ffffff}`;
-e.exampleOut = `You dida bad! (modlog entry)`;
+e.exampleOut = `You did a bad! (modlog entry)`;
 
 e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
