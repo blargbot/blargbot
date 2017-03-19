@@ -27,7 +27,7 @@ e.flags = [{
 e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words);
     if (input.undefined.length == 0) {
-        bu.send(msg, 'Not enough input. Do `b!help warn` for usage instructions.');
+        bu.send(msg, 'Not enough input. Do `b!help pardon` for usage instructions.');
         return;
     }
     let user = await bu.getUser(msg, input.undefined.join(' '));
@@ -40,7 +40,7 @@ e.execute = async function (msg, words) {
     let res = await bu.issuePardon(user, msg.guild, count);
     await bu.logAction(msg.guild, user, msg.author, 'Pardon', input.r, bu.ModLogColour.PARDON, [{
         name: 'Pardons',
-        value: `Assigned: ${count}\nNew Total: ${res.count || 0}`,
+        value: `Assigned: ${count}\nNew Total: ${res || 0}`,
         inline: true
     }]);
     bu.send(msg, `:ok_hand: **${bu.getFullName(user)}** has been given ${count == 1 ? 'a pardon' : count + ' pardons'}. They now have ${res} warnings.`);
