@@ -24,7 +24,7 @@ e.execute = async function (params) {
     var replaceContent = false;
     if (args[1]) {
         try {
-            replaceString = (dep.brainfuck.execute(args[1], args[2])).output;
+            replaceString = await bu.filterMentions((dep.brainfuck.execute(args[1], args[2])).output);
         } catch (err) {
             replaceString = await bu.tagProcessError(params, '`' + err.message + '`');
         }
