@@ -29,7 +29,7 @@ botEmitter.on('reloadIrc', () => {
 
 /** LOGGING STUFF **/
 
-console.log = function() {
+console.log = function () {
     logger.debug(arguments);
 };
 
@@ -48,7 +48,7 @@ var VERSION = config.version;
 
 function reloadConfig() {
     logger.info('Attempting to reload config');
-    dep.fs.readFile(dep.path.join(__dirname, 'config.json'), 'utf8', function(err, data) {
+    dep.fs.readFile(dep.path.join(__dirname, 'config.json'), 'utf8', function (err, data) {
         if (err) throw err;
         config = JSON.parse(data);
     });
