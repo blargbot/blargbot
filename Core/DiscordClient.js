@@ -40,6 +40,7 @@ class DiscordClient extends _dep.Eris.Client {
 
         global._discord = this;
         this.Core = require('./index.js');
+        this.Helpers = require('./Helpers');
 
         this.LocaleManager = new LocaleManager();
         this.LocaleManager.init();

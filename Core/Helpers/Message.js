@@ -1,13 +1,28 @@
 const Context = require('../Structures/Context');
-const Resolve = require('./Resolve');
+const Helpers = require('./index.js');
 
+/**
+ * Decodes and sends a locale key
+ * @param {(Message|Channel|Guild|User|Member|Context|String)} dest A destination resolveable.
+ * @param {Member} dest a member object (DM)
+ * @param {String} key The locale key
+ * @param {Object} [args] Additional arguments for decoding
+ * @param {Object} [file] A file to send
+ * @param {String} file.name The file's name
+ * @param {Buffer} file.file The file's buffer
+ */
 async function decodeAndSend(dest, key, args, file) {
-    let output = await decode(dest, key, args);
-    return await send(dest, output, file);
+    return await send(dest, await decode(dest, key, args), file);
 }
 
+/**
+ * Decodes a locale key
+ * @param {(Message|Channel|Guild|User|Member|Context|String)} dest A destination resolveable.
+ * @param {String} key The locale key
+ * @param {Object} [args={}] Additional arguments for decoding
+ */
 async function decode(dest, key, args = {}) {
-    let { user, guild } = Resolve.generic(dest);
+    let { user, guild } = Helpers.Resolve.generic(dest);
     let localeName;
     if (guild) {
         // TODO: get guild locale
@@ -29,7 +44,7 @@ async function decode(dest, key, args = {}) {
     };
 
     if (Array.isArray(template)) {
-        template = template[_discord.Core.Helpers.Random.getRandomInt(0, template.length - 1)];
+        template = template[Helpers.Random.getRandomInt(0, template.length - 1)];
     }
 
     for (const arg of Object.keys(args)) {
@@ -40,9 +55,17 @@ async function decode(dest, key, args = {}) {
     return template;
 }
 
+/**
+ * Sends a message to the provided destination
+ * @param {(Message|Channel|Guild|User|Member|Context|String)} dest A destination resolveable.
+ * @param {String} [content=''] 
+ * @param {Object} [file] The file to send
+ * @param {String} file.name The file's name
+ * @param {Buffer} file.file The file's buffer
+ */
 async function send(dest, content = '', file) {
-    let { channel, user, guild } = Resolve.generic(dest);
-    let destination = await Resolve.destination(dest);
+    let { channel, user, guild } = Helpers.Resolve.generic(dest);
+    let destination = await Helpers.Resolve.destination(dest);
 
     if (channel == undefined && guild == undefined) throw new Error('No such channel or guild');
     else if (channel == undefined && guild != undefined) channel = _discord.getChannel(guild.id);
@@ -106,7 +129,20 @@ async function send(dest, content = '', file) {
     }
 }
 
-function awaitMessage(ctx, callback, timeout) {
+/**
+ * @callback verifyCallback
+ * The verification callback for awaitMessage
+ * @param {Message} msg2 The new message input
+ * @returns {Boolean} Whether or not to finalize the await
+ */
+
+/**
+ * Awaits a message response
+ * @param {Context} ctx The context to await the message in 
+ * @param {verifyCallback} callback A verification callback
+ * @param {Number} [timeout=300000] The amount of time before the await expires. Set to -1 to disable 
+ */
+function awaitMessage(ctx, callback, timeout = 300000) {
     return new Promise((resolve, reject) => {
         if (_discord.awaitedMessages[ctx.channel.id] == undefined)
             _discord.awaitedMessages[ctx.channel.id] = {};
@@ -115,7 +151,6 @@ function awaitMessage(ctx, callback, timeout) {
             return msg2.author.id == ctx.author.id;
         };
 
-        timeout = timeout || 300000;
         let timer;
         if (timeout > 0)
             timer = setTimeout(function () {
@@ -139,9 +174,28 @@ function awaitMessage(ctx, callback, timeout) {
             }
         };
     });
+}
 
+/**
+ * Inserts a message into the database
+ * @param {Message} msg The message object 
+ * @param {Number} type The type of the message - 0 for create, 1 for update, 2 for delete
+ */
+async function insertMessage(msg, type = 0) {
+    if (msg.channel)
+        return await _r.table('chatlogs').insert({
+            id: type == 0 ? msg.id : Helpers.Snowflake.make(),
+            content: msg.content,
+            attachment: msg.attachments.length > 0 ? msg.attachments[0].url : undefined,
+            userid: msg.author ? msg.author.id : 'unknown',
+            msgid: msg.id,
+            channelid: msg.channel.id,
+            guildid: msg.guild ? msg.guild.id : 'DM',
+            msgtime: _r.epochTime(msg.timestamp / 1000),
+            type
+        });
 }
 
 module.exports = {
-    send, decode, awaitMessage
+    send, decode, awaitMessage, insertMessage
 };
