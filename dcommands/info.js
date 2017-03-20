@@ -23,8 +23,17 @@ const patrons = [
     '144906892307726336'
 ];
 
+const donators = [
+    '191793155685744640'
+];
+
 e.execute = (msg) => {
     let patronStr = patrons.map(p => {
+        if (/^[0-9]{17,23}$/.test(p)) {
+            return bu.getFullName(bot.users.get(p));
+        } else return p;
+    }).join('\n - ');
+    let donatorStr = donators.map(p => {
         if (/^[0-9]{17,23}$/.test(p)) {
             return bu.getFullName(bot.users.get(p));
         } else return p;
@@ -34,6 +43,9 @@ e.execute = (msg) => {
 
 :heart: __**Special thanks to my patrons!**__ :heart:
 ** - ${patronStr}**
+
+:heart: __**Special thanks to all my other donators!**__ :heart:
+** - ${donatorStr}**
 
 Additional credits to Aurieh#0258! :thumbsup:
 
