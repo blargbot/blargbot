@@ -1,5 +1,7 @@
 const Context = require('../Structures/Context');
-const Helpers = require('./index.js');
+const Resolve = require('./Resolve');
+const Snowflake = require('./Snowflake');
+const Random = require('./Random');
 
 /**
  * Decodes and sends a locale key
@@ -22,7 +24,7 @@ async function decodeAndSend(dest, key, args, file) {
  * @param {Object} [args={}] Additional arguments for decoding
  */
 async function decode(dest, key, args = {}) {
-    let { user, guild } = Helpers.Resolve.generic(dest);
+    let { user, guild } = Resolve.generic(dest);
     let localeName;
     if (guild) {
         // TODO: get guild locale
@@ -44,7 +46,7 @@ async function decode(dest, key, args = {}) {
     };
 
     if (Array.isArray(template)) {
-        template = template[Helpers.Random.getRandomInt(0, template.length - 1)];
+        template = template[Random.getRandomInt(0, template.length - 1)];
     }
 
     for (const arg of Object.keys(args)) {
@@ -64,8 +66,8 @@ async function decode(dest, key, args = {}) {
  * @param {Buffer} file.file The file's buffer
  */
 async function send(dest, content = '', file) {
-    let { channel, user, guild } = Helpers.Resolve.generic(dest);
-    let destination = await Helpers.Resolve.destination(dest);
+    let { channel, user, guild } = Resolve.generic(dest);
+    let destination = await Resolve.destination(dest);
 
     if (channel == undefined && guild == undefined) throw new Error('No such channel or guild');
     else if (channel == undefined && guild != undefined) channel = _discord.getChannel(guild.id);
@@ -184,7 +186,7 @@ function awaitMessage(ctx, callback, timeout = 300000) {
 async function insertMessage(msg, type = 0) {
     if (msg.channel)
         return await _r.table('chatlogs').insert({
-            id: type == 0 ? msg.id : Helpers.Snowflake.make(),
+            id: type == 0 ? msg.id : Snowflake.make(),
             content: msg.content,
             attachment: msg.attachments.length > 0 ? msg.attachments[0].url : undefined,
             userid: msg.author ? msg.author.id : 'unknown',
@@ -196,6 +198,28 @@ async function insertMessage(msg, type = 0) {
         });
 }
 
+/**
+ * Gets the most recent entry in the database for the provided message id
+ * @param {String} msgId The message to get
+ * @returns {Object} The entry
+ */
+async function getLatestCachedMessage(msgId) {
+    const rawMsg = (await _r.table('chatlogs').getAll(msgId, { index: 'msgid' }).orderBy(_r.desc('id')).limit(1))[0];
+    return constructMessage({
+        id: msgId,
+        timestamp: rawMsg.type == 0 ? rawMsg.msgtime : Snowflake.unmake(msgId),
+        channel_id: rawMsg.channelid,
+        content: rawMsg.content,
+        edited_timestamp: rawMsg.type != 1 ? rawMsg.msgtime : undefined,
+        mentions: [],
+        role_mentions: []
+    });
+}
+
+async function constructMessage(data) {
+    return new _dep.Eris.Message(data, _discord);
+}
+
 module.exports = {
-    send, decode, awaitMessage, insertMessage
+    send, decode, awaitMessage, insertMessage, getLatestCachedMessage
 };
