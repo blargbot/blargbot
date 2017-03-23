@@ -28,26 +28,16 @@ e.execute = async function (msg, words) {
 
 
             let storedGuild = await bu.getGuild(msg.guild.id);
-            logger.debug('1debug');
             let modlog = storedGuild.modlog;
-            logger.debug('2debug');
             let index = latest ? modlog.length - 1 : caseid;
-            logger.debug('3debug');
             if (modlog.length > 0 && modlog[index]) {
-                logger.debug('4debug');
                 let msg2 = await bot.getMessage(val, modlog[index].msgid);
-                logger.debug('5debug');
 
                 var content = msg2.content;
-                logger.debug('6debug');
                 content = content.replace(/\*\*Reason:\*\*.+?\n/, `**Reason:** ${words.join(' ')}\n`);
-                logger.debug('7debug');
                 modlog[index].reason = words.join(' ');
-                logger.debug('8debug');
                 content = content.replace(/\*\*Moderator:\*\*.+/, `**Moderator:** ${msg.author.username}#${msg.author.discriminator}`);
-                logger.debug('9debug');
                 modlog[index].modid = msg.author.id;
-                logger.debug('10debug');
                 r.table('guild').get(msg.channel.guild.id).update({
                     modlog: modlog
                 }).run();
