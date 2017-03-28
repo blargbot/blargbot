@@ -20,7 +20,13 @@
     ],
     "generic": {
         "output": "Output:\n{{output}}",
-        "nooutput": "No output..."
+        "nooutput": "No output...",
+        "queryexpire": "This query will expire in {{length}} minutes",
+        "resolveuser": {
+            "nousers": "No users found.",
+            "pickuserone": "{{length}} users were found! Please select one from the list.",
+            "pickusertwo": "**{{name}}**, please type the number of the user you wish to select below, or type `c` to cancel. [[generic.queryexpire]]"
+        }
     },
     "error": {
         "keyundef": "No such locale entry was found: '{{key}}'",

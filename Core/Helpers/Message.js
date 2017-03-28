@@ -27,10 +27,12 @@ async function decode(dest, key, args = {}) {
     let { user, guild } = Resolve.generic(dest);
     let localeName;
     if (guild) {
-        // TODO: get guild locale
+        let storedGuild = await guild.database;
+        if (storedGuild.locale) localeName = storedGuild.locale;
     }
     if (user) {
-        // TODO: get author locale
+        let storedUser = await user.database;
+        if (storedUser.locale) localeName = storedUser.locale;
     }
     if (!localeName) {
         localeName = 'en_US';
@@ -140,31 +142,32 @@ async function send(dest, content = '', file) {
 
 /**
  * Awaits a message response
- * @param {Context} ctx The context to await the message in 
+ * @param {(Message|Channel|Guild|User|Member|Context|String)} dest A destination resolveable.
  * @param {verifyCallback} callback A verification callback
  * @param {Number} [timeout=300000] The amount of time before the await expires. Set to -1 to disable 
  */
-function awaitMessage(ctx, callback, timeout = 300000) {
+function awaitMessage(dest, callback, timeout = 300000) {
+    const { channel, user } = Resolve.generic(dest);
     return new Promise((resolve, reject) => {
-        if (_discord.awaitedMessages[ctx.channel.id] == undefined)
-            _discord.awaitedMessages[ctx.channel.id] = {};
+        if (_discord.awaitedMessages[channel.id] == undefined)
+            _discord.awaitedMessages[channel.id] = {};
 
         callback = callback || function (msg2) {
-            return msg2.author.id == ctx.author.id;
+            return msg2.author.id == user.id;
         };
 
         let timer;
         if (timeout > 0)
             timer = setTimeout(function () {
-                delete _discord.awaitedMessages[ctx.channel.id][ctx.author.id];
+                delete _discord.awaitedMessages[channel.id][user.id];
                 reject(new Error('Await timed out after ' + timeout + 'ms'));
             }, timeout);
 
-        if (_discord.awaitedMessages[ctx.channel.id][ctx.author.id] != undefined) {
-            _discord.awaitedMessages[ctx.channel.id][ctx.author.id].kill();
+        if (_discord.awaitedMessages[channel.id][user.id] != undefined) {
+            _discord.awaitedMessages[channel.id][user.id].kill();
         }
 
-        _discord.awaitedMessages[ctx.channel.id][ctx.author.id] = {
+        _discord.awaitedMessages[channel.id][user.id] = {
             callback,
             execute: function (msg2) {
                 if (timer != undefined) clearTimeout(timer);
@@ -188,7 +191,7 @@ async function insertMessage(msg, type = 0) {
         return await _r.table('chatlogs').insert({
             id: type == 0 ? msg.id : Snowflake.make(),
             content: msg.content,
-            attachment: msg.attachments.length > 0 ? msg.attachments[0].url : undefined,
+            attachment: msg.attachments && msg.attachments.length > 0 ? msg.attachments[0].url : undefined,
             userid: msg.author ? msg.author.id : 'unknown',
             msgid: msg.id,
             channelid: msg.channel.id,

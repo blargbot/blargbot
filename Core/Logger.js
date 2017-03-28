@@ -23,7 +23,7 @@ const Levels = [{ name: 'error', color: Colours.RED },
 { name: 'output', color: Colours.MAGENTA },
 { name: 'verbose', color: Colours.CYAN },
 { name: 'debug', color: Colours.GREY },
-{ name: 'debug2', color: Colours.CYAN }];
+{ name: 'adebug', color: Colours.CYAN }];
 
 var maxLength = 0;
 
@@ -63,11 +63,12 @@ class Logger extends _dep.Winston.Logger {
                         output += options.meta.stack.join('\n');
                     else
                         output += options.meta.stack;
-                } else
+                } else {
                     output += options.message || '';
 
-                if (options.meta && Object.keys(options.meta).length > 0) {
-                    output += '\n' + _dep.util.inspect(options.meta, { depth: 4 });
+                    if (options.meta && Object.keys(options.meta).length > 0) {
+                        output += '\n' + _dep.util.inspect(options.meta, { depth: 4 });
+                    }
                 }
                 return output;
             }.bind(this)
