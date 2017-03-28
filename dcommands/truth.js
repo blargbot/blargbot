@@ -16,6 +16,9 @@ e.longinfo = `<p>Shows everyone what is written in the Scroll of Truth.</p>`;
 e.alias = ['scrolloftruth'];
 
 e.execute = async function (msg, words) {
+    if (words.length == 1) {
+        bu.send(msg, 'Not enough arguments!'); return;
+    }
     let text = await bu.filterMentions(words.slice(1).join(' '));
     bot.sendChannelTyping(msg.channel.id);
     let code = bu.genEventCode();

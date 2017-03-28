@@ -16,6 +16,9 @@ e.longinfo = `<p>Clippy the paperclip is here to save the day!</p>`;
 e.alias = ['clippit', 'paperclip'];
 
 e.execute = async function (msg, words) {
+    if (words.length == 1) {
+        bu.send(msg, 'Not enough arguments!'); return;
+    }
     let text = await bu.filterMentions(words.slice(1).join(' '));
     bot.sendChannelTyping(msg.channel.id);
     let code = bu.genEventCode();
