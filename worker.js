@@ -204,6 +204,36 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
+    clippy: async function (msg) {
+        let buf = await createCaption({
+            text: msg.text,
+            font: 'arial.ttf',
+            size: '290x130',
+            gravity: 'North'
+        });
+        let text = await Jimp.read(buf);
+        let img = await Jimp.read(path.join(__dirname, 'img', `clippy.png`));
+        img.composite(text, 28, 36);
+
+        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            submitBuffer(msg.code, buffer);
+        });
+    },
+    truth: async function (msg) {
+        let buf = await createCaption({
+            text: msg.text,
+            font: 'AnnieUseYourTelescope.ttf',
+            size: '96x114',
+            gravity: 'North'
+        });
+        let text = await Jimp.read(buf);
+        let img = await Jimp.read(path.join(__dirname, 'img', `truth.png`));
+        img.composite(text, 95, 289);
+
+        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            submitBuffer(msg.code, buffer);
+        });
+    },
     shit: async function (msg) {
         let buf = await createCaption({
             text: msg.text,
