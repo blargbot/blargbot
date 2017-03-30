@@ -218,7 +218,7 @@ bu.processTag = async function (params) {
             msg, words, contents: args[0], fallback, author, tagName, terminate
         })).contents.toLowerCase();
         if (TagManager.list.hasOwnProperty(title)) {
-            replaceObj = await TagManager.list[title].execute({
+            let parameters = {
                 msg: msg,
                 args: args,
                 fallback: fallback,
@@ -228,8 +228,15 @@ bu.processTag = async function (params) {
                 ccommand: params.ccommand,
                 terminate,
                 isStaff
-            });
-
+            };
+            if (TagManager.list[title].category == bu.TagType.CCOMMAND && !params.ccommand) {
+                replaceObj = {
+                    replaceString: await bu.tagProcessError(params, '`Can only use {' + title + '} in CCommands`'),
+                    terminate: params.terminate,
+                    replaceContent: false
+                };
+            } else
+                replaceObj = await TagManager.list[title].execute(parameters);
         } else {
             replaceObj.replaceString = await bu.tagProcessError({
                 msg: msg,
