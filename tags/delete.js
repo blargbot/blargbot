@@ -8,13 +8,13 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `delete`;
-e.args = ``;
-e.usage = `{delete}`;
-e.desc = `Deletes the initiating command.`;
+e.args = `[channelid] [messageid]`;
+e.usage = `{delete[;channelid][;messageid]}`;
+e.desc = `Delete's th`;
 e.exampleIn = `The message that triggered this will be deleted. {delete}`;
 e.exampleOut = `(the message got deleted idk how to do examples for this)`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
