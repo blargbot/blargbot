@@ -19,8 +19,9 @@ e.requireCtx = require;
  * @param topConfig - the config file (Object)
  * @param em - the event emitter (EventEmitter)
  */
-e.init = async function(v, em) {
+e.init = async function (v, em) {
     bu.commandMessages = {};
+    bu.notCommandMessages = {};
 
     VERSION = v;
     emitter = em;
@@ -101,7 +102,7 @@ e.init = async function(v, em) {
  * Reloads the misc variables object
  */
 function reloadVars() {
-    dep.fs.readFileSync(dep.path.join(__dirname, 'vars.json'), 'utf8', function(err, data) {
+    dep.fs.readFileSync(dep.path.join(__dirname, 'vars.json'), 'utf8', function (err, data) {
         if (err) throw err;
         vars = JSON.parse(data);
     });
@@ -134,7 +135,7 @@ function createLogs(channelid, msgid, times) {
                 createLogs(channelid, kek[kek.length - 1].id, times);
             }, 5000);
         });
-    else {}
+    else { }
 }
 /**
  * Function to be used with createLogs
@@ -162,24 +163,24 @@ function fml(id) {
         }
     };
 
-    var req = https.request(options, function(res) {
+    var req = https.request(options, function (res) {
         var body = '';
-        res.on('data', function(chunk) {
+        res.on('data', function (chunk) {
             logger.debug(chunk);
             body += chunk;
         });
 
-        res.on('end', function() {
+        res.on('end', function () {
             logger.debug('body: ' + body);
             lastUserStatsKek = JSON.parse(body);
             logger.debug(lastUserStatsKek);
         });
 
-        res.on('error', function(thing) {
+        res.on('error', function (thing) {
             logger.warn(`Result Error: ${thing}`);
         });
     });
-    req.on('error', function(err) {
+    req.on('error', function (err) {
         logger.warn(`Request Error: ${err}`);
     });
     req.end();

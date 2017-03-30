@@ -43,10 +43,11 @@ async function handleDelete(msg, quiet) {
     }
     if (bu.commandMessages[msg.channel.guild.id] && bu.commandMessages[msg.channel.guild.id].indexOf(msg.id) > -1) {
         let val = await bu.guildSettings.get(msg.channel.guild.id, 'deletenotif');
-        if (val && val != 0)
-            bu.send(msg, `**${msg.member.nick
-|| msg.author.username}** deleted their command message.`);
+        if (val && val != 0 && (!bu.notCommandMessages || !bu.notCommandMessages[msg.channel.guild.id] || !bu.notCommandMessages[msg.channel.guild.id][msg.id]))
+            bu.send(msg, `**${msg.author.username}** deleted their command message.`);
         bu.commandMessages[msg.channel.guild.id].splice(bu.commandMessages[msg.channel.guild.id].indexOf(msg.id), 1);
+        if (bu.notCommandMessages && bu.notCommandMessages[msg.channel.guild.id] && bu.notCommandMessages[msg.id])
+            delete bu.notCommandMessages[msg.guild.id][msg.id];
     }
     if (storedGuild.settings.makelogs)
         if (msg.channel.id != '204404225914961920') {
@@ -79,7 +80,7 @@ async function handleDelete(msg, quiet) {
 
 bot.on('messageDelete', handleDelete);
 
-bot.on('messageDeleteBulk', function(msgs) {
+bot.on('messageDeleteBulk', function (msgs) {
     for (const msg of msgs) {
         handleDelete(msg, true);
     }
@@ -92,6 +93,6 @@ bot.on('messageDeleteBulk', function(msgs) {
         value: msgs[0].channel.mention,
         inline: true
     }], {
-        description: 'Bulk Message Delete'
-    });
+            description: 'Bulk Message Delete'
+        });
 });
