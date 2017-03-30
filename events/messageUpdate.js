@@ -22,11 +22,11 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
                 oldmsg.author = bot.users.get(storedMsg.userid) || {
                     id: storedMsg.userid
                 };
-                oldmsg.mentions = storedMsg.mentions.split(',').map(m => {
+                oldmsg.mentions = storedMsg.mentions ? storedMsg.mentions.split(',').map(m => {
                     return {
                         username: m
                     };
-                });
+                }) : [];
                 oldmsg.attachments = [];
                 if (storedMsg.attachment) oldmsg.attachments = [{
                     url: storedMsg.attachment
