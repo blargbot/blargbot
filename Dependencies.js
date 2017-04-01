@@ -41,5 +41,6 @@ module.exports = {
     babel: require('babel-core'),
     EventEmitter: require('eventemitter3'),
     irc: require('irc'),
-    brainfuck: new (require('brainfuck-node'))()
+    brainfuck: new (require('brainfuck-node'))(),
+    chevrotain: require('chevrotain')
 };

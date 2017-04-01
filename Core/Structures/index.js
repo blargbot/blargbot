@@ -5,5 +5,8 @@ module.exports = {
     Locale: require('./Locale'),
     Shard: require('./Shard'),
     Sender: require('./Sender'),
-    Cache: require('./Cache')
+    Cache: require('./Cache'),
+    Data: require('./Data'),
+    Tag: require('./Tag'),
+    PublicTag: require('./PublicTag')
 };

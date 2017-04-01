@@ -27,12 +27,12 @@ async function decode(dest, key, args = {}) {
     let { user, guild } = Resolve.generic(dest);
     let localeName;
     if (guild) {
-        let storedGuild = await guild.database;
-        if (storedGuild.locale) localeName = storedGuild.locale;
+        let guildLocale = await guild.data.getLocale();
+        if (guildLocale) localeName = guildLocale.locale;
     }
     if (user) {
-        let storedUser = await user.database;
-        if (storedUser.locale) localeName = storedUser.locale;
+        let userLocale = await user.data.getLocale();
+        if (userLocale) localeName = userLocale.locale;
     }
     if (!localeName) {
         localeName = 'en_US';
@@ -208,15 +208,16 @@ async function insertMessage(msg, type = 0) {
  */
 async function getLatestCachedMessage(msgId) {
     const rawMsg = (await _r.table('chatlogs').getAll(msgId, { index: 'msgid' }).orderBy(_r.desc('id')).limit(1))[0];
-    return constructMessage({
-        id: msgId,
-        timestamp: rawMsg.type == 0 ? rawMsg.msgtime : Snowflake.unmake(msgId),
-        channel_id: rawMsg.channelid,
-        content: rawMsg.content,
-        edited_timestamp: rawMsg.type != 1 ? rawMsg.msgtime : undefined,
-        mentions: [],
-        role_mentions: []
-    });
+    if (rawMsg)
+        return constructMessage({
+            id: msgId,
+            timestamp: rawMsg.type == 0 ? rawMsg.msgtime : Snowflake.unmake(msgId),
+            channel_id: rawMsg.channelid,
+            content: rawMsg.content,
+            edited_timestamp: rawMsg.type != 1 ? rawMsg.msgtime : undefined,
+            mentions: [],
+            role_mentions: []
+        });
 }
 
 async function constructMessage(data) {

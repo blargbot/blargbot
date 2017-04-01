@@ -1,3 +1,5 @@
+const { DataUser, DataGuild } = require('./Core/Structures/Data');
+
 /**
  * Defining prototypes for Message
  */
@@ -23,24 +25,23 @@ Object.defineProperties(_dep.Eris.User.prototype, {
             return `${this.username}#${this.discriminator} (${this.id})`;
         }
     },
-    database: {
-        get: async function getDatabaseEntry() {
-            return await _cache.User.get(this.id);
+    data: {
+        get: function getDatabaseEntry() {
+            if (this.storedData == undefined) this.storedData = new DataUser(this.id);
+            return this.storedData;
         }
     }
 });
-_dep.Eris.User.prototype.setDatabase = async function (data) {
-    return await _cache.User.set(this.id, data);
-};
 
 /**
  * Defining prototypes for Guild
  */
 
 Object.defineProperties(_dep.Eris.Guild.prototype, {
-    database: {
-        get: async function getDatabaseEntry() {
-            return await _cache.Guild.get(this.id);
+    data: {
+        get: function getDatabaseEntry() {
+            if (this.storedData == undefined) this.storedData = new DataGuild(this.id);
+            return this.storedData;
         }
     },
     botMember: {
@@ -49,6 +50,3 @@ Object.defineProperties(_dep.Eris.Guild.prototype, {
         }
     }
 });
-_dep.Eris.Guild.prototype.setDatabase = async function (data) {
-    return await _cache.Guild.set(this.id, data);
-};
