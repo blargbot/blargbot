@@ -17,31 +17,32 @@ e.exampleIn = `I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e
 e.exampleOut = `I likn ta cansumn chnnsn.`;
 
 
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
+e.execute = async function (params) {
+    //for (let i = 1; i < params.args.length; i++) {
+    //    params.args[i] = await bu.processTagInner(params, i);
+    //}
+    let fallback = params.fallback;
     var returnObj = {
         replaceContent: false
     };
 
     var regexList;
-    if (args.length > 3) {
-        if (/^\/?.*\/.*/.test(args[2])) {
-            //var
-            regexList = args[2].match(/^\/?(.*)\/(.*)/);
-            returnObj.replaceString = args[1].replace(new RegExp(regexList[1], regexList[2]), args[3]);
+    if (params.args.length > 3) {
+        if (/^\/?.*\/.*/.test(params.args[2])) {
+            params.args[1] = await bu.processTagInner(params, 1);
+            params.args[3] = await bu.processTagInner(params, 3);
+            regexList = params.args[2].match(/^\/?(.*)\/(.*)/);
+            returnObj.replaceString = params.args[1].replace(new RegExp(regexList[1], regexList[2]), params.args[3]);
         } else {
             returnObj.replaceString = await bu.tagProcessError(params, '`Invalid regex string`');
         }
-    } else if (args.length == 3) {
-        if (/^\/?.*\/.*/.test(args[1])) {
+    } else if (params.args.length == 3) {
+        if (/^\/?.*\/.*/.test(params.args[1])) {
             try {
-                regexList = args[1].match(/^\/?(.*)\/(.*)/);
+                regexList = params.args[1].match(/^\/?(.*)\/(.*)/);
+                params.args[2] = await bu.processTagInner(params, 2);
                 returnObj.replace = new RegExp(regexList[1], regexList[2]);
-                returnObj.replaceString = args[2];
+                returnObj.replaceString = params.args[2];
                 returnObj.replaceContent = true;
             } catch (err) {
                 returnObj.replaceString = await bu.tagProcessError(params, err.message);
