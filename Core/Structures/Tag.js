@@ -19,7 +19,7 @@ class Tag {
     async execute(ctx, parseArgs) {
         if (parseArgs)
             for (let i = 1; i < ctx.args.length; i++) {
-            //    params.args[i] = await bu.processTagInner(params, i);
+                //    params.args[i] = await bu.processTagInner(params, i);
             }
 
         return new TagResult(ctx);
@@ -40,13 +40,16 @@ class Tag {
         }
         return output;
     }
+
     get usage() {
-        let output = '{name';
+        let output = '{' + this.name;
         let optionalCount = 0;
         for (const arg of this.argList) {
             if (arg.optional) {
-                output += `[;${arg.name}`;
-                optionalCount++;
+                if (arg.nested) {
+                    output += `[;${arg.name}`;
+                    optionalCount++;
+                } else output += `[;${arg.name}]`;
             } else if (optionalCount > 0) {
                 output += ']'.repeat(optionalCount) + `;${arg.name}`;
                 optionalCount = 0;
