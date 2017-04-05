@@ -374,6 +374,29 @@ const functions = {
             submitBuffer(msg.code, buffer);
         });
     },
+    clyde: async function (msg) {
+        let img = im(864 - 150, 1000).command('convert');
+        img.font(path.join(__dirname, 'img', 'fonts', 'whitney.ttf'), 20);
+        img.out('-fill').out('#ffffff');
+        img.out('-background').out('transparent');
+        img.out('-gravity').out('west');
+        img.out(`caption:${msg.text}`);
+        let originalText = await Jimp.read(await getBufferFromIM(img));
+        let text = new Jimp(originalText.bitmap.width + 10, originalText.bitmap.height + 10);
+        text.composite(originalText, 5, 5);
+        text.autocrop();
+        let height = 185 + text.bitmap.height;
+        let canvas = new Jimp(864, height, 0x33363bff);
+        let top = await Jimp.read(path.join(__dirname, 'img', `clydeTop.png`));
+        let bottom = await Jimp.read(path.join(__dirname, 'img', `clydeBottom.png`));
+        canvas.composite(top, 0, 0);
+        canvas.composite(text, 118, 83);
+        canvas.composite(bottom, 0, height - bottom.bitmap.height);
+
+        canvas.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            submitBuffer(msg.code, buffer);
+        });
+    },
     objection: async function (msg) {
         let frameCount = 6;
         let frames = [];
