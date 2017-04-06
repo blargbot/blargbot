@@ -11,7 +11,7 @@ class TagLexer {
             TagOpen: createToken('TagOpen', /\{/),
             TagClose: createToken('TagClose', /\}/),
             ArgumentSeparator: createToken('ArgumentSeparator', /;/),
-            Text: createToken('Text', /[^\{\};]*/)
+            Identifier: createToken('Text', /[^\{\};]*/)
         };
         this.SelectLexer = new Lexer(Object.values(this.tokens));
     }
@@ -20,15 +20,108 @@ class TagLexer {
         return this.SelectLexer.tokenize(input);
     }
 
+    get tokenTypes() {
+        let types = {};
+        const tokenNames = Object.keys(this.tokens);
+        for (let i = 0; i < tokenNames.length; i++) {
+            types[tokenNames[i]] = i + 2;
+        }
+        return types;
+    }
+
     parse(input) {
         let lexed = this.tokenize(input);
         let tokens = lexed.tokens;
-        const tokenNames = Object.keys(this.tokens);
-        for (let token of tokens) {
-            token.name = tokenNames[token.tokenType - 2];
+        const tokenTypes = this.tokenTypes;
+        const map = [];
+        const stack = [map];
+
+        function last(arr) {
+            return (arr || stack)[(arr || stack).length - 1];
         }
-        return tokens;
+
+        function add(token, arr) {
+            const lastThing = last(arr);
+            if (typeof token == 'string') token = token.trim();
+            if (lastThing == undefined) console.dir(stack, { depth: 10 });
+            if (lastThing instanceof SubTag) {
+                lastThing.addArgument(token);
+            } else {
+                lastThing.push(token);
+            }
+        }
+
+        for (const token of tokens) {
+            switch (token.tokenType) {
+                case tokenTypes.TagOpen:
+                    if (Array.isArray(last())) {
+                        add(new SubTag());
+                        stack.push(last(last()));
+                    } else {
+                        add(new SubTag(), last().rawArgs);
+                        stack.push(last(last(last().rawArgs)));
+                    }
+                    break;
+                case tokenTypes.TagClose:
+                    stack.pop();
+                    break;
+                case tokenTypes.ArgumentSeparator:
+                    if (!(last() instanceof SubTag)) {
+                        add(token.image);
+                    }
+                    break;
+                case tokenTypes.Identifier:
+                    add(token.image);
+                    break;
+            }
+        }
+        return map;
     }
 }
 
 module.exports = TagLexer;
+
+class SubTag {
+    constructor(name, args) {
+        this.rawArgs = [];
+    }
+
+    get name() {
+        if (this.rawArgs[0].length > 1)
+            return this.rawArgs[0];
+        else
+            return this.rawArgs[0][0];
+    }
+
+    get args() {
+        return this.rawArgs.slice(1);
+    }
+
+    addArgument(arg) {
+        if (Array.isArray(arg)) {
+            this.rawArgs.push(arg);
+        } else this.rawArgs.push([arg]);
+    }
+}
+
+/**
+ * This is an example of what a parsed map may look like
+ */
+
+const map = ['Hello! My favourite number is ', // Each block is an array of strings/SubTags
+    { // This is a SubTag
+        name: 'randint', // This is the SubTag's name
+        args: [['1'], ['10']] // As each argument is a block, it is an array
+    },
+    '! This is a nested tag:',
+    { // This is another SubTag
+        name: 'void',
+        args: [['Hello',
+            { // This is a SubTag within a SubTag
+                name: 'randint',
+                args: [['1'], ['10']]
+            },
+            'World!'
+        ]/* , ['another argument here, etc'] */]
+    }
+];
