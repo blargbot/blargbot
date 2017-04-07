@@ -125,17 +125,6 @@ Greeting Channel : ${greetChan}
                     inline: true
                 },
                 {
-                    name: 'Moderation',
-                    value: `\`\`\`
-      Chat Logs : ${makeLogs}
-   Anti-Mention : ${antiMention}
-     Muted Role : ${mutedRole}
-  Track Deletes : ${deleteNotif}
-Admin Role Name : ${adminRoleName}
-\`\`\``,
-                    inline: true
-                },
-                {
                     name: 'Permissions',
                     value: `\`\`\`
 Perm Override : ${permOverride}
@@ -150,6 +139,17 @@ Kick Override : ${kickPerms}
                     value: `\`\`\`
 Kick At : ${kickAt}
  Ban At : ${banAt}
+\`\`\``,
+                    inline: true
+                },
+                {
+                    name: 'Moderation',
+                    value: `\`\`\`
+      Chat Logs : ${makeLogs}
+   Anti-Mention : ${antiMention}
+     Muted Role : ${mutedRole}
+  Track Deletes : ${deleteNotif}
+Admin Role Name : ${adminRoleName}
 \`\`\``,
                     inline: true
                 }
