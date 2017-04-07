@@ -8,5 +8,6 @@ module.exports = {
     Cache: require('./Cache'),
     Data: require('./Data'),
     Tag: require('./Tag'),
-    PublicTag: require('./PublicTag')
+    PublicTag: require('./PublicTag'),
+    SubTag: require('./SubTag')
 };

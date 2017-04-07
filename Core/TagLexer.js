@@ -1,5 +1,6 @@
 const chevrotain = _dep.chevrotain;
 const Lexer = chevrotain.Lexer;
+const { SubTag } = require('./Structures');
 function createToken(name, pattern) {
     let token = chevrotain.createToken({ name, pattern });
     return token;
@@ -42,7 +43,6 @@ class TagLexer {
 
         function add(token, arr) {
             const lastThing = last(arr);
-            if (typeof token == 'string') token = token.trim();
             if (lastThing == undefined) console.dir(stack, { depth: 10 });
             if (lastThing instanceof SubTag) {
                 lastThing.addArgument(token);
@@ -81,28 +81,7 @@ class TagLexer {
 
 module.exports = TagLexer;
 
-class SubTag {
-    constructor(name, args) {
-        this.rawArgs = [];
-    }
 
-    get name() {
-        if (this.rawArgs[0].length > 1)
-            return this.rawArgs[0];
-        else
-            return this.rawArgs[0][0];
-    }
-
-    get args() {
-        return this.rawArgs.slice(1);
-    }
-
-    addArgument(arg) {
-        if (Array.isArray(arg)) {
-            this.rawArgs.push(arg);
-        } else this.rawArgs.push([arg]);
-    }
-}
 
 /**
  * This is an example of what a parsed map may look like
