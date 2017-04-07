@@ -93,44 +93,70 @@ e.execute = async function (msg, words) {
         let kickAt = settings.kickat || 'Disabled';
         let banAt = settings.banat || 'Disabled';
         let adminRoleName = settings.adminrole || 'Admin';
-        var message = `\`\`\`prolog
-Settings For ${msg.channel.guild.name}
-
--- General --
-          Prefix : ${prefix}
-     CAH is NSFW : ${cahNsfw}
-         DM Help : ${dmHelp}
-
--- Messages --
-        Greeting : ${greeting}
-        Farewell : ${farewell}
-      Tableflips : ${tableFlip}        
-
--- Channels --
+        let embed = {
+            fields: [
+                {
+                    name: 'General',
+                    value: `\`\`\`
+     Prefix : ${prefix}
+CAH is NSFW : ${cahNsfw}
+    DM Help : ${dmHelp}
+\`\`\``,
+                    inline: true
+                },
+                {
+                    name: 'Messages',
+                    value: `\`\`\`
+  Greeting : ${greeting}
+  Farewell : ${farewell}
+Tableflips : ${tableFlip}
+\`\`\``,
+                    inline: true
+                },
+                {
+                    name: 'Channels',
+                    value: `\`\`\`
 Farewell Channel : ${farewellChan}
 Greeting Channel : ${greetChan}
    NSFW Channels : ${nsfwMessage}
   Modlog Channel : ${modlogChannel}
-     Blacklisted : ${blacklistMessage}  
+     Blacklisted : ${blacklistMessage}
+\`\`\``,
+                    inline: true
+                },
+                {
+                    name: 'Moderation',
+                    value: `\`\`\`
+      Chat Logs : ${makeLogs}
+   Anti-Mention : ${antiMention}
+     Muted Role : ${mutedRole}
+  Track Deletes : ${deleteNotif}
+Admin Role Name : ${adminRoleName}
+\`\`\``,
+                    inline: true
+                },
+                {
+                    name: 'Permissions',
+                    value: `\`\`\`
+Perm Override : ${permOverride}
+  Staff Perms : ${staffPerms}
+Kick Override : ${kickPerms}
+ Ban Override : ${banPerms}
+\`\`\``,
+                    inline: true
+                },
+                {
+                    name: 'Warnings',
+                    value: `\`\`\`
+Kick At : ${kickAt}
+ Ban At : ${banAt}
+\`\`\``,
+                    inline: true
+                }
+            ]
+        };
 
--- Moderation --
-       Chat Logs : ${makeLogs}
-    Anti-Mention : ${antiMention}
-      Muted Role : ${mutedRole}
-   Track Deletes : ${deleteNotif}
- Admin Role Name : ${adminRoleName}
-
--- Permissions --
-   Perm Override : ${permOverride}
-     Staff Perms : ${staffPerms}
-   Kick Override : ${kickPerms}
-    Ban Override : ${banPerms}
-
--- Warnings --
-         Kick At : ${kickAt}
-          Ban At : ${banAt}
-\`\`\``;
-        bu.send(msg, message);
+        bu.send(msg, { embed });
     } else {
         words.shift();
         var key;
