@@ -32,6 +32,10 @@ e.flags = [{
     word: 'weight',
     desc: 'Add: How many incidents the censor is worth.'
 }, {
+    flag: 'r',
+    word: 'reason',
+    desc: 'Add: A custom modlog reason. NOT BBTag compatible.'
+}, {
     flag: 'd',
     word: 'deletemessage',
     desc: 'Add/Rule: The BBTag-compatible message to send after a message is deleted. Adds override rules.'
@@ -61,7 +65,7 @@ e.defaultDeleteMessage = 'Deleted {username}#{userdiscrim}\'s message containing
 e.defaultKickMessage = `Kicked {username}#{userdiscrim} for saying a blacklisted phrase.`;
 e.defaultBanMessage = `Banned {username}#{userdiscrim} for saying a blacklisted phrase.`;
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words, true);
     if (!msg.guild) return;
     if (input.undefined.length == 0) {
@@ -120,13 +124,17 @@ e.execute = async function(msg, words) {
             if (input.w && input.w.length > 0 && !isNaN(parseInt(input.w[0]))) {
                 addCensor.weight = parseInt(input.w[0]);
             }
+            if (input.r && input.r.length > 0) {
+                addCensor.reason = input.r.join(' ');
+            }
             storedGuild.censor.list.push(addCensor);
             await saveGuild();
             bu.send(msg, `Censor created!
 **Trigger**: ${addCensor.term}
 **Regex**: ${addCensor.regex}
 **Messages**: ${messages.join(', ')}
-**Weight**: ${addCensor.weight}`);
+**Weight**: ${addCensor.weight}
+**Reason**: ${addCensor.reason || 'Default'}`);
             break;
         case 'delete':
         case 'remove':
@@ -183,7 +191,7 @@ e.execute = async function(msg, words) {
             }
             if (input.c && input.c.length > 0) {
                 for (const name of input.c) {
-                    if (/(\d+)/.test(input.c[0])) {}
+                    if (/(\d+)/.test(input.c[0])) { }
                     let channel = input.c[0].match(/(\d+)/)[1];
                     let guild = bot.channelGuildMap[channel];
                     if (guild == msg.guild.id) channelList.push(channel);
@@ -304,21 +312,22 @@ e.execute = async function(msg, words) {
             bu.send(msg, `Censor Details:
 **Trigger**: ${censor.term}
 **Regex**: ${censor.regex}${triggeredMessages.length > 0 ? '\n' + triggeredMessages.join('\n') : ''}
-**Weight**: ${censor.weight}`);
+**Weight**: ${censor.weight}
+**Reason**: ${censor.reason || 'Default'}`);
             break;
         default:
             let output = `There are currently ${storedGuild.censor.list.length} censors active.
 **__Exceptions__**
 User Exceptions: ${storedGuild.censor.exception.user.map(u => {
-                let user = bot.users.get(u);
-                if (user) return bu.getFullName(user);
-                else return u;
+                    let user = bot.users.get(u);
+                    if (user) return bu.getFullName(user);
+                    else return u;
                 }).join(', ')}
 Role Exceptions: ${storedGuild.censor.exception.role.map(r => {
-                let role = msg.guild.roles.get(r);
-                if (role) return role.name;
-                else return r;
-}).join(', ')}
+                    let role = msg.guild.roles.get(r);
+                    if (role) return role.name;
+                    else return r;
+                }).join(', ')}
 Channel Exceptions: ${storedGuild.censor.exception.channel.map(c => `<#${c}>`).join(', ')}
 
 **__Settings__**

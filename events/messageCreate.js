@@ -377,7 +377,7 @@ async function handleCensor(msg, storedGuild) {
                 if (violation == true) { // Uh oh, they did a bad!
                     let res = await bu.issueWarning(msg.author, msg.guild, cens.weight);
                     if (cens.weight > 0) {
-                        await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', 'Said a blacklisted phrase.', bu.ModLogColour.WARN, [{
+                        await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', cens.reason || 'Said a blacklisted phrase.', bu.ModLogColour.WARN, [{
                             name: 'Warnings',
                             value: `Assigned: ${cens.weight}\nNew Total: ${res.count || 0}`,
                             inline: true
@@ -385,30 +385,30 @@ async function handleCensor(msg, storedGuild) {
                     }
                     try {
                         await msg.delete();
-                        let message = '';
-                        switch (res.type) {
-                            case 0:
-                                if (cens.deleteMessage) message = cens.deleteMessage;
-                                else if (censor.rule.deleteMessage) message = censor.rule.deleteMessage;
-                                else message = CommandManager.list['censor'].defaultDeleteMessage;
-                                break;
-                            case 1:
-                                if (cens.banMessage) message = cens.banMessage;
-                                else if (censor.rule.banMessage) message = censor.rule.banMessage;
-                                else message = CommandManager.list['censor'].defaultBanMessage;
-                                break;
-                            case 2:
-                                if (cens.kickMessage) message = cens.kickMessage;
-                                else if (censor.rule.kickMessage) message = censor.rule.kickMessage;
-                                else message = CommandManager.list['censor'].defaultKickMessage;
-                                break;
-                        }
-                        let output = await tags.processTag(msg, message, msg.content, undefined, undefined, true);
-                        bu.send(msg, output);
-                        return;
                     } catch (err) {
                         bu.send(msg, `${bu.getFullName(msg.author)} said a blacklisted word, but I was not able to delete it.`);
                     }
+                    let message = '';
+                    switch (res.type) {
+                        case 0:
+                            if (cens.deleteMessage) message = cens.deleteMessage;
+                            else if (censor.rule.deleteMessage) message = censor.rule.deleteMessage;
+                            else message = CommandManager.list['censor'].defaultDeleteMessage;
+                            break;
+                        case 1:
+                            if (cens.banMessage) message = cens.banMessage;
+                            else if (censor.rule.banMessage) message = censor.rule.banMessage;
+                            else message = CommandManager.list['censor'].defaultBanMessage;
+                            break;
+                        case 2:
+                            if (cens.kickMessage) message = cens.kickMessage;
+                            else if (censor.rule.kickMessage) message = censor.rule.kickMessage;
+                            else message = CommandManager.list['censor'].defaultKickMessage;
+                            break;
+                    }
+                    let output = await tags.processTag(msg, message, msg.content, undefined, undefined, true);
+                    bu.send(msg, output);
+                    return;
                 }
             }
         }
