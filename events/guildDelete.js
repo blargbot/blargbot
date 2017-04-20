@@ -1,14 +1,15 @@
-bot.on('guildDelete', async function(guild) {
+bot.on('guildDelete', async function (guild) {
     bu.postStats();
     logger.debug('removed from guild');
     let members = guild.memberCount;
-    let users = guild.members.filter(m => !m.user.bot).length;
-    let bots = guild.members.filter(m => m.user.bot).length;
-    let percent = Math.floor(bots / members * 10000) / 100;
-    var message = `:x: Guild: \`${guild.name}\`` +
-        ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
-    bu.send(`205153826162868225`, message);
-
+    if (guild.members) {
+        let users = guild.members.filter(m => !m.user.bot).length;
+        let bots = guild.members.filter(m => m.user.bot).length;
+        let percent = Math.floor(bots / members * 10000) / 100;
+        var message = `:x: Guild: \`${guild.name}\`` +
+            ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
+        bu.send(`205153826162868225`, message);
+    }
 
     r.table('guild').get(guild.id).update({
         active: false
