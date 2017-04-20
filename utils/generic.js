@@ -1198,7 +1198,7 @@ bu.isUserStaff = async function (userId, guildId) {
 };
 
 bu.makeSnowflake = function () {
-    return (dep.moment() - 1420070400000) * 4194304;
+    return dep.BigNumber(Date.now()).minus(1420070400000).multiply(4194304).toString();
 };
 
 bu.unmakeSnowflake = function (snowflake) {

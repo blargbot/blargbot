@@ -1,5 +1,5 @@
 bu.guildSettings = {
-    set: async function(guildid, key, value, type) {
+    set: async function (guildid, key, value, type) {
         let storedGuild = await bu.getGuild(guildid);
         let returnObj = true;
         switch (type) {
@@ -26,13 +26,13 @@ bu.guildSettings = {
         }).run();
         return true;
     },
-    get: async function(guildid, key) {
+    get: async function (guildid, key) {
         let storedGuild = await bu.getGuild(guildid);
 
         if (!storedGuild) return {};
         return storedGuild.settings[key];
     },
-    remove: async function(guildid, key) {
+    remove: async function (guildid, key) {
         let storedGuild = await bu.getGuild(guildid);
 
         delete storedGuild.settings[key];
@@ -44,7 +44,7 @@ bu.guildSettings = {
     }
 };
 bu.ccommand = {
-    set: async function(guildid, key, value) {
+    set: async function (guildid, key, value) {
         let storedGuild = await bu.getGuild(guildid);
 
         storedGuild.ccommands[key.toLowerCase()] = value;
@@ -54,13 +54,13 @@ bu.ccommand = {
         }).run();
         return;
     },
-    get: async function(guildid, key) {
+    get: async function (guildid, key) {
         let storedGuild = await bu.getGuild(guildid);
 
         if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return null;
         return storedGuild.ccommands[key.toLowerCase()];
     },
-    rename: async function(guildid, key1, key2) {
+    rename: async function (guildid, key1, key2) {
         let storedGuild = await bu.getGuild(guildid);
 
         storedGuild.ccommands[key2.toLowerCase()] = storedGuild.ccommands[key1.toLowerCase()];
@@ -69,7 +69,7 @@ bu.ccommand = {
         r.table('guild').get(guildid).replace(storedGuild).run();
         return;
     },
-    remove: async function(guildid, key) {
+    remove: async function (guildid, key) {
         let storedGuild = await bu.getGuild(guildid);
 
         delete storedGuild.ccommands[key.toLowerCase()];
@@ -77,7 +77,7 @@ bu.ccommand = {
         r.table('guild').get(guildid).replace(storedGuild).run();
         return;
     },
-    sethelp: async function(guildid, key, help) {
+    sethelp: async function (guildid, key, help) {
         let storedGuild = await bu.getGuild(guildid);
 
         if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return false;
@@ -86,7 +86,7 @@ bu.ccommand = {
         r.table('guild').get(guildid).replace(storedGuild).run();
         return true;
     },
-    gethelp: async function(guildid, key) {
+    gethelp: async function (guildid, key) {
         let storedGuild = await bu.getGuild(guildid);
 
         if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return undefined;
@@ -94,7 +94,7 @@ bu.ccommand = {
     }
 };
 
-bu.isNsfwChannel = async function(channelid) {
+bu.isNsfwChannel = async function (channelid) {
     let guildid = bot.channelGuildMap[channelid];
     if (!guildid) {
         //   logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isNsfwChannel');
@@ -105,7 +105,7 @@ bu.isNsfwChannel = async function(channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].nsfw : false;
 };
 
-bu.isBlacklistedChannel = async function(channelid) {
+bu.isBlacklistedChannel = async function (channelid) {
     let guildid = bot.channelGuildMap[channelid];
     if (!guildid) {
         //logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
@@ -116,7 +116,7 @@ bu.isBlacklistedChannel = async function(channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
-bu.getCachedGlobal = async function(varname) {
+bu.getCachedGlobal = async function (varname) {
     let storedVar;
     if (bu.globalVars[varname]) {
         storedVar = bu.globalVars[varname];
@@ -134,7 +134,7 @@ bu.getCachedGlobal = async function(varname) {
     return storedVar;
 };
 
-bu.getCachedTag = async function(tagname) {
+bu.getCachedTag = async function (tagname) {
     let storedTag;
     if (bu.tagCache[tagname]) {
         storedTag = bu.tagCache[tagname];
@@ -145,7 +145,7 @@ bu.getCachedTag = async function(tagname) {
     return storedTag;
 };
 
-bu.getCachedUser = async function(userid) {
+bu.getCachedUser = async function (userid) {
     let storedUser;
     if (bu.userCache[userid]) {
         storedUser = bu.userCache[userid];
@@ -156,7 +156,7 @@ bu.getCachedUser = async function(userid) {
     return storedUser;
 };
 
-bu.getGuild = async function(guildid) {
+bu.getGuild = async function (guildid) {
     let storedGuild;
     if (bu.guildCache[guildid]) {
         storedGuild = bu.guildCache[guildid];
@@ -167,9 +167,7 @@ bu.getGuild = async function(guildid) {
     return storedGuild;
 };
 
-
-
-bu.insertChatlog = function(msg, type) {
+bu.insertChatlog = function (msg, type) {
     if (msg.channel.id != '204404225914961920') {
         r.table('chatlogs').insert({
             id: bu.makeSnowflake(),
@@ -180,7 +178,8 @@ bu.insertChatlog = function(msg, type) {
             channelid: msg.channel.id,
             guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
             msgtime: r.epochTime(dep.moment(msg.timestamp) / 1000),
-            type: type
+            type: type,
+            embeds: msg.embeds
         }).run();
     }
 };

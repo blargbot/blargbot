@@ -37,10 +37,6 @@ e.flags = [{
     word: 'user',
     desc: 'The user(s) to retrieve logs from. Value can be a username, nickname, mention, or ID. This uses the user lookup system.'
 }, {
-    flag: 'o',
-    word: 'order',
-    desc: 'The order of logs. Value can be DESC (get newest messages first) or ASC (get oldest messages first).'
-}, {
     flag: 'C',
     word: 'create',
     desc: 'Get message creates.'
@@ -64,7 +60,7 @@ var typeRef = {
     DELETE: 2
 };
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     const storedGuild = await bu.getGuild(msg.guild.id);
     if (!storedGuild.settings.makelogs) {
         bu.send(msg, `This guild has not opted into chatlogs. Please do \`b!settings makelogs true\` to allow me to start creating chatlogs.`);
@@ -94,15 +90,7 @@ e.execute = async function(msg, words) {
         bu.send(msg, 'The channel must be on this guild!');
         return;
     }
-    if (input.o && input.o.length > 0)
-        if (input.o[0].startsWith('ASC') && order == null) {
-            order = true;
-        } else if (input.o[0].toUpperCase().startsWith('DESC') && order == null) {
-        order = false;
-    }
-    if (order == null) {
-        order = false;
-    }
+
     let user = '',
         type = '';
     if (input.t) type = input.t.join(' ');
@@ -134,7 +122,6 @@ e.execute = async function(msg, words) {
     if (input.U && !types.includes(1)) types.push(1);
     if (input.D && !types.includes(2)) types.push(2);
 
-    logger.debug(channel, users, types, order);
     let msg2 = await bu.send(msg, 'Generating your logs...');
     let pingUser = false;
     let timer = setTimeout(() => {
@@ -142,21 +129,23 @@ e.execute = async function(msg, words) {
         pingUser = true;
     }, 10000);
     let msgids = [msg.id, msg2.id];
-    let thing = await r.table('chatlogs')
-        .between([channel, r.epochTime(0)], [channel, r.now()], {
-            index: 'channel_time'
+    let results = await r.table('chatlogs')
+        .between([channel, r.minval], [channel, msg.id], {
+            index: 'channel_id',
+            rightBound: 'open'
         })
         .orderBy({
-            index: order ? r.asc('channel_time') : r.desc('channel_time')
+            index: r.desc('channel_id')
         })
-        .filter(function(q) {
+        .filter(function (q) {
             return r.expr(users).count().eq(0).or(r.expr(users).contains(q('userid')))
                 .and(r.expr(types).count().eq(0).or(r.expr(types).contains(q('type')))
                     .and(r.expr(msgids).contains(q('msgid')).not())
                 );
         })
         .limit(numberOfMessages).run();
-    if (thing.length == 0) {
+
+    if (results.length == 0) {
         clearTimeout(timer);
         bot.editMessage(msg2.channel.id, msg2.id, 'No results found!');
     } else {
@@ -164,44 +153,24 @@ e.execute = async function(msg, words) {
         if (input.j) {
             let toSend = `${pingUser ? 'Sorry that took so long, ' + msg.author.mention : ''}Here are your logs, in a JSON file!`;
             await bu.send(msg, toSend, {
-                file: JSON.stringify(thing, null, 2),
+                file: JSON.stringify(results, null, 2),
                 name: `${msg.channel.id}-logs.json`
             });
             return;
         }
-        let key = await insertQuery(msg, channel, users, types, thing[thing.length - 1].msgtime, numberOfMessages);
+        const key = Date.now();
+        await r.table('logs').insert({
+            channel, users, types,
+            last: parseInt(results[0].id),
+            first: parseInt(results[results.length - 1].id),
+            limit: numberOfMessages, keycode: key
+        });
         let toSend = 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key;
+        if (config.general.isbeta) toSend += `\nhttp://localhost:8085/logs/#beta${key}`;
         if (pingUser) {
             toSend = `Sorry that took so long, ${msg.author.mention}!\n${toSend}`;
             await bu.send(msg, toSend);
         } else
             await bot.editMessage(msg2.channel.id, msg2.id, toSend);
-
     }
 };
-
-var insertQuery = async function(msg, channel, users, types, firstTime, numberOfMessages) {
-    async function attemptInsert() {
-        var key = randomString(6);
-        logger.debug(key);
-        let exists = await r.table('logs').get(key);
-        if (exists) {
-            return attemptInsert;
-        }
-        await r.table('logs').insert({
-            keycode: key,
-            channel: channel,
-            users: users,
-            types: types,
-            firsttime: r.expr(firstTime),
-            lasttime: r.now(),
-            limit: numberOfMessages
-        }).run();
-        return key;
-    }
-    return attemptInsert();
-};
-
-function randomString(length) {
-    return Math.round((Math.pow(36, length + 1) - Math.random() * Math.pow(36, length))).toString(36).slice(1);
-}

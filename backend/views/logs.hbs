@@ -67,8 +67,8 @@
                         <p>Channel: {{channelname}} ({{channel}})</p>
                         <p>User(s): {{users}}</p>
                         <p>Type(s): {{types}}</p>
-                        <p>First Timestamp: {{firsttime}}</p>
-                        <p>Last Timestamp: {{lasttime}}</p>
+                        <p>First Message: {{first}}</p>
+                        <p>Last Message: {{last}}</p>
 
                         <p>Count: {{limit}}</p>
                         <p>Click on a mention to copy the user's ID.</p>
@@ -143,6 +143,82 @@
             content: 'Copied!';
             font-size: 1rem;
         }
+        
+        .discord-embed-description {}
+        
+        .discord-embed-author,
+        .discord-embed-footer {
+            display: block;
+            height: 32px;
+            margin: 5px 0;
+        }
+        
+        .discord-embed-author-icon {
+            height: 32px;
+            width: 32px;
+            display: inline;
+            border-radius: 100px;
+        }
+        
+        .discord-embed-author a.discord-embed-title {
+            color: #eee;
+        }
+        
+        .discord-embed-author a.discord-embed-title:hover {
+            color: #fff;
+        }
+        
+        .discord-embed-title {
+            font-weight: bold;
+        }
+        
+        .discord-embed-fields {
+            padding: 0;
+            margin: 0;
+        }
+        
+        .discord-embed-fields .col {
+            margin-left: 0;
+            padding-left: 0;
+        }
+        
+        .discord-embed-author .discord-embed-title {
+            margin-left: 5px !important;
+            display: inline;
+        }
+        
+        .discord-embed-footer-entry {
+            display: inline;
+        }
+        
+        .discord-embed-footer-separator {
+            content: '|';
+            padding: 0 5px;
+        }
+        
+        .discord-embed-footer-icon {
+            border-radius: 3px;
+            margin-right: 5px;
+            height: 32px;
+            width: 32px;
+            display: inline;
+        }
+        
+        .discord-embed-thumbnail {
+            max-width: 128px;
+            max-height: 128px;
+            float: right;
+        }
+        
+        .discord-embed-image {
+            max-width: 33%;
+            margin: 5px 0;
+        }
+        
+        .block {
+            display: block;
+            height: 32px;
+        }
     </style>
 
     <main>
@@ -162,9 +238,55 @@
                                 <div class='chip z-depth-1'>ACTION: {{this.type.name}}</div>
                                 <div class='chip z-depth-1'>ID: {{this.userid}}</div>
                                 <div class='chip z-depth-1'>MSG ID: {{this.msgid}}</div>
-                                <blockquote>{{this.content}}</blockquote>
-                                {{#if this.attachment}}
-                                <a href='{{this.attachment}}'>Attachment</a> {{/if}}
+                                <p>{{this.content}}</p> {{#if this.attachment}}
+                                <a href='{{this.attachment}}'>Attachment</a> {{/if}} {{#each this.embeds}}
+                                <div class='discord-embed'>
+                                    <blockquote {{#if this.color}}style='border-left: 5px solid #{{this.color}}' {{/if}}>
+                                        {{#if this.thumbnail}}
+                                        <img src='{{this.thumbnail.url}}' class='discord-embed-thumbnail'> {{/if}} {{#if
+                                        this.author}}
+                                        <div class='discord-embed-author'>
+                                            {{#if this.author.icon_url}}
+                                            <div class='valign-wrapper'>
+                                                <img src='{{this.author.icon_url}}' class='discord-embed-author-icon' />{{/if}}
+                                                {{#if this.author.url}}
+                                                <a class='discord-embed-title' href='{{this.author.url}}'> {{this.author.name}} </a>                                                {{else}}
+                                                <p class='discord-embed-title'> {{this.author.name}} </p>
+                                                {{/if}}
+                                            </div>
+                                        </div>
+                                        {{/if}} {{#if this.url}}
+                                        <a class='discord-embed-title' href='{{this.url}}'>{{this.title}}</a> {{else}}
+                                        <p class='discord-embed-title'>{{this.title}}</p>
+                                        {{/if}}
+                                        <p class='discord-embed-description'>{{this.description}}</p>
+                                        <div class='row discord-embed-fields'>
+                                            {{#each this.fields}}
+                                            <div class='col s12 {{#if this.inline}}m4{{/if}}'>
+                                                <p class='discord-embed-title'>{{this.name}}</p>
+                                                <p class='discord-embed-description'>{{this.value}}</p>
+                                            </div>
+                                            {{/each}}
+                                        </div>
+
+                                        {{#if this.image}}
+                                        <img src='{{this.image.url}}' class='discord-embed-image'> {{/if}}
+
+                                        <div class='discord-embed-footer'>
+                                            <div class='valign-wrapper'>
+                                                {{#if this.footer}} {{#if this.footer.icon_url}}
+                                                <img src='{{this.footer.icon_url}}' class='discord-embed-footer-icon' />                                                {{/if}}
+                                                <p class='discord-embed-footer-entry'>{{this.footer.text}}</p>
+                                                {{/if}} {{#if this.separateFooter}}
+                                                <p class='discord-embed-footer-separator'>|</p>
+                                                {{/if}} {{#if this.timestamp}}
+                                                <p class='discord-embed-footer-entry time nounix'>{{this.timestamp}}</p>
+                                                {{/if}}
+                                            </div>
+                                        </div>
+                                    </blockquote>
+                                </div>
+                                {{/each}}
                             </li>
                             {{/each}}
                         </ul>
@@ -186,13 +308,18 @@
     </footer>
     <script>
         init();
-
+function unmakeSnowflake(snowflake) {
+    return (snowflake / 4194304) + 1420070400000;
+};
         function doStuff() {
             var first = true;
             var elements = document.getElementsByClassName('time');
             for (var i = 0; i < elements.length; i++) {
                 var timestamp = elements.item(i).innerHTML;
-                var newTimestamp = moment(parseInt(timestamp));
+                var newTimestamp;
+                if (!Array.from(elements.item(i).classList).includes('nounix'))
+                    newTimestamp = moment.unix(timestamp);
+                else newTimestamp = moment(timestamp);
                 elements.item(i).innerHTML = newTimestamp.format('YYYY/MM/DD h:mm:ss A');
             }
             console.log('hi');

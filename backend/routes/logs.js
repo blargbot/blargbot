@@ -20,7 +20,7 @@ router.get('/', (req, res) => {
     res.render('logsfirst');
 });
 
-router.post('/', async(req, res) => {
+router.post('/', async (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/logs' + req.path;
 
@@ -33,23 +33,25 @@ router.post('/', async(req, res) => {
         hash = hash.replace('beta', '');
     }
     res.locals.hash = hash;
-    let logsSpecs = await r.db(db).table('logs').get(hash).run();
+    let logsSpecs = await r.db(db).table('logs').get(parseInt(hash)).run();
+    logger.debug(logsSpecs);
     if (!logsSpecs) {
         res.locals.continue = false;
     } else {
         let messages = await r.db(db).table('chatlogs')
-            .between([logsSpecs.channel, logsSpecs.firsttime], [logsSpecs.channel, logsSpecs.lasttime], {
-                index: 'channel_time'
+            .between([logsSpecs.channel, logsSpecs.first], [logsSpecs.channel, logsSpecs.last], {
+                index: 'channel_id',
+                rightBound: 'closed'
             })
             .orderBy({
-                index: 'channel_time'
+                index: 'channel_id'
             })
-            .filter(function(q) {
+            .filter(function (q) {
                 return r.expr(logsSpecs.users).count().eq(0).or(r.expr(logsSpecs.users).contains(q('userid')))
                     .and(r.expr(logsSpecs.types).count().eq(0).or(r.expr(logsSpecs.types).contains(q('type'))));
             }).eqJoin('userid', r.table('user'), {
                 index: 'userid'
-            }).zip().orderBy('msgtime').run();
+            }).zip().orderBy('id').run();
         if (messages.length > 0) {
             let messages2 = [];
             for (let m of messages) {
@@ -64,8 +66,15 @@ router.post('/', async(req, res) => {
                 m.userdiscrim = user.discriminator;
                 m.bot = user.bot;
                 m.avatar = user.avatarURL || '/img/default.png';
+                for (const embed of m.embeds) {
+                    if (embed.color) {
+                        embed.color = embed.color.toString(16);
+                    }
+                    if (embed.timestamp && embed.footer)
+                        embed.separateFooter = true;
+                }
 
-                m.msgtime = dep.moment.unix(m.msgtime).unix();
+                m.msgtime = dep.moment(bu.unmakeSnowflake(m.id)).unix();
                 let text = m.content;
 
                 text = dep.hbs.handlebars.Utils.escapeExpression(text);
@@ -103,8 +112,8 @@ router.post('/', async(req, res) => {
             res.locals.guildname = bot.getChannel(logsSpecs.channel).guild.name;
             res.locals.users = logsSpecs.users.join(', ');
             res.locals.types = logsSpecs.types.join(', ');
-            res.locals.firsttime = dep.moment(logsSpecs.firsttime).valueOf();
-            res.locals.lasttime = dep.moment(logsSpecs.lasttime).valueOf();
+            res.locals.first = logsSpecs.first;
+            res.locals.last = logsSpecs.last;
             res.locals.limit = messages.length;
             res.locals.continue = true;
         }
