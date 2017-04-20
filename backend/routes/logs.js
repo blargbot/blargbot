@@ -65,7 +65,7 @@ router.post('/', async (req, res) => {
                 m.username = user.username;
                 m.userdiscrim = user.discriminator;
                 m.bot = user.bot;
-                m.avatar = user.avatarURL || '/img/default.png';
+                m.avatar = user.avatarURL.split('?size=')[0] || '/img/default.png';
                 if (m.embeds)
                     for (const embed of m.embeds) {
                         if (embed.color) {
