@@ -388,7 +388,7 @@ const functions = {
         timestamp.out('-fill').out('#ffffff');
         timestamp.out('-background').out('transparent');
         timestamp.out('-gravity').out('southwest');
-        timestamp.out(`caption:Today at ${date.getHours()-1>12?date.getHours()-13:date.getHours()+1}:${date.getMinutes()} ${date.getHours()-1>12?"PM":"AM"}`);
+        timestamp.out(`caption:Today at ${date.getHours()+1>12?date.getHours()-11:date.getHours()+1}:${date.getMinutes()} ${date.getHours()+1>12?"PM":"AM"}`);
         let timestampText = await Jimp.read(await getBufferFromIM(timestamp));
         let text = new Jimp(originalText.bitmap.width + 10, originalText.bitmap.height + 10);
         text.composite(originalText, 5, 5).autocrop().opacity(0.7);
