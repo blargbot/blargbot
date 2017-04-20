@@ -66,13 +66,14 @@ router.post('/', async (req, res) => {
                 m.userdiscrim = user.discriminator;
                 m.bot = user.bot;
                 m.avatar = user.avatarURL || '/img/default.png';
-                for (const embed of m.embeds) {
-                    if (embed.color) {
-                        embed.color = embed.color.toString(16);
+                if (m.embeds)
+                    for (const embed of m.embeds) {
+                        if (embed.color) {
+                            embed.color = embed.color.toString(16);
+                        }
+                        if (embed.timestamp && embed.footer)
+                            embed.separateFooter = true;
                     }
-                    if (embed.timestamp && embed.footer)
-                        embed.separateFooter = true;
-                }
 
                 m.msgtime = dep.moment(bu.unmakeSnowflake(m.id)).unix();
                 let text = m.content;
