@@ -1197,8 +1197,8 @@ bu.isUserStaff = async function (userId, guildId) {
     return false;
 };
 
-bu.makeSnowflake = function () {
-    return dep.BigNumber(Date.now()).minus(1420070400000).multiply(4194304).toString();
+bu.makeSnowflake = function (date = Date.now()) {
+    return dep.BigNumber(date).minus(1420070400000).multiply(4194304).toString();
 };
 
 bu.unmakeSnowflake = function (snowflake) {
