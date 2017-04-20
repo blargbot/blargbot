@@ -21,6 +21,14 @@ function spawn() {
             last = '';
         }
     });
+
+    child.on('exit', code => {
+        if (code == 0) {
+            process.exit();
+        } else {
+            spawn();
+        }
+    });
 }
 
 spawn();
