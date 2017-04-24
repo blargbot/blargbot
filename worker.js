@@ -384,7 +384,7 @@ const functions = {
         let originalText = await Jimp.read(await getBufferFromIM(img));
         let date = new Date();
         let timestamp = im(1000, 30).command('convert');
-        timestamp.font(path.join(__dirname, 'assets', 'fonts', 'whitney.ttf'), 12);
+        timestamp.font(path.join(__dirname, 'img', 'fonts', 'whitney.ttf'), 12);
         timestamp.out('-fill').out('#ffffff');
         timestamp.out('-background').out('transparent');
         timestamp.out('-gravity').out('southwest');
