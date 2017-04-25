@@ -16,13 +16,17 @@ e.exampleIn = `I feel like eating {randchoose;cake;pie;pudding} today.`;
 e.exampleOut = `I feel like eating pudding today.`;
 
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     let args = params.args,
         fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
     if (args.length > 1) {
+        if (args.length == 2) {
+            params.args[1] = await bu.processTagInner(params, 1);
+        }
         let deserialized = await bu.getArray(params, args[1]);
+        logger.verbose(deserialized);
         if (deserialized && Array.isArray(deserialized.v)) {
             logger.verbose(deserialized);
             let seed = bu.getRandomInt(0, deserialized.v.length - 1);

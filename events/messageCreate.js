@@ -50,12 +50,10 @@ async function handleUserMessage(msg, storedGuild) {
         logger.debug('Was a mention');
         doCleverbot = true;
     }
-    if (msg.content.startsWith(prefix)) {
+    if (prefix != undefined && msg.content.startsWith(prefix)) {
         var command = msg.content.replace(prefix, '').trim();
-        logger.command('Incoming Command:', `${prefix} ${command}`);
         try {
             let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
-            logger.command('Was command:', wasCommand);
             if (wasCommand) {
                 logCommand(msg);
 
