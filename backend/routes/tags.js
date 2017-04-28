@@ -60,23 +60,23 @@ async function renderEditor(req, res) {
         return { name: g.name, id: g.id };
     });
 
-
-
     if (req.body && req.body.action) {
         let destination = req.body.destination || false;
         res.locals.destination = req.body.destination;
         let title, storedTag, storedGuild;
+        title = filterTitle((req.body.tagName || ''));
+
         if (destination && await bu.isUserStaff(req.user.id, destination)) {
             storedGuild = await bu.getGuild(destination);
+            title = title.toLowerCase();
         }
-        title = (req.body.tagName || '').replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
 
         async function saveCcommand(tag, name) {
-            storedGuild.ccommands[name || title] = tag;
+            storedGuild.ccommands[(name || title).toLowerCase()] = tag;
             await r.table('guild').get(destination).update({
                 ccommands: r.literal(storedGuild.ccommands)
             });
-        }
+        };
 
         switch (req.body.action) {
             case 'load':
@@ -161,7 +161,7 @@ async function renderEditor(req, res) {
             case 'rename':
                 res.locals.startText = req.body.content;
                 res.locals.tagName = title;
-                let newTitle = req.body.newname.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@\[\]]/gi, '');
+                let newTitle = filterTitle(req.body.newname);
                 if (newTitle == '') {
                     res.locals.error = 'Blank is not a name!';
                 } else {
@@ -198,7 +198,7 @@ async function renderEditor(req, res) {
                             }
                         } else {
                             let storedGuild = await bu.getGuild(destination);
-                            if (storedGuild.ccommands[newTitle] != undefined) {
+                            if (storedGuild.ccommands[newTitle.toLowerCase()] != undefined) {
                                 res.locals.error = 'There is already a custom command with that name!';
                             } else {
                                 await saveCcommand(undefined);
@@ -295,6 +295,10 @@ async function logChange(user, action, actionObj) {
             }
         }
     });
+}
+
+function filterTitle(title) {
+    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[]=\-_~()@]/gi, '');
 }
 
 module.exports = router;

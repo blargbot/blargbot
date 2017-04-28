@@ -196,7 +196,7 @@ var listTags = async function (msg, originalTagList, page, author, deleteMsg) {
 };
 
 function filterTitle(title) {
-    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}=\-_~()@]/gi, '');
+    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[]=\-_~()@]/gi, '');
 }
 
 e.execute = async function (msg, words, text) {
