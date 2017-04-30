@@ -1,8 +1,11 @@
-const cleverbotIo = new dep.cleverbotIo(config.cleverbot.ioid, config.cleverbot.iokey);
-cleverbotIo.setNick('blargbotProd');
-cleverbotIo.create(function (err, session) {
-    if (err) logger.error(err);
-    logger.init(session);
+const cleverbotIo = new dep.cleverbotIo({
+    user: config.cleverbot.ioid,
+    key: config.cleverbot.iokey,
+    nick: 'blargbot' + bu.makeSnowflake()
+});
+
+cleverbotIo.create().then(function (session) {
+    logger.init('Cleverbot.io initialized with session', session);
 });
 
 const cleverbot = new dep.cleverbot({
@@ -515,20 +518,25 @@ async function handleCleverbot(msg) {
         options = {
             cs: cleverCache[msg.channel.id]
         };
-
     try {
         let response = await cleverbot.query(msgToSend, options);
         cleverCache[msg.channel.id] = response.cs;
         await bot.sendChannelTyping(msg.channel.id);
         await bu.sleep(1500);
-        bu.send(msg, response.output);
+        await bu.send(msg, response.output);
     } catch (e) { // Couldn't use cleverbot api, default to cleverbot.io
         //  logger.error(e);
-        cleverbotIo.ask(msgToSend, async function (err, response) {
+        try {
+            cleverbotIo.setNick('blargbot' + msg.channel.id);
+            let response = await cleverbotIo.ask(msgToSend);
             await bot.sendChannelTyping(msg.channel.id);
             await bu.sleep(1500);
-            bu.send(msg, response);
-        });
+            await bu.send(msg, response);
+        } catch (err) {
+            await bot.sendChannelTyping(msg.channel.id);
+            await bu.sleep(1500);
+            await bu.send(msg, `Failed to contact the API. Blame cleverbot.io`);
+        }
     }
 }
 

@@ -2,7 +2,6 @@ var irc = require('irc');
 
 var freefreefree = require('./dcommands/free.js');
 
-const cleverbot = new dep.cleverbotIo();
 const http = dep.http;
 var e = module.exports = {};
 e.requireCtx = require;
@@ -27,7 +26,7 @@ e.init = (v, em) => {
     });
     e.bot = botIrc = ircbot;
 
-    notifInterval = setInterval(function() {
+    notifInterval = setInterval(function () {
         logger.irc('[NOT] Doing notifications');
         for (var user in ircUserList) {
             if (user !== botIrc.nick) {
@@ -48,11 +47,11 @@ e.init = (v, em) => {
         reloadUserList();
     });
 
-    botIrc.addListener('motd', function() {
+    botIrc.addListener('motd', function () {
         sendMessageToIrc('nickserv', `identify ${config.irc.nickserv_name} ${config.irc.nickserv_pass}`);
     });
 
-    botIrc.addListener('names', function(channel, nicks) {
+    botIrc.addListener('names', function (channel, nicks) {
         var message = 'Online Users: ';
         for (var key in nicks) {
             message += `${key}, `;
@@ -63,7 +62,7 @@ e.init = (v, em) => {
         changeDiscordTopic(message);
     });
 
-    botIrc.addListener('message', function(from, to, text) {
+    botIrc.addListener('message', function (from, to, text) {
         var userMessage = `\<${from}\> ${text}`;
         logger.irc(`[IRC] ${from}> ${to}> ${text}`);
         // logger.irc(userMessage);
@@ -86,10 +85,10 @@ e.init = (v, em) => {
             } catch (err) {
                 logger.irc(err.stack);
             }
-        } else if (text.startsWith('blargbot, ')) {}
+        } else if (text.startsWith('blargbot, ')) { }
     });
 
-    botIrc.addListener('join', function(channel, nick, message) {
+    botIrc.addListener('join', function (channel, nick, message) {
         var joinMessage = `${nick} (${message.user}@${message.host}) has joined ${channel}`;
         logger.irc(`[IRC] ${joinMessage}`);
         if (channel === config.irc.channel) {
@@ -116,7 +115,7 @@ e.init = (v, em) => {
         reloadUserList();
     });
 
-    botIrc.addListener('quit', function(nick, reason, channels, message) {
+    botIrc.addListener('quit', function (nick, reason, channels, message) {
         var quitMessage = `${nick} (${message.host}) has quit (Reason: ${reason})`;
         logger.irc(`[IRC] ${quitMessage}`);
         sendMessageToDiscord(quitMessage);
@@ -126,7 +125,7 @@ e.init = (v, em) => {
         reloadUserList();
     });
 
-    botIrc.addListener('part', function(channel, nick, reason, message) {
+    botIrc.addListener('part', function (channel, nick, reason, message) {
         var quitMessage = `${nick} (${message.host}) has parted (Reason: ${reason})`;
         logger.irc(`[IRC] ${quitMessage}`);
         sendMessageToDiscord(quitMessage);
@@ -136,7 +135,7 @@ e.init = (v, em) => {
         reloadUserList();
     });
 
-    botIrc.addListener('nick', function(oldnick, newnick, channels, message) {
+    botIrc.addListener('nick', function (oldnick, newnick, channels, message) {
         if (oldnick === botIrc.nick || newnick === botIrc.nick) {
             return;
         }
@@ -170,7 +169,7 @@ e.init = (v, em) => {
         sendMessageToDiscord(` * ${sender} ${text}`);
     });
 
-    botIrc.addListener('error', function(message) {
+    botIrc.addListener('error', function (message) {
         logger.irc('An IRC error occured: ', message);
     });
 };
@@ -450,13 +449,13 @@ function sendDiscordAttachment(msg, attach) {
 
 function getCat(channel) {
     var output;
-    http.get('http://random.cat/meow', function(res) {
+    http.get('http://random.cat/meow', function (res) {
         var body = '';
-        res.on('data', function(chunk) {
+        res.on('data', function (chunk) {
             body += chunk;
         });
 
-        res.on('end', function() {
+        res.on('end', function () {
             logger.irc(body);
             output = JSON.parse(body);
             sendMessageToIrc(channel, output.file);
@@ -468,12 +467,12 @@ var xkcdMax = 0;
 
 function getXkcd(channel, words) {
     if (xkcdMax === 0) {
-        http.get('http://xkcd.com/info.0.json', function(res) {
+        http.get('http://xkcd.com/info.0.json', function (res) {
             var body = '';
-            res.on('data', function(chunk) {
+            res.on('data', function (chunk) {
                 body += chunk;
             });
-            res.on('end', function() {
+            res.on('end', function () {
                 logger.irc(body);
                 var output = JSON.parse(body);
                 xkcdMax = output.num;
@@ -499,12 +498,12 @@ function getXkcd(channel, words) {
     } else {
         url = `http://xkcd.com/${choice}/info.0.json`;
     }
-    http.get(url, function(res) {
+    http.get(url, function (res) {
         var body = '';
-        res.on('data', function(chunk) {
+        res.on('data', function (chunk) {
             body += chunk;
         });
-        res.on('end', function() {
+        res.on('end', function () {
             logger.irc(body);
             var output = JSON.parse(body);
             var message = '';
@@ -697,12 +696,12 @@ function getEcon(channel, words) {
 
     var url = `http://api.fixer.io/latest?symbols=${to}&base=${from}`;
 
-    http.get(url, function(res) {
+    http.get(url, function (res) {
         var body = '';
-        res.on('data', function(chunk) {
+        res.on('data', function (chunk) {
             body += chunk;
         });
-        res.on('end', function() {
+        res.on('end', function () {
             var rates = JSON.parse(body);
             if (rates.error != null && rates.error === 'Invalid base') {
                 sendMessageToIrc(channel, `Invalid currency ${from}\n\`econ \<from\> \<to\> \<amount\>\``);
