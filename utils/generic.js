@@ -1252,6 +1252,19 @@ bu.postStats = function () {
         }, (err) => {
             if (err) logger.error(err);
         });
+
+        dep.request.post({
+            url: `https://discordbots.org/api/bots/${bot.user.id}/stats`,
+            json: true,
+            headers: {
+                'content-type': 'application/json',
+                'Authorization': config.general.botlistorgtoken,
+                'User-Agent': 'blargbot/1.0 (ratismal)'
+            },
+            body: {
+                'server_count': bot.guilds.size
+            }
+        });
     }
 };
 async function updateStats() {
