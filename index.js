@@ -13,8 +13,6 @@ global.Promise = require('bluebird');
 global._dep = require('./Dependencies');
 global._config = require('./config.json');
 
-global._r = _dep.rethinkdbdash(_config.db);
-
 global._core = require('./Core');
 
 global._constants = _core.Constants;

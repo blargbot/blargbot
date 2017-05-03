@@ -7,6 +7,20 @@ class BaseCommand {
         this.name = options.name || this.constructor.name;
         this.flags = options.flags || [];
         this.aliases = options.aliases || [];
+        /**
+         * Subcommands are objects with the following structure
+         * this.subcommands = {
+         *   // A name used for usage and locale generation
+         *   name: {
+         *     flags, // An array, optional
+         *     function // A function to execute, preferably by reference
+         *   }
+         * }
+         * Locales populated are:
+         * `${base}.subcommand.${name}.usage`
+         * `${base}.subcommand.${name}.info`
+         */
+        this.subcommands = options.subcommands || {};
     }
 
     async getInfo(dest) {
@@ -17,8 +31,9 @@ class BaseCommand {
         return await this.decode(dest, `${this.base}.usage`);
     }
 
-    get webInfo() {
-        let paragraphs = this.info.replace(/\n+/g, '\n').split('\n');
+    async webInfo() {
+        let paragraphs = (await this.getInfo()).replace(/\n+/g, '\n')
+            .replace(/>/g, '&gt;').replace(/</g, '&lt;').split('\n');
         let output = '';
         let list = [];
         for (const line of paragraphs) {
@@ -38,7 +53,12 @@ class BaseCommand {
     }
 
     async execute(ctx) {
-        this.parseInput(ctx);
+        if (this.subcommands.hasOwnProperty(ctx.words[0].toLowerCase())) {
+            let key = ctx.words[0].toLowerCase();
+
+        } else {
+            this.parseInput(ctx);
+        }
     }
 
     async event(params) {
@@ -70,7 +90,15 @@ class BaseCommand {
         }));
     }
 
-    parseInput(ctx) {
+    parseInput(ctx, subcommand) {
+        let flags = this.flags;
+        if (subcommand !== undefined && this.subcommands[subcommand] !== undefined
+            && Array.isArray(this.subcommands[subcommand].flags)) {
+            for (const flag of this.subcommands[subcommand].flags) {
+                this.flags.push(flag);
+            }
+        }
+
         let words = ctx.words;
         let output = {
             _: []

@@ -2,11 +2,11 @@ global._dep = require('../Dependencies');
 
 const { CommandManager, EventManager, LocaleManager } = require('./Managers');
 const { Cache } = require('./Structures');
+const Database = require('./Database');
 
 global.Promise = require('bluebird');
 global._config = require('../config.json');
 
-global._r = _dep.rethinkdbdash(_config.db);
 require('../Prototypes');
 global._core = require('../Core');
 global._logger = new _core.Logger();
@@ -54,6 +54,8 @@ class DiscordClient extends _dep.Eris.Client {
         this.sender = new _core.Structures.Sender(process);
 
         this.emitter = new _dep.EventEmitter();
+
+        this.database = new Database(this);
 
         this.awaitedMessages = {};
     }

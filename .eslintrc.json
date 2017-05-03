@@ -56,7 +56,6 @@
         "_config": false,
         "_core": false,
         "_discord": false,
-        "_r": false,
         "_cache": false,
         "_logger": false
     }

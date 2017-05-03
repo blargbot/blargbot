@@ -42,5 +42,7 @@ module.exports = {
     EventEmitter: require('eventemitter3'),
     irc: require('irc'),
     brainfuck: new (require('brainfuck-node'))(),
-    chevrotain: require('chevrotain')
+    chevrotain: require('chevrotain'),
+    pg: require('pg-promise')(),
+    sequelize: require('sequelize')
 };

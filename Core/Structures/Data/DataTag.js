@@ -1,6 +1,6 @@
 const Base = require('./DataBase');
 
-class DataUser extends Base {
+class DataTag extends Base {
     constructor(id) {
         super(id, 'Tag');
 
@@ -79,4 +79,4 @@ class DataUser extends Base {
 
 }
 
-module.exports = DataUser;
+module.exports = DataTag;

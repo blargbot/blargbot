@@ -184,20 +184,20 @@ function awaitMessage(dest, callback, timeout = 300000) {
 /**
  * Inserts a message into the database
  * @param {Message} msg The message object 
- * @param {Number} type The type of the message - 0 for create, 1 for update, 2 for delete
+ * @param {String} type The type of the message - one of `create`, `update`, `delete`
  */
-async function insertMessage(msg, type = 0) {
-    if (msg.channel)
-        return await _r.table('chatlogs').insert({
-            id: type == 0 ? msg.id : Snowflake.make(),
+async function insertMessage(msg, type = 'create') {
+    if (msg.channel && msg.guild)
+        return await _discord.models.ChatLog.create({
+            id: type == 'create' ? msg.id : Snowflake.make(),
+            guildId: msg.guild.id,
+            channelId: msg.channel.id,
+            userId: msg.author.id,
+            msgId: msg.id,
+            type,
             content: msg.content,
-            attachment: msg.attachments && msg.attachments.length > 0 ? msg.attachments[0].url : undefined,
-            userid: msg.author ? msg.author.id : 'unknown',
-            msgid: msg.id,
-            channelid: msg.channel.id,
-            guildid: msg.guild ? msg.guild.id : 'DM',
-            msgtime: _r.epochTime(msg.timestamp / 1000),
-            type
+            embeds: msg.embeds,
+            attachmentUrl: msg.attachments && msg.attachments.length > 0 ? msg.attachments[0].url : undefined
         });
 }
 
@@ -207,14 +207,21 @@ async function insertMessage(msg, type = 0) {
  * @returns {Object} The entry
  */
 async function getLatestCachedMessage(msgId) {
-    const rawMsg = (await _r.table('chatlogs').getAll(msgId, { index: 'msgid' }).orderBy(_r.desc('id')).limit(1))[0];
+    const rawMsg = _discord.models.ChatLog.findOne({
+        where: {
+            msgId
+        },
+        order: [
+            ['id', 'DESC']
+        ]
+    });
     if (rawMsg)
         return constructMessage({
             id: msgId,
-            timestamp: rawMsg.type == 0 ? rawMsg.msgtime : Snowflake.unmake(msgId),
+            timestamp: Snowflake.unmake(rawMsg.msgId),
             channel_id: rawMsg.channelid,
             content: rawMsg.content,
-            edited_timestamp: rawMsg.type != 1 ? rawMsg.msgtime : undefined,
+            edited_timestamp: rawMsg.type != 'create' ? Snowflake.unmake(rawMsg.id) : undefined,
             mentions: [],
             role_mentions: []
         });

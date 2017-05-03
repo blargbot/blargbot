@@ -1,10 +1,10 @@
 const Base = require('./DataBase');
 
-class DataUser extends Base {
+class DataCustomCommand extends Base {
     constructor(id, guildId) {
         super(id, 'Guild');
         this.guildId = guildId;
-        
+
         this.template = {
             [this.cache.pk]: this.id,
             content: '',
@@ -92,4 +92,4 @@ class DataUser extends Base {
 
 }
 
-module.exports = DataUser;
+module.exports = DataCustomCommand;

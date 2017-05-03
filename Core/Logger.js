@@ -22,6 +22,7 @@ const Levels = [{ name: 'error', color: Colours.RED },
 { name: 'info', color: Colours.GREEN },
 { name: 'output', color: Colours.MAGENTA },
 { name: 'verbose', color: Colours.CYAN },
+{ name: 'database', color: Colours.BLUE },
 { name: 'debug', color: Colours.GREY },
 { name: 'adebug', color: Colours.CYAN }];
 

@@ -1,0 +1,47 @@
+const Base = require('./Base');
+
+class GuildModlogModel extends Base {
+    constructor(db) {
+        super(db);
+
+        this.model = db.define('guild_modlog', {
+            guildId: {
+                type: this.Sequelize.BIGINT,
+                references: {
+                    model: _discord.models.Guild,
+                    key: 'guildId'
+                },
+                allowNull: false,
+                primaryKey: true
+            },
+            caseId: {
+                type: this.Sequelize.INTEGER,
+                primaryKey: true,
+                autoIncrement: true
+            },
+            msgId: {
+                type: this.Sequelize.BIGINT,
+                allowNull: false
+            },
+            moderatorId: {
+                type: this.Sequelize.BIGINT,
+                references: {
+                    model: _discord.models.User,
+                    key: 'userId'
+                }
+            },
+            type: {
+                type: this.Sequelize.STRING,
+                allowNull: false
+            },
+            reason: {
+                type: this.Sequelize.STRING(1000)
+            },
+            targets: {
+                type: this.Sequelize.ARRAY(this.Sequelize.BIGINT)
+            }
+        });
+    }
+}
+
+module.exports = GuildModlogModel;
