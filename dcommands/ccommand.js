@@ -82,6 +82,7 @@ e.execute = async function (msg, words, text) {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
                 break;
+            case 'add':
             case 'create':
                 if (words.length > 3) {
                     if (words[2] == 'cc' || words[2] == 'ccommand') {
@@ -136,6 +137,7 @@ e.execute = async function (msg, words, text) {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
                 break;
+            case 'remove':
             case 'delete':
                 if (words.length > 2) {
                     storedTag = await bu.ccommand.get(msg.channel.guild.id, words[2]);

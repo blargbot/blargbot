@@ -204,6 +204,7 @@ e.execute = async function (msg, words, text) {
     let title, content, tag, author, originalTagList;
     if (words[1]) {
         switch (words[1].toLowerCase()) {
+            case 'add':
             case 'create':
                 if (words[2]) title = words[2];
                 if (words[3]) content = bu.splitInput(text, true).slice(3).join(' ');
@@ -357,6 +358,7 @@ e.execute = async function (msg, words, text) {
                 });
 
                 break;
+            case 'remove':
             case 'delete':
                 if (words[2]) title = words[2];
                 if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
@@ -498,10 +500,11 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
 
                 listTags(msg, originalTagList, 1, user);
                 break;
+            case 'eval':
             case 'test':
                 if (words.length > 2) {
                     let output = await tags.processTag(msg, words.slice(2).join(' '), '', 'test', msg.author.id);
-                    await bu.send(msg, `Test Output:\n${output} `);
+                    await bu.send(msg, `Output:\n${output.trim()}`);
                 }
                 break;
             case 'favourite':
