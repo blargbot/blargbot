@@ -94,15 +94,8 @@ bu.ccommand = {
     }
 };
 
-bu.isNsfwChannel = async function (channelid) {
-    let guildid = bot.channelGuildMap[channelid];
-    if (!guildid) {
-        //   logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isNsfwChannel');
-        return true;
-    }
-    let guild = await bu.getGuild(guildid);
-
-    return guild.channels[channelid] ? guild.channels[channelid].nsfw : false;
+bu.isNsfwChannel = function (channelid) {
+    return bot.getChannel(channelid).name.startsWith('nsfw-');
 };
 
 bu.isBlacklistedChannel = async function (channelid) {
