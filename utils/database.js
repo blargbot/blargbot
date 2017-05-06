@@ -94,7 +94,7 @@ bu.ccommand = {
     }
 };
 
-bu.isNsfwChannel = function (channelid) {
+bu.isNsfwChannel = async function (channelid) {
     const channel = bot.getChannel(channelid);
     return channel.name.startsWith('nsfw-') || channel.name === 'nsfw';
 };
