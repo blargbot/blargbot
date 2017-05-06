@@ -18,8 +18,7 @@ e.longinfo = `<p>Displays three images obtained from <a href="https://danbooru.d
 
 e.execute = (msg, words) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
-        var tagList = JSON.parse(JSON.stringify(words));
-        delete tagList[0];
+        var tagList = words.slice(1);
 
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
@@ -31,7 +30,7 @@ e.execute = (msg, words) => {
         //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
-                //        logger.(kek); 
+                //        logger.(kek);
                 bu.send(msg, config.general.nsfwMessage);
 
                 return;
@@ -46,12 +45,13 @@ e.execute = (msg, words) => {
                     return a - b;
                 });
             }
-        var query = '';
-        for (var tag in tagList) {
-            query += tagList[tag] + '%20';
+        const usedTags = [];
+        for (var tag of tagList) {
+            if (!/(loli|shota|child|young)/i.test(tag)) {
+                usedTags.push(tag);
+            }
         }
-
-        var url = '/posts.json?limit=' + 50 + '&tags=' + query;
+        var url = '/posts.json?limit=' + 50 + '&tags=' + usedTags.join('%20');
         var message = '';
 
         logger.debug('url: ' + url);
@@ -65,13 +65,13 @@ e.execute = (msg, words) => {
             }
         };
 
-        var req = https.request(options, function(res) {
+        var req = https.request(options, function (res) {
             var body = '';
-            res.on('data', function(chunk) {
+            res.on('data', function (chunk) {
                 body += chunk;
             });
 
-            res.on('end', function() {
+            res.on('end', function () {
                 try {
                     var doc = JSON.parse(body);
                     var urlList = [];
@@ -92,7 +92,7 @@ e.execute = (msg, words) => {
                         bu.send(msg, 'No results found!');
                         return;
                     }
-                    message += `Found **${urlList.length}/50** posts\n`;
+                    message += `Found **${urlList.length}/50** posts for tags \`${usedTags.join(' ')}\`\n`;
                     for (var i = 0; i < 3; i++) {
                         if (urlList.length > 0) {
                             var choice = bu.getRandomInt(0, urlList.length - 1);

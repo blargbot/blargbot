@@ -18,8 +18,7 @@ e.longinfo = `<p>Displays three images obtained from <a href="http://rule34.xxx/
 e.execute = (msg, words) => {
     bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
 
-        var tagList = JSON.parse(JSON.stringify(words));
-        delete tagList[0];
+        var tagList = words.slice(1);
 
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
@@ -33,12 +32,14 @@ e.execute = (msg, words) => {
             bu.send(msg, config.general.nsfwMessage);
             return;
         }
-        var query = '';
-        for (var tag in tagList) {
-            query += tagList[tag] + '%20';
+        const usedTags = [];
+        for (var tag of tagList) {
+            if (!/(loli|shota|child|young)/i.test(tag)) {
+                usedTags.push(tag);
+            }
         }
 
-        var url = `/index.php?page=dapi&s=post&q=index&limit=${50}&tags=${query}`;
+        var url = `/index.php?page=dapi&s=post&q=index&limit=${50}&tags=${usedTags.join('%20')}`;
 
         var message = '';
         logger.debug('url: ' + url);
@@ -51,18 +52,18 @@ e.execute = (msg, words) => {
                 'User-Agent': 'blargbot/1.0 (ratismal)'
             }
         };
-        var req = https.request(options, function(res) {
+        var req = https.request(options, function (res) {
             var body = '';
-            res.on('data', function(chunk) {
+            res.on('data', function (chunk) {
                 //logger.(chunk);
                 body += chunk;
             });
 
-            res.on('end', function() {
+            res.on('end', function () {
                 //  logger.('body: ' + body);
                 //   var xml = JSON.parse(body);
                 try {
-                    xml2js.parseString(body, function(err, doc) {
+                    xml2js.parseString(body, function (err, doc) {
                         if (err != null) {
                             logger.debug('error: ' + err.message);
                         }
@@ -81,7 +82,7 @@ e.execute = (msg, words) => {
                             bu.send(msg, 'No results found!');
                             return;
                         } else {
-                            message = `Found **${urlList.length}/50** posts\n`;
+                            message = `Found **${urlList.length}/50** posts for tags \`${usedTags.join(' ')}\`\n`;
                         }
                         //   parsedUrlList = JSON.parse(JSON.stringify(urlList));
 
