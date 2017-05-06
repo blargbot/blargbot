@@ -19,7 +19,7 @@ e.flags = [{
     desc: 'The reason for the ban.'
 }];
 
-e.execute = async function(msg, words, text) {
+e.execute = async function (msg, words, text) {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
         bu.send(msg, `I don't have permission to ban users!`);
         return;
@@ -64,7 +64,7 @@ e.execute = async function(msg, words, text) {
         };
     console.dir(bu.bans[msg.channel.guild.id]);
     userList.forEach(m => {
-        bot.banGuildMember(msg.channel.guild.id, m, days).then(() => {
+        bot.banGuildMember(msg.channel.guild.id, m, days, 'Banned by ' + bu.getFullName(msg.author) + (input.r ? ' with reason: ' + input.r.join(' ') : '')).then(() => {
             return;
         }).catch(logger.error);
     });

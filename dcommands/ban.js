@@ -25,7 +25,7 @@ e.flags = [{
 }];
 
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (words[1]) {
         let input = bu.parseInput(e.flags, words);
 
@@ -47,7 +47,7 @@ e.execute = async function(msg, words) {
     }
 };
 
-e.ban = async function(msg, user, deleteDays = 1, reason, duration, tag = false, noPerms = false) {
+e.ban = async function (msg, user, deleteDays = 1, reason, duration, tag = false, noPerms = false) {
     if (!msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
         return [`I don't have permission to ban users!`, '`Bot has no permissions`'];
     }
@@ -77,7 +77,7 @@ e.ban = async function(msg, user, deleteDays = 1, reason, duration, tag = false,
         reason: reason
     };
     try {
-        await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays);
+        await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, 'Banned by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason : ''));
         let suffix = '';
         if (duration) {
             await r.table('events').insert({
