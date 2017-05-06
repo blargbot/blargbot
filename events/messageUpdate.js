@@ -31,7 +31,7 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
                 if (storedMsg.attachment) oldmsg.attachments = [{
                     url: storedMsg.attachment
                 }];
-                oldmsg.channel = bot.getChannel(msg.channelID);
+                oldmsg.channel = bot.getChannel(msg.channel.id);
 
             } else {
                 logger.debug('Somebody deleted an uncached message and unstored message.');
