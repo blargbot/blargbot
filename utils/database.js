@@ -95,7 +95,8 @@ bu.ccommand = {
 };
 
 bu.isNsfwChannel = function (channelid) {
-    return bot.getChannel(channelid).name.startsWith('nsfw-');
+    const channel = bot.getChannel(channelid);
+    return channel.name.startsWith('nsfw-') || channel.name === 'nsfw';
 };
 
 bu.isBlacklistedChannel = async function (channelid) {
