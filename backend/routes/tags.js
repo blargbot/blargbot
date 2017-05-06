@@ -125,10 +125,9 @@ async function renderEditor(req, res) {
                                     content: req.body.content
                                 });
                             } else {
-                                await saveCcommand({
-                                    content: req.body.content,
-                                    author: req.user.id
-                                });
+                                storedTag.content = req.body.content;
+                                storedTag.author = req.user.id;
+                                await saveCcommand(storedTag);
                                 res.locals.message = 'Your custom command has been edited! It has been saved as \'' + title + '\'.';
 
                             }
