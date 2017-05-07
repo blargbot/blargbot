@@ -33,7 +33,7 @@ async function handleUserMessage(msg, storedGuild) {
     let prefix;
     if (msg.guild) {
         handleAntiMention(msg, storedGuild);
-        handleCensor(msg, storedGuild);
+        bu.handleCensor(msg, storedGuild);
         handleRoleme(msg, storedGuild);
         prefix = storedGuild.settings.prefix;
     } else prefix = '';
@@ -358,7 +358,7 @@ async function handleAntiMention(msg, storedGuild) {
     }
 }
 
-async function handleCensor(msg, storedGuild) {
+bu.handleCensor = async function handleCensor(msg, storedGuild) {
     let censor = storedGuild.censor;
     if (censor && censor.list.length > 0) {
         //First, let's check exceptions
@@ -414,7 +414,7 @@ async function handleCensor(msg, storedGuild) {
             }
         }
     }
-}
+};
 
 async function handleRoleme(msg, storedGuild) {
     if (storedGuild && storedGuild.roleme) {

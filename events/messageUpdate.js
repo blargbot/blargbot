@@ -1,12 +1,13 @@
 bot.on('messageUpdate', async function (msg, oldmsg) {
-    if (msg.channel.guild == undefined) {
+    if (oldmsg == undefined) {
         if (bot.channelGuildMap.hasOwnProperty(msg.channel.id)) {
-            msg.channel.guild = bot.guilds.get(bot.channelGuildMap[msg.channel.id]);
-            msg.guild = msg.channel.guild;
+            msg = await bot.getMessage(msg.channel.id, msg.id);
         } else return; // Don't handle DM
     }
+    const storedGuild = await bu.getGuild(msg.guild.id);
+    await bu.handleCensor(msg, storedGuild);
+
     if (msg.author) {
-        const storedGuild = await bu.getGuild(msg.guild.id);
         if (!oldmsg) {
             let storedMsg = await r.table('chatlogs')
                 .getAll(msg.id, {
@@ -53,8 +54,8 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
             if (oldMsg.length > 900) oldMsg = oldMsg.substring(0, 900) + '... (too long to display)';
             if (newMsg.length > 900) newMsg = newMsg.substring(0, 900) + '... (too long to display)';
         }
-        if (msg.guild)
-            bu.logEvent(msg.guild.id, 'messageupdate', [{
+        if (msg.guild) {
+            await bu.logEvent(msg.guild.id, 'messageupdate', [{
                 name: 'User',
                 value: msg.author ? bu.getFullName(msg.author) + ` (${msg.author.id})` : 'Undefined',
                 inline: true
@@ -73,5 +74,6 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
                 name: 'New Message',
                 value: newMsg
             }]);
+        }
     }
 });
