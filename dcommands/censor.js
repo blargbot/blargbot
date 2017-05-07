@@ -169,8 +169,7 @@ e.execute = async function (msg, words) {
             let index = parseInt(msg2.content) - 1;
             addCensor = storedGuild.censor.list[index];
             term = input.undefined.slice(1).join(' ') || addCensor.term;
-            if (term != '')
-                addCensor.term = term;
+
             if (input.R) {
                 try {
                     bu.createRegExp(term);
@@ -180,7 +179,8 @@ e.execute = async function (msg, words) {
                     return;
                 }
             } else addCensor.regex = false;
-
+            if (term != '')
+                addCensor.term = term;
             messages = [];
             if (input.d && input.d.length > 0) {
                 addCensor.deleteMessage = input.d.join(' ');
