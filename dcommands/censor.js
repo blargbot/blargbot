@@ -16,9 +16,10 @@ Commands:
    INFO - Displays information about censors.`;
 e.longinfo = `<p>Creates message censorships. Subcommands:</p>
 <ul>
-<li>ADD <text> [flags] - Adds a censor with for the provided text.</li>
+<li>ADD &lt;text&gt; [flags] - Adds a censor with for the provided text.</li>
 <li>REMOVE - Brings up a menu to remove a censor</li>
-<li>EXCEPTION <add | remove> [flags] - Adds or removes an exception.</li>
+<li>EDIT &lt;text&gt; [flags] - Brings up a menu to edit a censor</li>
+<li>EXCEPTION &lt;add | remove&gt; [flags] - Adds or removes an exception.</li>
 <li>RULE [flags] - Sets the censorship rules.</li>
 <li>INFO - Displays information about censors.</li>
 </ul>`;
@@ -26,27 +27,27 @@ e.longinfo = `<p>Creates message censorships. Subcommands:</p>
 e.flags = [{
     flag: 'R',
     word: 'regex',
-    desc: 'Add: If specified, parse as /regex/ rather than plaintext.'
+    desc: 'Add/Edit: If specified, parse as /regex/ rather than plaintext.'
 }, {
     flag: 'w',
     word: 'weight',
-    desc: 'Add: How many incidents the censor is worth.'
+    desc: 'Add/Edit: How many incidents the censor is worth.'
 }, {
     flag: 'r',
     word: 'reason',
-    desc: 'Add: A custom modlog reason. NOT BBTag compatible.'
+    desc: 'Add/Edit: A custom modlog reason. NOT BBTag compatible.'
 }, {
     flag: 'd',
     word: 'deletemessage',
-    desc: 'Add/Rule: The BBTag-compatible message to send after a message is deleted. Adds override rules.'
+    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a message is deleted. Adds override rules.'
 }, {
     flag: 'k',
     word: 'kickmessage',
-    desc: 'Add/Rule: The BBTag-compatible message to send after a user is kicked. Adds override rules.'
+    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is kicked. Adds override rules.'
 }, {
     flag: 'b',
     word: 'banmessage',
-    desc: 'Add/Rule: The BBTag-compatible message to send after a user is banned. Adds override rules.'
+    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is banned. Adds override rules.'
 }, {
     flag: 'u',
     word: 'users',
@@ -89,15 +90,19 @@ e.execute = async function (msg, words) {
         cases: {}
     };
     let changes = 0;
-    let censorList, suffix, msg2;
+    let censorList, suffix, msg2, addCensor, term, messages;
     switch (input.undefined[0].toLowerCase()) {
         case 'create':
         case 'add':
             if (!storedGuild.censor.list) storedGuild.censor.list = [];
-            let addCensor = {
+            addCensor = {
                 weight: 1
             };
-            let term = input.undefined.slice(1).join(' ');
+            term = input.undefined.slice(1).join(' ');
+            if (term == '') {
+                bu.send(msg, `You can't censor nothing!`);
+                return;
+            }
             if (input.R) {
                 try {
                     bu.createRegExp(term);
@@ -108,7 +113,7 @@ e.execute = async function (msg, words) {
                 }
             } else addCensor.regex = false;
             addCensor.term = term;
-            let messages = [];
+            messages = [];
             if (input.d && input.d.length > 0) {
                 addCensor.deleteMessage = input.d.join(' ');
                 messages.push('delete');
@@ -130,6 +135,74 @@ e.execute = async function (msg, words) {
             storedGuild.censor.list.push(addCensor);
             await saveGuild();
             bu.send(msg, `Censor created!
+**Trigger**: ${addCensor.term}
+**Regex**: ${addCensor.regex}
+**Messages**: ${messages.join(', ')}
+**Weight**: ${addCensor.weight}
+**Reason**: ${addCensor.reason || 'Default'}`);
+            break;
+        case 'edit':
+            if (!storedGuild.censor.list || storedGuild.censor.list.length == 0) {
+                bu.send(msg, `There are no censors on this guild!`);
+                return;
+            }
+            censorList = "Existing censors:\n```prolog\n";
+            suffix = "```\nPlease type the number of the censor you wish to view, or type 'c' to cancel. This prompt will expire in 5 minutes.";
+            for (let i = 0; i < storedGuild.censor.list.length; i++) {
+                let phrase = `${i + 1}. ${storedGuild.censor.list[i].term}${storedGuild.censor.list[i].regex ? ' (regex)' : ''}\n`;
+                if (censorList.length + phrase.length + suffix.length > 1500) {
+                    censorList += `...and ${storedGuild.censor.list.length - i} more.\n`;
+                } else {
+                    censorList += phrase;
+                }
+            }
+            censorList += suffix;
+            msg2 = await bu.awaitMessage(msg, censorList, m => {
+                if (m.content.toLowerCase() == 'c') return true;
+                let choice = parseInt(m.content);
+                return !isNaN(choice) && choice > 0 && choice <= storedGuild.censor.list.length;
+            });
+            if (msg2.content.toLowerCase() == 'c') {
+                bu.send(msg, 'Query canceled.');
+                return;
+            }
+            let index = parseInt(msg2.content) - 1;
+            addCensor = storedGuild.censor.list[index];
+            term = input.undefined.slice(1).join(' ') || addCensor.term;
+            if (term != '')
+                addCensor.term = term;
+            if (input.R) {
+                try {
+                    bu.createRegExp(term);
+                    addCensor.regex = true;
+                } catch (err) {
+                    bu.send(msg, 'Unsafe or invalid regex! Terminating.');
+                    return;
+                }
+            } else addCensor.regex = false;
+
+            messages = [];
+            if (input.d && input.d.length > 0) {
+                addCensor.deleteMessage = input.d.join(' ');
+                messages.push('delete');
+            }
+            if (input.k && input.k.length > 0) {
+                addCensor.kickMessage = input.k.join(' ');
+                messages.push('kick');
+            }
+            if (input.b && input.b.length > 0) {
+                addCensor.banMessage = input.b.join(' ');
+                messages.push('ban');
+            }
+            if (input.w && input.w.length > 0 && !isNaN(parseInt(input.w[0]))) {
+                addCensor.weight = parseInt(input.w[0]);
+            }
+            if (input.r && input.r.length > 0) {
+                addCensor.reason = input.r.join(' ');
+            }
+            storedGuild.censor.list[index] = addCensor;
+            await saveGuild();
+            bu.send(msg, `Censor edited!
 **Trigger**: ${addCensor.term}
 **Regex**: ${addCensor.regex}
 **Messages**: ${messages.join(', ')}
