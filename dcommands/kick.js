@@ -56,8 +56,8 @@ e.execute = async function (msg, words) {
         //    if (words[2])
         //       deletedays = parseInt(words[2])
         try {
-            await bot.kickGuildMember(msg.channel.guild.id, user.id, 'Kicked by ' + bu.getFullName(msg.author) + (input.r ? ' with reason: ' + input.r.join(' ') : ''));
             let input = bu.parseInput(e.flags, words);
+            await bot.kickGuildMember(msg.channel.guild.id, user.id, 'Kicked by ' + bu.getFullName(msg.author) + (input.r ? ' with reason: ' + input.r.join(' ') : ''));
             bu.logAction(msg.channel.guild, user, msg.author, 'Kick', input.r, bu.ModLogColour.KICK);
             bu.send(msg, ':ok_hand:');
         } catch (err) {
