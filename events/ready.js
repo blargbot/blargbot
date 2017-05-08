@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:23:02
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:23:02
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 bot.on('ready', async function () {
     logger.init('Ready! Logged in as ' + bot.user.username + '#' + bot.user.discriminator);
     let restart = await r.table('vars').get('restart').run();

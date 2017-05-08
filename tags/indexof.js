@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:48:14
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:48:14
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -16,7 +25,7 @@ e.desc = 'Finds the index of <code>searchfor</code> in <code>text</code>, after 
 e.exampleIn = 'The index of \'o\' in \'hello world\' is {indexof;hello world;o}';
 e.exampleOut = 'The index of \'o\' in \'hello world\' is 4';
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }

@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:19:14
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:19:14
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 const router = dep.express.Router();
 
 

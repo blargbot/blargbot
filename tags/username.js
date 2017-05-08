@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 19:20:42
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 19:20:42
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -14,7 +23,6 @@ e.desc = `Returns the user's name. If <code>name</code> is specified, gets that 
 <code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
 e.exampleIn = `Your username is {username;stupid;this can be anything}`;
 e.exampleOut = `Your username is stupid cat`;
-
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {

@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:48:52
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:48:52
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -14,7 +23,7 @@ e.desc = `Determines whether the provided text is a valid array.`;
 e.exampleIn = `{isarray;["array?"]} {isarray;array?}`;
 e.exampleOut = `true false`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     let replaceContent = false;
     let replaceString;
     if (params.args.length >= 2) {

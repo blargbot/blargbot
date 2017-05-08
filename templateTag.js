@@ -1,13 +1,16 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 19:35:50
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 19:36:52
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 // START: Do not touch
 var e = module.exports = {};
 
-
-
-
-
 e.init = () => {
-    
-    
     e.category = bu.TagType.COMPLEX;
 };
 e.requireCtx = require;
@@ -43,14 +46,13 @@ e.exampleOut = '';
  * @return.replaceContent Boolean - if true, will replace the entire content rather than just the tag (within scope)
  * @return.fallback? String - if provided, will change the fallback
  */
-e.execute = async function(params) {
+e.execute = async function (params) {
     // processes any nested tags in the `args` array. if your tag uses advanced logic, you may wish to reimplement this
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
     var replaceString = '';
     var replaceContent = false;
-
 
     return {
         replaceString: replaceString,

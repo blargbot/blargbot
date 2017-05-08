@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:27:02
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:27:02
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -14,7 +23,7 @@ e.desc = 'Converts a Base <code>origin</code> number into <code>radix</code>. De
 e.exampleIn = '{base;255;16}';
 e.exampleOut = 'FF';
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }

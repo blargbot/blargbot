@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 19:31:30
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 19:31:51
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var app;
 var e = module.exports;
 
@@ -6,7 +15,7 @@ var server;
 e.init = () => {
     app = dep.express();
     app.use(dep.bodyParser.json());
-    server = app.listen(8081, function() {
+    server = app.listen(8081, function () {
         var host = server.address().address;
         var port = server.address().port;
         logger.init('Interface listening at http://%s:%s', host, port);

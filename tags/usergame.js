@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 19:19:58
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 19:19:58
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -14,7 +23,6 @@ e.desc = `Returns the game the user is playing. If the user isn't playing a game
 <code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
 e.exampleIn = `You are playing {usergame}`;
 e.exampleOut = `You are playing with bbtag`;
-
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {

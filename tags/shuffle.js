@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:57:23
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:57:23
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -16,7 +25,7 @@ e.exampleIn = `{shuffle} {args;0} {args;1} {args;2}`;
 e.exampleOut = `Input: <code>one two three</code><br>Output: <code>three one two</code>`;
 
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -33,7 +42,7 @@ e.execute = async function(params) {
                 await bu.setArray(deserialized, params);
             } else replaceString = bu.serializeTagArray(deserialized.v)
         } else {
-        replaceString = await bu.tagProcessError(params, '`Not an array`');
+            replaceString = await bu.tagProcessError(params, '`Not an array`');
         }
     } else
         bu.shuffle(words);

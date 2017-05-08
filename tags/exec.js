@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:37:16
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:37:16
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -14,7 +23,7 @@ e.exampleIn = 'Let me do a tag for you. {exec;f}';
 e.exampleOut = 'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5';
 
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     if (params.msg.iterations && params.msg.iterations > 200) {
         bu.send(params.msg, 'Terminated recursive tag after 200 execs.');
         throw ('Too Much Exec');

@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:49:31
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:49:31
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -16,7 +25,7 @@ e.exampleIn = `What you said is {length;{args}} chars long.`;
 e.exampleOut = `What you said is 5 chars long.`;
 
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     let replaceContent = false;
     let replaceString;
     if (params.args.length >= 2) {

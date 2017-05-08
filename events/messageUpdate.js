@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:18:57
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:22:52
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 bot.on('messageUpdate', async function (msg, oldmsg) {
     if (oldmsg == undefined) {
         if (bot.channelGuildMap.hasOwnProperty(msg.channel.id)) {

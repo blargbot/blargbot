@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 19:26:13
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 19:27:43
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 global.dep = require('./dep.js');
 
 const reload = dep.reload(require);

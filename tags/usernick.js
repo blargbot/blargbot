@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 19:20:48
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 19:20:48
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -15,7 +24,6 @@ e.desc = `Returns the user's nickname. If it doesn't exist, returns their userna
 specified, if a user can't be found it will simply return the <code>name</code>`;
 e.exampleIn = `Your nick is {usernick}`;
 e.exampleOut = `Your nick is cat`;
-
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {

@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:54:15
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:54:15
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -17,7 +26,7 @@ e.exampleIn = `I like {replace;to eat;eat;nom} cheese. {replace;cheese;ham}`;
 e.exampleOut = `I like to nom ham`;
 
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }

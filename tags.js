@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 19:34:15
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 19:34:15
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.processTag = async function (msg, contents, command, tagName, author, isCcommand) {

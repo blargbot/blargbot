@@ -1,6 +1,13 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:20:35
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:20:35
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 let e = module.exports = {};
-
-
 
 const commandType = {
     1: "General Commands",
@@ -28,7 +35,7 @@ const tagType = {
 e.init = () => {
     dep.hbs.registerPartials(dep.path.join(__dirname, 'views', 'partials'));
 
-    dep.hbs.registerHelper('ifCond', function(v1, operator, v2, options) {
+    dep.hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
 
         switch (operator) {
             case '==':
@@ -56,7 +63,7 @@ e.init = () => {
         }
     });
 
-    dep.hbs.registerHelper('listcommands', function() {
+    dep.hbs.registerHelper('listcommands', function () {
         let sidebar = '';
         let commands = CommandManager.list;
         let lastType = -10;
@@ -76,7 +83,7 @@ e.init = () => {
         return sidebar;
     });
 
-    dep.hbs.registerHelper('listtags', function() {
+    dep.hbs.registerHelper('listtags', function () {
         let sidebar = '';
         let lastType = -10;
         let tags = TagManager.list;
@@ -95,7 +102,7 @@ e.init = () => {
         return sidebar;
     });
 
-    dep.hbs.registerHelper('tags', function(text, url) {
+    dep.hbs.registerHelper('tags', function (text, url) {
         let toReturn = '';
         let lastType = -10;
         let tags = TagManager.list;
@@ -192,7 +199,7 @@ e.init = () => {
 
 
 
-    dep.hbs.registerHelper('commands', function(text, url) {
+    dep.hbs.registerHelper('commands', function (text, url) {
         let toReturn = '';
         let lastType = -10;
         let commands = CommandManager.list;

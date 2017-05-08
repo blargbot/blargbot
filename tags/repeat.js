@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:54:06
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:54:06
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -14,7 +23,7 @@ e.desc = 'Repeats <code>text</code> <code>amount</code> times.';
 e.exampleIn = '{repeat;e;10}';
 e.exampleOut = 'eeeeeeeeee';
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     //   for (let i = 1; i < params.args.length; i++) {
     //       params.args[i] =await bu.processTagInner(params, i);
     //   }

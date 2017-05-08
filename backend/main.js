@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:20:47
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:20:47
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 const router = dep.express.Router();
@@ -30,14 +39,14 @@ function checkAuth(req, res, next) {
 const sessionUserMap = {};
 
 e.init = () => {
-    bu.getUserFromSession = function(sessionId) {
+    bu.getUserFromSession = function (sessionId) {
         return sessionUserMap[sessionId];
     };
 
-    dep.passport.serializeUser(function(user, done) {
+    dep.passport.serializeUser(function (user, done) {
         done(null, user);
     });
-    dep.passport.deserializeUser(function(obj, done) {
+    dep.passport.deserializeUser(function (obj, done) {
         done(null, obj);
     });
     dep.passport.use(new Strategy({
@@ -45,8 +54,8 @@ e.init = () => {
         clientSecret: config.website.secret,
         callbackURL: config.website.callback,
         scope: scopes
-    }, function(accessToken, refreshToken, profile, done) {
-        process.nextTick(function() {
+    }, function (accessToken, refreshToken, profile, done) {
+        process.nextTick(function () {
             return done(null, profile);
         });
     }));
@@ -65,23 +74,23 @@ e.init = () => {
     app.use(dep.passport.session());
     app.get('/login', dep.passport.authenticate('discord', {
         scope: scopes
-    }), function(req, res) {});
+    }), function (req, res) { });
     app.get('/callback',
         dep.passport.authenticate('discord', {
             failureRedirect: '/'
         }),
-        function(req, res) {
+        function (req, res) {
             logger.website('A user has authenticated');
             sessionUserMap[req.sessionID] = req.user.id;
             res.redirect(req.session.returnTo || '/');
         } // auth success
     );
-    app.get('/logout', function(req, res) {
+    app.get('/logout', function (req, res) {
         req.logout();
         delete sessionUserMap[req.sessionID];
         res.redirect(req.session.returnTo || '/');
     });
-    app.get('/info', checkAuth, function(req, res) {
+    app.get('/info', checkAuth, function (req, res) {
         logger.debug(req.user);
         //res.json(req.user);
         res.end(`<p>The person below sucks</p>
@@ -90,7 +99,7 @@ e.init = () => {
         `);
     });
 
-    app.get('/messages', function(req, res) {
+    app.get('/messages', function (req, res) {
         res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
         res.render('messages');
     });

@@ -1,6 +1,15 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:21:03
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:21:03
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 const debug = false;
 
-bot.on('debug', function(message, id) {
+bot.on('debug', function (message, id) {
     if (debug)
         logger.debug(`[${id}] ${message}`);
 });

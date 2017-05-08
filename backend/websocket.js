@@ -1,8 +1,16 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:20:52
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:20:52
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 const e = module.exports = {};
 const WebSocketServer = dep.ws.Server;
 
-
-e.init = function(server) {
+e.init = function (server) {
     global.wss = new WebSocketServer({
         server: server
     });
@@ -13,9 +21,9 @@ e.init = function(server) {
         });
     };
 
-    wss.on('connection', function(ws) {
+    wss.on('connection', function (ws) {
         logger.ws('A user has connected');
-        ws.on('message', function(message) {
+        ws.on('message', function (message) {
             try {
                 logger.ws(dep.util.inspect(message, {
                     depth: 1

@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 18:47:59
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 18:47:59
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -19,7 +28,7 @@ e.exampleOut = `1,2,3,4,5,6,7,8,9,10`;
 //Then, return the new value of the counter
 //To decrement, you just pass a negative number as the amount
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }

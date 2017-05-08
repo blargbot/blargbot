@@ -1,3 +1,12 @@
+/*
+ * @Author: stupid cat
+ * @Date: 2017-05-07 19:32:10
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-07 19:32:10
+ *
+ * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
+ */
+
 var e = module.exports = {};
 
 const levels = {
@@ -56,13 +65,13 @@ e.init = () => {
             maxLength = key.length;
         }
     }
-    var logger = e.logger = new(dep.winston.Logger)({
+    var logger = e.logger = new (dep.winston.Logger)({
         levels: levels,
         colors: colors,
         level: 'debug',
         exitOnError: false,
         transports: [
-            new(dep.winston.transports.Console)({
+            new (dep.winston.transports.Console)({
                 prettyPrint: true,
                 colorize: true,
                 name: 'general',
@@ -88,7 +97,7 @@ e.init = () => {
                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }
             }),
-            new(dep.winston.transports.File)({
+            new (dep.winston.transports.File)({
                 name: 'file-general',
                 filename: dep.path.join(__dirname, 'logs', 'generallogs.log'),
                 maxsize: 10000000,
@@ -110,7 +119,7 @@ e.init = () => {
                                 '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }
             }),
-            new(dep.winston.transports.File)({
+            new (dep.winston.transports.File)({
                 name: 'file-error',
                 filename: dep.path.join(__dirname, 'logs', 'errorlogs.log'),
                 maxsize: 10000000,
@@ -137,7 +146,7 @@ e.init = () => {
     });
     logger.level = debug ? 'debug' : 'info';
 
-    logger.toggleDebug = function() {
+    logger.toggleDebug = function () {
         logger.level = debug ? 'info' : 'debug';
         debug = !debug;
         return debug;
