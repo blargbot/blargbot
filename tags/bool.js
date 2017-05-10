@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:27:16
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:27:16
+ * @Last Modified time: 2017-05-10 15:58:12
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -45,8 +45,12 @@ e.execute = async function (params) {
 
     if (args.length > 2) {
         args[1] = await bu.processTagInner(params, 1);
+        if (/^-?[0-9]+\.?[0-9]*$/.test(args[1])) args[1] = parseFloat(args[1]);
         args[2] = await bu.processTagInner(params, 2);
+        if (/^-?[0-9]+\.?[0-9]*$/.test(args[2])) args[2] = parseFloat(args[2]);
         args[3] = await bu.processTagInner(params, 3);
+        if (/^-?[0-9]+\.?[0-9]*$/.test(args[3])) args[3] = parseFloat(args[3]);
+
         if (operators.hasOwnProperty(args[1])) {
             replaceString = operators[args[1]](args[2], args[3]).toString();
         } else if (operators.hasOwnProperty(args[2])) {

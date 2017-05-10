@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:47:48
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:47:48
+ * @Last Modified time: 2017-05-10 15:57:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -59,11 +59,11 @@ e.execute = async function (params) {
         }
     } else if (args.length > 4) {
         args[1] = await bu.processTagInner(params, 1);
-        if (/^[0-9]+\.?[0-9]*$/.test(args[1])) args[1] = parseFloat(args[1]);
+        if (/^-?[0-9]+\.?[0-9]*$/.test(args[1])) args[1] = parseFloat(args[1]);
         args[2] = await bu.processTagInner(params, 2);
-        if (/^[0-9]+\.?[0-9]*$/.test(args[2])) args[2] = parseFloat(args[2]);
+        if (/^-?[0-9]+\.?[0-9]*$/.test(args[2])) args[2] = parseFloat(args[2]);
         args[3] = await bu.processTagInner(params, 3);
-        if (/^[0-9]+\.?[0-9]*$/.test(args[3])) args[3] = parseFloat(args[3]);
+        if (/^-?[0-9]+\.?[0-9]*$/.test(args[3])) args[3] = parseFloat(args[3]);
 
         let res;
         if (typeof args[1] == 'string' && operators.hasOwnProperty(args[1].toLowerCase())) {
