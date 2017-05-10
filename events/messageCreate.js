@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:22:24
+ * @Last Modified time: 2017-05-10 15:53:42
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -44,6 +44,7 @@ async function handleUserMessage(msg, storedGuild) {
         handleAntiMention(msg, storedGuild);
         bu.handleCensor(msg, storedGuild);
         handleRoleme(msg, storedGuild);
+        handleTableflip(msg);
         prefix = storedGuild.settings.prefix;
     } else prefix = '';
 
