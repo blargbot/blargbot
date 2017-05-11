@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:47:48
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-10 15:57:35
+ * @Last Modified time: 2017-05-11 15:55:14
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -28,8 +28,8 @@ e.exampleIn = `{if;&lt;=;5;10;5 is less than or equal to 10;5 is greater than 10
 e.exampleOut = `5 is less than or equal to 10`;
 
 const operators = {
-    '==': (a, b) => a == b,
-    '!=': (a, b) => a != b,
+    '==': (a, b) => a === b,
+    '!=': (a, b) => a !== b,
     '>=': (a, b) => a >= b,
     '>': (a, b) => a > b,
     '<=': (a, b) => a <= b,

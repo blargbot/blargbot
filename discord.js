@@ -9,7 +9,6 @@
 
 const https = dep.https;
 global.tags = require('./tags.js');
-const reload = dep.reload(require);
 
 const Promise = require('promise');
 //const webInterface = require('./interface.js');
