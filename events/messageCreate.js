@@ -2,10 +2,11 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-10 15:53:42
+ * @Last Modified time: 2017-05-13 23:56:41
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+
 
 const cleverbotIo = new dep.cleverbotIo({
     user: config.cleverbot.ioid,
@@ -16,6 +17,28 @@ const cleverbotIo = new dep.cleverbotIo({
 cleverbotIo.create().then(function (session) {
     logger.init('Cleverbot.io initialized with session', session);
 });
+
+/*
+dep.cleverbotIoIo.prototype.askPromise = function (input) {
+    return new Promise((resolve, reject) => {
+        this.ask(input, function (err, res) {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve(res);
+        });
+    });
+};
+
+const cleverbotIo = new dep.cleverbotIoIo(config.cleverbot.ioid, config.cleverbot.iokey);
+cleverbotIo.setNick('blargbot' + bu.makeSnowflake());
+cleverbotIo.create(function (err, session) {
+    if (err) logger.error('Cleverbot error', err);
+    else
+        logger.info('Created a cleverbot instance with session ' + session);
+});
+*/
 
 const cleverbot = new dep.cleverbot({
     key: config.cleverbot.key
@@ -537,12 +560,13 @@ async function handleCleverbot(msg) {
     } catch (e) { // Couldn't use cleverbot api, default to cleverbot.io
         //  logger.error(e);
         try {
-            cleverbotIo.setNick('blargbot' + msg.channel.id);
+            //cleverbotIo.setNick('blargbot' + msg.channel.id);
             let response = await cleverbotIo.ask(msgToSend);
             await bot.sendChannelTyping(msg.channel.id);
             await bu.sleep(1500);
             await bu.send(msg, response);
         } catch (err) {
+            logger.error(err);
             await bot.sendChannelTyping(msg.channel.id);
             await bu.sleep(1500);
             await bu.send(msg, `Failed to contact the API. Blame cleverbot.io`);

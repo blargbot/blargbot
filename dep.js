@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:30:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:30:02
+ * @Last Modified time: 2017-05-13 23:45:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -41,6 +41,7 @@ var e = module.exports = {
     wordsearch: require('wordsearch'),
     cleverbot: require('cleverbot'),
     cleverbotIo: require('better-cleverbot-io'),
+    cleverbotIoIo: require('cleverbot.io'),
     bodyParser: require('body-parser'),
     mkdirp: require('mkdirp'),
     winston: require('winston'),
