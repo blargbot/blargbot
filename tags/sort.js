@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:36
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:57:36
+ * @Last Modified time: 2017-05-16 19:40:38
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -23,7 +23,7 @@ e.desc = `Sorts the provided array in ascending order. If descending is provided
 e.exampleIn = `{sort;[3, 2, 5, 1, 4]}`;
 e.exampleOut = `[1,2,3,4,5]`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -35,11 +35,20 @@ e.execute = async function(params) {
         let deserialized = await bu.getArray(params, args[1]);
 
         if (deserialized && Array.isArray(deserialized.v)) {
-            deserialized.v.sort();
+            let intArray = true;
+            let parsed = deserialized.v.map(e => {
+                if (/^-?\d+(\.\d*)?$/.test(e)) e = parseFloat(e);
+                else intArray = false;
+                return e;
+            });
+            if (intArray) {
+                parsed.sort((a, b) => a - b);
+                deserialized.v = parsed;
+            } else deserialized.v.sort();
             if (args[2]) deserialized.v.reverse();
             if (deserialized.n) {
                 await bu.setArray(deserialized, params);
-            } else replaceString = bu.serializeTagArray(deserialized.v)
+            } else replaceString = bu.serializeTagArray(deserialized.v);
         } else {
             replaceString = await bu.tagProcessError(params, '`Not an array`');
         }
