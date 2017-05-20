@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:38:19
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2017-05-20 12:23:47
+ * @Last Modified time: 2017-05-20 12:29:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -134,7 +134,7 @@ const functions = {
                 gravity: 'north',
                 fill: 'white',
                 stroke: 'black',
-                strokewidth: 4
+                strokewidth: 16
             });
             let topcap = await Jimp.read(topbuf);
             img.composite(topcap, 0, 0);
@@ -147,7 +147,7 @@ const functions = {
                 gravity: 'south',
                 fill: 'white',
                 stroke: 'black',
-                strokewidth: 4
+                strokewidth: 16
             });
             let botcap = await Jimp.read(botbuf);
             img.composite(botcap, 0, height / 6 * 5);
