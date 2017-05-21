@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 12:20:00
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 12:48:05
+ * @Last Modified time: 2017-05-21 13:44:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -45,14 +45,18 @@ e.execute = async function (params) {
         else if (!params.msg.guild.members.get(user.id))
             replaceString = await bu.tagProcessError(params, '`User not on guild`');
         else {
-            const DMChannel = await user.getDMChannel();
-            if (!DMCache[user.id] || DMCache[user.id].count > 5 || DMCache[user.id].user != msg.author.id || DMCache[user.id].guild != params.msg.guild.id) {
-                // Ew we're gonna send a message first? It was voted...
-                await bu.send(DMChannel.id, `The following message was sent from **__${params.msg.guild.name}__** (${params.msg.guild.id}), and was sent by **__${bu.getFullName(params.msg.author)}__** (${params.msg.author.id}):`)
-                DMCache[user.id] = { user: params.msg.author.id, guild: params.msg.guild.id, count: 1 };
+            try {
+                const DMChannel = await user.getDMChannel();
+                if (!DMCache[user.id] || DMCache[user.id].count > 5 || DMCache[user.id].user != msg.author.id || DMCache[user.id].guild != params.msg.guild.id) {
+                    // Ew we're gonna send a message first? It was voted...
+                    await bu.send(DMChannel.id, `The following message was sent from **__${params.msg.guild.name}__** (${params.msg.guild.id}), and was sent by **__${bu.getFullName(params.msg.author)}__** (${params.msg.author.id}):`)
+                    DMCache[user.id] = { user: params.msg.author.id, guild: params.msg.guild.id, count: 1 };
+                }
+                await bu.send(DMChannel.id, params.args[2]);
+                DMCache[user.id].count++;
+            } catch (err) {
+                replaceString = await bu.tagProcessError(params, '`Could not send DM`');
             }
-            await bu.send(DMChannel.id, params.args[2]);
-            DMCache[user.id].count++;
         }
     }
 
