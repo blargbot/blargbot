@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 00:55:16
+ * @Last Modified time: 2017-05-21 01:08:15
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -19,17 +19,19 @@ router.get('/:hex', async function (req, res) {
         });
         return;
     }
-    let img = new dep.Jimp(128, 128, hex);
-    img.getBuffer(dep.Jimp.MIME_JPEG, (err, buf) => {
-        logger.website(req.params.hex, hex, buf.length);
+    let code = bu.genEventCode();
 
-        res.writeHead(200, {
-            'Content-Type': 'image/jpeg',
-            'Content-Length': buf.length
-        });
-        res.end(buf, 'binary');
-
+    let buf = await bu.awaitEvent({
+        cmd: 'img',
+        command: 'color',
+        code: code,
+        hex
     });
+    res.writeHead(200, {
+        'Content-Type': 'image/jpeg',
+        'Content-Length': buf.length
+    });
+    res.end(buf, 'binary');
 });
 
 module.exports = router;

@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 19:38:19
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2017-05-20 12:29:21
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2017-05-21 01:11:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -64,6 +64,12 @@ const logger = {
 };
 
 const functions = {
+    color: async function (msg) {
+        let img = new Jimp(128, 128, msg.hex);
+        img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
+            submitBuffer(msg.code, buffer);
+        });
+    },
     free: async function (msg) {
         let topCaption = await Jimp.read(await createCaption({
             text: msg.top,
