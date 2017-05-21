@@ -78,26 +78,39 @@
         <div class="section">
             <div class='row'>
                 <div class='col s12 m10 offset-m1'>
-                    <p class='flow-text'>BBTag feature four different types of variables, each with a different scope. These types are distinguished
+                    <p class='flow-text'>BBTag feature five different types of variables, each with a different scope. These types are distinguished
                         from each other with prefixes. These variables can be used for numerous operations and functions.</p>
-                        <h2 class='centre'>Variable Classification</h2>
-                        <h3>Local Variables</h3>
-                        Prefix: none
-                        <p class='flow-text'>Local variables are your classic variables. They are unique per-tag, and not shared by anything.</p>
-                
-                        <h3>Guild Variables</h3>
-                        Prefix: <code>_</code>
-                        <p class='flow-text'>Unlike local variables, guild variables are unique per-guild (server). They are intended for allowing separate tags to communicate with each other and other tags on the same guild.</p>
+                    <h2 class='centre'>Variable Classification</h2>
+                    <h3 id='temp'>Temporary Variables</h3>
+                    Prefix: <code>~</code>
+                    <p class='flow-text'>All the other variable types are immediately stored to a database for data persistence. Temporary variables,
+                        however, do not. As such, they are faster and have the smallest scope. Use these variables if you
+                        don't need to reuse them between executions.</p>
 
-                        <p class='flow-text'>Additionally, there are actually two separate pools of guild variables - one for tags, and another for custom commands. This means that public tags don't share the same variables as custom commands, even on the same guild.</p>
-                
-                        <h3>Author Variables</h3>
-                        Prefix: <code>@</code>
-                        <p class='flow-text'>Author variables are similar to guild variables, in that they allow tags to communicate with each other. However, they are unique per-author. This means that it is a set of variables that only you can ever touch. Other than global variables, author variables are the only type that allow for tags and custom commands to communicate.</p>
-                
-                        <h3>Global Variables</h3>
-                        Prefix: <code>*</code>
-                        <p class='flow-text'>These variables are in a public pool, meaning that <em>anybody</em> is able to access or modify them. As a general rule of thumb, if you don't want somebody using your variables, don't use global ones!</p>
+                    <h3 id='local'>Local Variables</h3>
+                    Prefix: none
+                    <p class='flow-text'>Local variables are your classic variables. They are unique per-tag, and not shared by anything.</p>
+
+                    <h3 id='guild'>Guild Variables</h3>
+                    Prefix: <code>_</code>
+                    <p class='flow-text'>Unlike local variables, guild variables are unique per-guild (server). They are intended for allowing
+                        separate tags to communicate with each other and other tags on the same guild.</p>
+
+                    <p class='flow-text'>Additionally, there are actually two separate pools of guild variables - one for tags, and another for
+                        custom commands. This means that public tags don't share the same variables as custom commands, even
+                        on the same guild.</p>
+
+                    <h3 id='author'>Author Variables</h3>
+                    Prefix: <code>@</code>
+                    <p class='flow-text'>Author variables are similar to guild variables, in that they allow tags to communicate with each other.
+                        However, they are unique per-author. This means that it is a set of variables that only you can ever
+                        touch. Other than global variables, author variables are the only type that allow for tags and custom
+                        commands to communicate.</p>
+
+                    <h3 id='global'>Global Variables</h3>
+                    Prefix: <code>*</code>
+                    <p class='flow-text'>These variables are in a public pool, meaning that <em>anybody</em> is able to access or modify them.
+                        As a general rule of thumb, if you don't want somebody using your variables, don't use global ones!</p>
                 </div>
             </div>
 
@@ -109,18 +122,18 @@
         <script>
             init();
         </script>
-</main>
-<footer class="page-footer blue-grey darken-2">
-    <div class="section">
-        <div class="rows">
-            <div class="col s12 m10 offset-m1 l6 offset-l3">
-                <p class="centre">
-                    &copy; 2016 - Ratismal (stupid cat)
-                </p>
+    </main>
+    <footer class="page-footer blue-grey darken-2">
+        <div class="section">
+            <div class="rows">
+                <div class="col s12 m10 offset-m1 l6 offset-l3">
+                    <p class="centre">
+                        &copy; 2016 - Ratismal (stupid cat)
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
 </body>
 
