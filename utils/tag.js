@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 11:21:27
+ * @Last Modified time: 2017-05-21 16:16:59
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -169,7 +169,7 @@ bu.processTag = async function (params) {
     if (params.content) contents = params.content;
     if (!contents) contents = '';
     if (isStaff === undefined)
-        isStaff = author != params.msg.guild.id && await bu.isUserStaff(author, msg.guild.id);
+        isStaff = author == params.msg.guild.id || await bu.isUserStaff(author, msg.guild.id);
     if (vars === undefined) vars = {};
 
     if (terminate) return {
