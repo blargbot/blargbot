@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:26:17
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:26:17
+ * @Last Modified time: 2017-05-21 00:49:16
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,7 +25,7 @@ e.exampleIn = `Your second word was {args;1}`;
 e.exampleOut = `Input: <code>Hello world!</code> <br>Output: <code>Your second word was world!</code>`;
 
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -53,10 +53,7 @@ e.execute = async function(params) {
             replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
         }
     } else {
-        if (!(words[0] == '' && words.length == 1)) {
-            replaceString = words.join(' ');
-        } else
-            replaceString = await bu.tagProcessError(params, '`User gave no args`');
+        replaceString = words.join(' ');
     }
     replaceString = replaceString + '';
     replaceString = bu.fixContent(replaceString);
