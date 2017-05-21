@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:22:38
+ * @Last Modified time: 2017-05-21 00:53:46
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -257,7 +257,7 @@ bu.processTag = async function (params) {
                 ccommand: params.ccommand,
                 terminate,
                 isStaff
-            }, fallback, '`Tag doesn\'t exist`');
+            }, `\`Tag "${title}" doesn\'t exist\``);
         }
 
         if (replaceObj.fallback !== undefined) {
@@ -343,7 +343,12 @@ bu.processSpecial = (contents, final) => {
     return contents.replace(/\uE010/g, bu.specialCharBegin).replace(/\uE011/g, bu.specialCharEnd);
 };
 
-
+bu.getTagRole = async function (msg, args, index) {
+    var obtainedRole;
+    if (!index) index = 1;
+    msg.content = bu.processSpecial(msg.content);
+    return await bu.getRole(msg, args[index], args[index + 1]);
+};
 
 bu.getTagUser = async function (msg, args, index) {
     var obtainedUser;
