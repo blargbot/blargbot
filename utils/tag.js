@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 00:53:46
+ * @Last Modified time: 2017-05-21 11:21:27
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -165,19 +165,18 @@ bu.processTagInner = async function (params, i) {
 
 
 bu.processTag = async function (params) {
-    let msg = params.msg,
-        words = params.words,
-        contents = params.content || params.contents || '',
-        fallback = params.fallback,
-        author = params.author,
-        tagName = params.tagName,
-        terminate = params.terminate,
-        isStaff = params.isStaff || (author != params.msg.guild.id ? await bu.isUserStaff(author, msg.guild.id) : true);
+    let { msg, words, contents, fallback, author, tagName, terminate, isStaff, vars } = params;
+    if (params.content) contents = params.content;
+    if (!contents) contents = '';
+    if (isStaff === undefined)
+        isStaff = author != params.msg.guild.id && await bu.isUserStaff(author, msg.guild.id);
+    if (vars === undefined) vars = {};
 
     if (terminate) return {
         contents: contents,
         terminate: true
     };
+
     let openBraceCount = (contents.match(/\{/g) || []).length;
     let closeBraceCount = (contents.match(/\}/g) || []).length;
     if (openBraceCount !== closeBraceCount) return {
@@ -224,7 +223,7 @@ bu.processTag = async function (params) {
             args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
         let title = (await bu.processTag({
-            msg, words, contents: args[0], fallback, author, tagName, terminate
+            msg, words, contents: args[0], fallback, author, tagName, terminate, vars
         })).contents.toLowerCase();
         if (TagManager.list.hasOwnProperty(title)) {
             let parameters = {
@@ -236,7 +235,7 @@ bu.processTag = async function (params) {
                 tagName: tagName,
                 ccommand: params.ccommand,
                 terminate,
-                isStaff
+                isStaff, vars
             };
             if (TagManager.list[title].category == bu.TagType.CCOMMAND && !params.ccommand) {
                 replaceObj = {
@@ -256,7 +255,7 @@ bu.processTag = async function (params) {
                 tagName: tagName,
                 ccommand: params.ccommand,
                 terminate,
-                isStaff
+                isStaff, vars
             }, `\`Tag "${title}" doesn\'t exist\``);
         }
 

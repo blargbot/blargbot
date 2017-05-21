@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:14
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:57:14
+ * @Last Modified time: 2017-05-21 11:30:13
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,7 +25,7 @@ e.desc = `Stores a variable. These variables are saved between sessions, and are
 e.exampleIn = `{set;testvar;This is a test var}`;
 e.exampleOut = ``;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -59,7 +59,7 @@ e.execute = async function(params) {
     };
 };
 
-e.setVar = async function(params, varName, value) {
+e.setVar = async function (params, varName, value) {
     let vars = {};
     let subVarName = varName.substring(1);
     let prefix = varName.substring(0, 1);
@@ -79,6 +79,10 @@ e.setVar = async function(params, varName, value) {
             break;
         case '*': // global
             await bu.setVariable(undefined, subVarName, value, bu.TagVariableType.GLOBAL);
+            break;
+        case '~': // temp
+            params.vars[subVarName] = value;
+            logger.verbose('set', params.vars);
             break;
         default: // local to tag
             if (params.ccommand) { // custom command

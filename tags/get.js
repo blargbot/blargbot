@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:38:55
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:38:55
+ * @Last Modified time: 2017-05-21 11:29:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -23,7 +23,7 @@ e.desc = `Returns a stored variable, or an index in a stored array. Variables ar
 e.exampleIn = `{get;testvar}`;
 e.exampleOut = `This is a test var`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -62,7 +62,7 @@ e.execute = async function(params) {
     };
 };
 
-e.getVar = async function(params, varName) {
+e.getVar = async function (params, varName) {
     let vars = {};
     let subVarName = varName.substring(1);
     let prefix = varName.substring(0, 1);
@@ -81,7 +81,11 @@ e.getVar = async function(params, varName) {
             else return await bu.tagProcessError(params, '`No author found`');
             break;
         case '*': // global
+            logger.verbose('get', params.vars);
             vars = await bu.getVariable(undefined, subVarName, bu.TagVariableType.GLOBAL);
+            break;
+        case '~': // temp
+            vars = params.vars[subVarName];
             break;
         default: // local to tag
             if (params.ccommand) { // custom command
