@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 13:17:14
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 13:25:14
+ * @Last Modified time: 2017-05-21 13:26:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -21,7 +21,7 @@ e.name = `max`;
 e.args = `&lt;number&gt;...`;
 e.usage = `{max;number...}`;
 e.desc = `Returns the largest number out of those provided`;
-e.exampleIn = `{min;50;2;65}`;
+e.exampleIn = `{max;50;2;65}`;
 e.exampleOut = `65`;
 
 e.execute = async function (params) {
