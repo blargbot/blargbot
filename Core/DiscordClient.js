@@ -1,25 +1,22 @@
-global._dep = require('../Dependencies');
+process.on('unhandledRejection', (reason, p) => {
+    console.error('Unhandled Promise Rejection:', reason || p);
+});
 
 const { CommandManager, EventManager, LocaleManager } = require('./Managers');
 const { Cache } = require('./Structures');
 const Database = require('./Database');
+const Eris = require('eris');
+const EventEmitter = require('eventemitter3');
 
 global.Promise = require('bluebird');
 global._config = require('../config.json');
 
-require('../Prototypes');
 global._core = require('../Core');
 global._logger = new _core.Logger();
 
-global._cache = {
-    User: new Cache('user', 'userid'),
-    Guild: new Cache('guild', 'guildid'),
-    Tag: new Cache('tag', 'name')
-};
-
 global._constants = _core.Constants;
 
-class DiscordClient extends _dep.Eris.Client {
+class DiscordClient extends Eris.Client {
     constructor() {
         _logger.debug('Max:', process.env.SHARD_MAX, 'ID:', process.env.SHARD_ID);
         super(_config.discord.token, {
@@ -38,24 +35,39 @@ class DiscordClient extends _dep.Eris.Client {
             messageLimit: 1
         });
 
-        global._discord = this;
-        this.Core = require('./index.js');
-        this.Helpers = require('./Helpers');
+        require('../Prototypes')(this);
+        
 
-        this.LocaleManager = new LocaleManager();
+        this.Core = require('./index.js');
+        this.Helpers = {};
+        const helpers = require('./Helpers');
+        for (const key of Object.keys(helpers)) {
+            const helper = new helpers[key](this);
+            this.Helpers[key] = helper;
+        }
+        this.LocaleManager = new LocaleManager(this);
         this.LocaleManager.init();
 
-        this.CommandManager = new CommandManager();
+        this.CommandManager = new CommandManager(this);
         this.CommandManager.init();
 
-        this.EventManager = new EventManager();
+        this.EventManager = new EventManager(this);
         this.EventManager.init();
 
-        this.sender = new _core.Structures.Sender(process);
+        
 
-        this.emitter = new _dep.EventEmitter();
+        this.sender = new _core.Structures.Sender(this, process);
+
+        this.emitter = new EventEmitter();
 
         this.database = new Database(this);
+        this.database.authenticate().then(() => {
+            this.cache = {
+                User: new Cache(this, this.models.User, 'userId'),
+                Guild: new Cache(this, this.models.Guild, 'guildId'),
+                Tag: new Cache(this, this.models.Tag, 'name')
+            };
+        });
 
         this.awaitedMessages = {};
     }
@@ -77,7 +89,7 @@ discord.sender.send('threadReady', process.env.SHARD_ID);
 process.on('message', async msg => {
     const { data, code } = JSON.parse(msg);
     if (code.startsWith('await:')) {
-        _discord.sender.emit(code, data);
+        discord.sender.emit(code, data);
         return;
     }
     switch (code) {

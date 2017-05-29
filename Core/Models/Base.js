@@ -1,8 +1,11 @@
+const sequelize = require('sequelize');
+
 class BaseModel {
-    constructor(db) {
+    constructor(client, db) {
         _logger.init('Loading database model ' + this.constructor.name);
+        this.client = client;
         this.db = db;
-        this.Sequelize = _dep.sequelize;
+        this.Sequelize = sequelize;
     }
 
     async sync(force = false) {

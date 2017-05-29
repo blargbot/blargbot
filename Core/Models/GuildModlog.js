@@ -1,14 +1,14 @@
 const Base = require('./Base');
 
 class GuildModlogModel extends Base {
-    constructor(db) {
-        super(db);
+    constructor(client, db) {
+        super(client, db);
 
         this.model = db.define('guild_modlog', {
             guildId: {
                 type: this.Sequelize.BIGINT,
                 references: {
-                    model: _discord.models.Guild,
+                    model: this.client.models.Guild,
                     key: 'guildId'
                 },
                 allowNull: false,
@@ -26,7 +26,7 @@ class GuildModlogModel extends Base {
             moderatorId: {
                 type: this.Sequelize.BIGINT,
                 references: {
-                    model: _discord.models.User,
+                    model: this.client.models.User,
                     key: 'userId'
                 }
             },

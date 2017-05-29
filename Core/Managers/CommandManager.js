@@ -2,8 +2,8 @@ const Manager = require('./Manager');
 const Base = require('../Structures/Command/Base');
 
 class CommandManager extends Manager {
-    constructor() {
-        super('Commands', Base);
+    constructor(client) {
+        super(client, 'Commands', Base);
         this.fullList = {};
     }
 

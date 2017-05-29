@@ -2,14 +2,10 @@ const Manager = require('./Manager');
 const Event = require('../Structures/Event');
 
 class EventManager extends Manager {
-    constructor() {
-        super('Events', Event);
+    constructor(client) {
+        super(client, 'Events', Event);
         this.eventList = {};
         this.events = {};
-    }
-
-    load(name) {
-        super.load(name);
     }
 
     unload(name) {
@@ -17,10 +13,6 @@ class EventManager extends Manager {
         delete this.eventList[eventName][name];
         delete this.builtList[name];
         super.unload(name);
-    }
-
-    reload(name) {
-        super.reload(name);
     }
 
     build(name) {
@@ -41,7 +33,7 @@ class EventManager extends Manager {
                         }
                     }
                 }.bind(this);
-                _discord.on(eventName, this.events[eventName]);
+                this.client.on(eventName, this.events[eventName]);
             }
         }
     }

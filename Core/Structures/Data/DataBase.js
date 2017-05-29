@@ -1,14 +1,18 @@
 class DataBase {
 
-    constructor(id, cacheName) {
+    constructor(client, id, cacheName) {
+        this.client = client;
         this.id = id;
-        this.cache = _cache[cacheName];
+        this.cache = this.client.cache[cacheName];
         this.temp = {};
-        this.template = { [this.cache.pk]: this.id };
+    }
+
+    get template() {
+        return { [this.cache.pk]: this.id };
     }
 
     async create() {
-        return await this.setObject(this.temp);
+        return await this.setObject(this.template);
     }
 
     getTemp(key) {
@@ -25,7 +29,9 @@ class DataBase {
     }
 
     async getObject() {
-        return await this.cache.get(this.id);
+        let obj = await this.cache.get(this.id);
+        if (!obj) return await this.create();
+        else return obj;
     }
 
     async setObject(data) {

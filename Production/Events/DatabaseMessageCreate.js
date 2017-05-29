@@ -1,12 +1,12 @@
-const { Event, Context } = _discord.Core.Structures;
+const { Event } = require('../../Core/Structures');
 
 class DatabaseMessageCreateEvent extends Event {
-    constructor() {
-        super('messageCreate', 1);
+    constructor(client) {
+        super(client, 'messageCreate', 1);
     }
 
     async execute(msg) {
-        await _discord.Helpers.Message.insertMessage(msg);
+        await this.client.Helpers.Message.insertMessage(msg);
     }
 }
 

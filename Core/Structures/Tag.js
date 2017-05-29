@@ -2,10 +2,11 @@ const TagResult = require('./TagResult');
 
 class Tag {
 
-    constructor(options) {
+    constructor(client, options) {
         if (this.constructor === Tag) {
             throw new Error('Can\'t instantiate an abstract class!');
         }
+        this.client = client;
         if (!options) options = {};
         this.category = options.category || bu.TagType.COMPLEX;
         this.name = options.name || this.constructor.name.toLowerCase();

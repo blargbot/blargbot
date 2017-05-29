@@ -1,4 +1,4 @@
-const irc = _dep.irc;
+const irc = require('irc');
 
 class IrcClient {
     constructor() {

@@ -50,12 +50,10 @@
         "bot": false,
         "config": false,
         "dep": false,
-        "_dep": false,
         "_client": false,
         "_constants": false,
         "_config": false,
         "_core": false,
-        "_discord": false,
         "_cache": false,
         "_logger": false
     }

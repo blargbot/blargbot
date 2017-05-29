@@ -1,7 +1,7 @@
-const { Event, Context } = _discord.Core.Structures;
+const { Event, Context } = require('../../Core/Structures');
 
 const prefixes = ['blargbot'];
-if (_config.general.isbeta) {
+if (_config.beta) {
     prefixes.push('k!');
     prefixes.push('<@198554059295293440>');
     prefixes.push('<@!198554059295293440>');
@@ -12,8 +12,8 @@ if (_config.general.isbeta) {
 }
 
 class CommandMessageEvent extends Event {
-    constructor() {
-        super('messageCreate');
+    constructor(client) {
+        super(client, 'messageCreate');
     }
 
     async execute(msg) {
@@ -26,7 +26,7 @@ class CommandMessageEvent extends Event {
             }
         }
         if (prefix !== false) {
-            const ctx = new Context(msg, msg.content.substring(prefix.length));
+            const ctx = new Context(this.client, msg, msg.content.substring(prefix.length));
             shouldBreak = await this.handleCommand(ctx);
         }
         return shouldBreak;
@@ -35,9 +35,9 @@ class CommandMessageEvent extends Event {
     async handleCommand(ctx) {
         let commandName = ctx.words[0].toLowerCase();
         let didCommand = false;
-        if (_discord.CommandManager.has(commandName)) {
+        if (this.client.CommandManager.has(commandName)) {
             didCommand = true;
-            _discord.CommandManager.execute(commandName, ctx);
+            this.client.CommandManager.execute(commandName, ctx);
         }
 
         return didCommand;

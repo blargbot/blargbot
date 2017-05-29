@@ -1,5 +1,3 @@
-global._dep = require('../Dependencies');
-
 const TagLexer = require('../Core/TagLexer');
 
 const tagLexer = new TagLexer();

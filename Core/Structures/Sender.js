@@ -1,6 +1,10 @@
-class Sender extends _dep.EventEmitter {
-    constructor(process) {
+const EventEmitter = require('eventemitter3');
+const Random = new (require('../Helpers/Random'))({});
+
+class Sender extends EventEmitter {
+    constructor(client, process) {
         super();
+        this.client = client;
         this.process = process || undefined;
     }
 
@@ -33,7 +37,7 @@ class Sender extends _dep.EventEmitter {
                 message: data
             };
         return new Promise((fulfill, reject) => {
-            data.key = _core.Helpers.Random.generateToken(14);
+            data.key = Random.generateToken(14);
             let event = 'await:' + data.key;
             this.send('await', data);
             let timer = setTimeout(() => {
@@ -46,7 +50,6 @@ class Sender extends _dep.EventEmitter {
             });
         });
     }
-
 }
 
 module.exports = Sender;

@@ -1,8 +1,8 @@
 const Base = require('./Base');
 
 class EventModel extends Base {
-    constructor(db) {
-        super(db);
+    constructor(client, db) {
+        super(client, db);
 
         this.model = db.define('event', {
             id: {

@@ -1,12 +1,12 @@
-const { Event, Context } = _discord.Core.Structures;
+const { Event } = require('../../Core/Structures');
 
 class DatabaseMessageDeleteEvent extends Event {
-    constructor() {
-        super('messageDelete', 1);
+    constructor(client) {
+        super(client, 'messageDelete', 1);
     }
 
     async execute(msg) {
-        await _discord.Helpers.Message.insertMessage(msg, 2);
+        await this.client.Helpers.Message.insertMessage(msg, 'delete');
     }
 }
 

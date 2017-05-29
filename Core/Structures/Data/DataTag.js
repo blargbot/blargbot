@@ -1,15 +1,15 @@
 const Base = require('./DataBase');
 
 class DataTag extends Base {
-    constructor(id) {
-        super(id, 'Tag');
+    constructor(client, id) {
+        super(client, id, 'Tag');
 
         this.template = {
             [this.cache.pk]: this.id,
             content: '',
             favourites: 0,
-            lastmodified: _r.now(),
-            lastuse: _r.now(),
+            lastmodified: Date.now(),
+            lastuse: Date.now(),
             uses: 0,
             vars: {},
             author: ''

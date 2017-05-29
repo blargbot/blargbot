@@ -1,5 +1,6 @@
 class SubTag {
-    constructor(name, args) {
+    constructor(client, name, args) {
+        this.client = client;
         this.rawArgs = [];
     }
 

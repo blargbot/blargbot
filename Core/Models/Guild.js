@@ -1,8 +1,8 @@
 const Base = require('./Base');
 
 class GuildModel extends Base {
-    constructor(db) {
-        super(db);
+    constructor(client, db) {
+        super(client, db);
 
         this.model = db.define('guild', {
             guildId: {
@@ -127,6 +127,13 @@ class GuildModel extends Base {
                 type: this.Sequelize.ARRAY(this.Sequelize.BIGINT),
                 allowNull: false,
                 defaultValue: []
+            }
+        }, {
+            hooks: {
+                afterUpdate: (data) => {
+                    const guildData = data.dataValues;
+                    this.client.cache.Guild._internalCache[data.guildId] = data;
+                }
             }
         });
     }

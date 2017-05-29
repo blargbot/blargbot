@@ -5,7 +5,8 @@
  */
 
 class Locale {
-    constructor(code) {
+    constructor(client, code) {
+        this.client = client;
         if (this.constructor === Locale) {
             throw new Error("Can't instantiate an abstract class!");
         }

@@ -1,3 +1,8 @@
+const Winston = require('winston');
+const wconfig = require('winston/lib/winston/config');
+const moment = require('moment-timezone');
+const util = require('util');
+
 const LogLevels = {};
 
 const Colours = {
@@ -22,9 +27,9 @@ const Levels = [{ name: 'error', color: Colours.RED },
 { name: 'info', color: Colours.GREEN },
 { name: 'output', color: Colours.MAGENTA },
 { name: 'verbose', color: Colours.CYAN },
-{ name: 'database', color: Colours.BLUE },
 { name: 'debug', color: Colours.GREY },
-{ name: 'adebug', color: Colours.CYAN }];
+{ name: 'adebug', color: Colours.CYAN },
+{ name: 'database', color: Colours.BLUE }];
 
 var maxLength = 0;
 
@@ -34,7 +39,7 @@ for (let i = 0; i < Levels.length; i++) {
     LogColours[Levels[i].name] = Levels[i].color;
 }
 
-class Logger extends _dep.Winston.Logger {
+class Logger extends Winston.Logger {
     constructor() {
         super({
             exitOnError: false,
@@ -43,15 +48,15 @@ class Logger extends _dep.Winston.Logger {
         });
         this.setLevels(LogLevels);
         this.master = process.env.SHARD_ID == -1;
-        this.colorize = _dep.wconfig.colorize;
-        this.add(_dep.Winston.transports.Console, {
+        this.colorize = wconfig.colorize;
+        this.add(Winston.transports.Console, {
             name: 'general',
             stderrLevels: ['error', 'warn'],
             silent: false,
             handleExceptions: true,
             prettyPrint: true,
             timestamp: function () {
-                return `[${_dep.moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
+                return `[${moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
             },
             formatter: function (options) {
                 let output = '';
@@ -68,7 +73,7 @@ class Logger extends _dep.Winston.Logger {
                     output += options.message || '';
 
                     if (options.meta && Object.keys(options.meta).length > 0) {
-                        output += '\n' + _dep.util.inspect(options.meta, { depth: 4 });
+                        output += '\n' + util.inspect(options.meta, { depth: 4 });
                     }
                 }
                 return output;

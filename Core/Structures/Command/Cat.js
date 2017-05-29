@@ -1,8 +1,8 @@
 const Base = require('./Base');
 
 class CatCommand extends Base {
-    constructor(options) {
-        super(options);
+    constructor(...args) {
+        super(...args);
         if (this.constructor === CatCommand) {
             throw new Error("Can't instantiate an abstract class!");
         }
@@ -12,7 +12,7 @@ class CatCommand extends Base {
     async getInfo() {
         return 'meow meow meow';
     }
-    
+
     async getUsage() {
         return 'meow meow meow';
     }

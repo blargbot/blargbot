@@ -1,8 +1,8 @@
 const { GeneralCommand } = _core.Structures.Command;
 
 class ShipCommand extends GeneralCommand {
-    constructor() {
-        super({
+    constructor(client) {
+        super(client, {
             name: 'ship'
         });
     }

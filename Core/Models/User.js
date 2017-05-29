@@ -1,8 +1,8 @@
 const Base = require('./Base');
 
 class UserModel extends Base {
-    constructor(db) {
-        super(db);
+    constructor(client, db) {
+        super(client, db);
         this.model = db.define('user', {
             userId: {
                 type: this.Sequelize.BIGINT,
@@ -10,7 +10,7 @@ class UserModel extends Base {
                 primaryKey: true,
                 allowNull: false
             },
-            disciminator: {
+            discriminator: {
                 type: this.Sequelize.INTEGER,
                 allowNull: false
             },
@@ -28,7 +28,14 @@ class UserModel extends Base {
                 allowNull: false,
                 defaultValue: 'en_US'
             }
+        }, {
+            hooks: {
+                afterUpdate: (...args) => {
+                    console.log(args);
+                }
+            }
         });
+        
     }
 }
 

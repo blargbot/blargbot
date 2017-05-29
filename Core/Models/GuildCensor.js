@@ -1,14 +1,14 @@
 const Base = require('./Base');
 
 class GuildCensorModel extends Base {
-    constructor(db) {
-        super(db);
+    constructor(client, db) {
+        super(client, db);
 
         this.model = db.define('guild_censor', {
             guildId: {
                 type: this.Sequelize.BIGINT,
                 references: {
-                    model: _discord.models.Guild,
+                    model: this.client.models.Guild,
                     key: 'guildId'
                 },
                 allowNull: false,
@@ -60,7 +60,7 @@ class GuildCensorModel extends Base {
             author: {
                 type: this.Sequelize.BIGINT,
                 references: {
-                    model: _discord.models.User,
+                    model: this.client.models.User,
                     key: 'userId'
                 },
                 allowNull: false

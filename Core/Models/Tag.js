@@ -1,8 +1,8 @@
 const Base = require('./Base');
 
 class TagModel extends Base {
-    constructor(db) {
-        super(db);
+    constructor(client, db) {
+        super(client, db);
 
         this.model = db.define('tag', {
             tagName: {
@@ -13,7 +13,7 @@ class TagModel extends Base {
                 type: this.Sequelize.BIGINT,
                 allowNull: false,
                 references: {
-                    model: _discord.models.User,
+                    model: this.client.models.User,
                     key: 'userId'
                 }
             },

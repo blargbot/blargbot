@@ -1,4 +1,4 @@
-const chevrotain = _dep.chevrotain;
+const chevrotain = require('chevrotain');
 const Lexer = chevrotain.Lexer;
 const { SubTag } = require('./Structures');
 function createToken(name, pattern) {

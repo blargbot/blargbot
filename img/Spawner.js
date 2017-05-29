@@ -1,6 +1,7 @@
-const { Shard } = require('./Structures'); 
+const { Shard } = require('./Structures');
+const EventEmitter = require('eventemitter3');
 
-class Spawner extends _dep.EventEmitter {
+class Spawner extends EventEmitter {
     constructor(options = {}) {
         super();
         this.max = options.max || 1;

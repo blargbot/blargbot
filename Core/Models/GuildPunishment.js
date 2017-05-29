@@ -1,14 +1,14 @@
 const Base = require('./Base');
 
 class GuildPunishmentModel extends Base {
-    constructor(db) {
-        super(db);
+    constructor(client, db) {
+        super(client, db);
 
         this.model = db.define('guild_punishment', {
             guildId: {
                 type: this.Sequelize.BIGINT,
                 references: {
-                    model: _discord.models.Guild,
+                    model: this.client.models.Guild,
                     key: 'guildId'
                 },
                 allowNull: false,

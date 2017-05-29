@@ -1,8 +1,9 @@
 class BaseCommand {
-    constructor(options) {
+    constructor(client, options = {}) {
         if (this.constructor === BaseCommand) {
             throw new Error("Can't instantiate an abstract class!");
         }
+        this.client = client;
         this.hidden = options.hidden || false;
         this.name = options.name || this.constructor.name;
         this.flags = options.flags || [];
@@ -66,11 +67,11 @@ class BaseCommand {
     }
 
     async send(dest, content, file) {
-        await _discord.Core.Helpers.Message.send(dest, content, file);
+        await this.client.Helpers.Message.send(dest, content, file);
     }
 
     async decode(dest, key, args) {
-        await _discord.Core.Helpers.Message.decode(dest, key, args);
+        await this.client.Helpers.Message.decode(dest, key, args);
     }
 
     async canExecute(ctx) {

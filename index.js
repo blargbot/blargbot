@@ -10,7 +10,6 @@ process.on('unhandledRejection', (reason, p) => {
 process.env.SHARD_ID = -1;
 
 global.Promise = require('bluebird');
-global._dep = require('./Dependencies');
 global._config = require('./config.json');
 
 global._core = require('./Core');

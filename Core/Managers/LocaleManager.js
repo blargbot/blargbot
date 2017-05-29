@@ -1,8 +1,8 @@
 const Manager = require('./Manager');
 
 class LocaleManager extends Manager {
-    constructor() {
-        super('Locale', undefined, 'json');
+    constructor(client) {
+        super(client, 'Locale', undefined, 'json');
     }
 
     build(name) {

@@ -1,3 +1,4 @@
+/*
 module.exports = {
     rethinkdbdash: require('rethinkdbdash'),
     moment: require('moment-timezone'),
@@ -25,7 +26,6 @@ module.exports = {
     safe: require('safe-regex'),
     twemoji: require('twemoji'),
     svg2png: require('svg2png'),
-    Table: require('cli-table'),
     youtubeStream: require('youtube-audio-stream'),
     google: require('googleapis'),
     SC: require('node-soundcloud'),
@@ -46,3 +46,4 @@ module.exports = {
     pg: require('pg-promise')(),
     sequelize: require('sequelize')
 };
+*/

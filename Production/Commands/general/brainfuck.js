@@ -1,8 +1,9 @@
 const { GeneralCommand } = _core.Structures.Command;
+const brainfuck = require('brainfuck-node');
 
 class BrainfuckCommand extends GeneralCommand {
-    constructor() {
-        super({
+    constructor(client) {
+        super(client, {
             name: 'brainfuck',
             flags: [
                 { flag: 'p', name: 'pointers' },
@@ -20,7 +21,7 @@ class BrainfuckCommand extends GeneralCommand {
         }
 
         try {
-            let output = _dep.brainfuck.execute(ctx.input._.join(''), (ctx.input.i || []).join(' '));
+            let output = brainfuck.execute(ctx.input._.join(''), (ctx.input.i || []).join(' '));
             await ctx.send(output.output.length == 0 ? await ctx.decode('generic.nooutput') : await ctx.decode('generic.output', {
                 output: `${output.output}${ctx.input.p ? '\n\n[' + output.memory.list.join(', ') + ']\nPointer: ' + output.memory.pointer : ''}`
             }));

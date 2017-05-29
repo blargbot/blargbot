@@ -1,6 +1,6 @@
 class Event {
-
-    constructor(eventName, priority) {
+    constructor(client, eventName, priority) {
+        this.client = client;
         if (this.constructor === Event) {
             throw new Error("Can't instantiate an abstract class!");
         }

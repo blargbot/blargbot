@@ -1,7 +1,8 @@
 const { DataTag } = require('./Data');
 
 class PublicTag {
-    constructor(name) {
+    constructor(client, name) {
+        this.client;
         this.data = new DataTag(name);
     }
 

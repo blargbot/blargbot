@@ -1,20 +1,29 @@
 const Base = require('./DataBase');
 
 class DataUser extends Base {
-    constructor(id) {
-        super(id, 'User');
+    constructor(client, id, user) {
+        super(client, id, 'User');
+        this.user = user;
     }
 
-    async updateUser(user) {
+    get template() {
+        return {
+            [this.cache.pk]: this.id,
+            discriminator: this.user.discriminator,
+            username: this.user.username
+        };
+    }
+
+    async updateUser() {
         let obj = await this.getObject();
-        obj.avatarURL = user.avatarURL;
-        if (user.username != obj.username) {
-            obj.discriminator = user.discriminator;
-            obj.username = user.username;
-            obj.usernames.push({
-                name: obj.username,
-                date: _r.now()
-            });
+        obj.avatarURL = this.user.avatarURL;
+        if (this.user.username != obj.username) {
+            obj.discriminator = this.user.discriminator;
+            obj.username = this.user.username;
+            //obj.usernames.push({
+            //    name: obj.username,
+            //    date: _r.now()
+            //});
         }
         await this.setObject(obj);
     }

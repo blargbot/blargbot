@@ -1,8 +1,8 @@
 const Base = require('./Base');
 
 class ChatLogModel extends Base {
-    constructor(db) {
-        super(db);
+    constructor(client, db) {
+        super(client, db);
 
         this.model = db.define('chatlog', {
             id: {
@@ -11,11 +11,7 @@ class ChatLogModel extends Base {
             },
             guildId: {
                 type: this.Sequelize.BIGINT,
-                allowNull: false,
-                references: {
-                    model: _discord.models.Guild,
-                    key: 'guildId'
-                }
+                allowNull: false
             },
             channelId: {
                 type: this.Sequelize.BIGINT,
@@ -23,11 +19,7 @@ class ChatLogModel extends Base {
             },
             userId: {
                 type: this.Sequelize.BIGINT,
-                allowNull: false,
-                references: {
-                    model: _discord.models.User,
-                    key: 'userId'
-                }
+                allowNull: false
             },
             msgId: {
                 type: this.Sequelize.BIGINT,

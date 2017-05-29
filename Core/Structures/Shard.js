@@ -1,4 +1,5 @@
 const Sender = require('./Sender');
+const childProcess = require('child_process');
 
 class Shard extends Sender {
     constructor(id, manager) {
@@ -16,7 +17,7 @@ class Shard extends Sender {
             return !/debug-brk/.test(a);
         });
 
-        this.process = _dep.childProcess.fork(this.manager.file, process.argv, {
+        this.process = childProcess.fork(this.manager.file, process.argv, {
             env: this.env,
             execArgv
         });

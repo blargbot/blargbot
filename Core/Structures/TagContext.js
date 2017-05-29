@@ -1,5 +1,6 @@
 class TagContext {
-    constructor(params) {
+    constructor(client, params) {
+        this.client = client;
         this.ctx = params.ctx;
         this.content = params.content;
         this.fallback = '';

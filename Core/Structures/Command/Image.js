@@ -1,8 +1,8 @@
 const Base = require('./Base');
 
 class ImageCommand extends Base {
-    constructor(options) {
-        super(options);
+    constructor(...args) {
+        super(...args);
         if (this.constructor === ImageCommand) {
             throw new Error("Can't instantiate an abstract class!");
         }

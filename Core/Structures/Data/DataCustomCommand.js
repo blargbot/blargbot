@@ -1,8 +1,8 @@
 const Base = require('./DataBase');
 
 class DataCustomCommand extends Base {
-    constructor(id, guildId) {
-        super(id, 'Guild');
+    constructor(client, id, guildId) {
+        super(client, id, 'Guild');
         this.guildId = guildId;
 
         this.template = {

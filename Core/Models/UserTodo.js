@@ -1,14 +1,14 @@
 const Base = require('./Base');
 
 class UserTodoModel extends Base {
-    constructor(db) {
-        super(db);
+    constructor(client, db) {
+        super(client, db);
 
         this.model = db.define('user_todo', {
             userId: {
                 type: this.Sequelize.BIGINT,
                 references: {
-                    model: _discord.models.User,
+                    model: this.client.models.User,
                     key: 'userId'
                 },
                 allowNull: false,

@@ -1,16 +1,17 @@
 class Context {
-    constructor(msg, text) {
+    constructor(client, msg, text) {
+        this.client = client;
         this.msg = msg;
         this.text = text;
         this.splitInput();
     }
 
     async send(content, file) {
-        return await _discord.Core.Helpers.Message.send(this, content, file);
+        return await this.client.Helpers.Message.send(this, content, file);
     }
 
     async decode(key, args) {
-        return await _discord.Core.Helpers.Message.decode(this, key, args);
+        return await this.client.Helpers.Message.decode(this, key, args);
     }
 
     get channel() {

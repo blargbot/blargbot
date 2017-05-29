@@ -1,8 +1,17 @@
 const Base = require('./DataBase');
 
 class DataGuild extends Base {
-    constructor(id) {
-        super(id, 'Guild');
+    constructor(client, id, guild) {
+        super(client, id, 'Guild');
+        this.guild = guild;
+    }
+
+    get template() {
+        return {
+            [this.cache.pk]: this.id,
+            active: true,
+            name: this.guild.name
+        };
     }
 
     async getLocale() {
