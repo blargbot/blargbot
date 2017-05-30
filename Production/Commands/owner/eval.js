@@ -1,4 +1,4 @@
-const { CatCommand } = _core.Structures.Command;
+const { CatCommand } = require('../../Core/Structures/Command');
 const util = require('util');
 
 class EvalCommand extends CatCommand {

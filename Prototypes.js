@@ -1,7 +1,7 @@
 const { DataUser, DataGuild } = require('./Core/Structures/Data');
 const Eris = require('eris');
 
-module.exports = function(client) {
+module.exports = function (client) {
     /**
      * Defining prototypes for Message
      */

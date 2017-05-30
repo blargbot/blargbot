@@ -1,29 +1,69 @@
 const TagResult = require('./TagResult');
 
 class Tag {
-
-    constructor(client, options) {
+    constructor(client, options = {}) {
         if (this.constructor === Tag) {
             throw new Error('Can\'t instantiate an abstract class!');
         }
         this.client = client;
-        if (!options) options = {};
         this.category = options.category || bu.TagType.COMPLEX;
         this.name = options.name || this.constructor.name.toLowerCase();
         this.args = options.args || [];
-        this.desc = options.desc || '';
-        this.exampleIn = options.exampleIn || `This is a tag: {${this.name}}`;
-        this.exampleOut = options.exampleOut || 'This is a tag:';
+        this.minimumArgs = options.args;
+        this.maximumArgs = options.args;
+        /* Format:
+         * {
+         *   name: string,
+         *   optional: boolean,
+         *   repeat: boolean
+         * }
+         * */
         this.array = options.array || false;
     }
 
-    async execute(ctx, parseArgs) {
+    async getDescription(dest) {
+        return await this.decode(dest, `${this.base}.desc`);
+    }
+
+    async getExampleIn(dest) {
+        return await this.decode(dest, `${this.base}.example.in`);
+    }
+
+    async getExampleOut(dest) {
+        return await this.decode(dest, `${this.base}.example.out`);
+    }
+
+    /**
+     * Main execution of the tag, returning a TagResult
+     * @param {TagContext} ctx The TagContext
+     * @param {boolean} parseArgs Whether to parse args automatically. Set to false to parse manually.
+     */
+    async execute(ctx, parseArgs = true) {
+        const res = new TagResult();
+
+        if (this.maximumArgs && ctx.args.length > this.maximumArgs)
+            return await this.throw(ctx, ctx.client.Constants.TagError.TOO_MANY_ARGS, {
+                expected: this.maximumArgs,
+                got: ctx.args.length
+            });
+        if (this.minimumArgs && ctx.args.length < this.minimumArgs)
+            return await this.throw(ctx, ctx.client.Constants.TagError.TOO_FEW_ARGS, {
+                expected: this.minimumArgs,
+                got: ctx.args.length
+            });
+
         if (parseArgs)
             for (let i = 1; i < ctx.args.length; i++) {
                 //    params.args[i] = await bu.processTagInner(params, i);
             }
 
-        return new TagResult(ctx);
+
+        return res;
+    }
+
+    async throw(ctx, key, args) {
+        const res = new TagResult();
+        return res.setContent(ctx.fallback || await this.decode(ctx.channel, key, args));
     }
 
     set args(args) {
@@ -231,6 +271,14 @@ class Tag {
         if (returnMessage.terminate) params.terminate = true;
         return returnMessage.contents;
     };
+
+    async decode(dest, key, args) {
+        await this.client.Helpers.Message.decode(dest, key, args);
+    }
+
+    get base() {
+        return `tag.${this.category}.${this.name}`;
+    }
 
 }
 

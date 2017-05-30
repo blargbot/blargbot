@@ -7,5 +7,7 @@ module.exports = {
     BUG_CHANNEL: '229137183234064384',
     SUGGESTION_CHANNEL: '195716879237644292',
     FEEDBACK_CHANNEL: '268859677326966784',
-    Messages: require('./Messages')
+    Messages: require('./Messages'),
+    Types: require('./Types'),
+    TagError: require('./TagError');
 };

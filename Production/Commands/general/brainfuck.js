@@ -1,4 +1,4 @@
-const { GeneralCommand } = _core.Structures.Command;
+const { GeneralCommand } = require('../../Core/Structures/Command');
 const brainfuck = require('brainfuck-node');
 
 class BrainfuckCommand extends GeneralCommand {

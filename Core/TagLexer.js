@@ -1,7 +1,7 @@
 const chevrotain = require('chevrotain');
 const Lexer = chevrotain.Lexer;
 const { SubTag } = require('./Structures');
-function createToken(name, pattern) {
+function createToken(name, pattern, group) {
     let token = chevrotain.createToken({ name, pattern });
     return token;
 }
@@ -12,22 +12,21 @@ class TagLexer {
             TagOpen: createToken('TagOpen', /\{/),
             TagClose: createToken('TagClose', /\}/),
             ArgumentSeparator: createToken('ArgumentSeparator', /;/),
+            NewLine: chevrotain.createToken({ name: 'NewLine', pattern: / +\n/ }),
             Identifier: createToken('Text', /[^\{\};]*/)
         };
         this.SelectLexer = new Lexer(Object.values(this.tokens));
-    }
 
-    tokenize(input) {
-        return this.SelectLexer.tokenize(input);
-    }
-
-    get tokenTypes() {
         let types = {};
         const tokenNames = Object.keys(this.tokens);
         for (let i = 0; i < tokenNames.length; i++) {
             types[tokenNames[i]] = i + 2;
         }
-        return types;
+        this.tokenTypes = types;
+    }
+
+    tokenize(input) {
+        return this.SelectLexer.tokenize(input);
     }
 
     parse(input) {
@@ -55,10 +54,10 @@ class TagLexer {
             switch (token.tokenType) {
                 case tokenTypes.TagOpen:
                     if (Array.isArray(last())) {
-                        add(new SubTag());
+                        add(new SubTag(token.startColumn - 1, token.startLine - 1));
                         stack.push(last(last()));
                     } else {
-                        add(new SubTag(), last().rawArgs);
+                        add(new SubTag(token.startColumn - 1, token.startLine - 1), last().rawArgs);
                         stack.push(last(last(last().rawArgs)));
                     }
                     break;
@@ -72,6 +71,9 @@ class TagLexer {
                     break;
                 case tokenTypes.Identifier:
                     add(token.image);
+                    break;
+                case tokenTypes.NewLine:
+                    add('\n');
                     break;
             }
         }

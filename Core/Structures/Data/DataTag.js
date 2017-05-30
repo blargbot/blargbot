@@ -1,6 +1,6 @@
-const Base = require('./DataBase');
+const DataCacheBase = require('./DataCacheBase');
 
-class DataTag extends Base {
+class DataTag extends DataCacheBase {
     constructor(client, id) {
         super(client, id, 'Tag');
 

@@ -1,9 +1,9 @@
-const Base = require('./DataBase');
+const DataCacheBase = require('./DataCacheBase');
 
-class DataUser extends Base {
+class DataUser extends DataCacheBase {
     constructor(client, id, user) {
         super(client, id, 'User');
-        this.user = user;
+        this.user = user || this.client.users.get(this.id);
     }
 
     get template() {

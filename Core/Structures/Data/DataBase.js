@@ -1,26 +1,27 @@
 class DataBase {
-
-    constructor(client, id, cacheName) {
+    constructor(client, id, model = null) {
         this.client = client;
         this.id = id;
-        this.cache = this.client.cache[cacheName];
+        this.model = model;
         this.temp = {};
+        client.Data[this.constructor.name.replace('Data', '')][id] = this;
     }
 
     get template() {
-        return { [this.cache.pk]: this.id };
+        return {};
     }
 
     async create() {
         return await this.setObject(this.template);
     }
 
-    getTemp(key) {
-        return this.temp[key];
+    async setObject(data) {
+        if (this.model === null) throw new Error('Model not set for ' + this.constructor.name);
+        return await this.model.upsert(data);
     }
 
-    setTemp(key, data) {
-        this.temp[key] = data;
+    async getObject() {
+        return await this.model.findById(this.id);
     }
 
     async saveTemp() {
@@ -28,24 +29,17 @@ class DataBase {
         this.temp = {};
     }
 
-    async getObject() {
-        let obj = await this.cache.get(this.id);
-        if (!obj) return await this.create();
-        else return obj;
-    }
-
-    async setObject(data) {
-        return await this.cache.set(this.id, data);
-    }
-
     async getKey(key) {
         return (await this.getObject())[key];
     }
 
-    async setKey(key, data) {
-        return await this.setObject({
-            [key]: data
-        });
+    async setKey(key, data = null) {
+        let obj = await this.getObject();
+        if (data === null)
+            delete obj[key];
+        else
+            obj[key] = data;
+        this.setObject(obj);
     }
 }
 

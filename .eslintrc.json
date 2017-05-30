@@ -47,14 +47,7 @@
         "comma-dangle": "warn"
     },
     "globals": {
-        "bot": false,
-        "config": false,
-        "dep": false,
-        "_client": false,
-        "_constants": false,
         "_config": false,
-        "_core": false,
-        "_cache": false,
         "_logger": false
     }
 }

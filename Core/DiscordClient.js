@@ -2,19 +2,17 @@ process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Promise Rejection:', reason || p);
 });
 
-const { CommandManager, EventManager, LocaleManager } = require('./Managers');
+const { CommandManager, EventManager, LocaleManager, TagManager } = require('./Managers');
 const { Cache } = require('./Structures');
 const Database = require('./Database');
 const Eris = require('eris');
 const EventEmitter = require('eventemitter3');
+const data = require('./Structures/Data');
+const core = require('index.js');
 
 global.Promise = require('bluebird');
 global._config = require('../config.json');
-
-global._core = require('../Core');
-global._logger = new _core.Logger();
-
-global._constants = _core.Constants;
+global._logger = new core.Logger();
 
 class DiscordClient extends Eris.Client {
     constructor() {
@@ -36,9 +34,9 @@ class DiscordClient extends Eris.Client {
         });
 
         require('../Prototypes')(this);
-        
 
-        this.Core = require('./index.js');
+        this.Core = core;
+        this.Constants = core.Constants;
         this.Helpers = {};
         const helpers = require('./Helpers');
         for (const key of Object.keys(helpers)) {
@@ -51,12 +49,20 @@ class DiscordClient extends Eris.Client {
         this.CommandManager = new CommandManager(this);
         this.CommandManager.init();
 
+        this.TagManager = new TagManager(this);
+        this.TagManager.init();
+
         this.EventManager = new EventManager(this);
         this.EventManager.init();
 
-        
+        this.Data = {
+            CustomCommand: {},
+            Tag: {},
+            Guild: {},
+            User: {}
+        };
 
-        this.sender = new _core.Structures.Sender(this, process);
+        this.sender = new core.Structures.Sender(this, process);
 
         this.emitter = new EventEmitter();
 
@@ -70,6 +76,37 @@ class DiscordClient extends Eris.Client {
         });
 
         this.awaitedMessages = {};
+
+        this.TagLexer = new core.TagLexer();
+    }
+
+    getData(type, ...args) {
+        let constr;
+        switch (type) {
+            case this.Constants.Types.Data.CUSTOM_COMMAND: constr = data.DataCustomCommand; break;
+            case this.Constants.Types.Data.USER: constr = data.DataUser; break;
+            case this.Constants.Types.Data.GUILD: constr = data.DataGuild; break;
+            case this.Constants.Types.Data.TAG: constr = data.DataTag; break;
+        }
+        if (constr) {
+            return new constr(this, ...args);
+        }
+    }
+
+    getDataGuild(id) {
+        return this.getData(this.Constants.Types.Data.GUILD, id);
+    }
+
+    getDataUser(id) {
+        return this.getData(this.Constants.Types.Data.USER, id);
+    }
+
+    getDataTag(id) {
+        return this.getData(this.Constants.Types.Data.TAG, id);
+    }
+
+    getDataCustomCommand(id, guildId) {
+        return this.getData(this.Constants.Types.Data.CUSTOM_COMMAND, id, guildId);
     }
 
     async decodeLocale(dest, key, args) {

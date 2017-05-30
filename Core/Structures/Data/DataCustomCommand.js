@@ -1,27 +1,16 @@
-const Base = require('./DataBase');
+const DataBase = require('./DataBase');
 
-class DataCustomCommand extends Base {
+class DataCustomCommand extends DataBase {
     constructor(client, id, guildId) {
-        super(client, id, 'Guild');
+        super(client, id, client.models.GuildCustomCommand);
         this.guildId = guildId;
+        this.guild = this.client.getDataGuild(guildId);
 
         this.template = {
             [this.cache.pk]: this.id,
             content: '',
             author: ''
         };
-    }
-
-    async getObject() {
-        return (await this.cache.get(this.guildId)).ccommands[this.id];
-    }
-
-    async setObject(data) {
-        return await this.cache.set(this.guildId, {
-            ccommands: {
-                [this.id]: data
-            }
-        });
     }
 
     async getAuthor() {
@@ -38,18 +27,14 @@ class DataCustomCommand extends Base {
 
     async rename(id) {
         let stored = await this.getObject();
-        let newStored = (await this.cache.get(this.guildId)).ccommands[id];
-        if (newStored != undefined) throw new Error('Entry already exists');
-        await this.setObject(_r.literal(undefined));
-        stored[this.cache.pk] = id;
-        this.id = id;
+        // TODO: rename
         await this.setObject(stored);
     }
 
     async setContent(content) {
         return await this.setObject({
             content,
-            lastmodified: _r.now()
+            lastmodified: Date.now()
         });
     }
 
@@ -64,7 +49,7 @@ class DataCustomCommand extends Base {
     async incrementUses() {
         return await this.setObject({
             uses: (await this.getUses()) + 1,
-            lastuse: _r.now()
+            lastuse: Date.now()
         });
     }
 

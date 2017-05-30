@@ -1,6 +1,7 @@
 class SubTag {
-    constructor(client, name, args) {
-        this.client = client;
+    constructor(columnIndex, rowIndex) {
+        this.columnIndex = columnIndex;
+        this.rowIndex = rowIndex;
         this.rawArgs = [];
     }
 
@@ -51,7 +52,6 @@ class SubTag {
     }
 
     addArgument(arg) {
-        console.log(arg);
         if (Array.isArray(arg)) {
             this.rawArgs.push(arg);
         } else this.rawArgs.push([arg]);

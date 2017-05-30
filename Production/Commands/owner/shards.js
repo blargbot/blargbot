@@ -1,4 +1,4 @@
-const { CatCommand } = _core.Structures.Command;
+const { CatCommand } = require('../../Core/Structures/Command');
 
 class ShardCommand extends CatCommand {
     constructor(client) {
