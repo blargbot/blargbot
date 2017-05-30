@@ -1,4 +1,4 @@
-const { GeneralCommand } = require('../../Core/Structures/Command');
+const { GeneralCommand } = require('../../../Core/Structures/Command');
 
 class PingCommand extends GeneralCommand {
     constructor(client) {

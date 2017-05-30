@@ -6,7 +6,7 @@ class Tag {
             throw new Error('Can\'t instantiate an abstract class!');
         }
         this.client = client;
-        this.category = options.category || bu.TagType.COMPLEX;
+        this.category = options.category || 'aaa'; // TODO: category struct
         this.name = options.name || this.constructor.name.toLowerCase();
         this.args = options.args || [];
         this.minimumArgs = options.args;

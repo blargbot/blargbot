@@ -8,7 +8,7 @@ const Database = require('./Database');
 const Eris = require('eris');
 const EventEmitter = require('eventemitter3');
 const data = require('./Structures/Data');
-const core = require('index.js');
+const core = require('./index.js');
 
 global.Promise = require('bluebird');
 global._config = require('../config.json');

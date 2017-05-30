@@ -18,3 +18,5 @@ class CommentTag extends Tag {
         return await super.execute(ctx, false);
     }
 }
+
+module.exports = CommentTag;

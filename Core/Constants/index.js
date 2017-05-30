@@ -9,5 +9,5 @@ module.exports = {
     FEEDBACK_CHANNEL: '268859677326966784',
     Messages: require('./Messages'),
     Types: require('./Types'),
-    TagError: require('./TagError');
+    TagError: require('./TagError')
 };

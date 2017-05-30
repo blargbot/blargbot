@@ -1,4 +1,4 @@
-const { GeneralCommand } = require('../../Core/Structures/Command');
+const { GeneralCommand } = require('../../../Core/Structures/Command');
 const superagent = require('superagent');
 
 class CatCommand extends GeneralCommand {

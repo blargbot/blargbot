@@ -56,7 +56,8 @@ class BaseCommand {
     async execute(ctx) { }
 
     async _execute(ctx) {
-        let key = ctx.words[0].toLowerCase();
+        ctx.words.shift();
+        let key = (ctx.words[0] || '').toLowerCase();
         if (this.subcommandAliases.hasOwnProperty(key)) key = this.subcommandAliases[key];
         if (this.subcommands.hasOwnProperty(key)) {
             if (typeof this[`sub_${key}`] == 'function') {
