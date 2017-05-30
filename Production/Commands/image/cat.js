@@ -9,7 +9,6 @@ class CatCommand extends GeneralCommand {
     }
 
     async execute(ctx) {
-        await super.execute(ctx);
         let res1 = await superagent.get('http://random.cat/meow');
 
         await ctx.send({

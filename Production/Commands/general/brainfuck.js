@@ -14,7 +14,6 @@ class BrainfuckCommand extends GeneralCommand {
     }
 
     async execute(ctx) {
-        await super.execute(ctx);
         if (ctx.input._.length == 0) {
             await this.notEnoughParameters(ctx);
             return;

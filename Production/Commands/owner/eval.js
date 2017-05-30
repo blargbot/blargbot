@@ -9,7 +9,6 @@ class EvalCommand extends CatCommand {
     }
 
     async execute(ctx) {
-        await super.execute(ctx);
         let input = ctx.text.split(' ').slice(1).join(' ');
         try {
             let response = await this.client.doEval(ctx, input);

@@ -13,8 +13,7 @@ class BaseCommand {
          * this.subcommands = {
          *   // A name used for usage and locale generation
          *   name: {
-         *     flags, // An array, optional
-         *     function // A function to execute, preferably by reference
+         *     flags // An array, optional
          *   }
          * }
          * Locales populated are:
@@ -22,6 +21,7 @@ class BaseCommand {
          * `${base}.subcommand.${name}.info`
          */
         this.subcommands = options.subcommands || {};
+        this.subcommandAliases = options.subcommandAliases || {};
     }
 
     async getInfo(dest) {
@@ -53,12 +53,21 @@ class BaseCommand {
         return output;
     }
 
-    async execute(ctx) {
-        if (this.subcommands.hasOwnProperty(ctx.words[0].toLowerCase())) {
-            let key = ctx.words[0].toLowerCase();
+    async execute(ctx) { }
 
+    async _execute(ctx) {
+        let key = ctx.words[0].toLowerCase();
+        if (this.subcommandAliases.hasOwnProperty(key)) key = this.subcommandAliases[key];
+        if (this.subcommands.hasOwnProperty(key)) {
+            if (typeof this[`sub_${key}`] == 'function') {
+                ctx.words.shift();
+                this.parseInput(ctx, key);
+                return await this[`sub_${key}`](ctx);
+            }
+            else throw new Error('No matching function found for subcommand ' + key);
         } else {
             this.parseInput(ctx);
+            return await this.execute(ctx);
         }
     }
 
@@ -96,7 +105,7 @@ class BaseCommand {
         if (subcommand !== undefined && this.subcommands[subcommand] !== undefined
             && Array.isArray(this.subcommands[subcommand].flags)) {
             for (const flag of this.subcommands[subcommand].flags) {
-                this.flags.push(flag);
+                flags.push(flag);
             }
         }
 
@@ -108,7 +117,7 @@ class BaseCommand {
         for (let i = 0; i < words.length; i++) {
             let pushFlag = true;
             if (words[i].startsWith('--')) {
-                let parseFlags = this.flags.filter(f => f.word == words[i].substring(2).toLowerCase());
+                let parseFlags = flags.filter(f => f.word == words[i].substring(2).toLowerCase());
                 if (parseFlags.length > 0) {
                     currentFlag = parseFlags[0].flag;
                     output[currentFlag] = [];
@@ -116,7 +125,7 @@ class BaseCommand {
                 }
             } else if (words[i].startsWith('-')) {
                 let tempFlag = words[i].substring(1);
-                let parseFlags = this.flags.map(f => f.flag);
+                let parseFlags = flags.map(f => f.flag);
                 let oldFlag = currentFlag, oldOutput = output;
                 pushFlag = false;
                 for (const char of tempFlag) {

@@ -8,7 +8,6 @@ class ShardCommand extends CatCommand {
     }
 
     async execute(ctx) {
-        await super.execute(ctx);
         let shardsRaw = await this.client.sender.awaitMessage('shardStatus');
         let shards = [], maxGuilds = 0, maxStatus = 0, maxId = 0;
         for (const shard of shardsRaw.message) {

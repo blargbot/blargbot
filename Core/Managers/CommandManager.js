@@ -32,7 +32,7 @@ class CommandManager extends Manager {
         if (command !== undefined) {
             if (command.canExecute(ctx)) {
                 try {
-                    let response = await command.execute(ctx);
+                    let response = await command._execute(ctx);
                     if (response !== undefined) {
                         await command.send(response);
                     }
