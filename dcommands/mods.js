@@ -55,22 +55,22 @@ e.execute = (msg, words) => {
             let online = [];
             if (status == 0 || status == 1)
                 mods.filter(m => m.status == 'online').forEach(m => {
-                    online.push(`<:vpOnline:212789758110334977> **${getName(m)}** (${m.user.id})`);
+                    online.push(`<:online:313956277808005120> **${getName(m)}** (${m.user.id})`);
                 });
             let away = [];
             if (status == 0 || status == 2)
                 mods.filter(m => m.status == 'idle').forEach(m => {
-                    away.push(`<:vpAway:212789859071426561> **${getName(m)}** (${m.user.id})`);
+                    away.push(`<:away:313956277220802560> **${getName(m)}** (${m.user.id})`);
                 });
             let dnd = [];
             if (status == 0 || status == 3)
                 mods.filter(m => m.status == 'dnd').forEach(m => {
-                    dnd.push(`<:vpDnD:236744731088912384> **${getName(m)}** (${m.user.id})`);
+                    dnd.push(`<:dnd:313956276893646850> **${getName(m)}** (${m.user.id})`);
                 });
             let offline = [];
             if (status == 0 || status == 4)
                 mods.filter(m => m.status == 'offline').forEach(m => {
-                    offline.push(`<:vpOffline:212790005943369728> **${getName(m)}** (${m.user.id})`);
+                    offline.push(`<:offline:313956277237710868> **${getName(m)}** (${m.user.id})`);
                 });
             let message = `Mods on **${msg.guild.name}**`;
 
