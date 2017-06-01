@@ -8,12 +8,14 @@ class BaseCommand {
         this.name = options.name || this.constructor.name;
         this.flags = options.flags || [];
         this.aliases = options.aliases || [];
+        this.minArgs = options.minArgs || 0;
         /**
          * Subcommands are objects with the following structure
          * this.subcommands = {
          *   // A name used for usage and locale generation
          *   name: {
-         *     flags // An array, optional
+         *     flags, // An array, optional
+         *     minArgs // the minimum amount of args the user must provide
          *   }
          * }
          * Locales populated are:
@@ -63,11 +65,16 @@ class BaseCommand {
             if (typeof this[`sub_${key}`] == 'function') {
                 ctx.words.shift();
                 this.parseInput(ctx, key);
+                let minArgs = this.subcommands[key].minArgs || 0;
+                if (ctx.input._.length < minArgs)
+                    return await this.notEnoughParameters(ctx, minArgs, ctx.input._.length);
                 return await this[`sub_${key}`](ctx);
             }
             else throw new Error('No matching function found for subcommand ' + key);
         } else {
             this.parseInput(ctx);
+            if (ctx.input._.length < this.minArgs)
+                return await this.notEnoughParameters(ctx, this.minArgs, ctx.input._.length);
             return await this.execute(ctx);
         }
     }
@@ -88,11 +95,12 @@ class BaseCommand {
         return true;
     }
 
-    async notEnoughParameters(ctx) {
-        return await ctx.send(await ctx.decode('error.notenoughparams', {
+    async notEnoughParameters(ctx, expected, received) {
+        return await ctx.decodeAndSend('error.notenoughparams', {
             name: this.name,
-            prefix: 'b!'
-        }));
+            prefix: 'b!', // TODO: Prefix stuff
+            expected, received
+        });
     }
 
     async genericError(ctx, message) {

@@ -86,13 +86,14 @@ class MessageHelper extends BaseHelper {
             };
         }
         if (content.content == undefined) content.content = '';
+        content.content.trim();
         try {
             if (content.content.length > 2000) {
                 return await destination.createMessage(await this.decode(dest, 'error.messagetoolong'), {
                     file: (content.content || '') + '\n\n' + JSON.stringify(content.embed || {}, null, 2),
                     name: 'output.json'
                 });
-            } else if (content.content.length >= 0) {
+            } else if (content.content.length > 0) {
                 return await destination.createMessage(content, file);
             }
         } catch (err) {

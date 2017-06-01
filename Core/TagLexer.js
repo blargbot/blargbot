@@ -12,7 +12,7 @@ class TagLexer {
             TagOpen: createToken('TagOpen', /\{/),
             TagClose: createToken('TagClose', /\}/),
             ArgumentSeparator: createToken('ArgumentSeparator', /;/),
-            NewLine: chevrotain.createToken({ name: 'NewLine', pattern: / +\n/ }),
+            NewLine: chevrotain.createToken({ name: 'NewLine', pattern: / *\n/ }),
             Identifier: createToken('Text', /[^\{\};]*/)
         };
         this.SelectLexer = new Lexer(Object.values(this.tokens));

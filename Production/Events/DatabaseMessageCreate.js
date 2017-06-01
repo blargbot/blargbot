@@ -6,6 +6,7 @@ class DatabaseMessageCreateEvent extends Event {
     }
 
     async execute(msg) {
+        await msg.author.data.updateUser();
         await this.client.Helpers.Message.insertMessage(msg);
     }
 }

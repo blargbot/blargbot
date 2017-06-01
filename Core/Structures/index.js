@@ -9,5 +9,8 @@ module.exports = {
     Data: require('./Data'),
     Tag: require('./Tag'),
     PublicTag: require('./PublicTag'),
-    SubTag: require('./SubTag')
+    SubTag: require('./SubTag'),
+    TagContext: require('./TagContext'),
+    TagError: require('./TagError'),
+    TagResult: require('./TagResult')
 };

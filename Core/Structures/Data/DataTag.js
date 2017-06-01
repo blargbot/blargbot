@@ -1,27 +1,28 @@
-const DataCacheBase = require('./DataCacheBase');
+const DataBase = require('./DataBase');
 
-class DataTag extends DataCacheBase {
+class DataTag extends DataBase {
     constructor(client, id) {
-        super(client, id, 'Tag');
+        super(client, id, client.models.Tag);
+    }
 
-        this.template = {
-            [this.cache.pk]: this.id,
+    get template() {
+        return {
+            tagName: this.id,
             content: '',
             favourites: 0,
-            lastmodified: Date.now(),
-            lastuse: Date.now(),
+            lastUsed: Date.now(),
             uses: 0,
-            vars: {},
-            author: ''
+            variables: {},
+            authorId: ''
         };
     }
 
     async getAuthor() {
-        return await this.getKey('author');
+        return await this.getKey('authorId');
     }
 
     async setAuthor(id) {
-        return await this.setKey('author', id);
+        return await this.setKey('authorId', id);
     }
 
     async getContent() {
@@ -29,14 +30,17 @@ class DataTag extends DataCacheBase {
     }
 
     async rename(id) {
-        await this.cache.rename(this.id, id);
+        let obj = await this.getObject(id);
+        obj.set('tagName', id);
+        await obj.save();
         this.id = id;
+        return obj;
     }
 
     async setContent(content) {
         return await this.setObject({
             content,
-            lastmodified: _r.now()
+            lastmodified: Date.now()
         });
     }
 
@@ -51,7 +55,7 @@ class DataTag extends DataCacheBase {
     async incrementUses() {
         return await this.setObject({
             uses: (await this.getUses()) + 1,
-            lastuse: _r.now()
+            lastuse: Date.now()
         });
     }
 

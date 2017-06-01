@@ -46,3 +46,5 @@ class TagResult {
         return this;
     }
 }
+
+module.exports = TagResult;

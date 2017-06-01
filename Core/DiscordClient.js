@@ -81,6 +81,8 @@ class DiscordClient extends Eris.Client {
     }
 
     getData(type, ...args) {
+        if (this.Data[type][args[0]])
+            return this.Data[type][args[0]];
         let constr;
         switch (type) {
             case this.Constants.Types.Data.CUSTOM_COMMAND: constr = data.DataCustomCommand; break;

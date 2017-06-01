@@ -1,4 +1,6 @@
 const { GeneralCommand } = require('../../../Core/Structures/Command');
+const util = require('util');
+const { TagContext } = require('../../../Core/Structures');
 
 class TagCommand extends GeneralCommand {
     constructor(client) {
@@ -6,68 +8,130 @@ class TagCommand extends GeneralCommand {
             name: 'tag',
             aliases: 't',
             subcommands: {
-                set: {},
-                create: {},
-                edit: {},
-                delete: {},
-                rename: {},
-                raw: {},
-                info: {},
+                set: { minArgs: 2 },
+                delete: { minArgs: 1 },
+                rename: { minArgs: 2 },
+                raw: { minArgs: 1 },
+                info: { minArgs: 1 },
                 top: {},
-                author: {},
-                search: {},
+                author: { minArgs: 1 },
+                search: { minArgs: 1 },
                 list: {},
                 favorite: {},
-                report: {},
-                test: {},
+                report: { minArgs: 2 },
+                test: { minArgs: 1 },
                 help: {}
             },
             subcommandAliases: {
                 remove: 'delete',
                 favourite: 'favorite',
-                add: 'create'
+                add: 'create',
+                create: 'set',
+                edit: 'set'
             }
         });
+
+        this.keys = {
+            dontown: `${this.base}.dontown`,
+            notag: `${this.base}.notag`,
+            tagset: `${this.base}.tagset`,
+            tagrename: `${this.base}.tagrename`,
+            raw: `${this.base}.raw`,
+            alreadyexists: `${this.base}.alreadyexists`
+        };
+    }
+
+    async getTag(name) {
+        const data = await this.client.getDataTag(name);
+        const tag = await data.getObject();
+        return { data, tag };
+    }
+
+    async ownershipTest(ctx) {
+        const { data, tag } = await this.getTag(ctx.input._[0]);
+        if (!tag) {
+            await ctx.decodeAndSend(this.keys.notag);
+        } else if (tag.get('authorId') !== ctx.author.id) {
+            await ctx.decodeAndSend(this.keys.dontown);
+        } else {
+            return { data, tag, owner: true };
+        }
+        return { data, tag, owner: false };
     }
 
     async execute(ctx) {
         if (ctx.input._.length == 0) return await this.sub_help(ctx);
-        await ctx.send('regular');
+        const { data, tag } = await this.getTag(ctx.input._[0]);
+        if (!tag)
+            await ctx.decodeAndSend(this.keys.notag);
+        else {
+            const tagContext = new TagContext(ctx.client, {
+                ctx, content: tag.get('content'),
+                guild: ctx.guild,
+                channel: ctx.channel,
+                author: tag.get('authorId'), name: tag.get('tagName'),
+                isCustomCommand: false
+            }, data);
+            await ctx.send(await tagContext.process());
+            //await ctx.send(tag.get('content'));
 
+        }
     }
 
     async sub_set(ctx) {
-        await ctx.send('set');
-    }
-
-    async sub_create(ctx) {
-        await ctx.send('create');
-
-    }
-
-    async sub_edit(ctx) {
-        await ctx.send('edit');
-
+        const { data, tag } = await this.getTag(ctx.input._[0]);
+        if (tag && tag.get('authorId') !== ctx.author.id) {
+            await ctx.decodeAndSend(this.keys.dontown);
+            return;
+        }
+        let content = ctx.input._.slice(1).join(' ').replace(/\n /g, '\n');
+        if (!tag)
+            await data.create({
+                content,
+                authorId: ctx.author.id
+            });
+        else await data.setContent(content);
+        await ctx.decodeAndSend(this.keys.tagset, {
+            name: ctx.input._[0], process: await ctx.decode(`generic.${tag ? 'edited' : 'created'}`)
+        });
     }
 
     async sub_delete(ctx) {
-        await ctx.send('delete');
-
+        const { data, tag, owner } = await this.ownershipTest(ctx);
+        if (owner) {
+            await tag.destroy();
+            await ctx.decodeAndSend(this.keys.tagset, {
+                name: ctx.input._[0], process: await ctx.decode('generic.deleted')
+            });
+        }
     }
 
     async sub_rename(ctx) {
-        await ctx.send('rename');
-
+        const { data, tag, owner } = await this.ownershipTest(ctx);
+        const tag2 = await this.getTag(ctx.input._[1]);
+        if (tag2.tag) {
+            await ctx.decodeAndSend(this.keys.alreadyexists);
+        } else if (owner) {
+            await data.rename(ctx.input._[1]);
+            await ctx.decodeAndSend(this.keys.tagrename, {
+                old: ctx.input._[0], new: ctx.input._[1]
+            });
+        }
     }
 
     async sub_raw(ctx) {
-        await ctx.send('raw');
-
+        const { data, tag } = await this.getTag(ctx.input._[0]);
+        if (!tag)
+            await ctx.decodeAndSend(this.keys.notag);
+        else {
+            await ctx.decodeAndSend(this.keys.raw, {
+                name: ctx.input._[0], code: tag.get('content')
+            });
+        }
     }
 
     async sub_info(ctx) {
         await ctx.send('info');
-
     }
 
     async sub_top(ctx) {
@@ -102,7 +166,6 @@ class TagCommand extends GeneralCommand {
 
     async sub_test(ctx) {
         await ctx.send('test');
-
     }
 
     async sub_help(ctx) {

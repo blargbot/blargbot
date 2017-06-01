@@ -1,8 +1,8 @@
-const DataCacheBase = require('./DataCacheBase');
+const DataBase = require('./DataBase');
 
-class DataGuild extends DataCacheBase {
+class DataGuild extends DataBase {
     constructor(client, id, guild) {
-        super(client, id, 'Guild');
+        super(client, id, client.models.Guild);
         this.guild = guild || this.client.guilds.get(this.id);
     }
 

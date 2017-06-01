@@ -18,7 +18,7 @@ class UserModel extends Base {
                 type: this.Sequelize.STRING(32),
                 allowNull: false
             },
-            variables: {
+            variables: {  
                 type: this.Sequelize.JSON,
                 allowNull: false,
                 defaultValue: {}
@@ -27,15 +27,13 @@ class UserModel extends Base {
                 type: this.Sequelize.STRING(8),
                 allowNull: false,
                 defaultValue: 'en_US'
-            }
-        }, {
-            hooks: {
-                afterUpdate: (...args) => {
-                    console.log(args);
-                }
+            },
+            avatarURL: {
+                type: this.Sequelize.STRING(256),
+                allowNull: true
             }
         });
-        
+
     }
 }
 

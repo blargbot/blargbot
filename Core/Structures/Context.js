@@ -14,6 +14,10 @@ class Context {
         return await this.client.Helpers.Message.decode(this, key, args);
     }
 
+    async decodeAndSend(key, args, file) {
+        return await this.client.Helpers.Message.decodeAndSend(this, key, args, file);
+    }
+
     get channel() {
         return this.msg.channel;
     }

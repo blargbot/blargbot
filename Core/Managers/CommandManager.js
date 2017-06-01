@@ -38,7 +38,9 @@ class CommandManager extends Manager {
                     }
                 } catch (err) {
                     console.error(err.stack);
-                    // TO-DO
+                    ctx.decodeAndSend('error.generic', {
+                        message: err.stack
+                    });
                 }
             }
         }

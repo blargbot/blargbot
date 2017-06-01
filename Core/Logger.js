@@ -65,6 +65,7 @@ class Logger extends Winston.Logger {
                 output += this.colorize(options.level, pad(`[${options.level.toUpperCase()}]`, maxLength + 2));
                 output += ' ';
                 if (options.level == 'error' && options.meta && options.meta.stack) {
+                    output += options.meta.message ? options.meta.message + '\n' : '';
                     if (Array.isArray(options.meta.stack))
                         output += options.meta.stack.join('\n');
                     else

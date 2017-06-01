@@ -12,3 +12,5 @@ class TagError extends Error {
         this.decoded = msg;
     }
 }
+
+module.exports = TagError;

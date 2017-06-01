@@ -12,7 +12,7 @@ class TagContext {
         this.name = params.name;
         this.guild = params.guild;
         this.channel = params.channel;
-        this.isCustomCommand = data instanceof DataCustomCommand;
+        this.isCustomCommand = params.isCustomCommand || data instanceof DataCustomCommand || false;
         this.terminate = false;
         this.isStaff = false;
 
@@ -53,7 +53,7 @@ class TagContext {
             try {
                 if (element instanceof SubTag) {
                     if (this.client.TagManager.has(element.name)) {
-                        const res = await this.client.TagManager.execute(element.name, this);
+                        const res = await this.client.TagManager.execute(element.name, this, element.args);
                         if (res.terminate) this.terminate = true;
                         if (res.replace) {
                             if (res.replaceTarget) {
@@ -65,7 +65,7 @@ class TagContext {
                             content += res.content;
                         }
                     } else {
-                        throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { name: element.name });
+                        throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { tag: element.name });
                     }
                 } else if (Array.isArray(element)) {
                     content += await this.processSub(element);
@@ -74,7 +74,9 @@ class TagContext {
                 if (err instanceof TagError) {
                     if (err.decoded === '') content += ''; // TODO: redo, messy
                     if (err.decoded !== null) content += this.fallback || `\`${err.decoded}\``;
-                    else content += this.fallback || `\`${await this.decode(err.key, err.args)}\``;
+                    else content += this.fallback || `\`${await this.decode(err.key, err.args)} [${element.rowIndex}:${element.columnIndex}]\``;
+                } else {
+                    throw err;
                 }
             }
         }
@@ -82,3 +84,5 @@ class TagContext {
         return content;
     }
 }
+
+module.exports = TagContext;

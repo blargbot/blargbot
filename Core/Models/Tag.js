@@ -31,9 +31,9 @@ class TagModel extends Base {
                 defaultValue: 0
             },
             favourites: {
-                type: this.Sequelize.JSON,
+                type: this.Sequelize.INTEGER,
                 allowNull: false,
-                defaultValue: {}
+                defaultValue: 0
             },
 
             variables: {

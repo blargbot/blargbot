@@ -13,28 +13,26 @@ class DataCacheBase extends DataBase {
         return { [this.cache.pk]: this.id };
     }
 
-    async create() {
-        return await this.setObject(this.template);
+    async create(args = {}) {
+        let template = this.template;
+        for (const key in args)
+            template[key] = args[key];
+        await this.setObject(template);
+        return await this.getObject();
     }
 
-    async getObject() {
+    async getOrCreateObject(args) {
         let obj = await this.cache.get(this.id);
-        if (!obj) return await this.create();
+        if (!obj) return await this.create(args);
         else return obj;
     }
 
-    async setObject(data) {
-        return await this.cache.set(this.id, data);
+    async getObject() {
+        return await this.cache.get(this.id);
     }
 
-    async getKey(key) {
-        return (await this.getObject())[key];
-    }
-
-    async setKey(key, data) {
-        return await this.setObject({
-            [key]: data
-        });
+    async setObject(datum = {}) {
+        return await this.cache.set(this.id, datum);
     }
 }
 

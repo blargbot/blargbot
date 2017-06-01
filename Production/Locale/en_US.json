@@ -12,6 +12,7 @@
         "2. Templates are used in templates by using [[path.to.key]]. Do not modify these.",
         "3. All commands must contain an 'info' and 'usage' property.",
         "4. For random outputs, phrases are placed in an array []. You may contribute random outputs as needed.",
+        "5. Terms should not end with periods. Other punctuation is fine.",
         "For contribution, please use the following regulations:",
         "1. Keep translations civil.",
         "2. Do not modify the structure of this file.",
@@ -24,21 +25,36 @@
         "queryexpire": "This query will expire in {{length}} minutes",
         "resolveuser": {
             "nousers": "No users found.",
-            "pickuserone": "{{length}} users were found! Please select one from the list.",
+            "pickuserone": "{{length}} users were found! Please select one from the list",
             "pickusertwo": "**{{name}}**, please type the number of the user you wish to select below, or type `c` to cancel. [[generic.queryexpire]]"
-        }
+        },
+        "edited": "edited",
+        "created": "created",
+        "deleted": "deleted"
+    },
+    "emote": {
+        "check": ":white_check_mark:",
+        "x": ":x:",
+        "okhand": ":ok_hand:"
     },
     "error": {
         "keyundef": "No such locale entry was found: '{{key}}'",
         "pleasereport": "If you think this is an error, please report it!",
         "generic": "Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
         "messagetoolong": "Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
-        "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details."
+        "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
+        "tag": {
+            "notfound": "Tag '{{tag}}' doesn't exist",
+            "toomanyargs": "Too many args ({{received}}:{{expected}})",
+            "toofewargs": "Too little args ({{received}}:{{expected}})",
+            "isnan": "{{arg}} must be a number",
+            "maxlessthanmin": "Max must be greater than Min"
+        }
     },
     "command": {
         "general": {
             "ping": {
-                "info": "Pong!\nFinds the command latency.",
+                "info": "Pong!\nFinds the command latency",
                 "usage": "ping",
                 "randmsg": [
                     "Existence is a lie.",
@@ -61,15 +77,15 @@
                 "final": "Pong! ({{time}}ms)"
             },
             "brainfuck": {
-                "info": "Executes brainfuck code.",
+                "info": "Executes brainfuck code",
                 "usage": "brainfuck <code>",
                 "flags": {
-                    "p": "Shows a list of pointers after the execution.",
-                    "i": "Specifies the input for the , operator."
+                    "p": "Shows a list of pointers after the execution",
+                    "i": "Specifies the input for the , operator"
                 }
             },
             "cat": {
-                "info": "Gets a picture of a cat.",
+                "info": "Gets a picture of a cat",
                 "usage": "cat"
             },
             "ship": {
@@ -77,6 +93,16 @@
                 "usage": "ship <user1> <user2>",
                 "final": "Your shipname is **{{name}}**!",
                 "notenough": "You have to tell me who to ship!"
+            },
+            "tag": {
+                "info": "",
+                "usage": "",
+                "dontown": "[[emote.x]] You don't own that tag!",
+                "alreadyexists": "[[emote.x]] A tag with that name already exists!",
+                "notag": "[[emote.x]] There is no tag with that name",
+                "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
+                "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`",
+                "raw": "The code for {{name}} is:\n```{{code}}```"
             }
         }
     }

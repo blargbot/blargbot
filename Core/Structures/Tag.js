@@ -1,4 +1,5 @@
 const TagResult = require('./TagResult');
+const TagError = require('./TagError');
 
 class Tag {
     constructor(client, options = {}) {
@@ -8,16 +9,17 @@ class Tag {
         this.client = client;
         this.category = options.category || 'aaa'; // TODO: category struct
         this.name = options.name || this.constructor.name.toLowerCase();
-        this.args = options.args || [];
-        this.minimumArgs = options.args;
-        this.maximumArgs = options.args;
         /* Format:
-         * {
-         *   name: string,
-         *   optional: boolean,
-         *   repeat: boolean
-         * }
-         * */
+        * {
+        *   name: string,
+        *   optional: boolean,
+        *   repeat: boolean
+        * }
+        * */
+        this.args = options.args || [];
+        this.minArgs = options.minArgs;
+        this.maxArgs = options.maxArgs;
+
         this.array = options.array || false;
     }
 
@@ -38,32 +40,30 @@ class Tag {
      * @param {TagContext} ctx The TagContext
      * @param {boolean} parseArgs Whether to parse args automatically. Set to false to parse manually.
      */
-    async execute(ctx, parseArgs = true) {
+    async execute(ctx, args, parseArgs = true) {
         const res = new TagResult();
-
-        if (this.maximumArgs && ctx.args.length > this.maximumArgs)
-            return await this.throw(ctx, ctx.client.Constants.TagError.TOO_MANY_ARGS, {
-                expected: this.maximumArgs,
-                got: ctx.args.length
+        if (this.maxArgs && args.length > this.maxArgs)
+            this.throw(ctx.client.Constants.TagError.TOO_MANY_ARGS, {
+                expected: this.maxArgs,
+                received: args.length
             });
-        if (this.minimumArgs && ctx.args.length < this.minimumArgs)
-            return await this.throw(ctx, ctx.client.Constants.TagError.TOO_FEW_ARGS, {
-                expected: this.minimumArgs,
-                got: ctx.args.length
+
+        if (this.minArgs && args.length < this.minArgs)
+            this.throw(ctx.client.Constants.TagError.TOO_FEW_ARGS, {
+                expected: this.minArgs,
+                received: args.length
             });
 
         if (parseArgs)
-            for (let i = 1; i < ctx.args.length; i++) {
-                //    params.args[i] = await bu.processTagInner(params, i);
+            for (let i = 0; i < args.length; i++) {
+                args[i] = await ctx.processSub(args[i]);
             }
-
 
         return res;
     }
 
-    async throw(ctx, key, args) {
-        const res = new TagResult();
-        return res.setContent(ctx.fallback || await this.decode(ctx.channel, key, args));
+    throw(key, args) {
+        throw new TagError(key, args);
     }
 
     set args(args) {

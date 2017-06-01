@@ -128,13 +128,6 @@ class GuildModel extends Base {
                 allowNull: false,
                 defaultValue: []
             }
-        }, {
-            hooks: {
-                afterUpdate: (data) => {
-                    const guildData = data.dataValues;
-                    this.client.cache.Guild._internalCache[data.guildId] = data;
-                }
-            }
         });
     }
 }

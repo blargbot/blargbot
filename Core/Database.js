@@ -28,7 +28,7 @@ class Database {
         this.client.models = {};
         for (const key in models) {
             this.models[key] = new models[key](this.client, this.sequelize);
-            this.models[key].model.sync({force: false});
+            await this.models[key].model.sync({ force: false });
             this.client.models[key] = this.models[key].model;
         }
         _logger.init('Database models loaded.');
