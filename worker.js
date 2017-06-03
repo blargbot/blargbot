@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:38:19
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 01:11:53
+ * @Last Modified time: 2017-06-03 14:23:42
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -20,8 +20,6 @@ const GIFEncoder = require('gifencoder');
 const util = require('util');
 const request = require('request');
 const fs = require('fs');
-const Canvas = require('canvas'),
-    Image = Canvas.Image;
 
 const colorThief = require('color-thief-jimp');
 
