@@ -68,8 +68,6 @@ class TagCommand extends GeneralCommand {
         else {
             const tagContext = new TagContext(ctx.client, {
                 ctx, content: tag.get('content'),
-                guild: ctx.guild,
-                channel: ctx.channel,
                 author: tag.get('authorId'), name: tag.get('tagName'),
                 isCustomCommand: false
             }, data);
@@ -166,13 +164,13 @@ class TagCommand extends GeneralCommand {
     }
 
     async sub_test(ctx) {
+        const data = this.client.getDataTag('{test}');
+        await data.getOrCreateObject();
         const tagContext = new TagContext(ctx.client, {
             ctx, content: ctx.input._.raw.join(''),
-            guild: ctx.guild,
-            channel: ctx.channel,
             author: ctx.author.id, name: '{test}',
             isCustomCommand: false
-        });
+        }, data);
         await ctx.decodeAndSend(this.keys.testoutput, {
             output: (await tagContext.process()).trim()
         });

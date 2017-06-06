@@ -31,7 +31,12 @@ class Database {
             await this.models[key].model.sync({ force: false });
             this.client.models[key] = this.models[key].model;
         }
-        _logger.init('Database models loaded.');
+        _logger.init('Database models loaded. Loading Clyde');
+        const clyde = this.client.getData(this.client.Constants.Types.Data.USER, 0, {
+            username: 'Clyde',
+            discriminator: '0000'
+        });
+        await clyde.getOrCreateObject();
     }
 }
 

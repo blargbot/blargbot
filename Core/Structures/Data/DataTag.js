@@ -13,7 +13,7 @@ class DataTag extends DataBase {
             lastUsed: Date.now(),
             uses: 0,
             variables: {},
-            authorId: ''
+            authorId: 0
         };
     }
 
@@ -72,13 +72,11 @@ class DataTag extends DataBase {
     }
 
     async getVariable(name) {
-        let vars = await this.getKey('vars');
-        if (!vars) vars = {};
-        return vars[name];
+        return (await this.getKey(`variables`) || {})[name];
     }
 
     async setVariable(name, value) {
-        return await this.setKey('vars', { [name]: value });
+        return await this.setKey(`variables.${name}`, value);
     }
 
 }

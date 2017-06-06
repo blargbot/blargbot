@@ -8,7 +8,7 @@ class DataGuild extends DataBase {
 
     get template() {
         return {
-            [this.cache.pk]: this.id,
+            guildId: this.id,
             active: true,
             name: this.guild.name
         };
@@ -23,13 +23,19 @@ class DataGuild extends DataBase {
     }
 
     async getVariable(name) {
-        let vars = await this.getKey('vars');
-        if (!vars) vars = {};
-        return vars[name];
+        return (await this.getKey(`variables`) || {})[name];
     }
 
     async setVariable(name, value) {
-        return await this.setKey('vars', { [name]: value });
+        return await this.setKey(`variables.${name}`, value);
+    }
+
+    async setTagVariable(name, value) {
+        return await this.setKey(`tagVariables.${name}`, value);
+    }
+
+    async getTagVariable(name) {
+        return (await this.getKey(`tagVariables`) || {})[name];
     }
 
 }

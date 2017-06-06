@@ -32,10 +32,10 @@ class CommandArgs extends Array {
         for (let i = 0; i < chars.length; i++) {
             switch (chars[i]) {
                 case '\\':
-                temp += "\\";
+                    temp += "\\";
                     if (escaped) {
                         escaped = false;
-                    } else 
+                    } else
                         escaped = true;
                     break;
                 case '"':

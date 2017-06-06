@@ -3,5 +3,6 @@ module.exports = {
     EventManager: require('./EventManager'),
     LocaleManager: require('./LocaleManager'),
     Manager: require('./Manager'),
-    TagManager: require('./TagManager')
+    TagManager: require('./TagManager'),
+    TagVariableManager: require('./TagVariableManager')
 };

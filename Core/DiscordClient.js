@@ -2,7 +2,7 @@ process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Promise Rejection:', reason || p);
 });
 
-const { CommandManager, EventManager, LocaleManager, TagManager } = require('./Managers');
+const { CommandManager, EventManager, LocaleManager, TagManager, TagVariableManager } = require('./Managers');
 const { Cache } = require('./Structures');
 const Database = require('./Database');
 const Eris = require('eris');
@@ -54,6 +54,9 @@ class DiscordClient extends Eris.Client {
 
         this.EventManager = new EventManager(this);
         this.EventManager.init();
+
+        this.TagVariableManager = new TagVariableManager(this);
+        this.TagVariableManager.init();
 
         this.Data = {
             CustomCommand: {},

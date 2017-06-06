@@ -7,6 +7,7 @@ class DatabaseMessageCreateEvent extends Event {
 
     async execute(msg) {
         await msg.author.data.updateUser();
+        await msg.guild.data.create();
         await this.client.Helpers.Message.insertMessage(msg);
     }
 }

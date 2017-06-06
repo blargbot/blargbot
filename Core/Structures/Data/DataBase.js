@@ -13,11 +13,16 @@ class DataBase {
     }
 
     async create(args) {
-        let template = this.template;
-        for (const key in args)
-            template[key] = args[key];
-        await this.model.upsert(template);
-        return await this.getObject();
+        if (this.object === null) {
+            await this.reloadObject();
+            if (this.object !== null) return;
+
+            let template = this.template;
+            for (const key in args)
+                template[key] = args[key];
+            await this.model.upsert(template);
+            return await this.getObject();
+        }
     }
 
     async setObject(data) {
@@ -32,10 +37,13 @@ class DataBase {
         }
     }
 
-    async getOrCreateObject() {
-        let obj = await this.getObject();
-        if (!obj) obj = await this.create();
-        return obj;
+    async getOrCreateObject(args) {
+        await this.reloadObject();
+        if (this.object !== null) return this.object;
+        else {
+            await this.create(args);
+            return this.getObject();
+        };
     }
 
     async reloadObject() {
@@ -45,7 +53,8 @@ class DataBase {
 
     async getObject() {
         await this.reloadObject();
-        return this.object;
+        if (this.object !== null) return this.object;
+        else throw new Error('Instance ' + this.id + ' of ' + this.constructor.name + ' does not exist.');
     }
 
     async saveTemp() {

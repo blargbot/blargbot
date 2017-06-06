@@ -6,12 +6,16 @@ class TagContext {
     constructor(client, params = {}, data) {
         this.client = client;
         this.ctx = params.ctx;
+        this.guild = this.ctx.guild;
+        this.channel = this.ctx.channel;
+        this.user = this.ctx.author;
+
         this.content = params.content;
         this.fallback = null;
+
         this.author = params.author;
         this.name = params.name;
-        this.guild = params.guild;
-        this.channel = params.channel;
+
         this.isCustomCommand = params.isCustomCommand || data instanceof DataCustomCommand || false;
         this.terminate = false;
         this.isStaff = false;
@@ -24,6 +28,8 @@ class TagContext {
         this.totalExecs = 0;
         this.totalTimers = 0;
         this.tempArgs = {};
+
+        this.vars = {};
     }
 
     async decode(key, args) {

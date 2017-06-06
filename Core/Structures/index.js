@@ -12,5 +12,6 @@ module.exports = {
     SubTag: require('./SubTag'),
     TagContext: require('./TagContext'),
     TagError: require('./TagError'),
-    TagResult: require('./TagResult')
+    TagResult: require('./TagResult'),
+    TagVariable: require('./TagVariable')
 };
