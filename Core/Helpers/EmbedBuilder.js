@@ -7,7 +7,7 @@ const moment = require('moment');
 class EmbedError extends Error {
     constructor(message, embed) {
         super(message);
-        this.name = this.constuctor.name;
+        this.name = this.constructor.name;
         this.embed = embed;
     }
 }
@@ -116,6 +116,7 @@ class Embed {
 
     setContent(content) {
         this.content = this.limit(content, 2000);
+        return this;
     }
 
     get raw() {
@@ -123,9 +124,10 @@ class Embed {
     }
 
     validate() {
-        if (this.embed.fields.length > 25) throw new EmbedError('Cannot have more than 25 fields', this.embed);
+        if (this.embed.fields && this.embed.fields.length > 25) throw new EmbedError('Cannot have more than 25 fields', this.embed);
         let total = this.total;
-        if (this.total > 5488) throw new EmbedError('Cannot be more than 4000 characters in total', this.embed);
+        if (this.total > 5488) throw new EmbedError('Cannot be more than 5488 characters in total', this.embed);
+        return this;
     }
 
     get total() {
@@ -139,7 +141,7 @@ class Embed {
                 total += value.length;
             else if (Array.isArray(value)) {
                 for (const value2 of value) {
-                    total += value.name.length * 2;
+                    total += value2.name.length * 2;
                 }
             } else if (typeof value == 'object') {
                 total += this.count(value);

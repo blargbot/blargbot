@@ -1,13 +1,12 @@
-const TagResult = require('./TagResult');
-const TagError = require('./TagError');
+const TagResult = require('../TagResult');
+const TagError = require('../TagError');
 
-class Tag {
+class TagBase {
     constructor(client, options = {}) {
-        if (this.constructor === Tag) {
+        if (this.constructor === TagBase) {
             throw new Error('Can\'t instantiate an abstract class!');
         }
         this.client = client;
-        this.category = options.category || 'aaa'; // TODO: category struct
         this.name = options.name || this.constructor.name.toLowerCase();
         /* Format:
         * {
@@ -282,4 +281,4 @@ class Tag {
 
 }
 
-module.exports = Tag;
+module.exports = TagBase;

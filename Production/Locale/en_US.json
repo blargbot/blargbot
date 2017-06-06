@@ -32,6 +32,16 @@
         "created": "created",
         "deleted": "deleted"
     },
+    "menu": {
+        "cancel": {
+            "name": "Cancel",
+            "description": "Close this menu"
+        },
+        "confirm": {
+            "name": "Confirm",
+            "description": "Confirms this menu"
+        }
+    },
     "emote": {
         "check": ":white_check_mark:",
         "x": ":x:",
@@ -45,10 +55,14 @@
         "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
         "tag": {
             "notfound": "Tag '{{tag}}' doesn't exist",
-            "toomanyargs": "Too many args ({{received}}:{{expected}})",
-            "toofewargs": "Too little args ({{received}}:{{expected}})",
-            "isnan": "{{arg}} must be a number",
-            "maxlessthanmin": "Max must be greater than Min"
+            "toomanyargs": "Too many args (r:{{received}} e:{{expected}})",
+            "toofewargs": "Too little args (r:{{received}} e:{{expected}})",
+            "isnan": "Expected '{{arg}}' to be a number, but received '{{value}}'",
+            "maxlessthanmin": "Max must be greater than Min",
+            "ccommandonly": "'{{tag}}' may only be used in ccommands",
+            "unclosed": "Unmatched opening bracket [{{column}}:{{row}}]",
+            "unopened": "Unmatched closing bracket [{{column}}:{{row}}]",
+            "invalidradix": "Radix must be between 2 and 36, but received {{radix}}"
         }
     },
     "command": {
@@ -102,7 +116,31 @@
                 "notag": "[[emote.x]] There is no tag with that name",
                 "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
                 "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`",
-                "raw": "The code for {{name}} is:\n```{{code}}```"
+                "raw": "The code for {{name}} is:\n```{{code}}```",
+                "testoutput": "Test Output:\n\n{{output}}"
+            }
+        }
+    },
+    "tag": {
+        "comment": {
+            "desc": "Specifies an area that will be ignored from parsing",
+            "example": {
+                "in": "This will be shown {//;This won't be}",
+                "out": "This will be shown"
+            }
+        },
+        "void": {
+            "desc": "Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed.",
+            "example": {
+                "in": "This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
+                "out": "This will be shown  but this will be set"
+            }
+        },
+        "randint": {
+            "desc": "Returns a random integer between the provided range. `min` defaults to `0`",
+            "example": {
+                "in": "One: {randint;5}, two: {randint;10;20}",
+                "out": "One: 2, two: 17"
             }
         }
     }

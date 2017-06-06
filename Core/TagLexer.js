@@ -1,6 +1,7 @@
 const chevrotain = require('chevrotain');
 const Lexer = chevrotain.Lexer;
-const { SubTag } = require('./Structures');
+const { TagError, SubTag } = require('./Structures');
+
 function createToken(name, pattern, group) {
     let token = chevrotain.createToken({ name, pattern });
     return token;
@@ -9,11 +10,14 @@ function createToken(name, pattern, group) {
 class TagLexer {
     constructor() {
         this.tokens = {
+            Escaped: createToken('Escaped', /\\([\\{}])/),
+            SemiEscaped: createToken('SemiEscaped', /\\;/),
             TagOpen: createToken('TagOpen', /\{/),
             TagClose: createToken('TagClose', /\}/),
             ArgumentSeparator: createToken('ArgumentSeparator', /;/),
             NewLine: chevrotain.createToken({ name: 'NewLine', pattern: / *\n/ }),
-            Identifier: createToken('Text', /[^\{\};]*/)
+            Identifier: createToken('Text', /[^\{\};\\]*/),
+            Escape: createToken('Escape', /\\/)
         };
         this.SelectLexer = new Lexer(Object.values(this.tokens));
 
@@ -36,14 +40,15 @@ class TagLexer {
         const map = [];
         const stack = [map];
 
-        function last(arr) {
-            return (arr || stack)[(arr || stack).length - 1];
+        function last(arr = stack) {
+            return (arr)[(arr).length - 1];
         }
 
         function add(token, arr) {
             const lastThing = last(arr);
-            if (lastThing == undefined) console.dir(stack, { depth: 10 });
-            if (lastThing instanceof SubTag) {
+            if (lastThing == undefined) {
+                arr.push([token]);
+            } else if (lastThing instanceof SubTag) {
                 lastThing.addArgument(token);
             } else {
                 lastThing.push(token);
@@ -62,20 +67,40 @@ class TagLexer {
                     }
                     break;
                 case tokenTypes.TagClose:
+                    if (!last() || Array.isArray(last())) {
+                        throw new TagError('error.tag.unopened', {
+                            column: token.startColumn - 1,
+                            row: token.startLine - 1
+                        });
+                    }
                     stack.pop();
                     break;
                 case tokenTypes.ArgumentSeparator:
                     if (!(last() instanceof SubTag)) {
                         add(token.image);
+                    } else {
+                        last().rawArgs.push([]);
                     }
                     break;
+                case tokenTypes.Escape:
                 case tokenTypes.Identifier:
                     add(token.image);
                     break;
                 case tokenTypes.NewLine:
                     add('\n');
                     break;
+                case tokenTypes.Escaped:
+                case tokenTypes.SemiEscaped:
+                    add(token.image.substring(1));
+                    break;
             }
+        }
+        if (!Array.isArray(last())) {
+            const unclosed = last();
+            throw new TagError('error.tag.unclosed', {
+                column: unclosed.columnIndex,
+                row: unclosed.rowIndex
+            });
         }
         return map;
     }

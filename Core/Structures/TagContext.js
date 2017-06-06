@@ -39,10 +39,18 @@ class TagContext {
     }
 
     async process() {
-        this.rawContent = this.content || await this.data.getContent();
-        this.lexedContent = await this.client.TagLexer.parse(this.rawContent);
-        this.result = await this.processSub(this.lexedContent);
-        return this.result;
+        try {
+            this.rawContent = this.content || await this.data.getContent();
+            this.lexedContent = await this.client.TagLexer.parse(this.rawContent);
+            this.result = await this.processSub(this.lexedContent);
+            return this.result;
+        } catch (err) {
+            if (err instanceof TagError) {
+                return 'Parsing Error: ' + await this.decode(err.key, err.args);
+            } else {
+                throw err;
+            }
+        }
     }
 
     async processSub(elemMap) {
@@ -52,8 +60,12 @@ class TagContext {
             if (this.terminate) break;
             try {
                 if (element instanceof SubTag) {
-                    if (this.client.TagManager.has(element.name)) {
-                        const res = await this.client.TagManager.execute(element.name, this, element.args);
+                    let name = element.name;
+                    if (Array.isArray(name)) {
+                        name = await this.processSub(name);
+                    }
+                    if (this.client.TagManager.has(name)) {
+                        const res = await this.client.TagManager.execute(name, this, element.args);
                         if (res.terminate) this.terminate = true;
                         if (res.replace) {
                             if (res.replaceTarget) {
@@ -65,7 +77,7 @@ class TagContext {
                             content += res.content;
                         }
                     } else {
-                        throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { tag: element.name });
+                        throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { tag: name });
                     }
                 } else if (Array.isArray(element)) {
                     content += await this.processSub(element);

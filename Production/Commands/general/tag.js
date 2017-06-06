@@ -37,7 +37,8 @@ class TagCommand extends GeneralCommand {
             tagset: `${this.base}.tagset`,
             tagrename: `${this.base}.tagrename`,
             raw: `${this.base}.raw`,
-            alreadyexists: `${this.base}.alreadyexists`
+            alreadyexists: `${this.base}.alreadyexists`,
+            testoutput: `${this.base}.testoutput`
         };
     }
 
@@ -165,7 +166,16 @@ class TagCommand extends GeneralCommand {
     }
 
     async sub_test(ctx) {
-        await ctx.send('test');
+        const tagContext = new TagContext(ctx.client, {
+            ctx, content: ctx.input._.raw.join(''),
+            guild: ctx.guild,
+            channel: ctx.channel,
+            author: ctx.author.id, name: '{test}',
+            isCustomCommand: false
+        });
+        await ctx.decodeAndSend(this.keys.testoutput, {
+            output: (await tagContext.process()).trim()
+        });
     }
 
     async sub_help(ctx) {

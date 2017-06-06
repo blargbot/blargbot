@@ -93,7 +93,7 @@ class MessageHelper extends BaseHelper {
                     file: (content.content || '') + '\n\n' + JSON.stringify(content.embed || {}, null, 2),
                     name: 'output.json'
                 });
-            } else if (content.content.length > 0) {
+            } else if (content.content.length > 0 || content.embed) {
                 return await destination.createMessage(content, file);
             }
         } catch (err) {

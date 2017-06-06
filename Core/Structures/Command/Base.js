@@ -122,6 +122,7 @@ class BaseCommand {
         let output = {
             _: []
         };
+        output._.raw = [];
         let currentFlag = '';
         for (let i = 0; i < words.length; i++) {
             let pushFlag = true;
@@ -152,9 +153,13 @@ class BaseCommand {
             if (pushFlag) {
                 if (currentFlag != '') {
                     output[currentFlag].push(words[i]);
+                    if (!output[currentFlag].raw) output[currentFlag].raw = [];
+                    output[currentFlag].raw.push(words.rawArgs[i]);
                 } else {
-                    if (words[i] != '')
+                    if (words[i] != '') {
                         output['_'].push(words[i]);
+                        output['_'].raw.push(words.rawArgs[i]);
+                    }
                 }
             }
         }

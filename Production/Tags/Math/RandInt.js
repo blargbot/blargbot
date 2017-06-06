@@ -1,6 +1,6 @@
-const { Tag } = require('../../Core/Structures');
+const { Math } = require('../../../Core/Structures/Tag');
 
-class RandIntTag extends Tag {
+class RandIntTag extends Math {
     constructor(client) {
         super(client, {
             name: 'randint',
@@ -19,12 +19,13 @@ class RandIntTag extends Tag {
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
         let min, max;
-        if (args.length == 1) min = 0, max = parseInt(args[0]);
+        if (args.length === 1) min = 0, max = parseInt(args[0]);
         else min = parseInt(args[0]), max = parseInt(args[1]);
 
         if (isNaN(min) || isNaN(max)) {
             this.throw('error.tag.isnan', {
-                arg: isNaN(min) ? 'Min' : 'Max'
+                arg: isNaN(min) ? 'Min' : 'Max',
+                value: isNaN(min) || args.length === 1 ? args[0] : args[1]
             });
         }
         if (max < min) {

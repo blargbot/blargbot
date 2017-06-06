@@ -76,6 +76,7 @@ class DiscordClient extends Eris.Client {
         });
 
         this.awaitedMessages = {};
+        this.awaitedReactions = {};
 
         this.TagLexer = new core.TagLexer();
     }

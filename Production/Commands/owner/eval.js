@@ -12,9 +12,10 @@ class EvalCommand extends CatCommand {
         let input = ctx.text.split(' ').slice(1).join(' ');
         try {
             let response = await this.client.doEval(ctx, input);
-            await ctx.send(`Input:\n\`\`\`js\n${input}\n\`\`\`\nOutput:\n\`\`\`\n${util.inspect(response, { depth: 3 })}\n\`\`\``);
+            let output = typeof response === 'string' || typeof response === 'number' ? response : util.inspect(response, { depth: 3 });
+            await ctx.send(`Input:\n\`\`\`js\n${input}\n\`\`\`\nOutput:\n\`\`\`js\n${output}\n\`\`\``);
         } catch (err) {
-            await ctx.send(`Input:\n\`\`\`js\n${input}\n\`\`\`\Error:\n\`\`\`\n${err.message}\n${err.stack}\n\`\`\``);
+            await ctx.send(`Input:\n\`\`\`js\n${input}\n\`\`\`\nError:\n\`\`\`fix\n${err.message}\n${err.stack}\n\`\`\``);
         }
 
     }

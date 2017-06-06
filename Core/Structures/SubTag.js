@@ -2,14 +2,11 @@ class SubTag {
     constructor(columnIndex, rowIndex) {
         this.columnIndex = columnIndex;
         this.rowIndex = rowIndex;
-        this.rawArgs = [];
+        this.rawArgs = [[]];
     }
 
     get name() {
-        if (this.rawArgs[0].length > 1)
-            return this.rawArgs[0];
-        else
-            return this.rawArgs[0][0];
+        return this.rawArgs[0];
     }
 
     get args() {
@@ -52,10 +49,11 @@ class SubTag {
     }
 
     addArgument(arg) {
-        if (Array.isArray(arg)) {
-            this.rawArgs.push(arg);
-        } else this.rawArgs.push([arg]);
+        // if (Array.isArray(arg)) {
+        //    this.rawArgs.push(arg);
+        // } else this.rawArgs.push([arg]);
         let last = this.rawArgs[this.rawArgs.length - 1];
+        last.push(arg);
     }
 }
 

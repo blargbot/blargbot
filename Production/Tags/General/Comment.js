@@ -1,6 +1,6 @@
-const { Tag } = require('../../Core/Structures');
+const { General } = require('../../../Core/Structures/Tag');
 
-class CommentTag extends Tag {
+class CommentTag extends General {
     constructor(client) {
         super(client, {
             name: '//',
@@ -14,8 +14,8 @@ class CommentTag extends Tag {
         });
     }
 
-    async execute(ctx) {
-        return await super.execute(ctx, false);
+    async execute(ctx, args) {
+        return await super.execute(ctx, args, false);
     }
 }
 
