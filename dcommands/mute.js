@@ -37,24 +37,18 @@ e.execute = async function (msg, words, text) {
 
     if (!mutedrole) {
         if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
-            let role = await bot.createRole(msg.channel.guild.id);
-            logger.debug(role.id);
-            bot.editRole(msg.channel.guild.id, role.id, {
+            let role = await bot.createRole(msg.channel.guild.id, {
                 color: 16711680,
                 name: 'Muted',
-                permissions: 0
+                permissions: 0,
+                reason: 'Automatic muted role generation'
             });
             await bu.guildSettings.set(msg.channel.guild.id, 'mutedrole', role.id);
             if (msg.channel.guild.members.get(bot.user.id).permission.json.manageChannels) {
                 var channels = msg.channel.guild.channels.map(m => m);
                 logger.debug(channels.length);
                 for (var i = 0; i < channels.length; i++) {
-                    logger.debug(`
-Modifying $ {
-    channels[i].name
-}
-`);
-                    bot.editChannelPermission(channels[i].id, role.id, 0, 2048, 'role').catch(logError);
+                    bot.editChannelPermission(channels[i].id, role.id, 0, 2048, 'role', 'Automatic muted role configuration').catch(logError);
                 }
                 e.execute(msg, words, text);
             } else {
