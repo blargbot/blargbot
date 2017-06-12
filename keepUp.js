@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:32:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:32:02
+ * @Last Modified time: 2017-06-12 15:02:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -31,7 +31,7 @@ function spawn() {
         }
     });
 
-    child.on('exit', code => {
+    child.on('exit', (code, signal) => {
         if (code == 0) {
             process.exit();
         } else {
@@ -45,8 +45,7 @@ setInterval(function () {
     if (last != '') {
         console.error('Missed a ping!');
         if (++missed == 5) {
-            child.kill();
-            spawn();
+            child.kill('SIGKILL');
             client.executeWebhook(config.emerg.id, config.emerg.token, {
                 content: 'Restarted the thread after 5 missed pings.'
             });
