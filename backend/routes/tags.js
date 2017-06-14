@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:04
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:20:04
+ * @Last Modified time: 2017-06-14 10:22:05
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -306,7 +306,6 @@ async function logChange(user, action, actionObj) {
 }
 
 function filterTitle(title) {
-    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[]=\-_~()@]/gi, '');
+    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()]/gi, '');
 }
-
 module.exports = router;

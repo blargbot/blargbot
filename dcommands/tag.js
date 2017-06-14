@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:17:56
+ * @Last Modified time: 2017-06-14 10:21:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -205,7 +205,7 @@ var listTags = async function (msg, originalTagList, page, author, deleteMsg) {
 };
 
 function filterTitle(title) {
-    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[]=\-_~()@]/gi, '');
+    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()]/gi, '');
 }
 
 e.execute = async function (msg, words, text) {
