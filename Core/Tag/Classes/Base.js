@@ -29,6 +29,10 @@ class TagBase {
         this.array = options.array || false;
     }
 
+    get implicit() {
+        return true;
+    }
+
     async getDescription(dest) {
         return await this.decode(dest, `${this.base}.desc`);
     }

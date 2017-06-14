@@ -1,9 +1,9 @@
 const { User } = require.main.require('./Tag/Classes');
 
-class UserDiscrimTag extends User {
+class UserJoinedAtTag extends User {
     constructor(client) {
         super(client, {
-            name: 'userdiscrim',
+            name: 'joinedat',
             args: [
                 {
                     name: 'user',
@@ -16,12 +16,14 @@ class UserDiscrimTag extends User {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-        let user = ctx.user;
+        let user = ctx.user, member;
         if (args[0]) {
             user = await ctx.client.Helpers.Resolve.user(args[0].toString(), ctx, true);
         }
-        return res.setContent(user ? user.discriminator : '');
+        if (user)
+            member = ctx.guild.members.get(user.id);
+        return res.setContent(member ? member.joinedAt : '');
     }
 }
 
-module.exports = UserDiscrimTag;
+module.exports = UserJoinedAtTag;

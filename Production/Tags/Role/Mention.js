@@ -1,14 +1,15 @@
 const { Role } = require.main.require('./Tag/Classes');
 
-class RoleIdTag extends Role {
+class RoleMentionTag extends Role {
     constructor(client) {
         super(client, {
-            name: 'roleid',
+            name: 'mention',
             args: [
                 {
                     name: 'role'
                 }
             ],
+            ccommand: true,
             minArgs: 1, maxArgs: 1
         });
     }
@@ -19,8 +20,9 @@ class RoleIdTag extends Role {
         if (args[0]) {
             role = await ctx.client.Helpers.Resolve.role(args[0].toString(), ctx, true);
         }
-        return res.setContent(role ? role.id : '');
+        // Todo: make mentionable?
+        return res.setContent(role ? role.mention : '');
     }
 }
 
-module.exports = RoleIdTag;
+module.exports = RoleMentionTag;

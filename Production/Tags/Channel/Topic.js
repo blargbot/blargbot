@@ -1,9 +1,9 @@
 const { Channel } = require.main.require('./Tag/Classes');
 
-class ChannelPositionTag extends Channel {
+class ChannelTopicTag extends Channel {
     constructor(client) {
         super(client, {
-            name: 'channelposition',
+            name: 'topic',
             args: [
                 {
                     name: 'channel',
@@ -20,8 +20,8 @@ class ChannelPositionTag extends Channel {
         if (args[0]) {
             channel = await ctx.client.Helpers.Resolve.channel(args[0].toString(), ctx, true);
         }
-        return res.setContent(channel ? channel.position : '');
+        return res.setContent(channel ? channel.topic : '');
     }
 }
 
-module.exports = ChannelPositionTag;
+module.exports = ChannelTopicTag;

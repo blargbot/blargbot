@@ -1,9 +1,9 @@
 const { User } = require.main.require('./Tag/Classes');
 
-class UserIdTag extends User {
+class UserFullNameTag extends User {
     constructor(client) {
         super(client, {
-            name: 'userid',
+            name: 'fullname',
             args: [
                 {
                     name: 'user',
@@ -20,8 +20,8 @@ class UserIdTag extends User {
         if (args[0]) {
             user = await ctx.client.Helpers.Resolve.user(args[0].toString(), ctx, true);
         }
-        return res.setContent(user ? user.id : '');
+        return res.setContent(user ? user.fullName : '');
     }
 }
 
-module.exports = UserIdTag;
+module.exports = UserFullNameTag;

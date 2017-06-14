@@ -1,9 +1,9 @@
 const { User } = require.main.require('./Tag/Classes');
 
-class UserJoinedAtTag extends User {
+class UserNickTag extends User {
     constructor(client) {
         super(client, {
-            name: 'userjoinedat',
+            name: 'nick',
             args: [
                 {
                     name: 'user',
@@ -22,8 +22,15 @@ class UserJoinedAtTag extends User {
         }
         if (user)
             member = ctx.guild.members.get(user.id);
-        return res.setContent(member ? member.joinedAt : '');
+
+        if (member) {
+            res.setContent(member.nick || member.user.username);
+        } else if (user) {
+            res.setContent(user.username);
+        }
+
+        return res;
     }
 }
 
-module.exports = UserJoinedAtTag;
+module.exports = UserNickTag;

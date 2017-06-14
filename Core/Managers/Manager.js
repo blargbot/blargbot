@@ -46,10 +46,9 @@ class Manager {
     load(file, filePath) {
         filePath = this.constructPath(filePath);
         _logger.init('Loading ' + this.name + ': ' + file);
-        let name = path.basename(file);
-        this.list[name] = require(filePath);
-        if (this.build(name))
-            this.builtList[name].path = filePath;
+        this.list[filePath] = require(filePath);
+        if (this.build(filePath))
+            this.builtList[filePath].path = filePath;
     }
 
     unload(name) {

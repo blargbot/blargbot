@@ -9,6 +9,7 @@ class RoleTag extends Base {
     }
 
     get category() { return 'role'; }
+    get implicit() { return false; }
 
 }
 

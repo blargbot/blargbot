@@ -3,7 +3,7 @@ const { User } = require.main.require('./Tag/Classes');
 class UserStatusTag extends User {
     constructor(client) {
         super(client, {
-            name: 'userstatus',
+            name: 'status',
             args: [
                 {
                     name: 'user',

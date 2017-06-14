@@ -1,6 +1,6 @@
 const { Math } = require.main.require('./Tag/Classes');
 
-class ParseFloatTag extends General {
+class ParseFloatTag extends Math {
     constructor(client) {
         super(client, {
             name: 'parsefloat',

@@ -1,9 +1,9 @@
 const { Channel } = require.main.require('./Tag/Classes');
 
-class ChannelNameTag extends Channel {
+class ChannelTypeTag extends Channel {
     constructor(client) {
         super(client, {
-            name: 'channelname',
+            name: 'type',
             args: [
                 {
                     name: 'channel',
@@ -20,8 +20,8 @@ class ChannelNameTag extends Channel {
         if (args[0]) {
             channel = await ctx.client.Helpers.Resolve.channel(args[0].toString(), ctx, true);
         }
-        return res.setContent(channel ? channel.name : '');
+        return res.setContent(channel ? channel.type === 0 ? 'text' : 'voice' : '');
     }
 }
 
-module.exports = ChannelNameTag;
+module.exports = ChannelTypeTag;

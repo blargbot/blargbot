@@ -3,7 +3,7 @@ const { Channel } = require.main.require('./Tag/Classes');
 class ChannelIdTag extends Channel {
     constructor(client) {
         super(client, {
-            name: 'channelid',
+            name: 'id',
             args: [
                 {
                     name: 'channel',

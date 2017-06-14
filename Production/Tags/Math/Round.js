@@ -1,6 +1,6 @@
 const { Math } = require.main.require('./Tag/Classes');
 
-class RoundTag extends General {
+class RoundTag extends Math {
     constructor(client) {
         super(client, {
             name: 'round',

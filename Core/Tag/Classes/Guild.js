@@ -9,6 +9,7 @@ class GuildTag extends Base {
     }
 
     get category() { return 'guild'; }
+    get implicit() { return false; }
 
 }
 

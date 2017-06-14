@@ -1,9 +1,9 @@
 const { User } = require.main.require('./Tag/Classes');
 
-class UserStatusTag extends User {
+class UserAvatarTag extends User {
     constructor(client) {
         super(client, {
-            name: 'userroles',
+            name: 'avatar',
             args: [
                 {
                     name: 'user',
@@ -16,23 +16,12 @@ class UserStatusTag extends User {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-        let user = ctx.user, member;
+        let user = ctx.user;
         if (args[0]) {
             user = await ctx.client.Helpers.Resolve.user(args[0].toString(), ctx, true);
         }
-
-        if (user)
-            member = ctx.guild.members.get(user.id);
-
-        if (member) {
-            const arr = new this.TagArray();
-            for (const role of member.roles) arr.push(role);
-            _logger.debug(arr);
-            res.setContent(arr);
-        }
-
-        return res;
+        return res.setContent(user ? user.avatarURL : '');
     }
 }
 
-module.exports = UserStatusTag;
+module.exports = UserAvatarTag;

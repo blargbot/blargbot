@@ -10,6 +10,8 @@ class UserTag extends Base {
 
     get category() { return 'user'; }
 
+    get implicit() { return false; }
+
 }
 
 module.exports = UserTag;

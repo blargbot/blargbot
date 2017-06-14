@@ -9,6 +9,7 @@ class ChannelTag extends Base {
     }
 
     get category() { return 'channel'; }
+    get implicit() { return false; }
 
 }
 

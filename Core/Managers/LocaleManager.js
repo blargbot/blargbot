@@ -1,9 +1,17 @@
 const Manager = require('./Manager');
+const path = require('path');
 
 class LocaleManager extends Manager {
     constructor(client) {
         super(client, 'Locale', undefined, 'json');
     }
+
+    load(file, filePath) {
+        filePath = this.constructPath(filePath);
+        _logger.init('Loading ' + this.name + ': ' + file);
+        this.list[file] = require(filePath);
+    }
+
 
     build(name) {
         // no-op

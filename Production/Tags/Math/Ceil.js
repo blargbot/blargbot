@@ -1,6 +1,6 @@
 const { Math } = require.main.require('./Tag/Classes');
 
-class CeilTag extends General {
+class CeilTag extends Math {
     constructor(client) {
         super(client, {
             name: 'ceil',

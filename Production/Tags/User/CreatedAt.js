@@ -1,9 +1,9 @@
 const { User } = require.main.require('./Tag/Classes');
 
-class UserGameTag extends User {
+class UserCreatedAtTag extends User {
     constructor(client) {
         super(client, {
-            name: 'usergame',
+            name: 'createdat',
             args: [
                 {
                     name: 'user',
@@ -16,14 +16,12 @@ class UserGameTag extends User {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-        let user = ctx.user, member;
+        let user = ctx.user;
         if (args[0]) {
             user = await ctx.client.Helpers.Resolve.user(args[0].toString(), ctx, true);
         }
-        if (user)
-            member = ctx.guild.members.get(user.id);
-        return res.setContent(member && member.game ? member.game.name : '');
+        return res.setContent(user ? user.createdAt : '');
     }
 }
 
-module.exports = UserGameTag;
+module.exports = UserCreatedAtTag;
