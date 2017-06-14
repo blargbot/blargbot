@@ -1,6 +1,6 @@
-const { Info } = require.main.require('./Tag/Classes');
+const { User } = require.main.require('./Tag/Classes');
 
-class UserMentionTag extends Info {
+class UserMentionTag extends User {
     constructor(client) {
         super(client, {
             name: 'usermention',
@@ -10,6 +10,7 @@ class UserMentionTag extends Info {
                     optional: true
                 }
             ],
+            ccommand: true,
             minArgs: 0, maxArgs: 1
         });
     }

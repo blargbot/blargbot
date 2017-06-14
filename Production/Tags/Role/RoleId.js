@@ -1,6 +1,6 @@
-const { Info } = require.main.require('./Tag/Classes');
+const { Role } = require.main.require('./Tag/Classes');
 
-class RoleIdTag extends Info {
+class RoleIdTag extends Role {
     constructor(client) {
         super(client, {
             name: 'roleid',

@@ -1,4 +1,4 @@
-const { General } = require('../../../Core/Tag/Classes');
+const { Math } = require.main.require('./Tag/Classes');
 
 class RoundTag extends General {
     constructor(client) {

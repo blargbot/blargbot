@@ -1,6 +1,6 @@
-const { Info } = require.main.require('./Tag/Classes');
+const { User } = require.main.require('./Tag/Classes');
 
-class UserGameTag extends Info {
+class UserGameTag extends User {
     constructor(client) {
         super(client, {
             name: 'usergame',

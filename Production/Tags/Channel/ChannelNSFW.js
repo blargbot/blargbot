@@ -1,6 +1,6 @@
-const { Info } = require.main.require('./Tag/Classes');
+const { Channel } = require.main.require('./Tag/Classes');
 
-class ChannelNSFWTag extends Info {
+class ChannelNSFWTag extends Channel {
     constructor(client) {
         super(client, {
             name: 'channelnsfw',

@@ -1,6 +1,6 @@
-const { General } = require('../../../Core/Tag/Classes');
+const { Math } = require.main.require('./Tag/Classes');
 
-class AbsTag extends General {
+class AbsTag extends Math {
     constructor(client) {
         super(client, {
             name: 'abs',

@@ -1,6 +1,6 @@
-const { Info } = require.main.require('./Tag/Classes');
+const { Channel } = require.main.require('./Tag/Classes');
 
-class ChannelNameTag extends Info {
+class ChannelNameTag extends Channel {
     constructor(client) {
         super(client, {
             name: 'channelname',

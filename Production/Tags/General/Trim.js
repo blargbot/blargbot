@@ -1,4 +1,4 @@
-const { General } = require('../../../Core/Tag/Classes');
+const { General } = require.main.require('./Tag/Classes');
 
 class TrimTag extends General {
     constructor(client) {

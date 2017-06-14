@@ -5,5 +5,9 @@ module.exports = {
     CCommand: require('./CCommand'),
     Info: require('./Info'),
     Logic: require('./Logic'),
-    Math: require('./Math')
+    Math: require('./Math'),
+    User: require('./User'),
+    Role: require('./Role'),
+    Channel: require('./Channel'),
+    Guild: require('./Guild')
 };
