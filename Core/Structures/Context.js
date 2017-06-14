@@ -5,7 +5,7 @@ class Context {
         this.client = client;
         this.msg = msg;
         this.text = text;
-        this.words = new CommandArgs(this.text);
+        this.words = new CommandArgs(client, this.text);
     }
 
     async send(content, file) {
@@ -22,6 +22,10 @@ class Context {
 
     get channel() {
         return this.msg.channel;
+    }
+
+    get user() {
+        return this.msg.author;
     }
 
     get author() {

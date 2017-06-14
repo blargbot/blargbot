@@ -1,19 +1,23 @@
-const { DataTag, DataCustomCommand } = require('./Data');
+const { DataTag, DataCustomCommand } = require('../Structures/Data');
+const Context = require('../Structures/Context');
 const SubTag = require('./SubTag');
+const TagArray = require('./TagArray');
 const TagError = require('./TagError');
 
-class TagContext {
+class TagContext extends Context {
+    /* {
+     *     ctx?, msg?, msgId?,
+     *  content, author, name, isCustomCommand?
+     * }
+     */
+
     constructor(client, params = {}, data) {
-        this.client = client;
-        this.ctx = params.ctx;
-        this.guild = this.ctx.guild;
-        this.channel = this.ctx.channel;
-        this.user = this.ctx.author;
+        super(client, params.ctx ? params.ctx.msg : params.msg);
 
         this.content = params.content;
         this.fallback = null;
 
-        this.author = params.author;
+        this._author = params.author;
         this.name = params.name;
 
         this.isCustomCommand = params.isCustomCommand || data instanceof DataCustomCommand || false;
@@ -32,16 +36,16 @@ class TagContext {
         this.vars = {};
     }
 
+    get user() {
+        return this.msg.author;
+    }
+
+    get author() {
+        return this._author;
+    }
+
     async decode(key, args) {
         return await this.client.Helpers.Message.decode(this.channel, key, args);
-    }
-
-    get msg() {
-        return this.ctx.msg;
-    }
-
-    get words() {
-        return this.ctx.words;
     }
 
     async process() {
@@ -49,7 +53,7 @@ class TagContext {
             this.rawContent = this.content || await this.data.getContent();
             this.lexedContent = await this.client.TagLexer.parse(this.rawContent);
             this.result = await this.processSub(this.lexedContent);
-            return this.result;
+            return this.result.join('');
         } catch (err) {
             if (err instanceof TagError) {
                 return 'Parsing Error: ' + await this.decode(err.key, err.args);
@@ -61,7 +65,7 @@ class TagContext {
 
     async processSub(elemMap) {
         const oldFallback = this.fallback;
-        let content = "";
+        let content = [];
         for (const element of elemMap) {
             if (this.terminate) break;
             try {
@@ -77,22 +81,27 @@ class TagContext {
                             if (res.replaceTarget) {
                                 content.replace(res.replaceTarget, res.content);
                             } else {
-                                content = res.content;
+                                content.push(res.content);
                             }
                         } else {
-                            content += res.content;
+                            content.push(res.content);
                         }
                     } else {
                         throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { tag: name });
                     }
+                } else if (element instanceof TagArray) {
+                    for (const arrElm of element) {
+                        arrElm = await this.processSub(arrElm);
+                    }
+                    content.push(element);
                 } else if (Array.isArray(element)) {
-                    content += await this.processSub(element);
-                } else content += element;
+                    content.push(await this.processSub(element));
+                } else content.push(element);
             } catch (err) {
                 if (err instanceof TagError) {
-                    if (err.decoded === '') content += ''; // TODO: redo, messy
-                    if (err.decoded !== null) content += this.fallback || `\`${err.decoded}\``;
-                    else content += this.fallback || `\`${await this.decode(err.key, err.args)} [${element.rowIndex}:${element.columnIndex}]\``;
+                    if (err.decoded === '') content.push(''); // TODO: redo, messy
+                    if (err.decoded !== null) content.push(this.fallback || `\`${err.decoded}\``);
+                    else content.push(this.fallback || `\`${await this.decode(err.key, err.args)} [${element.rowIndex}:${element.columnIndex}]\``);
                 } else {
                     throw err;
                 }

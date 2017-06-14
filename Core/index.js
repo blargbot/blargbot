@@ -4,7 +4,7 @@ module.exports = {
     IrcClient: require('./IrcClient'),
     Structures: require('./Structures'),
     Constants: require('./Constants'),
+    Tag: require('./Tag'),
     Helpers: require('./Helpers'),
-    Logger: require('./Logger'),
-    TagLexer: require('./TagLexer')
+    Logger: require('./Logger')
 };

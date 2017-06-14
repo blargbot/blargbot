@@ -1,5 +1,5 @@
 const Manager = require('./Manager');
-const { Base } = require('../Structures/Tag');
+const { Base } = require('../Tag/Classes');
 
 class TagManager extends Manager {
     constructor(client) {

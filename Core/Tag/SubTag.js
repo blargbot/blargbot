@@ -1,3 +1,5 @@
+const TagArray = require('./TagArray');
+
 class SubTag {
     constructor(columnIndex, rowIndex) {
         this.columnIndex = columnIndex;
@@ -31,7 +33,9 @@ class SubTag {
         for (const elem of arr) {
             if (subtag) temp += ';';
             if (typeof elem == 'string') temp += elem;
-            else if (Array.isArray(elem) || elem instanceof SubTag)
+            else if (elem instanceof TagArray) {
+                temp += elem;
+            } else if (Array.isArray(elem) || elem instanceof SubTag)
                 temp += this.parseElement(elem);
         }
 
@@ -54,6 +58,10 @@ class SubTag {
         // } else this.rawArgs.push([arg]);
         let last = this.rawArgs[this.rawArgs.length - 1];
         last.push(arg);
+    }
+
+    toString() {
+        return this.serialize();
     }
 }
 

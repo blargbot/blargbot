@@ -1,5 +1,5 @@
 const Manager = require('./Manager');
-const { TagVariable } = require('../Structures');
+const { TagVariable } = require('../Tag');
 
 class TagVariableManager extends Manager {
     constructor(client) {

@@ -1,4 +1,5 @@
 const Context = require('../Structures/Context');
+const TagContext = require('../Tag/TagContext');
 const Eris = require('eris');
 const BaseHelper = require('./BaseHelper');
 
@@ -7,8 +8,74 @@ class ResolveHelper extends BaseHelper {
         super(client);
     }
 
-    async user(query, dest, quiet) {
-        const { guild, channel, user } = this.generic(dest);
+    async channel(query, ctx, quiet) {
+        const { guild, channel, user } = this.generic(ctx);
+        let channelList = guild.channels, channelId;
+        if (/\d{17,23}/.test(query)) {
+            channelId = query.match(/(\d{17,23})/)[0];
+            return this.client.getChannel(channelId);
+        }
+        channelList = channelList.filter(c => {
+            return c.name && c.name.toLowerCase().includes(query.toLowerCase());
+        });
+
+        channelList.sort((a, b) => {
+            return this.sortNames(a.name, b.name, query) + (a.position - b.position);
+        });
+
+        if (channelList.length == 1) {
+            return channelList[0];
+        } else if (channelList.length == 0) {
+            if (!quiet)
+                await this.client.Helpers.Message.decodeAndSend(ctx, 'generic.resolvechannel.nochannels');
+            return null;
+        } else {
+            let roleMessage = await this.client.Helpers.Message.decode(ctx, 'generic.resolvechannel.pickchannel', {
+                length: channelList.length
+            });
+            let menu = await this.client.Helpers.Menu.build(ctx);
+            menu.embed.setDescription(roleMessage);
+            let res = await menu.paginate(channelList.map(c => ({ name: c.name, value: c.id })));
+
+            return this.client.getChannel(res.value);
+        }
+    }
+
+    async role(query, ctx, quiet) {
+        const { guild, channel, user } = this.generic(ctx);
+        let roleList = guild.roles, roleId;
+        if (/\d{17,23}/.test(query)) {
+            roleId = query.match(/(\d{17,23})/)[0];
+            return guild.roles.get(roleId);
+        }
+        roleList = roleList.filter(r => {
+            return r.name && r.name.toLowerCase().includes(query.toLowerCase());
+        });
+
+        roleList.sort((a, b) => {
+            return this.sortNames(a.name, b.name, query) + (b.position - a.position);
+        });
+
+        if (roleList.length == 1) {
+            return roleList[0];
+        } else if (roleList.length == 0) {
+            if (!quiet)
+                await this.client.Helpers.Message.decodeAndSend(ctx, 'generic.resolverole.noroles');
+            return null;
+        } else {
+            let roleMessage = await this.client.Helpers.Message.decode(ctx, 'generic.resolverole.pickrole', {
+                length: roleList.length
+            });
+            let menu = await this.client.Helpers.Menu.build(ctx);
+            menu.embed.setDescription(roleMessage);
+            let res = await menu.paginate(roleList.map(r => ({ name: r.name, value: r.id })));
+
+            return guild.roles.get(res.value);
+        }
+    }
+
+    async user(query, ctx, quiet) {
+        const { guild, channel, user } = this.generic(ctx);
         let userList = guild.members, userId, userDiscrim;
         if (/\d{17,23}/.test(query)) {
             userId = query.match(/(\d{17,23})/)[0];
@@ -29,62 +96,39 @@ class ResolveHelper extends BaseHelper {
             return nameSearch || nickSearch;
         });
         userList.sort((a, b) => {
-            let position = 0;
-            position += this.compareNames(a.user.username, query, true, true, -1000);
-            position += this.compareNames(a.nick, query, true, true, -1000);
-            position += this.compareNames(b.user.username, query, true, true, 1000);
-            position += this.compareNames(b.nick, query, true, true, 1000);
-
-            position += this.compareNames(a.user.username, query, true, false, -100);
-            position += this.compareNames(a.nick, query, true, false, -100);
-            position += this.compareNames(b.user.username, query, true, false, 100);
-            position += this.compareNames(b.nick, query, true, false, 100);
-
-            position += this.compareNames(a.user.username, query, false, true, -10);
-            position += this.compareNames(a.nick, query, false, true, -10);
-            position += this.compareNames(b.user.username, query, false, true, 10);
-            position += this.compareNames(b.nick, query, false, true, 10);
-
-            position += this.compareNames(a.user.username, query, false, false, -1);
-            position += this.compareNames(a.nick, query, false, false, -1);
-            position += this.compareNames(b.user.username, query, false, false, 1);
-            position += this.compareNames(b.nick, query, false, false, 1);
-
-            return position;
+            return this.sortNames(a.user.username, b.user.username, query)
+                + this.sortNames(a.nick, b.nick, query);
         });
 
         if (userList.length == 1) {
             return userList[0].user;
         } else if (userList.length == 0) {
             if (!quiet)
-                await this.client.Helpers.Message.decodeAndSend(dest, 'generic.resolveuser.nousers');
+                await this.client.Helpers.Message.decodeAndSend(ctx, 'generic.resolveuser.nousers');
             return null;
         } else {
-            let pickUserOne = await this.client.Helpers.Message.decode(dest, 'generic.resolveuser.pickuserone', {
+            let userMessage = await this.client.Helpers.Message.decode(ctx, 'generic.resolveuser.pickuser', {
                 length: userList.length
             });
-            let pickUserTwo = await this.client.Helpers.Message.decode(dest, 'generic.resolveuser.pickusertwo', {
-                length: 5,
-                name: user.fullName
-            });
-            let userListString = '';
-            for (let i = 0; i < userList.length && i < 20; i++) {
-                userListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${userList[i].user.username}#${userList[i].user.discriminator}\n`;
-            }
-            let message = `${pickUserOne}\`\`\`prolog
-${userListString}
-\`\`\`
-${pickUserTwo}`;
-            await this.client.Helpers.Message.send(dest, message);
-            let msg = await this.client.Helpers.Message.awaitMessage(dest, function (msg) {
-                let index = parseInt(msg.content);
-                return (msg.content.toLowerCase() == 'c' ||
-                    (!isNaN(index) && index <= 20 && index > 0 && index < userList.length));
-            });
-            if (msg.content.toLowerCase() == 'c') return null;
-            let index = parseInt(msg.content);
-            return userList[index - 1].user;
+            let menu = await this.client.Helpers.Menu.build(ctx);
+            menu.embed.setDescription(userMessage);
+            let res = await menu.paginate(userList.map(u => ({ name: u.user.fullName, value: u.user.id })));
+
+            return this.client.users.get(res.value);
         }
+    }
+
+    sortNames(name1, name2, query) {
+        let position = 0;
+        position += this.compareNames(name1, query, true, true, -1000);
+        position += this.compareNames(name2, query, true, true, 1000);
+        position += this.compareNames(name1, query, true, false, -100);
+        position += this.compareNames(name2, query, true, false, 100);
+        position += this.compareNames(name1, query, false, true, -10);
+        position += this.compareNames(name2, query, false, true, 10);
+        position += this.compareNames(name1, query, false, false, -1);
+        position += this.compareNames(name2, query, false, false, 1);
+        return position;
     }
 
     compareNames(nameOne, nameTwo, caseSensitive, startsWith, multiplicity = 1) {
@@ -125,6 +169,11 @@ ${pickUserTwo}`;
             channel = dest;
         } else if (dest instanceof Eris.Guild) {
             guild = dest;
+        } else if (dest instanceof TagContext) {
+            guild = dest.guild;
+            user = dest.user;
+            channel = dest.channel;
+            member = dest.msg.member;
         } else if (dest instanceof Context) {
             guild = dest.guild;
             user = dest.author;

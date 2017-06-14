@@ -4,9 +4,10 @@
  * yeah
  */
 
-process.on('unhandledRejection', (reason, p) => {
-    console.error('Unhandled Promise Rejection:', reason || p);
+process.on('unhandledRejection', (err, p) => {
+    console.error('Unhandled Promise Rejection:', err.stack);
 });
+
 process.env.SHARD_ID = -1;
 
 global.Promise = require('bluebird');

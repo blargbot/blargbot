@@ -1,4 +1,4 @@
-const { TagVariable } = require('../../Core/Structures');
+const { TagVariable } = require('../../Core/Tag');
 
 class LocalVariable extends TagVariable {
 

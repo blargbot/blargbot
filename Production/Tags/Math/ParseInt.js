@@ -1,4 +1,4 @@
-const { General } = require('../../../Core/Structures/Tag');
+const { General } = require('../../../Core/Tag/Classes');
 
 class ParseIntTag extends General {
     constructor(client) {

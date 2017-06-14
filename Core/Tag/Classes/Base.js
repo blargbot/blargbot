@@ -1,5 +1,6 @@
 const TagResult = require('../TagResult');
 const TagError = require('../TagError');
+const TagArray = require('../TagArray');
 
 class TagBase {
     constructor(client, options = {}) {
@@ -18,6 +19,12 @@ class TagBase {
         this.args = options.args || [];
         this.minArgs = options.minArgs;
         this.maxArgs = options.maxArgs;
+
+        this.ccommand = options.ccommand || false;
+
+        this.TagResult = TagResult;
+        this.TagError = TagError;
+        this.TagArray = TagArray;
 
         this.array = options.array || false;
     }
@@ -40,6 +47,9 @@ class TagBase {
      * @param {boolean} parseArgs Whether to parse args automatically. Set to false to parse manually.
      */
     async execute(ctx, args, parseArgs = true) {
+        if (this.ccommand && !ctx.isCustomCommand) throw new TagError('error.tag.ccommandonly', {
+            tag: this.name
+        });
         const res = new TagResult();
         if (this.maxArgs && args.length > this.maxArgs)
             this.throw(ctx.client.Constants.TagError.TOO_MANY_ARGS, {

@@ -1,6 +1,6 @@
 const { GeneralCommand } = require('../../../Core/Structures/Command');
 const util = require('util');
-const { TagContext } = require('../../../Core/Structures');
+const { TagContext } = require('../../../Core/Tag');
 
 class TagCommand extends GeneralCommand {
     constructor(client) {
@@ -71,7 +71,7 @@ class TagCommand extends GeneralCommand {
                 author: tag.get('authorId'), name: tag.get('tagName'),
                 isCustomCommand: false
             }, data);
-            await ctx.send(await tagContext.process());
+            await ctx.send((await tagContext.process()).toString());
             //await ctx.send(tag.get('content'));
 
         }
@@ -171,8 +171,9 @@ class TagCommand extends GeneralCommand {
             author: ctx.author.id, name: '{test}',
             isCustomCommand: false
         }, data);
+        let output = await tagContext.process() || '';
         await ctx.decodeAndSend(this.keys.testoutput, {
-            output: (await tagContext.process()).trim()
+            output: output.toString().trim()
         });
     }
 

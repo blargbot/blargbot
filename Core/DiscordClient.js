@@ -1,5 +1,5 @@
-process.on('unhandledRejection', (reason, p) => {
-    console.error('Unhandled Promise Rejection:', reason || p);
+process.on('unhandledRejection', (err, p) => {
+    console.error('Unhandled Promise Rejection:', err.stack);
 });
 
 const { CommandManager, EventManager, LocaleManager, TagManager, TagVariableManager } = require('./Managers');
@@ -8,6 +8,7 @@ const Database = require('./Database');
 const Eris = require('eris');
 const EventEmitter = require('eventemitter3');
 const data = require('./Structures/Data');
+const ArgumentLexer = require('./ArgumentLexer');
 const core = require('./index.js');
 
 global.Promise = require('bluebird');
@@ -81,7 +82,8 @@ class DiscordClient extends Eris.Client {
         this.awaitedMessages = {};
         this.awaitedReactions = {};
 
-        this.TagLexer = new core.TagLexer();
+        this.TagLexer = new core.Tag.TagLexer();
+        this.ArgumentLexer = new ArgumentLexer();
     }
 
     getData(type, ...args) {

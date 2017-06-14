@@ -1,13 +1,22 @@
-const TagLexer = require('../Core/TagLexer');
+const TagLexer = require('../Core/Tag/TagLexer');
+const TagArray = require('../Core/Tag/TagArray');
 
 const tagLexer = new TagLexer();
-try {
-//let tokens = tagLexer.parse(`one {two;three} {four; \n five;six {seven;eight {nine}}}`);
-let tokens = tagLexer.parse(`\\{me\\ow\\}`);
 
-console.dir(tokens, { depth: 10 });
-console.log(tokens[3].serialize());
+function LexInput(input) {
+    try {
+        let tokens = tagLexer.parse(input);
 
-} catch (err) {
-    console.error(err.key);
+        console.dir(tokens, { depth: 15 });
+        console.log('Serialized: ', tokens.join(''));
+
+    } catch (err) {
+        if (err.key)
+            console.error(err.key);
+        else console.error(err);
+    }
+
 }
+
+LexInput(`one {two;three} {four; \n five;six {seven;eight {nine;[1;2;[3;4];{ten;elevent} 5;6]}}}`);
+LexInput(`[1;2;[3;4;5];6]`);

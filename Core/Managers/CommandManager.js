@@ -37,6 +37,7 @@ class CommandManager extends Manager {
                         await command.send(response);
                     }
                 } catch (err) {
+                    
                     console.error(err.stack);
                     ctx.decodeAndSend('error.generic', {
                         message: err.stack

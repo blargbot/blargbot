@@ -1,4 +1,4 @@
-const { Math } = require('../../../Core/Structures/Tag');
+const { Math } = require('../../../Core/Tag/Classes');
 
 class RandIntTag extends Math {
     constructor(client) {

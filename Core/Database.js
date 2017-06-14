@@ -1,3 +1,5 @@
+var pg = require('pg');
+delete pg.native;
 const sequelize = require('sequelize');
 
 class Database {

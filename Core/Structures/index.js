@@ -7,11 +7,5 @@ module.exports = {
     Sender: require('./Sender'),
     Cache: require('./Cache'),
     Data: require('./Data'),
-    Tag: require('./Tag'),
-    PublicTag: require('./PublicTag'),
-    SubTag: require('./SubTag'),
-    TagContext: require('./TagContext'),
-    TagError: require('./TagError'),
-    TagResult: require('./TagResult'),
-    TagVariable: require('./TagVariable')
+    PublicTag: require('./PublicTag')
 };

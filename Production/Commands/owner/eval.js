@@ -17,7 +17,6 @@ class EvalCommand extends CatCommand {
         } catch (err) {
             await ctx.send(`Input:\n\`\`\`js\n${input}\n\`\`\`\nError:\n\`\`\`fix\n${err.message}\n${err.stack}\n\`\`\``);
         }
-
     }
 }
 

@@ -1,9 +1,9 @@
 class CommandArgs extends Array {
-    constructor(args) {
+    constructor(client, args) {
         if (Array.isArray(args))
             super(...args);
         else if (typeof args === 'string') {
-            const { words, raw } = CommandArgs.splitInput(args);
+            const { words, raw } = CommandArgs.splitInput(client, args);
             super(...words);
             this.rawArgs = raw;
         } else super(args);
@@ -21,7 +21,10 @@ class CommandArgs extends Array {
 
     static get [Symbol.species]() { return Array; }
 
-    static splitInput(text) {
+    static splitInput(client, text) {
+        const { output, rawOutput } = client.ArgumentLexer.parse(text);
+        return { words: output, raw: rawOutput };
+        /*
         let words = [];
         text = text.replace(/\n/g, '\n ');
         let chars = text.split('');
@@ -57,12 +60,21 @@ class CommandArgs extends Array {
                     };
                     break;
                 case ' ':
-                    if (escaped) temp += ' ';
-                    else if (!inPhrase && temp != '') {
-                        words.push(temp);
-                        temp = '';
-                    } else if (inPhrase) temp += ' ';
-                    else words[words.length - 1] += ' ';
+                    temp += ' ';
+
+                    if (!inPhrase && temp != ' ') {
+                        if (!escaped) {
+                            words.push(temp);
+                            temp = '';
+                        }
+                    } else if (inPhrase)
+
+                        if (escaped) temp += ' ';
+                        else if (!inPhrase && temp != '') {
+                            words.push(temp);
+                            temp = '';
+                        } else if (inPhrase) temp += ' ';
+                        else words[words.length - 1] += ' ';
                     if (escaped) escaped = false;
                     break;
                 default:
@@ -78,6 +90,7 @@ class CommandArgs extends Array {
         return {
             words, raw
         };
+        */
     }
 }
 
