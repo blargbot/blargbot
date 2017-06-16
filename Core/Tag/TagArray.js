@@ -1,7 +1,13 @@
 class TagArray extends Array {
 
-    constructor() {
-        super();
+    constructor(...vals) {
+        let values = [];
+        for (const val of vals) {
+            if (Array.isArray(val))
+                values.push(...val);
+            else values.push(val);
+        }
+        super(...values);
     }
 
     static get [Symbol.species]() { return Array; }

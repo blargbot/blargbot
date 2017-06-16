@@ -11,14 +11,10 @@ class GuildRolesTag extends Guild {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-        const arr = new this.TagArray();
         const roles = ctx.guild.roles.map(r => r).sort((a, b) => {
             return b.position - a.position;
         }).map(r => r.id);
-        for (const role in roles) {
-            arr.push(role);
-        }
-        return res.setContent(arr);
+        return res.setContent(new this.TagArray(roles));
     }
 }
 

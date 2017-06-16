@@ -3,7 +3,7 @@ const { Guild } = require.main.require('./Tag/Classes');
 class GuildIdTag extends Guild {
     constructor(client) {
         super(client, {
-            name: 'id',
+            name: 'name',
             args: [],
             minArgs: 0, maxArgs: 0
         });

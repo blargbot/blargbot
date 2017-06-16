@@ -11,14 +11,10 @@ class GuildChannelsTag extends Guild {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-        const arr = new this.TagArray();
         const channels = ctx.guild.channels.map(c => c).sort((a, b) => {
             return a.position - b.position;
         }).map(c => c.id);
-        for (const channel in channels) {
-            arr.push(channel);
-        }
-        return res.setContent(arr);
+        return res.setContent(new this.TagArray(channels));
     }
 }
 

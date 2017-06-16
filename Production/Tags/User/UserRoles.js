@@ -25,9 +25,7 @@ class UserStatusTag extends User {
             member = ctx.guild.members.get(user.id);
 
         if (member) {
-            const arr = new this.TagArray();
-            for (const role of member.roles) arr.push(role);
-            res.setContent(arr);
+            res.setContent(new this.TagArray(member.roles));
         }
 
         return res;
