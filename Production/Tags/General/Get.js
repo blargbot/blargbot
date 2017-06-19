@@ -20,7 +20,6 @@ class CleanTag extends General {
         const res = await super.execute(ctx, args);
 
         let variable = await ctx.client.TagVariableManager.executeGet(ctx, args[0]) || '';
-
         return res.setContent(variable);
     }
 }

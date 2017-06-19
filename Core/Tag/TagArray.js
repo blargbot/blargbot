@@ -1,9 +1,11 @@
+const TagError = require('./TagError');
+
 class TagArray extends Array {
 
     constructor(...vals) {
         let values = [];
         for (const val of vals) {
-            if (Array.isArray(val))
+            if (Array.isArray(val) && !val instanceof TagArray)
                 values.push(...val);
             else values.push(val);
         }
@@ -19,11 +21,27 @@ class TagArray extends Array {
     async load(ctx, name) {
         this.ctx = ctx;
         this.name = name;
+
+        let variable = await ctx.client.TagVariableManager.executeGet(ctx, name) || '';
+        if (Array.isArray(variable)) {
+            this.splice(0, this.length, ...variable);
+        } else {
+            throw new TagError(ctx.client.Constants.TagError.NOT_AN_ARRAY, { name, value: variable });
+        }
+
+        for (let elem of this) {
+            for (let subElem of elem) {
+                if (Array.isArray(subElem)) subElem = new TagArray(subElem);
+            }
+        }
+
         return this;
     }
 
     async save(ctx, name) {
+        if (ctx) this.ctx = ctx;
         if (name) this.name = name;
+        await this.ctx.client.TagVariableManager.executeSet(this.ctx, this.name, this.slice(0));
     }
 
     get last() {
@@ -35,6 +53,7 @@ class TagArray extends Array {
     }
 
     addArgument(token) {
+        if (this.length === 0) this.push([]);
         if (!Array.isArray(this.last)) {
             this.last = [this.last];
         }

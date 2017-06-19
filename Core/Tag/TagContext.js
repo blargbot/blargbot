@@ -90,7 +90,7 @@ class TagContext extends Context {
                         throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { tag: name });
                     }
                 } else if (element instanceof TagArray) {
-                    for (const arrElm of element) {
+                    for (let arrElm of element) {
                         arrElm = await this.processSub(arrElm);
                     }
                     content.push(element);

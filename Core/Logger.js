@@ -1,44 +1,101 @@
-const Winston = require('winston');
-const wconfig = require('winston/lib/winston/config');
+const chalk = require('chalk');
 const moment = require('moment-timezone');
 const util = require('util');
 
-const LogLevels = {};
+class Logger {
+    constructor(shardId, level) {
+        this.shard = shardId;
+        if (typeof this.shard === 'string') this.shard = 'MS';
+        else if (this.shard < 10) this.shard = '0' + this.shard;
+        this._level = level;
+        this.levels = {};
+        let max = 0;
+        this._levels = [
+            { name: 'fatal', color: chalk.red.bgBlack, err: true },
+            { name: 'error', color: chalk.black.bgRed, err: true },
+            { name: 'warn', color: chalk.black.bgYellow, err: true },
+            { name: 'init', color: chalk.black.bgBlue },
+            { name: 'info', color: chalk.black.bgGreen },
+            { name: 'output', color: chalk.black.bgMagenta },
+            { name: 'verbose', color: chalk.black.bgCyan },
+            { name: 'adebug', color: chalk.cyan.bgBlack },
+            { name: 'debug', color: chalk.magenta.bgBlack },
+            { name: 'database', color: chalk.black.bgBlue }
+        ];
+        this._levels = this._levels.map(l => {
+            l.position = this._levels.indexOf(l);
+            this.levels[l.name] = l;
+            this[l.name] = function (...args) {
+                return this.format(l, ...args);
+            };
+            max = l.name.length > max ? l.name.length : max;
+            return l;
+        });
 
-const Colours = {
-    RED: 'red',
-    YELLOW: 'yellow',
-    GREEN: 'green',
-    CYAN: 'cyan',
-    BLUE: 'blue',
-    MAGENTA: 'magenta',
-    GREY: 'grey',
-    BOLD: 'bold'
-};
+        this.maxLength = max + 2;
 
-const LogColours = {
-    timestamp: Colours.GREY,
-    shard: Colours.YELLOW
-};
+        this._meta = {};
+    }
 
-const Levels = [{ name: 'error', color: Colours.RED },
-{ name: 'warn', color: Colours.YELLOW },
-{ name: 'init', color: Colours.GREEN },
-{ name: 'info', color: Colours.GREEN },
-{ name: 'output', color: Colours.MAGENTA },
-{ name: 'verbose', color: Colours.CYAN },
-{ name: 'debug', color: Colours.GREY },
-{ name: 'adebug', color: Colours.CYAN },
-{ name: 'database', color: Colours.BLUE }];
+    get level() {
+        return this.levels[this._level];
+    }
 
-var maxLength = 0;
+    setGlobal() {
+        Object.defineProperty.bind(this)(global, 'console', {
+            get: function () {
+                return this;
+            }
+        });
+        return this;
+    }
 
-for (let i = 0; i < Levels.length; i++) {
-    if (maxLength < Levels[i].name.length) maxLength = Levels[i].name.length;
-    LogLevels[Levels[i].name] = i;
-    LogColours[Levels[i].name] = Levels[i].color;
+    get timestamp() {
+        return chalk.black.bgWhite(` ${moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')} `);
+    }
+
+    centrePad(text, length) {
+        return ' '.repeat(Math.floor((length - text.length) / 2))
+            + text + ' '.repeat(Math.ceil((length - text.length) / 2));
+    }
+
+    write(text, err = false) {
+        let stream = err ? process.stderr : process.stdout;
+        let shard = `${this.shard}`;
+        let shardText = chalk.black.bold.bgYellow(this.centrePad(shard, 4, false));
+        stream.write(`${shardText}${this.timestamp}${text}\n`);
+        return this;
+    }
+
+    meta(meta = { depth: 3, color: true }) {
+        this._meta = meta;
+        return this;
+    }
+
+    format(level, ...args) {
+        if (level.position > this.level.position) return;
+        let output = level.color(this.centrePad(level.name, this.maxLength)) + ' ';
+        let text = [];
+        for (const arg of args) {
+            if (typeof arg === 'string') {
+                text.push(chalk.magenta(`'${arg}'`));
+            } else if (typeof arg === 'number') {
+                text.push(chalk.cyan(arg));
+            } else if (typeof arg === 'object') {
+                text.push('\n');
+                if (arg instanceof Error) {
+                    text.push(chalk.red(arg.stack));
+                } else {
+                    text.push(util.inspect(arg, this.meta));
+                }
+            } else text.push(arg);
+        }
+        output += text.join(' ');
+        if (level.err) output = chalk.red(output);
+        return this.write(output, level.err).meta();
+    }
 }
-
+/*
 class Logger extends Winston.Logger {
     constructor() {
         super({
@@ -72,7 +129,7 @@ class Logger extends Winston.Logger {
                         output += options.meta.stack;
                 } else {
                     output += options.message || '';
-
+                    console.log(options.message);
                     if (options.meta && Object.keys(options.meta).length > 0) {
                         output += '\n' + util.inspect(options.meta, { depth: 4 });
                     }
@@ -87,6 +144,6 @@ class Logger extends Winston.Logger {
 
 function pad(value, length) {
     return ' '.repeat(length - value.length) + value;
-}
+}*/
 
 module.exports = Logger;

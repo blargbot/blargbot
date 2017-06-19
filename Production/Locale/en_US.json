@@ -72,7 +72,8 @@
             "ccommandonly": "'{{tag}}' may only be used in ccommands",
             "unclosed": "Unmatched opening bracket [{{column}}:{{row}}]",
             "unopened": "Unmatched closing bracket [{{column}}:{{row}}]",
-            "invalidradix": "Radix must be between 2 and 36, but received {{radix}}"
+            "invalidradix": "Radix must be between 2 and 36, but received {{radix}}",
+            "notanarray": "Variable {{name}} is not an array (Received: {{value}})"
         }
     },
     "command": {
