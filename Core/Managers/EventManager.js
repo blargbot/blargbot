@@ -29,7 +29,7 @@ class EventManager extends Manager {
                             let res = await event.execute(...args);
                             if (res === true) break;
                         } catch (err) {
-                            _logger.error(err);
+                            console.error(err);
                         }
                     }
                 }.bind(this);

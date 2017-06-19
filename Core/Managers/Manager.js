@@ -45,7 +45,7 @@ class Manager {
 
     load(file, filePath) {
         filePath = this.constructPath(filePath);
-        _logger.init('Loading ' + this.name + ': ' + file);
+        console.init('Loading ' + this.name + ': ' + file);
         this.list[filePath] = require(filePath);
         if (this.build(filePath))
             this.builtList[filePath].path = filePath;

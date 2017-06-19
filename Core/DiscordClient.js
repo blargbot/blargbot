@@ -13,11 +13,11 @@ const core = require('./index.js');
 
 global.Promise = require('bluebird');
 global._config = require('../config.json');
-global._logger = new core.Logger();
+global.console = new core.Logger(parseInt(process.env.SHARD_ID), _config.log.level || 'info').setGlobal();
 
 class DiscordClient extends Eris.Client {
     constructor() {
-        _logger.debug('Max:', process.env.SHARD_MAX, 'ID:', process.env.SHARD_ID);
+        console.debug('Max:', process.env.SHARD_MAX, 'ID:', process.env.SHARD_ID);
         super(_config.discord.token, {
             autoreconnect: true,
             disableEveryone: true,

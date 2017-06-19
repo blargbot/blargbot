@@ -10,17 +10,17 @@ class Database {
             _config.database.postgres.password, {
                 host: _config.database.postgres.host,
                 dialect: 'postgres',
-                logging: _logger.database
+                logging: console.database
             });
     }
 
     async authenticate() {
         try {
             await this.sequelize.authenticate();
-            _logger.init('Connected to database. Loading models...');
+            console.init('Connected to database. Loading models...');
             await this.loadModels();
         } catch (err) {
-            _logger.error(err);
+            console.error(err);
         }
     }
 
@@ -33,7 +33,7 @@ class Database {
             await this.models[key].model.sync({ force: false });
             this.client.models[key] = this.models[key].model;
         }
-        _logger.init('Database models loaded. Loading Clyde');
+        console.init('Database models loaded. Loading Clyde');
         const clyde = this.client.getData(this.client.Constants.Types.Data.USER, 0, {
             username: 'Clyde',
             discriminator: '0000'

@@ -46,7 +46,7 @@ class ArgumentLexer {
                     rawOutput[rawOutput.length - 1] += token.image;
                     break;
                 case tokenTypes.Escaped:
-                    _logger.debug(token.image);
+                    console.debug(token.image);
                     output[output.length - 1] += token.image.substring(1);
                     rawOutput[rawOutput.length - 1] += token.image;
                     break;

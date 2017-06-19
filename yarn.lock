@@ -1275,13 +1275,13 @@ encodeurl@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/encodeurl/-/encodeurl-1.0.1.tgz#79e3d58655346909fe6f0f45a5de68103b294d20"
 
-eris@^0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/eris/-/eris-0.6.0.tgz#75f15a940826f7df5e329b88372ee5fbcd1cc30e"
+eris@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/eris/-/eris-0.7.0.tgz#74ca2b3b18418561d7590a849ccb2e58a881b279"
   dependencies:
-    ws "^2.1.0"
+    ws "^2.3.1"
   optionalDependencies:
-    opusscript "^0.0.2"
+    opusscript "^0.0.3"
     tweetnacl "^1.0.0-rc.1"
 
 erlpack@^0.1.0:
@@ -2866,9 +2866,9 @@ options@>=0.0.5, options@latest:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/options/-/options-0.0.6.tgz#ec22d312806bb53e731773e7cdaefcf1c643128f"
 
-opusscript@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/opusscript/-/opusscript-0.0.2.tgz#5fdd7274c13991fd96f64320e69ad56f5b0b9bcd"
+opusscript@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/opusscript/-/opusscript-0.0.3.tgz#ce46717fc8d6f901c5191e69485c889a036a8674"
 
 os-homedir@^1.0.0:
   version "1.0.2"
@@ -4242,7 +4242,7 @@ ws@^1.1.1:
     options ">=0.0.5"
     ultron "1.0.x"
 
-ws@^2.1.0:
+ws@^2.3.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/ws/-/ws-2.3.1.tgz#6b94b3e447cb6a363f785eaf94af6359e8e81c80"
   dependencies:

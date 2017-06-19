@@ -214,7 +214,7 @@ class MessageHelper extends BaseHelper {
      * @returns {Object} The entry
      */
     async getLatestCachedMessage(msgId) {
-        const rawMsg = this.client.models.ChatLog.findOne({
+        const rawMsg = await this.client.models.ChatLog.findOne({
             where: {
                 msgId
             },
@@ -226,7 +226,7 @@ class MessageHelper extends BaseHelper {
             return this.constructMessage({
                 id: msgId,
                 timestamp: this.client.Helpers.Snowflake.unmake(rawMsg.msgId),
-                channel_id: rawMsg.channelid,
+                channel_id: rawMsg.channelId,
                 content: rawMsg.content,
                 edited_timestamp: rawMsg.type != 'create' ? this.client.Helpers.Snowflake.unmake(rawMsg.id) : undefined,
                 mentions: [],

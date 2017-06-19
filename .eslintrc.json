@@ -48,6 +48,6 @@
     },
     "globals": {
         "_config": false,
-        "_logger": false
+        "console": false
     }
 }

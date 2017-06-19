@@ -14,20 +14,24 @@ class Logger {
             { name: 'fatal', color: chalk.red.bgBlack, err: true },
             { name: 'error', color: chalk.black.bgRed, err: true },
             { name: 'warn', color: chalk.black.bgYellow, err: true },
+            { name: 'trace', color: chalk.green.bgBlack, trace: true },
             { name: 'init', color: chalk.black.bgBlue },
             { name: 'info', color: chalk.black.bgGreen },
             { name: 'output', color: chalk.black.bgMagenta },
             { name: 'verbose', color: chalk.black.bgCyan },
             { name: 'adebug', color: chalk.cyan.bgBlack },
-            { name: 'debug', color: chalk.magenta.bgBlack },
+            { name: 'debug', color: chalk.magenta.bgBlack, alias: ['log', 'dir'] },
             { name: 'database', color: chalk.black.bgBlue }
         ];
         this._levels = this._levels.map(l => {
             l.position = this._levels.indexOf(l);
             this.levels[l.name] = l;
-            this[l.name] = function (...args) {
+            let func = function (...args) {
                 return this.format(l, ...args);
-            };
+            }.bind(this);
+            this[l.name] = func;
+            if (l.alias && Array.isArray(l.alias))
+                for (const alias of l.alias) this[alias] = func;
             max = l.name.length > max ? l.name.length : max;
             return l;
         });
@@ -43,7 +47,7 @@ class Logger {
 
     setGlobal() {
         Object.defineProperty.bind(this)(global, 'console', {
-            get: function () {
+            get: () => {
                 return this;
             }
         });
@@ -78,7 +82,7 @@ class Logger {
         let text = [];
         for (const arg of args) {
             if (typeof arg === 'string') {
-                text.push(chalk.magenta(`'${arg}'`));
+                text.push(chalk.magenta(this._meta.quote ? `'${arg}'` : arg));
             } else if (typeof arg === 'number') {
                 text.push(chalk.cyan(arg));
             } else if (typeof arg === 'object') {
@@ -86,9 +90,12 @@ class Logger {
                 if (arg instanceof Error) {
                     text.push(chalk.red(arg.stack));
                 } else {
-                    text.push(util.inspect(arg, this.meta));
+                    text.push(util.inspect(arg, this._meta));
                 }
             } else text.push(arg);
+        }
+        if (level.trace) {
+            text.push(new Error().stack);
         }
         output += text.join(' ');
         if (level.err) output = chalk.red(output);

@@ -20,9 +20,9 @@ class Client {
 
     async init() {
         await this.spawner.spawnAll();
-        _logger.init('All shards have spawned. Connecting...');
+        console.init('All shards have spawned. Connecting...');
         await this.spawner.awaitBroadcast('connect');
-        _logger.init('Shards connected');
+        console.init('Shards connected');
     }
 }
 

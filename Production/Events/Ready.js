@@ -6,7 +6,8 @@ class ReadyEvent extends Event {
     }
 
     async execute() {
-        _logger.init('Ready!');
+        console.init('Ready!');
+        console.init('(so ready)');
         //this.client.guilds.forEach(g => g.data.create());
     }
 }

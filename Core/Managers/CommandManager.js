@@ -9,7 +9,7 @@ class CommandManager extends Manager {
 
     load(file, filePath) {
         filePath = this.constructPath(filePath);
-        _logger.init('Loading ' + this.name + ': ' + file);
+        console.init('Loading ' + this.name + ': ' + file);
         if (file.includes('/')) file = file.split('/');
         file = file[file.length - 1];
         this.list[file] = require(filePath);
@@ -57,7 +57,6 @@ class CommandManager extends Manager {
     }
 
     has(name) {
-        console.debug(Object.keys(this.builtList));
         return this.builtList.hasOwnProperty(name);
     }
 }

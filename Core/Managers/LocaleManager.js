@@ -8,7 +8,7 @@ class LocaleManager extends Manager {
 
     load(file, filePath) {
         filePath = this.constructPath(filePath);
-        _logger.init('Loading ' + this.name + ': ' + file);
+        console.init('Loading ' + this.name + ': ' + file);
         this.list[file] = require(filePath);
     }
 
