@@ -26,7 +26,7 @@ class Logger {
         this._levels = this._levels.map(l => {
             l.position = this._levels.indexOf(l);
             this.levels[l.name] = l;
-            let func = function (...args) {
+            let func = function(...args) {
                 return this.format(l, ...args);
             }.bind(this);
             this[l.name] = func;
@@ -71,8 +71,10 @@ class Logger {
         return this;
     }
 
-    meta(meta = { depth: 3, color: true }) {
-        this._meta = meta;
+    meta(meta = {}) {
+        let temp = { depth: 3, color: true };
+        Object.assign(temp, meta);
+        this._meta = temp;
         return this;
     }
 
@@ -94,63 +96,14 @@ class Logger {
                 }
             } else text.push(arg);
         }
-        if (level.trace) {
-            text.push(new Error().stack);
-        }
+
         output += text.join(' ');
+        if (level.trace || this._meta.trace) {
+            output += '\n' + new Error().stack.split('\n').slice(1).join('\n');
+        }
         if (level.err) output = chalk.red(output);
         return this.write(output, level.err).meta();
     }
 }
-/*
-class Logger extends Winston.Logger {
-    constructor() {
-        super({
-            exitOnError: false,
-            levels: LogLevels,
-            colors: LogColours
-        });
-        this.setLevels(LogLevels);
-        this.master = process.env.SHARD_ID == -1;
-        this.colorize = wconfig.colorize;
-        this.add(Winston.transports.Console, {
-            name: 'general',
-            stderrLevels: ['error', 'warn'],
-            silent: false,
-            handleExceptions: true,
-            prettyPrint: true,
-            timestamp: function () {
-                return `[${moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
-            },
-            formatter: function (options) {
-                let output = '';
-                output += this.colorize('shard', pad(this.master ? '[M]' : `[${process.env.SHARD_ID}]`, 4));
-                output += this.colorize('timestamp', options.timestamp());
-                output += this.colorize(options.level, pad(`[${options.level.toUpperCase()}]`, maxLength + 2));
-                output += ' ';
-                if (options.level == 'error' && options.meta && options.meta.stack) {
-                    output += options.meta.message ? options.meta.message + '\n' : '';
-                    if (Array.isArray(options.meta.stack))
-                        output += options.meta.stack.join('\n');
-                    else
-                        output += options.meta.stack;
-                } else {
-                    output += options.message || '';
-                    console.log(options.message);
-                    if (options.meta && Object.keys(options.meta).length > 0) {
-                        output += '\n' + util.inspect(options.meta, { depth: 4 });
-                    }
-                }
-                return output;
-            }.bind(this)
-        });
-
-        this.level = 'debug';
-    }
-}
-
-function pad(value, length) {
-    return ' '.repeat(length - value.length) + value;
-}*/
 
 module.exports = Logger;
