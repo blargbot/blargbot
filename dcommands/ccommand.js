@@ -19,7 +19,7 @@ __**Usage:**__
   **cc delete <name>** - deletes the ccommand with given name, provided that you own it
   **cc rename <tag1> <tag2>** - renames the ccommand by the name of \`ccommand1\` to \`ccommand2\`
   **cc raw <name>** - displays the raw code of a ccommand
-  **cc setrole <name> <role names...>** - sets the roles required to execute the ccommand
+  **cc setrole <name> [role names...]** - sets the roles required to execute the ccommand
   **cc help** - shows this message
   **cc sethelp** <name> [help text] - set the help message for a custom command
   
@@ -53,7 +53,7 @@ blargbot&gt; Hello, User. This is a test command.
     <p>Renames an existing ccommand to something else.<p>
     <pre><code>cc raw &lt;name&gt;</code></pre>
     <p>Displays the raw code of a given ccommand.</p>
-    <pre><code>cc setrole &lt;name&gt; &lt;role names...&gt;</code></pre>
+    <pre><code>cc setrole &lt;name&gt; [role names...]</code></pre>
     <p>sets the roles required to execute the ccommand</p>
     <pre><code>cc help</code></pre>
     <p>Gets basic ccommand help.</p>
@@ -67,17 +67,22 @@ e.execute = async function (msg, words, text) {
         let content;
         switch (words[1].toLowerCase()) {
             case 'setrole':
-                if (words.length > 3) {
+                if (words.length > 2) {
                     storedTag = await bu.ccommand.get(msg.guild.id, words[2]);
                     if (!storedTag) {
                         bu.send(msg, 'That ccommand doesn\'t exist!');
                         return;
                     }
+                    let roles = [];
+                    if (words[3]) roles = words.slice(3);
                     await bu.ccommand.set(msg.guild.id, words[2], {
                         content: storedTag.content || storedTag,
-                        roles: words.slice(3)
+                        roles: roles
                     });
-                    bu.send(msg, `Set the custom role requirements of '${words[2]}' to \`\`\`fix\n${words.slice(3).join(', ')}\n\`\`\` `);
+                    if (roles.length === 0) {
+                        bu.send(msg, `Removed the custom role requirement of '${words[2]}'.`)
+                    } else
+                        bu.send(msg, `Set the custom role requirements of '${words[2]}' to \`\`\`fix\n${words.slice(3).join(', ')}\n\`\`\` `);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
