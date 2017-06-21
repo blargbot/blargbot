@@ -25,7 +25,7 @@ class TagCommand extends GeneralCommand {
             subcommandAliases: {
                 remove: 'delete',
                 favourite: 'favorite',
-                add: 'create',
+                add: 'set',
                 create: 'set',
                 edit: 'set'
             }
@@ -43,13 +43,13 @@ class TagCommand extends GeneralCommand {
     }
 
     async getTag(name) {
+        const data = await this.client.getDataTag(name);
+        let tag;
         try {
-            const data = await this.client.getDataTag(name);
-            const tag = await data.getObject();
-            return { data, tag };
-        } catch (err) {
-            return {};
-        }
+            tag = await data.getObject();
+        } catch (err) { }
+        return { data, tag };
+
     }
 
     async ownershipTest(ctx) {

@@ -1,6 +1,7 @@
 const chalk = require('chalk');
 const moment = require('moment-timezone');
 const util = require('util');
+const seqErrors = require('sequelize/lib/errors');
 
 class Logger {
     constructor(shardId, level) {
@@ -91,6 +92,13 @@ class Logger {
                 text.push('\n');
                 if (arg instanceof Error) {
                     text.push(chalk.red(arg.stack));
+
+                    if (arg instanceof seqErrors.ValidationError) {
+                        for (const err of arg.errors) {
+                            text.push('\n');
+                            text.push(chalk.red(err));
+                        }
+                    }
                 } else {
                     text.push(util.inspect(arg, this._meta));
                 }
