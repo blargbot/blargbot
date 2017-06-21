@@ -6,7 +6,6 @@ logs/*
 node_modules/*
 userdata/*
 .idea/*
-package.json
 cache/*
 cache*
 .vscode/*

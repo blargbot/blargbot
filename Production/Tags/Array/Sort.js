@@ -69,8 +69,11 @@ class SortTag extends Array {
                     .then(() => ctx.client.TagVariableManager.executeSet(ctx, varNameTwo, b))
                     .then(() => ctx.processSub(code))
                     .then(content => {
+                        console.log(a, b, content);
                         let res = parseInt(content.join(''));
                         if (isNaN(res)) res = 0;
+                        else if (res > 0) res = 1;
+                        else if (res < 0) res = -1;
                         callback(null, res);
                     });
             }, (err, sorted) => {

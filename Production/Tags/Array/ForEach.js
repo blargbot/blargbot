@@ -1,9 +1,9 @@
 const { Array } = require.main.require('./Tag/Classes');
 
-class MapTag extends Array {
+class ForEachTag extends Array {
     constructor(client) {
         super(client, {
-            name: 'map',
+            name: 'foreach',
             args: [
                 {
                     name: 'array'
@@ -28,16 +28,15 @@ class MapTag extends Array {
         let name = args.length === 3 ? args[1] : 'i';
         let code = args.length === 3 ? args[2] : args[1];
 
-        let newArr = new this.TagArray();
-
         for (let i = 0; i < arr.length; i++) {
             ctx.client.TagVariableManager.executeSet(ctx, name, arr[i]);
-            newArr[i] = await ctx.processSub(code);
+            await ctx.processSub(code);
         }
 
-        return res.setContent(newArr);
+
+        return res;
     }
 
 }
 
-module.exports = MapTag;
+module.exports = ForEachTag;
