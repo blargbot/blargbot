@@ -7,7 +7,7 @@ class Database {
         this.client = client;
         this.sequelize = new sequelize(_config.database.postgres.database,
             _config.database.postgres.user,
-            _config.database.postgres.password, {
+            _config.database.postgres.pass, {
                 host: _config.database.postgres.host,
                 dialect: 'postgres',
                 logging: console.database
