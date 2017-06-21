@@ -3,19 +3,21 @@ const { Event, Context } = require('../../Core/Structures');
 class CommandMessageEvent extends Event {
     constructor(client) {
         super(client, 'messageCreate');
+    }
 
-        this.prefixes = [
+    get prefixes() {
+        return [
             'blargbot',
             _config.discord.defaultPrefix,
-            `<@${client.user.id}>`,
-            `<@!${client.user.id}>`
+            `<@${this.client.user.id}>`,
+            `<@!${this.client.user.id}>`
         ];
     }
 
     async execute(msg) {
         let prefix = false;
         let shouldBreak = false;
-        for (const pref of this.prefixes) {
+        for (const pref of prefixes) {
             if (msg.content.startsWith(pref)) {
                 prefix = pref;
                 break;
