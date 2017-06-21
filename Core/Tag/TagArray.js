@@ -41,7 +41,7 @@ class TagArray extends Array {
     async save(ctx, name) {
         if (ctx) this.ctx = ctx;
         if (name) this.name = name;
-        await this.ctx.client.TagVariableManager.executeSet(this.ctx, this.name, this.slice(0));
+        await this.ctx.client.TagVariableManager.executeSet(this.ctx, this.name, this);
     }
 
     get last() {

@@ -17,17 +17,11 @@ class RandIntTag extends Math {
     }
 
     async execute(ctx, args) {
-        const res = await super.execute(ctx, args, true);
+        const res = await super.execute(ctx, args);
         let min, max;
-        if (args.length === 1) min = 0, max = parseInt(args[0]);
-        else min = parseInt(args[0]), max = parseInt(args[1]);
+        if (args.length === 1) min = 0, max = this.parseInt(args[0], 'max');
+        else min = this.parseInt(args[0], 'min'), max = this.parseInt(args[1], 'max');
 
-        if (isNaN(min) || isNaN(max)) {
-            this.throw('error.tag.isnan', {
-                arg: isNaN(min) ? 'Min' : 'Max',
-                value: isNaN(min) || args.length === 1 ? args[0] : args[1]
-            });
-        }
         if (max < min) {
             this.throw('error.tag.maxlessthanmin');
         }

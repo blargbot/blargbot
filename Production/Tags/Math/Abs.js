@@ -14,13 +14,9 @@ class AbsTag extends Math {
     }
 
     async execute(ctx, args) {
-        const res = await super.execute(ctx, args, false);
+        const res = await super.execute(ctx, args);
 
-        let parsed = parseInt(args[0]);
-        if (isNaN(parsed)) this.throw('error.tag.isnan', {
-            arg: 'Number',
-            value: args[0]
-        });
+        let parsed = this.parseInt(args[0], 'number');
 
         return res.setContent(Math.abs(parsed));
     }

@@ -6,7 +6,8 @@ class ReadyEvent extends Event {
     }
 
     async execute() {
-        console.init('Ready!');
+        console.info('Ready! Guilds:', this.client.guilds.size);
+        this.client.sender.send('ready', this.client.guilds.map(g => g.id));
         //this.client.guilds.forEach(g => g.data.create());
     }
 }

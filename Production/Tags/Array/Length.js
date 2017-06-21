@@ -1,18 +1,15 @@
 const { Array } = require.main.require('./Tag/Classes');
 
-class PushTag extends Array {
+class LengthTag extends Array {
     constructor(client) {
         super(client, {
-            name: 'push',
+            name: 'length',
             args: [
                 {
                     name: 'array'
-                }, {
-                    name: 'value',
-                    repeat: true
                 }
             ],
-            minArgs: 2
+            minArgs: 1, maxArgs: 1
         });
     }
 
@@ -20,11 +17,8 @@ class PushTag extends Array {
         const res = await super.execute(ctx, args, true);
         let arr = await this.loadArray(ctx, args[0]);
 
-        arr.push(...args.slice(1));
-        if (arr.ctx && arr.name) await arr.save();
-
-        return res.setContent(arr);
+        return res.setContent(arr.length);
     }
 }
 
-module.exports = PushTag;
+module.exports = LengthTag;

@@ -1,30 +1,27 @@
 const { Array } = require.main.require('./Tag/Classes');
 
-class PushTag extends Array {
+class SplitTag extends Array {
     constructor(client) {
         super(client, {
-            name: 'push',
+            name: 'split',
             args: [
                 {
-                    name: 'array'
+                    name: 'text'
                 }, {
-                    name: 'value',
-                    repeat: true
+                    name: 'delimiter',
+                    optional: true
                 }
             ],
-            minArgs: 2
+            minArgs: 1, maxArgs: 2
         });
     }
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
-        let arr = await this.loadArray(ctx, args[0]);
-
-        arr.push(...args.slice(1));
-        if (arr.ctx && arr.name) await arr.save();
+        let arr = new this.TagArray(...args[0].toString().split(args[1] || ''));
 
         return res.setContent(arr);
     }
 }
 
-module.exports = PushTag;
+module.exports = SplitTag;

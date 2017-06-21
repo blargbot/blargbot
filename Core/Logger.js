@@ -15,8 +15,8 @@ class Logger {
             { name: 'error', color: chalk.black.bgRed, err: true },
             { name: 'warn', color: chalk.black.bgYellow, err: true },
             { name: 'trace', color: chalk.green.bgBlack, trace: true },
-            { name: 'init', color: chalk.black.bgBlue },
             { name: 'info', color: chalk.black.bgGreen },
+            { name: 'init', color: chalk.black.bgBlue },
             { name: 'output', color: chalk.black.bgMagenta },
             { name: 'verbose', color: chalk.black.bgCyan },
             { name: 'adebug', color: chalk.cyan.bgBlack },
@@ -26,7 +26,7 @@ class Logger {
         this._levels = this._levels.map(l => {
             l.position = this._levels.indexOf(l);
             this.levels[l.name] = l;
-            let func = function(...args) {
+            let func = function (...args) {
                 return this.format(l, ...args);
             }.bind(this);
             this[l.name] = func;

@@ -14,11 +14,14 @@ class ParseFloatTag extends Math {
     }
 
     async execute(ctx, args) {
-        const res = await super.execute(ctx, args, false);
+        const res = await super.execute(ctx, args);
 
-        let parsed = parseFloat(args[0]);
-        if (isNaN(parsed)) res.setContent('NaN');
-        else res.setContent(parsed);
+        try {
+            let parsed = this.parseFloat(args[0], 'number');
+            res.setContent(parsed);
+        } catch (err) {
+            res.setContent('NaN');
+        }
 
         return res;
     }

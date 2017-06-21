@@ -9,6 +9,7 @@ class Spawner extends EventEmitter {
         this.file = options.file || 'Core/DiscordClient.js';
         this.respawn = options.respawn || true;
         this.shards = new Map();
+        this.guildShardMap = {};
     }
 
     spawn(id) {
@@ -18,6 +19,7 @@ class Spawner extends EventEmitter {
                 this.shards.delete(id);
             this.shards.set(id, shard);
             this.once('threadReady' + id, () => {
+
                 resolve(shard);
             });
         });
@@ -72,6 +74,18 @@ class Spawner extends EventEmitter {
                 break;
             case 'threadReady':
                 this.emit('threadReady' + data.message);
+                break;
+            case 'ready':
+                for (const guild in this.guildShardMap)
+                    if (this.guildShardMap[guild] === shard.id) delete this.guildShardMap[guild];
+                for (const guild of data)
+                    this.guildShardMap[guild] = shard.id;
+                break;
+            case 'guildCreate':
+                this.guildShardMap[data] = shard.js;
+                break;
+            case 'guildDelete':
+                delete this.guildShardMap[data];
                 break;
         }
     }

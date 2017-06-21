@@ -36,6 +36,7 @@ class CommandMessageEvent extends Event {
         let commandName = ctx.words[0].toLowerCase();
         let didCommand = false;
         if (this.client.CommandManager.has(commandName)) {
+            console.output(`${ctx.author.fullName} has executed command ${commandName}`);
             didCommand = true;
             this.client.CommandManager.execute(commandName, ctx);
         }

@@ -74,18 +74,26 @@ class TagContext extends Context {
                     if (Array.isArray(name)) {
                         name = await this.processSub(name);
                     }
-                    if (this.client.TagManager.has(name)) {
-                        const res = await this.client.TagManager.execute(name, this, element.args);
+                    name = name.join('');
+                    let display = true;
+                    name = name.split('!');
+                    if (name.length > 1) display = false;
+                    if (this.client.TagManager.has(name[0])) {
+                        const res = await this.client.TagManager.execute(name[0], this, element.args);
                         if (res.terminate) this.terminate = true;
                         if (res.replace) {
                             if (res.replaceTarget) {
                                 content.replace(res.replaceTarget, res.content);
                             } else {
-                                content.push(res.content);
+                                if (display)
+                                    content.push(res.content);
                             }
                         } else {
-                            content.push(res.content);
+                            if (display)
+                                content.push(res.content);
                         }
+                        if (!display && name[1] != '')
+                            await this.client.TagVariableManager.executeSet(this, name[1], res.content);
                     } else {
                         throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { tag: name });
                     }

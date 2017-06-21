@@ -1,9 +1,9 @@
 const { Array } = require.main.require('./Tag/Classes');
 
-class PushTag extends Array {
+class UnshiftTag extends Array {
     constructor(client) {
         super(client, {
-            name: 'push',
+            name: 'unshift',
             args: [
                 {
                     name: 'array'
@@ -20,11 +20,11 @@ class PushTag extends Array {
         const res = await super.execute(ctx, args, true);
         let arr = await this.loadArray(ctx, args[0]);
 
-        arr.push(...args.slice(1));
+        arr.unshift(...args.slice(1));
         if (arr.ctx && arr.name) await arr.save();
 
         return res.setContent(arr);
     }
 }
 
-module.exports = PushTag;
+module.exports = UnshiftTag;

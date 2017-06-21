@@ -24,11 +24,9 @@ class TagVariableManager extends Manager {
         } else {
             variable = await this.prefixMap[false].get(ctx, name);
         }
-        console.debug(variable);
         if (Array.isArray(variable)) {
 
         }
-
         return variable;
     }
 
