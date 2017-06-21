@@ -44,7 +44,7 @@ e.execute = (msg) => {
             return bu.getFullName(bot.users.get(p));
         } else return p;
     }).join('\n - ');
-    let age = dep.moment.duration(moment() - moment(startDate));
+    let age = dep.moment.duration(dep.moment() - dep.moment(startDate));
     let dateStr = `${age.years()} year${age.years() != 1 ? 's' : ''}, ${age.days()} day${age.days() != 1 ? 's' : ''}, ${age.hours()} hour${age.hours() != 1 ? 's' : ''}, ${age.minutes()} minute${age.minutes() != 1 ? 's' : ''}, and ${age.seconds()} second${age.seconds() != 1 ? 's' : ''}`;
     try {
         bu.send(msg, `blargbot is a multipurpose bot with new features implemented regularly, written in javascript using Eris.
