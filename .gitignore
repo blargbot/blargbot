@@ -7,7 +7,6 @@ node_modules/*
 userdata/*
 .idea/*
 cache/*
-cache*
 .vscode/*
 img/generated/*
 chocobot/*
