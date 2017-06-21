@@ -96,7 +96,7 @@ class Logger {
                     if (arg instanceof seqErrors.ValidationError) {
                         for (const err of arg.errors) {
                             text.push('\n');
-                            text.push(chalk.red(err));
+                            text.push(chalk.red(util.inspect(err, this.meta)));
                         }
                     }
                 } else {
