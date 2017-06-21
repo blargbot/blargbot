@@ -49,7 +49,6 @@ class TagCommand extends GeneralCommand {
             tag = await data.getObject();
         } catch (err) { }
         return { data, tag };
-
     }
 
     async ownershipTest(ctx) {
@@ -76,8 +75,6 @@ class TagCommand extends GeneralCommand {
                 isCustomCommand: false
             }, data);
             await ctx.send((await tagContext.process()).toString());
-            //await ctx.send(tag.get('content'));
-
         }
     }
 
