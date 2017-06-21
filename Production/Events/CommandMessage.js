@@ -1,25 +1,21 @@
 const { Event, Context } = require('../../Core/Structures');
 
-const prefixes = ['blargbot'];
-if (_config.beta) {
-    prefixes.push('k!');
-    prefixes.push('<@198554059295293440>');
-    prefixes.push('<@!198554059295293440>');
-} else {
-    prefixes.push('b!');
-    prefixes.push('<@134133271750639616>');
-    prefixes.push('<@!134133271750639616>');
-}
-
 class CommandMessageEvent extends Event {
     constructor(client) {
         super(client, 'messageCreate');
+
+        this.prefixes = [
+            'blargbot',
+            _config.discord.defaultPrefix,
+            `<@${client.user.id}>`,
+            `<@!${client.user.id}>`
+        ];
     }
 
     async execute(msg) {
         let prefix = false;
         let shouldBreak = false;
-        for (const pref of prefixes) {
+        for (const pref of this.prefixes) {
             if (msg.content.startsWith(pref)) {
                 prefix = pref;
                 break;
