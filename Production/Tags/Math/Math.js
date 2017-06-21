@@ -88,14 +88,24 @@ class MathTag extends Math {
             operation.unshift(0);
         for (const operator of this.operators) {
             let index = operation.indexOf(operator);
-            if (index >= 1) {
+            while (index > -1) {
                 let augend = operation[index - 1];
+                if (typeof augend === 'string') {
+                    operation.slice(index, 1);
+                    continue;
+                }
                 let operands = [];
                 for (let i = index + 1; i < operation.length && typeof operation[i] === 'number'; i++)
                     operands.push(operation[i]);
                 let out = this.operations[operator](augend, operands);
                 operation.splice(index - 1, 2 + operands.length, out);
+                index = operation.indexOf(operator);
             }
+        }
+
+        if (operation.length > 1) {
+            for (let i = 1; i < operation.length; i++)
+                operation[0] += operation[i];
         }
 
         return res.setContent(operation[0]);
