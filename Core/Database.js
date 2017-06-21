@@ -20,7 +20,7 @@ class Database {
             console.init('Connected to database. Loading models...');
             await this.loadModels();
         } catch (err) {
-            console.error('Failed to connect to the database, retrying in 5 seconds');
+            console.error('Failed to connect to the database, retrying in 5 seconds', err);
             await this.sleep(5 * 1000);
             return await this.authenticate();
         }
