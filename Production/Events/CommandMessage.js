@@ -17,7 +17,7 @@ class CommandMessageEvent extends Event {
     async execute(msg) {
         let prefix = false;
         let shouldBreak = false;
-        for (const pref of prefixes) {
+        for (const pref of this.prefixes) {
             if (msg.content.startsWith(pref)) {
                 prefix = pref;
                 break;
