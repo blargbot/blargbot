@@ -13,7 +13,7 @@ class ArgumentLexer {
             NewLine: createToken('NewLine', / *\n/),
             Phrase: createToken('Phrase', /".+"/),
             WhiteSpace: createToken('WhiteSpace', / +/),
-            Identifier: createToken('Text', /[^ \\]+/)
+            Identifier: createToken('Text', /[^ \\\n]+/)
         };
         this.SelectLexer = new Lexer(Object.values(this.tokens));
 
@@ -50,14 +50,15 @@ class ArgumentLexer {
                     rawOutput[rawOutput.length - 1] += token.image;
                     break;
                 case tokenTypes.NewLine:
-                    output[output.length - 1] += '\n';
                     rawOutput[rawOutput.length - 1] += '\n';
+                    break;
                 case tokenTypes.Phrase:
                     output.push(token.image.substring(1, token.image.lastIndexOf('"')));
                     rawOutput.push(token.image);
                     break;
             }
         }
+        console.log(output, rawOutput);
         return { output, rawOutput };
     }
 }
