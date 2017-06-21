@@ -31,7 +31,7 @@ const donators = [
     '235677262437941249'
 ];
 
-const startDate = 1444755667000;
+const startDate = 1444708800000;
 
 e.execute = (msg) => {
     let patronStr = patrons.map(p => {
