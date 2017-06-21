@@ -1,9 +1,9 @@
 const { Logic } = require.main.require('./Tag/Classes');
 
-class BoolTag extends Logic {
+class LogicTag extends Logic {
     constructor(client) {
         super(client, {
-            name: 'bool',
+            name: 'logic',
             args: [
                 {
                     name: 'augend'
@@ -174,4 +174,4 @@ class BoolTag extends Logic {
     }
 }
 
-module.exports = BoolTag;
+module.exports = LogicTag;
