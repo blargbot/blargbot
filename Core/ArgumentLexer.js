@@ -58,7 +58,6 @@ class ArgumentLexer {
                     break;
             }
         }
-        console.log(output, rawOutput);
         return { output, rawOutput };
     }
 }
