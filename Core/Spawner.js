@@ -90,7 +90,7 @@ class Spawner extends EventEmitter {
             case 'KILLEVERYTHING':
                 console.fatal('We all deserve to die. Even you, mister cat. Even I.');
                 this.shards.forEach(s => {
-                    //      s.process.kill();
+                    s.process.kill();
                 });
                 process.exit(0);
                 break;
