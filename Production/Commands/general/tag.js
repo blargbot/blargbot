@@ -43,9 +43,13 @@ class TagCommand extends GeneralCommand {
     }
 
     async getTag(name) {
-        const data = await this.client.getDataTag(name);
-        const tag = await data.getObject();
-        return { data, tag };
+        try {
+            const data = await this.client.getDataTag(name);
+            const tag = await data.getObject();
+            return { data, tag };
+        } catch (err) {
+            return {};
+        }
     }
 
     async ownershipTest(ctx) {
