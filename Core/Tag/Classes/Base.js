@@ -21,12 +21,15 @@ class TagBase {
         this.maxArgs = options.maxArgs;
 
         this.ccommand = options.ccommand || false;
+        this.requiresStaff = options.requiresStaff || false;
 
         this.TagResult = TagResult;
         this.TagError = TagError;
         this.TagArray = TagArray;
 
         this.array = options.array || false;
+
+        this.permissions = options.permissions || false;
     }
 
     get implicit() {
@@ -51,9 +54,23 @@ class TagBase {
      * @param {boolean} parseArgs Whether to parse args automatically. Set to false to parse manually.
      */
     async execute(ctx, args, parseArgs = true) {
-        if (this.ccommand && !ctx.isCustomCommand) throw new TagError('error.tag.ccommandonly', {
-            tag: this.name
+        //   if (this.ccommand && !ctx.isCustomCommand) throw new TagError('error.tag.ccommandonly', {
+        //      tag: this.name
+        //   });
+        if (this.requiresStaff && !ctx.isAuthorStaff) throw new TagError('error.tag.authorstaff', {
+            tag: this.name,
+            author: ctx.client.users.get(ctx.author).fullName
         });
+        if (this.permissions !== false && Array.isArray(this.permissions) && this.permissions.length > 0) {
+            let botPerms = ctx.channel.permissionsOf(ctx.client.user.id);
+            for (const permission of this.permissions) {
+                if (!botPerms.has(permission))
+                    throw new TagError('error.tag.noperms', {
+                        tag: this.name,
+                        perm: permission
+                    });
+            }
+        }
         const res = new TagResult();
         if (this.maxArgs && args.length > this.maxArgs)
             this.throw(ctx.client.Constants.TagError.TOO_MANY_ARGS, {

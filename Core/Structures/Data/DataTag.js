@@ -5,7 +5,7 @@ class DataTag extends DataBase {
         return title.replace(/[^\d\w\.,!#\$\/?"':;\[\]&%*()-_=+ ]/gi, '');
     }
 
-    constructor(client, id) {
+    constructor(client, id, strip = true) {
         id = DataTag.stripTitle(id);
         super(client, id, client.models.Tag);
     }

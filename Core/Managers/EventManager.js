@@ -8,14 +8,16 @@ class EventManager extends Manager {
         this.events = {};
     }
 
-    unload(name) {
+    unload(...names) {
+        let name = names[names.length - 1];
+
         let eventName = this.builtList[name].eventName;
         delete this.eventList[eventName][name];
-        delete this.builtList[name];
         super.unload(name);
     }
 
-    build(name) {
+    build(...names) {
+        let name = names[names.length - 1];
         if (super.build(name)) {
             let eventName = this.builtList[name].eventName;
             if (!this.eventList[eventName]) this.eventList[eventName] = {};

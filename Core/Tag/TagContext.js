@@ -23,6 +23,7 @@ class TagContext extends Context {
         this.isCustomCommand = params.isCustomCommand || data instanceof DataCustomCommand || false;
         this.terminate = false;
         this.isStaff = false;
+        this.isAuthorStaff = false;
 
         this.result = '';
 
@@ -50,6 +51,7 @@ class TagContext extends Context {
 
     async process() {
         try {
+            this.isAuthorStaff = await this.checkStaff(this.author);
             this.rawContent = this.content || await this.data.getContent();
             this.lexedContent = await this.client.TagLexer.parse(this.rawContent);
             this.result = await this.processSub(this.lexedContent);

@@ -7,23 +7,24 @@ class TagManager extends Manager {
 
         this.tagMap = { _: {} };
     }
-
-    build(name) {
-        let temp = new this.list[name](this.client);
-        if (temp instanceof this.base) {
-            if (!this.tagMap[temp.category]) this.tagMap[temp.category] = {};
-            this.tagMap[temp.category][temp.name] = temp;
-            if (temp.implicit) {
-                this.tagMap._[temp.name] = temp;
+    build(...names) {
+        let mod = this.modules.get(...names);
+        let name = names[names.length - 1];
+        let built = new mod(this.client);
+        if (built instanceof this.base) {
+            console.module(`Built ${this.name} module: ${names.join('/')}`);
+            if (!this.tagMap[built.category]) this.tagMap[built.category] = {};
+            this.tagMap[built.category][built.name] = built;
+            if (built.implicit) {
+                this.tagMap._[built.name] = built;
             }
+
+            return true;
         }
         else {
-            delete this.list[name];
             delete this.builtList[name];
+            return false;
         }
-        //        if (super.build(name)) {
-        //            this.tagMap[this.builtList[name].name] = this.builtList[name];
-        //        }
     }
 
     split(name) {

@@ -8,5 +8,6 @@ module.exports = {
     User: require('./User'),
     Role: require('./Role'),
     Channel: require('./Channel'),
-    Guild: require('./Guild')
+    Guild: require('./Guild'),
+    Message: require('./Message')
 };

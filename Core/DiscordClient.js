@@ -84,6 +84,8 @@ class DiscordClient extends Eris.Client {
 
         this.TagLexer = new core.Tag.TagLexer();
         this.ArgumentLexer = new ArgumentLexer();
+
+        this.catOverrides = true;
     }
 
     getData(type, ...args) {

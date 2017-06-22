@@ -161,15 +161,14 @@ class TagCommand extends GeneralCommand {
 
     async sub_report(ctx) {
         await ctx.send('report');
-
     }
 
     async sub_test(ctx) {
-        const data = this.client.getDataTag('{test}');
+        const data = this.client.getDataTag('test');
         await data.getOrCreateObject();
         const tagContext = new TagContext(ctx.client, {
             ctx, content: ctx.input._.raw.join(''),
-            author: ctx.author.id, name: '{test}',
+            author: ctx.author.id, name: 'test',
             isCustomCommand: false
         }, data);
         let output = await tagContext.process() || '';

@@ -2,7 +2,7 @@ const sequelize = require('sequelize');
 
 class BaseModel {
     constructor(client, db) {
-        console.init('Loading database model ' + this.constructor.name);
+        console.module('Loading database model ' + this.constructor.name);
         this.client = client;
         this.db = db;
         this.Sequelize = sequelize;

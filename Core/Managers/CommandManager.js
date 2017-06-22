@@ -7,16 +7,8 @@ class CommandManager extends Manager {
         this.fullList = {};
     }
 
-    load(file, filePath) {
-        filePath = this.constructPath(filePath);
-        console.init('Loading ' + this.name + ': ' + file);
-        if (file.includes('/')) file = file.split('/');
-        file = file[file.length - 1];
-        this.list[file] = require(filePath);
-        this.build(file);
-    }
-
-    unload(name) {
+    unload(...names) {
+        let name = names[names.length - 1];
         if (this.builtList[name].aliases.length > 0) {
             for (const alias of this.builtList[name].aliases) {
                 delete this.builtList[alias];
@@ -25,8 +17,9 @@ class CommandManager extends Manager {
         super.unload(name);
     }
 
-    build(name) {
-        if (super.build(name)) {
+    build(...names) {
+        let name = names[names.length - 1];
+        if (super.build(...names)) {
             if (this.builtList[name].aliases.length > 0) {
                 for (const alias of this.builtList[name].aliases) {
                     this.builtList[alias] = this.builtList[name];

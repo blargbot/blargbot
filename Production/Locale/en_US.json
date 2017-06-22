@@ -59,6 +59,10 @@
     },
     "error": {
         "keyundef": "No such locale entry was found: '{{key}}'",
+        "memberundef": "No such member was found: '{{member}}'",
+        "userundef": "No such user was found: '{{user}}'",
+        "channelundef": "No such channel was found: '{{channel}}'",
+        "roleundef": "No such role was found: '{{role}}'",
         "pleasereport": "If you think this is an error, please report it!",
         "generic": "Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
         "messagetoolong": "Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
@@ -70,11 +74,14 @@
             "isnan": "Expected '{{arg}}' to be a number, but received '{{value}}'",
             "maxlessthanmin": "Max must be greater than Min",
             "ccommandonly": "'{{tag}}' may only be used in ccommands",
+            "authorstaff": "Author {{author}} must be staff to use '{{tag}}'",
+            "noperms": "Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
+            "toolow": "Bot cannot '{{tag}}' because its lower-ranked than '{{target}}'",
             "unclosed": "Unmatched opening bracket [{{column}}:{{row}}]",
             "unopened": "Unmatched closing bracket [{{column}}:{{row}}]",
-            "invalidradix": "Radix must be between 2 and 36, but received {{radix}}",
-            "notanarray": "Variable {{name}} is not an array (Received: {{value}})",
-            "notbool": "Variable {{name}} is not a boolean (Received: {{value}})"
+            "invalidradix": "Radix must be between 2 and 36, but received '{{radix}}'",
+            "notanarray": "Variable '{{name}}' is not an array (Received: '{{value}}')",
+            "notbool": "Variable '{{name}}' is not a boolean (Received: '{{value}}')"
         }
     },
     "command": {

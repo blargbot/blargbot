@@ -16,8 +16,9 @@ class Logger {
             { name: 'error', color: chalk.black.bgRed, err: true },
             { name: 'warn', color: chalk.black.bgYellow, err: true },
             { name: 'trace', color: chalk.green.bgBlack, trace: true },
-            { name: 'info', color: chalk.black.bgGreen },
             { name: 'init', color: chalk.black.bgBlue },
+            { name: 'info', color: chalk.black.bgGreen },
+            { name: 'module', color: chalk.black.bgBlue },
             { name: 'output', color: chalk.black.bgMagenta },
             { name: 'verbose', color: chalk.black.bgCyan },
             { name: 'adebug', color: chalk.cyan.bgBlack },
@@ -73,7 +74,7 @@ class Logger {
     }
 
     meta(meta = {}) {
-        let temp = { depth: 3, color: true };
+        let temp = { depth: 1, color: true };
         Object.assign(temp, meta);
         this._meta = temp;
         return this;
@@ -96,7 +97,7 @@ class Logger {
                     if (arg instanceof seqErrors.ValidationError) {
                         for (const err of arg.errors) {
                             text.push('\n');
-                            text.push(chalk.red(util.inspect(err, this.meta)));
+                            text.push(chalk.red(util.inspect(err, this._meta)));
                         }
                     }
                 } else {

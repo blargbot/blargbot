@@ -8,7 +8,8 @@ class TagVariableManager extends Manager {
         this.prefixMap = {};
     }
 
-    async build(name) {
+    async build(...names) {
+        let name = names[names.length - 1];
         if (super.build(name)) {
             const source = this.builtList[name];
             this.prefixMap[source.prefix] = source;

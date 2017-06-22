@@ -16,77 +16,39 @@ class Manager {
     }
 
     init() {
-        let fileList = [];
-        this.walk(path.join(__dirname, this.path), fileList);
-        const regexp = new RegExp("/?(.+)\." + this.extension);
-        for (var i = 0; i < fileList.length; i++) {
-            let file = fileList[i];
-            if (regexp.test(file)) {
-                let name = file.match(regexp)[1];
-                this.load(name, file);
+        this.modules = require(`../../Production/${this.name}`);
+        for (const key in this.modules) {
+            if (key === 'index') continue;
+            let obj = this.modules[key];
+            if (typeof obj === 'object') {
+                for (const subKey in obj) {
+                    this.build(key, subKey);
+                }
+            } else if (typeof obj === 'function') {
+                this.build(key);
             }
         }
     }
 
-    walk(dir, fileList, prefix = '') {
-        let files = fs.readdirSync(dir);
-        fileList = fileList || [];
-        files.forEach((file) => {
-            let filePath = path.join(dir, file);
-            let name = path.join(prefix, file);
-            if (fs.statSync(filePath).isDirectory()) {
-                this.walk(filePath, fileList, name);
+    unload(...names) {
+        let name = names[names.length - 1];
+        delete this.builtList[name];
+    }
+
+    build(...names) {
+        let mod = this.modules.get(...names);
+        let name = names[names.length - 1];
+        if (typeof mod === 'function') {
+            this.builtList[name] = new mod(this.client);
+            if (this.builtList[name] instanceof this.base) {
+                console.module(`Built ${this.name} module: ${names.join('/')}`);
+                return true;
             }
             else {
-                fileList.push(name);
+                delete this.builtList[name];
+                return false;
             }
-        });
-    }
-
-    load(file, filePath) {
-        filePath = this.constructPath(filePath);
-        console.init('Loading ' + this.name + ': ' + file);
-        this.list[filePath] = require(filePath);
-        if (this.build(filePath))
-            this.builtList[filePath].path = filePath;
-    }
-
-    unload(name) {
-        delete this.list[name];
-    }
-
-    reload(name) {
-        let filePath = this.builtList[name].path;
-        this.unload(name);
-        this.list[name] = reload(filePath);
-        this.build(name);
-    }
-
-    build(name) {
-        this.builtList[name] = new this.list[name](this.client);
-        if (this.builtList[name] instanceof this.base)
-            return true;
-        else {
-            delete this.list[name];
-            delete this.builtList[name];
-            return false;
-        }
-    }
-
-    get topPath() {
-        return `./Production/${this.name}/`;
-    }
-
-    get path() {
-        return `../.${this.topPath}`;
-    }
-
-    constructPath(name) {
-        return path.join(this.path, name);
-    }
-
-    constructReloadPath(name) {
-        return path.join(this.topPath, name);
+        } else this.builtList[name] = mod;
     }
 }
 

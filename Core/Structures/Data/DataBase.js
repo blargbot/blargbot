@@ -40,7 +40,7 @@ class DataBase {
         }
     }
 
-    async getOrCreateObject(args) {
+    async getOrCreateObject(args = {}) {
         await this.reloadObject();
         if (this.object !== null) return this.object;
         else {

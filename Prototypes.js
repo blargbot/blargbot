@@ -36,6 +36,32 @@ module.exports = function (client) {
     });
 
     /**
+     * Defining prototypes for Member
+     */
+
+    Object.defineProperties(Eris.Member.prototype, {
+        position: {
+            get: function getMemberPosition() {
+                let { guild, roles } = this;
+                roles = roles.map(r => {
+                    return guild.roles.get(r).position;
+                });
+                roles.sort((a, b) => b - a);
+                return roles[0];
+            }
+        },
+        color: {
+            get: function getMemberColor() {
+                let { guild, roles } = this;
+                roles = roles.map(r => guild.roles.get(r)).filter(r => r.color > 0);
+                if (roles.length === 0) return 0;
+                roles.sort((a, b) => b.position - a.position);
+                return roles[0].color;
+            }
+        }
+    });
+
+    /**
      * Defining prototypes for Guild
      */
 
