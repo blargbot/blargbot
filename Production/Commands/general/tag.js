@@ -187,7 +187,7 @@ class TagCommand extends GeneralCommand {
 
     async sub_help(ctx) {
         if (ctx.input._.length === 0) {
-            await ctx.decodeAndSend(this.keys.help, {
+            await ctx.decodeAndSend(this.keys.info, {
                 subcommands: Object.keys(this.subcommands).map(s => `**${s}**`).join(', ')
             });
         } else { }

@@ -41,6 +41,8 @@ class BaseCommand {
                     if (this.keys[key].startsWith('.')) this.keys[key] = this.base + this.keys[key];
                     this._keys.push(this.keys[key]);
                 }
+                this.keys.info = this._keys[0];
+                this.keys.usage = this._keys[1];
             }
             let temp;
             for (const key of this._keys) {

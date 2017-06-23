@@ -126,7 +126,7 @@
                 "notenough": "You have to tell me who to ship!"
             },
             "tag": {
-                "info": "",
+                "info": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit https://blargbot.xyz/tags\nBy creating a tag, you acknowledge that you agree to the Terms of Service (https://blargbot.xyz/tags/tos)",
                 "usage": "",
                 "dontown": "[[emote.x]] You don't own that tag!",
                 "alreadyexists": "[[emote.x]] A tag with that name already exists!",
@@ -135,7 +135,6 @@
                 "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`",
                 "raw": "The code for {{name}} is:\n```{{code}}```",
                 "testoutput": "Test Output:\n\n{{output}}",
-                "help": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit https://blargbot.xyz/tags\nBy creating a tag, you acknowledge that you agree to the Terms of Service (https://blargbot.xyz/tags/tos)",
                 "subcommand": {
                     "set": {
                         "usage": "",
