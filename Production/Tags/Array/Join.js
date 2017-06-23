@@ -18,8 +18,14 @@ class JoinTag extends Array {
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
         let arr = await this.loadArray(ctx, args[0]);
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i] instanceof this.TagArray) arr[i] = arr[i].toString();
+            else if (global.Array.isArray(arr[i])) arr[i] = arr[i].join('');
+        }
+        console.log(arr);
 
-        return res.setContent(arr.join(args[1]));
+
+        return res.setContent(arr.join(args[1].join('')));
     }
 }
 

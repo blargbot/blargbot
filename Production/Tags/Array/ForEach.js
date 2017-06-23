@@ -27,14 +27,15 @@ class ForEachTag extends Array {
         let arr = await this.loadArray(ctx, args[0]);
         let name = args.length === 3 ? args[1] : 'i';
         let code = args.length === 3 ? args[2] : args[1];
-
+        let output;
         for (let i = 0; i < arr.length; i++) {
             ctx.client.TagVariableManager.executeSet(ctx, name, arr[i]);
-            await ctx.processSub(code);
+            let result = await ctx.processSub(code);
+            if (!output) output = result;
+            else output = output.concat(result);
         }
 
-
-        return res;
+        return res.setContent(output);
     }
 
 }

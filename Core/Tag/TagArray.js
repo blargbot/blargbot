@@ -66,6 +66,12 @@ class TagArray extends Array {
         return this;
     }
 
+    map(...args) {
+        let newArr = super.map(...args).map(a => [a]);
+        this.splice(0, this.length, ...newArr);
+        return this;
+    }
+
     toString() {
         return `[${this.map(a => Array.isArray(a) ? a.join('') : a).join(';')}]`;
     }

@@ -36,7 +36,6 @@ class SortTag extends Array {
 
         let arr = await this.loadArray(ctx, args[0]);
 
-
         arr = arr.map(a => {
             // Normalize sub-elements
             if (a.length > 1) a = a.join('');
@@ -48,15 +47,20 @@ class SortTag extends Array {
             return a;
         });
 
-        if (args.length === 1) arr = arr.sort((a, b) => a - b);
+        let newArr;
+
+        if (args.length === 1) newArr = arr.sort((a, b) => a - b);
         else if (args.length === 2) {
-            arr = await this.sort(ctx, arr, 'a', 'b', args[1]);
+            newArr = await this.sort(ctx, arr, 'a', 'b', args[1]);
         } else if (args.length === 4) {
-            arr = await this.sort(ctx, arr, args[1], args[2], args[3]);
+            newArr = await this.sort(ctx, arr, args[1], args[2], args[3]);
         } else this.throw(ctx.client.Constants.TagError.TOO_FEW_ARGS, {
             expected: 4,
             received: args.length
         });
+
+        arr.splice(0, arr.length, ...newArr);
+
         if (arr.ctx && arr.name) await arr.save();
 
         return res.setContent(arr);
@@ -69,7 +73,6 @@ class SortTag extends Array {
                     .then(() => ctx.client.TagVariableManager.executeSet(ctx, varNameTwo, b))
                     .then(() => ctx.processSub(code))
                     .then(content => {
-                        console.log(a, b, content);
                         let res = parseInt(content.join(''));
                         if (isNaN(res)) res = 0;
                         else if (res > 0) res = 1;

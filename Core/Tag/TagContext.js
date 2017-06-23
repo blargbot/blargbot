@@ -88,11 +88,17 @@ class TagContext extends Context {
                                 content.replace(res.replaceTarget, res.content);
                             } else {
                                 if (display)
-                                    content.push(res.content);
+                                    if (Array.isArray(res.content) && !(res.content instanceof TagArray))
+                                        content.push(...res.content);
+                                    else
+                                        content.push(res.content);
                             }
                         } else {
                             if (display)
-                                content.push(res.content);
+                                if (Array.isArray(res.content) && !(res.content instanceof TagArray))
+                                    content.push(...res.content);
+                                else
+                                    content.push(res.content);
                         }
                         if (!display && name[1] != '')
                             await this.client.TagVariableManager.executeSet(this, name[1], res.content);

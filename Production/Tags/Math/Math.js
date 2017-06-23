@@ -79,10 +79,20 @@ class MathTag extends Math {
         for (let i = 0; i < args.length; i++) {
             if (args[i] instanceof this.TagArray) args[i] = args[i].toString();
             else if (Array.isArray(args[i])) args[i] = args[i].join('');
-            if (!this.operators.includes(args[i].toLowerCase())) args[i] = this.parseFloat(args[i], i === 0 ? 'augend' : 'operand');
+            if (!this.operators.includes(args[i].toLowerCase())) {
+                try {
+                    args[i] = this.parseFloat(args[i]);
+                } catch (err) {
+                    let variable = await ctx.client.TagVariableManager.executeGet(ctx, args[i]) || '';
+                    try {
+                        args[i] = this.parseFloat(variable);
+                    } catch (err2) {
+                        this.parseFloat(`${variable}', variable: '${args[i]}`, i === 0 ? 'augend' : 'operand');
+                    }
+                }
+            }
             else args[i] = args[i].toLowerCase();
         }
-
         let operation = args.slice(0);
         if (typeof operation[0] !== 'number')
             operation.unshift(0);

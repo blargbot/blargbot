@@ -196,7 +196,8 @@
                         "usage": "",
                         "info": ""
                     }
-                }
+                },
+                "help": ""
             },
             "ccommand": {
                 "info": "",
@@ -469,6 +470,20 @@
                 "example": {
                     "in": "This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
                     "out": "This will be shown  but this will be set"
+                }
+            },
+            "newline": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "space": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
                 }
             }
         },
