@@ -13,10 +13,7 @@
         "3. All commands must contain an 'info' and 'usage' property.",
         "4. For random outputs, phrases are placed in an array []. You may contribute random outputs as needed.",
         "5. Terms should not end with periods. Other punctuation is fine.",
-        "For contribution, please use the following regulations:",
-        "1. Keep translations civil.",
-        "2. Do not modify the structure of this file.",
-        "3. For credit, please add your name to the 'contributors' field in the above 'specs' property.",
+        "6. Keep translations civil.",
         "Thank you!"
     ],
     "generic": {
