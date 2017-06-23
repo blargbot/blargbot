@@ -56,6 +56,12 @@ class GuildModel extends Base {
                 allowNull: false,
                 defaultValue: []
             },
+            staffUsers: {
+                type: this.Sequelize.ARRAY(this.Sequelize.BIGINT),
+                allowNull: false,
+                defaultValue: []
+            },
+
             kickRoles: {
                 type: this.Sequelize.ARRAY(this.Sequelize.BIGINT),
                 allowNull: false,

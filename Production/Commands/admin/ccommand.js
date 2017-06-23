@@ -5,24 +5,17 @@ const { TagContext } = require('../../../Core/Tag');
 class TagCommand extends GeneralCommand {
     constructor(client) {
         super(client, {
-            name: 'tag',
-            aliases: 't',
+            name: 'ccommand',
+            aliases: 'cc',
             subcommands: {
                 set: { minArgs: 2 },
                 delete: { minArgs: 1 },
                 rename: { minArgs: 2 },
-                raw: { minArgs: 1 },
-                info: { minArgs: 1 },
-                transfer: { minArgs: 2 },
-                top: {},
                 author: { minArgs: 1 },
-                search: { minArgs: 1 },
+                transfer: { minargs: 2 },
                 list: {},
-                favorite: {},
-                report: { minArgs: 2 },
                 test: { minArgs: 1 },
-                help: {},
-                docs: {}
+                help: {}
             },
             subcommandAliases: {
                 remove: 'delete',
@@ -77,7 +70,6 @@ class TagCommand extends GeneralCommand {
                 isCustomCommand: false
             }, data);
             await ctx.send((await tagContext.process()).toString());
-            await data.incrementUses();
         }
     }
 
@@ -133,10 +125,6 @@ class TagCommand extends GeneralCommand {
         }
     }
 
-    async sub_transfer(ctx) {
-        await ctx.send('transfer');
-    }
-
     async sub_info(ctx) {
         await ctx.send('info');
     }
@@ -185,9 +173,6 @@ class TagCommand extends GeneralCommand {
     }
 
     async sub_help(ctx) {
-        if (ctx.input._.length === 0) {
-
-        }
         await ctx.send('help');
 
     }

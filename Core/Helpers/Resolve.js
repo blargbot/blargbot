@@ -30,14 +30,20 @@ class ResolveHelper extends BaseHelper {
                 await this.client.Helpers.Message.decodeAndSend(ctx, 'generic.resolvechannel.nochannels');
             return null;
         } else {
-            let roleMessage = await this.client.Helpers.Message.decode(ctx, 'generic.resolvechannel.pickchannel', {
-                length: channelList.length
-            });
-            let menu = await this.client.Helpers.Menu.build(ctx);
-            menu.embed.setDescription(roleMessage);
-            let res = await menu.paginate(channelList.map(c => ({ name: c.name, value: c.id })));
+            try {
+                let roleMessage = await this.client.Helpers.Message.decode(ctx, 'generic.resolvechannel.pickchannel', {
+                    length: channelList.length
+                });
+                let menu = await this.client.Helpers.Menu.build(ctx);
+                menu.embed.setDescription(roleMessage);
+                let res = await menu.paginate(channelList.map(c => ({ name: c.name, value: c.id })));
 
-            return this.client.getChannel(res.value);
+                return this.client.getChannel(res.value);
+            } catch (err) {
+                if (err == 'Canceled')
+                    return null;
+                else throw err;
+            }
         }
     }
 
@@ -63,14 +69,20 @@ class ResolveHelper extends BaseHelper {
                 await this.client.Helpers.Message.decodeAndSend(ctx, 'generic.resolverole.noroles');
             return null;
         } else {
-            let roleMessage = await this.client.Helpers.Message.decode(ctx, 'generic.resolverole.pickrole', {
-                length: roleList.length
-            });
-            let menu = await this.client.Helpers.Menu.build(ctx);
-            menu.embed.setDescription(roleMessage);
-            let res = await menu.paginate(roleList.map(r => ({ name: r.name, value: r.id })));
+            try {
+                let roleMessage = await this.client.Helpers.Message.decode(ctx, 'generic.resolverole.pickrole', {
+                    length: roleList.length
+                });
+                let menu = await this.client.Helpers.Menu.build(ctx);
+                menu.embed.setDescription(roleMessage);
+                let res = await menu.paginate(roleList.map(r => ({ name: r.name, value: r.id })));
 
-            return guild.roles.get(res.value);
+                return guild.roles.get(res.value);
+            } catch (err) {
+                if (err == 'Canceled')
+                    return null;
+                else throw err;
+            }
         }
     }
 
@@ -107,14 +119,20 @@ class ResolveHelper extends BaseHelper {
                 await this.client.Helpers.Message.decodeAndSend(ctx, 'generic.resolveuser.nousers');
             return null;
         } else {
-            let userMessage = await this.client.Helpers.Message.decode(ctx, 'generic.resolveuser.pickuser', {
-                length: userList.length
-            });
-            let menu = await this.client.Helpers.Menu.build(ctx);
-            menu.embed.setDescription(userMessage);
-            let res = await menu.paginate(userList.map(u => ({ name: u.user.fullName, value: u.user.id })));
+            try {
+                let userMessage = await this.client.Helpers.Message.decode(ctx, 'generic.resolveuser.pickuser', {
+                    length: userList.length
+                });
+                let menu = await this.client.Helpers.Menu.build(ctx);
+                menu.embed.setDescription(userMessage);
+                let res = await menu.paginate(userList.map(u => ({ name: u.user.fullName, value: u.user.id })));
 
-            return this.client.users.get(res.value);
+                return this.client.users.get(res.value);
+            } catch (err) {
+                if (err == 'Canceled')
+                    return null;
+                else throw err;
+            }
         }
     }
 

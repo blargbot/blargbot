@@ -20,7 +20,6 @@ class DataBase {
             let template = this.template;
             for (const key in args)
                 template[key] = args[key];
-            console.log(`Creating new ${this.constructor.name}:`, template);
 
             await this.model.upsert(template);
             return await this.getObject();
@@ -28,7 +27,6 @@ class DataBase {
     }
 
     async setObject(data) {
-        console.log(`Setting ${this.constructor.name}:`, data);
         if (this.model === null) throw new Error('Model not set for ' + this.constructor.name);
         let obj = await this.getObject();
         if (obj) {

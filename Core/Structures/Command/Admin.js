@@ -10,7 +10,7 @@ class GeneralCommand extends Base {
     }
 
     async canExecute(ctx) {
-        return true;
+        return await ctx.checkStaff();
     }
 }
 

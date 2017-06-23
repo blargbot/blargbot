@@ -9,6 +9,7 @@ class Context {
     }
 
     async checkStaff(userId) {
+        if (!userId) userId = this.user.id;
         if (this.client.catOverrides && userId === this.client.Constants.CAT_ID) return true;
         if (userId === this.guild.ownerID) return true;
         let member = this.guild.members.get(userId);

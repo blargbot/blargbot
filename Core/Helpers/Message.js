@@ -80,9 +80,9 @@ class MessageHelper extends BaseHelper {
         if (channel == undefined && guild == undefined) throw new Error('No such channel or guild');
         else if (channel == undefined && guild != undefined) channel = this.client.getChannel(guild.id);
         if (channel == undefined) throw new Error('No such channel');
-        if (typeof content == 'string') {
+        if (typeof content == 'string' || typeof content == 'number') {
             content = {
-                content
+                content: content.toString()
             };
         }
         if (content.content == undefined) content.content = '';

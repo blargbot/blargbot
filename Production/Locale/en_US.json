@@ -40,7 +40,8 @@
         "deleted": "deleted",
         "menu": {
             "choices": "Page {{page}}/{{max}}"
-        }
+        },
+        "nochange": "Nothing was changed."
     },
     "menu": {
         "cancel": {
@@ -136,7 +137,14 @@
                 "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
                 "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`",
                 "raw": "The code for {{name}} is:\n```{{code}}```",
-                "testoutput": "Test Output:\n\n{{output}}"
+                "testoutput": "Test Output:\n\n{{output}}",
+                "help": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit https://blargbot.xyz/tags\nBy creating a tag, you acknowledge that you agree to the Terms of Service (https://blargbot.xyz/tags/tos)"
+            }
+        },
+        "admin": {
+            "mod": {
+                "setrole": "The staff roles have been updated.",
+                "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands."
             }
         }
     },

@@ -120,7 +120,10 @@ class Menu extends EventEmitter {
         super.emit(event, userId, value);
     }
 
-    async paginate(values = []) {
+    async paginate(values = [], select = false) {
+        if (this.selected === undefined)
+            this.selected = values.filter(v => v.selected).map(v => v.value);
+
         if (this.page < 0) this.page = Math.ceil(values.length / 5) - 1;
         if (this.page > Math.ceil(values.length / 5) - 1) this.page = 0;
         this.strict = true;
@@ -128,7 +131,9 @@ class Menu extends EventEmitter {
         // Grab 10 items
         this.tempVals = values.slice(this.page * 5, (this.page * 5) + 5);
         for (let i = 0; i < this.tempVals.length; i++) {
-            choiceString += `${emoteMap[i]} ${this.tempVals[i].name}\n`;
+            choiceString += `${emoteMap[i]} ${select ?
+                (this.selected.includes(this.tempVals[i].value) ? this.client.Constants.YES_TICK : this.client.Constants.NEUTRAL_TICK) + ' '
+                : ''}${this.tempVals[i].name}\n`;
         }
 
         if (this.msg == null) {
@@ -141,11 +146,11 @@ class Menu extends EventEmitter {
                     }), choiceString);
                     this.on('pageRight', () => {
                         this.page++;
-                        this.paginate(values);
+                        this.paginate(values, select);
                     });
                     this.on('pageLeft', () => {
                         this.page--;
-                        this.paginate(values);
+                        this.paginate(values, select);
                     });
 
                     this.msg = await this.embed.send();
@@ -153,10 +158,19 @@ class Menu extends EventEmitter {
                     if (!this.client.awaitedReactions[this.ctx.channel.id])
                         this.client.awaitedReactions[this.ctx.channel.id] = {};
                     this.client.awaitedReactions[this.ctx.channel.id][this.msg.id] = this;
-                    this.on('result', (userid, value) => {
+                    this.on('result', async (userid, value) => {
                         if (this.tempVals[value]) {
-                            this.resolve(this.tempVals[value]);
-                            this.close(true);
+                            value = this.tempVals[value];
+                            if (!select) {
+                                this.resolve(value);
+                                this.close(true);
+                            } else {
+                                console.log(value);
+                                if (this.selected.includes(value.value))
+                                    this.selected.splice(this.selected.indexOf(value.value), 1);
+                                else this.selected.push(value.value);
+                                await this.paginate(values, true);
+                            }
                         }
                     });
 
@@ -171,9 +185,18 @@ class Menu extends EventEmitter {
                         await this.msg.addReaction(this.choices[this.choices.length - 2].emote);
                         await this.msg.addReaction(this.choices[this.choices.length - 1].emote);
                     }
+                    this.on('cancel', () => {
+                        this.reject('Canceled');
+                    });
                     this.addCancel();
                     await this.msg.addReaction(this.choices[this.choices.length - 1].emote);
-
+                    if (select) {
+                        this.on('confirm', () => {
+                            this.resolve(this.selected);
+                        });
+                        this.addConfirm();
+                        await this.msg.addReaction(this.choices[this.choices.length - 1].emote);
+                    }
                     this.timeout = setTimeout(this.close.bind(this), 10 * 60 * 1000);
                 } catch (err) { reject(err); }
             });

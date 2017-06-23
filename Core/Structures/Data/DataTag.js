@@ -51,9 +51,16 @@ class DataTag extends DataBase {
 
     async setContent(content) {
         return await this.setObject({
-            content,
-            lastmodified: Date.now()
+            content
         });
+    }
+
+    async getAuthor() {
+        return await this.getKey('authorId');
+    }
+
+    async setAuthor(authorId) {
+        return await this.setKey('authorId', authorId);
     }
 
     async getUses() {
@@ -67,7 +74,7 @@ class DataTag extends DataBase {
     async incrementUses() {
         return await this.setObject({
             uses: (await this.getUses()) + 1,
-            lastuse: Date.now()
+            lastUsed: Date.now()
         });
     }
 

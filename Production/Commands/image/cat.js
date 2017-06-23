@@ -1,7 +1,7 @@
-const { GeneralCommand } = require('../../../Core/Structures/Command');
+const { ImageCommand } = require('../../../Core/Structures/Command');
 const superagent = require('superagent');
 
-class CatCommand extends GeneralCommand {
+class CatCommand extends ImageCommand {
     constructor(client) {
         super(client, {
             name: 'cat'
