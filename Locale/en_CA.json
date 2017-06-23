@@ -1,0 +1,174 @@
+{
+    "specs": {
+        "lang": "en_CA",
+        "contributors": [
+            "stupid cat"
+        ]
+    },
+    "comments": [
+        "This is a locale file for blargbot.",
+        "For contribution, please use the following guidelines:",
+        "1. Arguments are passed into templates using {{name}}. Do not modify these.",
+        "2. Templates are used in templates by using [[path.to.key]]. Do not modify these.",
+        "3. All commands must contain an 'info' and 'usage' property.",
+        "4. For random outputs, phrases are placed in an array []. You may contribute random outputs as needed.",
+        "5. Terms should not end with periods. Other punctuation is fine.",
+        "For contribution, please use the following regulations:",
+        "1. Keep translations civil.",
+        "2. Do not modify the structure of this file.",
+        "3. For credit, please add your name to the 'contributors' field in the above 'specs' property.",
+        "Thank you!"
+    ],
+    "generic": {
+        "output": "Output:\n{{output}}",
+        "nooutput": "No output...",
+        "queryexpire": "This query will expire in {{length}} minutes",
+        "resolveuser": {
+            "nousers": "No users found",
+            "pickuser": "{{length}} users were found! Please select one from the list"
+        },
+        "resolverole": {
+            "noroles": "No roles found",
+            "pickrole": "{{length}} roles were found! Please select one from the list"
+        },
+        "resolvechannel": {
+            "nochannels": "No channels found",
+            "pickchannel": "{{length}} channels were found! Please select one from the list"
+        },
+        "edited": "edited",
+        "created": "created",
+        "deleted": "deleted",
+        "menu": {
+            "choices": "Page {{page}}/{{max}}"
+        },
+        "nochange": "Nothing was changed."
+    },
+    "menu": {
+        "cancel": {
+            "name": "Cancel",
+            "description": "Close this menu"
+        },
+        "confirm": {
+            "name": "Confirm",
+            "description": "Confirms this menu"
+        }
+    },
+    "emote": {
+        "check": ":white_check_mark:",
+        "x": ":x:",
+        "okhand": ":ok_hand:"
+    },
+    "error": {
+        "keyundef": "No such locale entry was found: '{{key}}'",
+        "memberundef": "No such member was found: '{{member}}'",
+        "userundef": "No such user was found: '{{user}}'",
+        "channelundef": "No such channel was found: '{{channel}}'",
+        "roleundef": "No such role was found: '{{role}}'",
+        "pleasereport": "If you think this is an error, please report it!",
+        "generic": "Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+        "messagetoolong": "Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
+        "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
+        "tag": {
+            "notfound": "Tag '{{tag}}' doesn't exist",
+            "toomanyargs": "Too many args (r:{{received}} e:{{expected}})",
+            "toofewargs": "Too little args (r:{{received}} e:{{expected}})",
+            "isnan": "Expected '{{arg}}' to be a number, but received '{{value}}'",
+            "maxlessthanmin": "Max must be greater than Min",
+            "ccommandonly": "'{{tag}}' may only be used in ccommands",
+            "authorstaff": "Author {{author}} must be staff to use '{{tag}}'",
+            "noperms": "Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
+            "toolow": "Bot cannot '{{tag}}' because its lower-ranked than '{{target}}'",
+            "unclosed": "Unmatched opening bracket [{{column}}:{{row}}]",
+            "unopened": "Unmatched closing bracket [{{column}}:{{row}}]",
+            "invalidradix": "Radix must be between 2 and 36, but received '{{radix}}'",
+            "notanarray": "Variable '{{name}}' is not an array (Received: '{{value}}')",
+            "notbool": "Variable '{{name}}' is not a boolean (Received: '{{value}}')"
+        }
+    },
+    "command": {
+        "general": {
+            "ping": {
+                "info": "Pong!\nFinds the command latency",
+                "usage": "ping",
+                "randmsg": [
+                    "Existence is a lie.",
+                    "You're going to die some day, perhaps soon.",
+                    "Nothing matters.",
+                    "Where do you get off?",
+                    "There is nothing out there.",
+                    "You are alone in an infinite void.",
+                    "Truth is false.",
+                    "Forsake everything.",
+                    "Your existence is pitiful.",
+                    "We are all already dead.",
+                    "Meow.",
+                    "Fear is freedom.",
+                    "Subjugation is liberation.",
+                    "Contradiction is truth.",
+                    "Would you like to make a contract?",
+                    "Let it go, and move on."
+                ],
+                "final": "Pong! ({{time}}ms)"
+            },
+            "brainfuck": {
+                "info": "Executes brainfuck code",
+                "usage": "brainfuck <code>",
+                "flags": {
+                    "p": "Shows a list of pointers after the execution",
+                    "i": "Specifies the input for the , operator"
+                }
+            },
+            "cat": {
+                "info": "Gets a picture of a cat",
+                "usage": "cat"
+            },
+            "ship": {
+                "info": "Gives you the ship name for two users.",
+                "usage": "ship <user1> <user2>",
+                "final": "Your shipname is **{{name}}**!",
+                "notenough": "You have to tell me who to ship!"
+            },
+            "tag": {
+                "info": "",
+                "usage": "",
+                "dontown": "[[emote.x]] You don't own that tag!",
+                "alreadyexists": "[[emote.x]] A tag with that name already exists!",
+                "notag": "[[emote.x]] There is no tag with that name",
+                "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
+                "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`",
+                "raw": "The code for {{name}} is:\n```{{code}}```",
+                "testoutput": "Test Output:\n\n{{output}}",
+                "help": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit https://blargbot.xyz/tags\nBy creating a tag, you acknowledge that you agree to the Terms of Service (https://blargbot.xyz/tags/tos)"
+            }
+        },
+        "admin": {
+            "mod": {
+                "setrole": "The staff roles have been updated.",
+                "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands."
+            }
+        }
+    },
+    "tag": {
+        "comment": {
+            "desc": "Specifies an area that will be ignored from parsing",
+            "example": {
+                "in": "This will be shown {//;This won't be}",
+                "out": "This will be shown"
+            }
+        },
+        "void": {
+            "desc": "Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed.",
+            "example": {
+                "in": "This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
+                "out": "This will be shown  but this will be set"
+            }
+        },
+        "randint": {
+            "desc": "Returns a random integer between the provided range. `min` defaults to `0`",
+            "example": {
+                "in": "One: {randint;5}, two: {randint;10;20}",
+                "out": "One: 2, two: 17"
+            }
+        }
+    }
+}

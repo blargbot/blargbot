@@ -1,1 +1,0 @@
-module.exports = require('../../Core/ModuleIndex')(__dirname, require);
