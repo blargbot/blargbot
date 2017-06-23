@@ -11,7 +11,7 @@
         "1. Arguments are passed into templates using {{name}}. Do not modify these.",
         "2. Templates are used in templates by using [[path.to.key]]. Do not modify these.",
         "3. All commands must contain an 'info' and 'usage' property.",
-        "4. For random outputs, phrases are placed in an array []. You may contribute random outputs as needed.",
+        "4. For random outputs, terms are placed in a '.list' context. Each random output is specified on a new line. You may contribute random outputs as needed.",
         "5. Terms should not end with periods. Other punctuation is fine.",
         "6. Keep translations civil.",
         "Thank you!"
