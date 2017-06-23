@@ -31,7 +31,7 @@ class TagBase {
 
         this.permissions = options.permissions || false;
 
-        if (process.env.SHARD_ID == 0) {
+        if (_config.beta && process.env.SHARD_ID == 0) {
             this.keys = [`${this.base}.desc`, `${this.base}.example.in`, `${this.base}.example.out`];
             if (options.keys) {
                 for (const key in options.keys) {
