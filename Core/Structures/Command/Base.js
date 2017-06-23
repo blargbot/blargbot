@@ -28,6 +28,11 @@ class BaseCommand {
         this.subcommands = options.subcommands || {};
         this.subcommandAliases = options.subcommandAliases || {};
 
+        for (const key in this.subcommands) {
+            this.subcommands[key].usage = `${this.base}.subcommand.${key}.usage`;
+            this.subcommands[key].info = `${this.base}.subcommand.${key}.info`;
+        }
+
         if (_config.beta && process.env.SHARD_ID == 0 && this.keys !== false) {
             this._keys = [`${this.base}.info`, `${this.base}.usage`];
 

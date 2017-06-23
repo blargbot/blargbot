@@ -38,7 +38,8 @@
         "menu": {
             "choices": "Page {{page}}/{{max}}"
         },
-        "nochange": "Nothing was changed."
+        "nochange": "Nothing was changed.",
+        "commandhelp": "**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}"
     },
     "menu": {
         "cancel": {
@@ -135,7 +136,7 @@
                 "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`",
                 "raw": "The code for {{name}} is:\n```{{code}}```",
                 "testoutput": "Test Output:\n\n{{output}}",
-                "help": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit https://blargbot.xyz/tags\nBy creating a tag, you acknowledge that you agree to the Terms of Service (https://blargbot.xyz/tags/tos)",
+                "help": "",
                 "subcommand": {
                     "set": {
                         "usage": "tag set <name> <content>",
@@ -198,7 +199,7 @@
                         "info": "Gives a link to the BBTag documentation, or provides information about a specific subtag."
                     }
                 },
-                "help": ""
+                "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`."
             },
             "ccommand": {
                 "info": "",
@@ -236,7 +237,14 @@
                         "usage": "",
                         "info": ""
                     }
-                }
+                },
+                "dontown": "",
+                "notag": "",
+                "tagset": "",
+                "tagrename": "",
+                "raw": "",
+                "alreadyexists": "",
+                "testoutput": ""
             }
         },
         "admin": {

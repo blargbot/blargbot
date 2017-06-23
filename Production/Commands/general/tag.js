@@ -32,14 +32,15 @@ class TagCommand extends GeneralCommand {
                 edit: 'set'
             },
             keys: {
-                dontown: `.dontown`,
-                notag: `.notag`,
-                tagset: `.tagset`,
-                tagrename: `.tagrename`,
-                raw: `.raw`,
-                alreadyexists: `.alreadyexists`,
-                testoutput: `.testoutput`,
-                help: `.help`
+                dontown: '.dontown',
+                notag: '.notag',
+                tagset: '.tagset',
+                tagrename: '.tagrename',
+                raw: '.raw',
+                alreadyexists: '.alreadyexists',
+                testoutput: '.testoutput',
+                help: '.help',
+                subcommandNotFound: '.subcommandnotfound'
             }
         });
 
@@ -190,7 +191,23 @@ class TagCommand extends GeneralCommand {
             await ctx.decodeAndSend(this.keys.info, {
                 subcommands: Object.keys(this.subcommands).map(s => `**${s}**`).join(', ')
             });
-        } else { }
+        } else {
+            let query = ctx.input._[0].toLowerCase();
+            let name = this.subcommandAliases[query] || query;
+            let subcommand = this.subcommands[name];
+            if (!subcommand) {
+                await ctx.decodeAndSend(this.keys.subcommandNotFound, {
+                    subcommand: name
+                });
+            } else {
+                await ctx.decodeAndSend('generic.commandhelp', {
+                    name: `tag ${name}`,
+                    info: await ctx.decode(subcommand.info),
+                    usage: await ctx.decode(subcommand.usage),
+                    aliases: Object.keys(this.subcommandAliases).filter(a => this.subcommandAliases[a] === name).join(', ') || ''
+                });
+            }
+        }
     }
 }
 
