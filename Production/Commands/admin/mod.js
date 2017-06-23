@@ -12,13 +12,13 @@ class ModCommand extends AdminCommand {
                 client.Constants.Permissions.MANAGE_MESSAGES,
                 client.Constants.Permissions.ADD_REACTIONS,
                 client.Constants.Permissions.EMBED_LINKS
-            ]
+            ],
+            keys: {
+                setrole: `${this.base}.setrole`,
+                rolequery: `${this.base}.rolequery`,
+                nochange: 'generic.nochange'
+            }
         });
-        this.keys = {
-            setrole: `${this.base}.setrole`,
-            rolequery: `${this.base}.rolequery`,
-            nochange: 'generic.nochange'
-        };
     }
 
     async execute(ctx) {

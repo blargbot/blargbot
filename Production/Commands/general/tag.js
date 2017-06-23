@@ -30,18 +30,18 @@ class TagCommand extends GeneralCommand {
                 add: 'set',
                 create: 'set',
                 edit: 'set'
+            },
+            keys: {
+                dontown: `${this.base}.dontown`,
+                notag: `${this.base}.notag`,
+                tagset: `${this.base}.tagset`,
+                tagrename: `${this.base}.tagrename`,
+                raw: `${this.base}.raw`,
+                alreadyexists: `${this.base}.alreadyexists`,
+                testoutput: `${this.base}.testoutput`
             }
         });
 
-        this.keys = {
-            dontown: `${this.base}.dontown`,
-            notag: `${this.base}.notag`,
-            tagset: `${this.base}.tagset`,
-            tagrename: `${this.base}.tagrename`,
-            raw: `${this.base}.raw`,
-            alreadyexists: `${this.base}.alreadyexists`,
-            testoutput: `${this.base}.testoutput`
-        };
     }
 
     async getTag(name) {
@@ -188,7 +188,7 @@ class TagCommand extends GeneralCommand {
         if (ctx.input._.length === 0) {
 
         }
-        await ctx.send('help');
+        await ctx.decodeAndSend('help');
 
     }
 }

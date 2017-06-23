@@ -30,16 +30,17 @@ class TagBase {
         this.array = options.array || false;
 
         this.permissions = options.permissions || false;
+        this.keys = options.keys === undefined ? {} : options.keys;
 
         if (_config.beta && process.env.SHARD_ID == 0) {
-            this.keys = [`${this.base}.desc`, `${this.base}.example.in`, `${this.base}.example.out`];
+            this._keys = [`${this.base}.desc`, `${this.base}.example.in`, `${this.base}.example.out`];
             if (options.keys) {
                 for (const key in options.keys) {
-                    this.keys.push(options.keys[key]);
+                    this._keys.push(options.keys[key]);
                 }
             }
             let temp;
-            for (const key of this.keys) {
+            for (const key of this._keys) {
                 temp = this.client.LocaleManager.localeList.en_US;
                 let segments = key.split('.');
                 for (let i = 0; i < segments.length; i++) {

@@ -3,13 +3,13 @@ const { GeneralCommand } = require('../../../Core/Structures/Command');
 class PingCommand extends GeneralCommand {
     constructor(client) {
         super(client, {
-            name: 'ping'
+            name: 'ping',
+            keys: {
+                randmsg: `${this.base}.randmsg`,
+                final: `${this.base}.final`
+            }
         });
 
-        this.keys = {
-            randmsg: `${this.base}.randmsg`,
-            final: `${this.base}.final`
-        };
     }
 
     async execute(ctx) {

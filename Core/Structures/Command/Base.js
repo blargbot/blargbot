@@ -10,6 +10,7 @@ class BaseCommand {
         this.flags = options.flags || [];
         this.aliases = options.aliases || [];
         this.minArgs = options.minArgs || 0;
+        this.keys = options.keys === undefined ? {} : options.keys;
         /**
          * Subcommands are objects with the following structure
          * this.subcommands = {
@@ -27,20 +28,20 @@ class BaseCommand {
         this.subcommandAliases = options.subcommandAliases || {};
 
         if (_config.beta && process.env.SHARD_ID == 0 && options.keys !== false) {
-            this.keys = [`${this.base}.info`, `${this.base}.usage`];
+            this._keys = [`${this.base}.info`, `${this.base}.usage`];
 
             for (const subKey in this.subcommands) {
-                this.keys.push(`${this.base}.subcommand.${subKey}.usage`,
+                this._keys.push(`${this.base}.subcommand.${subKey}.usage`,
                     `${this.base}.subcommand.${subKey}.info`);
             }
 
             if (options.keys) {
                 for (const key in options.keys) {
-                    this.keys.push(options.keys[key]);
+                    this._keys.push(options.keys[key]);
                 }
             }
             let temp;
-            for (const key of this.keys) {
+            for (const key of this._keys) {
                 temp = this.client.LocaleManager.localeList.en_US;
                 let segments = key.split('.');
                 for (let i = 0; i < segments.length; i++) {
