@@ -238,7 +238,14 @@
                         "usage": "",
                         "info": ""
                     }
-                }
+                },
+                "dontown": "",
+                "notag": "",
+                "tagset": "",
+                "tagrename": "",
+                "raw": "",
+                "alreadyexists": "",
+                "testoutput": ""
             }
         },
         "admin": {

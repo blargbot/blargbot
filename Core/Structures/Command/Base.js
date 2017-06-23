@@ -11,6 +11,7 @@ class BaseCommand {
         this.aliases = options.aliases || [];
         this.minArgs = options.minArgs || 0;
         this.keys = options.keys === undefined ? {} : options.keys;
+
         /**
          * Subcommands are objects with the following structure
          * this.subcommands = {
@@ -27,7 +28,7 @@ class BaseCommand {
         this.subcommands = options.subcommands || {};
         this.subcommandAliases = options.subcommandAliases || {};
 
-        if (_config.beta && process.env.SHARD_ID == 0 && options.keys !== false) {
+        if (_config.beta && process.env.SHARD_ID == 0 && this.keys !== false) {
             this._keys = [`${this.base}.info`, `${this.base}.usage`];
 
             for (const subKey in this.subcommands) {
@@ -35,9 +36,10 @@ class BaseCommand {
                     `${this.base}.subcommand.${subKey}.info`);
             }
 
-            if (options.keys) {
-                for (const key in options.keys) {
-                    this._keys.push(options.keys[key]);
+            if (this.keys) {
+                for (const key in this.keys) {
+                    if (this.keys[key].startsWith('.')) this.keys[key] = this.base + this.keys[key];
+                    this._keys.push(this.keys[key]);
                 }
             }
             let temp;

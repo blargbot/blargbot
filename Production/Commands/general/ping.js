@@ -5,8 +5,8 @@ class PingCommand extends GeneralCommand {
         super(client, {
             name: 'ping',
             keys: {
-                randmsg: `${this.base}.randmsg`,
-                final: `${this.base}.final`
+                randmsg: `.randmsg`,
+                final: `.final`
             }
         });
 

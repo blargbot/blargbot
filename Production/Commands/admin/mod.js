@@ -14,8 +14,8 @@ class ModCommand extends AdminCommand {
                 client.Constants.Permissions.EMBED_LINKS
             ],
             keys: {
-                setrole: `${this.base}.setrole`,
-                rolequery: `${this.base}.rolequery`,
+                setrole: `.setrole`,
+                rolequery: `.rolequery`,
                 nochange: 'generic.nochange'
             }
         });

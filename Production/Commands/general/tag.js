@@ -32,13 +32,14 @@ class TagCommand extends GeneralCommand {
                 edit: 'set'
             },
             keys: {
-                dontown: `${this.base}.dontown`,
-                notag: `${this.base}.notag`,
-                tagset: `${this.base}.tagset`,
-                tagrename: `${this.base}.tagrename`,
-                raw: `${this.base}.raw`,
-                alreadyexists: `${this.base}.alreadyexists`,
-                testoutput: `${this.base}.testoutput`
+                dontown: `.dontown`,
+                notag: `.notag`,
+                tagset: `.tagset`,
+                tagrename: `.tagrename`,
+                raw: `.raw`,
+                alreadyexists: `.alreadyexists`,
+                testoutput: `.testoutput`,
+                help: `.help`
             }
         });
 
@@ -186,10 +187,10 @@ class TagCommand extends GeneralCommand {
 
     async sub_help(ctx) {
         if (ctx.input._.length === 0) {
-
-        }
-        await ctx.decodeAndSend('help');
-
+            await ctx.decodeAndSend(this.keys.help, {
+                subcommands: Object.keys(this.subcommands).map(s => `**${s}**`).join(', ')
+            });
+        } else { }
     }
 }
 
