@@ -138,36 +138,613 @@
                 "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`",
                 "raw": "The code for {{name}} is:\n```{{code}}```",
                 "testoutput": "Test Output:\n\n{{output}}",
-                "help": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit https://blargbot.xyz/tags\nBy creating a tag, you acknowledge that you agree to the Terms of Service (https://blargbot.xyz/tags/tos)"
+                "help": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit https://blargbot.xyz/tags\nBy creating a tag, you acknowledge that you agree to the Terms of Service (https://blargbot.xyz/tags/tos)",
+                "subcommand": {
+                    "set": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "delete": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "rename": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "raw": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "info": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "transfer": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "top": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "author": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "search": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "list": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "favorite": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "report": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "test": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "help": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "docs": {
+                        "usage": "",
+                        "info": ""
+                    }
+                }
+            },
+            "ccommand": {
+                "info": "",
+                "usage": "",
+                "subcommand": {
+                    "set": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "delete": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "rename": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "author": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "transfer": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "list": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "test": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "help": {
+                        "usage": "",
+                        "info": ""
+                    }
+                }
             }
         },
         "admin": {
             "mod": {
                 "setrole": "The staff roles have been updated.",
-                "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands."
+                "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
+                "info": "",
+                "usage": "",
+                "subcommand": {
+                    "user": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "role": {
+                        "usage": "",
+                        "info": ""
+                    }
+                }
+            }
+        },
+        "image": {
+            "cat": {
+                "info": "",
+                "usage": ""
             }
         }
     },
     "tag": {
-        "comment": {
-            "desc": "Specifies an area that will be ignored from parsing",
-            "example": {
-                "in": "This will be shown {//;This won't be}",
-                "out": "This will be shown"
+        "array": {
+            "filter": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "foreach": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "get": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "isarray": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "join": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "length": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "map": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "pop": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "push": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "set": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "shift": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "slice": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "sort": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "splice": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "split": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "unshift": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
             }
         },
-        "void": {
-            "desc": "Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed.",
-            "example": {
-                "in": "This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
-                "out": "This will be shown  but this will be set"
+        "channel": {
+            "id": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "nsfw": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "name": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "position": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "topic": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "type": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
             }
         },
-        "randint": {
-            "desc": "Returns a random integer between the provided range. `min` defaults to `0`",
-            "example": {
-                "in": "One: {randint;5}, two: {randint;10;20}",
-                "out": "One: 2, two: 17"
+        "general": {
+            "clean": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "//": {
+                "desc": "Specifies an area that will be ignored from parsing",
+                "example": {
+                    "in": "This will be shown {//;This won't be}",
+                    "out": "This will be shown"
+                }
+            },
+            "get": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "set": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "trim": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "void": {
+                "desc": "Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed.",
+                "example": {
+                    "in": "This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
+                    "out": "This will be shown  but this will be set"
+                }
+            }
+        },
+        "guild": {
+            "createdat": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "channels": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "icon": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "id": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "name": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "owner": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "region": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "roles": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            }
+        },
+        "logic": {
+            "if": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "logic": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            }
+        },
+        "math": {
+            "abs": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "base": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "ceil": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "floor": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "math": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "parsefloat": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "parseint": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "randint": {
+                "desc": "Returns a random integer between the provided range. `min` defaults to `0`",
+                "example": {
+                    "in": "One: {randint;5}, two: {randint;10;20}",
+                    "out": "One: 2, two: 17"
+                }
+            },
+            "round": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            }
+        },
+        "message": {
+            "id": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            }
+        },
+        "role": {
+            "color": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "id": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "mention": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "name": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "position": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            }
+        },
+        "user": {
+            "avatar": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "createdat": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "discrim": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "fullname": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "game": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "id": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "joinedat": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "mention": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "name": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "nick": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "roles": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "setnick": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
+            },
+            "status": {
+                "desc": "",
+                "example": {
+                    "in": "",
+                    "out": ""
+                }
             }
         }
     }

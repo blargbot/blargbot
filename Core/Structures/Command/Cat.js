@@ -2,6 +2,8 @@ const Base = require('./Base');
 
 class CatCommand extends Base {
     constructor(...args) {
+        args[1].keys = false;
+        args[1].category = 'cat';
         super(...args);
         if (this.constructor === CatCommand) {
             throw new Error("Can't instantiate an abstract class!");

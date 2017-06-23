@@ -30,6 +30,31 @@ class TagBase {
         this.array = options.array || false;
 
         this.permissions = options.permissions || false;
+
+        if (process.env.SHARD_ID == 0) {
+            this.keys = [`${this.base}.desc`, `${this.base}.example.in`, `${this.base}.example.out`];
+            if (options.keys) {
+                for (const key in options.keys) {
+                    this.keys.push(options.keys[key]);
+                }
+            }
+            let temp;
+            for (const key of this.keys) {
+                temp = this.client.LocaleManager.localeList.en_US;
+                let segments = key.split('.');
+                for (let i = 0; i < segments.length; i++) {
+                    if (temp[segments[i]]) {
+                        temp = temp[segments[i]];
+                        continue;
+                    }
+                    if (i === segments.length - 1)
+                        temp[segments[i]] = '';
+                    else temp[segments[i]] = {};
+                    if (!this.client.localeDirty) this.client.localeDirty = true;
+                    temp = temp[segments[i]];
+                }
+            }
+        }
     }
 
     get implicit() {

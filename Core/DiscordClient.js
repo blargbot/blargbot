@@ -10,6 +10,7 @@ const EventEmitter = require('eventemitter3');
 const data = require('./Structures/Data');
 const ArgumentLexer = require('./ArgumentLexer');
 const core = require('./index.js');
+const fs = require('fs'), path = require('path');
 
 global.Promise = require('bluebird');
 global._config = require('../config.json');
@@ -33,6 +34,8 @@ class DiscordClient extends Eris.Client {
             defaultImageSize: 512,
             messageLimit: 1
         });
+
+        this.localeDirty = false;
 
         require('../Prototypes')(this);
 
@@ -86,6 +89,10 @@ class DiscordClient extends Eris.Client {
         this.ArgumentLexer = new ArgumentLexer();
 
         this.catOverrides = true;
+
+        if (this.localeDirty === true) {
+            fs.writeFileSync(path.join(__dirname, '..', 'Locale', 'en_US.json'), JSON.stringify(this.LocaleManager.localeList.en_US, null, 4));
+        }
     }
 
     getData(type, ...args) {

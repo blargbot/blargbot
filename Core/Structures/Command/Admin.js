@@ -1,12 +1,12 @@
 const Base = require('./Base');
 
-class GeneralCommand extends Base {
+class AdminCommand extends Base {
     constructor(...args) {
+        args[1].category = 'admin';
         super(...args);
-        if (this.constructor === GeneralCommand) {
+        if (this.constructor === AdminCommand) {
             throw new Error("Can't instantiate an abstract class!");
         }
-        this.category = 'admin';
     }
 
     async canExecute(ctx) {
@@ -14,4 +14,4 @@ class GeneralCommand extends Base {
     }
 }
 
-module.exports = GeneralCommand;
+module.exports = AdminCommand;
