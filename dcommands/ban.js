@@ -65,7 +65,7 @@ e.ban = async function (msg, user, deleteDays = 1, reason, duration, tag = false
         if (targetPos >= botPos) {
             return [`I don't have permission to ban ${user.username}!`, '`Bot has no permissions`'];
         }
-        if (!noPerms && targetPos >= userPos) {
+        if (!noPerms && targetPos >= userPos && msg.author.id != msg.guild.ownerID) {
             return [`You don't have permission to ban ${user.username}!`, '`User has no permissions`'];
         }
     }

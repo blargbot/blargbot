@@ -44,7 +44,7 @@ e.execute = async function (msg, words) {
             bu.send(msg, `I don't have permission to kick ${user.username}!`);
             return;
         }
-        if (targetPos >= userPos) {
+        if (targetPos >= userPos && msg.author.id != msg.guild.ownerID) {
             bu.send(msg, `You don't have permission to kick ${user.username}!`);
             return;
         }
