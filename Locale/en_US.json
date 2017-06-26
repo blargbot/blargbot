@@ -39,7 +39,12 @@
             "choices": "Page {{page}}/{{max}}"
         },
         "nochange": "Nothing was changed.",
-        "commandhelp": "**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}"
+        "commandhelp": "**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
+        "example": {
+            "id1": "111111111111111111",
+            "id2": "222222222222222222",
+            "id3": "333333333333333333"
+        }
     },
     "menu": {
         "cancel": {
@@ -136,7 +141,7 @@
                 "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`",
                 "raw": "The code for {{name}} is:\n```{{code}}```",
                 "testoutput": "Test Output:\n\n{{output}}",
-                "help": "",
+                "help": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit https://blargbot.xyz/tags\nBy creating a tag, you acknowledge that you agree to the Terms of Service (https://blargbot.xyz/tags/tos)",
                 "subcommand": {
                     "set": {
                         "usage": "tag set <name> <content>",
@@ -387,77 +392,77 @@
                 }
             },
             "splice": {
-                "desc": "",
+                "desc": "Starting at the position `start`, removes `deleteCount` elements from the array and adds the remaining `items` at that position. Returns the removed elements.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{set;array;[1;2;3;4;5]}\n{array.splice;array;2;2;inserted;items}\n{get;array}",
+                    "out": "[3;4]\n[1;2;inserted;items;5]"
                 }
             },
             "split": {
-                "desc": "",
+                "desc": "Splits the `text` by the `delimiter`, returning the new array.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{array.split;This will be split by spaces;{space}}",
+                    "out": "[This;will;be;split;by;spaces]"
                 }
             },
             "unshift": {
-                "desc": "",
+                "desc": "Inserts `value` at the beginning of the array, and returns the modified array.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{set;array;[1;2;3;4;5]}\n{array.unshift;array;0}",
+                    "out": "[0;1;2;3;4;5]"
                 }
             }
         },
         "channel": {
             "id": {
-                "desc": "",
+                "desc": "Returns the ID of the current or specified channel.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{channel.id}",
+                    "out": "[[generic.example.id1]]"
                 }
             },
             "nsfw": {
-                "desc": "",
+                "desc": "Returns whether the current or specified channel is NSFW.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{channel.nsfw}",
+                    "out": "false"
                 }
             },
             "name": {
-                "desc": "",
+                "desc": "Returns the name of the current or specified channel.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{channel.name;#general}",
+                    "out": "general"
                 }
             },
             "position": {
-                "desc": "",
+                "desc": "Returns the position of the current or specified channel.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{channel.position}",
+                    "out": "1"
                 }
             },
             "topic": {
-                "desc": "",
+                "desc": "Returns the topic of the current or specified channel (text only).",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{channel.topic}",
+                    "out": "This is an example channel topic."
                 }
             },
             "type": {
-                "desc": "",
+                "desc": "Returns the type of the current or specified channel (returns \"text\" or \"voice\").",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{channel.type}",
+                    "out": "text"
                 }
             }
         },
         "general": {
             "clean": {
-                "desc": "",
+                "desc": "Cleans the provided text by shrinking all whitespace.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{clean;  one\n\n                two\n  \n\n    three}",
+                    "out": "one\ntwo\nthree"
                 }
             },
             "//": {
@@ -468,24 +473,24 @@
                 }
             },
             "get": {
-                "desc": "",
+                "desc": "Returns the stored variable with the supplied name. Variable prefixes can modify the pool in which to search.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{set;var;This is a variable.}\n{get;var}",
+                    "out": "This is a variable."
                 }
             },
             "set": {
-                "desc": "",
+                "desc": "Sets the stored variable with the supplied name to the supplied value. Variable prefixes can modify the pool in which to set.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{set;var;This is a variable.}\n{get;var}",
+                    "out": "This is a variable."
                 }
             },
             "trim": {
-                "desc": "",
+                "desc": "Removes whitespace before and after the provided text. Consider using the {clean} tag to remove whitespace within the text.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{trim;{space;5}Hello{space;5}}",
+                    "out": "Hello"
                 }
             },
             "void": {
@@ -512,59 +517,59 @@
         },
         "guild": {
             "createdat": {
-                "desc": "",
+                "desc": "Returns when the current guild was created as a Unix timestamp (milliseconds).",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{guild.createdat}",
+                    "out": "1466379030450"
                 }
             },
             "channels": {
-                "desc": "",
+                "desc": "Returns the channels in the current guild as an array.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{guild.channels}",
+                    "out": "[ [[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]] ]"
                 }
             },
             "icon": {
-                "desc": "",
+                "desc": "Returns the URL of the current guild's icon.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{guild.icon}",
+                    "out": "https://cdn.discordapp.com/icons/194232473931087872/2e9d173fc1461ff9e4672cb8782978e7.png?size=512"
                 }
             },
             "id": {
-                "desc": "",
+                "desc": "Returns the ID of the current guild.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{guild.id}",
+                    "out": "[[generic.example.id1]]"
                 }
             },
             "name": {
-                "desc": "",
+                "desc": "Returns the name of the current guild.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{guild.name}",
+                    "out": "Cat Town"
                 }
             },
             "owner": {
-                "desc": "",
+                "desc": "Returns the ID of the guild's owner.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{guild.owner}",
+                    "out": "[[generic.example.id1]]"
                 }
             },
             "region": {
-                "desc": "",
+                "desc": "Returns the region the current guild is in.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{guild.region}",
+                    "out": "us-west"
                 }
             },
             "roles": {
-                "desc": "",
+                "desc": "Returns an array of roles in the current guild.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{guild.roles}",
+                    "out": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]"
                 }
             }
         },
