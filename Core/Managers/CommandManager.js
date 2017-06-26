@@ -32,14 +32,13 @@ class CommandManager extends Manager {
     async execute(name, ctx) {
         const command = this.builtList[name];
         if (command !== undefined) {
-            if (command.canExecute(ctx)) {
+            if (await command.canExecute(ctx)) {
                 try {
                     let response = await command._execute(ctx);
                     if (response !== undefined) {
                         await command.send(response);
                     }
                 } catch (err) {
-
                     console.error(err.stack);
                     ctx.decodeAndSend('error.generic', {
                         message: err.stack

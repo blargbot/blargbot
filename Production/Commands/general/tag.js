@@ -170,6 +170,16 @@ class TagCommand extends GeneralCommand {
 
     async sub_info(ctx) {
         const { data, tag } = await this.getTag(ctx.input._[0]);
+        if (tag) {
+            let author = this.client.users.get(await data.getAuthor()) || await this.client.getRESTUser(await data.getAuthor()) || { fullName: 'Clyde#0000' };
+            await ctx.decodeAndSend(this.keys.taginfo, {
+                name: await tag.get('tagName'),
+                author: author.fullName,
+                lastModified: await tag.get('updatedAt'),
+                uses: await data.getUses(),
+                favourites: await data.getFavourites()
+            });
+        } else ctx.decodeAndSend(this.keys.notag);
     }
 
     async sub_top(ctx) {
