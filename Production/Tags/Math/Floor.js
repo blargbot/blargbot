@@ -18,7 +18,7 @@ class FloorTag extends Math {
 
         let parsed = this.parseFloat(args[0], 'number');
 
-        return res.setContent(Math.floor(parsed));
+        return res.setContent(global.Math.floor(parsed));
     }
 }
 

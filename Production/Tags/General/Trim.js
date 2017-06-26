@@ -15,10 +15,24 @@ class TrimTag extends General {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-        if (typeof args[0][0] === 'string')
-            args[0][0] = args[0][0].replace(/^\s+/, '');
-        if (typeof args[0][args[0].length - 1] === 'string')
-            args[0][args[0].length - 1] = args[0][args[0].length - 1].replace(/\s+$/, '');
+        for (let i = 0; i < args[0].length; i++) {
+            // If whitespace
+            if (typeof args[0][i] === 'string' && !args[0][i].trim())
+                args[0][i] = '';
+            else if (typeof args[0][i] === 'string') {
+                args[0][i] = args[0][i].replace(/^\s+/, '');
+                break;
+            } else break;
+        }
+        for (let i = args[0].length; i > -1; i--) {
+            // If whitespace
+            if (typeof args[0][i] === 'string' && !args[0][i].trim())
+                args[0][i] = '';
+            else if (typeof args[0][i] === 'string') {
+                args[0][i] = args[0][i].replace(/\s+$/, '');
+                break;
+            } else break;
+        }
         return res.setContent(args[0]);
     }
 }

@@ -18,7 +18,7 @@ class MathTag extends Math {
                     repeat: true
                 }
             ],
-            minArgs: 3
+            minArgs: 2
         });
     }
 

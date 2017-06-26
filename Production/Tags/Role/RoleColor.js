@@ -19,7 +19,7 @@ class RoleIdTag extends Role {
         if (args[0]) {
             role = await ctx.client.Helpers.Resolve.role(args[0].toString(), ctx, true);
         }
-        return res.setContent(role ? role.color : '');
+        return res.setContent(role ? role.color.toString(16).toUpperCase() : '');
     }
 }
 

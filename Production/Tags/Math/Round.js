@@ -7,9 +7,12 @@ class RoundTag extends Math {
             args: [
                 {
                     name: 'number'
+                }, {
+                    name: 'places',
+                    optional: true
                 }
             ],
-            minArgs: 1, maxArgs: 1
+            minArgs: 1, maxArgs: 2
         });
     }
 
@@ -17,8 +20,11 @@ class RoundTag extends Math {
         const res = await super.execute(ctx, args);
 
         let parsed = this.parseFloat(args[0], 'number');
+        let places = args[1] ? this.parseFloat(args[1], 'places') : 0;
 
-        return res.setContent(Math.round(parsed));
+        let output = global.Math.round(parsed * (10 ** places)) / (10 ** places);
+
+        return res.setContent(output);
     }
 }
 

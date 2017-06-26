@@ -18,7 +18,7 @@ class AbsTag extends Math {
 
         let parsed = this.parseInt(args[0], 'number');
 
-        return res.setContent(Math.abs(parsed));
+        return res.setContent(global.Math.abs(parsed));
     }
 }
 

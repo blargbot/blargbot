@@ -18,7 +18,7 @@ class CeilTag extends Math {
 
         let parsed = this.parseFloat(args[0], 'number');
 
-        return res.setContent(Math.ceil(parsed));
+        return res.setContent(global.Math.ceil(parsed));
     }
 }
 

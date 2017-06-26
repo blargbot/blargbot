@@ -11,7 +11,7 @@ class CleanTag extends General {
                     name: 'value'
                 }
             ],
-            minArgs: 1, maxArgs: 1
+            minArgs: 1, maxArgs: 2
         });
     }
 
