@@ -20,7 +20,6 @@ class CatCommand extends Base {
     }
 
     async canExecute(ctx) {
-        console.log('Can we exec? ', ctx.msg.author.id === this.client.Constants.CAT_ID);
         return ctx.msg.author.id === this.client.Constants.CAT_ID;
     }
 }
