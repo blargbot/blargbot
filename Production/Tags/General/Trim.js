@@ -15,7 +15,11 @@ class TrimTag extends General {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-        return res.setContent(args[0].trim());
+        if (typeof args[0][0] === 'string')
+            args[0][0] = args[0][0].replace(/^\s+/, '');
+        if (typeof args[0][args[0].length - 1] === 'string')
+            args[0][args[0].length - 1] = args[0][args[0].length - 1].replace(/\s+$/, '');
+        return res.setContent(args[0]);
     }
 }
 

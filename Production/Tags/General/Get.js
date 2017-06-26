@@ -7,12 +7,9 @@ class CleanTag extends General {
             args: [
                 {
                     name: 'name'
-                }, {
-                    name: 'index',
-                    optional: true
                 }
             ],
-            minArgs: 1, maxArgs: 2
+            minArgs: 1, maxArgs: 1
         });
     }
 

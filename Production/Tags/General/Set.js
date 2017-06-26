@@ -8,12 +8,10 @@ class CleanTag extends General {
                 {
                     name: 'name'
                 }, {
-                    name: 'value',
-                    optional: true,
-                    repeat: true
+                    name: 'value'
                 }
             ],
-            minArgs: 1
+            minArgs: 1, maxArgs: 1
         });
     }
 

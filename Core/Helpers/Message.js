@@ -48,7 +48,7 @@ class MessageHelper extends BaseHelper {
             return await this.decode(dest, 'error.keyundef', { key });
         }
 
-        let recursiveRegex = /\[\[(.+?)\]\]/, match;
+        let recursiveRegex = /\[\[([^\[].+?[^\]])\]\]/, match;
         while ((match = recursiveRegex.exec(template)) != null) {
             template = template.replace(new RegExp('\\[\\[' + match[1] + '\\]\\]', 'g'), await this.decode(dest, match[1], args));
         };

@@ -17,6 +17,7 @@
         "Thank you!"
     ],
     "generic": {
+        "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
         "output": "Output:\n{{output}}",
         "nooutput": "No output...",
         "queryexpire": "This query will expire in {{length}} minutes",
