@@ -205,7 +205,10 @@
                     }
                 },
                 "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`.",
-                "transferprompt": ""
+                "transferprompt": "{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
+                "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
+                "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
+                "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`."
             },
             "ccommand": {
                 "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit https://blargbot.xyz/tags",

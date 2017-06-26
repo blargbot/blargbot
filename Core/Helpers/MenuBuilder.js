@@ -42,6 +42,8 @@ class Menu extends EventEmitter {
         this.msg = null;
         this.page = 0;
         this.tempVals = [];
+
+        this.userId = ctx.author.id;
     }
 
     get emoteRegex() {
@@ -50,6 +52,13 @@ class Menu extends EventEmitter {
 
     setStrict(bool = true) {
         this.strict = bool;
+        return this;
+    }
+
+    setUserId(userId) {
+        this.strict = true;
+        this.userId = userId;
+        return this;
     }
 
     getEmoteId(emote) {
@@ -66,7 +75,8 @@ class Menu extends EventEmitter {
         });
         emote = this.getEmoteId(emote);
         this.on(emote, (userId) => {
-            this.emit('result', userId, value);
+            if (!this.strict || (this.strict && userId === this.userId))
+                this.emit('result', userId, value);
         });
         return this;
     }
@@ -75,7 +85,8 @@ class Menu extends EventEmitter {
         this.choices.push({ name, description, value, emote });
         emote = this.getEmoteId(emote);
         this.on(emote, (userId) => {
-            this.emit('result', userId, value);
+            if (!this.strict || (this.strict && userId === this.userId))
+                this.emit('result', userId, value);
         });
         return this;
     }
@@ -83,8 +94,10 @@ class Menu extends EventEmitter {
     addConfirm() {
         this.choices.push({ name: 'menu.confirm.name', description: 'menu.confirm.description', emote: '✅', decode: true });
         this.on('✅', (userId) => {
-            this.emit('confirm', userId);
-            this.close();
+            if (!this.strict || (this.strict && userId === this.userId)) {
+                this.emit('confirm', userId);
+                this.close();
+            }
         });
         return this;
     }
@@ -92,10 +105,24 @@ class Menu extends EventEmitter {
     addCancel() {
         this.choices.push({ name: 'menu.cancel.name', description: 'menu.cancel.description', emote: '❌', decode: true });
         this.on('❌', (userId) => {
-            this.emit('cancel', userId);
-            this.close();
+            if (!this.strict || (this.strict && userId === this.userId)) {
+                this.emit('cancel', userId);
+                this.close();
+            }
         });
         return this;
+    }
+
+    awaitConfirmation() {
+        return new Promise(async (res, rej) => {
+            this.on('confirm', (userId) => {
+                res(userId);
+            });
+            this.on('cancel', (userId) => {
+                rej(userId);
+            });
+            await this.send();
+        });
     }
 
     addPagination() {
@@ -103,20 +130,22 @@ class Menu extends EventEmitter {
             emote: '⬅'
         });
         this.on('⬅', (userId) => {
-            this.emit('pageLeft', userId);
+            if (!this.strict || (this.strict && userId === this.userId))
+                this.emit('pageLeft', userId);
         });
         this.choices.push({
             emote: '➡'
         });
         this.on('➡', (userId) => {
-            this.emit('pageRight', userId);
+            if (!this.strict || (this.strict && userId === this.userId))
+                this.emit('pageRight', userId);
         });
         return this;
     }
 
     emit(event, userId, value) {
         if (this.client.user.id === userId) return;
-        if (this.strict && this.ctx.user.id !== userId) return;
+        if (this.strict && this.userId !== userId) return;
         super.emit(event, userId, value);
     }
 
@@ -221,7 +250,6 @@ class Menu extends EventEmitter {
             if (choice.emote.startsWith('<'))
                 choice.emote = choice.emote.substring(2, choice.emote.length - 1);
         }
-        this.embed.setTitle('meow');
         this.msg = await this.embed.send();
 
         for (const emote of this.choices.map(c => c.emote)) {

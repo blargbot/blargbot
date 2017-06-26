@@ -41,7 +41,11 @@ class TagCommand extends GeneralCommand {
                 testoutput: '.testoutput',
                 help: '.info',
                 subcommandNotFound: '.subcommandnotfound',
-                transferprompt: '.transferprompt'
+                transferprompt: '.transferprompt',
+                nobots: '.nobots',
+                transfercancelled: '.transfercancelled',
+                transfercomplete: '.transfercomplete',
+                taginfo: '.taginfo'
             }
         });
 
@@ -109,8 +113,6 @@ class TagCommand extends GeneralCommand {
             await ctx.decodeAndSend(this.keys.tagset, {
                 name: ctx.input._[0], process: await ctx.decode('generic.deleted')
             });
-        } else {
-            await ctx.decodeAndSend(this.keys.dontown);
         }
     }
 
@@ -124,8 +126,6 @@ class TagCommand extends GeneralCommand {
             await ctx.decodeAndSend(this.keys.tagrename, {
                 old: ctx.input._[0], new: ctx.input._[1]
             });
-        } else {
-            await ctx.decodeAndSend(this.keys.dontown);
         }
     }
 
@@ -143,23 +143,33 @@ class TagCommand extends GeneralCommand {
     async sub_transfer(ctx) {
         const { data, tag, owner } = await this.ownershipTest(ctx);
         if (owner) {
-            let user = this.client.Helpers.Resolve.user(ctx.input._[0]);
+            let user = await this.client.Helpers.Resolve.user(ctx.input._[1], ctx);
             if (user) {
+                if (user.bot) return await ctx.decodeAndSend(this.keys.nobots);
                 let menu = this.client.Helpers.Menu.build(ctx);
                 menu.embed.setContent(await ctx.decode(this.keys.transferprompt, {
                     target: user.mention,
                     user: ctx.author.fullName,
                     tag: await tag.get('tagName')
                 }));
-                await menu.addConfirm().addCancel().send();
+                try {
+                    await menu.setUserId(user.id).addConfirm().addCancel().awaitConfirmation();
+                    await data.setAuthor(user.id);
+                    await ctx.decodeAndSend(this.keys.transfercomplete, {
+                        user: user.fullName,
+                        tag: await tag.get('tagName')
+                    });
+                } catch (err) {
+                    if (typeof err === 'string') {
+                        await ctx.decodeAndSend(this.keys.transfercancelled);
+                    } else throw err;
+                }
             }
-        } else {
-            await ctx.decodeAndSend(this.keys.dontown);
         }
     }
 
     async sub_info(ctx) {
-        await ctx.send('info');
+        const { data, tag } = await this.getTag(ctx.input._[0]);
     }
 
     async sub_top(ctx) {
