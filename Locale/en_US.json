@@ -207,49 +207,49 @@
                 "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`."
             },
             "ccommand": {
-                "info": "",
-                "usage": "",
+                "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit https://blargbot.xyz/tags",
+                "usage": "cc <subcommand> [args]",
                 "subcommand": {
                     "set": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "cc set <name> <content>",
+                        "info": "Creates or edits a custom command with the provided name and content. Will not replace any tags made by anyone else."
                     },
                     "delete": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "cc delete <name>",
+                        "info": "Deletes a custom command."
                     },
                     "rename": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "cc rename <name> <newName>",
+                        "info": "Renames a custom command."
                     },
                     "author": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "cc author <name>",
+                        "info": "Returns the author of the custom command."
                     },
                     "transfer": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "cc transfer <name> <user>",
+                        "info": "Transfers ownership of a custom command to somebody else. Must be consensual."
                     },
                     "list": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "cc list",
+                        "info": "Lists the custom commands on the guild."
                     },
                     "test": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "cc test",
+                        "info": "Executes code in the context of your account."
                     },
                     "help": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "cc help [subcommand]",
+                        "info": "Displays this!"
                     }
                 },
-                "dontown": "",
-                "notag": "",
-                "tagset": "",
-                "tagrename": "",
-                "raw": "",
-                "alreadyexists": "",
-                "testoutput": ""
+                "dontown": "[[emote.x]] You don't own that custom command!",
+                "notag": "[[emote.x]] There is no custom command with that name.",
+                "tagset": "[[emote.check]] Custom command `{{name}}` {{process}}!",
+                "tagrename": "[[emote.check]] The custom command `{{old}}` has been renamed to `{{new}}`",
+                "raw": "The code for {{name}} is:\\n```{{code}}```",
+                "alreadyexists": "A custom command with that name already exists.",
+                "testoutput": "Test Output:\\n\\n{{output}}"
             }
         },
         "admin": {
@@ -301,10 +301,10 @@
         },
         "array": {
             "filter": {
-                "desc": "",
+                "desc": "Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array only containing the elements where the result of the iteration was `true` or `1`.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{set;array;[1;2;3;4;5]}\n{filter;array;{logic;{get;i};<;3}}",
+                    "out": "[1;2]"
                 }
             },
             "foreach": {
@@ -501,17 +501,17 @@
                 }
             },
             "newline": {
-                "desc": "",
+                "desc": "Returns the specified number of newlines, defaulting to 1.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "One{newline;5}Two",
+                    "out": "One\n\n\n\n\nTwo"
                 }
             },
             "space": {
-                "desc": "",
+                "desc": "Returns the specified number of spaces, defaulting to 1.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "One{space;5}Two",
+                    "out": "One     Two"
                 }
             }
         },
@@ -527,7 +527,7 @@
                 "desc": "Returns the channels in the current guild as an array.",
                 "example": {
                     "in": "{guild.channels}",
-                    "out": "[ [[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]] ]"
+                    "out": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]"
                 }
             },
             "icon": {
@@ -575,68 +575,68 @@
         },
         "logic": {
             "if": {
-                "desc": "",
+                "desc": "If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nUse this with the {logic} tag.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{if;true;This will be shown.;This won't be shown.}",
+                    "out": "This will be shown."
                 }
             },
             "logic": {
-                "desc": "",
+                "desc": "Does logical operators on the `augend` and `operands`, returning `true` or `false`.\n\nEquivalence Operators:\n - `==` - equal\n - `!=` - not equal\n - `<` - less than\n - `<=` - less than or equal\n - `>` - greater than\n - `>=` - greater than or equal\n - `startswith` - the augend starts with the operand\n - `endswith` - the augend ends with the operand\n - `includes` - the augend includes the operand\n\nLogical Operators:\n - `&&` - returns true if the augend and operand are both true\n - `||` - returns true if either the augend or operand are true\n - `XOR` - returns true if only one of the augend and operand are true (not both)\n\nOther Operators:\n - `!` - inverts the next operand (true becomes false, etc.)",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{logic;5;==;6}\n{logic;5;!=;6;&&;5;>;6}\n{logic;5;>=;6;||;5;<;6}\n{logic;5;<=;6;xor;true}\n{logic;1234;startswith;12}\n{logic;1234;endswith;34}\n{logic;1234;includes;23}\n{logic;!;true}\n{logic;!;5;!=;5}",
+                    "out": "false\nfalse\ntrue\nfalse\ntrue\ntrue\ntrue\nfalse\ntrue"
                 }
             }
         },
         "math": {
             "abs": {
-                "desc": "",
+                "desc": "Returns the absolute value of the provided number (no negatives).",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{math.abs;-3523}",
+                    "out": "3523"
                 }
             },
             "base": {
-                "desc": "",
+                "desc": "Parses the `number` using the provided base `origin` (defaulting to 10), and converts it to base `radix`.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{math.base;FA;16;10}",
+                    "out": "250"
                 }
             },
             "ceil": {
-                "desc": "",
+                "desc": "Rounds the provided decimal up.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{math.ceil;1.25}",
+                    "out": "2"
                 }
             },
             "floor": {
-                "desc": "",
+                "desc": "Rounds the provided decimal down.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{math.floor;1.75}",
+                    "out": "1"
                 }
             },
             "math": {
-                "desc": "",
+                "desc": "Calculates the value of the provided expression using the following operators:\n\n - `^` - exponents\n - `/` - division\n - `*` - multiplication\n - `+` - addition\n - `-` - subtraction\n - `&` - bitwise AND\n - `|` - bitwise OR\n - `XOR` - bitwise XOR\n\nOperators are executed using the Order of Operations (Brackets, Exponents, Division, Multiplication, Addition, Subtraction, Bitwise).\n\nIf an operator isn't specified, it uses the last-used operator (defaulting to addition).\n\nBrackets would be achieved by using another nested {math} tag.\n\nIf an `operand` or `augend` cannot be parsed as a number, a variable with the same name will be retrieved. If the retrieved variable is also not a number, throws an error.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "Equation: 1 + (2^2 * 3) - (4 / 5)\nAnswer: {math;1;+;2;^;2;*;3;-;4;/;5}\n\nEquation: 4 + 6 + 8\nAnswer: {math;4;6;8}\n\nEquation: 01001010 | 11000100 & 11111011\n{trim;{set;bin1;{math.base;01001010;2;10}}\n{set;bin2;{math.base;11000100;2;10}}\n{set;bin3;{math.base;11111011;2;10}}\nAnswer: {base;{math;bin1;|;bin2;|;bin3};10;2}}",
+                    "out": "Equation: 1 + (2^2 * 3) - (4 / 5)\nAnswer: 12.2\n\nEquation: 4 + 6 + 8\nAnswer: 18\n\nEquation: 01001010 | 11000100 & 11111011\nAnswer: 11111111"
                 }
             },
             "parsefloat": {
-                "desc": "",
+                "desc": "Attempts to parse the given text as a decimal.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{math.parsefloat;2.5}\n{math.parsefloat;not a number}",
+                    "out": "2.5\nNaN"
                 }
             },
             "parseint": {
-                "desc": "",
+                "desc": "Attempts to parse the given text as an integer.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{math.parseint;2.5}\n{math.parseint;not a number}",
+                    "out": "2\nNaN"
                 }
             },
             "randint": {
@@ -647,149 +647,149 @@
                 }
             },
             "round": {
-                "desc": "",
+                "desc": "Rounds the given `number` to the specified decimal `places`, defaulting to 0.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{math.round;5.125}\n{math.round;5.125;1}\n{math.round;5.125;2}",
+                    "out": "5\n5.1\n5.13"
                 }
             }
         },
         "message": {
             "id": {
-                "desc": "",
+                "desc": "Returns the ID of the executing command message.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{message.id}",
+                    "out": "[[generic.example.id1]]"
                 }
             }
         },
         "role": {
             "color": {
-                "desc": "",
+                "desc": "Returns the color of the specified role in hexadecimal.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "#{role.color;coolrole}",
+                    "out": "#2ECC71"
                 }
             },
             "id": {
-                "desc": "",
+                "desc": "Returns the ID of the specified role.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{role.id;coolrole}",
+                    "out": "[[generic.example.id1]]"
                 }
             },
             "mention": {
-                "desc": "",
+                "desc": "Returns a mention of the specified role.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{role.mention;coolrole}",
+                    "out": "@coolrole"
                 }
             },
             "name": {
-                "desc": "",
+                "desc": "Returns the name of the specified role.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{role.name;coolrole}",
+                    "out": "coolrole"
                 }
             },
             "position": {
-                "desc": "",
+                "desc": "Returns the position of the specified role.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{role.position;coolrole}",
+                    "out": "5"
                 }
             }
         },
         "user": {
             "avatar": {
-                "desc": "",
+                "desc": "Returns the avatar URL of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.avatar}",
+                    "out": "https://cdn.discordapp.com/avatars/[[generic.example.id1]]/avatarhash.png"
                 }
             },
             "createdat": {
-                "desc": "",
+                "desc": "Returns the date that the specified user, defaulting to the executing user, was created as a Unix timestamp (milliseconds).",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.createdat}",
+                    "out": "1444710446104"
                 }
             },
             "discrim": {
-                "desc": "",
+                "desc": "Returns the discriminator of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.discrim}",
+                    "out": "1111"
                 }
             },
             "fullname": {
-                "desc": "",
+                "desc": "Returns the name + discriminator of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.fullname}",
+                    "out": "person#1111"
                 }
             },
             "game": {
-                "desc": "",
+                "desc": "Returns the game the specified user is playing, defaulting to the executing user. If the user isn't playing a game, returns nothing.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.game}",
+                    "out": "with BBTag!"
                 }
             },
             "id": {
-                "desc": "",
+                "desc": "Returns the ID of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.id}",
+                    "out": "[[generic.example.id1]]"
                 }
             },
             "joinedat": {
-                "desc": "",
+                "desc": "Returns the date that the specified user, defaulting to the executing user, joined the current guild as a Unix timestamp (milliseconds).",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.joinedat}",
+                    "out": "1466379030499"
                 }
             },
             "mention": {
-                "desc": "",
+                "desc": "Mentions the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.mention}",
+                    "out": "@person"
                 }
             },
             "name": {
-                "desc": "",
+                "desc": "Returns the name of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.name}",
+                    "out": "person"
                 }
             },
             "nick": {
-                "desc": "",
+                "desc": "Returns the nickname of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.nick}",
+                    "out": "CoolNickname"
                 }
             },
             "roles": {
-                "desc": "",
+                "desc": "Returns an array of the roles the specified user has, defaulting to the executing user.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.roles}",
+                    "out": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]"
                 }
             },
             "setnick": {
-                "desc": "",
+                "desc": "Sets the nickname of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.setnick;EvenCoolerNickname}",
+                    "out": "(the nickname was set)"
                 }
             },
             "status": {
-                "desc": "",
+                "desc": "Returns the status of the specified user, defaulting to the executing user. Can return \"online\", \"away\", \"dnd\", or \"offline\".",
                 "example": {
-                    "in": "",
-                    "out": ""
+                    "in": "{user.status}",
+                    "out": "online"
                 }
             }
         }
