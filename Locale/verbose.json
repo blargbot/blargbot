@@ -256,6 +256,12 @@
                 "raw": "The code for {{name}} is:\\n```{{code}}```",
                 "alreadyexists": "A custom command with that name already exists.",
                 "testoutput": "Test Output:\\n\\n{{output}}"
+            },
+            "locale": {
+                "info": "",
+                "usage": "",
+                "set": "",
+                "list": ""
             }
         },
         "admin": {
