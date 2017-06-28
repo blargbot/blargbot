@@ -39,7 +39,7 @@
         "menu": {
             "choices": "Page {{page}}/{{max}}"
         },
-        "nochange": "After much deliberation and processing, all the changes you have proposed have been considered and implemented using our 10-step process. That is to say, no procedural event has actually occurred.",
+        "nochange": "After much deliberation and processing, all the changes you have proposed have been considered and implemented using our fabled and thorough 0-step process. That is to say, no procedural event has actually occurred.",
         "commandhelp": "**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
         "example": {
             "id1": "111111111111111111",
