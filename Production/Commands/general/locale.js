@@ -32,7 +32,7 @@ class LocaleCommand extends GeneralCommand {
 
             await ctx.author.data.setLocale(res.value);
             await ctx.decodeAndSend(this.keys.set, {
-                locale: res.value
+                locale: res.name
             });
         } catch (err) {
             await ctx.decodeAndSend('generic.nochange');
