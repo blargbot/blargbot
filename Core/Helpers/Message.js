@@ -34,11 +34,11 @@ class MessageHelper extends BaseHelper {
         let localeName;
         if (guild) {
             let guildLocale = await guild.data.getLocale();
-            if (guildLocale) localeName = guildLocale.locale;
+            if (guildLocale) localeName = guildLocale;
         }
         if (user) {
             let userLocale = await user.data.getLocale();
-            if (userLocale) localeName = userLocale.locale;
+            if (userLocale) localeName = userLocale;
         }
         if (!localeName) {
             localeName = 'en_US';

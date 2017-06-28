@@ -258,10 +258,10 @@
                 "testoutput": "Test Output:\\n\\n{{output}}"
             },
             "locale": {
-                "info": "",
-                "usage": "",
-                "set": "",
-                "list": ""
+                "info": "Sets what locale you use.",
+                "usage": "locale",
+                "set": "Your locale has been set to {{locale}}!",
+                "list": "Your current locale is: `{{current}}`\n\nPlease select which locale you want to use."
             }
         },
         "admin": {

@@ -5,7 +5,7 @@ class LocaleCommand extends GeneralCommand {
         super(client, {
             name: 'locale',
             keys: {
-                randmsg: `.set`,
+                set: `.set`,
                 list: `.list`
             }
         });
@@ -22,14 +22,20 @@ class LocaleCommand extends GeneralCommand {
             };
         });
         let userLocale = await ctx.author.data.getLocale();
-
         const menu = ctx.client.Helpers.Menu.build(ctx);
-        menu.embed.setDescription(await ctx.decode(this.keys.list), {
-            current: userLocale
-        });
-        let res = await menu.paginate(locales);
+        menu.embed.setDescription(await ctx.decode(this.keys.list, {
+            current: localeManager.localeList[userLocale].specs.lang
+        }));
+        try {
+            let res = await menu.paginate(locales);
 
-        await ctx.send(res.value);
+            await ctx.author.data.setLocale(res.value);
+            await ctx.decodeAndSend(this.keys.set, {
+                locale: res.value
+            });
+        } catch (err) {
+            await ctx.decodeAndSend('generic.nochange');
+        }
     }
 }
 
