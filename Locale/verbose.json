@@ -258,10 +258,10 @@
                 "testoutput": "Test Output:\\n\\n{{output}}"
             },
             "locale": {
-                "info": "",
-                "usage": "",
-                "set": "",
-                "list": ""
+                "info": "Provide a definition to assist me in supplying you with linguistic translation for the locale of your choice.",
+                "usage": "locale",
+                "set": "Marvelous! From this point on, I will provide informative and outstanding messages to assist your comprehension of the bot, and will attempt to be as verbose as programatically possible. It is quite remarkable how much easier using me will become due to this! You are quite a sensible person for making such a phenomenal decision. Trust me. The choice that you have made is most definitely the correct and factually valid one.",
+                "list": "As of the current moment, you'll find that I am making an effort to deliver your messages in a manner that is as informative and verbose as possible. Isn't it wonderful? Absolutely stupendous!\n\nOf course, if you tire of my antics you may always switch to another locale by using your cursor to select one of the buttons that are immediately underneath this message.\n\nBut doing such a thing isn't something that you as a studious and superb user would do, is it?"
             }
         },
         "admin": {
