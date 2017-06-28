@@ -21,6 +21,7 @@ class LocaleCommand extends GeneralCommand {
                 name: localeManager.localeList[l].specs.lang
             };
         });
+        locales = locales.sort((a, b) => a.name > b.name ? 1 : a.name < b.name ? -1 : 0);
         let userLocale = await ctx.author.data.getLocale();
         const menu = ctx.client.Helpers.Menu.build(ctx);
         menu.embed.setDescription(await ctx.decode(this.keys.list, {
