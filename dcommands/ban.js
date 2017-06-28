@@ -77,7 +77,7 @@ e.ban = async function (msg, user, deleteDays = 1, reason, duration, tag = false
         reason: reason
     };
     try {
-        await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, 'Banned by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason : ''));
+        await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, 'Banned by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason.join(' ') : ''));
         let suffix = '';
         if (duration) {
             await r.table('events').insert({
