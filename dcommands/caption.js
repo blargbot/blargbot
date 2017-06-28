@@ -47,14 +47,14 @@ const fonts = {
     comicsans: 'comicsans.ttf'
 };
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words);
     if (input.l) {
         let availFonts = Object.keys(fonts).sort().map(m => '**' + m.toUpperCase() + '**').join('\n - ');
         bu.send(msg, `Currently available fonts:\n - ${availFonts}`);
         return;
     }
-    if ((!input.t || input.t.length == 0) && (!input.b || input.t.length == 0)) {
+    if ((!input.t || input.t.length == 0) && (!input.b || input.b.length == 0)) {
         bu.send(msg, `You have to have at least one caption!`);
         return;
     }
