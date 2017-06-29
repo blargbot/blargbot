@@ -27,7 +27,7 @@
         },
         "resolverole": {
             "noroles": "No roles found.",
-            "pickrole": "{{length}} roles were found! Please select one from the list"
+            "pickrole": "{{length}} roles were found! Please select one from the list."
         },
         "resolvechannel": {
             "nochannels": "No channels found.",
