@@ -74,46 +74,41 @@
         "messagetoolong": "I am embarrassed to admit that the resulting output that I attempted to deliver to you was beyond my meager capabilities, as the number of linguistic characters (not to be confused with characters that constitute as people, but rather those of a more unicode variation) far surpassed my limit of 2000. [[error.pleasereport]]",
         "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
         "tag": {
-            "notfound": "Tag '{{tag}}' doesn't exist.",
-            "toomanyargs": "Too many args (r:{{received}} e:{{expected}})",
-            "toofewargs": "Too little args (r:{{received}} e:{{expected}})",
-            "isnan": "Expected '{{arg}}' to be a number, but received '{{value}}'",
-            "maxlessthanmin": "Max must be greater than Min",
-            "ccommandonly": "'{{tag}}' may only be used in ccommands",
-            "authorstaff": "Author {{author}} must be staff to use '{{tag}}'",
-            "noperms": "Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
-            "toolow": "Bot cannot '{{tag}}' because its lower-ranked than '{{target}}'",
-            "unclosed": "Unmatched opening bracket [{{column}}:{{row}}]",
-            "unopened": "Unmatched closing bracket [{{column}}:{{row}}]",
-            "invalidradix": "Radix must be between 2 and 36, but received '{{radix}}'",
-            "notanarray": "Variable '{{name}}' is not an array (Received: '{{value}}')",
-            "notbool": "Variable '{{name}}' is not a boolean (Received: '{{value}}')"
+            "notfound": "I regret to inform you in this textual tag error that the subtag '{{tag}}' that you attempted to execute is not currently in existence",
+            "toomanyargs": "I regret to inform you in this textual tag error that too many arguments were provided, and while the effort is very much appreciated it is simply not feasible (r:{{received}} e:{{expected}})",
+            "toofewargs": "I regret to inform you in this textual tag error that you simply did not provide enough arguments and thus execution is simply infeasible at this moment (r:{{received}} e:{{expected}})",
+            "isnan": "I regret to inform you in this textual tag error that you have provided the faulty, malformed, or invalid value '{{value}}' as the '{{arg}}' argument when the proper format is a numeric value",
+            "maxlessthanmin": "I regret to inform you in this textual tag error that you provided a Maximum value that was lower than the Minimum value which is quite logically unsound",
+            "ccommandonly": "I regret to inform you in this textual tag error that the subtag that you attempted to execute, '{{tag}}', is only available in custom commands due to the dangerous effects that it may impart as a public tag",
+            "authorstaff": "I regret to inform you in this textual tag error that in order to execute the subtag '{{tag}}', the author of this custom command must be staff on the current guild as part of a safety precaution",
+            "noperms": "I regret to inform you in this textual tag error that in order to execute the subtag '{{tag}}' I require the permission '{{perm}}', but this permission was not available for my use",
+            "toolow": "I regret to inform you in this textual tag error that, and though this is rather embarrassing to admit, I am actually lower ranked than '{{target}}' and thus I am unable to execute the '{{tag}}' tag on them",
+            "unclosed": "I regret to inform you in this textual tag error that you have an unmatched opening brace at the coordinates x={{column}}, y{{row}}, and thus execution was impossible",
+            "unopened": "I regret to inform you in this textual tag error that you have an unmatched closing brace at the coordinates x={{column}}, y{{row}}, and thus execution was impossible",
+            "invalidradix": "I regret to inform you in this textual tag error that you were perhaps overzealous in choosing a radix to convert to that you failed to take in account the available range of 2-36, and instead provided '{{radix}}'",
+            "notanarray": "I regret to inform you in this textual tag error that the variable '{{name}}' you attempted to load was not in fact an array at all, as its value was '{{value}}', and thus execution was impossible",
+            "notbool": "I regret to inform you in this textual tag error that the variable '{{name}}' you attempted to load was not in fact an boolean at all, as its value was '{{value}}', and thus execution was impossible"
         }
     },
     "command": {
         "general": {
             "ping": {
-                "info": "Pong!\nFinds the command latency.",
+                "info": "This command is most definitely the favourite of anybody, as it is incredibly detailed and functional. Its purpose is to find the latency of the bot, thereby determining how quickly it is running. Of course there are many other contributing factors to the result of this command so you may find it favourable to take it with a grain of salt.",
                 "usage": "ping",
                 "randmsg": [
-                    "Existence is a lie.",
-                    "You're going to die some day, perhaps soon.",
-                    "Nothing matters.",
-                    "Where do you get off?",
-                    "There is nothing out there.",
-                    "You are alone in an infinite void.",
-                    "Truth is false.",
-                    "Forsake everything.",
-                    "Your existence is pitiful.",
-                    "We are all already dead.",
-                    "Meow.",
-                    "Fear is freedom.",
-                    "Subjugation is liberation.",
-                    "Contradiction is truth.",
-                    "Would you like to make a contract?",
-                    "Let it go, and move on."
+                    "Perhaps you'll find that existence and reality are not what you intuitively think they are.",
+                    "It's very nice to have someone to talk in detail with once more, especially what happened last time.",
+                    "Your stupendous word of the day is: floccinaucinihilipilification",
+                    "Your self worth is determined by the numeric quantity of characters delimited by spaces you can fit within a linguistic prose at once, which is correlated to a greater extend of mutual understanding and viable communication by statistics that are most definitely factual and are not simply made up on the spot.",
+                    "I'm sorry to interrupt, but have you looked behind you?",
+                    "To achieve world peace, the world must first be sanitized.",
+                    "Cleanse yourself.",
+                    "One must understand the value of words before one can fully understand themself or others.",
+                    "Stay in school, you'll find it moderately more beneficial than absconding.",
+                    "Your stupendous word of the day is: honorificabilitudinitatibus",
+                    "Your stupendous word of the day is: sesquipedalianism"
                 ],
-                "final": "Pong! ({{time}}ms)"
+                "final": "After much deliberation, I have looked deep within my self in a meditative state. My self-reflection has culmulated into a final result:\n```\n{{time}} milliseconds\n```\nTruly enlightening."
             },
             "brainfuck": {
                 "info": "Executes brainfuck code.",
