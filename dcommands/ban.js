@@ -71,13 +71,15 @@ e.ban = async function (msg, user, deleteDays = 1, reason, duration, tag = false
     }
     if (!bu.bans[msg.channel.guild.id])
         bu.bans[msg.channel.guild.id] = {};
+    if (reason && Array.isArray(reason)) reason = reason.join(' ');
+
     bu.bans[msg.channel.guild.id][user.id] = {
         mod: noPerms ? bot.user : msg.author,
         type: tag ? 'Tag Ban' : 'Ban',
         reason: reason
     };
     try {
-        await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, 'Banned by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason.join(' ') : ''));
+        await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, 'Banned by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason : ''));
         let suffix = '';
         if (duration) {
             await r.table('events').insert({
