@@ -46,7 +46,7 @@ e.flags = [{
     desc: 'Reverses the effects of all the flag filters.'
 }];
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words);
     let userList;
     let query;
@@ -73,6 +73,10 @@ e.execute = async function(msg, words) {
                 userList.push(user);
         }
         userList = userList.map(u => u.id);
+        if (userList.length == 0) {
+            await bu.send(msg, 'No users were found.');
+            return;
+        }
     }
 
     var limit = 100;
