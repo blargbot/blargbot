@@ -44,6 +44,39 @@ module.exports = {
         ALL: "all",
         ALL_GUILD: "allGuild",
         ALL_TEXT: "allText",
-        ALL_VOICE: "allVOice"
+        ALL_VOICE: "allVoice"
     }
 };
+
+const SettingTypes = {
+    INT: 1,
+    STRING: 2,
+    BOOL: 3,
+    CHANNEL: 4,
+    ROLE: 5
+};
+module.exports.SettingTypes = SettingTypes;
+
+const Settings = {
+    MAKELOGS: { type: SettingTypes.BOOL },
+    TABLEFLIP: { type: SettingTypes.BOOL },
+    CAHNSFW: { type: SettingTypes.BOOL },
+    DMHELP: { type: SettingTypes.BOOL },
+    STAFFPERMS: { type: SettingTypes.INT },
+    ANTIMENTION: { type: SettingTypes.INT },
+    ANTIMENTIONWEIGHT: { type: SettingTypes.INT },
+    ANNOUNCEMENTCHANNEL: { type: SettingTypes.CHANNEL },
+    ANNOUNCEMENTROLE: { type: SettingTypes.ROLE },
+    GREETING: { type: SettingTypes.STRING },
+    GREETINGCHANNEL: { type: SettingTypes.CHANNEL },
+    FAREWELL: { type: SettingTypes.STRING },
+    FAREWELLCHANNEL: { type: SettingTypes.CHANNEL },
+    MUTEDROLE: { type: SettingTypes.ROLE },
+    MODLOG: { type: SettingTypes.CHANNEL },
+    LOCALE: { type: SettingTypes.STRING }
+};
+for (const key in Settings) {
+    Settings[key].desc = `settings.${key.toLowerCase()}`;
+}
+
+module.exports.Settings = Settings;

@@ -29,6 +29,11 @@ class GuildModel extends Base {
                 allowNull: false,
                 defaultValue: {}
             },
+            warnings: {
+                type: this.Sequelize.JSON,
+                allowNull: false,
+                defaultValue: {}
+            },
             // Settings
             makeLogs: {
                 type: this.Sequelize.BOOLEAN,
