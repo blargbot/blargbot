@@ -143,7 +143,7 @@ class TagCommand extends GeneralCommand {
     async sub_transfer(ctx) {
         const { data, tag, owner } = await this.ownershipTest(ctx);
         if (owner) {
-            let user = await this.client.Helpers.Resolve.user(ctx.input._[1], ctx);
+            let user = await this.client.Helpers.Resolve.user(ctx, ctx.input._[1]);
             if (user) {
                 if (user.bot) return await ctx.decodeAndSend(this.keys.nobots);
                 let menu = this.client.Helpers.Menu.build(ctx);

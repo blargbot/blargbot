@@ -18,7 +18,7 @@ class RoleMentionTag extends Role {
         const res = await super.execute(ctx, args);
         let role;
         if (args[0]) {
-            role = await ctx.client.Helpers.Resolve.role(args[0].toString(), ctx, true);
+            role = await ctx.client.Helpers.Resolve.role(ctx, args[0].toString(), true);
         }
         // Todo: make mentionable?
         return res.setContent(role ? role.mention : '');

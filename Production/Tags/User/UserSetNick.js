@@ -23,7 +23,7 @@ class UserSetNick extends User {
         let user = ctx.user, member;
         let nick;
         if (args[1]) {
-            user = await ctx.client.Helpers.Resolve.user(args[0].toString(), ctx, true);
+            user = await ctx.client.Helpers.Resolve.user(ctx, args[0].toString(), true);
             nick = args[1];
         } else nick = args[0];
         if (user) {

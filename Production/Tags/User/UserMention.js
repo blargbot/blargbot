@@ -19,7 +19,7 @@ class UserMentionTag extends User {
         const res = await super.execute(ctx, args);
         let user = ctx.user;
         if (args[0]) {
-            user = await ctx.client.Helpers.Resolve.user(args[0].toString(), ctx, true);
+            user = await ctx.client.Helpers.Resolve.user(ctx, args[0].toString(), true);
         }
         return res.setContent(user ? user.mention : '');
     }

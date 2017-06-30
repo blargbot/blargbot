@@ -17,7 +17,7 @@ class RoleIdTag extends Role {
         const res = await super.execute(ctx, args);
         let role;
         if (args[0]) {
-            role = await ctx.client.Helpers.Resolve.role(args[0].toString(), ctx, true);
+            role = await ctx.client.Helpers.Resolve.role(ctx, args[0].toString(), true);
         }
         return res.setContent(role ? role.id : '');
     }

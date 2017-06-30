@@ -8,7 +8,7 @@ class ResolveHelper extends BaseHelper {
         super(client);
     }
 
-    async channel(query, ctx, quiet) {
+    async channel(ctx, query, quiet) {
         const { guild, channel, user } = this.generic(ctx);
         let channelList = guild.channels, channelId;
         if (/\d{17,23}/.test(query)) {
@@ -47,7 +47,7 @@ class ResolveHelper extends BaseHelper {
         }
     }
 
-    async role(query, ctx, quiet) {
+    async role(ctx, query, quiet) {
         const { guild, channel, user } = this.generic(ctx);
         let roleList = guild.roles, roleId;
         if (/\d{17,23}/.test(query)) {
@@ -86,7 +86,7 @@ class ResolveHelper extends BaseHelper {
         }
     }
 
-    async user(query, ctx, quiet) {
+    async user(ctx, query, quiet) {
         const { guild, channel, user } = this.generic(ctx);
         let userList = guild.members, userId, userDiscrim;
         if (/\d{17,23}/.test(query)) {
