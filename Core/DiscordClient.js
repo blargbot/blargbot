@@ -91,6 +91,7 @@ class DiscordClient extends Eris.Client {
         this.catOverrides = true;
 
         if (this.localeDirty === true) {
+            console.info('Some keys have been generated.');
             fs.writeFileSync(path.join(__dirname, '..', 'Locale', 'en_US.json'), JSON.stringify(this.LocaleManager.localeList.en_US, null, 4));
         }
     }
