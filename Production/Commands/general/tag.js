@@ -48,8 +48,6 @@ class TagCommand extends GeneralCommand {
                 transfercancelled: '.transfercancelled',
                 transfercomplete: '.transfercomplete',
                 taginfo: '.taginfo',
-                usageupdate: '.usageupdate',
-                usagereset: '.usagereset',
                 descupdate: '.descupdate',
                 descreset: '.descreset',
                 subcommandconflict: '.subcommandconflict'
