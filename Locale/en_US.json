@@ -222,7 +222,11 @@
                 "tagusage": "",
                 "tagdesc": "",
                 "valupdated": "",
-                "valreset": ""
+                "valreset": "",
+                "usageupdate": "",
+                "usagereset": "",
+                "descupdate": "",
+                "descreset": ""
             },
             "ccommand": {
                 "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
