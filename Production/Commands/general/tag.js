@@ -23,8 +23,7 @@ class TagCommand extends GeneralCommand {
                 test: { minArgs: 1 },
                 help: {},
                 docs: {},
-                setdesc: { minArgs: 1 },
-                setusage: { minArgs: 1 }
+                setdesc: { minArgs: 1 }
             },
             subcommandAliases: {
                 remove: 'delete',
@@ -236,9 +235,9 @@ class TagCommand extends GeneralCommand {
     async sub_setdesc(ctx) {
         const { data, tag, owner } = await this.ownershipTest(ctx);
         if (owner) {
-            let toSet;
-            if (ctx.input._.length > 0) toSet = ctx.input._.raw.join('');
-            if (toSet && toSet.length > 900) {
+            let toSet = null;
+            if (ctx.input._.length > 1) toSet = ctx.input._.raw.slice(1).join('');
+            if (toSet && toSet.length > 1000) {
                 return ctx.decodeAndSend('error.inputtoolong', {
                     length: toSet.length,
                     max: 100
@@ -249,26 +248,6 @@ class TagCommand extends GeneralCommand {
                 tag: await tag.get('tagName')
             });
             else await ctx.decodeAndSend(this.keys.descreset, {
-                tag: await tag.get('tagName')
-            });
-        }
-    }
-    async sub_setusage(ctx) {
-        const { data, tag, owner } = await this.ownershipTest(ctx);
-        if (owner) {
-            let toSet;
-            if (ctx.input._.length > 0) toSet = ctx.input._.raw.join('');
-            if (toSet && toSet.length > 100) {
-                return ctx.decodeAndSend('error.inputtoolong', {
-                    length: toSet.length,
-                    max: 100
-                });
-            }
-            await data.setUsage(toSet);
-            if (toSet) await ctx.decodeAndSend(this.keys.usageupdate, {
-                tag: await tag.get('tagName')
-            });
-            else await ctx.decodeAndSend(this.keys.usagereset, {
                 tag: await tag.get('tagName')
             });
         }
