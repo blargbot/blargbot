@@ -220,9 +220,11 @@
                 "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
                 "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
                 "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!\n\n{{desc}}",
-                "descupdate": "The description for {{tag}} has been updated.",
-                "descreset": "The description for {{tag}} has been reset.",
-                "subcommandconflict": "You can't use the name {{name}} because there is a subcommand with that name!"
+                "descupdate": "The description for `{{tag}}` has been updated.",
+                "descreset": "The description for `{{tag}}` has been reset.",
+                "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",
+                "usageupdate": "",
+                "usagereset": ""
             },
             "ccommand": {
                 "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
