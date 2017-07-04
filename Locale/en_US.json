@@ -219,7 +219,7 @@
                 "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
                 "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
                 "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!\n\nUsage: `{{usage}}`\n\nDescription:\n\n{{description}}",
+                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!\n\nUsage: `{{usage}}`\n\nDescription:\n\n{{desc}}",
                 "usageupdate": "The usage for {{tag}} has been updated.",
                 "usagereset": "The usage for {{tag}} has been reset.",
                 "descupdate": "The description for {{tag}} has been updated.",
