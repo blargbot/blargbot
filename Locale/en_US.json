@@ -223,6 +223,12 @@
                 "descupdate": "The description for `{{tag}}` has been updated.",
                 "descreset": "The description for `{{tag}}` has been reset.",
                 "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",
+                "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+                "toptags": "Here are the top 10 tags!\n\n{{tags}}",
+                "tagauthor": "The tag `{{tag}}` was created by **{{author}}**.",
+                "favouriteadd": "The tag `{{tag}}` has been added to your favorites list.",
+                "favouriteremove": "The tag `{{tag}}` has been removed from your favorites list.",
+                "favourites": "You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
             },
             "ccommand": {
                 "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",

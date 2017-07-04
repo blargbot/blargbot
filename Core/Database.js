@@ -42,11 +42,15 @@ class Database {
             this.client.models[key] = this.models[key].model;
         }
         console.init('Database models loaded. Loading Clyde');
-        const clyde = this.client.getData(this.client.Constants.Types.Data.USER, 0, {
+        const clyde = await this.client.getData(this.client.Constants.Types.Data.USER, 0, {
             username: 'Clyde',
             discriminator: '0000'
         });
         await clyde.getOrCreateObject();
+        console.init('Creating functions');
+        this.sequelize.query(`CREATE OR REPLACE FUNCTION countTagFavourites(text) RETURNS bigint AS $$ 
+                SELECT count(*) as result FROM tag_favourites WHERE "tag_favourites"."tagName" = $1;
+            $$ LANGUAGE sql;`);
     }
 }
 

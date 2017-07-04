@@ -14,5 +14,7 @@ module.exports = {
 
     Tag: require('./Tag'),
 
+    TagFavourite: require('./TagFavourite'),
+
     ChatLog: require('./ChatLog')
 };

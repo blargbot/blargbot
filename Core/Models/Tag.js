@@ -35,9 +35,14 @@ class TagModel extends Base {
                 defaultValue: 0
             },
             favourites: {
-                type: this.Sequelize.INTEGER,
-                allowNull: false,
-                defaultValue: 0
+                type: this.Sequelize.VIRTUAL,
+                get() {
+                    return client.models.TagFavourite.count({
+                        where: {
+                            tagName: this.getDataValue('tagName')
+                        }
+                    });
+                }
             },
 
             variables: {

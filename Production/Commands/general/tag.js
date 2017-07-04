@@ -50,7 +50,13 @@ class TagCommand extends GeneralCommand {
                 taginfo: '.taginfo',
                 descupdate: '.descupdate',
                 descreset: '.descreset',
-                subcommandconflict: '.subcommandconflict'
+                subcommandconflict: '.subcommandconflict',
+                toptagformat: '.toptagformat',
+                toptags: '.toptags',
+                tagauthor: '.tagauthor',
+                favouriteadd: '.favouriteadd',
+                favouriteremove: '.favouriteremove',
+                favourites: '.favourites'
             }
         });
 
@@ -58,7 +64,7 @@ class TagCommand extends GeneralCommand {
     }
 
     get filterRegex() {
-        return /[^\w\d_!\.,+-=\^\$\?"':;#]/gim;
+        return /[^\w\d_!\.+-=\^\$\?"':;# ]/gim;
     }
 
     filterName(name) {
@@ -214,13 +220,45 @@ class TagCommand extends GeneralCommand {
     }
 
     async sub_top(ctx) {
-        await ctx.send('top');
+        let tags = await ctx.client.models.Tag.findAll({
+            order: [
+                [ctx.client.database.sequelize.fn('countTagFavourites', ctx.client.database.sequelize.col('tagName')), 'DESC'],
+                ['uses', 'DESC']
+            ],
+            limit: 10
+        });
+        let output = [];
+        let authorCache = {};
 
+        for (let i = 0; i < tags.length; i++) {
+            let author = await tags[i].get('authorId');
+            if (authorCache[author]) author = authorCache[author];
+            else if (ctx.client.users.get(author)) author = ctx.client.users.get(author);
+            else author = await ctx.client.getRESTUser(author);
+            authorCache[author.id] = author;
+            output.push(await ctx.decode(this.keys.toptagformat, {
+                name: await tags[i].get('tagName'),
+                uses: await tags[i].get('uses'),
+                favourites: await tags[i].get('favourites'),
+                index: i + 1,
+                author: author.fullName
+            }));
+        }
+
+        return await ctx.decodeAndSend(this.keys.toptags, {
+            tags: output.join('\n\n')
+        });
     }
 
     async sub_author(ctx) {
-        await ctx.send('author');
-
+        const { data, tag } = await this.getTag(ctx.input._[0]);
+        if (tag) {
+            let author = this.client.users.get(await data.getAuthor()) || await this.client.getRESTUser(await data.getAuthor()) || { fullName: 'Clyde#0000' };
+            await ctx.decodeAndSend(this.keys.tagauthor, {
+                name: await tag.get('tagName'),
+                author: author.fullName
+            });
+        } else ctx.decodeAndSend(this.keys.notag);
     }
 
     async sub_search(ctx) {
@@ -234,8 +272,31 @@ class TagCommand extends GeneralCommand {
     }
 
     async sub_favorite(ctx) {
-        await ctx.send('favorite');
-
+        if (ctx.input._.length > 1) {
+            let name = ctx.input._.raw.slice(1).join('');
+            const { data, tag } = await this.getTag(name);
+            let favTemplate = {
+                tagName: data.id,
+                userId: ctx.user.id
+            };
+            let fav = await ctx.client.models.TagFavourite.findOrCreate({
+                where: favTemplate,
+                defaults: favTemplate
+            });
+            console.log(fav);
+        } else {
+            let tags = await ctx.client.models.TagFavourite.findAll({
+                attributes: ['tagName'],
+                where: {
+                    userId: ctx.user.id
+                }
+            });
+            let tagNames = tags.map(t => t.dataValues.tagName);
+            await ctx.decodeAndSend(this.keys.favourites, {
+                count: tagNames.length,
+                tags: tagNames.join(', ')
+            });
+        }
     }
 
     async sub_report(ctx) {

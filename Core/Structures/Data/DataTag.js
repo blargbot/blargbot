@@ -2,7 +2,7 @@ const DataBase = require('./DataBase');
 
 class DataTag extends DataBase {
     static stripTitle(title) {
-        return title.replace(/[^\d\w\.,!#\$\/?"':;\[\]&%*()-_=+ ]/gi, '');
+        return title.replace(/[^\w\d_!\.+-=\^\$\?"':;# ]/gim, '');
     }
 
     constructor(client, id, strip = true) {
@@ -82,12 +82,19 @@ class DataTag extends DataBase {
         return await this.getKey('favourites');
     }
 
-    async setFavourites(count) {
-        return await this.setKey('favourites', count);
+    async addFavourite(userId) {
+        return await this.client.models.TagFavourite.upsert({
+            tagName: this.id,
+            userId
+        });
     }
 
-    async incrementFavourites() {
-        return await this.setKey('favourites', (await this.getFavourites()) + 1);
+    async removeFavourite(userId) {
+        let fav = await this.client.models.TagFavourite.findAll({
+            tagName: this.id,
+            userId
+        });
+        return await fav.destroy();
     }
 
     async getVariable(name) {
