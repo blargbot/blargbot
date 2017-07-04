@@ -72,7 +72,6 @@
         "pleasereport": "If you think this is an error, please report it!",
         "generic": "Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
         "messagetoolong": "Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
-        "inputtoolong": "",
         "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
         "tag": {
             "notfound": "Tag '{{tag}}' doesn't exist.",
@@ -89,7 +88,8 @@
             "invalidradix": "Radix must be between 2 and 36, but received '{{radix}}'",
             "notanarray": "Variable '{{name}}' is not an array (Received: '{{value}}')",
             "notbool": "Variable '{{name}}' is not a boolean (Received: '{{value}}')"
-        }
+        },
+        "inputtoolong": "Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
     },
     "command": {
         "general": {
@@ -219,11 +219,11 @@
                 "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
                 "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
                 "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
-                "usageupdate": "",
-                "usagereset": "",
-                "descupdate": "",
-                "descreset": ""
+                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!\n\nUsage: `{{usage}}`\n\nDescription:\n\n{{description}}",
+                "usageupdate": "The usage for {{tag}} has been updated.",
+                "usagereset": "The usage for {{tag}} has been reset.",
+                "descupdate": "The description for {{tag}} has been updated.",
+                "descreset": "The description for {{tag}} has been reset."
             },
             "ccommand": {
                 "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
