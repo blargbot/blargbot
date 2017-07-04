@@ -98,6 +98,21 @@ class DataTag extends DataBase {
         return await this.setKey(`variables.${name}`, value);
     }
 
+    async getUsage() {
+        return await this.getKey('usage');
+    }
+
+    async setUsage(value) {
+        this.setKey('usage', value);
+    }
+
+    async getDesc() {
+        return await this.getKey('desc');
+    }
+
+    async setDesc(value) {
+        return await this.setKey('desc', value);
+    }
 }
 
 module.exports = DataTag;

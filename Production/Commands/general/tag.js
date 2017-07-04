@@ -183,7 +183,9 @@ class TagCommand extends GeneralCommand {
                 author: author.fullName,
                 lastModified: await tag.get('updatedAt'),
                 uses: await data.getUses(),
-                favourites: await data.getFavourites()
+                favourites: await data.getFavourites(),
+                usage: await data.getUsage() || '',
+                desc: await data.getDesc() || ''
             });
         } else ctx.decodeAndSend(this.keys.notag);
     }
@@ -236,7 +238,19 @@ class TagCommand extends GeneralCommand {
         if (owner) {
             let toSet;
             if (ctx.input._.length > 0) toSet = ctx.input._.raw.join('');
-            tag.setKey('desc', toSet);
+            if (toSet && toSet.length > 900) {
+                return ctx.decodeAndSend('error.inputtoolong', {
+                    length: toSet.length,
+                    max: 100
+                });
+            }
+            await data.setDesc(toSet);
+            if (toSet) await ctx.decodeAndSend(this.keys.descupdate, {
+                tag: await tag.get('tagName')
+            });
+            else await ctx.decodeAndSend(this.keys.descreset, {
+                tag: await tag.get('tagName')
+            });
         }
     }
     async sub_setusage(ctx) {
@@ -244,8 +258,19 @@ class TagCommand extends GeneralCommand {
         if (owner) {
             let toSet;
             if (ctx.input._.length > 0) toSet = ctx.input._.raw.join('');
-            tag.setKey('usage', toSet);
-
+            if (toSet && toSet.length > 100) {
+                return ctx.decodeAndSend('error.inputtoolong', {
+                    length: toSet.length,
+                    max: 100
+                });
+            }
+            await data.setUsage(toSet);
+            if (toSet) await ctx.decodeAndSend(this.keys.usageupdate, {
+                tag: await tag.get('tagName')
+            });
+            else await ctx.decodeAndSend(this.keys.usagereset, {
+                tag: await tag.get('tagName')
+            });
         }
     }
 
