@@ -18,9 +18,17 @@ class TagModel extends Base {
                 }
             },
             content: {
-                type: this.Sequelize.STRING(10000),
+                type: this.Sequelize.STRING(50000),
                 allowNull: false,
                 defaultValue: ''
+            },
+            usage: {
+                type: this.Sequelize.STRING(100),
+                allowNull: true
+            },
+            desc: {
+                type: this.Sequelize.STRING(900),
+                allowNull: true
             },
             lastUsed: {
                 type: this.Sequelize.DATE

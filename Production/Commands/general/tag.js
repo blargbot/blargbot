@@ -19,10 +19,12 @@ class TagCommand extends GeneralCommand {
                 search: { minArgs: 1 },
                 list: {},
                 favorite: {},
-                report: { minArgs: 2 },
+                report: { minArgs: 1 },
                 test: { minArgs: 1 },
                 help: {},
-                docs: {}
+                docs: {},
+                setdesc: { minArgs: 1 },
+                setusage: { minArgs: 1 }
             },
             subcommandAliases: {
                 remove: 'delete',
@@ -45,7 +47,11 @@ class TagCommand extends GeneralCommand {
                 nobots: '.nobots',
                 transfercancelled: '.transfercancelled',
                 transfercomplete: '.transfercomplete',
-                taginfo: '.taginfo'
+                taginfo: '.taginfo',
+                usageupdate: '.usageupdate',
+                usagereset: '.usagereset',
+                descupdate: '.descupdate',
+                descreset: '.descreset'
             }
         });
 
@@ -223,6 +229,24 @@ class TagCommand extends GeneralCommand {
         await ctx.decodeAndSend(this.keys.testoutput, {
             output: output.toString().trim()
         });
+    }
+
+    async sub_setdesc(ctx) {
+        const { data, tag, owner } = await this.ownershipTest(ctx);
+        if (owner) {
+            let toSet;
+            if (ctx.input._.length > 0) toSet = ctx.input._.raw.join('');
+            tag.setKey('desc', toSet);
+        }
+    }
+    async sub_setusage(ctx) {
+        const { data, tag, owner } = await this.ownershipTest(ctx);
+        if (owner) {
+            let toSet;
+            if (ctx.input._.length > 0) toSet = ctx.input._.raw.join('');
+            tag.setKey('usage', toSet);
+
+        }
     }
 
     async sub_help(ctx) {
