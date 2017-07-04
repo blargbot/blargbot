@@ -30,7 +30,8 @@ class TagCommand extends GeneralCommand {
                 favourite: 'favorite',
                 add: 'set',
                 create: 'set',
-                edit: 'set'
+                edit: 'set',
+                setinfo: 'setdesc'
             },
             keys: {
                 dontown: '.dontown',
@@ -50,13 +51,30 @@ class TagCommand extends GeneralCommand {
                 usageupdate: '.usageupdate',
                 usagereset: '.usagereset',
                 descupdate: '.descupdate',
-                descreset: '.descreset'
+                descreset: '.descreset',
+                subcommandconflict: '.subcommandconflict'
             }
         });
 
+        this.subcommandKeys = [].concat(Object.keys(this.subcommands), Object.keys(this.subcommandAliases));
+    }
+
+    get filterRegex() {
+        return /[^\w\d_!\.,+-=\^\$\?"':;#]/gim;
+    }
+
+    filterName(name) {
+        let toReturn = { name, valid: true };
+
+        toReturn.name = toReturn.name.replace(this.filterRegex, '');
+        if (this.subcommandKeys.includes(toReturn.name.toLowerCase()))
+            toReturn.valid = false;
+
+        return toReturn;
     }
 
     async getTag(name) {
+        name = this.filterName(name).name;
         const data = await this.client.getDataTag(name);
         let tag;
         try {
@@ -66,7 +84,7 @@ class TagCommand extends GeneralCommand {
     }
 
     async ownershipTest(ctx) {
-        const { data, tag } = await this.getTag(ctx.input._[0]);
+        const { data, tag } = await this.getTag(this.filterName(ctx.input._[0]).name);
         if (!tag) {
             await ctx.decodeAndSend(this.keys.notag);
         } else if (tag.get('authorId') !== ctx.author.id) {
@@ -94,7 +112,11 @@ class TagCommand extends GeneralCommand {
     }
 
     async sub_set(ctx) {
-        const { data, tag } = await this.getTag(ctx.input._[0]);
+        let name = this.filterName(ctx.input._[0]);
+        if (!name.valid) {
+            return ctx.decodeAndSend(this.keys.subcommandconflict, { name: name.name.toLowerCase() });
+        }
+        const { data, tag } = await this.getTag(name.name);
         if (tag && tag.get('authorId') !== ctx.author.id) {
             await ctx.decodeAndSend(this.keys.dontown);
             return;
@@ -127,7 +149,11 @@ class TagCommand extends GeneralCommand {
         if (tag2.tag) {
             await ctx.decodeAndSend(this.keys.alreadyexists);
         } else if (owner) {
-            await data.rename(ctx.input._[1]);
+            let name = this.filterName(ctx.input._[1]);
+            if (!name.valid) {
+                return ctx.decodeAndSend(this.keys.subcommandconflict, { name: name.name.toLowerCase() });
+            }
+            await data.rename(name.name);
             await ctx.decodeAndSend(this.keys.tagrename, {
                 old: ctx.input._[0], new: ctx.input._[1]
             });
