@@ -10,6 +10,7 @@ e.requireCtx = require;
 
 e.isCommand = true;
 e.hidden = false;
+e.cannotDisable = true;
 e.usage = 'editcommand < list \n    | setrole <commandname | "commandname,..."> [role name]... \n    | setperm <commandname | "commandname,..."> [perm number] \n    | toggle <commandname | "commandname,...">';
 e.info = `Changes command-specific usage permissions.
 
@@ -42,7 +43,7 @@ e.longinfo = `<p>Changes command-specific usage permissions.</p>
 </tbody>
 </table>`;
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (words.length >= 2) {
         let commandName;
         let storedGuild;
@@ -56,13 +57,13 @@ e.execute = async function(msg, words) {
                 let commandList = [];
                 for (let key in commandperms) {
                     if (commandperms[key].rolename || commandperms[key].permission || commandperms[key].disabled)
-                        commandList.push(`**${key}** ${commandperms[key].rolename 
-                        ? '\n   __Role__: ' + commandperms[key].rolename 
-                        : ''}${commandperms[key].permission 
-                            ? '\n   __Perm__: ' + commandperms[key].permission 
-                            : ''}${commandperms[key].disabled 
-                                ? '\n   __DISABLED__' 
-                                : ''}`);
+                        commandList.push(`**${key}** ${commandperms[key].rolename
+                            ? '\n   __Role__: ' + commandperms[key].rolename
+                            : ''}${commandperms[key].permission
+                                ? '\n   __Perm__: ' + commandperms[key].permission
+                                : ''}${commandperms[key].disabled
+                                    ? '\n   __DISABLED__'
+                                    : ''}`);
                 }
                 if (commandList.length > 0) message += commandList.join('\n');
                 else message += 'No modified commands found.';
@@ -121,7 +122,8 @@ e.execute = async function(msg, words) {
                     if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
                         commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
                         if (CommandManager.list[commandName].category == bu.CommandType.CAT ||
-                            CommandManager.list[commandName].category == bu.CommandType.MUSIC) {
+                            CommandManager.list[commandName].category == bu.CommandType.MUSIC ||
+                            CommandManager.list[commandName].cannotDisable === true) {
                             logger.debug('no ur not allowed');
                         } else {
                             logger.debug(commandperms[commandName]);
