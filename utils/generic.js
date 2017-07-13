@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-07-13 14:53:02
+ * @Last Modified time: 2017-07-13 15:01:49
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -874,7 +874,6 @@ bu.canExecuteCcommand = async function (msg, commandName, quiet) {
 bu.canExecuteCommand = async function (msg, commandName, quiet) {
     if (msg.author.id == bu.CAT_ID && bu.catOverrides) return [true, commandName];
     if (msg.channel.guild) {
-        if (msg.author.id == msg.channel.guild.ownerID) return [true, commandName];
         let permoverride, staffperms, storedGuild, adminrole;
         storedGuild = await bu.getGuild(msg.guild.id);
         let val = storedGuild.settings.permoverride,
