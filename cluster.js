@@ -2,11 +2,10 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:28:09
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:28:09
+ * @Last Modified time: 2017-07-13 10:49:32
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
-
 process.execArgv[0] = process.execArgv[0].replace('-brk', '');
 
 const cluster = dep.cluster;
@@ -22,7 +21,7 @@ if (cluster.isMaster) {
 
     var i = 0;
 
-    cluster.send = function(message) {
+    cluster.send = function (message) {
         if (!(i >= 0 && i < Object.keys(cluster.workers).length)) {
             i = 0;
         }
@@ -32,7 +31,7 @@ if (cluster.isMaster) {
         return res;
     };
 
-    cluster.reset = function() {
+    cluster.reset = function () {
         reload('./worker.js');
         for (const worker of workers) {
             worker[1].kill(0);
@@ -63,12 +62,12 @@ if (cluster.isMaster) {
         cluster.fork();
     }
 
-    cluster.on('online', function(worker) {
+    cluster.on('online', function (worker) {
         workers.add(worker);
         logger.cluster('Worker ' + worker.process.pid + ' is online');
     });
 
-    cluster.on('exit', function(worker, code, signal) {
+    cluster.on('exit', function (worker, code, signal) {
         workers.remove(worker);
         logger.cluster('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
         cluster.fork();
