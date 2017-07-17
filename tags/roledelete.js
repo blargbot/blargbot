@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-07-13 14:42:34
+ * @Last Modified time: 2017-07-17 13:05:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -42,6 +42,7 @@ e.execute = async function (params) {
                 try {
                     await obtainedRole.delete(`Deleted with the '${params.tagName}' command, executed by ${msg.author.username}#${msg.author.discrim} (${msg.author.id})`);
                 } catch (err) {
+                    logger.err(err.stack);
                     replaceString = await bu.tagProcessError(params, '`Failed to create role: no perms`');
                 }
         }
