@@ -60,29 +60,36 @@ blargbot&gt; Hello, User. This is a test command.
     <pre><code>cc sethelp &lt;name&gt; &#91;help text&#93;</code></pre>
     <p>sets the help message for the given ccommand</p>`;
 e.alias = ['cc'];
+
+function filterTitle(title) {
+    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()]/gi, '');
+}
+
 e.execute = async function (msg, words, text) {
     logger.debug('Text:', text);
     if (words[1]) {
         let storedTag;
         let content;
+        let title;
         switch (words[1].toLowerCase()) {
             case 'setrole':
                 if (words.length > 2) {
-                    storedTag = await bu.ccommand.get(msg.guild.id, words[2]);
+                    title = filterTitle(words[2]);
+                    storedTag = await bu.ccommand.get(msg.guild.id, title);
                     if (!storedTag) {
                         bu.send(msg, 'That ccommand doesn\'t exist!');
                         return;
                     }
                     let roles = [];
                     if (words[3]) roles = words.slice(3);
-                    await bu.ccommand.set(msg.guild.id, words[2], {
+                    await bu.ccommand.set(msg.guild.id, title, {
                         content: storedTag.content || storedTag,
                         roles: roles
                     });
                     if (roles.length === 0) {
-                        bu.send(msg, `Removed the custom role requirement of '${words[2]}'.`)
+                        bu.send(msg, `Removed the custom role requirement of '${title}'.`)
                     } else
-                        bu.send(msg, `Set the custom role requirements of '${words[2]}' to \`\`\`fix\n${words.slice(3).join(', ')}\n\`\`\` `);
+                        bu.send(msg, `Set the custom role requirements of '${title}' to \`\`\`fix\n${words.slice(3).join(', ')}\n\`\`\` `);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
@@ -90,54 +97,57 @@ e.execute = async function (msg, words, text) {
             case 'add':
             case 'create':
                 if (words.length > 3) {
-                    if (words[2] == 'cc' || words[2] == 'ccommand') {
+                    title = filterTitle(words[2]);
+                    if (title == 'cc' || title == 'ccommand') {
                         bu.send(msg, 'You cannot overwrite the `ccommand` command!');
                         break;
                     }
-                    storedTag = await bu.ccommand.get(msg.channel.guild.id, words[2]);
+                    storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
                     if (storedTag) {
                         bu.send(msg, 'That ccommand already exists!');
                         break;
                     }
                     content = bu.splitInput(text, true).slice(3).join(' ');
-                    await bu.ccommand.set(msg.channel.guild.id, words[2], {
+                    await bu.ccommand.set(msg.channel.guild.id, title, {
                         content,
                         author: msg.author.id
                     });
-                    bu.send(msg, `✅ Custom command \`${words[2]}\` created. ✅`);
+                    bu.send(msg, `✅ Custom command \`${title}\` created. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
                 break;
             case 'edit':
                 if (words.length > 3) {
-                    storedTag = await bu.ccommand.get(msg.channel.guild.id, words[2]);
+                    title = filterTitle(words[2]);
+                    storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
                     if (!storedTag) {
                         bu.send(msg, 'That ccommand doesn\'t exist!');
                         break;
                     }
                     content = bu.splitInput(text, true).slice(3).join(' ');
-                    await bu.ccommand.set(msg.channel.guild.id, words[2], {
+                    await bu.ccommand.set(msg.channel.guild.id, title, {
                         content,
                         author: msg.author.id
                     });
-                    bu.send(msg, `✅ Custom command \`${words[2]}\` edited. ✅`);
+                    bu.send(msg, `✅ Custom command \`${title}\` edited. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
                 break;
             case 'set':
                 if (words.length > 3) {
-                    if (words[2] == 'cc' || words[2] == 'ccommand') {
+                    title = filterTitle(words[2])
+                    if (title == 'cc' || title == 'ccommand') {
                         bu.send(msg, 'You cannot overwrite the `ccommand` command!');
                         break;
                     }
                     content = bu.splitInput(text, true).slice(3).join(' ');
-                    await bu.ccommand.set(msg.channel.guild.id, words[2], {
+                    await bu.ccommand.set(msg.channel.guild.id, title, {
                         content,
                         author: msg.author.id
                     });
-                    bu.send(msg, `✅ Custom command \`${words[2]}\` set. ✅`);
+                    bu.send(msg, `✅ Custom command \`${title}\` set. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
@@ -145,37 +155,45 @@ e.execute = async function (msg, words, text) {
             case 'remove':
             case 'delete':
                 if (words.length > 2) {
-                    storedTag = await bu.ccommand.get(msg.channel.guild.id, words[2]);
+                    title = filterTitle(words[2]);
+                    storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
                     if (!storedTag) {
                         bu.send(msg, 'That ccommand doesn\'t exist!');
                         break;
                     }
-                    await bu.ccommand.remove(msg.channel.guild.id, words[2]);
-                    bu.send(msg, `✅ Custom command \`${words[2]}\` deleted. ✅`);
+                    await bu.ccommand.remove(msg.channel.guild.id, title);
+                    bu.send(msg, `✅ Custom command \`${title}\` deleted. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
                 break;
             case 'rename':
                 if (words.length > 3) {
-                    storedTag = await bu.ccommand.get(msg.channel.guild.id, words[2]);
+                    title = words[2];
+                    storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
                     if (!storedTag) {
-                        bu.send(msg, `The ccommand ${words[2]} doesn\'t exist!`);
-                        break;
+                        title = filterTitle(words[2]);
+                        storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (!storedTag) {
+                            bu.send(msg, `The ccommand ${title} doesn\'t exist!`);
+                            break;
+                        }
                     }
-                    let newTag = await bu.ccommand.get(msg.channel.guild.id, words[3]);
+                    let newTitle = filterTitle(words[3]);
+                    let newTag = await bu.ccommand.get(msg.channel.guild.id, newTitle);
                     if (newTag) {
-                        bu.send(msg, `The ccommand ${words[3]} already exists!`);
+                        bu.send(msg, `The ccommand ${newTitle} already exists!`);
                     }
-                    await bu.ccommand.rename(msg.channel.guild.id, words[2], words[3]);
-                    bu.send(msg, `✅ Custom command \`${words[2]}\` renamed. ✅`);
+                    await bu.ccommand.rename(msg.channel.guild.id, title, newTitle);
+                    bu.send(msg, `✅ Custom command \`${title}\` renamed. ✅`);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
                 break;
             case 'raw':
                 if (words.length > 2) {
-                    storedTag = await bu.ccommand.get(msg.channel.guild.id, words[2]);
+                    title = filterTitle(words[2]);
+                    storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
                     if (!storedTag) {
                         bu.send(msg, 'That ccommand doesn\'t exist!');
                         break;
@@ -187,7 +205,7 @@ e.execute = async function (msg, words, text) {
                     }
                     content = storedTag.replace(/`/g, '`\u200B');
 
-                    bu.send(msg, `The raw code for ${words[2]} is\`\`\`${lang}\n${content}\n\`\`\``);
+                    bu.send(msg, `The raw code for ${title} is\`\`\`${lang}\n${content}\n\`\`\``);
                 } else {
                     bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                 }
@@ -198,18 +216,27 @@ e.execute = async function (msg, words, text) {
                 break;
             case 'sethelp':
                 if (words.length > 3) {
+                    title = filterTitle(words[2]);
+                    storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
+                    if (!storedTag) {
+                        bu.send(msg, 'That ccommand doesn\'t exist!');
+                        break;
+                    }
                     content = bu.splitInput(text, true).slice(3).join(' ');
                     var message = "";
-                    if (await bu.ccommand.sethelp(msg.channel.guild.id, words[2], content)) {
-                        message = `✅ Help for custom command \`${words[2]}\` set. ✅`;
+                    if (await bu.ccommand.sethelp(msg.channel.guild.id, title, content)) {
+                        message = `✅ Help for custom command \`${title}\` set. ✅`;
                     } else {
-                        message = `Custom command \`${words[2]}\` not found. Do \`help\` for a list of all commands, including ccommands`;
+                        message = `Custom command \`${title}\` not found. Do \`help\` for a list of all commands, including ccommands`;
                     }
 
                     bu.send(msg, message);
+                } else if (words.length == 2) {
+                    title = filterTitle(words[2]);
+                    await bu.ccommand.sethelp(msg.channel.guild.id, title, undefined);
+                    bu.send(msg, `✅ Help text for \`${title}\` removed. ✅`);
                 } else {
-                    await bu.ccommand.sethelp(msg.channel.guild.id, words[2], undefined);
-                    bu.send(msg, `✅ Help text for \`${words[2]}\` removed. ✅`);
+                    bu.send(msg, `You have to tell me the name of the ccommand!`);
                 }
                 break;
             case 'help':
