@@ -75,7 +75,7 @@ e.execute = async function (params) {
                     }, `Created with the '${params.tagName}' command, executed by ${msg.author.username}#${msg.author.discrim} (${msg.author.id})`);
                     replaceString = role.id;
                 } catch (err) {
-                    logger.info(err.stack);
+                    logger.error(err.stack);
                     replaceString = await bu.tagProcessError(params, '`Failed to create role: no perms`');
                 }
         }
