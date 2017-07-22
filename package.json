@@ -1,0 +1,71 @@
+{
+  "name": "blargbot",
+  "version": "6.0.105",
+  "dependencies": {
+    "better-cleverbot-io": "^1.0.2",
+    "big-number": "^0.4.0",
+    "body-parser": "^1.17.2",
+    "brainfuck-node": "^1.0.1",
+    "cleverbot": "^1.0.1",
+    "cleverbot-node": "^0.3.11",
+    "cleverbot.io": "^1.0.4",
+    "cli-table": "^0.3.1",
+    "color-thief-jimp": "^2.0.2",
+    "eris": "^0.7.0",
+    "eventemitter3": "^2.0.3",
+    "express": "^4.15.3",
+    "express-session": "^1.15.4",
+    "gifencoder": "^1.1.0",
+    "gm": "latest",
+    "googleapis": "^12.2.0",
+    "hbs": "^4.0.1",
+    "irc": "latest",
+    "jimp": "^0.2.28",
+    "lodash": "latest",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.13.0",
+    "moment-timezone": "latest",
+    "needle": "^1.1.0",
+    "node-cleverbot": "0.0.5",
+    "node-emoji": "^1.8.0",
+    "node-soundcloud": "0.0.6",
+    "node-trello": "^1.2.1",
+    "node-uuid": "^1.4.8",
+    "passport": "^0.3.2",
+    "passport-discord": "^0.1.2",
+    "promise": "latest",
+    "request": "latest",
+    "require-reload": "^0.2.2",
+    "rethinkdbdash": "^2.3.29",
+    "safe-regex": "^1.1.0",
+    "svg2png": "^4.1.1",
+    "twemoji": "^2.4.1",
+    "winston": "^2.3.1",
+    "wordsearch": "latest",
+    "ws": "^3.0.0",
+    "xml2js": "^0.4.17",
+    "youtube-audio-stream": "0.0.26"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-core": "^6.22.1",
+    "babel-eslint": "^7.0.0",
+    "babel-preset-latest": "^6.22.0",
+    "eslint-plugin-react": "^6.4.1"
+  },
+  "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
+  "main": "blargbot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ratismal/blargbot.git"
+  },
+  "author": "stupid cat",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Ratismal/blargbot/issues"
+  },
+  "homepage": "https://github.com/Ratismal/blargbot#readme"
+}
