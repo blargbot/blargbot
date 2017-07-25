@@ -272,18 +272,22 @@ class TagCommand extends GeneralCommand {
     }
 
     async sub_favorite(ctx) {
-        if (ctx.input._.length > 1) {
-            let name = ctx.input._.raw.slice(1).join('');
+        if (ctx.input._.length > 0) {
+            let name = ctx.input._.raw.join('');
             const { data, tag } = await this.getTag(name);
-            let favTemplate = {
-                tagName: data.id,
-                userId: ctx.user.id
-            };
-            let fav = await ctx.client.models.TagFavourite.findOrCreate({
-                where: favTemplate,
-                defaults: favTemplate
-            });
-            console.log(fav);
+            if (tag) {
+                let favTemplate = {
+                    tagName: data.id,
+                    userId: ctx.user.id
+                };
+                let fav = await ctx.client.models.TagFavourite.findOrCreate({
+                    where: favTemplate,
+                    defaults: favTemplate
+                });
+                console.log(fav);
+            } else {
+                await ctx.decodeAndSend(this.keys.notag);
+            }
         } else {
             let tags = await ctx.client.models.TagFavourite.findAll({
                 attributes: ['tagName'],
