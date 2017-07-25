@@ -280,6 +280,10 @@
                 "usage": "locale",
                 "set": "Your locale has been set to {{locale}}!",
                 "list": "Your current locale is: {{current}}\n\nPlease select which locale you want to use."
+            },
+            "tokenify": {
+                "info": "",
+                "usage": ""
             }
         },
         "admin": {

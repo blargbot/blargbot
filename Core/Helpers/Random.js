@@ -1,5 +1,6 @@
 const choices = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
 const BaseHelper = require('./BaseHelper');
+const crypto = require('crypto');
 
 class RandomHelper extends BaseHelper {
     constructor(client) {
@@ -10,13 +11,31 @@ class RandomHelper extends BaseHelper {
         if (!length) length = 7;
         let output = '';
         for (let i = 0; i < length; i++) {
-            output += choices[this.getRandomInt(0, choices.length - 1)];
+            output += choices[this.randInt(0, choices.length - 1)];
         }
         return output;
     }
 
-    getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
+    randBytes(size = 4) {
+        let arr = [];
+        arr.length = size;
+        let buf = Buffer.from(arr);
+        crypto.randomFillSync(buf, 0, size);
+        return buf;
+    }
+
+    rawRandInt(size = 4) {
+        let bytes = this.randBytes(size);
+        return bytes.readUIntBE(0, bytes.length);
+    }
+
+    randInt(min, max) {
+        return (this.rawRandInt() % (++max - min)) + min;
+    }
+
+    chance(threshold, bounds) {
+        let seed = this.randInt(1, bounds);
+        return seed <= threshold;
     }
 
     shuffle(array) {
