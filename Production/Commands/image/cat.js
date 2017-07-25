@@ -13,7 +13,7 @@ class CatCommand extends ImageCommand {
 
         await ctx.send({
             embed: {
-                color: this.client.Helpers.Random.getRandomInt(0x000000, 0xffffff),
+                color: this.client.Helpers.Random.randInt(0x000000, 0xffffff),
                 image: {
                     url: res1.body.file
                 }

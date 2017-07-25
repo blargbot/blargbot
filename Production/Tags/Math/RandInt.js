@@ -26,7 +26,7 @@ class RandIntTag extends Math {
             this.throw('error.tag.maxlessthanmin');
         }
 
-        res.setContent(ctx.client.Helpers.Random.getRandomInt(min, max));
+        res.setContent(ctx.client.Helpers.Random.randInt(min, max));
         return res;
     }
 }

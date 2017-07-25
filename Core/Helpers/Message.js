@@ -54,7 +54,7 @@ class MessageHelper extends BaseHelper {
         };
 
         if (Array.isArray(template)) {
-            template = template[this.client.Helpers.Random.getRandomInt(0, template.length - 1)];
+            template = template[this.client.Helpers.Random.randInt(0, template.length - 1)];
         }
 
         for (const arg of Object.keys(args)) {

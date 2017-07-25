@@ -40,12 +40,12 @@ class GenerateCommand extends CatCommand {
         for (let i = 0; i < length; i++) {
             let data = await ctx.client.getDataTag(ctx.client.Helpers.Random.generateToken(10));
             await data.create({
-                uses: ctx.client.Helpers.Random.getRandomInt(1, 999),
+                uses: ctx.client.Helpers.Random.randInt(1, 999),
                 authorId: this.randomUser.id,
                 content: 'Procedurally Generated Tag:\n\n' + ctx.client.Helpers.Random.generateToken(100),
                 desc: 'This tag was procedurally generated for testing purposes.\n\n' + ctx.client.Helpers.Random.generateToken(100)
             });
-            for (let i = 0; i < ctx.client.Helpers.Random.getRandomInt(2, members.size); i++) {
+            for (let i = 0; i < ctx.client.Helpers.Random.randInt(2, members.size); i++) {
                 await data.addFavourite(this.randomUser.id);
             }
         }
