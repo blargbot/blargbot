@@ -24,6 +24,7 @@ class EventManager extends Manager {
             this.eventList[eventName][name] = this.builtList[name];
             if (!this.events.hasOwnProperty(eventName)) {
                 this.events[eventName] = async function (...args) {
+                    if (!this.client.ready) return;
                     for (const event of Object.keys(this.eventList[eventName])
                         .map(k => this.eventList[eventName][k])
                         .sort((a, b) => a.priority - b.priority)) {

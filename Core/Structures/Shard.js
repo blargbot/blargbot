@@ -6,6 +6,7 @@ class Shard extends Sender {
         super();
         this.id = id;
         this.manager = manager;
+        this.respawn = true;
 
         this.env = Object.assign({}, process.env, this.manager.env, {
             SHARD_ID: this.id,
@@ -33,6 +34,11 @@ class Shard extends Sender {
         this.process.once('kill', code => {
             this.manager.handleDeath(this, code);
         });
+    }
+
+    kill(code) {
+        this.respawn = false;
+        this.process.kill(code);
     }
 }
 

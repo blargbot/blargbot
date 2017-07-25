@@ -10,8 +10,13 @@ class RestartCommand extends CatCommand {
     }
 
     async execute(ctx) {
-        await ctx.send('bai');
-        ctx.client.sender.send('KILLEVERYTHING', 'meep');
+        if (ctx.input._.join(' ').toLowerCase() === 'kill') {
+            await ctx.send('ah you killed me D:');
+            ctx.client.sender.send('KILLEVERYTHING', 'meep');
+        } else {
+            await ctx.send('ah you killed me but in a way that minimizes downtime D:');
+            ctx.client.sender.send('respawnAll', 'morp');
+        }
     }
 }
 

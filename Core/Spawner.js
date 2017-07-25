@@ -12,14 +12,35 @@ class Spawner extends EventEmitter {
         this.guildShardMap = {};
     }
 
-    spawn(id) {
+    respawnAll() {
+        return Promise.all(Array.from(this.shards.values()).map(s => this.respawnShard(s.id)));
+    }
+
+    respawnShard(id) {
+        return new Promise(async (res, rej) => {
+            let shard = await this.spawn(id, false);
+            shard.on('ready', async () => {
+                if (this.shards.get(id) !== undefined) {
+                    let oldShard = this.shards.get(id);
+                    oldShard.kill();
+                    this.shards.delete(id);
+                }
+                this.shards.set(id, shard);
+                res();
+            });
+            await shard.awaitMessage('connect');
+        });
+    }
+
+    spawn(id, set = true) {
         return new Promise((resolve, reject) => {
             const shard = new Shard(id, this);
-            if (this.shards.get(id) !== undefined)
-                this.shards.delete(id);
-            this.shards.set(id, shard);
-            this.once('threadReady' + id, () => {
-
+            if (set) {
+                if (this.shards.get(id) !== undefined)
+                    this.shards.delete(id);
+                this.shards.set(id, shard);
+            }
+            shard.once('threadReady', () => {
                 resolve(shard);
             });
         });
@@ -73,13 +94,23 @@ class Spawner extends EventEmitter {
                 }
                 break;
             case 'threadReady':
-                this.emit('threadReady' + data.message);
+                shard.emit('threadReady');
                 break;
             case 'ready':
+                shard.emit('ready');
                 for (const guild in this.guildShardMap)
                     if (this.guildShardMap[guild] === shard.id) delete this.guildShardMap[guild];
                 for (const guild of data)
                     this.guildShardMap[guild] = shard.id;
+                break;
+            case 'respawn':
+                console.log('Respawning a shard');
+                await this.respawnShard(data.id || shard.id);
+                break;
+            case 'respawnAll':
+                console.log('Respawning all shards');
+                await this.respawnAll();
+                console.log('Respawn complete.');
                 break;
             case 'guildCreate':
                 this.guildShardMap[data] = shard.js;
@@ -98,7 +129,8 @@ class Spawner extends EventEmitter {
     }
 
     handleDeath(shard, code) {
-        if (this.respawn) this.spawn(shard.id);
+        console.log('A shard died, how sad');
+        if (this.respawn && shard.respawn) this.spawn(shard.id);
     }
 }
 
