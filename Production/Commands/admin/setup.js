@@ -16,8 +16,8 @@ class ModCommand extends AdminCommand {
                 client.Constants.Permissions.EMBED_LINKS
             ],
             keys: {
-                setrole: `.setrole`,
-                rolequery: `.rolequery`,
+                setstaffrole: `.setstaffrole`,
+                staffrolequery: `.staffrolequery`,
                 nochange: 'generic.nochange'
             }
         });
@@ -55,10 +55,10 @@ class ModCommand extends AdminCommand {
             };
         });
         try {
-            menu.embed.setDescription(await ctx.decode(this.keys.rolequery));
+            menu.embed.setDescription(await ctx.decode(this.keys.staffrolequery));
             let selected = await menu.paginate(roles, true);
             await data.setKey('staffRoles', selected);
-            await ctx.decodeAndSend(this.keys.setrole);
+            await ctx.decodeAndSend(this.keys.setstaffrole);
         } catch (err) {
             await ctx.decodeAndSend(this.keys.nochange);
         }
