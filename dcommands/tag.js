@@ -620,6 +620,8 @@ ${Object.keys(user.favourites).join(', ')}
                         tag.deleter = msg.author.id;
                         tag.reason = words.slice(3).join(' ');
                         tag.deleted = true;
+                        tag.uses = 0;
+                        tag.favourites = 0;
                         await r.table('tag').get(title).replace(tag);
                         await bu.send(msg, 'The tag has been deleted.');
                     } else {

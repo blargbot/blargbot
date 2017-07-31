@@ -42,21 +42,20 @@ e.execute = async function (params) {
     if (isNaN(incrementBy)) {
         incrementBy = 1;
     }
-    if (args.length <= 2) {
+    if (args.length >= 2) {
         let result = await TagManager.list['get'].getVar(params, args[1]);
         if (result == undefined) {
-            logger.debug(1);
             replaceString = await bu.tagProcessError(params, '`Variable not defined`');
         } else {
             result = parseInt(result) + incrementBy;
             if (isNaN(result)) {
-                logger.debug(2);
                 replaceString = await bu.tagProcessError(params, '`Not a number`');
-            } else replaceString = result;
-            await TagManager.list['set'].setVar(params, args[1], result);
+            } else {
+                replaceString = result;
+                await TagManager.list['set'].setVar(params, args[1], result);
+            }
         }
     } else if (args.length < 2) {
-        logger.debug(2);
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
 

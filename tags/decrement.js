@@ -42,7 +42,7 @@ e.execute = async function (params) {
     if (isNaN(decrementBy)) {
         decrementBy = 1;
     }
-    if (args.length <= 2) {
+    if (args.length >= 2) {
         let result = await TagManager.list['get'].getVar(params, args[1]);
         if (result == undefined) {
             replaceString = await bu.tagProcessError(params, '`Variable not defined`');
