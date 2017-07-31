@@ -286,6 +286,12 @@
                 "usage": ""
             }
         },
+        "image": {
+            "cat": {
+                "info": "Gives you a lovely dear sweet precious kitty.\nD'awww!",
+                "usage": "cat"
+            }
+        },
         "admin": {
             "mod": {
                 "setrole": "The staff roles have been updated.",
@@ -302,12 +308,6 @@
                         "info": "Brings up a dialog to select or deselect roles."
                     }
                 }
-            }
-        },
-        "image": {
-            "cat": {
-                "info": "Gives you a lovely dear sweet precious kitty.\nD'awww!",
-                "usage": "cat"
             }
         }
     },
