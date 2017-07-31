@@ -286,11 +286,17 @@
                 "usage": ""
             }
         },
+        "image": {
+            "cat": {
+                "info": "Gives you a lovely dear sweet precious kitty.\nD'awww!",
+                "usage": "cat"
+            }
+        },
         "admin": {
             "mod": {
                 "setrole": "The staff roles have been updated.",
                 "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
-                "info": "Sets which users/roles are considered to be staff.",
+                "info": "Sets what users/roles are considered to be staff.",
                 "usage": "mod <subcommand>",
                 "subcommand": {
                     "user": {
@@ -302,12 +308,6 @@
                         "info": "Brings up a dialog to select or deselect roles."
                     }
                 }
-            }
-        },
-        "image": {
-            "cat": {
-                "info": "Gives you a lovely dear sweet precious kitty.\nD'awww!",
-                "usage": "cat"
             }
         }
     },
