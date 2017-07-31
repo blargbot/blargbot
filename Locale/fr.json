@@ -2,44 +2,47 @@
     "specs": {
         "lang": "Français",
         "contributors": [
-            "231499325123854336"
+            "231499325123854336",
+            "170844396877512704",
+            "145577223452229632"
         ]
     },
     "comments": [
-        "This is a locale file for blargbot.",
-        "For contribution, please use the following guidelines:",
-        "1. Arguments are passed into templates using {{name}}. Do not modify these.",
-        "2. Templates are used in templates by using [[path.to.key]]. Do not modify these.",
-        "3. All commands must contain an 'info' and 'usage' property.",
-        "4. For random outputs, terms are placed in a '.list' context. Each random output is specified on a new line. You may contribute random outputs as needed.",
-        "5. Terms should end with the same punctuation as in the en_US reference.",
-        "6. For credit, put your Discord ID (or desired name) on a new line in the `contributors` term. IDs will get parsed to whatever your username/discrim are.",
-        "7. Keep translations civil.",
-        "Thank you!"
+        "Ceci est un fichier local (de traduction) pour blargbot.",
+        "Afin d'y contribuer, merci de respecter les règles suivantes:",
+        "1. Ne changez pas les \"templates\" notées: {{nom}}.",
+        "2. Ne modifiez pas les \"templates\" notées: \"[[path.to.key]]\"",
+        "3. Toutes les commandes doivent contenir une propriété \"info\" et \"utilisation\".",
+        "4. Pour les résultats aléatoires, les \"terms\" sont placés dans un \"context\" '.list'. Vous avez le droit d'en ajouter.",
+        "5. Utilisez la même ponctuation que dans la référence.",
+        "6. Pour la gloire, les femmes et l'argent, ajoutez votre discord userID dans une nouvelle ligne juste ci-dessus.",
+        "7. Pas d'bêtises.",
+        "",
+        "Bises, NegativeCoffee."
     ],
     "generic": {
         "output": "Résultat:\n{{output}}",
-        "nooutput": "Aucun résultats...",
+        "nooutput": "Aucun résultat...",
         "queryexpire": "Cette requête expirera dans {{length}} minutes.",
         "resolveuser": {
-            "nousers": "Aucun utilisateur de trouvé.",
-            "pickuser": "{{length}} utilisateurs de trouvés! Veuillez en choisir un de la liste."
+            "nousers": "Aucun utilisateur trouvé.",
+            "pickuser": "{{length}} utilisateurs trouvés! Veuillez en choisir un de la liste."
         },
         "resolverole": {
-            "noroles": "Aucun rôles de trouvés.",
-            "pickrole": "{{length}} rôles de trouvés! Veuillez en choisir un de la liste."
+            "noroles": "Aucun rôle trouvé.",
+            "pickrole": "{{length}} rôles trouvés! Veuillez en choisir un de la liste."
         },
         "resolvechannel": {
-            "nochannels": "Aucun channel de trouvé.",
-            "pickchannel": "{{length}} channels de  trouvés! Veuillez en choisir un de la liste."
+            "nochannels": "Aucun canal trouvé.",
+            "pickchannel": "{{length}} canaux trouvés! Veuillez en choisir un de la liste."
         },
-        "edited": "edité",
+        "edited": "édité",
         "created": "créé",
         "deleted": "supprimé",
         "menu": {
             "choices": "Page {{page}}/{{max}}"
         },
-        "nochange": "Aucun changements.",
+        "nochange": "Aucun changement.",
         "commandhelp": "**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
         "example": {
             "id1": "111111111111111111",
@@ -55,206 +58,220 @@
         },
         "confirm": {
             "name": "Confirmer",
-            "description": "Confirms this menu."
+            "description": "Veuillez confirmer ce menu."
         }
     },
     "emote": {
-        "check": "white_check_mark:",
+        "check": ":white_check_mark:",
         "x": ":x:",
         "okhand": ":ok_hand:"
     },
     "error": {
-        "keyundef": "No such locale entry was found: '{{key}}'.",
-        "memberundef": "No such member was found: '{{member}}'.",
-        "userundef": "No such user was found: '{{user}}'.",
-        "channelundef": "No such channel was found: '{{channel}}'.",
-        "roleundef": "No such role was found: '{{role}}'.",
-        "pleasereport": "If you think this is an error, please report it!",
-        "generic": "Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
-        "messagetoolong": "Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
-        "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
+        "keyundef": "Aucune entrée locale de ce type n'a été trouvée: '{{key}}'.",
+        "memberundef": "Aucun membre de ce nom n'a été trouvé: '{{member}}'",
+        "userundef": "Aucun utilisateur de ce nom n'a été trouvé: '{{user}}'.",
+        "channelundef": "Aucun canal de ce nom n'a été trouvé: '{{channel}}'.",
+        "roleundef": "Aucun rôle de ce nom n'a été trouvé: '{{role}}'.",
+        "pleasereport": "Si vous pensez qu'il s'agit d'une erreur, veuillez la signaler (en anglais)!",
+        "generic": "Une erreur s'est produite!\n```\n{{message}}\n```\n[error.pleasereport]]",
+        "messagetoolong": "Oh-oh! J'ai tenté d'envoyer un message qui était trop long.\n[[error.pleasereport]]",
+        "notenoughparams": "Pas assez de paramètres. Utilisez `{{prefix}}help {{name}}` pour plus de détails.\n\nIl fallait `{{expected}}` parameters, mais j'ai reçu `{{received}}` à la place.",
         "tag": {
-            "notfound": "Tag '{{tag}}' doesn't exist.",
-            "toomanyargs": "Too many args (r:{{received}} e:{{expected}})",
-            "toofewargs": "Too little args (r:{{received}} e:{{expected}})",
-            "isnan": "Expected '{{arg}}' to be a number, but received '{{value}}'",
-            "maxlessthanmin": "Max must be greater than Min",
-            "ccommandonly": "'{{tag}}' may only be used in ccommands",
-            "authorstaff": "Author {{author}} must be staff to use '{{tag}}'",
-            "noperms": "Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
-            "toolow": "Bot cannot '{{tag}}' because its lower-ranked than '{{target}}'",
-            "unclosed": "Unmatched opening bracket [{{column}}:{{row}}]",
-            "unopened": "Unmatched closing bracket [{{column}}:{{row}}]",
-            "invalidradix": "Radix must be between 2 and 36, but received '{{radix}}'",
-            "notanarray": "Variable '{{name}}' is not an array (Received: '{{value}}')",
-            "notbool": "Variable '{{name}}' is not a boolean (Received: '{{value}}')"
-        }
+            "notfound": "Le tag `{{tag}}` n'existe pas.",
+            "toomanyargs": "Trop d'arguments! (r:{{received}} e:{{expected}})",
+            "toofewargs": "Pas assez d'arguments! (r:{{received}} e:{{expected}})",
+            "isnan": "'{{arg}}' s'attend à être un nombre, mais reçois une '{{value}}'",
+            "maxlessthanmin": "Le maximum doit être supérieur au minimum",
+            "ccommandonly": "'{{tag}}' ne peut être utilisé qu'avec les ccommands",
+            "authorstaff": "L'auteur {{author}} doit être un membre du staff pour utiliser '{{tag}}'",
+            "noperms": "Il manque au bot la permission '{{perm}}' requise par le tag '{{tag}}'",
+            "toolow": "Le bot ne peut '{{tag}}' car son rang est inférieur à celui de '{{target}}'",
+            "unclosed": "Accolade d'ouverture solitaire [{{column}}:{{row}}]",
+            "unopened": "Accolade de fermeture solitaire [{{column}}:{{row}}]",
+            "invalidradix": "La base doit être comprise entre 2 et 36, mais vaut '{{radix}}'",
+            "notanarray": "La variable '{{name}}' n'est pas un tableau (reçu: '{{value}}').",
+            "notbool": "La variable '{{name}}' n'est pas un booléen (reçu: '{{value}}')."
+        },
+        "inputtoolong": "Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
     },
     "command": {
         "general": {
             "ping": {
-                "info": "Pong!\nFinds the command latency.",
+                "info": "Pong!\nDétermine la latence des commandes.",
                 "usage": "ping",
                 "randmsg": [
-                    "Existence is a lie.",
-                    "You're going to die some day, perhaps soon.",
-                    "Nothing matters.",
-                    "Where do you get off?",
-                    "There is nothing out there.",
-                    "You are alone in an infinite void.",
-                    "Truth is false.",
-                    "Forsake everything.",
-                    "Your existence is pitiful.",
-                    "We are all already dead.",
-                    "Meow.",
-                    "Fear is freedom.",
-                    "Subjugation is liberation.",
-                    "Contradiction is truth.",
-                    "Would you like to make a contract?",
-                    "Let it go, and move on."
+                    "Tu veux du gâteau ?",
+                    "Un biscuit ?",
+                    "Une tasse de thé ?",
+                    "Tu veux un petit café ?",
+                    "J'ai faim.",
+                    "Un grand verre d'eau avec une paille, s'il vous plaît.",
+                    "J'ai des P'tits Lu.",
+                    "Tu veux un cookie?",
+                    "J'ai soif.",
+                    "Wouaf.",
+                    "Miaou.",
+                    "..."
                 ],
                 "final": "Pong! ({{time}}ms)"
             },
             "brainfuck": {
-                "info": "Executes brainfuck code.",
+                "info": "Exécute le code \"brainfuck\".",
                 "usage": "brainfuck <code>",
                 "flags": {
-                    "p": "Shows a list of pointers after the execution.",
-                    "i": "Specifies the input for the `,` operator."
+                    "p": "Montre une liste de pointeurs après exécution.",
+                    "i": "Spécifie les données apportées pour l'opérateur `,`."
                 }
             },
             "cat": {
-                "info": "Gets a picture of a cat.",
-                "usage": "cat"
+                "info": "Affiche une photo de chat.",
+                "usage": "chat"
             },
             "ship": {
-                "info": "Gives you the ship name for two users.",
-                "usage": "ship <user1> <user2>",
-                "final": "Your shipname is **{{name}}**!",
-                "notenough": "You have to tell me who to ship!"
+                "info": "Génère un surnom pour deux utilisateurs.",
+                "usage": "ship <utilisateur1> <utilisateur2>",
+                "final": "Votre surnom est **{{name}}**!",
+                "notenough": "Vous devez choisir deux membres!"
             },
             "tag": {
-                "info": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>).",
-                "usage": "tag <name | subcommand> [args]",
-                "dontown": "[[emote.x]] You don't own that tag!",
-                "alreadyexists": "[[emote.x]] A tag with that name already exists!",
-                "notag": "[[emote.x]] There is no tag with that name.",
+                "info": "Les tags sont un système de commandes publiques que tout le monde peut créer ou utiliser, écrits avec le langage BBTag.\n\n**Sous-commandes**:\n{{subcommands}}\n\nPour plus d'informations sur une sous-commande, utilisez `b!t help <sous-command>`.\nPour plus d'informations sur le langage BBTag, visitez <https://blargbot.xyz/tags>.\nEn créant un tag, vous certifiez approuver les conditions d'utilisation. (<https://blargbot.xyz/tags/tos> - en anglais.)",
+                "usage": "tag <nom | sous-commande> [arguments]",
+                "dontown": "[[emote.x]] Vous ne possédez pas ce tag!",
+                "alreadyexists": "[[emote.x]] Un tag avec ce nom existe déjà!",
+                "notag": "[[emote.x]] Aucun tag avec ce nom n'existe.",
                 "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
-                "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`.",
-                "raw": "The code for {{name}} is:\n```{{code}}```",
-                "testoutput": "Test Output:\n\n{{output}}",
+                "tagrename": "[[emote.check]] Le tag `{{old}}` a été renommé en `{{new}}`.",
+                "raw": "Le code pour {{name}} est:\n```{{code}}```",
+                "testoutput": "Résultat:\n\n{{output}}",
                 "subcommand": {
                     "set": {
-                        "usage": "tag set <name> <content>",
-                        "info": "Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
+                        "usage": "tag set <nom> <contenu>",
+                        "info": "Crée ou modifie un tag avec un nom et un contenu donné. Ne remplacera aucun tag créé par quelqu'un d'autre."
                     },
                     "delete": {
-                        "usage": "tag delete <name>",
-                        "info": "Deletes a tag that you own."
+                        "usage": "tag delete <nom>",
+                        "info": "Supprime un tag que vous avez créé."
                     },
                     "rename": {
-                        "usage": "tag rename <name> <new name>",
-                        "info": "Renames a tag that you own."
+                        "usage": "tag rename <nom> <nouveau_nom>",
+                        "info": "Renomme un tag que vous avez créé."
                     },
                     "raw": {
-                        "usage": "tag raw <name>",
-                        "info": "Gets the raw code of a tag."
+                        "usage": "tag raw <nom>",
+                        "info": "Renvoie le code d'un tag."
                     },
                     "info": {
-                        "usage": "tag info <name>",
-                        "info": "Displays information about a tag."
+                        "usage": "tag info <nom>",
+                        "info": "Affiche des informations à propos d'un tag."
                     },
                     "transfer": {
-                        "usage": "tag transfer <name> <user>",
-                        "info": "Transfers a tag to the specified user. Variables will not be transferred."
+                        "usage": "tag transfer <nom> <utilisateur>",
+                        "info": "Transfère le tag vers un utilisateur. Les variables ne seront pas transférées."
                     },
                     "top": {
                         "usage": "tag top",
-                        "info": "Displays the tags that have been the most favorited."
+                        "info": "Affiche des tags qui ont été les plus favorisés."
                     },
                     "author": {
-                        "usage": "tag author <name>",
-                        "info": "Displays the author of a tag."
+                        "usage": "tag author <nom>",
+                        "info": "Affiche l'auteur d'un tag."
                     },
                     "search": {
                         "usage": "tag search <query>",
-                        "info": "Searches for a tag with a name containing your query."
+                        "info": "Recherche un tag avec le nom contenant votre query"
                     },
                     "list": {
                         "usage": "tag list [@user]",
-                        "info": "Lists all the tags, or optionally all the tags created by a specific user."
+                        "info": "Liste tous les tags, ou optionnellement tous les tags créés par un utilisateur spécifique."
                     },
                     "favorite": {
-                        "usage": "tag favorite <name>",
-                        "info": "Favorites the specified tag."
+                        "usage": "tag favorite <nom>",
+                        "info": "Favorise le tag spécifié."
                     },
                     "report": {
-                        "usage": "tag report <name>",
-                        "info": "Reports a tag for violating the ToS. Please use responsibly."
+                        "usage": "tag report <nom>",
+                        "info": "Signale un tag pour avoir violer les ToS. Merci de l'utiliser avec responsabilité."
                     },
                     "test": {
                         "usage": "tag test <code>",
-                        "info": "Executes the given code in a test environment."
+                        "info": "Exécute le code donné dans un environnement d'essai."
                     },
                     "help": {
-                        "usage": "tag help [subcommand]",
-                        "info": "Displays this!"
+                        "usage": "tag aide [sous-commande]",
+                        "info": "Affiche ceci !"
                     },
                     "docs": {
-                        "usage": "tag docs [subtag]",
-                        "info": "Gives a link to the BBTag documentation, or provides information about a specific subtag."
+                        "usage": "documents tag [subtag]",
+                        "info": "Donne un lien vers la documentation BBTag ou donne des informations à propos d'un sous-tag spécifique."
+                    },
+                    "setdesc": {
+                        "usage": "",
+                        "info": "info"
+                    },
+                    "setusage": {
+                        "usage": "",
+                        "info": "info"
                     }
                 },
-                "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`.",
+                "subcommandnotfound": "Aucune sous-commande trouvée avec le nom `{{subcommand}}`",
                 "transferprompt": "{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
                 "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
                 "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
                 "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!"
+                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!\n\n{{desc}}",
+                "descupdate": "La description pour `{{tag}}` a été mise à jour.",
+                "descreset": "La description pour `{{tag}}` a été réinitialisée.",
+                "subcommandconflict": "Vous ne pouvez pas utiliser le nom `{{name}}` parce qu'il y a une sous-commande qui porte ce nom!",
+                "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+                "toptags": "Voici les 10 meilleurs tags!\n\n{{tags}}",
+                "tagauthor": "Le tag `{{tag}}` a été créé par **{{author}}**.",
+                "favouriteadd": "The tag `{{tag}}` has been added to your favorites list.",
+                "favouriteremove": "The tag `{{tag}}` has been removed from your favorites list.",
+                "favourites": "You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
             },
             "ccommand": {
-                "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
-                "usage": "cc <subcommand> [args]",
+                "info": "Les \"ccommands\" sont un système de commandes personnalisées que les modérateurs peuvent créer pour leurs utilisateurs en utilisant le langage BBTag.\n\n**Sous-commandes**\n{{subcommands}}\n\nPour plus d'informations à propos d'une sous-commande, faites `b!t help <sous-commande>`\nPour plus d'informations à propos des BBTag, visitez <https://blargbot.xyz/tags>.",
+                "usage": "cc <sous-commande> [args]",
                 "subcommand": {
                     "set": {
-                        "usage": "cc set <name> <content>",
-                        "info": "Creates or edits a custom command with the provided name and content. Will not replace any tags made by anyone else."
+                        "usage": "cc set <nom> <contenu>",
+                        "info": "Crée ou modifie une commande personnalisée avec le nom et le contenu donnés. Ne remplacera aucun tag fait par quelqu'un d'autre."
                     },
                     "delete": {
-                        "usage": "cc delete <name>",
-                        "info": "Deletes a custom command."
+                        "usage": "cc delete <nom>",
+                        "info": "Supprime une commande personnalisée."
                     },
                     "rename": {
-                        "usage": "cc rename <name> <newName>",
-                        "info": "Renames a custom command."
+                        "usage": "cc rename <nom> <nouveauNom>",
+                        "info": "Renomme une commande personnalisée."
                     },
                     "author": {
-                        "usage": "cc author <name>",
-                        "info": "Returns the author of the custom command."
+                        "usage": "cc author <nom>",
+                        "info": "Renvoie le nom de l'auteur d'une commande personnalisée."
                     },
                     "transfer": {
-                        "usage": "cc transfer <name> <user>",
-                        "info": "Transfers ownership of a custom command to somebody else. Must be consensual."
+                        "usage": "cc transfer <nom> <utilisateur>",
+                        "info": "Transfère les droits de propriété d'une commande personnalisé vers quelqu'un d'autre. Doit être consensuel."
                     },
                     "list": {
-                        "usage": "cc list",
-                        "info": "Lists the custom commands on the guild."
+                        "usage": "Liste cc",
+                        "info": "Liste les commandes personnalisées de la guilde."
                     },
                     "test": {
-                        "usage": "cc test",
-                        "info": "Executes code in the context of your account."
+                        "usage": "Test cc",
+                        "info": "Exécute le code dans le contexte de votre compte."
                     },
                     "help": {
-                        "usage": "cc help [subcommand]",
-                        "info": "Displays this!"
+                        "usage": "Aide cc [subcommand]",
+                        "info": "Affiche ceci !"
                     }
                 },
                 "dontown": "[[emote.x]] You don't own that custom command!",
                 "notag": "[[emote.x]] There is no custom command with that name.",
                 "tagset": "[[emote.check]] Custom command `{{name}}` {{process}}!",
                 "tagrename": "[[emote.check]] The custom command `{{old}}` has been renamed to `{{new}}`",
-                "raw": "The code for {{name}} is:\\n```{{code}}```",
-                "alreadyexists": "A custom command with that name already exists.",
+                "raw": "Le code pour {{name}} est :\\n```{{code}}```",
+                "alreadyexists": "Une commande personnalisée avec ce nom existe déjà.",
                 "testoutput": "Test Output:\\n\\n{{output}}"
             },
             "locale": {
@@ -262,163 +279,167 @@
                 "usage": "locale",
                 "set": "Your locale has been set to {{locale}}!",
                 "list": "Your current locale is: {{current}}\n\nPlease select which locale you want to use."
+            },
+            "tokenify": {
+                "info": "",
+                "usage": ""
             }
         },
         "admin": {
             "mod": {
-                "setrole": "The staff roles have been updated.",
-                "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
-                "info": "Sets what users/roles are considered to be staff.",
-                "usage": "mod <subcommand>",
+                "setrole": "Les rôles Staff ont été mis à jour.",
+                "rolequery": "Sélectionnez les rôles qui seront considérés comme modérateurs. Les utilisateurs avec ces rôles seront habilités à utiliser les commandes d'administration.",
+                "info": "Définit quel utilisateur/rôle doit être considéré comme membre/rôle du Staff.",
+                "usage": "mod <sous-commande>",
                 "subcommand": {
                     "user": {
-                        "usage": "mod user <add | remove> <user>...",
-                        "info": "Adds or removes the specified user(s) to the staff list."
+                        "usage": "mod user <ajouter | retirer> <utilisateur>",
+                        "info": "Ajoute ou retire un utilisateur spécifique à la liste du Staff."
                     },
                     "role": {
-                        "usage": "mod user role",
-                        "info": "Brings up a dialog to select or deselect roles."
+                        "usage": "Utilisateur du rôle Modérateur",
+                        "info": "Affiche une fenêtre de dialogue afin de sélectionner ou désélectionner des rôles."
                     }
                 }
             }
         },
         "image": {
             "cat": {
-                "info": "Gives you a lovely dear sweet precious kitty.\nD'awww!",
-                "usage": "cat"
+                "info": "Vous montre un adorable, très doux et précieux chaton.",
+                "usage": "chat"
             }
         }
     },
     "tag": {
         "comment": {
-            "desc": "Specifies an area that will be ignored from parsing.",
+            "desc": "Spécifie une zone qui sera ignorée durant l'analyse.",
             "example": {
-                "in": "This will be shown {//;This won't be}",
-                "out": "This will be shown"
+                "in": "Ce texte apparaîtra. {{//; Celui-ci n'apparaîtra pas.}.",
+                "out": "Ce texte apparaîtra."
             }
         },
         "void": {
-            "desc": "Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed.",
+            "desc": "Prévient l'apparition du résultat. Ce tag est différent des commentaires car tout est exécuté, juste pas affiché. ",
             "example": {
-                "in": "This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
-                "out": "This will be shown  but this will be set"
+                "in": "Ce texte apparaîtra {void;Celui-ci n'apparaîtra pas. {set;~temp;et cette variable sera assignée.}} {get;~temp}",
+                "out": "Ce texte apparaîtra et cette variable sera assignée."
             }
         },
         "randint": {
-            "desc": "Returns a random integer between the provided range. `min` defaults to `0`.",
+            "desc": "Renvoie un entier aléatoire compris entre deux nombres. `min` vaut 0 par défaut.",
             "example": {
-                "in": "One: {randint;5}, two: {randint;10;20}",
-                "out": "One: 2, two: 17"
+                "in": "Un: {randint;5}, deux: {randint;10;20}",
+                "out": "Un: 2, Deux: 17"
             }
         },
         "array": {
             "filter": {
-                "desc": "Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array only containing the elements where the result of the iteration was `true` or `1`.",
+                "desc": "Itère à travers un tableau en modifiant l'élément à une variable locale `i`. Si `varName` est spécifiée, remplace l'élément par cette variable à la place de `i`.\n\nRenvoie un nouveau tableau qui contient seulement les éléments où le résultat de l'itération était `vrai` ou `1`",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{filter;array;{logic;{get;i};<;3}}",
                     "out": "[1;2]"
                 }
             },
             "foreach": {
-                "desc": "Iterates through an array, setting the local variable `i` to the current element. If `varName` is provided, sets that variable instead.",
+                "desc": "Itère à travers un tableau en remplaçant l'élément actuel par la variable `i`. Si `varName` est donné, remplace l'élément actuel par celui-ci à la place de `i`.",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{array.foreach;array;Element:{get;i}{newline}}",
-                    "out": "Element:1\nElement:2\nElement:3\nElement:4\nElement:5"
+                    "out": "Elément:1\nElément:2\nElément:3\nElément:4\nElément:5"
                 }
             },
             "get": {
-                "desc": "Gets an element from an array at the position `index`.",
+                "desc": "Obtient l'élément d'un tableau à la position `index`",
                 "example": {
-                    "in": "{set;array;[1;2;3;4;5]}\nElement at index 3: {array.get;array;3}",
-                    "out": "Element at index 3: 4"
+                    "in": "{set;array;[1;2;3;4;5]}\nÉlément à l'index 3: {array.get;array;3}",
+                    "out": "Élément à l'index 3: 4"
                 }
             },
             "isarray": {
-                "desc": "Returns true if the provided element is an array, and false otherwise. You cannot use variable names.",
+                "desc": "Renvoie vrai si l'élément donné est un tableau, faux dans le cas contraire. Vous ne pouvez pas utiliser de noms de variable.",
                 "example": {
-                    "in": "{set;arr1;[this;is;an;array]}\n{set;arr2;this is not an array}\narr1: {array.isarray;{get;arr1}}\narr2: {array.isarray;{get;arr2}}",
-                    "out": "arr1: true\narr2: false"
+                    "in": "{set;arr1;[c';est;un;tableau]}\n{set;arr2;ce n'est pas un tableau}\narr1: {array.isarray;{get;arr1}}\narr2: {array.isarray;{get;arr2}}",
+                    "out": "arr1: vrai\narr2: faux"
                 }
             },
             "join": {
-                "desc": "Joins an array with the provided `delimiter`.",
+                "desc": "Unit un tableau avec le `délimiteur` fourni.",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{array.join;array;,{space}}",
                     "out": "1, 2, 3, 4, 5"
                 }
             },
             "length": {
-                "desc": "Returns the length of the given array.",
+                "desc": "Renvoie la longueur du tableau donné.",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{array.length;array}",
                     "out": "5"
                 }
             },
             "map": {
-                "desc": "Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array where each element is the result of each iteration.",
+                "desc": "Itère à travers un tableau en remplaçant l'élément actuel par une variable `i`. Si `varName` est spécifié, remplace l'élément actuel par celui-ci plutôt que par `i`.\n\nRenvoie un nouveau tableau où chaque élément est le résultat d'une itération.",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{array.map;array;{math;i;*;2}}",
                     "out": "[2;4;6;8;10]"
                 }
             },
             "pop": {
-                "desc": "Removes and returns the last element of the array.",
+                "desc": "Supprime et renvoie le dernier élément du tableau.",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{array.pop;array}\n{get;array}",
                     "out": "5\n[1;2;3;4]"
                 }
             },
             "push": {
-                "desc": "Pushes an element to the end of an array. Returns the modified array.",
+                "desc": "Pousse un élément à la fin d'un tableau. Renvoie ainsi le tableau modifié.",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{array.push;array;6}",
                     "out": "[1;2;3;4;5;6]"
                 }
             },
             "set": {
-                "desc": "Sets an element on the array at the specified `index`.",
+                "desc": "Définit un élément dans le tableau à l' `index` spécifié",
                 "example": {
                     "in": "{set;array;[1;2;3;8;5]}\n{get;array}\n{array.set;array;3;4}\n{get;array}",
                     "out": "[1;2;3;8;5]\n\n[1;2;3;4;5]"
                 }
             },
             "shift": {
-                "desc": "Removes and returns the first element in the array.",
+                "desc": "Supprime et renvoie le premier élément du tableau.",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{array.shift;array}\n{get;array}",
                     "out": "1\n[2;3;4;5]"
                 }
             },
             "slice": {
-                "desc": "Returns a section of the array, including the `start` index and excluding the `end` index. If `end` is unspecified, defaults to all remaining elements.",
+                "desc": "Renvoie la partie du tableau incluant l'index de `début` et excluant l'index de `fin`. Si l'index de `fin` n'est pas spécifié, le définit par défaut à tous les éléments restants.",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{slice;array;3}\n{slice;array;2;4}",
-                    "out": "[4;5]\n[3;4]"
+                    "out": "[4;5]\n[3;4]\nout"
                 }
             },
             "sort": {
-                "desc": "Sorts and returns an array, by default in ascending order.\n\nIf `function` is provided, sorting will occur based on the result of executing said function. This will set two local variables: `a` (or `varNameOne`) and `b` (or `varNameTwo`). \n\nThe function must return a number. If the number is greater than 0, `a` will be considered greater than `b`. If the number is lower than 0, `b` will be considered greater than `a`. Any non-number result will be converted to 0, where both elements are equal.",
+                "desc": "Trie et rassemble un tableau, par défaut dans l'ordre d'ascension.\n\nSi la «fonction» est fournie, le tri se produira en fonction du résultat de l'exécution de ladite fonction. Cela va créer deux variables locales : `a` (ou `varNomUn`) et `b` (ou `varNomDeux`).\n\nLa fonction doit redevenir un nombre. Si le nombre est plus grand que 0, `a` sera considérer plus grand que `b`. Si le nombre est plus petit que 0, `b` sera considérer plus grand que `a`. Tout les résultats pour les nombres négatifs seront convertis en 0, où tout les nombres seront alors égaux.",
                 "example": {
                     "in": "{set;array;[2;5;1;6;3;7]}\n{sort;array}\n{sort;array;{math;b;-;a}}",
                     "out": "[1;2;3;5;6;7]\n[7;6;5;3;2;1]"
                 }
             },
             "splice": {
-                "desc": "Starting at the position `start`, removes `deleteCount` elements from the array and adds the remaining `items` at that position. Returns the removed elements.",
+                "desc": "Départ sur la position `start`, supprimera les éléments `deleteCount` du tableau et ajouteront les `items` restants de la position.  Résultats des éléments supprimés.",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{array.splice;array;2;2;inserted;items}\n{get;array}",
-                    "out": "[3;4]\n[1;2;inserted;items;5]"
+                    "out": "[3;4;]\n[1;2;insérer;objets;5]"
                 }
             },
             "split": {
-                "desc": "Splits the `text` by the `delimiter`, returning the new array.",
+                "desc": "Séparer le `text` par le `delimiter`, renvoyer au nouveau tableau.",
                 "example": {
-                    "in": "{array.split;This will be split by spaces;{space}}",
-                    "out": "[This;will;be;split;by;spaces]"
+                    "in": "{array.split;Ce sera séparer par espaces;{space}}",
+                    "out": "[Ce;sera;séparer;par;espaces]"
                 }
             },
             "unshift": {
-                "desc": "Inserts `value` at the beginning of the array, and returns the modified array.",
+                "desc": "Insère `valeur` au début du tableau, et rencoie le tableau modifié.",
                 "example": {
                     "in": "{set;array;[1;2;3;4;5]}\n{array.unshift;array;0}",
                     "out": "[0;1;2;3;4;5]"
@@ -427,82 +448,82 @@
         },
         "channel": {
             "id": {
-                "desc": "Returns the ID of the current or specified channel.",
+                "desc": "Renvoie l'ID du canal actuel ou spécifié",
                 "example": {
-                    "in": "{channel.id}",
-                    "out": "[[generic.example.id1]]"
+                    "in": "{id.canal}",
+                    "out": "[[exemple.générique.1id]]"
                 }
             },
             "nsfw": {
-                "desc": "Returns whether the current or specified channel is NSFW.",
+                "desc": "Renvoie au canal courant ou spécifié qui est NSFW.",
                 "example": {
-                    "in": "{channel.nsfw}",
-                    "out": "false"
+                    "in": "{canal.nsfw}",
+                    "out": "Faux"
                 }
             },
             "name": {
-                "desc": "Returns the name of the current or specified channel.",
+                "desc": "Renvoie le nom du canal actuel ou spécifié",
                 "example": {
-                    "in": "{channel.name;#general}",
-                    "out": "general"
+                    "in": "{nom.canal;#general}",
+                    "out": "général"
                 }
             },
             "position": {
-                "desc": "Returns the position of the current or specified channel.",
+                "desc": "Renvoie la position du canal actuel ou spécifié ",
                 "example": {
-                    "in": "{channel.position}",
+                    "in": "{position.canal}",
                     "out": "1"
                 }
             },
             "topic": {
-                "desc": "Returns the topic of the current or specified channel (text only).",
+                "desc": "Renvoie le sujet du canal actuel ou spécifié (texte uniquement)",
                 "example": {
-                    "in": "{channel.topic}",
-                    "out": "This is an example channel topic."
+                    "in": "{sujet.canal}",
+                    "out": "Ceci est un exemple de sujet de canal"
                 }
             },
             "type": {
-                "desc": "Returns the type of the current or specified channel (returns \"text\" or \"voice\").",
+                "desc": "Renvoie le type du canal actuel ou spécifié (renvoie \"textuel\" ou \"vocal\").",
                 "example": {
-                    "in": "{channel.type}",
-                    "out": "text"
+                    "in": "{canal.type}",
+                    "out": "texte"
                 }
             }
         },
         "general": {
             "clean": {
-                "desc": "Cleans the provided text by shrinking all whitespace.",
+                "desc": "Nettoie le texte fourni en diminuant tout les espace blanc.",
                 "example": {
-                    "in": "{clean;  one\n\n                two\n  \n\n    three}",
-                    "out": "one\ntwo\nthree"
+                    "in": "{nettoyer;  un\n\n                deux\n  \n\n    trois}",
+                    "out": "un\ndeux\ntrois"
                 }
             },
             "//": {
-                "desc": "Specifies an area that will be ignored from parsing",
+                "desc": "Spécifie une aire qui sera ignorer d'analyse.",
                 "example": {
-                    "in": "This will be shown {//;This won't be}",
-                    "out": "This will be shown"
+                    "in": "Ceci sera montré {//;Ceci ne le sera pas}",
+                    "out": "Ceci sera montré"
                 }
             },
             "get": {
-                "desc": "Returns the stored variable with the supplied name. Variable prefixes can modify the pool in which to search.",
+                "desc": "Résultats des variables emmagasinées avec un nom supplémentaire. Les prefixes des variables pourront modifier",
                 "example": {
                     "in": "{set;var;This is a variable.}\n{get;var}",
-                    "out": "This is a variable."
+                    "out": "Ceci est une variable."
                 }
             },
             "set": {
                 "desc": "Sets the stored variable with the supplied name to the supplied value. Variable prefixes can modify the pool in which to set.",
                 "example": {
                     "in": "{set;var;This is a variable.}\n{get;var}",
-                    "out": "This is a variable."
+                    "out": "Ceci est une variable."
                 }
             },
             "trim": {
                 "desc": "Removes whitespace before and after the provided text. Consider using the {clean} tag to remove whitespace within the text.",
                 "example": {
                     "in": "{trim;{space;5}Hello{space;5}}",
-                    "out": "Hello"
+                    "out": "Bonjour"
                 }
             },
             "void": {
@@ -516,13 +537,13 @@
                 "desc": "Returns the specified number of newlines, defaulting to 1.",
                 "example": {
                     "in": "One{newline;5}Two",
-                    "out": "One\n\n\n\n\nTwo"
+                    "out": "Un\n\n\n\nDeux"
                 }
             },
             "space": {
-                "desc": "Returns the specified number of spaces, defaulting to 1.",
+                "desc": "Renvoie le nombre spécifié d'espaces, par défaut 1.",
                 "example": {
-                    "in": "One{space;5}Two",
+                    "in": "Un{espace;5}Deux",
                     "out": "One     Two"
                 }
             }
@@ -536,49 +557,49 @@
                 }
             },
             "channels": {
-                "desc": "Returns the channels in the current guild as an array.",
+                "desc": "Renvoie les canaux de la guilde actuelle sous forme de tableau.",
                 "example": {
                     "in": "{guild.channels}",
                     "out": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]"
                 }
             },
             "icon": {
-                "desc": "Returns the URL of the current guild's icon.",
+                "desc": "Renvoie l'URL de l'icône de la guilde actuelle.",
                 "example": {
                     "in": "{guild.icon}",
                     "out": "https://cdn.discordapp.com/icons/194232473931087872/2e9d173fc1461ff9e4672cb8782978e7.png?size=512"
                 }
             },
             "id": {
-                "desc": "Returns the ID of the current guild.",
+                "desc": "Renvoie l'ID de la guilde actuelle.",
                 "example": {
-                    "in": "{guild.id}",
+                    "in": "{guilde.id}",
                     "out": "[[generic.example.id1]]"
                 }
             },
             "name": {
-                "desc": "Returns the name of the current guild.",
+                "desc": "Renvoie le nom de la guilde actuelle.",
                 "example": {
-                    "in": "{guild.name}",
-                    "out": "Cat Town"
+                    "in": "{guilde.nom}",
+                    "out": "Ville de Cat"
                 }
             },
             "owner": {
-                "desc": "Returns the ID of the guild's owner.",
+                "desc": "Renvoie l'ID du propriétaire de la guilde.",
                 "example": {
-                    "in": "{guild.owner}",
+                    "in": "{guilde.propriétaire}",
                     "out": "[[generic.example.id1]]"
                 }
             },
             "region": {
-                "desc": "Returns the region the current guild is in.",
+                "desc": "Renvoie la région de la guilde actuelle.",
                 "example": {
                     "in": "{guild.region}",
                     "out": "us-west"
                 }
             },
             "roles": {
-                "desc": "Returns an array of roles in the current guild.",
+                "desc": "Renvoie un tableau des rôles de la guilde actuelle.",
                 "example": {
                     "in": "{guild.roles}",
                     "out": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]"
@@ -587,23 +608,23 @@
         },
         "logic": {
             "if": {
-                "desc": "If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nUse this with the {logic} tag.",
+                "desc": "Si la `valeur` est égale à `vrai` ou `1`, ça exécute la partie `alors`.\nSi la `valeur` est égale à `faux` ou `0`, ça exécute la partie `sinon`.\nAutrement, ça affiche une erreur.\n\nUtilisez ceci avec le {logique} tag.",
                 "example": {
-                    "in": "{if;true;This will be shown.;This won't be shown.}",
-                    "out": "This will be shown."
+                    "in": "{si;vrai;Ceci sera montré.;Ceci ne le sera pas.}",
+                    "out": "Ceci sera montré."
                 }
             },
             "logic": {
                 "desc": "Does logical operators on the `augend` and `operands`, returning `true` or `false`.\n\nEquivalence Operators:\n - `==` - equal\n - `!=` - not equal\n - `<` - less than\n - `<=` - less than or equal\n - `>` - greater than\n - `>=` - greater than or equal\n - `startswith` - the augend starts with the operand\n - `endswith` - the augend ends with the operand\n - `includes` - the augend includes the operand\n\nLogical Operators:\n - `&&` - returns true if the augend and operand are both true\n - `||` - returns true if either the augend or operand are true\n - `XOR` - returns true if only one of the augend and operand are true (not both)\n\nOther Operators:\n - `!` - inverts the next operand (true becomes false, etc.)",
                 "example": {
                     "in": "{logic;5;==;6}\n{logic;5;!=;6;&&;5;>;6}\n{logic;5;>=;6;||;5;<;6}\n{logic;5;<=;6;xor;true}\n{logic;1234;startswith;12}\n{logic;1234;endswith;34}\n{logic;1234;includes;23}\n{logic;!;true}\n{logic;!;5;!=;5}",
-                    "out": "false\nfalse\ntrue\nfalse\ntrue\ntrue\ntrue\nfalse\ntrue"
+                    "out": "faux\nfaux\nvrai\nfaux\nvrai\nvrai\nvrai\nfaux\nvrai"
                 }
             }
         },
         "math": {
             "abs": {
-                "desc": "Returns the absolute value of the provided number (no negatives).",
+                "desc": "Renvoie la valeur absolue du nombre fourni (pas de negatifs).",
                 "example": {
                     "in": "{math.abs;-3523}",
                     "out": "3523"
@@ -668,7 +689,7 @@
         },
         "message": {
             "id": {
-                "desc": "Returns the ID of the executing command message.",
+                "desc": "Renvoie l'ID du message contenant la commande",
                 "example": {
                     "in": "{message.id}",
                     "out": "[[generic.example.id1]]"
@@ -677,35 +698,35 @@
         },
         "role": {
             "color": {
-                "desc": "Returns the color of the specified role in hexadecimal.",
+                "desc": "Renvoie la couleur du rôle spécifié en hexadécimales.",
                 "example": {
                     "in": "#{role.color;coolrole}",
                     "out": "#2ECC71"
                 }
             },
             "id": {
-                "desc": "Returns the ID of the specified role.",
+                "desc": "Renvoie l'ID du rôle spécifié.",
                 "example": {
                     "in": "{role.id;coolrole}",
                     "out": "[[generic.example.id1]]"
                 }
             },
             "mention": {
-                "desc": "Returns a mention of the specified role.",
+                "desc": "Renvoie une mention du rôle spécifié.",
                 "example": {
                     "in": "{role.mention;coolrole}",
                     "out": "@coolrole"
                 }
             },
             "name": {
-                "desc": "Returns the name of the specified role.",
+                "desc": "Renvoie le nom du rôle spécifié.",
                 "example": {
                     "in": "{role.name;coolrole}",
                     "out": "coolrole"
                 }
             },
             "position": {
-                "desc": "Returns the position of the specified role.",
+                "desc": "Renvoie la position du rôle spécifié.",
                 "example": {
                     "in": "{role.position;coolrole}",
                     "out": "5"
@@ -714,7 +735,7 @@
         },
         "user": {
             "avatar": {
-                "desc": "Returns the avatar URL of the specified user, defaulting to the executing user.",
+                "desc": "Renvoie l'URL de l'avatar de l'utilisateur spécifié, par défaut celle de l'utilisateur.",
                 "example": {
                     "in": "{user.avatar}",
                     "out": "https://cdn.discordapp.com/avatars/[[generic.example.id1]]/avatarhash.png"
@@ -728,7 +749,7 @@
                 }
             },
             "discrim": {
-                "desc": "Returns the discriminator of the specified user, defaulting to the executing user.",
+                "desc": "Renvoie le discriminant de l'utilisateur spécifié, par défaut celui de l'utilisateur.",
                 "example": {
                     "in": "{user.discrim}",
                     "out": "1111"
@@ -742,10 +763,10 @@
                 }
             },
             "game": {
-                "desc": "Returns the game the specified user is playing, defaulting to the executing user. If the user isn't playing a game, returns nothing.",
+                "desc": "Renvoie le jeu auquel l'utilisateur spécifié est en train de jouer, par défaut celui de l'utilisateur.\nSi l'utilisateur n'est pas en train de jouer à un jeu, ça ne renvoie rien.",
                 "example": {
-                    "in": "{user.game}",
-                    "out": "with BBTag!"
+                    "in": "{utilisateur.jeu}",
+                    "out": "avec BBTag!"
                 }
             },
             "id": {
@@ -766,14 +787,14 @@
                 "desc": "Mentions the specified user, defaulting to the executing user.",
                 "example": {
                     "in": "{user.mention}",
-                    "out": "@person"
+                    "out": "@personne"
                 }
             },
             "name": {
                 "desc": "Returns the name of the specified user, defaulting to the executing user.",
                 "example": {
                     "in": "{user.name}",
-                    "out": "person"
+                    "out": "personne"
                 }
             },
             "nick": {
@@ -798,10 +819,10 @@
                 }
             },
             "status": {
-                "desc": "Returns the status of the specified user, defaulting to the executing user. Can return \"online\", \"away\", \"dnd\", or \"offline\".",
+                "desc": "Renvoie le statut de l'utilisateur spécifié, par défaut celui de l'utilisateur. Peut renvoyer \"en ligne\", \"absent\", \"npd\", ou \"hors-ligne\".",
                 "example": {
                     "in": "{user.status}",
-                    "out": "online"
+                    "out": "en ligne"
                 }
             }
         }
