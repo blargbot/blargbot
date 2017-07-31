@@ -130,6 +130,7 @@ class MessageHelper extends BaseHelper {
                     icon_url: user.avatarURL
                 };
             }
+            console.dir(content);
             await this.client.createMessage(this.client.Constants.ERROR_CHANNEL, {
                 embed: Embed
             }, {

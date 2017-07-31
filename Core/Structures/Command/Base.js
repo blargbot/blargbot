@@ -17,6 +17,7 @@ class BaseCommand {
          * this.subcommands = {
          *   // A name used for usage and locale generation
          *   name: {
+         *     aliases, // An array, optional
          *     flags, // An array, optional
          *     minArgs // the minimum amount of args the user must provide
          *   }
@@ -31,6 +32,9 @@ class BaseCommand {
         for (const key in this.subcommands) {
             this.subcommands[key].usage = `${this.base}.subcommand.${key}.usage`;
             this.subcommands[key].info = `${this.base}.subcommand.${key}.info`;
+            this.subcommandAliases[key] = key;
+            for (const aKey of (this.subcommands[key].aliases || []))
+                this.subcommandAliases[aKey] = key;
         }
 
         if (_config.beta && process.env.SHARD_ID == 0 && this.keys !== false) {
