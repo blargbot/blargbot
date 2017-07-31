@@ -2,7 +2,8 @@
     "specs": {
         "lang": "English (Canada)",
         "contributors": [
-            "103347843934212096"
+            "103347843934212096",
+            "155887194836303872"
         ]
     },
     "comments": [
@@ -88,7 +89,8 @@
             "invalidradix": "Radix must be between 2 and 36, but received '{{radix}}'",
             "notanarray": "Variable '{{name}}' is not an array (Received: '{{value}}')",
             "notbool": "Variable '{{name}}' is not a boolean (Received: '{{value}}')"
-        }
+        },
+        "inputtoolong": "Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
     },
     "command": {
         "general": {
@@ -203,6 +205,14 @@
                     "docs": {
                         "usage": "tag docs [subtag]",
                         "info": "Gives a link to the BBTag documentation, or provides information about a specific subtag."
+                    },
+                    "setdesc": {
+                        "usage": "usage",
+                        "info": "info"
+                    },
+                    "setusage": {
+                        "usage": "usage",
+                        "info": "info"
                     }
                 },
                 "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`.",
@@ -210,7 +220,16 @@
                 "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
                 "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
                 "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!"
+                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
+                "descupdate": "The description for `{{tag}}` has been updated.",
+                "descreset": "The description for `{{tag}}` has been reset.",
+                "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",
+                "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+                "toptags": "Here are the top 10 tags!\n\n{{tags}}",
+                "tagauthor": "The tag `{{tag}}` was created by **{{author}}**",
+                "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
+                "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
+                "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
             },
             "ccommand": {
                 "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
@@ -262,6 +281,10 @@
                 "usage": "locale",
                 "set": "Your locale has been set to {{locale}}!",
                 "list": "Your current locale is: {{current}}\n\nPlease select which locale you want to use."
+            },
+            "tokenify": {
+                "info": "",
+                "usage": ""
             }
         },
         "admin": {
