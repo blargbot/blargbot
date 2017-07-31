@@ -306,6 +306,14 @@
                     "staffrole": {
                         "usage": "mod user role",
                         "info": "Brings up a dialog to select or deselect roles."
+                    },
+                    "mute": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "announcement": {
+                        "usage": "",
+                        "info": ""
                     }
                 }
             }
