@@ -88,7 +88,8 @@
             "invalidradix": "Cơ số phải trong khoảng 2 tới 36, nhưng nhận được '{{radix}}'",
             "notanarray": "Biến '{{name}}' không phải là mảng (Nhận được '{{value}}')",
             "notbool": "Biến '{{name}' không thuộc phép toán luận (Nhận được '{{value}}')"
-        }
+        },
+        "inputtoolong": "Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
     },
     "command": {
         "general": {
@@ -150,64 +151,72 @@
                 "testoutput": "Đầu ra:\n\n{{output}}",
                 "subcommand": {
                     "set": {
-                        "usage": "tag set <name> <content>",
-                        "info": "Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
+                        "usage": "tag set <tên> <nội dung>",
+                        "info": "Tạo hoặc chỉnh sửa một tag với tên và nội dung đã cho. Nó sẽ không thay thế bất cứ tag nào được làm từ người khác."
                     },
                     "delete": {
-                        "usage": "tag delete <name>",
-                        "info": "Deletes a tag that you own."
+                        "usage": "tag delete <tên>",
+                        "info": "Xoá một tag mà bạn đã tạo ra trước đó."
                     },
                     "rename": {
-                        "usage": "tag rename <name> <new name>",
-                        "info": "Renames a tag that you own."
+                        "usage": "tag rename <tên cũ> <tên mới>",
+                        "info": "Đổi tên một tag mà bạn tạo ra."
                     },
                     "raw": {
-                        "usage": "tag raw <name>",
-                        "info": "Gets the raw code of a tag."
+                        "usage": "tag raw <tên tag>",
+                        "info": "Lấy nội dung/dòng mã của tag được xác định."
                     },
                     "info": {
-                        "usage": "tag info <name>",
-                        "info": "Displays information about a tag."
+                        "usage": "tag info <tên tag>",
+                        "info": "Gửi thông tin về một tag được xác định."
                     },
                     "transfer": {
-                        "usage": "tag transfer <name> <user>",
-                        "info": "Transfers a tag to the specified user. Variables will not be transferred."
+                        "usage": "tag transfer <tên tag> <người dùng>",
+                        "info": "Chuyển đổi quyền sở hữu tag được xác định cho một người dùng mà bạn muốn đổi. Tuy nhiên, các dữ liệu và hàm sẽ không được chuyển qua."
                     },
                     "top": {
                         "usage": "tag top",
-                        "info": "Displays the tags that have been the most favorited."
+                        "info": "Hiện lên danh sách tags được yêu thích nhiều nhất."
                     },
                     "author": {
-                        "usage": "tag author <name>",
-                        "info": "Displays the author of a tag."
+                        "usage": "tag author <tên tag>",
+                        "info": "Hiện lên chủ sở hữu một tag được xác định."
                     },
                     "search": {
-                        "usage": "tag search <query>",
-                        "info": "Searches for a tag with a name containing your query."
+                        "usage": "tag search <từ khoá>",
+                        "info": "Tìm một tag với tên có chứa từ khoá mà bạn đưa ra."
                     },
                     "list": {
-                        "usage": "tag list [@user]",
-                        "info": "Lists all the tags, or optionally all the tags created by a specific user."
+                        "usage": "tag list [@tên_người_dùng]",
+                        "info": "Cho ra tất cả các tag đang hoạt động, hoặc các tag được tạo bởi một người dùng được xác định, nếu cần thiết."
                     },
                     "favorite": {
-                        "usage": "tag favorite <name>",
-                        "info": "Favorites the specified tag."
+                        "usage": "tag favorite <tên tag>",
+                        "info": "Đánh dấu tag đó là tag mà bạn yêu thích."
                     },
                     "report": {
-                        "usage": "tag report <name>",
-                        "info": "Reports a tag for violating the ToS. Please use responsibly."
+                        "usage": "tag report <tên tag>",
+                        "info": "Báo cáo một tag vi phạm Điều khoản về Dịch vụ của chúng tôi. Xin hãy dùng nó một cách chính đáng."
                     },
                     "test": {
-                        "usage": "tag test <code>",
-                        "info": "Executes the given code in a test environment."
+                        "usage": "tag test <mã/nội dung>",
+                        "info": "Cho ra kết quả từ dòng mã đã cho trong khung test."
                     },
                     "help": {
-                        "usage": "tag help [subcommand]",
-                        "info": "Displays this!"
+                        "usage": "tag help [lệnh phụ]",
+                        "info": "Hiện cái này nè!"
                     },
                     "docs": {
                         "usage": "tag docs [subtag]",
-                        "info": "Gives a link to the BBTag documentation, or provides information about a specific subtag."
+                        "info": "Gửi một đường link tới thông tin và danh sách BBTag, hay cho ra một thông tin về một subtag mà bạn cho."
+                    },
+                    "setdesc": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "setusage": {
+                        "usage": "",
+                        "info": ""
                     }
                 },
                 "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`.",
@@ -215,19 +224,28 @@
                 "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
                 "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
                 "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!"
+                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!\n\n{{desc}}",
+                "descupdate": "The description for `{{tag}}` has been updated.",
+                "descreset": "The description for `{{tag}}` has been reset.",
+                "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",
+                "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+                "toptags": "Here are the top 10 tags!\n\n{{tags}}",
+                "tagauthor": "The tag `{{tag}}` was created by **{{author}}**.",
+                "favouriteadd": "The tag `{{tag}}` has been added to your favorites list.",
+                "favouriteremove": "The tag `{{tag}}` has been removed from your favorites list.",
+                "favourites": "You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
             },
             "ccommand": {
-                "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
-                "usage": "cc <subcommand> [args]",
+                "info": "CCommands là một hệ thống lệnh tuỳ chỉnh mà các mod có thể tạo chúng cho người dùng khác với ngôn ngữ lập trình BBTag.\n\n**Các lệnh phụ**\n{{subcommands}}\n\nĐể biết thêm thông tin về một câu lệnh phụ (subcommand), nhập `b!t help <lệnh phụ>`\nĐể biết thêm thông tin về BBTag, các bạn có thể truy cập <https://blargbot.xyz/tags>.",
+                "usage": "cc <câu lệnh phụ> [giá trị]",
                 "subcommand": {
                     "set": {
-                        "usage": "cc set <name> <content>",
+                        "usage": "cc set <tên> <nội dung>",
                         "info": "Creates or edits a custom command with the provided name and content. Will not replace any tags made by anyone else."
                     },
                     "delete": {
-                        "usage": "cc delete <name>",
-                        "info": "Deletes a custom command."
+                        "usage": "cc delete <tên lệnh>",
+                        "info": "Xoá một câu lệnh tuỳ chỉnh được xác định."
                     },
                     "rename": {
                         "usage": "cc rename <name> <newName>",
@@ -267,12 +285,16 @@
                 "usage": "locale",
                 "set": "Your locale has been set to {{locale}}!",
                 "list": "Your current locale is: {{current}}\n\nPlease select which locale you want to use."
+            },
+            "tokenify": {
+                "info": "",
+                "usage": ""
             }
         },
         "admin": {
             "mod": {
                 "setrole": "Roles dành cho mod đã được cập nhật.",
-                "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
+                "rolequery": "Chọn các roles sẽ được xem như là những roles dành cho mod. Những người có các roles đó sẽ có quyền sử dụng các lệnh điều hành dành cho admin.",
                 "info": "Sets what users/roles are considered to be staff.",
                 "usage": "mod <subcommand>",
                 "subcommand": {
@@ -296,24 +318,24 @@
     },
     "tag": {
         "comment": {
-            "desc": "Specifies an area that will be ignored from parsing.",
+            "desc": "Xác định một vùng sẽ không được qua phân tích.",
             "example": {
-                "in": "This will be shown {//;This won't be}",
-                "out": "This will be shown"
+                "in": "Cái này sẽ hiện lên {//;Cái này ếu có}",
+                "out": "Cái này sẽ hiện lên"
             }
         },
         "void": {
-            "desc": "Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed.",
+            "desc": "Ngăn chặn hiển Thị đầu ra từ bên trong Tag phụ. Cái khác giữa comment, là mọi thứ trong Tag phụ đó được phân tích, chỉ không hiển thị mà thôi.",
             "example": {
-                "in": "This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
-                "out": "This will be shown  but this will be set"
+                "in": "Tui đê {void;Nhưng tui vô hình {set;~temp;nhưng tui được đặt giá trị từ trong tag void}} {get;~temp}",
+                "out": "Tui đê  nhưng tui được đặt giá trị từ trong tag void"
             }
         },
         "randint": {
-            "desc": "Returns a random integer between the provided range. `min` defaults to `0`.",
+            "desc": "Cho ra 1 dữ liệu integer (số) giữa một khoảng dữ liệu được xác định. `min` được đặt mặc định là `0`.",
             "example": {
-                "in": "One: {randint;5}, two: {randint;10;20}",
-                "out": "One: 2, two: 17"
+                "in": "Một: {randint;5}, hai: {randint;10;20}",
+                "out": "Một: 2, hai: 17"
             }
         },
         "array": {
