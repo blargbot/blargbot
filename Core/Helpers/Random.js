@@ -17,11 +17,7 @@ class RandomHelper extends BaseHelper {
     }
 
     randBytes(size = 4) {
-        let arr = [];
-        arr.length = size;
-        let buf = Buffer.from(arr);
-        crypto.randomFillSync(buf, 0, size);
-        return buf;
+        return crypto.randomBytes(size);
     }
 
     rawRandInt(size = 4) {
@@ -30,7 +26,11 @@ class RandomHelper extends BaseHelper {
     }
 
     randInt(min, max) {
-        return (this.rawRandInt() % (++max - min)) + min;
+        if (max === undefined) {
+            max = min;
+            min = 0;
+        }
+        return (this.rawRandInt() % (1 + max - min)) + min;
     }
 
     chance(threshold, bounds) {
@@ -39,12 +39,8 @@ class RandomHelper extends BaseHelper {
     }
 
     shuffle(array) {
-        let i = 0,
-            j = 0,
-            temp = null;
-
-        for (i = array.length - 1; i > 0; i -= 1) {
-            j = Math.floor(Math.random() * (i + 1));
+        for (let i = array.length - 1, j = 0, temp = null; i > 0; i--) {
+            j = this.randInt(i);
             temp = array[i];
             array[i] = array[j];
             array[j] = temp;
