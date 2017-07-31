@@ -298,17 +298,17 @@
             }
         },
         "admin": {
-            "mod": {
-                "setrole": "The staff roles have been updated.",
+            "setup": {
+                "setstaffrole": "The staff roles have been updated.",
                 "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
                 "info": "Sets what users/roles are considered to be staff.",
                 "usage": "mod <subcommand>",
                 "subcommand": {
-                    "user": {
+                    "staffuser": {
                         "usage": "mod user <add | remove> <user>...",
                         "info": "Adds or removes the specified user(s) to the staff list."
                     },
-                    "role": {
+                    "staffrole": {
                         "usage": "mod user role",
                         "info": "Brings up a dialog to select or deselect roles."
                     }
