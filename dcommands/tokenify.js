@@ -29,10 +29,10 @@ e.execute = (msg, words, text) => {
                 if (bu.getRandomInt(1, 20) == 15) {
                     newPasta.push('.');
                 } else if (bu.getRandomInt(1, 30) == 15) {
-                newPasta.push('-');
-            } else if (bu.getRandomInt(1, 30) == 15) {
-                newPasta.push('\\_');
-            }
+                    newPasta.push('-');
+                } else if (bu.getRandomInt(1, 30) == 15) {
+                    newPasta.push('\\_');
+                }
         }
         logger.debug(newPasta.join(''));
         bu.send(msg, newPasta.join(''));
