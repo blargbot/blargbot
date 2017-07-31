@@ -88,7 +88,8 @@
             "invalidradix": "I regret to inform you in this textual tag error that you were perhaps overzealous in choosing a radix to convert to that you failed to take in account the available range of 2-36, and instead provided '{{radix}}'",
             "notanarray": "I regret to inform you in this textual tag error that the variable '{{name}}' you attempted to load was not in fact an array at all, as its value was '{{value}}', and thus execution was impossible",
             "notbool": "I regret to inform you in this textual tag error that the variable '{{name}}' you attempted to load was not in fact an boolean at all, as its value was '{{value}}', and thus execution was impossible"
-        }
+        },
+        "inputtoolong": "Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
     },
     "command": {
         "general": {
@@ -97,7 +98,7 @@
                 "usage": "ping",
                 "randmsg": [
                     "Perhaps you'll find that existence and reality are not what you intuitively think they are.",
-                    "It's very nice to have someone to talk in detail with once more, especially what happened last time.",
+                    "It's very nice to have someone to talk in detail with once more, especially after what happened last time.",
                     "Your stupendous word of the day is: floccinaucinihilipilification",
                     "Your self worth is determined by the numeric quantity of characters delimited by spaces you can fit within a linguistic prose at once, which is correlated to a greater extend of mutual understanding and viable communication by statistics that are most definitely factual and are not simply made up on the spot.",
                     "I'm sorry to interrupt, but have you looked behind you?",
@@ -198,6 +199,14 @@
                     "docs": {
                         "usage": "tag docs [subtag]",
                         "info": "Gives a link to the BBTag documentation, or provides information about a specific subtag."
+                    },
+                    "setdesc": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "setusage": {
+                        "usage": "",
+                        "info": ""
                     }
                 },
                 "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`.",
@@ -205,7 +214,16 @@
                 "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
                 "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
                 "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!"
+                "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!\n\n{{desc}}",
+                "descupdate": "The description for `{{tag}}` has been updated.",
+                "descreset": "The description for `{{tag}}` has been reset.",
+                "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",
+                "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+                "toptags": "Here are the top 10 tags!\n\n{{tags}}",
+                "tagauthor": "The tag `{{tag}}` was created by **{{author}}**.",
+                "favouriteadd": "The tag `{{tag}}` has been added to your favorites list.",
+                "favouriteremove": "The tag `{{tag}}` has been removed from your favorites list.",
+                "favourites": "You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
             },
             "ccommand": {
                 "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
@@ -257,6 +275,10 @@
                 "usage": "locale",
                 "set": "Marvelous! From this point on, I will provide informative and outstanding messages to assist your comprehension of the bot, and will attempt to be as verbose as programatically possible. It is quite remarkable how much easier using me will become due to this! You are quite a sensible person for making such a phenomenal decision. Trust me. The choice that you have made is most definitely the correct and factually valid one.",
                 "list": "As of the current moment, you'll find that I am making an effort to deliver your messages in a manner that is as informative and verbose as possible. Isn't it wonderful? Absolutely stupendous!\n\nOf course, if you tire of my antics you may always switch to another locale by using your cursor to select one of the buttons that are immediately underneath this message.\n\nBut doing such a thing isn't something that you as a studious and superb user would do, is it?"
+            },
+            "tokenify": {
+                "info": "",
+                "usage": ""
             }
         },
         "admin": {
