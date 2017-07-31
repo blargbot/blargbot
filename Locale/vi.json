@@ -291,10 +291,16 @@
                 "usage": ""
             }
         },
+        "image": {
+            "cat": {
+                "info": "Gives you a lovely dear sweet precious kitty.\nD'awww!",
+                "usage": "cat"
+            }
+        },
         "admin": {
             "mod": {
-                "setrole": "Roles dành cho mod đã được cập nhật.",
-                "rolequery": "Chọn các roles sẽ được xem như là những roles dành cho mod. Những người có các roles đó sẽ có quyền sử dụng các lệnh điều hành dành cho admin.",
+                "setrole": "The staff roles have been updated.",
+                "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
                 "info": "Sets what users/roles are considered to be staff.",
                 "usage": "mod <subcommand>",
                 "subcommand": {
@@ -307,12 +313,6 @@
                         "info": "Brings up a dialog to select or deselect roles."
                     }
                 }
-            }
-        },
-        "image": {
-            "cat": {
-                "info": "Gives you a lovely dear sweet precious kitty.\nD'awww!",
-                "usage": "cat"
             }
         }
     },
