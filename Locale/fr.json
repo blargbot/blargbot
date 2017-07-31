@@ -285,28 +285,28 @@
                 "usage": ""
             }
         },
-        "admin": {
-            "mod": {
-                "setrole": "Les rôles Staff ont été mis à jour.",
-                "rolequery": "Sélectionnez les rôles qui seront considérés comme modérateurs. Les utilisateurs avec ces rôles seront habilités à utiliser les commandes d'administration.",
-                "info": "Définit quel utilisateur/rôle doit être considéré comme membre/rôle du Staff.",
-                "usage": "mod <sous-commande>",
-                "subcommand": {
-                    "user": {
-                        "usage": "mod user <ajouter | retirer> <utilisateur>",
-                        "info": "Ajoute ou retire un utilisateur spécifique à la liste du Staff."
-                    },
-                    "role": {
-                        "usage": "Utilisateur du rôle Modérateur",
-                        "info": "Affiche une fenêtre de dialogue afin de sélectionner ou désélectionner des rôles."
-                    }
-                }
-            }
-        },
         "image": {
             "cat": {
                 "info": "Vous montre un adorable, très doux et précieux chaton.",
                 "usage": "chat"
+            }
+        },
+        "admin": {
+            "mod": {
+                "setrole": "The staff roles have been updated.",
+                "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
+                "info": "Sets what users/roles are considered to be staff.",
+                "usage": "mod <subcommand>",
+                "subcommand": {
+                    "user": {
+                        "usage": "mod user <add | remove> <user>...",
+                        "info": "Adds or removes the specified user(s) to the staff list."
+                    },
+                    "role": {
+                        "usage": "mod user role",
+                        "info": "Brings up a dialog to select or deselect roles."
+                    }
+                }
             }
         }
     },
