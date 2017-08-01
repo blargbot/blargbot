@@ -294,8 +294,10 @@
         },
         "admin": {
             "setup": {
-                "setstaffrole": "The staff roles have been updated.",
-                "staffrolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
+                "staff": {
+                    "setrole": "The staff roles have been updated.",
+                    "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands."
+                },
                 "info": "Configures various settings.",
                 "usage": "setup <subcommand>",
                 "subcommand": {
