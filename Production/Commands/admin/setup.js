@@ -5,10 +5,30 @@ class ModCommand extends AdminCommand {
         super(client, {
             name: 'setup',
             subcommands: {
-                mute: { aliases: ['mutes', 'muted'] },
-                announcement: { aliases: ['announcements'] },
-                staffrole: { aliases: ['staffroles'] },
-                staffuser: { aliases: ['staffusers'] }
+                mute: {
+                    aliases: ['mutes', 'muted'],
+                    usage: 'setup mute',
+                    info: 'Sets up the mute role.'
+                },
+                announcement: {
+                    aliases: ['announcements'],
+                    usage: 'setup announcement',
+                    info: 'Sets up announcements.'
+                },
+                staffrole: {
+                    aliases: ['staffroles'],
+                    usage: 'setup staffrole',
+                    info: 'Brings up a dialog to select or deselect staff roles.'
+                },
+                staffuser: {
+                    aliases: ['staffusers'],
+                    usage: 'setup staffuser <add | remove> <user>...',
+                    info: 'Adds or removes users to the staff list.'
+                },
+                modlog: {
+                    usage: 'setup modlog [#channel] [event]...',
+                    info: 'Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events.'
+                }
             },
             permissions: [
                 client.Constants.Permissions.MANAGE_MESSAGES,
@@ -20,9 +40,11 @@ class ModCommand extends AdminCommand {
                 staffrolequery: `.staff.rolequery`,
                 mutesetrole: `.mute.setrole`,
                 muterolequery: `.mute.rolequery`,
-                announceset: `.announce.set`,
-                announcerolequery: `.announce.rolequery`,
-                announcechannelquery: `.announce.channelquery`,
+                announceset: { key: `.announce.set`, value: 'Announcements have been set up.' },
+                announcerolequery: { key: `.announce.rolequery`, value: 'Select the role that should be pinged for announcements.' },
+                announcechannelquery: { key: `.announce.channelquery`, value: 'Select the channel that announcements should go into.' },
+                modlogset: { key: '.modlog.set', value: 'The modlog has been set to the current channel with the following events:\n\n{{events}}' },
+                modlogsetchannel: { key: '.modlog.setchannel', value: 'The modlog has been set to the channel {{channel}} with the following events:\n\n{{events}}' },
                 nochange: 'generic.nochange'
             }
         });
@@ -30,6 +52,14 @@ class ModCommand extends AdminCommand {
 
     async execute(ctx) {
         return 'rip';
+    }
+
+    get eventList() {
+        return ['all', 'kick', 'ban', 'mute', 'unban', 'unmute', 'rename', 'warn', 'pardon', 'custom'];
+    }
+
+    async sub_modlog(ctx) {
+
     }
 
     async sub_mute(ctx) {

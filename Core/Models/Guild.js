@@ -119,7 +119,7 @@ class GuildModel extends Base {
                 type: this.Sequelize.BIGINT
             },
             modlog: {
-                type: this.Sequelize.BIGINT
+                type: this.Sequelize.JSON
             },
 
             prefixes: {

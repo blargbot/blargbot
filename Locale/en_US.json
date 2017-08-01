@@ -310,12 +310,12 @@
                         "info": "Brings up a dialog to select or deselect roles."
                     },
                     "mute": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "setup mute",
+                        "info": "Sets up the mute role."
                     },
                     "announcement": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "setup announcement",
+                        "info": "Sets up announcements."
                     }
                 },
                 "mute": {
@@ -323,9 +323,9 @@
                     "rolequery": "Select the muted role."
                 },
                 "announce": {
-                    "set": "",
-                    "rolequery": "",
-                    "channelquery": ""
+                    "set": "Announcements have been set up.",
+                    "rolequery": "Select the role that should be pinged for announcements.",
+                    "channelquery": "Select the channel that announcements should go into."
                 }
             }
         }
