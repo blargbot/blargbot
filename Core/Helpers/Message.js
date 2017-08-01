@@ -43,6 +43,7 @@ class MessageHelper extends BaseHelper {
         if (!localeName) {
             localeName = 'en_US';
         }
+        if (typeof key === 'object') key = key.key;
         let template = this.client.LocaleManager.getTemplate(localeName, key);
         if (template === null) {
             return await this.decode(dest, 'error.keyundef', { key });

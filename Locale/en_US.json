@@ -323,7 +323,9 @@
                     "rolequery": "Select the muted role."
                 },
                 "announce": {
-                    "set": ""
+                    "set": "",
+                    "rolequery": "",
+                    "channelquery": ""
                 }
             }
         }

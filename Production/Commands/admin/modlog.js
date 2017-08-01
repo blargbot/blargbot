@@ -21,8 +21,8 @@ class ModCommand extends AdminCommand {
                 mutesetrole: `.mute.setrole`,
                 muterolequery: `.mute.rolequery`,
                 announceset: `.announce.set`,
-                announcerolequery: `.announce.rolequery`,
-                announcechannelquery: `.announce.channelquery`,
+                announcerolequery: `announce.rolequery`,
+                announcechannelquery: `announce.channelquery`,
                 nochange: 'generic.nochange'
             }
         });

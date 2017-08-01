@@ -30,24 +30,42 @@ class BaseCommand {
         this.subcommandAliases = options.subcommandAliases || {};
 
         for (const key in this.subcommands) {
-            this.subcommands[key].usage = `${this.base}.subcommand.${key}.usage`;
-            this.subcommands[key].info = `${this.base}.subcommand.${key}.info`;
             this.subcommandAliases[key] = key;
             for (const aKey of (this.subcommands[key].aliases || []))
                 this.subcommandAliases[aKey] = key;
         }
 
         if (_config.beta && process.env.SHARD_ID == 0 && this.keys !== false) {
-            this._keys = [`${this.base}.info`, `${this.base}.usage`];
+            let usage = {
+                key: `${this.base}.usage`,
+                value: options.usage || ''
+            };
+            let info = {
+                key: `${this.base}.info`,
+                value: options.info || ''
+            };
+            this._keys = [info, usage];
 
             for (const subKey in this.subcommands) {
-                this._keys.push(`${this.base}.subcommand.${subKey}.usage`,
-                    `${this.base}.subcommand.${subKey}.info`);
+                let usage = {
+                    key: `${this.base}.subcommand.${subKey}.usage`,
+                    value: this.subcommands[subKey].usage || ''
+                };
+                let info = {
+                    key: `${this.base}.subcommand.${subKey}.info`,
+                    value: this.subcommands[subKey].info || ''
+                };
+                this._keys.push(usage, info);
             }
 
             if (this.keys) {
                 for (const key in this.keys) {
-                    if (this.keys[key].startsWith('.')) this.keys[key] = this.base + this.keys[key];
+                    if (typeof this.keys[key] !== 'object')
+                        this.keys[key] = {
+                            key: this.keys[key],
+                            value: ''
+                        };
+                    if (this.keys[key].key.startsWith('.')) this.keys[key].key = this.base + this.keys[key].key;
                     this._keys.push(this.keys[key]);
                 }
                 this.keys.info = this._keys[0];
@@ -56,14 +74,15 @@ class BaseCommand {
             let temp;
             for (const key of this._keys) {
                 temp = this.client.LocaleManager.localeList.en_US;
-                let segments = key.split('.');
+                let segments = key.key.split('.');
+                console.log(key, segments);
                 for (let i = 0; i < segments.length; i++) {
                     if (temp[segments[i]]) {
                         temp = temp[segments[i]];
                         continue;
                     }
                     if (i === segments.length - 1)
-                        temp[segments[i]] = '';
+                        temp[segments[i]] = key.value;
                     else temp[segments[i]] = {};
                     if (!this.client.localeDirty) this.client.localeDirty = true;
                     temp = temp[segments[i]];
