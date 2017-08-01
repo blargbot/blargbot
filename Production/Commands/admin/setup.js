@@ -16,8 +16,8 @@ class ModCommand extends AdminCommand {
                 client.Constants.Permissions.EMBED_LINKS
             ],
             keys: {
-                setstaffrole: `.setstaffrole`,
-                staffrolequery: `.staffrolequery`,
+                staffsetrole: `.staff.setrole`,
+                staffrolequery: `.staff.rolequery`,
                 mutesetrole: `.mute.setrole`,
                 muterolequery: `.mute.rolequery`,
                 announceset: `.announce.set`,
@@ -115,7 +115,7 @@ class ModCommand extends AdminCommand {
             menu.embed.setDescription(await ctx.decode(this.keys.staffrolequery));
             let selected = await menu.paginate(roles, true);
             await data.setKey('staffRoles', selected);
-            await ctx.decodeAndSend(this.keys.setstaffrole);
+            await ctx.decodeAndSend(this.keys.staffsetrole);
         } catch (err) {
             await ctx.decodeAndSend(this.keys.nochange);
         }
