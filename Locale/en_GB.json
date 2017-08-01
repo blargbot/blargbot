@@ -206,12 +206,12 @@
                         "info": "Gives a link to the BBTag documentation, or provides information about a specific subtag."
                     },
                     "setdesc": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "usage",
+                        "info": "info"
                     },
                     "setusage": {
-                        "usage": "",
-                        "info": ""
+                        "usage": "usage",
+                        "info": "info"
                     }
                 },
                 "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`.",
@@ -223,12 +223,12 @@
                 "descupdate": "The description for `{{tag}}` has been updated.",
                 "descreset": "The description for `{{tag}}` has been reset.",
                 "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",
-                "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+                "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
                 "toptags": "Here are the top 10 tags!\n\n{{tags}}",
                 "tagauthor": "The tag `{{tag}}` was created by **{{author}}**.",
-                "favouriteadd": "The tag `{{tag}}` has been added to your favorites list.",
-                "favouriteremove": "The tag `{{tag}}` has been removed from your favorites list.",
-                "favourites": "You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+                "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
+                "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
+                "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
             },
             "ccommand": {
                 "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
@@ -282,8 +282,8 @@
                 "list": "Your current locale is: {{current}}\n\nPlease select which locale you want to use."
             },
             "tokenify": {
-                "info": "",
-                "usage": ""
+                "info": "info",
+                "usage": "usage"
             }
         },
         "image": {
@@ -294,19 +294,36 @@
         },
         "admin": {
             "setup": {
-                "setstaffrole": "The staff roles have been updated.",
-                "staffrolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
-                "info": "Sets what users/roles are considered to be staff.",
-                "usage": "mod <subcommand>",
+                "staff": {
+                    "setrole": "The staff roles has been updated.",
+                    "rolequery": "Select the roles that will be considered moderator roles. Users with theses roles will be able to use admin commands."
+                },
+                "info": "Configures various settings.",
+                "usage": "setup <subcommand>",
                 "subcommand": {
                     "staffuser": {
                         "usage": "mod user <add | remove> <user>...",
                         "info": "Adds or removes the specified user(s) to the staff list."
                     },
                     "staffrole": {
-                        "usage": "mod user role",
+                        "usage": "mod user roles",
                         "info": "Brings up a dialog to select or deselect roles."
+                    },
+                    "mute": {
+                        "usage": "usage",
+                        "info": "info"
+                    },
+                    "announcement": {
+                        "usage": "usage",
+                        "info": "info"
                     }
+                },
+                "mute": {
+                    "setrole": "The muted role has been updated.",
+                    "rolequery": "Select the muted role."
+                },
+                "announce": {
+                    "set": "set"
                 }
             }
         }
@@ -827,5 +844,9 @@
                 }
             }
         }
+    },
+    "announce": {
+        "rolequery": "rolequery",
+        "channelquery": "channelquery"
     }
 }
