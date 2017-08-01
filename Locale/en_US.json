@@ -324,10 +324,6 @@
                 },
                 "announce": {
                     "set": ""
-                },
-                "staff": {
-                    "setrole": "",
-                    "rolequery": ""
                 }
             }
         }
