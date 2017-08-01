@@ -294,10 +294,12 @@
         },
         "admin": {
             "setup": {
-                "setstaffrole": "The staff roles have been updated.",
-                "staffrolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
-                "info": "Sets what users/roles are considered to be staff.",
-                "usage": "mod <subcommand>",
+                "staff": {
+                    "setrole": "The staff roles have been updated.",
+                    "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands."
+                },
+                "info": "Configures various settings.",
+                "usage": "setup <subcommand>",
                 "subcommand": {
                     "staffuser": {
                         "usage": "mod user <add | remove> <user>...",
@@ -306,7 +308,22 @@
                     "staffrole": {
                         "usage": "mod user role",
                         "info": "Brings up a dialog to select or deselect roles."
+                    },
+                    "mute": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "announcement": {
+                        "usage": "",
+                        "info": ""
                     }
+                },
+                "mute": {
+                    "setrole": "The muted role has been updated.",
+                    "rolequery": "Select the muted role."
+                },
+                "announce": {
+                    "set": ""
                 }
             }
         }
@@ -827,5 +844,9 @@
                 }
             }
         }
+    },
+    "announce": {
+        "rolequery": "",
+        "channelquery": ""
     }
 }
