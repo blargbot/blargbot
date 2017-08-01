@@ -251,18 +251,18 @@
                     },
                     "transfer": {
                         "usage": "cc transfer <nom> <utilisateur>",
-                        "info": "Transfère les droits de propriété d'une commande personnalisé vers quelqu'un d'autre. Doit être consensuel."
+                        "info": "Transfère les droits de propriété d'une commande personnalisée vers quelqu'un d'autre. Doit être consensuel."
                     },
                     "list": {
-                        "usage": "Liste cc",
+                        "usage": "cc list",
                         "info": "Liste les commandes personnalisées de la guilde."
                     },
                     "test": {
-                        "usage": "Test cc",
+                        "usage": "cc test",
                         "info": "Exécute le code dans le contexte de votre compte."
                     },
                     "help": {
-                        "usage": "Aide cc [subcommand]",
+                        "usage": "cc help [sous-commande]",
                         "info": "Affiche ceci !"
                     }
                 },
@@ -293,10 +293,12 @@
         },
         "admin": {
             "setup": {
-                "setstaffrole": "The staff roles have been updated.",
-                "staffrolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.",
-                "info": "Sets what users/roles are considered to be staff.",
-                "usage": "mod <subcommand>",
+                "staff": {
+                    "setrole": "The staff roles have been updated.",
+                    "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands."
+                },
+                "info": "Configures various settings.",
+                "usage": "setup <subcommand>",
                 "subcommand": {
                     "staffuser": {
                         "usage": "mod user <add | remove> <user>...",
@@ -305,7 +307,22 @@
                     "staffrole": {
                         "usage": "mod user role",
                         "info": "Brings up a dialog to select or deselect roles."
+                    },
+                    "mute": {
+                        "usage": "",
+                        "info": ""
+                    },
+                    "announcement": {
+                        "usage": "",
+                        "info": ""
                     }
+                },
+                "mute": {
+                    "setrole": "The muted role has been updated.",
+                    "rolequery": "Select the muted role."
+                },
+                "announce": {
+                    "set": ""
                 }
             }
         }
@@ -506,7 +523,7 @@
                 }
             },
             "get": {
-                "desc": "Résultats des variables emmagasinées avec un nom supplémentaire. Les prefixes des variables pourront modifier",
+                "desc": "Renvoie la variable mémorisée avec le nom donné. Les préfixes de la variable peuvent modifier la zone où on la cherche.",
                 "example": {
                     "in": "{set;var;This is a variable.}\n{get;var}",
                     "out": "Ceci est une variable."
@@ -530,7 +547,7 @@
                 "desc": "Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed.",
                 "example": {
                     "in": "This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
-                    "out": "This will be shown  but this will be set"
+                    "out": "Ce sera afficher mais cela sera défini"
                 }
             },
             "newline": {
@@ -552,21 +569,21 @@
             "createdat": {
                 "desc": "Returns when the current guild was created as a Unix timestamp (milliseconds).",
                 "example": {
-                    "in": "{guild.createdat}",
+                    "in": "{datcreation.guilde}",
                     "out": "1466379030450"
                 }
             },
             "channels": {
                 "desc": "Renvoie les canaux de la guilde actuelle sous forme de tableau.",
                 "example": {
-                    "in": "{guild.channels}",
+                    "in": "{canals.guilde}",
                     "out": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]"
                 }
             },
             "icon": {
                 "desc": "Renvoie l'URL de l'icône de la guilde actuelle.",
                 "example": {
-                    "in": "{guild.icon}",
+                    "in": "{icone.guilde}",
                     "out": "https://cdn.discordapp.com/icons/194232473931087872/2e9d173fc1461ff9e4672cb8782978e7.png?size=512"
                 }
             },
@@ -595,13 +612,13 @@
                 "desc": "Renvoie la région de la guilde actuelle.",
                 "example": {
                     "in": "{guild.region}",
-                    "out": "us-west"
+                    "out": "us-ouest"
                 }
             },
             "roles": {
                 "desc": "Renvoie un tableau des rôles de la guilde actuelle.",
                 "example": {
-                    "in": "{guild.roles}",
+                    "in": "{roles.guilde}",
                     "out": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]"
                 }
             }
@@ -666,7 +683,7 @@
                 }
             },
             "parseint": {
-                "desc": "Attempts to parse the given text as an integer.",
+                "desc": "Tente d'analyser le texte donné en nombre entier.",
                 "example": {
                     "in": "{math.parseint;2.5}\n{math.parseint;not a number}",
                     "out": "2\nNaN"
@@ -700,7 +717,7 @@
             "color": {
                 "desc": "Renvoie la couleur du rôle spécifié en hexadécimales.",
                 "example": {
-                    "in": "#{role.color;coolrole}",
+                    "in": "#{couleur.role;rolecool}",
                     "out": "#2ECC71"
                 }
             },
@@ -737,7 +754,7 @@
             "avatar": {
                 "desc": "Renvoie l'URL de l'avatar de l'utilisateur spécifié, par défaut celle de l'utilisateur.",
                 "example": {
-                    "in": "{user.avatar}",
+                    "in": "{avatar.utilisateur}",
                     "out": "https://cdn.discordapp.com/avatars/[[generic.example.id1]]/avatarhash.png"
                 }
             },
@@ -758,8 +775,8 @@
             "fullname": {
                 "desc": "Returns the name + discriminator of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "{user.fullname}",
-                    "out": "person#1111"
+                    "in": "{nomcomplet.utilisateur}",
+                    "out": "personne#1111"
                 }
             },
             "game": {
@@ -772,35 +789,35 @@
             "id": {
                 "desc": "Returns the ID of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "{user.id}",
+                    "in": "{id.utilisateur}",
                     "out": "[[generic.example.id1]]"
                 }
             },
             "joinedat": {
                 "desc": "Returns the date that the specified user, defaulting to the executing user, joined the current guild as a Unix timestamp (milliseconds).",
                 "example": {
-                    "in": "{user.joinedat}",
+                    "in": "{àrejoint.utilisateur}",
                     "out": "1466379030499"
                 }
             },
             "mention": {
-                "desc": "Mentions the specified user, defaulting to the executing user.",
+                "desc": "Mentionne l'utilisateur spécifié, par défaut de l'utilisateur exécutif.",
                 "example": {
-                    "in": "{user.mention}",
+                    "in": "{mention.utilisateur}",
                     "out": "@personne"
                 }
             },
             "name": {
                 "desc": "Returns the name of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "{user.name}",
+                    "in": "{nom.utilisateur}",
                     "out": "personne"
                 }
             },
             "nick": {
                 "desc": "Returns the nickname of the specified user, defaulting to the executing user.",
                 "example": {
-                    "in": "{user.nick}",
+                    "in": "{",
                     "out": "CoolNickname"
                 }
             },
@@ -826,5 +843,9 @@
                 }
             }
         }
+    },
+    "announce": {
+        "rolequery": "",
+        "channelquery": ""
     }
 }
