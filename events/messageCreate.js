@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-13 23:56:41
+ * @Last Modified time: 2017-08-02 13:55:08
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -539,35 +539,40 @@ function handleDeleteNotif(msg, storedGuild) {
 
 const cleverCache = {};
 
+function query(input) {
+    return new Promise((res, rej) => {
+        dep.request.post(config.cleverbot.endpoint, {
+            form: { input }
+        }, (err, re, bod) => {
+            if (err) rej(err);
+            else {
+                let content = bod.match(/<font size="2" face="Verdana" color=darkred>(.+)<\/font>/)[1];
+                res(content.replace(/(\W)alice(\W)/gi, '$1blargbot$2'));
+            }
+        })
+    })
+}
+
 async function handleCleverbot(msg) {
+    await bot.sendChannelTyping(msg.channel.id);
     var username = msg.channel.guild.members.get(bot.user.id).nick ?
         msg.channel.guild.members.get(bot.user.id).nick :
         bot.user.username;
     var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
     bu.cleverbotStats++;
     updateStats();
-    let options = undefined;
-    if (cleverCache[msg.channel.id])
-        options = {
-            cs: cleverCache[msg.channel.id]
-        };
     try {
-        let response = await cleverbot.query(msgToSend, options);
-        cleverCache[msg.channel.id] = response.cs;
-        await bot.sendChannelTyping(msg.channel.id);
+        let response = await query(msgToSend);
         await bu.sleep(1500);
-        await bu.send(msg, response.output);
-    } catch (e) { // Couldn't use cleverbot api, default to cleverbot.io
-        //  logger.error(e);
+        await bu.send(msg, response);
+    } catch (err) {
         try {
             //cleverbotIo.setNick('blargbot' + msg.channel.id);
             let response = await cleverbotIo.ask(msgToSend);
-            await bot.sendChannelTyping(msg.channel.id);
             await bu.sleep(1500);
             await bu.send(msg, response);
         } catch (err) {
             logger.error(err);
-            await bot.sendChannelTyping(msg.channel.id);
             await bu.sleep(1500);
             await bu.send(msg, `Failed to contact the API. Blame cleverbot.io`);
         }
