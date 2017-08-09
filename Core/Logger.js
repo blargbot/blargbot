@@ -93,7 +93,6 @@ class Logger {
                 text.push('\n');
                 if (arg instanceof Error) {
                     text.push(chalk.red(arg.stack));
-
                     if (arg instanceof seqErrors.BaseError) {
                         for (const err of arg.errors) {
                             text.push('\n');

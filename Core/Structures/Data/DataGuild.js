@@ -38,6 +38,46 @@ class DataGuild extends DataBase {
         return (await this.getKey(`tagVariables`) || {})[name];
     }
 
+    getModlogChannels() {
+        return this.client.models.GuildModlogChannel.findAll({
+            where: {
+                guildId: this.guild.id
+            }
+        });
+    }
+
+    async getModlogChannel(type) {
+        let channel = this.client.models.GuildModlogChannel.findAll({
+            where: {
+                guildId: this.guild.id,
+                type
+            }
+        });
+        if (channel.length > 0) {
+            channel = await channel[0].get('channel');
+        } else if (type !== 'default') {
+            channel = await this.getModlogChannel('default');
+        } else channel = null;
+        return channel;
+    }
+
+    async setModlogChannel(type, channel) {
+        return await this.client.models.GuildModlogChannel.upsert({
+            type,
+            channel,
+            guildId: this.guild.id
+        });
+    }
+
+    async removeModlogChannel(type) {
+        return await this.client.models.GuildModlogChannel.destroy({
+            where: {
+                guildId: this.guild.id,
+                type
+            }
+        });
+    }
+
 }
 
 module.exports = DataGuild;

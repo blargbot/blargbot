@@ -75,7 +75,6 @@ class BaseCommand {
             for (const key of this._keys) {
                 temp = this.client.LocaleManager.localeList.en_US;
                 let segments = key.key.split('.');
-                console.log(key, segments);
                 for (let i = 0; i < segments.length; i++) {
                     if (temp[segments[i]]) {
                         temp = temp[segments[i]];

@@ -26,8 +26,13 @@ class ModCommand extends AdminCommand {
                     info: 'Adds or removes users to the staff list.'
                 },
                 modlog: {
-                    usage: 'setup modlog [#channel] [event]...',
-                    info: 'Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events.'
+                    usage: 'setup modlog [event]... [flags]',
+                    info: 'Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events.',
+                    flags: [
+                        { flag: 'c', name: 'channel' },
+                        { flag: 'r', name: 'remove' },
+                        { flag: 'l', name: 'list' }
+                    ]
                 }
             },
             permissions: [
@@ -43,8 +48,11 @@ class ModCommand extends AdminCommand {
                 announceset: { key: `.announce.set`, value: 'Announcements have been set up.' },
                 announcerolequery: { key: `.announce.rolequery`, value: 'Select the role that should be pinged for announcements.' },
                 announcechannelquery: { key: `.announce.channelquery`, value: 'Select the channel that announcements should go into.' },
-                modlogset: { key: '.modlog.set', value: 'The modlog has been set to the current channel with the following events:\n\n{{events}}' },
-                modlogsetchannel: { key: '.modlog.setchannel', value: 'The modlog has been set to the channel {{channel}} with the following events:\n\n{{events}}' },
+                modlogset: { key: '.modlog.set', value: 'The modlog has been set to the channel {{channel}} with the following events:\n```\n{{events}}\n```\n{{hadInvalid}}' },
+                modlogremove: { key: '.modlog.remove', value: 'The modlog for the following events has been removed:\n```\n{{events}}\n```\n{{hadInvalid}}' },
+                modloginvalid: { key: '.modlog.invalid', value: 'No valid events were provided. The list of valid events is:\n```\n{{eventList}}\n```' },
+                modloghadinvalid: { key: '.modlog.hadinvalid', value: 'You had some invalid events in your command. The list of valid events is:\n```\n{{eventList}}\n```' },
+                modloglist: { key: '.modlog.list', value: 'Here are the modlogs that are active on your guild:\n\n{{events}}' },
                 nochange: 'generic.nochange'
             }
         });
@@ -55,11 +63,62 @@ class ModCommand extends AdminCommand {
     }
 
     get eventList() {
-        return ['all', 'kick', 'ban', 'mute', 'unban', 'unmute', 'rename', 'warn', 'pardon', 'custom'];
+        return this.client.Helpers.Modlog.eventList;
     }
 
     async sub_modlog(ctx) {
+        if (ctx.input.l) {
+            let channels = await ctx.guild.data.getModlogChannels();
+            let output = '';
+            for (const channel of channels) {
+                output += ` - ${await channel.get('type')}: <#${await channel.get('channel')}>\n`;
+            }
+            await ctx.decodeAndSend(this.keys.modloglist, {
+                events: output
+            });
+        } else {
+            let channel = ctx.channel.id;
+            if (ctx.input.c) {
+                channel = (await this.client.Helpers.Resolve.channel(ctx, ctx.input.c.raw.join('')));
+                if (channel) channel = channel.id;
+                else return;
+            }
+            let hadInvalid = false;
+            let events = [];
+            if (ctx.input._.length > 0)
+                for (let arg of ctx.input._) {
+                    arg = arg.toLowerCase().trim();
+                    if (arg === 'all' || arg === 'default' || arg === '*') arg = 'default';
+                    if (this.eventList.includes(arg)) events.push(arg);
+                    else hadInvalid = true;
+                }
+            else events.push('default');
 
+            if (events.length === 0) {
+                await ctx.decodeAndSend(this.keys.modloginvalid, {
+                    events: this.eventList.join(', ')
+                });
+            } else {
+                let invalidMessage = '';
+                if (hadInvalid)
+                    invalidMessage = await ctx.decode(this.keys.modloghadinvalid, {
+                        eventList: this.eventList.join(', ')
+                    });
+
+                for (const event of events) {
+                    if (ctx.input.r)
+                        await ctx.guild.data.removeModlogChannel(event);
+                    else
+                        await ctx.guild.data.setModlogChannel(event, channel);
+                }
+
+                await ctx.decodeAndSend(!ctx.input.r ? this.keys.modlogset : this.keys.modlogremove, {
+                    hadInvalid: invalidMessage,
+                    events: events.join(', '),
+                    channel: `<#${channel}>`
+                });
+            }
+        }
     }
 
     async sub_mute(ctx) {

@@ -33,6 +33,7 @@
             "nochannels": "No channels found.",
             "pickchannel": "{{length}} channels were found! Please select one from the list."
         },
+        "querycancelled": "The query has been cancelled.",
         "edited": "edited",
         "created": "created",
         "deleted": "deleted",
@@ -284,6 +285,20 @@
             "tokenify": {
                 "info": "",
                 "usage": ""
+            },
+            "nato": {
+                "info": "",
+                "usage": ""
+            },
+            "invite": {
+                "info": "",
+                "usage": "",
+                "message": "Invite me to your guild!\n<http://invite.blargbot.xyz>\nDon't need the moderation functions? Use this link instead!\n<http://minvite.blargbot.xyz>\nJoin my support guild!\n<http://support.blargbot.xyz>"
+            },
+            "donate": {
+                "info": "",
+                "usage": "",
+                "message": "Hi! This is stupid cat, creator of blargbot. I hope you're enjoying it!\n\nI don't like to beg, but right now I'm a student. Tuition is expensive, and maintaining this project isn't exactly free. I have to pay for services such as web servers and domains, not to mention invest time into developing code to make this bot as good as it can be. I don't expect to be paid for what I'm doing; the most important thing to me is that people enjoy what I make, that my product is making people happy. But still, money doesn't grow on trees. If you want to support me and what I'm doing, I have a patreon available for donations. Prefer something with less commitment? I also have a paypal available.\n\nThank you for your time. I really appreciate all of my users! :3\n\n---------------------------------------------\nPaypal: <https://paypal.me/stupidcat>\nPatreon: <https://www.patreon.com/stupidcat>\n---------------------------------------------"
             }
         },
         "image": {
@@ -316,6 +331,10 @@
                     "announcement": {
                         "usage": "setup announcement",
                         "info": "Sets up announcements."
+                    },
+                    "modlog": {
+                        "usage": "setup modlog [#channel] [event]...",
+                        "info": "Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events."
                     }
                 },
                 "mute": {
@@ -326,6 +345,13 @@
                     "set": "Announcements have been set up.",
                     "rolequery": "Select the role that should be pinged for announcements.",
                     "channelquery": "Select the channel that announcements should go into."
+                },
+                "modlog": {
+                    "set": "The modlog has been set to the channel {{channel}} with the following events:\n```\n{{events}}\n```\n{{hadInvalid}}",
+                    "remove": "The modlog for the following events has been removed:\n```\n{{events}}\n```\n{{hadInvalid}}",
+                    "invalid": "No valid events were provided. The list of valid events is:\n```\n{{eventList}}\n```",
+                    "hadinvalid": "You had some invalid events in your command. The list of valid events is:\n```\n{{eventList}}\n```",
+                    "list": "Here are the modlogs that are active on your guild:\n\n{{events}}"
                 }
             }
         }

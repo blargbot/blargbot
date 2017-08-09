@@ -4,5 +4,6 @@ module.exports = {
     Resolve: require('./Resolve'),
     Snowflake: require('./Snowflake'),
     Embed: require('./EmbedBuilder'),
-    Menu: require('./MenuBuilder')
+    Menu: require('./MenuBuilder'),
+    Modlog: require('./Modlog')
 };

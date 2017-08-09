@@ -1,5 +1,6 @@
 const Manager = require('./Manager');
 const Base = require('../Structures/Command/Base');
+const seqErrors = require('sequelize/lib/errors');
 
 class CommandManager extends Manager {
     constructor(client) {
@@ -39,10 +40,17 @@ class CommandManager extends Manager {
                         await command.send(ctx, response);
                     }
                 } catch (err) {
-                    console.error(err.stack);
-                    ctx.decodeAndSend('error.generic', {
-                        message: err.stack
-                    });
+                    console.error(err);
+                    if (err instanceof seqErrors.BaseError) {
+                        let msg = 'Database Error:\n';
+                        for (const e of err.errors) msg += `${e.message} (${e.type})\n  Path: ${e.path}\n  Value: ${e.value}\n`;
+                        ctx.decodeAndSend('error.generic', {
+                            message: msg
+                        });
+                    } else
+                        ctx.decodeAndSend('error.generic', {
+                            message: err.stack
+                        });
                 }
             }
         }

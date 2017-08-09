@@ -118,9 +118,6 @@ class GuildModel extends Base {
             mutedRole: {
                 type: this.Sequelize.BIGINT
             },
-            modlog: {
-                type: this.Sequelize.JSON
-            },
 
             prefixes: {
                 type: this.Sequelize.ARRAY(this.Sequelize.STRING),

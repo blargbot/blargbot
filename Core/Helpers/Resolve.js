@@ -40,9 +40,11 @@ class ResolveHelper extends BaseHelper {
 
                 return this.client.getChannel(res.value);
             } catch (err) {
-                if (err == 'Canceled')
+                if (err == 'Canceled') {
+                    if (!quiet)
+                        await this.client.Helpers.Message.decodeAndSend(ctx, 'generic.querycancelled');
                     return null;
-                else throw err;
+                } else throw err;
             }
         }
     }
@@ -79,9 +81,11 @@ class ResolveHelper extends BaseHelper {
 
                 return guild.roles.get(res.value);
             } catch (err) {
-                if (err == 'Canceled')
+                if (err == 'Canceled') {
+                    if (!quiet)
+                        await this.client.Helpers.Message.decodeAndSend(ctx, 'generic.querycancelled');
                     return null;
-                else throw err;
+                } else throw err;
             }
         }
     }
@@ -129,9 +133,11 @@ class ResolveHelper extends BaseHelper {
 
                 return this.client.users.get(res.value);
             } catch (err) {
-                if (err == 'Canceled')
+                if (err == 'Canceled') {
+                    if (!quiet)
+                        await this.client.Helpers.Message.decodeAndSend(ctx, 'generic.querycancelled');
                     return null;
-                else throw err;
+                } else throw err;
             }
         }
     }
