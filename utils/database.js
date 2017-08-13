@@ -105,7 +105,7 @@ bu.ccommand = {
 
 bu.isNsfwChannel = async function (channelid) {
     const channel = bot.getChannel(channelid);
-    return channel.name.startsWith('nsfw-') || channel.name === 'nsfw';
+    return channel.nsfw;
 };
 
 bu.isBlacklistedChannel = async function (channelid) {
