@@ -2,6 +2,7 @@
 .eslintrc
 .eslintrc.json
 .jshintrc
+fonts/*
 logs/*
 node_modules/*
 userdata/*

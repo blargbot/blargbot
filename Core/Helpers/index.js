@@ -5,5 +5,6 @@ module.exports = {
     Snowflake: require('./Snowflake'),
     Embed: require('./EmbedBuilder'),
     Menu: require('./MenuBuilder'),
-    Modlog: require('./Modlog')
+    Modlog: require('./Modlog'),
+    Image: require('./Image')
 };

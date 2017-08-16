@@ -54,6 +54,8 @@
     "pg": "^6.1.5",
     "pg-hstore": "^2.3.2",
     "pg-promise": "^5.6.7",
+    "phantom": "^4.0.5",
+    "phantomjs-prebuilt": "^2.1.14",
     "promise": "^7.1.1",
     "request": "^2.79.0",
     "require-reload": "^0.2.2",
@@ -66,6 +68,7 @@
     "svg2png": "^4.1.0",
     "twemoji": "^2.2.0",
     "uws": "^0.14.5",
+    "webshot": "^0.18.0",
     "ws": "^1.1.1",
     "xml2json": "^0.10.0"
   },

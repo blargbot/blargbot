@@ -5,13 +5,16 @@ class DonateCommand extends GeneralCommand {
         super(client, {
             name: 'donate',
             keys: {
-                message: '.message'
+                message: '.message',
+                willdm: '.willdm'
             }
         });
     }
 
     async execute(ctx) {
-        await ctx.decodeAndSend(this.keys.message);
+        await ctx.decodeAndSend(this.keys.willdm);
+        let pc = await ctx.author.getDMChannel();
+        await this.decodeAndSend(pc, this.keys.message);
     }
 }
 

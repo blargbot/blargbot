@@ -148,11 +148,15 @@ class BaseCommand {
     }
 
     async send(dest, content, file) {
-        await this.client.Helpers.Message.send(dest, content, file);
+        return await this.client.Helpers.Message.send(dest, content, file);
     }
 
     async decode(dest, key, args) {
-        await this.client.Helpers.Message.decode(dest, key, args);
+        return await this.client.Helpers.Message.decode(dest, key, args);
+    }
+
+    async decodeAndSend(dest, key, args, file) {
+        return await this.client.Helpers.Message.decodeAndSend(dest, key, args, file);
     }
 
     async canExecute(ctx) {
