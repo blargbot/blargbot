@@ -27,7 +27,6 @@ class ShitGenerator extends Generator {
                     resizeText = function () {
                         var elNewFontSize;
                         elNewFontSize = (parseInt(el.style.fontSize.slice(0, -2)) - 1) + 'px';
-                        console.log(elNewFontSize);
                         el.style.fontSize = elNewFontSize;
                         return el;
                     };
