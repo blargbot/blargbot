@@ -15,10 +15,7 @@ config.json
 voiceSettings.json
 vars.json
 servers.json
-*.html
 *.ttf
-*.jpg
-*.gif
 *.db
 *.db-journal
 *.txt

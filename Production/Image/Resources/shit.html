@@ -1,0 +1,141 @@
+<html>
+
+<head>
+    <style>
+        @font-face {
+            font-family: AnimeAce;
+            font-style: normal;
+            font-weight: 500;
+            src: url(fonts/animeace.ttf)
+        }
+
+        .text-custom,
+        .text-shit {
+            margin: 15px 0;
+            padding: 0;
+            display: block;
+        }
+
+        .text-custom {
+            width: 230px;
+            text-align: center;
+            line-height: initial;
+            max-height: 280px;
+            overflow: hidden;
+        }
+
+        .text-shit {
+            font-size: 25px;
+            text-align: center;
+            width: 230px;
+            height: 65px;
+        }
+
+        .large1 {
+            font-size: 45px;
+        }
+
+        .large2 {
+            font-size: 55px;
+        }
+
+        #workspace {
+            display: inline-block;
+        }
+
+        body,
+        html {
+            font-family: 'AnimeAce';
+            margin: 0;
+            padding: 0;
+        }
+
+        pre {
+            font-family: 'AnimeAce';
+        }
+
+        #shit-wrapper {
+            position: absolute;
+            left: 800px;
+            top: 5px;
+            height: 345px;
+            line-height: 345px;
+        }
+
+        .reset {
+            line-height: 1em;
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        .v-center span {
+            vertical-align: middle;
+            margin: 0;
+            padding: 0;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='workspace'>
+        <img src='shit.png'>
+        <div id='shit-wrapper'>
+            <div class='reset'>
+                <div class='text-custom'>
+                    <div class='resize' id='replace1'> </div>
+                </div>
+                <div class='text-shit'>
+                    <div class='v-center'>
+                        <span id='replace2'></span>
+                        <span class='large1'>shit<span class='large2' style='padding-top: 10px;'>!</span></span>
+                    </div>
+                </div>
+            </div>​&#8203;
+        </div>
+    </div>
+    </div>
+
+    <script>
+var autoSizeText;
+
+document.autoSizeText = function() {
+  var el, elements, _i, _len, _results;
+  elements = document.getElementsByClassName('resize');
+  wrapper = document.getElementById('shit-wrapper');
+  if (elements.length < 0) {
+    return;
+  }
+  _results = [];
+  for (_i = 0, _len = elements.length; _i < _len; _i++) {
+    el = elements[_i];
+    _results.push((function(el) {
+      var resizeText, _results1;
+      if (el.style['font-size'] === '') el.style['font-size'] = '40px';      
+      resizeText = function() {
+        var elNewFontSize;
+        elNewFontSize = (parseInt(el.style.fontSize.slice(0, -2)) - 1) + 'px';
+        console.log(elNewFontSize);
+        el.style.fontSize = elNewFontSize;
+        return el;
+      };
+      _results1 = null;
+      let ii = 0;
+
+        console.log(el.scrollHeight, wrapper.clientHeight); 
+      while (el.scrollHeight > wrapper.clientHeight - 175) {
+        console.log(el.scrollHeight, wrapper.clientHeight - 30 - 65);
+          
+        _results1 = resizeText();
+          if (++ii == 1000) break;
+        
+      }
+       return _results1;
+    })(el));
+  }
+  return _results;
+};
+    </script>
+</body>
+
+</html>
