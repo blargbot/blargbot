@@ -96,7 +96,7 @@ class Embed {
     }
 
     setTimestamp(time) {
-        this.embed.timestamp = moment(time);
+        this.embed.timestamp = moment(time).toISOString();
         return this;
     }
 

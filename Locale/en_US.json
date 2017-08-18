@@ -47,7 +47,36 @@
             "id2": "222222222222222222",
             "id3": "333333333333333333"
         },
-        "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]"
+        "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
+        "user": "User",
+        "role": "Role",
+        "channel": "Channel"
+    },
+    "modlog": {
+        "events": {
+            "kick": "Kick",
+            "ban": "Ban",
+            "unban": "Unban",
+            "mute": "Mute",
+            "unmute": "Unmute",
+            "warn": "Warning",
+            "pardon": "Pardon",
+            "rename": "Rename",
+            "specialroleadd": "Special Role Added",
+            "specialroleremove": "Special Role Removed"
+        },
+        "case": "{{icon}} Case {{number}}: {{event}}",
+        "setreason": "Responsible moderator, please do `reason {{number}}` to set the reason.",
+        "warnings": {
+            "given": "Warnings Given",
+            "removed": "Warnings Pardoned",
+            "total": "New Total"
+        },
+        "rename": {
+            "old": "Old Name",
+            "new": "New Name"
+        },
+        "duration": "Duration"
     },
     "menu": {
         "cancel": {
