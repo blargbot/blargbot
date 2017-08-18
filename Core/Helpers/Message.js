@@ -27,7 +27,7 @@ class MessageHelper extends BaseHelper {
      * Decodes a locale key
      * @param {(Message|Channel|Guild|User|Member|Context|String)} dest A destination resolveable.
      * @param {String} key The locale key
-     * @param {Object} [args={}] Additional arguments for decoding
+     * @param {Object} [ar  gs={}] Additional arguments for decoding
      */
     async decode(dest, key, args = {}) {
         let { user, guild } = this.client.Helpers.Resolve.generic(dest);

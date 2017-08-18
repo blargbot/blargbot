@@ -17,11 +17,16 @@ class GuildModlogModel extends Base {
             caseId: {
                 type: this.Sequelize.INTEGER,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
+                default: 1
             },
             msgId: {
                 type: this.Sequelize.BIGINT,
-                allowNull: false
+                allowNull: true
+            },
+            channelId: {
+                type: this.Sequelize.BIGINT,
+                allowNull: true
             },
             moderatorId: {
                 type: this.Sequelize.BIGINT,

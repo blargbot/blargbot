@@ -63,7 +63,7 @@ class ModCommand extends AdminCommand {
     }
 
     get eventList() {
-        return this.client.Helpers.Modlog.eventList;
+        return Object.keys(this.client.Helpers.Modlog.eventMap);
     }
 
     async sub_modlog(ctx) {

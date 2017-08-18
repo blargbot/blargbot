@@ -38,8 +38,8 @@ class DataGuild extends DataBase {
         return (await this.getKey(`tagVariables`) || {})[name];
     }
 
-    getModlogChannels() {
-        return this.client.models.GuildModlogChannel.findAll({
+    async getModlogChannels() {
+        return await this.client.models.GuildModlogChannel.findAll({
             where: {
                 guildId: this.guild.id
             }
@@ -47,14 +47,15 @@ class DataGuild extends DataBase {
     }
 
     async getModlogChannel(type) {
-        let channel = this.client.models.GuildModlogChannel.findAll({
+        let channels = await this.client.models.GuildModlogChannel.findAll({
             where: {
                 guildId: this.guild.id,
                 type
             }
         });
-        if (channel.length > 0) {
-            channel = await channel[0].get('channel');
+        let channel;
+        if (channels.length > 0) {
+            channel = this.client.getChannel(await channels[0].get('channel'));
         } else if (type !== 'default') {
             channel = await this.getModlogChannel('default');
         } else channel = null;
@@ -76,6 +77,14 @@ class DataGuild extends DataBase {
                 type
             }
         });
+    }
+
+    async addModlog(moderatorId, type, reason, targets) {
+        let model = await this.client.models.GuildModlog.create({
+            guildId: this.guild.id,
+            moderatorId, type, reason, targets
+        });
+        return model;
     }
 
 }
