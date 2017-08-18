@@ -79,6 +79,14 @@ class DataGuild extends DataBase {
         });
     }
 
+    async getModlog(caseId) {
+        return await this.client.models.GuildModlog.find({
+            where: {
+                guildId: this.guild.id, caseId
+            }
+        });
+    }
+
     async addModlog(moderatorId, type, reason, targets) {
         let model = await this.client.models.GuildModlog.create({
             guildId: this.guild.id,

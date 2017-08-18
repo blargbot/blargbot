@@ -396,6 +396,12 @@
                     "hadinvalid": "You had some invalid events in your command. The list of valid events is:\n```\n{{eventList}}\n```",
                     "list": "Here are the modlogs that are active on your guild:\n\n{{events}}"
                 }
+            },
+            "reason": {
+                "info": "Sets the reason for a modlog entry.",
+                "usage": "reason <case> <reason>",
+                "nocase": "There is no case with the ID {{number}}!",
+                "reasonset": ":ok_hand: The reason has been set!"
             }
         }
     },

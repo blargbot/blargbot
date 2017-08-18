@@ -1,5 +1,6 @@
 const BaseHelper = require('./BaseHelper');
 const EventEmitter = require('eventemitter3');
+const moment = require('moment');
 
 class ModlogHelper extends BaseHelper {
     constructor(client) {
@@ -47,6 +48,29 @@ class ModlogHelper extends BaseHelper {
         let target = this.client.users.get(params.targetID) || await this.client.getRESTUser(params.targetID);
 
         await this.send(channel, type, target, mod, reason, params.fields, params.color);
+    }
+
+    async update(ctx, caseId, reason) {
+        let model = await ctx.guild.data.getModlog(caseId);
+        if (model == null) return false;
+        let msg2 = await this.client.getChannel(await model.get('channelId')).getMessage(await model.get('msgId'));
+        let embed = msg2.embeds[0];
+        embed.timestamp = moment(embed.timestamp).toISOString();
+        embed.footer = {
+            text: ctx.author.fullName,
+            icon_url: ctx.author.avatarURL
+        };
+        embed.description = reason;
+        await msg2.edit({ embed });
+        model.update({
+            modId: ctx.author.id,
+            reason
+        }, {
+                where: {
+                    guildId: ctx.guild.id,
+                    caseId
+                }
+            });
     }
 
     async send(channel, type, target, mod, reason, fields, color) {
