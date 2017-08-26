@@ -397,13 +397,6 @@ const functions = {
         img.out(`caption:${msg.text}`);
         let originalText = await Jimp.read(await getBufferFromIM(img));
         let date = new Date();
-        let timestamp = im(1000, 30).command('convert');
-        timestamp.font(path.join(__dirname, 'img', 'fonts', 'whitney.ttf'), 12);
-        timestamp.out('-fill').out('#ffffff');
-        timestamp.out('-background').out('transparent');
-        timestamp.out('-gravity').out('southwest');
-        timestamp.out(`caption:Today at ${date.getHours() + 1 > 12 ? date.getHours() - 11 : date.getHours() + 1}:${date.getMinutes().toString().length === 1 ? "0" + date.getMinutes() : date.getMinutes()} ${date.getHours() + 1 > 12 ? "PM" : "AM"}`);
-        let timestampText = await Jimp.read(await getBufferFromIM(timestamp));
         let text = new Jimp(originalText.bitmap.width + 10, originalText.bitmap.height + 10);
         text.composite(originalText, 5, 5).autocrop().opacity(0.7);
         let height = 165 + text.bitmap.height;
@@ -412,7 +405,6 @@ const functions = {
         let bottom = await Jimp.read(path.join(__dirname, 'img', `clydeBottom.png`));
         canvas.composite(top, 0, 0);
         canvas.composite(text, 118, 83);
-        canvas.composite(timestampText.opacity(0.2), 225, 40);
         canvas.composite(bottom, 0, height - bottom.bitmap.height);
 
         canvas.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
