@@ -44,7 +44,7 @@ e.execute = async function (msg, words) {
             duration = bu.parseDuration(input.t.join(' '));
         }
         bu.send(msg, (await e.ban(msg, user, parseInt(input.undefined.length > 1 ? input.undefined[input.undefined.length - 1] : 0), input.r, duration))[0]);
-    }
+    } else bu.send(msg, 'You have to tell me who to ban!');
 };
 
 e.ban = async function (msg, user, deleteDays = 1, reason, duration, tag = false, noPerms = false) {
