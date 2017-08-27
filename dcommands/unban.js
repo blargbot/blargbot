@@ -23,7 +23,7 @@ e.flags = [{
 e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words);
     if (input.undefined.length > 0) {
-        var user = await bu.getUser(msg, words[1]);
+        var user = input.undefined.join(' ').match(/(\d+)/)[1];
         if (!user) {
             bu.send(msg, `I couldn't find that user. Please make sure you're giving me a user id or a mention.`);
             return;
