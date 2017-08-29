@@ -50,8 +50,10 @@ e.execute = async function (msg, words) {
         }
         var greeting = settings.greeting ?
             settings.greeting : 'Not Set';
+        if (greeting.length > 100) greeting = greeting.substring(0, 100) + '...';
         var farewell = settings.farewell ?
             settings.farewell : 'Not Set';
+        if (farewell.length > 100) farewell = farewell.substring(0, 100) + '...';
         var modlogChannel;
         if (settings.modlog) {
             let channel = bot.getChannel(settings.modlog);
