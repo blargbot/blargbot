@@ -72,7 +72,7 @@ e.execute = async function (params) {
                         color,
                         hoist,
                         mentionable
-                    }, `Created with the '${params.tagName}' command, executed by ${msg.author.username}#${msg.author.discrim} (${msg.author.id})`);
+                    }, `Created with a custom command command, executed by user: ${msg.author.id}`);
                     replaceString = role.id;
                 } catch (err) {
                     logger.error(err.stack);
