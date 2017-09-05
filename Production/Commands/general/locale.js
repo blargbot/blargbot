@@ -25,7 +25,7 @@ class LocaleCommand extends GeneralCommand {
         let userLocale = await ctx.author.data.getLocale();
         const menu = ctx.client.Helpers.Menu.build(ctx);
         menu.embed.setDescription(await ctx.decode(this.keys.list, {
-            current: localeManager.localeList[userLocale].specs.lang
+            current: localeManager.localeList[userLocale.toLowerCase()].specs.lang
         }));
         try {
             let res = await menu.paginate(locales);

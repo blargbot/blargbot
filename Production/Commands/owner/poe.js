@@ -45,37 +45,33 @@ class EvalCommand extends CatCommand {
     };
     let res = await superagent.post('https://api.poeditor.com/v2/languages/list').type('form').send(args);
     if (res.body.response.status === 'success') {
-      let langList = [];
-      let failedList = [];
       let message = 'Importing languages from POEditor -> GitHub...\n\n';
       let msg2 = await ctx.send('Importing languages from POEditor -> GitHub...');
       for (const lang of res.body.result.languages) {
+        if (lang.code === 'en-us') continue;
         if (lang.percentage >= 60) {
-          await msg2.edit(message + `Importing \`${lang.code}\` ${lang.name}`);
           try {
-            let res2 = await superagent.get('https://api.poeditor.com/v2/projects/export')
-              .query({
-                api_token: args.api_token,
-                id: args.id,
-                language: lang.code,
-                type: 'json'
-              });
-            let res3 = await superagent.get(res2.body.result.url);
-            await writeFile(path.join(__dirname, '..', '..', 'Locale', lang.code + '.json'), JSON.stringify(res3.body, null, 2));
-            langList.push(lang);
+            let res2 = await superagent.post('https://api.poeditor.com/v2/projects/export').type('form').send({
+              api_token: args.api_token,
+              id: args.id,
+              language: lang.code,
+              type: 'key_value_json'
+            });
+            let code = lang.code.replace(/\-/g, '_');
+            let res3 = await superagent.get(res2.body.result.url).buffer();
+            await writeFile(path.join(__dirname, '..', '..', '..', 'Locale', code + '.json'), JSON.stringify(JSON.parse(res3.text), null, 2));
+            msg2 = await msg2.edit(msg2.content + `\n:white_check_mark: Imported \`${code}\` ${lang.name} (${lang.percentage}%)`);
+
           } catch (err) {
             lang.error = err.message;
-            failedList.push(lang);
+            msg2 = await msg2.edit(msg2.content + `\n:x: Failed \`${lang.code}\` ${lang.name} (${lang.percentage}%): ${err.message}`);
           }
         }
       }
-      await msg2.edit(message + `Exported the following languages:
-${langList.map(l => ' - `' + l.code + '` ' + l.name + ' (' + l.percentage + '%)').join('\n')}
+      await msg2.edit(msg2.content + `\n\nImport complete!`);
 
-The following languages failed to export:
-${failedList.map(l => ' - `' + l.code + '` ' + l.name + ' (' + l.percentage + '%) - ' + l.error).join('\n')}
+      this.client.LocaleManager.init();
 
-You should do an update now.`);
     } else return 'Failed to use tha API: ' + JSON.stringify(res.body.response);
   }
 }

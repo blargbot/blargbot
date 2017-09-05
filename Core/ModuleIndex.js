@@ -20,7 +20,15 @@ module.exports = function (dirname, require2) {
         enumerable: false
     });
 
+    Object.defineProperty(e, 'reload', {
+        value: () => {
+            return module.exports(dirname, require2);
+        },
+        enumerable: false
+    });
+
     let dirs = fs.readdirSync(dirname);
+    console.log(dirs);
     for (const dir of dirs) {
         if (!dir.includes('.')) {
             Object.defineProperty(e, dir, {

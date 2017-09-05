@@ -16,7 +16,11 @@ class Manager {
     }
 
     init() {
-        this.modules = require(`../../Production/${this.name}`);
+        if (this.modules)
+            this.modules = this.modules.reload();
+        else
+            this.modules = require(`../../Production/${this.name}`);
+
         for (const key in this.modules) {
             if (key === 'index') continue;
             let obj = this.modules[key];
