@@ -17,7 +17,6 @@
     "big-number": "^0.4.0",
     "body-parser": "^1.15.2",
     "brainfuck-node": "^1.0.1",
-    "canvas": "^1.6.2",
     "chalk": "^1.1.3",
     "chevrotain": "^0.27.1",
     "cleverbot": "^1.0.1",
