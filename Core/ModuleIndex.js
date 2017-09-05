@@ -28,7 +28,6 @@ module.exports = function (dirname, require2) {
     });
 
     let dirs = fs.readdirSync(dirname);
-    console.log(dirs);
     for (const dir of dirs) {
         if (!dir.includes('.')) {
             Object.defineProperty(e, dir, {
