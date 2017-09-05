@@ -6,7 +6,7 @@ class Client {
     constructor() {
         this.Emitter = new EventEmitter();
         //this.discord = new DiscordClient();
-        this.spawner = new Spawner({
+        this.spawner = new Spawner(this, {
             max: _config.discord.shards
         });
         //this.irc = new IrcClient();

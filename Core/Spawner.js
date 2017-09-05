@@ -1,9 +1,11 @@
 const { Shard } = require('./Structures');
 const EventEmitter = require('eventemitter3');
+const moment = require('moment');
 
 class Spawner extends EventEmitter {
-    constructor(options = {}) {
+    constructor(client, options = {}) {
         super();
+        this.client = client;
         this.max = options.max || 1;
         this.token = _config.discord.token;
         this.file = options.file || 'Core/DiscordClient.js';
@@ -109,7 +111,11 @@ class Spawner extends EventEmitter {
                 break;
             case 'respawnAll':
                 console.log('Respawning all shards');
+                console.log(data);
+                let start = moment();;
                 await this.respawnAll();
+                let diff = moment.duration(moment() - start);
+                await this.client.discord.createMessage(data.message, `I'm back! It only took me ${diff.minutes()} minutes, ${diff.seconds()} seconds, and ${diff.milliseconds()} milliseconds.`);
                 console.log('Respawn complete.');
                 break;
             case 'guildCreate':
