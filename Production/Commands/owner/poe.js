@@ -59,7 +59,10 @@ class EvalCommand extends CatCommand {
             });
             let code = lang.code.replace(/\-/g, '_');
             let res3 = await superagent.get(res2.body.result.url).buffer();
-            await writeFile(path.join(__dirname, '..', '..', '..', 'Locale', code + '.json'), JSON.stringify(JSON.parse(res3.text), null, 2));
+            let parsed = JSON.parse(res3.text);
+            if (code !== 'en_us')
+              parsed.specs.perc = lang.percentage;
+            await writeFile(path.join(__dirname, '..', '..', '..', 'Locale', code + '.json'), JSON.stringify(parsed, null, 2));
             msg2 = await msg2.edit(msg2.content + `\n:white_check_mark: Imported \`${code}\` ${lang.name} (${lang.percentage}%)`);
 
           } catch (err) {

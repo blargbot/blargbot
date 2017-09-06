@@ -16,9 +16,12 @@ class LocaleCommand extends GeneralCommand {
         let localeManager = ctx.client.LocaleManager;
 
         let locales = Object.keys(localeManager.localeList).map(l => {
+            let locale = localeManager.localeList[l];
+            let name = locale.specs.lang;
+            if (locale.specs.perc) name += ` (${locale.specs.perc}%)`;
             return {
                 value: l,
-                name: localeManager.localeList[l].specs.lang
+                name
             };
         });
         locales = locales.sort((a, b) => a.name > b.name ? 1 : a.name < b.name ? -1 : 0);
