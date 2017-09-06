@@ -17,16 +17,13 @@ class Context {
         if (member.permission.has(this.client.Constants.Permissions.ADMINISTRATOR)) return true;
         let guild = await this.guild.data.getOrCreateObject();
         let roles = await guild.get('staffRoles');
-
         if (roles && roles.length > 0) {
             for (const role of roles) {
                 if (member.roles.includes(role)) return true;
             }
         }
-
         let staffPerms = await guild.get('staffPerms');
         if (staffPerms & member.permission.allow != 0) return true;
-
         return false;
     }
 

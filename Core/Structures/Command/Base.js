@@ -11,6 +11,7 @@ class BaseCommand {
         this.aliases = options.aliases || [];
         this.minArgs = options.minArgs || 0;
         this.keys = options.keys === undefined ? {} : options.keys;
+        this.autoType = options.autoType || true;
 
         /**
          * Subcommands are objects with the following structure
@@ -122,6 +123,8 @@ class BaseCommand {
     async execute(ctx) { }
 
     async _execute(ctx) {
+        if (this.autoType)
+            await ctx.channel.sendTyping();
         ctx.words.shift();
         let key = (ctx.words[0] || '').toLowerCase();
         if (this.subcommandAliases.hasOwnProperty(key)) key = this.subcommandAliases[key];

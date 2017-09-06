@@ -5,7 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const writeFile = util.promisify(fs.writeFile);
 
-class EvalCommand extends CatCommand {
+class PoeCommand extends CatCommand {
   constructor(client) {
     super(client, {
       name: 'poe',
@@ -48,7 +48,7 @@ class EvalCommand extends CatCommand {
       let message = 'Importing languages from POEditor -> GitHub...\n\n';
       let msg2 = await ctx.send('Importing languages from POEditor -> GitHub...');
       for (const lang of res.body.result.languages) {
-        if (lang.code === 'en-us') continue;
+        if (!(ctx.input._[0] && ctx.input._[0] === 'en_us') && lang.code === 'en-us') continue;
         if (lang.percentage >= 60) {
           try {
             let res2 = await superagent.post('https://api.poeditor.com/v2/projects/export').type('form').send({
@@ -79,4 +79,4 @@ class EvalCommand extends CatCommand {
   }
 }
 
-module.exports = EvalCommand;
+module.exports = PoeCommand;

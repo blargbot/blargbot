@@ -329,6 +329,13 @@
         "usage": "",
         "willdm": "Ok, I'll send you my donation information in a DM!",
         "message": "Hi! This is stupid cat, creator of blargbot. I hope you're enjoying it!\n\nI don't like to beg, but right now I'm a student. Tuition is expensive, and maintaining this project isn't exactly free. I have to pay for services such as web servers and domains, not to mention invest time into developing code to make this bot as good as it can be. I don't expect to be paid for what I'm doing; the most important thing to me is that people enjoy what I make, that my product is making people happy. But still, money doesn't grow on trees. If you want to support me and what I'm doing, I have a patreon available for donations. Prefer something with less commitment? I also have a paypal available.\n\nThank you for your time. I really appreciate all of my users! :3\n\n---------------------------------------------\nPaypal: <https://paypal.me/stupidcat>\nPatreon: <https://www.patreon.com/stupidcat>\n---------------------------------------------"
+      },
+      "mods": {
+        "info": "",
+        "usage": "",
+        "mods": "Mods on **{{guild}}**",
+        "nomods": "There are no mods on this guild.",
+        "nomodsonline": "There are no online mods."
       }
     },
     "image": {
