@@ -33,7 +33,7 @@ class ModlogHelper extends BaseHelper {
             ? await this.getAuditEntry(guild, type, params.targetID)
             : null;
 
-        if (audit === null && this.eventMap[type].requiresAudit) return;
+        if (audit == null && this.eventMap[type].requiresAudit) return;
 
         let mod = audit && audit.user ? audit.user : params.user;
         if (typeof mod === 'string') mod = this.client.users.get(mod);
