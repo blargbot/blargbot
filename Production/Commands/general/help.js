@@ -1,6 +1,6 @@
-const { AdminCommand } = require('../../../Core/Structures/Command');
+const { GeneralCommand } = require('../../../Core/Structures/Command');
 
-class HelpCommand extends AdminCommand {
+class HelpCommand extends GeneralCommand {
     constructor(client) {
         super(client, {
             name: 'help',
