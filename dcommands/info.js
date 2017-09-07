@@ -15,26 +15,12 @@ e.usage = 'info';
 e.info = 'Returns some info about me.';
 e.longinfo = `<p>Gets information about the specified user.</p>`;
 
-const patrons = [
-    'Nex',
-    '196018922854678528',
-    '135556895086870528',
-    '196013641479225344',
-    '144906892307726336',
-    '154440828608184322',
-    '277596537515933696',
-    '318882324597047308',
-    '196351316681818112'
-];
-
-const donators = [
-    '191793155685744640',
-    '235677262437941249'
-];
+const { patrons, donators } = dep.reload('./donators.json');
 
 const startDate = 1444708800000;
 
 e.execute = (msg) => {
+    console.log('aaa');
     let patronStr = patrons.map(p => {
         if (/^[0-9]{17,23}$/.test(p)) {
             return bu.getFullName(bot.users.get(p));

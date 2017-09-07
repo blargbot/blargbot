@@ -2,11 +2,12 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:28:09
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-07-13 10:49:32
+ * @Last Modified time: 2017-09-07 13:47:39
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
-process.execArgv[0] = process.execArgv[0].replace('-brk', '');
+if (process.execArgv[0])
+    process.execArgv[0] = process.execArgv[0].replace('-brk', '');
 
 const cluster = dep.cluster;
 module.exports = cluster;
