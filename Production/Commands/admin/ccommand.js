@@ -1,12 +1,12 @@
-const { GeneralCommand } = require('../../../Core/Structures/Command');
+const { AdminCommand } = require('../../../Core/Structures/Command');
 const util = require('util');
 const { TagContext } = require('../../../Core/Tag');
 
-class TagCommand extends GeneralCommand {
+class CustomCommandCommand extends AdminCommand {
     constructor(client) {
         super(client, {
             name: 'ccommand',
-            aliases: 'cc',
+            aliases: ['cc'],
             subcommands: {
                 set: { minArgs: 2 },
                 delete: { minArgs: 1 },
@@ -177,4 +177,4 @@ class TagCommand extends GeneralCommand {
     }
 }
 
-module.exports = TagCommand;
+module.exports = CustomCommandCommand;

@@ -339,7 +339,8 @@
       },
       "help": {
         "info": "",
-        "usage": ""
+        "usage": "",
+        "allcommands": "Here are all the commands you can execute on **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor more information about commands, do `help <commandname>` or visit <https://blargbot.xyz/commands>."
       }
     },
     "image": {
@@ -413,6 +414,58 @@
         "usage": "reason <case> <reason>",
         "nocase": "There is no case with the ID {{number}}!",
         "reasonset": ":ok_hand: The reason has been set!"
+      },
+      "ccommand": {
+        "info": "",
+        "usage": "",
+        "subcommand": {
+          "set": {
+            "usage": "",
+            "info": ""
+          },
+          "delete": {
+            "usage": "",
+            "info": ""
+          },
+          "rename": {
+            "usage": "",
+            "info": ""
+          },
+          "author": {
+            "usage": "",
+            "info": ""
+          },
+          "transfer": {
+            "usage": "",
+            "info": ""
+          },
+          "list": {
+            "usage": "",
+            "info": ""
+          },
+          "test": {
+            "usage": "",
+            "info": ""
+          },
+          "help": {
+            "usage": "",
+            "info": ""
+          }
+        },
+        "dontown": "",
+        "notag": "",
+        "tagset": "",
+        "tagrename": "",
+        "raw": "",
+        "alreadyexists": "",
+        "testoutput": ""
+      },
+      "help": {
+        "info": "",
+        "usage": "",
+        "allcommands": "Here are all the commands you can execute on **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor more information about commands, do `help <commandname>` or visit <https://blargbot.xyz/commands>.",
+        "nocommand": "Sorry, there's no command with the name '{{name}}'!",
+        "commandinfo": "**Command: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}"
       }
     }
   },

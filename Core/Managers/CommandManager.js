@@ -6,6 +6,7 @@ class CommandManager extends Manager {
     constructor(client) {
         super(client, 'Commands', Base);
         this.fullList = {};
+        this.commandList = {};
     }
 
     unload(...names) {
@@ -21,6 +22,7 @@ class CommandManager extends Manager {
     build(...names) {
         let name = names[names.length - 1];
         if (super.build(...names)) {
+            this.commandList[name] = this.builtList[name];
             if (this.builtList[name].aliases.length > 0) {
                 for (const alias of this.builtList[name].aliases) {
                     this.builtList[alias] = this.builtList[name];
