@@ -11,12 +11,12 @@ class ModlogHelper extends BaseHelper {
     get eventMap() {
         return {
             default: {},
-            kick: { code: 20, emote: ':boot:', key: 'modlog.events.kick', color: 0xdb7b1c },
+            kick: { code: 20, emote: ':boot:', key: 'modlog.events.kick', color: 0xdb7b1c, requiresAudit: true },
             ban: { code: 22, emote: ':hammer:', key: 'modlog.events.ban', color: 0xcc0c1c },
             unban: { code: 23, emote: ':angel:', key: 'modlog.events.unban', color: 0x79add1 },
             mute: { code: 25, emote: ':mute:', key: 'modlog.events.mute', color: 0xd80f66 },
             unmute: { code: 25, emote: ':loud_sound:', key: 'modlog.events.unmute', color: 0x1cdb68 },
-            rename: { code: 24, emote: ':pen_ballpoint:', key: 'modlog.events.rename', color: 0xffee02 },
+            rename: { code: 24, emote: ':pen_ballpoint:', key: 'modlog.events.rename', color: 0xffee02, requireAudit: true },
             warn: { emote: ':warning:', key: 'modlog.events.warn', color: 0xd1be79 },
             pardon: { emote: ':cookie:', key: 'modlog.events.pardon', color: 0x79d196 },
             specialAdd: { emote: ':inbox_tray:', key: 'modlog.events.specialroleadd', color: 0x42f4ee },
@@ -33,6 +33,8 @@ class ModlogHelper extends BaseHelper {
             ? await this.getAuditEntry(guild, type, params.targetID)
             : null;
 
+        if (audit === null && this.eventMap[type].requiresAudit) return;
+
         let mod = audit && audit.user ? audit.user : params.user;
         if (typeof mod === 'string') mod = this.client.users.get(mod);
         let reason = audit && audit.reason ? audit.reason : params.reason;
@@ -47,7 +49,7 @@ class ModlogHelper extends BaseHelper {
 
         let target = this.client.users.get(params.targetID) || await this.client.getRESTUser(params.targetID);
 
-        await this.send(channel, type, target, mod, reason, params.fields, params.color);
+        await this.send(channel, type, target, mod, reason, params.fields || [], params.color);
     }
 
     async update(ctx, caseId, reason) {

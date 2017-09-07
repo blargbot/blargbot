@@ -336,6 +336,10 @@
         "mods": "Mods on **{{guild}}**",
         "nomods": "There are no mods on this guild.",
         "nomodsonline": "There are no online mods."
+      },
+      "help": {
+        "info": "",
+        "usage": ""
       }
     },
     "image": {
