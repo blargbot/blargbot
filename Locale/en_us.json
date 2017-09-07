@@ -340,7 +340,9 @@
       "help": {
         "info": "",
         "usage": "",
-        "allcommands": "Here are all the commands you can execute on **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor more information about commands, do `help <commandname>` or visit <https://blargbot.xyz/commands>."
+        "allcommands": "Here are all the commands you can execute on **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor more information about commands, do `help <commandname>` or visit <https://blargbot.xyz/commands>.",
+        "nocommand": "Sorry, there's no command with the name '{{name}}'!",
+        "commandinfo": "**Command: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}"
       }
     },
     "image": {
