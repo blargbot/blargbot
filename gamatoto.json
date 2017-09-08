@@ -1,0 +1,235 @@
+{
+    "mellowfield": {
+        "name": "Mellow Field",
+        "required": 0,
+        "xp": 2,
+        "items": [
+            {
+                "type": "xp",
+                "amount": [
+                    75,
+                    120
+                ],
+                "seed": 81.6,
+                "rate": 55
+            },
+            {
+                "type": "ketfud",
+                "amount": [
+                    1,
+                    2
+                ],
+                "seed": 17,
+                "rate": 5
+            },
+            {
+                "type": "speed",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 1.4,
+                "rate": 15
+            }
+        ]
+    },
+    "shaolinkingdom": {
+        "name": "Shaolin Kingdom",
+        "required": 3,
+        "xp": 5,
+        "items": [
+            {
+                "type": "xp",
+                "amount": [
+                    120,
+                    175
+                ],
+                "seed": 81.6,
+                "rate": 45
+            },
+            {
+                "type": "ketfud",
+                "amount": [
+                    1,
+                    2
+                ],
+                "seed": 17,
+                "rate": 12.5
+            },
+            {
+                "type": "cpu",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.7,
+                "rate": 21.25
+            },
+            {
+                "type": "speed",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.7,
+                "rate": 21.25
+            }
+        ]
+    },
+    "dustydessert": {
+        "name": "Dusty Dessert",
+        "required": 6,
+        "xp": 17,
+        "items": [
+            {
+                "type": "xp",
+                "amount": [
+                    175,
+                    250
+                ],
+                "seed": 81.5,
+                "rate": 47
+            },
+            {
+                "type": "ketfud",
+                "amount": [
+                    1,
+                    2
+                ],
+                "seed": 17,
+                "rate": 10
+            },
+            {
+                "type": "cpu",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.5,
+                "rate": 22.5
+            },
+            {
+                "type": "rich",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.5,
+                "rate": 22.5
+            },
+            {
+                "type": "sniper",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.5,
+                "rate": 22.5
+            }
+        ]
+    },
+    "facility999": {
+        "name": "Facility 999",
+        "required": 10,
+        "xp": 33,
+        "items": [
+            {
+                "type": "xp",
+                "amount": [
+                    350,
+                    525
+                ],
+                "seed": 81.5,
+                "rate": 47.5
+            },
+            {
+                "type": "ketfud",
+                "amount": [
+                    1,
+                    2
+                ],
+                "seed": 17,
+                "rate": 10
+            },
+            {
+                "type": "speed",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.5,
+                "rate": 22.5
+            },
+            {
+                "type": "sniper",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.5,
+                "rate": 22.5
+            },
+            {
+                "type": "jobs",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.5,
+                "rate": 22.5
+            }
+        ]
+    },
+    "caracaramarch": {
+        "name": "Caracara March",
+        "required": 14,
+        "xp": 50,
+        "items": [
+            {
+                "type": "xp",
+                "amount": [
+                    480,
+                    700
+                ],
+                "seed": 81.4,
+                "rate": 47.5
+            },
+            {
+                "type": "ketfud",
+                "amount": [
+                    1,
+                    2
+                ],
+                "seed": 17,
+                "rate": 10
+            },
+            {
+                "type": "speed",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.7,
+                "rate": 22.5
+            },
+            {
+                "type": "rick",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.7,
+                "rate": 22.5
+            },
+            {
+                "type": "treasure",
+                "amount": [
+                    1,
+                    1
+                ],
+                "seed": 0.2,
+                "rate": 22.5
+            }
+        ]
+    }
+}

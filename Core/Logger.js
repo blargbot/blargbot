@@ -16,14 +16,14 @@ class Logger {
             { name: 'error', color: chalk.black.bgRed, err: true },
             { name: 'warn', color: chalk.black.bgYellow, err: true },
             { name: 'trace', color: chalk.green.bgBlack, trace: true },
-            { name: 'init', color: chalk.black.bgBlue },
             { name: 'info', color: chalk.black.bgGreen },
-            { name: 'module', color: chalk.black.bgBlue },
+            { name: 'init', color: chalk.black.bgBlue },
             { name: 'output', color: chalk.black.bgMagenta },
             { name: 'verbose', color: chalk.black.bgCyan },
             { name: 'adebug', color: chalk.cyan.bgBlack },
             { name: 'debug', color: chalk.magenta.bgBlack, alias: ['log', 'dir'] },
-            { name: 'database', color: chalk.black.bgBlue }
+            { name: 'database', color: chalk.black.bgBlue },
+            { name: 'module', color: chalk.black.bgBlue }
         ];
         this._levels = this._levels.map(l => {
             l.position = this._levels.indexOf(l);

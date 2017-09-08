@@ -52,6 +52,32 @@ class DataUser extends DataBase {
         return await this.setKey(`variables.${name}`, value);
     }
 
+    async getGamatoto() {
+        return await this.getKey('gamatoto');
+    }
+
+    async setGamatoto(gamatoto) {
+        return await this.setKey('gamatoto', gamatoto);
+    }
+
+    async getGamatotoStart() {
+        return await this.getKey('gamatotoStart');
+    }
+
+    async setGamatotoStart(time = Date.now(), location) {
+        if (location) await this.setKey('gamatotoLocation', location);
+        return await this.setKey('gamatotoStart', time);
+    }
+    async getGamatotoLocation() {
+        return await this.getKey('gamatotoLocation');
+    }
+    async getGamatotoXp() {
+        return await this.getKey('gamatotoXp');
+    }
+    async setGamatotoXp(xp) {
+        return await this.setKey('gamatotoXp', xp);
+    }
+
 }
 
 module.exports = DataUser;

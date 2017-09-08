@@ -343,6 +343,32 @@
         "allcommands": "Here are all the commands you can execute on **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor more information about commands, do `help <commandname>` or visit <https://blargbot.xyz/commands>.",
         "nocommand": "Sorry, there's no command with the name '{{name}}'!",
         "commandinfo": "**Command: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}"
+      },
+      "gamatoto": {
+        "info": "Go on a magical expedition with Gamatoto!",
+        "usage": "",
+        "subcommand": {
+          "check": {
+            "usage": "check",
+            "info": "Checks the progress of the current expedition."
+          },
+          "start": {
+            "usage": "start <location>",
+            "info": "Starts an expedition!"
+          },
+          "end": {
+            "usage": "finish",
+            "info": ""
+          },
+          "items": {
+            "usage": "items",
+            "info": ""
+          }
+        },
+        "stats": "<:bc_cat:345081695990710272> Here are your items!\n\n{{stats}}",
+        "alreadystarted": "An expedition is already in progress!",
+        "nolocation": "Sorry, that wasn't a valid location. The locations you can currently visit are:\n\n{{locations}}",
+        "expeditionbeings": "<:bc_cat:345081695990710272> THE EXPEDITION BEGINS! <:bc_cat:345081695990710272>\n\nLocation: {{location}}"
       }
     },
     "image": {
@@ -373,24 +399,24 @@
         "info": "Configures various settings.",
         "usage": "setup <subcommand>",
         "subcommand": {
-          "staffuser": {
-            "usage": "mod user <add | remove> <user>...",
-            "info": "Adds or removes the specified user(s) to the staff list."
-          },
-          "staffrole": {
-            "usage": "mod user role",
-            "info": "Brings up a dialog to select or deselect roles."
-          },
           "mute": {
-            "usage": "setup mute",
+            "usage": "mute",
             "info": "Sets up the mute role."
           },
           "announcement": {
-            "usage": "setup announcement",
+            "usage": "announcement",
             "info": "Sets up announcements."
           },
+          "staffrole": {
+            "usage": "staffrole",
+            "info": "Brings up a dialog to select or deselect staff roles."
+          },
+          "staffuser": {
+            "usage": "staffuser <add | remove> <user>...",
+            "info": "Adds or removes users to the staff list."
+          },
           "modlog": {
-            "usage": "setup modlog [#channel] [event]...",
+            "usage": "modlog [event]... [flags]",
             "info": "Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events."
           }
         },

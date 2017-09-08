@@ -77,13 +77,14 @@ class BaseCommand {
                 temp = this.client.LocaleManager.localeList.en_us;
                 let segments = key.key.split('.');
                 for (let i = 0; i < segments.length; i++) {
-                    if (temp[segments[i]]) {
+                    if (typeof temp[segments[i]] === 'object') {
                         temp = temp[segments[i]];
                         continue;
                     }
-                    if (i === segments.length - 1)
-                        temp[segments[i]] = key.value;
-                    else temp[segments[i]] = {};
+                    if (i === segments.length - 1) {
+                        if (key.value != undefined && temp[segments[i] != key.value])
+                            temp[segments[i]] = key.value;
+                    } else temp[segments[i]] = {};
                     if (!this.client.localeDirty) this.client.localeDirty = true;
                     temp = temp[segments[i]];
                 }

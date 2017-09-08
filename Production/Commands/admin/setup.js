@@ -7,26 +7,26 @@ class ModCommand extends AdminCommand {
             subcommands: {
                 mute: {
                     aliases: ['mutes', 'muted'],
-                    usage: 'setup mute',
+                    usage: 'mute',
                     info: 'Sets up the mute role.'
                 },
                 announcement: {
                     aliases: ['announcements'],
-                    usage: 'setup announcement',
+                    usage: 'announcement',
                     info: 'Sets up announcements.'
                 },
                 staffrole: {
                     aliases: ['staffroles'],
-                    usage: 'setup staffrole',
+                    usage: 'staffrole',
                     info: 'Brings up a dialog to select or deselect staff roles.'
                 },
                 staffuser: {
                     aliases: ['staffusers'],
-                    usage: 'setup staffuser <add | remove> <user>...',
+                    usage: 'staffuser <add | remove> <user>...',
                     info: 'Adds or removes users to the staff list.'
                 },
                 modlog: {
-                    usage: 'setup modlog [event]... [flags]',
+                    usage: 'modlog [event]... [flags]',
                     info: 'Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events.',
                     flags: [
                         { flag: 'c', name: 'channel' },

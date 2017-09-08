@@ -18,7 +18,7 @@ class UserModel extends Base {
                 type: this.Sequelize.STRING(32),
                 allowNull: false
             },
-            variables: {  
+            variables: {
                 type: this.Sequelize.JSON,
                 allowNull: false,
                 defaultValue: {}
@@ -31,6 +31,32 @@ class UserModel extends Base {
             avatarURL: {
                 type: this.Sequelize.STRING(256),
                 allowNull: true
+            },
+
+            gamatotoXp: {
+                type: this.Sequelize.INTEGER,
+                allowNull: false,
+                defaultValue: 0
+            },
+            gamatotoStart: {
+                type: this.Sequelize.DATE
+            },
+            gamatotoLocation: {
+                type: this.Sequelize.STRING(64)
+            },
+            gamatoto: {
+                type: this.Sequelize.JSON,
+                allowNull: false,
+                defaultValue: {
+                    xp: 0,
+                    ketfud: 0,
+                    speed: 0,
+                    treasure: 0,
+                    rich: 0,
+                    cpu: 0,
+                    jobs: 0,
+                    sniper: 0
+                }
             }
         });
 

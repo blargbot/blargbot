@@ -4,6 +4,7 @@ class HelpCommand extends GeneralCommand {
     constructor(client) {
         super(client, {
             name: 'help',
+            aliases: ['commands'],
             keys: {
                 allCommands: { key: '.allcommands', value: 'Here are all the commands you can execute on **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor more information about commands, do `help <commandname>` or visit <https://blargbot.xyz/commands>.' },
                 noCommand: { key: '.nocommand', value: `Sorry, there's no command with the name '{{name}}'!` },

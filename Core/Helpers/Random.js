@@ -38,6 +38,10 @@ class RandomHelper extends BaseHelper {
         return seed <= threshold;
     }
 
+    chancePool(choices = []) {
+
+    }
+
     shuffle(array) {
         for (let i = array.length - 1, j = 0, temp = null; i > 0; i--) {
             j = this.randInt(i);
