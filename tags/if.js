@@ -17,14 +17,14 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `if`;
-e.args = `&lt;evaluator&gt; &lt;arg1&gt; &lt;arg2&gt; &lt;then&gt; &lt;else&gt;`;
+e.args = `&lt;arg1&gt; &lt;evaluator&gt; &lt;arg2&gt; &lt;then&gt; &lt;else&gt;`;
 e.usage = `{if;evaluator;arg1;arg2;then;else}`;
 e.desc = `Evaluates <code>arg1</code> and <code>arg2</code> using the <code>evaluator</code>. If it
 returns true, the tag returns <code>then</code>. Otherwise, it returns <code>else</code>. Valid
 evaluators are <code>==</code><code>!=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>
 &gt;=</code> <code>startswith</code> <code>endswith</code> <code>includes</code>`;
 
-e.exampleIn = `{if;&lt;=;5;10;5 is less than or equal to 10;5 is greater than 10}`;
+e.exampleIn = `{if;5;&lt;=;10;5 is less than or equal to 10;5 is greater than 10}`;
 e.exampleOut = `5 is less than or equal to 10`;
 
 const operators = {
