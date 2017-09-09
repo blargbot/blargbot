@@ -43,7 +43,6 @@ e.execute = async function(params) {
                     type: 'tag',
                     params,
                     channel: msg.channel.id,
-                    vars: params.vars,
                     endtime: r.epochTime(dep.moment().add(duration).unix())
                 });
                 params.msg = msg;
