@@ -18,7 +18,7 @@ class GamatotoCommand extends GeneralCommand {
                 noTimeElapsed: { key: '.notimeelapsed', value: 'No time has elapsed since the expedition started. Gamatoto didn\'t find anything!' },
                 itemFound: { key: '.itemfound', value: 'Gamatoto found {{amount}} {{item}} at the {{location}}.' },
                 levelUp: { key: '.levelup', value: ':fireworks: Gamatoto is now level {{level}}!' },
-                gamatotoXp: { key: '.gamatotoxp', value: 'Gamatoto gained {{amount}} XP.' },
+                gamatotoXp: { key: '.gamatotoxp', value: 'Gamatoto gained **{{amount}}** XP. ({{old}} → **{{new}}**)' },
                 itemIncrease: { key: '.itemincrease', value: '{{item}} You found **{{amount}}** ({{old}} → **{{new}}**)' },
 
                 gamatotoItems: { key: '.gamatotoitems', value: 'Here are your items:\n{{items}}' },
@@ -28,10 +28,9 @@ class GamatotoCommand extends GeneralCommand {
             },
             info: 'Go on a magical expedition with Gamatoto!',
             subcommands: {
-                check: { info: 'Checks the progress of the current expedition.', usage: 'check' },
+                check: { info: 'Checks the progress of the current expedition, as well as the items you have.', usage: 'check', aliases: ['items'] },
                 start: { aliases: ['begin'], info: 'Starts an expedition!', usage: 'start <location>' },
-                end: { aliases: ['finish'], usage: 'finish' },
-                items: { usage: 'items', aliases: ['stats'] }
+                end: { aliases: ['finish'], usage: 'finish', info: 'Ends an expedition!' }
             }
         });
     }
@@ -186,7 +185,7 @@ class GamatotoCommand extends GeneralCommand {
         let oldXp = await ctx.author.data.getGamatotoXp();
         let newXp = oldXp + xp;
         await ctx.author.data.setGamatotoXp(newXp);
-        output += await ctx.decode(this.keys.gamatotoXp, { amount: xp }) + '\n';
+        output += await ctx.decode(this.keys.gamatotoXp, { amount: xp, old: oldXp, new: newXp }) + '\n';
         if (this.getGamatotoLevel(oldXp) != this.getGamatotoLevel(newXp)) {
             output += await ctx.decode(this.keys.levelUp, { level: this.getGamatotoLevel(newXp) }) + '\n';
         }
@@ -207,17 +206,6 @@ class GamatotoCommand extends GeneralCommand {
         let amount = this.client.Helpers.Random.randInt(res.amount[0], res.amount[1]);
 
         return { type: res.type, amount };
-    }
-
-    async sub_items(ctx) {
-        let stats = await ctx.author.data.getGamatoto();
-        let output = '';
-        for (const key in this.emotes) {
-            if (stats[key] !== undefined) {
-                output += `${this.emotes[key]} ${stats[key]}\n`;
-            }
-        }
-        return await ctx.decodeAndSend(this.keys.stats, { stats: output });
     }
 }
 
