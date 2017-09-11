@@ -1,235 +1,705 @@
 {
-    "mellowfield": {
-        "name": "Mellow Field",
-        "required": 0,
-        "xp": 2,
-        "items": [
-            {
-                "type": "xp",
-                "amount": [
-                    75,
-                    120
-                ],
-                "seed": 81.6,
-                "rate": 55
-            },
-            {
-                "type": "ketfud",
-                "amount": [
-                    1,
-                    2
-                ],
-                "seed": 17,
-                "rate": 5
-            },
-            {
-                "type": "speed",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 1.4,
-                "rate": 15
-            }
-        ]
+    "locations": {
+        "mellowfield": {
+            "name": "Mellow Field",
+            "required": 0,
+            "xp": 2,
+            "items": [
+                {
+                    "type": "xp",
+                    "amount": [
+                        75,
+                        120
+                    ],
+                    "seed": 81.6,
+                    "rate": 55
+                },
+                {
+                    "type": "ketfud",
+                    "amount": [
+                        1,
+                        2
+                    ],
+                    "seed": 17,
+                    "rate": 5
+                },
+                {
+                    "type": "speed",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 1.4,
+                    "rate": 15
+                }
+            ]
+        },
+        "shaolinkingdom": {
+            "name": "Shaolin Kingdom",
+            "required": 3,
+            "xp": 5,
+            "items": [
+                {
+                    "type": "xp",
+                    "amount": [
+                        120,
+                        175
+                    ],
+                    "seed": 81.6,
+                    "rate": 45
+                },
+                {
+                    "type": "ketfud",
+                    "amount": [
+                        1,
+                        2
+                    ],
+                    "seed": 17,
+                    "rate": 12.5
+                },
+                {
+                    "type": "cpu",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.7,
+                    "rate": 21.25
+                },
+                {
+                    "type": "speed",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.7,
+                    "rate": 21.25
+                }
+            ]
+        },
+        "dustydessert": {
+            "name": "Dusty Dessert",
+            "required": 6,
+            "xp": 17,
+            "items": [
+                {
+                    "type": "xp",
+                    "amount": [
+                        175,
+                        250
+                    ],
+                    "seed": 81.5,
+                    "rate": 47
+                },
+                {
+                    "type": "ketfud",
+                    "amount": [
+                        1,
+                        2
+                    ],
+                    "seed": 17,
+                    "rate": 10
+                },
+                {
+                    "type": "cpu",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.5,
+                    "rate": 22.5
+                },
+                {
+                    "type": "rich",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.5,
+                    "rate": 22.5
+                },
+                {
+                    "type": "sniper",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.5,
+                    "rate": 22.5
+                }
+            ]
+        },
+        "facility999": {
+            "name": "Facility 999",
+            "required": 10,
+            "xp": 33,
+            "items": [
+                {
+                    "type": "xp",
+                    "amount": [
+                        350,
+                        525
+                    ],
+                    "seed": 81.5,
+                    "rate": 47.5
+                },
+                {
+                    "type": "ketfud",
+                    "amount": [
+                        1,
+                        2
+                    ],
+                    "seed": 17,
+                    "rate": 10
+                },
+                {
+                    "type": "speed",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.5,
+                    "rate": 22.5
+                },
+                {
+                    "type": "sniper",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.5,
+                    "rate": 22.5
+                },
+                {
+                    "type": "jobs",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.5,
+                    "rate": 22.5
+                }
+            ]
+        },
+        "caracaramarch": {
+            "name": "Caracara March",
+            "required": 14,
+            "xp": 50,
+            "items": [
+                {
+                    "type": "xp",
+                    "amount": [
+                        480,
+                        700
+                    ],
+                    "seed": 81.4,
+                    "rate": 47.5
+                },
+                {
+                    "type": "ketfud",
+                    "amount": [
+                        1,
+                        2
+                    ],
+                    "seed": 17,
+                    "rate": 10
+                },
+                {
+                    "type": "speed",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.7,
+                    "rate": 22.5
+                },
+                {
+                    "type": "rick",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.7,
+                    "rate": 22.5
+                },
+                {
+                    "type": "treasure",
+                    "amount": [
+                        1,
+                        1
+                    ],
+                    "seed": 0.2,
+                    "rate": 22.5
+                }
+            ]
+        }
     },
-    "shaolinkingdom": {
-        "name": "Shaolin Kingdom",
-        "required": 3,
-        "xp": 5,
-        "items": [
-            {
-                "type": "xp",
-                "amount": [
-                    120,
-                    175
-                ],
-                "seed": 81.6,
-                "rate": 45
-            },
-            {
-                "type": "ketfud",
-                "amount": [
-                    1,
-                    2
-                ],
-                "seed": 17,
-                "rate": 12.5
-            },
-            {
-                "type": "cpu",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.7,
-                "rate": 21.25
-            },
-            {
-                "type": "speed",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.7,
-                "rate": 21.25
-            }
-        ]
-    },
-    "dustydessert": {
-        "name": "Dusty Dessert",
-        "required": 6,
-        "xp": 17,
-        "items": [
-            {
-                "type": "xp",
-                "amount": [
-                    175,
-                    250
-                ],
-                "seed": 81.5,
-                "rate": 47
-            },
-            {
-                "type": "ketfud",
-                "amount": [
-                    1,
-                    2
-                ],
-                "seed": 17,
-                "rate": 10
-            },
-            {
-                "type": "cpu",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.5,
-                "rate": 22.5
-            },
-            {
-                "type": "rich",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.5,
-                "rate": 22.5
-            },
-            {
-                "type": "sniper",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.5,
-                "rate": 22.5
-            }
-        ]
-    },
-    "facility999": {
-        "name": "Facility 999",
-        "required": 10,
-        "xp": 33,
-        "items": [
-            {
-                "type": "xp",
-                "amount": [
-                    350,
-                    525
-                ],
-                "seed": 81.5,
-                "rate": 47.5
-            },
-            {
-                "type": "ketfud",
-                "amount": [
-                    1,
-                    2
-                ],
-                "seed": 17,
-                "rate": 10
-            },
-            {
-                "type": "speed",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.5,
-                "rate": 22.5
-            },
-            {
-                "type": "sniper",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.5,
-                "rate": 22.5
-            },
-            {
-                "type": "jobs",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.5,
-                "rate": 22.5
-            }
-        ]
-    },
-    "caracaramarch": {
-        "name": "Caracara March",
-        "required": 14,
-        "xp": 50,
-        "items": [
-            {
-                "type": "xp",
-                "amount": [
-                    480,
-                    700
-                ],
-                "seed": 81.4,
-                "rate": 47.5
-            },
-            {
-                "type": "ketfud",
-                "amount": [
-                    1,
-                    2
-                ],
-                "seed": 17,
-                "rate": 10
-            },
-            {
-                "type": "speed",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.7,
-                "rate": 22.5
-            },
-            {
-                "type": "rick",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.7,
-                "rate": 22.5
-            },
-            {
-                "type": "treasure",
-                "amount": [
-                    1,
-                    1
-                ],
-                "seed": 0.2,
-                "rate": 22.5
-            }
+    "dialog": {
+        "prefix": [
+            "was captured",
+            "discovered a lost city",
+            "ate food off the ground",
+            "got lost in thought",
+            "was beaten to a pulp",
+            "built their dream home",
+            "ran out of breath",
+            "was permenantly disturbed",
+            "confronted their worst fear",
+            "caught an incurable disease",
+            "was rejected",
+            "followed their true passion",
+            "picked some flowers",
+            "felt itchy",
+            "celebrated their birthday",
+            "was groped",
+            "got a bag of candy",
+            "delivered a powerful speech",
+            "had to use the toilet",
+            "went golfing with the boss",
+            "exploded",
+            "took a new job",
+            "learned they were adopted",
+            "was sold life insurance",
+            "got trampled",
+            "just couldn't take it",
+            "had a quiet family dinner",
+            "grew wings and flew away",
+            "laughed out loud",
+            "went all in on a bet",
+            "made a bad investment",
+            "cried until they laughed",
+            "felt shy",
+            "felt like moving to Canada",
+            "broke a sacred vow",
+            "decided to sue",
+            "took a naughty photo",
+            "met their biological father",
+            "impressed their longtime hero",
+            "nearly died of shame",
+            "took a new identity",
+            "was arrested",
+            "felt some relief",
+            "inspired an anime series",
+            "got deported",
+            "made a police report",
+            "was reported to the police",
+            "really messed up",
+            "was put under house arrest",
+            "learned the meaning of life",
+            "went delightfully mad",
+            "went on a rampage",
+            "went bankrupt",
+            "awoke with a start",
+            "ate the best burger ever",
+            "did an amazing cartwheel",
+            "drank too much",
+            "reached enlightenment",
+            "mastered the somersault",
+            "founded a charity",
+            "got caught poaching",
+            "resisted arrest",
+            "felt deeply nostalgic",
+            "developed six-pack abs",
+            "got challenged to a duel",
+            "got bit by a mouse",
+            "felt seriously hungry",
+            "saw something suspicious",
+            "wept furiously",
+            "went on a bender",
+            "revealed a conspiracy",
+            "littered, then felt bad",
+            "trembled in fear",
+            "realized the horror of war",
+            "was reborn",
+            "nodded off for a moment",
+            "repeated the question",
+            "saw a spooky ghost",
+            "missed Mom's cooking",
+            "became a vegetarian",
+            "steeled their resolve",
+            "leaked a scandal",
+            "fell in love",
+            "made a real mess",
+            "danced 'til they dropped",
+            "felt sweaty",
+            "finished their dissertation",
+            "ate nothing but cabbage",
+            "fought for world peace",
+            "knew true heartbreak",
+            "burned their tongue",
+            "yawned",
+            "became confused",
+            "got stalked",
+            "threw away some old undies",
+            "pretended to work hard",
+            "hummed quietly",
+            "lost consciousness",
+            "nearly choked to death",
+            "finally got it together",
+            "bought too many donuts",
+            "fed some ducks",
+            "stole candy from a baby",
+            "suspected their best friend",
+            "geeked out",
+            "stole a pen",
+            "got food poisoning",
+            "was truly miserable",
+            "worked a part time job",
+            "decided to take a day off",
+            "discovered a dark secret",
+            "attended a conference",
+            "was playing god",
+            "sent the wrong text to HER",
+            "avoided eye contact",
+            "made a fool of themselves",
+            "brushed his teeth",
+            "worried about going bald",
+            "entered a parallel universe",
+            "realized his destiny",
+            "was hit on by a stranger",
+            "predicted the future",
+            "couldn't sleep",
+            "played hide and seek",
+            "\"borrowed\" a hotel towel",
+            "visited Grandma",
+            "avoided a rainstorm",
+            "found a weird growth",
+            "glowed with pride",
+            "snapped out of it",
+            "ate a burnt cookie",
+            "was completely deluded",
+            "dropped their ice cream",
+            "shaved his legs",
+            "got an amazing hug",
+            "hit a home run",
+            "smushed a weird bug",
+            "tore up a love letter",
+            "broke a world record",
+            "had their identity stolen",
+            "stayed up all night",
+            "escaped captivity",
+            "received their first kiss",
+            "regretted their wasted youth",
+            "treated themselves",
+            "scraped their knee",
+            "bought a new suit",
+            "lost their temper",
+            "felt confident",
+            "was shipwrecked",
+            "hoped for the best",
+            "got a tattoo",
+            "learned something new",
+            "watched TV all night",
+            "thought You Only Live Once",
+            "double-dipped",
+            "had a terrible migraine",
+            "had just about enough",
+            "lost their house key",
+            "joined in on a strange ritual",
+            "found a pretty blue bird",
+            "squealed with joy",
+            "gave it all up for love",
+            "laughed until they cried",
+            "read a great book",
+            "drew a comic",
+            "thought they might die",
+            "bought a condo",
+            "nearly drowned",
+            "wished they could play piano",
+            "defeated a supreme evil",
+            "drank some bad milk",
+            "felt old for the first time",
+            "picked their nose",
+            "bought a toupee",
+            "got pickpocketed",
+            "joined a secret society",
+            "enjoyed some hot soup",
+            "bought a puppy",
+            "couldn't find a toilet",
+            "swore vengeance",
+            "couldn't find their wallet",
+            "almost won the election",
+            "forgot why they were angry",
+            "smelled something stinky",
+            "was filled with regret",
+            "couldn't get rid of hiccups",
+            "stepped in something gross",
+            "folded 1000 origami cranes",
+            "turned their life around",
+            "trusted their instincts",
+            "was taken to the hospital",
+            "got knocked out",
+            "started a riot",
+            "took all the blame",
+            "met their soulmate",
+            "laughed at the worst time",
+            "repaid a lifelong debt",
+            "caught the real criminal",
+            "tried to look dangerous",
+            "forgot where they were going",
+            "stuck a pen up their nose",
+            "refused to pay sales tax",
+            "bought some cheap cologne",
+            "stared down a hungry tiger",
+            "ruled the mosh pit",
+            "did a sick wheelie",
+            "refused to sell out",
+            "found their high-school blog",
+            "created homemade BBQ sauce",
+            "completely flipped out",
+            "burped",
+            "learned to juggle",
+            "joined an acapella group",
+            "shed a single tear",
+            "flipped a table",
+            "kept picking their nose",
+            "lost a tooth",
+            "admired their own booty",
+            "drooled just a little",
+            "fought off a dozen pirates",
+            "came back from the dead",
+            "recovered the ring of power",
+            "made a pact with a wizard",
+            "swore off gluten",
+            "finally spoke up",
+            "got a phone number",
+            "got chased by the KGB",
+            "skydived to safety",
+            "was really just joking",
+            "wasn't impressed",
+            "shot only three-pointers",
+            "published a zine",
+            "camped the spawn point",
+            "blew a big bubble"
+        ],
+        "suffix": [
+            "with a Hippoe.",
+            "after being taken hostage.",
+            "in Beverly Hills.",
+            "in a bug-infested jungle.",
+            "on a skyscraper's roof!",
+            "inside an ancient tomb.",
+            "during a double typhoon.",
+            "at a run-down theme park.",
+            "at the unemployment office.",
+            "in the 9th circle of Hell.",
+            "on the Champs Elysee.",
+            "at a 24-hour diner.",
+            "with a mysterious stranger.",
+            "during a family reunion.",
+            "with a childhood friend.",
+            "with a wandering hobo.",
+            "with the Cat God.",
+            "with an obnoxious neighbor.",
+            "with their crush from school.",
+            "during a blind date.",
+            "during a vision quest.",
+            "while filling out paperwork.",
+            "with Teacher Bun-Bun.",
+            "while in prison.",
+            "while falling from 30,000ft.",
+            "at a mall food court.",
+            "while stuck in traffic.",
+            "during a self-help course.",
+            "while making a cute face.",
+            "at a posh nightclub.",
+            "in an underground vault.",
+            "while lost in the forest.",
+            "at the Hospital ICU.",
+            "with Sexy Legs Cat.",
+            "thanks to Camelle.",
+            "with Doge.",
+            "due to heartbreak.",
+            "due to heatstroke.",
+            "with a lewd kappa.",
+            "at a Maid Café.",
+            "at a friend's wedding.",
+            "at a death metal show.",
+            "after meeting Moneko.",
+            "at the scene of the crime.",
+            "inside a public toilet.",
+            "on a city bus.",
+            "at a condemned warehouse.",
+            "while picking a lock.",
+            "because of the Illuminati.",
+            "thanks to a pyramid scheme.",
+            "at a scummy dive bar.",
+            "at their parents' basement.",
+            "at a Broadway show.",
+            "at a speed-dating party.",
+            "during his school reunion.",
+            "under the cherry blossoms.",
+            "at his retirement party.",
+            "after making a 3-point shot.",
+            "on the first day of school.",
+            "and realized they're not a Cat.",
+            "at a Las Vegas casino.",
+            "at the airport.",
+            "at a hidden library.",
+            "at a Milanese café.",
+            "during a daring heist.",
+            "at a Texas rodeo.",
+            "at the World Cup.",
+            "at the top of Mt. Fuji.",
+            "at Bondi Beach.",
+            "after a failed one-liner.",
+            "at the Parthenon.",
+            "while eating a TV dinner.",
+            "during a hockey game.",
+            "after joining the army.",
+            "with their secret admirer.",
+            "with the kid from next door.",
+            "thanks to the school bully.",
+            "while relaxing in the shade.",
+            "while climbing the Swiss Alps.",
+            "during a massive earthquake.",
+            "after winning the Iditarod.",
+            "during a press conference.",
+            "at a shareholder's meeting.",
+            "after an awkward breakup.",
+            "while enduring intense pain.",
+            "at a three-star restaurant.",
+            "while on the verge of death.",
+            "in the Chamber of Secrets.",
+            "while still in kindergarten.",
+            "during a sudden blizzard.",
+            "after unexpected betrayal!",
+            "while flying a helicopter.",
+            "under a cloudless sky.",
+            "after losing their tour group.",
+            "at the toy store.",
+            "while riding a unicycle.",
+            "at airport security.",
+            "at a child's birthday party.",
+            "in the middle of Mumbai.",
+            "on vacation in Bali.",
+            "next to their father-in-law.",
+            "in a bamboo grove.",
+            "at a crowded street bazaar.",
+            "at a fast-food restaurant.",
+            "after eating discount sushi.",
+            "at a hot-spring resort.",
+            "while in the car.",
+            "while watching the clock.",
+            "after getting to Heaven.",
+            "at the baggage claim.",
+            "in the desert.",
+            "in a blinding white void.",
+            "while firing the Cat Cannon.",
+            "on the edge of a cliff.",
+            "during the end credits.",
+            "at the center of the Earth.",
+            "at an office birthday party.",
+            "after checking their email.",
+            "in the name of science.",
+            "at the Rat Kingdom.",
+            "at an abandoned hospital.",
+            "on an Alaskan fishing boat.",
+            "with a famous actress.",
+            "on a sinking ship.",
+            "in front of their scary boss.",
+            "after winning \"Best Actor\".",
+            "while looking at the stars.",
+            "with the school principal.",
+            "at Yankee Stadium.",
+            "during a penalty kick.",
+            "at a kebab stand.",
+            "at the hair salon.",
+            "during a job interview.",
+            "with the school nurse.",
+            "at senior prom.",
+            "with a car salesman.",
+            "with a wise old hermit.",
+            "at the Tree of Legend.",
+            "during interrogation.",
+            "at a local flea market.",
+            "during Carnival.",
+            "without understanding why.",
+            "in a gated community.",
+            "in front of the mirror.",
+            "in an unmarked black sedan.",
+            "in the gym sauna.",
+            "in the women's locker room.",
+            "while hiding in the attic.",
+            "during a beautiful sunset.",
+            "at the movie theater.",
+            "at football team tryouts.",
+            "in a dirty taxicab.",
+            "at the Cat Base.",
+            "with a bicycle thief.",
+            "while hiding in a dumpster.",
+            "while in the bath.",
+            "at a frozen lake.",
+            "at the Cyber Academy.",
+            "while stuck in Purgatory.",
+            "with B-list actor.",
+            "after duelling with a Vajira.",
+            "in the Enemy Base.",
+            "with a teacup in one hand.",
+            "while writing a love letter.",
+            "at Nyarvard University.",
+            "in Jizo's Moving Castle.",
+            "in Mekako's workshop.",
+            "at [CLASSIFIED].",
+            "at Silicon Valley.",
+            "at his piano recital.",
+            "at the doctor's office.",
+            "on an aircraft carrier.",
+            "at his ancestor's grave.",
+            "during yoga class.",
+            "due to family circumstances.",
+            "on a packed train in summer.",
+            "trying to catch a bird.",
+            "as he watched a sad TV show.",
+            "during a thrilling chase.",
+            "after suffering vertigo.",
+            "after appearing on TV.",
+            "while interviewing experts.",
+            "after Mom yelled at him.",
+            "after joining a boy band.",
+            "at an Arctic Research Base.",
+            "while leading a revolution.",
+            "with a chupacabra.",
+            "in a moment of desperation.",
+            "after losing a title fight.",
+            "after studying all night.",
+            "while out with Grandpa.",
+            "after dropping their wallet.",
+            "while texting and driving.",
+            "after a romantic proposal.",
+            "after a round of karaoke.",
+            "after a deep trauma.",
+            "at a busy pizza parlor.",
+            "during a part-time job.",
+            "during final exams.",
+            "at the base of Taipei 101.",
+            "on a boat to Singapore.",
+            "on the street in Manila.",
+            "when Sir Seal attacked!",
+            "while making casserole.",
+            "while being buried alive.",
+            "after getting a bad cramp.",
+            "while flailing their arms wildly.",
+            "after gaining mutant powers.",
+            "while under anaesthesia.",
+            "during a slumber party.",
+            "while wearing a cute skirt.",
+            "on Leg Day.",
+            "in a ninja village.",
+            "during an exorcism.",
+            "after writing their memoirs.",
+            "with a feisty old guy.",
+            "at the bus stop.",
+            "during a game of dodgeball.",
+            "after losing their tail.",
+            "while dreaming of Senpai.",
+            "after a 72-hour TV binge.",
+            "after eating a whole cake.",
+            "while riding an alligator.",
+            "on the last day of summer.",
+            "during a power outage.",
+            "after brain surgery.",
+            "at the dollar store."
         ]
     }
 }

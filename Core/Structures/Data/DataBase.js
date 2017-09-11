@@ -71,10 +71,7 @@ class DataBase {
     async setKey(key, data = null) {
         let obj = await this.getObject();
         if (obj) {
-            if (data === null)
-                obj.set(key, undefined);
-            else
-                obj.set(key, data);
+            obj.set(key, data);
             await obj.save();
         }
         return this;

@@ -82,7 +82,7 @@ class BaseCommand {
                         continue;
                     }
                     if (i === segments.length - 1) {
-                        if (key.value != undefined && temp[segments[i] != key.value])
+                        if (key.value != undefined && temp[segments[i]] != key.value)
                             temp[segments[i]] = key.value;
                     } else temp[segments[i]] = {};
                     if (!this.client.localeDirty) this.client.localeDirty = true;

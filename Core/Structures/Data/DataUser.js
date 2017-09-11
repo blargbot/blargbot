@@ -68,6 +68,7 @@ class DataUser extends DataBase {
         if (location) await this.setKey('gamatotoLocation', location);
         return await this.setKey('gamatotoStart', time);
     }
+
     async getGamatotoLocation() {
         return await this.getKey('gamatotoLocation');
     }
