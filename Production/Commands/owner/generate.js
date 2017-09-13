@@ -5,7 +5,7 @@ const raur = '197529405659021322';
 class GenerateCommand extends CatCommand {
     constructor(client) {
         super(client, {
-            name: 'eval',
+            name: 'generate',
             subcommands: {
                 tags: { minArgs: 0, maxArgs: 1 },
                 raurusers: { minArgs: 0, maxArgs: 0 }
