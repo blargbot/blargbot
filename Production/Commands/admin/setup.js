@@ -7,17 +7,14 @@ class ModCommand extends AdminCommand {
             subcommands: {
                 mute: {
                     aliases: ['mutes', 'muted'],
-                    usage: 'mute',
                     info: 'Sets up the mute role.'
                 },
                 announcement: {
                     aliases: ['announcements'],
-                    usage: 'announcement',
                     info: 'Sets up announcements.'
                 },
                 staffrole: {
                     aliases: ['staffroles'],
-                    usage: 'staffrole',
                     info: 'Brings up a dialog to select or deselect staff roles.'
                 },
                 staffuser: {

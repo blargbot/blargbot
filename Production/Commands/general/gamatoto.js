@@ -30,11 +30,10 @@ class GamatotoCommand extends GeneralCommand {
                 gamatotoIdle: { key: '.gamatotoidle', value: 'Gamatoto isn\'t on an expedition right now. Send him on an adventure by doing `gamatoto start [location]`!' }
             },
             info: 'Go on a magical expedition with Gamatoto! Use this command to check on your stats, or use a subcommand to go on an adventure!',
-            usage: 'gamatoto',
             subcommands: {
-                start: { aliases: ['begin'], info: 'Starts an expedition!', usage: 'start <location>' },
-                end: { aliases: ['finish'], usage: 'end', info: 'Ends an expedition!' },
-                locations: { info: 'Lists all the expedition locations.', usage: 'locations' }
+                start: { aliases: ['begin'], info: 'Starts an expedition!', usage: '<location>' },
+                end: { aliases: ['finish'], info: 'Ends an expedition!' },
+                locations: { info: 'Lists all the expedition locations.' }
             }
         });
     }

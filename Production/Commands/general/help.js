@@ -50,7 +50,7 @@ class HelpCommand extends GeneralCommand {
                 if (command.aliases.length > 0)
                     aliases = `[ ${command.aliases.join(' | ')} ]`;
                 else aliases = await ctx.decode(this.keys.noAliases);
-                let usage = await command.getUsage(ctx);
+                let usage = name + ' ' + await command.getUsage(ctx);
                 let description = await command.getInfo(ctx);
                 let parts = [];
                 parts.push(await ctx.decode(this.keys.commandInfo,
@@ -68,14 +68,15 @@ class HelpCommand extends GeneralCommand {
             let name = ctx.input._[0];
             const command = ctx.client.CommandManager.builtList[name.toLowerCase()];
             if (command) {
-                let subname = ctx.input._[1].toLowerCase();
-                if (command.subcommands && command.subcommands[subname]) {
+                name = command.name;
+                let subname = command.subcommandAliases[ctx.input._[1].toLowerCase()];
+                if (subname && command.subcommands && command.subcommands[subname]) {
                     let aliases;
                     let cname = `${name} ${subname}`;
                     if (command.subcommands[subname].aliases && command.subcommands[subname].aliases.length > 0)
                         aliases = `[ ${command.subcommands[subname].aliases.join(' | ')} ]`;
                     else aliases = await ctx.decode(this.keys.noAliases);
-                    let usage = `${name} ` + await ctx.decode(`${command.base}.subcommand.${subname}.usage`);
+                    let usage = `${cname} ` + await ctx.decode(`${command.base}.subcommand.${subname}.usage`, undefined, true);
                     let description = await ctx.decode(`${command.base}.subcommand.${subname}.info`);
                     return await ctx.decodeAndSend(this.keys.commandInfo,
                         { type: await ctx.decode(this.keys.subcommand), name: cname, aliases, usage, description });

@@ -37,26 +37,29 @@ class BaseCommand {
         }
 
         if (_config.beta && process.env.SHARD_ID == 0 && this.keys !== false) {
-            let usage = {
-                key: `${this.base}.usage`,
-                value: options.usage || ''
-            };
-            let info = {
+            this._keys = [];
+            if (this.usage)
+                this._keys.push({
+                    key: `${this.base}.usage`,
+                    value: options.usage || ''
+                });
+
+            this._keys.push({
                 key: `${this.base}.info`,
                 value: options.info || ''
-            };
-            this._keys = [info, usage];
+            });
 
             for (const subKey in this.subcommands) {
-                let usage = {
-                    key: `${this.base}.subcommand.${subKey}.usage`,
-                    value: this.subcommands[subKey].usage || ''
-                };
-                let info = {
+                if (this.subcommands[subKey].usage)
+                    this._keys.push({
+                        key: `${this.base}.subcommand.${subKey}.usage`,
+                        value: this.subcommands[subKey].usage || ''
+                    });
+
+                this._keys.push({
                     key: `${this.base}.subcommand.${subKey}.info`,
                     value: this.subcommands[subKey].info || ''
-                };
-                this._keys.push(usage, info);
+                });
             }
 
             if (this.keys) {
@@ -97,7 +100,7 @@ class BaseCommand {
     }
 
     async getUsage(dest) {
-        return await this.decode(dest, `${this.base}.usage`);
+        return await this.decode(dest, `${this.base}.usage`, undefined, true);
     }
 
     async webInfo() {
@@ -155,8 +158,8 @@ class BaseCommand {
         return await this.client.Helpers.Message.send(dest, content, file);
     }
 
-    async decode(dest, key, args) {
-        return await this.client.Helpers.Message.decode(dest, key, args);
+    async decode(dest, key, args, nullable) {
+        return await this.client.Helpers.Message.decode(dest, key, args, nullable);
     }
 
     async decodeAndSend(dest, key, args, file) {

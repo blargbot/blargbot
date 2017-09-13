@@ -4,9 +4,10 @@ class ReasonCommand extends AdminCommand {
     constructor(client) {
         super(client, {
             name: 'reason',
+            info: '',
             keys: {
-                nocase: `.nocase`,
-                reasonset: '.reasonset'
+                nocase: { key: `.nocase`, value: '' },
+                reasonset: { key: '.reasonset', value: '' }
             },
             minArgs: 2
         });

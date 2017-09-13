@@ -31,8 +31,8 @@ class Context {
         return await this.client.Helpers.Message.send(this, content, file);
     }
 
-    async decode(key, args) {
-        return await this.client.Helpers.Message.decode(this, key, args);
+    async decode(key, args, nullable) {
+        return await this.client.Helpers.Message.decode(this, key, args, nullable);
     }
 
     async decodeAndSend(key, args, file) {

@@ -27,9 +27,10 @@ class MessageHelper extends BaseHelper {
      * Decodes a locale key
      * @param {(Message|Channel|Guild|User|Member|Context|String)} dest A destination resolveable.
      * @param {String} key The locale key
-     * @param {Object} [ar  gs={}] Additional arguments for decoding
+     * @param {Object} [args={}] Additional arguments for decoding
+     * @param {Boolean} [nullable=false] Whether the locale key can be null
      */
-    async decode(dest, key, args = {}) {
+    async decode(dest, key, args = {}, nullable = false) {
         let { user, guild } = this.client.Helpers.Resolve.generic(dest);
         let localeName;
         if (guild) {
@@ -46,7 +47,9 @@ class MessageHelper extends BaseHelper {
         if (typeof key === 'object') key = key.key;
         let template = this.client.LocaleManager.getTemplate(localeName, key);
         if (template === null) {
-            return await this.decode(dest, 'error.keyundef', { key });
+            if (nullable === false)
+                return await this.decode(dest, 'error.keyundef', { key });
+            else return '';
         }
 
         let recursiveRegex = /\[\[([^\[].+?[^\]])\]\]/, match;

@@ -7,15 +7,16 @@ class CustomCommandCommand extends AdminCommand {
         super(client, {
             name: 'ccommand',
             aliases: ['cc'],
+            info: '',
             subcommands: {
-                set: { minArgs: 2 },
-                delete: { minArgs: 1 },
-                rename: { minArgs: 2 },
-                author: { minArgs: 1 },
-                transfer: { minargs: 2 },
-                list: {},
-                test: { minArgs: 1 },
-                help: {}
+                set: { minArgs: 2, info: '' },
+                delete: { minArgs: 1, info: '' },
+                rename: { minArgs: 2, info: '' },
+                author: { minArgs: 1, info: '' },
+                transfer: { minargs: 2, info: '' },
+                list: { info: '' },
+                test: { minArgs: 1, info: '' },
+                help: { info: '' }
             },
             subcommandAliases: {
                 remove: 'delete',
@@ -25,13 +26,13 @@ class CustomCommandCommand extends AdminCommand {
                 edit: 'set'
             },
             keys: {
-                dontown: `.dontown`,
-                notag: `.notag`,
-                tagset: `.tagset`,
-                tagrename: `.tagrename`,
-                raw: `.raw`,
-                alreadyexists: `.alreadyexists`,
-                testoutput: `.testoutput`
+                dontown: { key: `.dontown`, value: '' },
+                notag: { key: `.notag`, value: '' },
+                tagset: { key: `.tagset`, value: '' },
+                tagrename: { key: `.tagrename`, value: '' },
+                raw: { key: `.raw`, value: '' },
+                alreadyexists: { key: `.alreadyexists`, value: '' },
+                testoutput: { key: `.testoutput`, value: '' }
             }
         });
     }
