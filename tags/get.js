@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:38:55
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 11:29:36
+ * @Last Modified time: 2017-09-13 11:45:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -44,7 +44,7 @@ e.execute = async function (params) {
             if (isNaN(index)) {
                 replaceString = await bu.tagProcessError(params, '`Invalid index`');
             } else {
-                if (!result[index]) {
+                if (result[index] === undefined && result[index] === null) {
                     replaceString = await bu.tagProcessError(params, '`Undefined index`');
                 } else
                     replaceString = result[index];
