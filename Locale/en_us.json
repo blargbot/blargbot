@@ -297,23 +297,28 @@
         "usage": "",
         "allcommands": "Here are all the commands you can execute on **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor more information about commands, do `help <commandname>` or visit <https://blargbot.xyz/commands>.",
         "nocommand": "Sorry, there's no command with the name '{{name}}'!",
-        "commandinfo": "**Command: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}"
+        "commandinfo": "**{{type}}: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}",
+        "aliases": "No aliases",
+        "subcommand": "Subcommand",
+        "command": "Command",
+        "nosubcommand": "Sorry, there's no subcommand for '{{command}}' with the name '{{name}}'!",
+        "subcommands": "**Subcommands**: {{subcommands}}\n\nDo `help <command> <subcommand>` to get more information about a subcommand!"
       },
       "gamatoto": {
-        "info": "Go on a magical expedition with Gamatoto!",
-        "usage": "",
+        "info": "Go on a magical expedition with Gamatoto! Use this command to check on your stats, or use a subcommand to go on an adventure!",
+        "usage": "gamatoto",
         "subcommand": {
-          "check": {
-            "usage": "check",
-            "info": "Checks the progress of the current expedition, as well as the items you have."
-          },
           "start": {
             "usage": "start <location>",
             "info": "Starts an expedition!"
           },
           "end": {
-            "usage": "finish",
+            "usage": "end",
             "info": "Ends an expedition!"
+          },
+          "locations": {
+            "usage": "locations",
+            "info": "Lists all the expedition locations."
           }
         },
         "stats": "<:bc_cat:345081695990710272> Here are your items!\n\n{{stats}}",
@@ -332,7 +337,8 @@
         "gamatotostats": "Gamatoto is currently level {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
         "gamatotocurrent": "Gamatoto has been exploring the **{{location}}** for **{{minutes}}** minutes.\n\nUse `gamatoto end` to end the expedition.",
         "gamatotoidle": "Gamatoto isn't on an expedition right now. Send him on an adventure by doing `gamatoto start [location]`!",
-        "wronglevel": "Sorry, you need to be level {{level}} in order to explore that place!"
+        "wronglevel": "Sorry, you need to be level {{level}} in order to explore that place!",
+        "locations": "Here are all the expedition locations!\n\n{{locations}}"
       }
     },
     "image": {

@@ -6,7 +6,7 @@ class TagCommand extends GeneralCommand {
     constructor(client) {
         super(client, {
             name: 'tag',
-            aliases: 't',
+            aliases: ['t'],
             subcommands: {
                 set: { minArgs: 2 },
                 delete: { minArgs: 1 },

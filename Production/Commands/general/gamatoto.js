@@ -20,6 +20,7 @@ class GamatotoCommand extends GeneralCommand {
                 levelUp: { key: '.levelup', value: ':fireworks: Gamatoto is now level {{level}}!' },
                 gamatotoXp: { key: '.gamatotoxp', value: 'Gamatoto gained **{{amount}}**XP ({{old}} → **{{new}}**)' },
                 itemIncrease: { key: '.itemincrease', value: '{{item}} You found **{{amount}}** ({{old}} → **{{new}}**)' },
+                locations: { key: '.locations', value: 'Here are all the expedition locations!\n\n{{locations}}' },
 
                 wrongLevel: { key: '.wronglevel', value: 'Sorry, you need to be level {{level}} in order to explore that place!' },
 
@@ -28,11 +29,12 @@ class GamatotoCommand extends GeneralCommand {
                 gamatotoCurrent: { key: '.gamatotocurrent', value: 'Gamatoto has been exploring the **{{location}}** for **{{minutes}}** minutes.\n\nUse `gamatoto end` to end the expedition.' },
                 gamatotoIdle: { key: '.gamatotoidle', value: 'Gamatoto isn\'t on an expedition right now. Send him on an adventure by doing `gamatoto start [location]`!' }
             },
-            info: 'Go on a magical expedition with Gamatoto!',
+            info: 'Go on a magical expedition with Gamatoto! Use this command to check on your stats, or use a subcommand to go on an adventure!',
+            usage: 'gamatoto',
             subcommands: {
-                check: { info: 'Checks the progress of the current expedition, as well as the items you have.', usage: 'check', aliases: ['items'] },
                 start: { aliases: ['begin'], info: 'Starts an expedition!', usage: 'start <location>' },
-                end: { aliases: ['finish'], usage: 'finish', info: 'Ends an expedition!' }
+                end: { aliases: ['finish'], usage: 'end', info: 'Ends an expedition!' },
+                locations: { info: 'Lists all the expedition locations.', usage: 'locations' }
             }
         });
     }
@@ -101,8 +103,13 @@ class GamatotoCommand extends GeneralCommand {
         return output;
     }
 
-    async sub_check(ctx) {
-        return await this.execute(ctx);
+    async sub_locations(ctx) {
+        let xp = await ctx.author.data.getGamatotoXp();
+        let level = this.getGamatotoLevel(xp);
+        return await ctx.decodeAndSend(this.keys.locations, {
+            locations: Object.values(locations)
+                .map(l => (level >= l.required ? ':white_check_mark:' : ':x:') + ` ${l.name} (Lv. ${l.required + 1})`).join('\n')
+        });
     }
 
     async sub_start(ctx) {
@@ -113,9 +120,8 @@ class GamatotoCommand extends GeneralCommand {
         let location;
         if (ctx.input._.length > 0)
             location = ctx.input._.raw.join('');
-        else location = await ctx.author.data.getGamatotoLocation();
         if (typeof location === 'string')
-            location = location.replace(/[^a-z0-9]/g, '').toLowerCase();
+            location = location.replace(/[^a-z0-9]/gi, '').toLowerCase();
         let xp = await ctx.author.data.getGamatotoXp();
         if (!locations.hasOwnProperty(location)) {
             return await ctx.decodeAndSend(this.keys.noLocation, {
