@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:26
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:06:26
+ * @Last Modified time: 2017-09-13 11:41:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -28,7 +28,7 @@ time to display, and a format to parse it with. See
 e.exampleIn = `It's currently {time;YYYY/MM/DD HH:mm:ss}`;
 e.exampleOut = `It's currently 2016/01/01 01:00:00`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -39,7 +39,7 @@ e.execute = async function(params) {
     var formatCode = '';
     if (args[1])
         formatCode = args[1];
-    let date = dep.moment(args[2], args[3]);
+    let date = dep.moment.tz(args[2], args[3], 'Etc/UTC');
     if (!date.isValid()) {
         replaceString = await bu.tagProcessError(params, '`Invalid date`');
     } else
