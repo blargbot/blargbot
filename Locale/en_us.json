@@ -143,7 +143,7 @@
           "Would you like to make a contract?",
           "Let it go, and move on."
         ],
-        "final": ""
+        "final": "Pong! ({{time}}ms)"
       },
       "brainfuck": {
         "info": "",

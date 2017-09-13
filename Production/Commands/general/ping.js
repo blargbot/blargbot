@@ -6,7 +6,7 @@ class PingCommand extends GeneralCommand {
             name: 'ping',
             keys: {
                 randmsg: `.randmsg`,
-                final: `.final`
+                final: { key: `.final`, value: 'Pong! ({{time}}ms)' }
             }
         });
 
