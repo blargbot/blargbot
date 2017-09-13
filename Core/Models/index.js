@@ -17,5 +17,8 @@ module.exports = {
 
     TagFavourite: require('./TagFavourite'),
 
-    ChatLog: require('./ChatLog')
+    ChatLog: require('./ChatLog'),
+
+    // temp
+    WhitelistedGuild: require('./WhitelistedGuild')
 };
