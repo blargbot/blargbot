@@ -39,7 +39,7 @@ e.execute = async function(params) {
     var formatCode = '';
     if (args[1])
         formatCode = args[1];
-    let date = dep.moment(args[2], args[3], 'Etc/UTC');
+    let date = dep.moment(args[2], args[3]);
     if (!date.isValid()) {
         replaceString = await bu.tagProcessError(params, '`Invalid date`');
     } else
