@@ -1,11 +1,12 @@
 const CommandArgs = require('./CommandArgs');
 
 class Context {
-    constructor(client, msg, text) {
+    constructor(client, msg, text, prefix) {
         this.client = client;
         this.msg = msg;
         this.text = text;
         this.words = new CommandArgs(client, this.text);
+        this.prefix = prefix;
     }
 
     async checkStaff(userId) {

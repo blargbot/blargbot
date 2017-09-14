@@ -22,6 +22,10 @@ class DataGuild extends DataBase {
         return await this.setKey('locale', locale);
     }
 
+    async getPrefixes() {
+        return await this.getKey('prefixes');
+    }
+
     async getVariable(name) {
         return (await this.getKey(`variables`) || {})[name];
     }

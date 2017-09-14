@@ -3,7 +3,8 @@ const { GeneralCommand } = require('../../../Core/Structures/Command');
 class NatoCommand extends GeneralCommand {
     constructor(client) {
         super(client, {
-            name: 'nato'
+            name: 'nato',
+            minArgs: 1
         });
     }
 
@@ -39,11 +40,6 @@ class NatoCommand extends GeneralCommand {
     }
 
     async execute(ctx) {
-        if (ctx.input._.length == 0) {
-            await this.notEnoughParameters(ctx);
-            return;
-        }
-
         let input = ctx.input._.join('').replace(/[^a-z]/gi, '');
         let output = [];
 

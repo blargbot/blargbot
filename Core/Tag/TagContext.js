@@ -12,7 +12,10 @@ class TagContext extends Context {
      */
 
     constructor(client, params = {}, data) {
-        super(client, params.ctx ? params.ctx.msg : params.msg);
+        super(client,
+            params.ctx ? params.ctx.msg : params.msg, // msg
+            undefined, // text
+            params.ctx ? params.ctx.prefix : _config.discord.prefix); // prefix
 
         this.content = params.content;
         this.fallback = null;

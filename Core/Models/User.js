@@ -33,6 +33,12 @@ class UserModel extends Base {
                 allowNull: true
             },
 
+            prefixes: {
+                type: this.Sequelize.ARRAY(this.Sequelize.STRING),
+                allowNull: false,
+                defaultValue: []
+            },
+
             gamatotoXp: {
                 type: this.Sequelize.INTEGER,
                 allowNull: false,

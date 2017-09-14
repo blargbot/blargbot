@@ -255,8 +255,8 @@
       },
       "donate": {
         "info": "",
-        "willdm": "",
-        "message": ""
+        "willdm": "Ok, I'll send you my donation information in a DM.",
+        "message": "placeholder"
       },
       "mods": {
         "info": "",
@@ -307,6 +307,27 @@
         "gamatotostats": "Gamatoto is currently level {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
         "gamatotocurrent": "Gamatoto has been exploring the **{{location}}** for **{{minutes}}** minutes.\n\nUse `gamatoto end` to end the expedition.",
         "gamatotoidle": "Gamatoto isn't on an expedition right now. Send him on an adventure by doing `gamatoto start [location]`!"
+      },
+      "prefix": {
+        "info": "Gets or sets the your command prefixes. This command configures user prefixes. For guild prefixes, use the `setup` command.",
+        "subcommand": {
+          "add": {
+            "usage": "<prefix>",
+            "info": "Adds a prefix to your list."
+          },
+          "remove": {
+            "usage": "<prefix>",
+            "info": "Removes a prefix from your list."
+          }
+        },
+        "prefixlist": "{{content}}\nTo configure your prefixes, use the `add` and `remove` subcommands. To configure the guild prefixes, use the `setup` command.",
+        "userprefixes": "Here are your prefixes:\n```md\n{{userprefixes}}\n```",
+        "guildprefixes": "Here are the prefixes on this guild:\n```md\n{{guildprefixes}}\n```",
+        "noprefixes": "You have no custom prefixes.",
+        "defaultprefixes": "You can always use these prefixes:\n{{prefixes}}",
+        "prefixadded": "That prefix has been added!",
+        "prefixremoved": "That prefix has been removed!",
+        "nothingchanged": "Nothing was changed."
       }
     },
     "image": {

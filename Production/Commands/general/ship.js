@@ -7,14 +7,12 @@ class ShipCommand extends GeneralCommand {
             keys: {
                 nousers: '.notenough',
                 final: '.final'
-            }
+            },
+            minArgs: 2
         });
     }
 
     async execute(ctx) {
-        if (ctx.input._.length < 2) {
-            return await this.notEnoughParameters(ctx);
-        }
         let users = [
             await ctx.client.Helpers.Resolve.user(ctx, ctx.input._[0]),
             await ctx.client.Helpers.Resolve.user(ctx, ctx.input._[1])

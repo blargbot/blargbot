@@ -173,7 +173,7 @@ class BaseCommand {
     async notEnoughParameters(ctx, expected, received) {
         return await ctx.decodeAndSend('error.notenoughparams', {
             name: this.name,
-            prefix: 'b!', // TODO: Prefix stuff
+            prefix: ctx.prefix, // TODO: Prefix stuff
             expected, received
         });
     }

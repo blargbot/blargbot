@@ -52,6 +52,13 @@ class DataUser extends DataBase {
         return await this.setKey(`variables.${name}`, value);
     }
 
+    async getPrefixes() {
+        return await this.getKey('prefixes');
+    }
+    async setPrefixes(prefixes) {
+        return await this.setKey('prefixes', prefixes);
+    }
+
     async getGamatoto() {
         return await this.getKey('gamatoto');
     }

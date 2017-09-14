@@ -7,7 +7,7 @@ class CommandMessageEvent extends Event {
 
     get prefixes() {
         return [
-            'blargbot',
+            this.client.user.username,
             _config.discord.defaultPrefix,
             `<@${this.client.user.id}>`,
             `<@!${this.client.user.id}>`
@@ -17,14 +17,15 @@ class CommandMessageEvent extends Event {
     async execute(msg) {
         let prefix = false;
         let shouldBreak = false;
-        for (const pref of this.prefixes) {
+        let prefixes = [].concat(this.prefixes, await msg.guild.data.getPrefixes(), await msg.author.data.getPrefixes());
+        for (const pref of prefixes) {
             if (msg.content.startsWith(pref)) {
                 prefix = pref;
                 break;
             }
         }
         if (prefix !== false) {
-            const ctx = new Context(this.client, msg, msg.content.substring(prefix.length));
+            const ctx = new Context(this.client, msg, msg.content.substring(prefix.length).trim(), prefix);
             shouldBreak = await this.handleCommand(ctx);
         }
         return shouldBreak;
@@ -34,7 +35,7 @@ class CommandMessageEvent extends Event {
         let commandName = ctx.words[0].toLowerCase();
         let didCommand = false;
         if (this.client.CommandManager.has(commandName)) {
-            console.output(`${ctx.author.fullName} has executed command ${commandName}`);
+            console.output(`${ctx.author.fullNameId} has executed command ${commandName}`);
             didCommand = true;
             this.client.CommandManager.execute(commandName, ctx);
         }
