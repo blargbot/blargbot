@@ -32,6 +32,7 @@ class CommandMessageEvent extends Event {
     }
 
     async handleCommand(ctx) {
+        if (!ctx.words[0]) return;
         let commandName = ctx.words[0].toLowerCase();
         let didCommand = false;
         if (this.client.CommandManager.has(commandName)) {
