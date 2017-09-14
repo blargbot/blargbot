@@ -9,21 +9,29 @@ e.init = () => {
 e.requireCtx = require;
 e.isCommand = true;
 e.hidden = false;
-e.usage = 'announce <<text> | -reset>';
+e.usage = 'announce < <text> | flags >';
 e.info = 'Makes an annoucement to a configured role, or resets the announcement configuration.';
 e.longinfo = '<p>Makes an annoucement to a configured role, or resets the announcement configuration.</p>';
-
-e.execute = async function(msg, words) {
+e.flags = [
+    {
+        flag: 'r',
+        word: 'reset',
+        desc: 'Resets the announcement settings'
+    }
+]
+e.execute = async function (msg, words) {
+    let input = bu.parseInput(e.flags, words);
     var changeChannel, roleId;
     let storedGuild = await bu.getGuild(msg.guild.id);
-    if (words.length > 1) {
-        if (words[1].toLowerCase() == '-reset') {
-            delete storedGuild.announce;
-            await r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
+    if (input.r) {
+        delete storedGuild.announce;
+        await r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
 
-            bu.send(msg, 'Announcement configuration reset! Do `b!announce` to reconfigure it.');
-            return;
-        }
+        bu.send(msg, 'Announcement configuration reset! Do `b!announce` to reconfigure it.');
+        return;
+    }
+    if (words.length > 1) {
+
         if (storedGuild.hasOwnProperty('announce')) {
             changeChannel = storedGuild.announce.channel;
             roleId = storedGuild.announce.role;
@@ -111,7 +119,8 @@ ${message}`;
 };
 
 
-function getTopRole(member) {;
+function getTopRole(member) {
+    ;
     let role = member.guild.roles.get(member.roles.sort((a, b) => {
         let thing = 0;
         if (member.guild.roles.get(a).color > 0) thing -= 9999999;
