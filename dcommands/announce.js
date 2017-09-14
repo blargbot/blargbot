@@ -18,7 +18,7 @@ e.flags = [
         word: 'reset',
         desc: 'Resets the announcement settings'
     }
-]
+];
 e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words);
     var changeChannel, roleId;
