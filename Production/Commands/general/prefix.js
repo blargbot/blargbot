@@ -44,7 +44,7 @@ class PrefixCommand extends GeneralCommand {
     async sub_add(ctx) {
         let prefixes = await ctx.author.data.getPrefixes();
         let newPrefix = ctx.input._.raw.join('');
-        if (!prefixes.includes(newPrefix)) {
+        if (!prefixes.includes(newPrefix) && newPrefix !== '') {
             prefixes.push(newPrefix);
             prefixes.sort();
             await ctx.author.data.setPrefixes(prefixes);
