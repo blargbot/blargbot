@@ -103,7 +103,7 @@ class TagContext extends Context {
                         if (!display && name[1] != '')
                             await this.client.TagVariableManager.executeSet(this, name[1], res.content);
                     } else {
-                        throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { tag: name });
+                        throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { tag: name[0] });
                     }
                 } else if (element instanceof TagArray) {
                     for (let arrElm of element) {

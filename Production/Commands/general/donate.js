@@ -5,8 +5,8 @@ class DonateCommand extends GeneralCommand {
         super(client, {
             name: 'donate',
             keys: {
-                message: '.message',
-                willdm: '.willdm'
+                message: { key: '.message', value: 'placeholder' },
+                willdm: { key: '.willdm', value: `Ok, I'll send you my donation information in a DM.` }
             }
         });
     }
