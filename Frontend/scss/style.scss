@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+
+@import 'materialize';
+
+body {
+    font-family: 'Ubuntu';
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    @extend .blue-grey, .white-text;
+
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+
+    padding: 0;
+    width: 100%;
+}
+
+main {
+    flex: 1 0 auto;
+    margin: 10px;
+}
