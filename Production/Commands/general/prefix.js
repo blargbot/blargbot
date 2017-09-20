@@ -6,7 +6,7 @@ class PrefixCommand extends GeneralCommand {
             name: 'prefix',
             keys: {
             },
-            info: 'Gets or sets the your command prefixes. This command configures user prefixes. For guild prefixes, use the `setup` command.',
+            info: 'Gets or sets your command prefixes. This command configures user prefixes. For guild prefixes, use the `setup` command.',
             subcommands: {
                 add: { usage: '<prefix>', info: 'Adds a prefix to your list.', aliases: ['create'] },
                 remove: { usage: '<prefix>', info: 'Removes a prefix from your list.', aliases: ['delete'] }
