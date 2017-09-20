@@ -1,7 +1,10 @@
 <template>
     <div id='app'>
+        <pageheader></pageheader>
         <main>
-            <slot name="content"></slot>
+            <div class='container'>
+                <slot name="content"></slot>
+            </div>
         </main>
         <pagefooter></pagefooter>
     </div>
@@ -9,11 +12,12 @@
 
 <script>
 import footer from '../components/footer.vue';
+import header from '../components/header.vue';
 
 export default {
     data: () => ({
     }),
-    components: { pagefooter: footer }
+    components: { pagefooter: footer, pageheader: header }
 };
 </script>
 

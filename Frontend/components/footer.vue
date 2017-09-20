@@ -3,7 +3,7 @@
         <div class='container'>
             <div class='row'>
                 <div class='col s12'>
-                    Hi!
+                    <span class='grey-text text-lighten-2'>Cat Fact:</span> {{fact}}
                 </div>
             </div>
         </div>
@@ -18,7 +18,13 @@
 <script>
 export default {
     data: () => ({
-    })
+        fact: ''
+    }),
+    methods: {
+    },
+    created() {
+        this.fact = this.$root.$data.fact;
+    }
 };
 </script>
 

@@ -12,7 +12,8 @@ html, body {
 }
 
 #app {
-    @extend .blue-grey, .white-text;
+    @extend .blue-grey;
+    @extend .white-text;
 
     display: flex;
     min-height: 100vh;
@@ -24,5 +25,42 @@ html, body {
 
 main {
     flex: 1 0 auto;
+    margin: 10px;
+}
+
+footer, header {
+    @extend .blue-grey.darken-2;
+    @extend .z-depth-1;
+}
+
+nav {
+    @extend .blue-grey.darken-2;
+}
+
+.collection, .collection .collection-item {
+    @extend .blue-grey.darken-1;
+    border: 0px;
+    border-bottom: 0px !important;
+}
+
+.allcaps {
+    text-transform: uppercase;
+}
+
+.card {
+    @extend .blue-grey.darken-1;
+}
+
+.card:hover {
+    @extend .z-depth-2;
+}
+
+.card-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.card-row .card {
+    flex: 1 1 300px;
     margin: 10px;
 }
