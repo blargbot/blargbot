@@ -22,7 +22,7 @@ class ModsCommand extends GeneralCommand {
 
     async execute(ctx) {
         const mods = (await Promise.filter(ctx.channel.guild.members, async m => {
-            if (m.user.bot) return false;
+            if (m[1].bot) return false;
             return await ctx.checkStaff(m[0], false);
         }))
             .map(m => m[1]);

@@ -309,7 +309,7 @@
         "gamatotoidle": "Gamatoto isn't on an expedition right now. Send him on an adventure by doing `gamatoto start [location]`!"
       },
       "prefix": {
-        "info": "Gets or sets the your command prefixes. This command configures user prefixes. For guild prefixes, use the `setup` command.",
+        "info": "Gets or sets your command prefixes. This command configures user prefixes. For guild prefixes, use the `setup` command.",
         "subcommand": {
           "add": {
             "usage": "<prefix>",
