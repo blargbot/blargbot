@@ -9,9 +9,9 @@ class Context {
         this.prefix = prefix;
     }
 
-    async checkStaff(userId) {
+    async checkStaff(userId, catOverrides = true) {
         if (!userId) userId = this.user.id;
-        if (this.client.catOverrides && userId === this.client.Constants.CAT_ID) return true;
+        if (catOverrides && this.client.catOverrides && userId === this.client.Constants.CAT_ID) return true;
         if (userId === this.guild.ownerID) return true;
         let member = this.guild.members.get(userId);
         if (!member) return false;

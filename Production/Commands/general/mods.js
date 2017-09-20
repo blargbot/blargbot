@@ -21,7 +21,10 @@ class ModsCommand extends GeneralCommand {
     sortUsers(a, b) { return a.user.fullName.toLowerCase() > b.user.fullName.toLowerCase(); }
 
     async execute(ctx) {
-        const mods = (await Promise.filter(ctx.channel.guild.members, async m => await ctx.checkStaff(m[0])))
+        const mods = (await Promise.filter(ctx.channel.guild.members, async m => {
+            if (m.user.bot) return false;
+            return await ctx.checkStaff(m[0], false);
+        }))
             .map(m => m[1]);
         if (mods.length === 0)
             return await ctx.decodeAndSend(this.keys.nomods);
