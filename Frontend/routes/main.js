@@ -27,7 +27,7 @@ router.get('/', async (req, res, next) => {
 });
 
 router.get('/userinfo', async (req, res) => {
-    if (!authenticate(req, res)) return;
+    if (!await authenticate(req, res)) return;
     render(req, res, 'userinfo');
 });
 
