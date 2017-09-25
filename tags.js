@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-09-25 16:34:25
+ * @Last Modified time: 2017-09-25 16:35:14
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -57,7 +57,7 @@ Reason: ${tag.reason}`);
         if (tag.content.toLowerCase().indexOf('{nsfw') > -1) {
             let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
             if (!nsfwChan) {
-                bu.send(msg, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
+                bu.send(msg, `❌ This command contains NSFW content! Go to an NSFW channel. ❌`);
                 return;
             }
         }
