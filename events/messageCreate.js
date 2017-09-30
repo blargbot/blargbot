@@ -63,7 +63,7 @@ bot.on('messageCreate', async function (msg) {
 
 async function handleUserMessage(msg, storedGuild) {
     let prefix;
-    if (msg.guild) {
+    if (msg.guild && storedGuild != null) {
         handleAntiMention(msg, storedGuild);
         bu.handleCensor(msg, storedGuild);
         handleRoleme(msg, storedGuild);
