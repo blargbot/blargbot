@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:32:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:32:10
+ * @Last Modified time: 2017-09-30 11:01:54
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -16,7 +16,6 @@ const levels = {
     command: 3,
     init: 4,
     irc: 5,
-    website: 6,
     cluster: 7,
     worker: 8,
     music: 9,
@@ -24,9 +23,10 @@ const levels = {
     ws: 11,
     info: 12,
     output: 13,
-    verbose: 14,
-    debug: 15,
-    silly: 16
+    website: 14,
+    verbose: 15,
+    debug: 16,
+    silly: 17
 };
 
 const colors = {

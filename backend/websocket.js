@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:52
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:20:52
+ * @Last Modified time: 2017-09-30 11:02:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,9 +25,6 @@ e.init = function (server) {
         logger.ws('A user has connected');
         ws.on('message', function (message) {
             try {
-                logger.ws(dep.util.inspect(message, {
-                    depth: 1
-                }));
                 message = JSON.parse(message);
                 let userId = bu.getUserFromSession(message.sid);
                 if (!userId) {
