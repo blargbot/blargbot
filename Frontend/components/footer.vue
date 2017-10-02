@@ -19,7 +19,6 @@
 import axios from 'axios';
 
 export default {
-    mixins: [locale],
     data: () => ({
         fact: ''
     }),

@@ -35,11 +35,6 @@
 <script>
 export default {
     data: () => ({
-        locale: {
-            website: {
-                header: {}
-            }
-        }
     }),
     created() {
     }
