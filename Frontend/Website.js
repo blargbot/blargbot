@@ -69,7 +69,8 @@ class Website {
             prefix: '/css/'
         }));
 
-        this.app.use(express.static(path.join(__dirname, 'public')));
+        this.app.use('/', express.static(path.join(__dirname, 'public')));
+        this.app.use('/locale', express.static(path.join(__dirname, '..', 'Locale')));
         this.app.use('/', require('./routes/main'));
         this.app.use('/api', require('./routes/api'));
     }
@@ -106,7 +107,8 @@ class Website {
                             content: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
                         },
                         { script: 'https://code.jquery.com/jquery-3.2.1.min.js' },
-                        { script: '/js/materialize.min.js' }
+                        { script: '/js/materialize.min.js' },
+                        { script: 'https://unpkg.com/axios/dist/axios.min.js' }
                     ]
                 }
             }
@@ -115,3 +117,6 @@ class Website {
 }
 
 module.exports = Website;
+
+const website = new Website();
+website.start();

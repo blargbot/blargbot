@@ -52,6 +52,14 @@
     "role": "Role",
     "channel": "Channel"
   },
+  "website": {
+    "header": {
+      "login": "Login",
+      "logout": "Logout",
+      "commands": "Commands",
+      "bbtag": "BBTag"
+    }
+  },
   "modlog": {
     "events": {
       "kick": "Kick",

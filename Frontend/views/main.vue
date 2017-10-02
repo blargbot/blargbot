@@ -42,10 +42,12 @@
 <script>
 import wrapper from '../components/wrapper.vue';
 import card from '../components/card.vue';
+import locale from '../mixins/locale';
 
 export default {
     data: () => ({
     }),
+    mixins: [locale],
     components: {
         wrapper, card
     }
