@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import locale from '../mixins/locale';
+import axios from 'axios';
 
 export default {
     mixins: [locale],
@@ -26,7 +26,9 @@ export default {
     methods: {
     },
     created() {
-        this.fact = this.$root.$data.fact;
+        axios.get('/api/catfact').then(res => {
+            this.fact = res.data;
+        })
     }
 };
 </script>

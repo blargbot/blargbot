@@ -1,18 +1,23 @@
 const path = require('path');
 const express = require('express');
-const expressVue = require('express-vue');
 const sassMiddleware = require('node-sass-middleware');
 const passport = require('passport');
 const Strategy = require('passport-discord').Strategy;
 const session = require('express-session');
 const config = require('../config');
 
+const { Nuxt, Builder } = require('nuxt');
+const nuxtConfig = require('./nuxt.config.js');
+const nuxt = new Nuxt(nuxtConfig);
+if (nuxt.options.dev) {
+    new Builder(nuxt).build();
+}
+
 class Website {
     constructor(port = 8078) {
         this.sessionUserMap = {};
         this.port = port;
         this.app = express();
-
         passport.serializeUser((user, done) => {
             done(null, user);
         });
@@ -49,19 +54,19 @@ class Website {
         this.app.get('/callback', passport.authenticate('discord', {
             failureRedirect: '/'
         }), (req, res) => {
+            req.session.user = req.user;
             this.sessionUserMap[req.sessionID] = req.user;
             res.redirect(req.session.returnTo || '/');
         });
         this.app.get('/logout', (req, res) => {
             req.logout();
             delete this.sessionUserMap[req.sessionID];
+            delete req.session.user;
             res.redirect(req.session.returnTo || '/');
         });
 
         this.app.set('views', path.join(__dirname, 'views'));
 
-        let vueEngine = expressVue.init(this.options);
-        this.app.use(vueEngine);
 
         this.app.use(sassMiddleware({
             src: path.join(__dirname, 'scss'),
@@ -71,9 +76,13 @@ class Website {
 
         this.app.use('/', express.static(path.join(__dirname, 'public')));
         this.app.use('/locale', express.static(path.join(__dirname, '..', 'Locale')));
-        this.app.use('/', require('./routes/main'));
+        this.app.use('/dist', express.static(path.join(__dirname, 'Vue', 'dist')));
         this.app.use('/api', require('./routes/api'));
+        //this.app.use('/', require('./routes/main'));
+        this.app.use(nuxt.render);
     }
+
+    get nuxt() { return nuxt; }
 
     get scopes() {
         return ['identify', 'guilds'];
