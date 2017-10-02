@@ -33,10 +33,7 @@
 </template>
 
 <script>
-import locale from '../mixins/locale';
-
 export default {
-    mixins: [locale],
     data: () => ({
         locale: {
             website: {
