@@ -52,6 +52,41 @@
     "role": "Role",
     "channel": "Channel"
   },
+  "website": {
+    "header": {
+      "login": "Login",
+      "logout": "Logout",
+      "commands": "Commands",
+      "bbtag": "BBTag"
+    },
+    "index": {
+      "desc": "blargbot is a multipurpose Discord bot dedicated to providing quality commands and services, including chatlogs and an in-depth custom command system.",
+      "commands": {
+        "title": "Commands",
+        "desc": "blargbot is equipped with numerous commands, all of which are documented and categorized for your convenience."
+      },
+      "bbtag": {
+        "title": "BBTag",
+        "desc": "blargbot uses a sophisticated tag system called BBTag, which you can use to create advanced custom commands."
+      },
+      "customization": {
+        "title": "Customization",
+        "desc": "We understand that not every guild is the same, so blargbot has extensive customization. You can control exactly which roles can use which commands, specify custom prefixes, and even change the display language!"
+      },
+      "moderation": {
+        "title": "Moderation",
+        "desc": "Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+      },
+      "opensource": {
+        "title": "Open-Source",
+        "desc": "Sharing is caring! blargbot is completely open-source under the GNU AGPLv3 License. Feel free to take a look and learn how everything works. If you use any of my code in your own project, you are required to credit me. See the license for more details."
+      },
+      "suggestions": {
+        "title": "Open To Suggestions",
+        "desc": "Have a suggestion for the bot? I would be glad to hear it! Found a bug? I'd like to hear that too! You can suggest anything to me using the <code>suggest</code> command, by joining my guild, or by submitting a ticket."
+      }
+    }
+  },
   "modlog": {
     "events": {
       "kick": "Kick",

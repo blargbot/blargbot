@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
     data: () => ({
         fact: ''
@@ -23,7 +25,9 @@ export default {
     methods: {
     },
     created() {
-        this.fact = this.$root.$data.fact;
+        axios.get('/api/catfact').then(res => {
+            this.fact = res.data;
+        })
     }
 };
 </script>

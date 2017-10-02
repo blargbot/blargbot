@@ -1,7 +1,7 @@
 const Spawner = require('./Spawner');
 const EventEmitter = require('eventemitter3');
 const Eris = require('eris');
-const Website = require('../Frontend/Website');
+const Frontend = require('../Frontend');
 
 class Client {
     constructor() {
@@ -18,7 +18,7 @@ class Client {
             restMode: true
         });
 
-        this.website = new Website();
+        this.frontend = new Frontend(this);
     }
 
     async init() {
@@ -26,8 +26,6 @@ class Client {
         console.init('All shards have spawned. Connecting...');
         await this.spawner.awaitBroadcast('connect');
         console.init('Shards connected');
-
-        this.website.start();
     }
 }
 
