@@ -3,7 +3,7 @@
         <pageheader></pageheader>
         <main>
             <div class='container'>
-                <slot name="content"></slot>
+                <nuxt/>
             </div>
         </main>
         <pagefooter></pagefooter>
