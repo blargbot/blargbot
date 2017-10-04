@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:26
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-09-13 12:10:15
+ * @Last Modified time: 2017-09-27 23:01:16
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -39,7 +39,7 @@ e.execute = async function (params) {
     var formatCode = '';
     if (args[1])
         formatCode = args[1];
-    let date = dep.moment.tz(args[2], args[3], args[4] || 'Etc/UTC');
+    let date = dep.moment.tz(args[2] || undefined, args[3] || undefined, args[4] || 'Etc/UTC');
     if (!date.isValid()) {
         replaceString = await bu.tagProcessError(params, '`Invalid date`');
     } else

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:34:15
+ * @Last Modified time: 2017-09-25 16:35:14
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,6 +14,14 @@ e.processTag = async function (msg, contents, command, tagName, author, isCcomma
         author = author || msg.channel.guild.id;
         logger.debug(command);
         var words = bu.splitInput(command);
+
+        if (contents.toLowerCase().indexOf('{nsfw') > -1) {
+            let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
+            if (!nsfwChan) {
+                bu.send(msg, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
+                return;
+            }
+        }
 
         if (contents.split(' ')[0].indexOf('help') > -1) {
             contents = '\u200B' + contents;
@@ -46,10 +54,10 @@ e.executeTag = async function (msg, tagName, command) {
 Reason: ${tag.reason}`);
             return;
         }
-        if (tag.content.toLowerCase().indexOf('{nsfw}') > -1) {
+        if (tag.content.toLowerCase().indexOf('{nsfw') > -1) {
             let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
             if (!nsfwChan) {
-                bu.send(msg, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
+                bu.send(msg, `❌ This command contains NSFW content! Go to an NSFW channel. ❌`);
                 return;
             }
         }
