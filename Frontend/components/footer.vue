@@ -24,10 +24,12 @@ export default {
     }),
     methods: {
     },
-    created() {
+    mounted() {
         axios.get('/api/catfact').then(res => {
             this.fact = res.data;
-        })
+        }).catch(err => {
+            console.error(err);
+        });
     }
 };
 </script>

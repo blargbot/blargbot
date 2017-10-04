@@ -13,6 +13,10 @@ if (nuxt.options.dev) {
     new Builder(nuxt).build();
 }
 
+process.on('unhandledRejection', (err, p) => {
+    console.error('Unhandled Promise Rejection:', err.stack);
+});
+
 class Website {
     constructor(port = 8078) {
         this.sessionUserMap = {};
