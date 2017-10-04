@@ -1,4 +1,5 @@
 .gitignore
+package-lock.json
 .eslintrc
 .eslintrc.json
 .jshintrc
