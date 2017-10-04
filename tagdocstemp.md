@@ -66,7 +66,7 @@ You can pass parameters into subtags. These are separated by semicolons `;`. Arg
 Normally, the order of provided arguments is very important. However, you can use the named counterparts instead. For example, the usage of `{math.randint}` is `{math.randint;min;max}`. The names of the arguments are `min` and `max` respectively. The following usages are equivalent:
 ```
 {math.randint;1;10}
-{math.randint#
+{math.randint=
     {*min;1}
     {*max;10}
 }
