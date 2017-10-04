@@ -1,4 +1,4 @@
-.gitignore
+.nuxt/*
 package-lock.json
 .eslintrc
 .eslintrc.json
