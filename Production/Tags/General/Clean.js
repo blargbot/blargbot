@@ -15,14 +15,15 @@ class CleanTag extends General {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
+        args = args.parsedArgs;
 
-        for (let i = 0; i < args[0].length; i++) {
-            args[0][i] = args[0][i]
+        for (let i = 0; i < args.text.length; i++) {
+            args.text[i] = args.text[i]
                 .replace(/[^\S\n]+/gm, ' ') // Shrink whitespace into a single space
                 .replace(/(\n *)+/gm, '\n'); // Get rid of spaces after newlines and shrink
-            if (args[0][i] === '\n') args[0][i] = '';
+            if (args.text[i] === '\n') args.text[i] = '';
         }
-        return res.setContent(args[0]);
+        return res.setContent(args.text);
     }
 }
 

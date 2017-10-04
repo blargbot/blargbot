@@ -15,8 +15,9 @@ class AbsTag extends Math {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
+        args = args.parsedArgs;
 
-        let parsed = this.parseInt(args[0], 'number');
+        let parsed = this.parseInt(args.number, 'number');
 
         return res.setContent(global.Math.abs(parsed));
     }

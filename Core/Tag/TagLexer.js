@@ -95,7 +95,7 @@ class TagLexer {
                     break;
                 case tokenTypes.ArgumentSeparator:
                     if (last() instanceof SubTag) {
-                        last().piping = false;
+                        last().piping = null;
                         last().rawArgs.push([]);
                     } else if (last() instanceof TagArray) {
                         last().push([]);
@@ -110,7 +110,8 @@ class TagLexer {
                     add(token.image);
                     break;
                 case tokenTypes.TagPipe:
-                    if (last() instanceof SubTag) {
+                    if (last() instanceof SubTag && last().pipe === false && last().piping === false) {
+                        console.log(last().pipe);
                         last().piping = true;
                         last().pipe = [];
                     } else add(token.image);
@@ -118,7 +119,7 @@ class TagLexer {
                 case tokenTypes.TagNamedArg:
                     if (last() instanceof SubTag) {
                         if (last().rawArgs.length === 1) {
-                            last().piping = false;
+                            last().piping = null;
                             last().named = true;
                         } else add(token.image);
                     } else add(token.image);

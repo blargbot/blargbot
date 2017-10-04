@@ -8,10 +8,10 @@ class MathBaseTag extends Math {
                 {
                     name: 'number'
                 }, {
+                    name: 'radix'
+                }, {
                     name: 'origin',
                     optional: true
-                }, {
-                    name: 'radix'
                 }
             ],
             minArgs: 2, maxArgs: 3
@@ -20,15 +20,8 @@ class MathBaseTag extends Math {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-        let integer, origin, radix;
 
-        if (args.length == 2) {
-            origin = 10;
-            radix = this.parseInt(args[1], 'radix');
-        } else {
-            origin = this.parseInt(args[1], 'origin');
-            radix = this.parseInt(args[2], 'radix');
-        }
+        let { number, origin = 10, radix } = args.parsedArgs;
 
         if (radix < 2 || radix > 36) {
             this.throw('error.tag.invalidradix', {
@@ -36,9 +29,9 @@ class MathBaseTag extends Math {
             });
         }
 
-        integer = this.parseInt(args[0], 'number', origin);
+        number = this.parseInt(args[0], 'number', origin);
 
-        return res.setContent(integer.toString(radix));
+        return res.setContent(number.toString(radix));
     }
 }
 

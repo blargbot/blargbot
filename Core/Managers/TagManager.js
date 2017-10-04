@@ -34,11 +34,11 @@ class TagManager extends Manager {
         return parts;
     }
 
-    async execute(name, ctx, args) {
+    async execute(name, ctx, args, named) {
         const parts = this.split(name);
         const tag = this.tagMap[parts[0]][parts[1]];
         if (tag !== undefined) {
-            return await tag.execute(ctx, args);
+            return await tag.execute(ctx, { args, named });
         } else throw new Error('Tag Not Found');
     }
 

@@ -16,7 +16,7 @@ class CeilTag extends Math {
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
 
-        let parsed = this.parseFloat(args[0], 'number');
+        let parsed = this.parseFloat(args.parsedArgs.number, 'number');
 
         return res.setContent(global.Math.ceil(parsed));
     }

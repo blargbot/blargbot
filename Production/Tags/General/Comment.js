@@ -15,7 +15,7 @@ class CommentTag extends General {
     }
 
     async execute(ctx, args) {
-        return await super.execute(ctx, args, false);
+        // no-op
     }
 }
 

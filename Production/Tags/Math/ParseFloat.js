@@ -17,7 +17,7 @@ class ParseFloatTag extends Math {
         const res = await super.execute(ctx, args);
 
         try {
-            let parsed = this.parseFloat(args[0], 'number');
+            let parsed = this.parseFloat(args.parsedArgs.number, 'number');
             res.setContent(parsed);
         } catch (err) {
             res.setContent('NaN');

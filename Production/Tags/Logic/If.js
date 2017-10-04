@@ -20,14 +20,14 @@ class IfTag extends Logic {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, false);
-
-        let val = (await ctx.processSub(args[0])).join('');
+        args = args.parsedArgs;
+        let val = (await ctx.processSub(args.value)).join('');
         let content = [];
         if (val.toLowerCase() === 'true' || val === '1' || val == true) {
-            content = await ctx.processSub(args[1]);
+            content = await ctx.processSub(args.then);
         } else if (val.toLowerCase() === 'false' || val === '0' || val == false) {
-            if (args[2])
-                content = await ctx.processSub(args[2]);
+            if (args.else)
+                content = await ctx.processSub(args.else);
         } else {
             throw new this.TagError('error.tag.notbool', {
                 name: 'value',

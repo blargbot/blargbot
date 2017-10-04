@@ -6,10 +6,11 @@ class UserSetNick extends User {
             name: 'setnick',
             args: [
                 {
+                    name: 'nick'
+                },
+                {
                     name: 'user',
                     optional: true
-                }, {
-                    name: 'nick'
                 }
             ],
             minArgs: 1, maxArgs: 2,
@@ -22,14 +23,14 @@ class UserSetNick extends User {
         const res = await super.execute(ctx, args);
         let user = ctx.user, member;
         let nick;
-        if (args[1]) {
-            user = await ctx.client.Helpers.Resolve.user(ctx, args[0].toString(), true);
-            nick = args[1];
-        } else nick = args[0];
+        if (args.parsedArgs.nick) {
+            user = await ctx.client.Helpers.Resolve.user(ctx, args.parsedArgs.user.toString(), true);
+            nick = args.parsedArgs.nick;
+        } else nick = args.parsedArgs.user;
         if (user) {
             member = ctx.guild.members.get(user.id);
             if (!member) throw new this.TagError('error.memberundef', {
-                member: args[0]
+                member: args.parsedArgs.user
             });
             try {
                 await member.edit({

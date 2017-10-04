@@ -15,8 +15,9 @@ class CleanTag extends General {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
+        args = args.parsedArgs;
 
-        let variable = await ctx.client.TagVariableManager.executeGet(ctx, args[0]) || '';
+        let variable = await ctx.client.TagVariableManager.executeGet(ctx, args.name) || '';
         return res.setContent(variable);
     }
 }

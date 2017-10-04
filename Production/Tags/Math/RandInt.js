@@ -6,10 +6,11 @@ class RandIntTag extends Math {
             name: 'randint',
             args: [
                 {
+                    name: 'max'
+                },
+                {
                     name: 'min',
                     optional: true
-                }, {
-                    name: 'max'
                 }
             ],
             minArgs: 1, maxArgs: 2
@@ -18,12 +19,14 @@ class RandIntTag extends Math {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-        let min, max;
-        if (args.length === 1) min = 0, max = this.parseInt(args[0], 'max');
-        else min = this.parseInt(args[0], 'min'), max = this.parseInt(args[1], 'max');
+        let { min = 0, max } = args.parsedArgs;
+        min = this.parseInt(min);
+        max = this.parseInt(max);
 
         if (max < min) {
-            this.throw('error.tag.maxlessthanmin');
+            let temp = min;
+            min = max;
+            max = temp;
         }
 
         res.setContent(ctx.client.Helpers.Random.randInt(min, max));

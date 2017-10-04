@@ -4,6 +4,7 @@ class MathTag extends Math {
     constructor(client) {
         super(client, {
             name: 'math',
+            named: false,
             args: [
                 {
                     name: 'augend'
@@ -75,6 +76,7 @@ class MathTag extends Math {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
+        args = args.args;
 
         for (let i = 0; i < args.length; i++) {
             if (args[i] instanceof this.TagArray) args[i] = args[i].toString();

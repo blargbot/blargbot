@@ -18,9 +18,10 @@ class RoundTag extends Math {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
+        args = args.parsedArgs;
 
-        let parsed = this.parseFloat(args[0], 'number');
-        let places = args[1] ? this.parseFloat(args[1], 'places') : 0;
+        let parsed = this.parseFloat(args.number, 'number');
+        let places = args[1] ? this.parseFloat(args.places, 'places') : 0;
 
         let output = global.Math.round(parsed * (10 ** places)) / (10 ** places);
 

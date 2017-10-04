@@ -69,6 +69,7 @@ class TagContext extends Context {
     }
 
     async processSub(elemMap) {
+        if (!Array.isArray(elemMap)) elemMap = [elemMap];
         const oldFallback = this.fallback;
         let content = [];
         for (const element of elemMap) {
@@ -76,15 +77,19 @@ class TagContext extends Context {
             try {
                 if (element instanceof SubTag) {
                     let name = element.name;
+                    let pipe = element.pipe;
                     if (Array.isArray(name)) {
                         name = await this.processSub(name);
                     }
-                    name = name.join('');
                     let display = true;
-                    name = name.split('!');
-                    if (name.length > 1) display = false;
-                    if (this.client.TagManager.has(name[0])) {
-                        const res = await this.client.TagManager.execute(name[0], this, element.args);
+                    if (Array.isArray(pipe)) {
+                        display = false;
+                        pipe = await this.processSub(pipe);
+                    }
+                    name = name.join('');
+
+                    if (this.client.TagManager.has(name)) {
+                        const res = await this.client.TagManager.execute(name, this, element.named ? element.namedArgs : element.args, element.named);
                         if (res.terminate) this.terminate = true;
                         if (res.replace) {
                             if (res.replaceTarget) {
@@ -103,10 +108,10 @@ class TagContext extends Context {
                                 else
                                     content.push(res.content);
                         }
-                        if (!display && name[1] != '')
-                            await this.client.TagVariableManager.executeSet(this, name[1], res.content);
+                        if (!display && pipe != '')
+                            await this.client.TagVariableManager.executeSet(this, pipe, res.content);
                     } else {
-                        throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { tag: name[0] });
+                        throw new TagError(this.client.Constants.TagError.TAG_NOT_FOUND, { tag: name });
                     }
                 } else if (element instanceof TagArray) {
                     for (let arrElm of element) {

@@ -1,6 +1,7 @@
 const TagResult = require('../TagResult');
 const TagError = require('../TagError');
 const TagArray = require('../TagArray');
+const SubTagArg = require('../SubTagArg');
 
 class TagBase {
     constructor(client, options = {}) {
@@ -16,6 +17,7 @@ class TagBase {
         *   repeat: boolean
         * }
         * */
+        this.named = options.named === undefined ? true : options.named;
         this.args = options.args || [];
         this.minArgs = options.minArgs;
         this.maxArgs = options.maxArgs;
@@ -79,10 +81,15 @@ class TagBase {
      * @param {TagContext} ctx The TagContext
      * @param {boolean} parseArgs Whether to parse args automatically. Set to false to parse manually.
      */
-    async execute(ctx, args, parseArgs = true) {
-        //   if (this.ccommand && !ctx.isCustomCommand) throw new TagError('error.tag.ccommandonly', {
-        //      tag: this.name
-        //   });
+    async execute(ctx, argsBundle, parseArgs = true) {
+        argsBundle.parsedArgs = {};
+        let { args, named, parsedArgs } = argsBundle;
+        if (named === true && this.named === false) {
+            throw new TagError('error.tag.namedunsupported', {
+                tag: this.name
+            });
+        }
+
         if (this.requiresStaff && !ctx.isAuthorStaff) throw new TagError('error.tag.authorstaff', {
             tag: this.name,
             author: ctx.client.users.get(ctx.author).fullName
@@ -97,23 +104,68 @@ class TagBase {
                     });
             }
         }
-        const res = new TagResult();
-        if (this.maxArgs && args.length > this.maxArgs)
-            this.throw(ctx.client.Constants.TagError.TOO_MANY_ARGS, {
-                expected: this.maxArgs,
-                received: args.length
-            });
 
-        if (this.minArgs && args.length < this.minArgs)
-            this.throw(ctx.client.Constants.TagError.TOO_FEW_ARGS, {
-                expected: this.minArgs,
-                received: args.length
-            });
-
-        if (parseArgs)
-            for (let i = 0; i < args.length; i++) {
-                args[i] = await ctx.processSub(args[i]);
+        if (this.named) {
+            let namedList = [];
+            if (named) {
+                for (const arg of args) {
+                    if (arg instanceof SubTagArg) {
+                        let name = (await ctx.processSub(arg.name)).join('').toLowerCase();
+                        let value = arg.value;
+                        namedList.push({ name, value });
+                    }
+                }
+            } else {
+                for (let i = 0; i < args.length; i++) {
+                    let template = this.argList[i];
+                    if (template)
+                        if (template.repeat) {
+                            let repeated = args.slice(i);
+                            for (const arg of repeated)
+                                namedList.push({ name: template.name, value: args[i] });
+                        } else
+                            namedList.push({ name: template.name, value: args[i] });
+                }
             }
+
+            for (const arg of this.argList) {
+                if (!arg.optional) {
+                    if (namedList.filter(n => n.name === arg.name).length === 0) {
+                        this.throw('error.tag.missingarg', {
+                            arg: arg.name,
+                            tag: this.name
+                        });
+                    }
+                }
+            }
+            for (const arg of namedList) {
+                let value = parseArgs ? await ctx.processSub(arg.value) : arg.value;
+                if (parsedArgs.hasOwnProperty(arg.name) && !Array.isArray(parsedArgs[arg.name])) {
+                    parsedArgs[arg.name] = [parsedArgs[arg.name]];
+                }
+                if (parsedArgs.hasOwnProperty(arg.name)) {
+                    parsedArgs[arg.name].push(value);
+                } else parsedArgs[arg.name] = value;
+            }
+        } else {
+            if (this.maxArgs && args.length > this.maxArgs)
+                this.throw(ctx.client.Constants.TagError.TOO_MANY_ARGS, {
+                    expected: this.maxArgs,
+                    received: args.length
+                });
+
+            if (this.minArgs && args.length < this.minArgs)
+                this.throw(ctx.client.Constants.TagError.TOO_FEW_ARGS, {
+                    expected: this.minArgs,
+                    received: args.length
+                });
+
+            if (parseArgs)
+                for (let i = 0; i < args.length; i++) {
+                    args[i] = await ctx.processSub(args[i]);
+                }
+        }
+        const res = new TagResult();
 
         return res;
     }

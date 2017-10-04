@@ -1,6 +1,4 @@
 const TagArray = require('./TagArray');
-const SubTag = require('./SubTag');
-
 
 class SubTagArg {
     constructor(columnIndex, rowIndex) {

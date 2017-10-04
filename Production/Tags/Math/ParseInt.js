@@ -17,7 +17,7 @@ class ParseIntTag extends Math {
         const res = await super.execute(ctx, args);
 
         try {
-            let parsed = this.parseInt(args[0], 'number');
+            let parsed = this.parseInt(args.parsedArgs.number, 'number');
             res.setContent(parsed);
         } catch (err) {
             res.setContent('NaN');

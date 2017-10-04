@@ -16,8 +16,9 @@ class SpaceTag extends General {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
+        args = args.parsedArgs;
 
-        let length = args[0] ? this.parseInt(args[0]) : 1;
+        let length = args.length ? this.parseInt(args.length) : 1;
         return res.setContent(' '.repeat(length));
     }
 }

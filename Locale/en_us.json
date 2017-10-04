@@ -143,6 +143,7 @@
       "notfound": "Subtag '{{tag}}' doesn't exist.",
       "toomanyargs": "Too many args (r:{{received}} e:{{expected}})",
       "toofewargs": "Not enough args (r:{{received}} e:{{expected}})",
+      "missingarg": "Subtag '{{tag}}' is missing argument: '{{arg}}'",
       "isnan": "Expected '{{arg}}' to be a number, but received '{{value}}'",
       "maxlessthanmin": "Max must be greater than Min",
       "ccommandonly": "'{{tag}}' may only be used in ccommands",
@@ -153,7 +154,8 @@
       "unopened": "Unmatched closing bracket [{{column}}:{{row}}]",
       "invalidradix": "Radix must be between 2 and 36, but received '{{radix}}'",
       "notanarray": "Variable '{{name}}' is not an array (Received: '{{value}}')",
-      "notbool": "Variable '{{name}}' is not a boolean (Received: '{{value}}')"
+      "notbool": "Variable '{{name}}' is not a boolean (Received: '{{value}}')",
+      "namedunsupported": "Subtag '{{tag}}' does not support named arguments"
     },
     "inputtoolong": "Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
   },

@@ -15,25 +15,27 @@ class TrimTag extends General {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-        for (let i = 0; i < args[0].length; i++) {
+        args = args.parsedArgs;
+
+        for (let i = 0; i < args.text.length; i++) {
             // If whitespace
-            if (typeof args[0][i] === 'string' && !args[0][i].trim())
-                args[0][i] = '';
-            else if (typeof args[0][i] === 'string') {
-                args[0][i] = args[0][i].replace(/^\s+/, '');
+            if (typeof args.text[i] === 'string' && args.text[i].trim() === '')
+                args.text[i] = '';
+            else if (typeof args.text[i] === 'string') {
+                args.text[i] = args.text[i].replace(/^\s+/, '');
                 break;
             } else break;
         }
-        for (let i = args[0].length; i > -1; i--) {
+        for (let i = args.text.length - 1; i > -1; i--) {
             // If whitespace
-            if (typeof args[0][i] === 'string' && !args[0][i].trim())
-                args[0][i] = '';
-            else if (typeof args[0][i] === 'string') {
-                args[0][i] = args[0][i].replace(/\s+$/, '');
+            if (typeof args.text[i] === 'string' && args.text[i].trim() === '')
+                args.text[i] = '';
+            else if (typeof args.text[i] === 'string') {
+                args.text[i] = args.text[i].replace(/\s+$/, '');
                 break;
             } else break;
         }
-        return res.setContent(args[0]);
+        return res.setContent(args.text);
     }
 }
 

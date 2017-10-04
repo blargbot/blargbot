@@ -4,6 +4,7 @@ class LogicTag extends Logic {
     constructor(client) {
         super(client, {
             name: 'logic',
+            named: false,
             args: [
                 {
                     name: 'augend'
@@ -82,6 +83,7 @@ class LogicTag extends Logic {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
+        args = args.args;
 
         for (let i = 0; i < args.length; i++) {
             if (args[i] instanceof this.TagArray) args[i] = args[i].toString();
