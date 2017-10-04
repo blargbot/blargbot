@@ -92,3 +92,15 @@ nav {
     border-radius: 1000px;
     vertical-align: middle;
 }
+
+code {
+    @extend .blue-grey.darken-2;
+    border-radius: 4px;
+    padding: 3.5px;
+}
+
+pre code {
+    @extend .blue-grey.darken-2;
+    border-radius: 4px;
+    padding: 3.5px;
+}

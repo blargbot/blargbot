@@ -83,7 +83,7 @@
       },
       "suggestions": {
         "title": "Open To Suggestions",
-        "desc": "Have a suggestion for the bot? I would be glad to hear it! Found a bug? I'd like to hear that too! You can suggest anything to me using the <code>suggest</code> command, by joining my guild, or by submitting a ticket."
+        "desc": "Have a suggestion for the bot? I would be glad to hear it! Found a bug? I'd like to hear that too! You can suggest anything to me using the `suggest` command, by joining my guild, or by submitting a ticket."
       }
     }
   },

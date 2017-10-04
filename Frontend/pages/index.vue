@@ -1,6 +1,6 @@
 <template>
     <div slot="content">
-        <p>
+        <p class='main-desc'>
             {{$t('website.index.desc')}}
         </p>
         <div class='card-row'>
@@ -30,7 +30,8 @@
                 </div>
             </card>
             <card :title="$t('website.index.suggestions.title')">
-                <div slot='content' v-html="$t('website.index.suggestions.desc')">
+                <div slot='content'>
+                    <vue-markdown :source='$t("website.index.suggestions.desc")'></vue-markdown>
                 </div>
             </card>
         </div>
@@ -38,24 +39,24 @@
 </template>
 
 <script>
+import VueMarkdown from 'vue-markdown';
 import card from '../components/card.vue';
 
 export default {
     data: () => ({
     }),
     components: {
-        card
+        card, VueMarkdown
     },
     fetch({ store, params }) {
-        // return axios.get('/api/catfact')
-        //     .then(res => {
-        //         console.log(res.data);
-        //         store.commit('SET_FACT', res.data);
-        //     })
     }
 };
 </script>
 
 <style scoped>
-
+.main-desc {
+    max-width: 600px;
+    text-align: center;
+    margin: 20px auto;
+}
 </style>
