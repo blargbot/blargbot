@@ -1,10 +1,15 @@
 const TagArray = require('./TagArray');
+const SubTagArg = require('./SubTagArg');
 
 class SubTag {
     constructor(columnIndex, rowIndex) {
         this.columnIndex = columnIndex;
         this.rowIndex = rowIndex;
         this.rawArgs = [[]];
+        this.named = false;
+        this.pipe = false;
+        this.piping = false;
+        this.namedArgs = [];
     }
 
     get name() {
@@ -21,43 +26,38 @@ class SubTag {
         });
     }
 
-    parseElement(element) {
-        let temp = '';
-        let arr;
-        let subtag = element instanceof SubTag;
-        if (subtag) {
-            temp = `{${element.name}`;
-            arr = element.args;
-        } else arr = element;
-
-        for (const elem of arr) {
-            if (subtag) temp += ';';
-            if (typeof elem == 'string') temp += elem;
-            else if (elem instanceof TagArray) {
-                temp += elem;
-            } else if (Array.isArray(elem) || elem instanceof SubTag)
-                temp += this.parseElement(elem);
-        }
-
-        if (subtag)
-            temp += '}';
-        return temp;
+    normalize(a) {
+        if (Array.isArray(a) && !(a instanceof TagArray))
+            return a.join('');
+        return a.toString();
     }
 
-    serialize(index) {
-        let element;
-        if (index)
-            element = this.rawArgs[index];
-        else element = this;
-        return this.parseElement(element);
+    serialize() {
+        let temp = `{${this.name}`;
+        if (this.pipe !== false) {
+            temp += `!${this.pipe.map(this.normalize).join('')}`;
+        }
+        if (this.named) {
+            temp += '=' + this.namedArgs.map(this.normalize).join('');
+        } else {
+            let arr = this.args.map(this.normalize);
+            if (arr.length > 0)
+                temp += `;${arr.join(';')}`;
+        }
+        temp += '}';
+        return temp;
+
     }
 
     addArgument(arg) {
-        // if (Array.isArray(arg)) {
-        //    this.rawArgs.push(arg);
-        // } else this.rawArgs.push([arg]);
-        let last = this.rawArgs[this.rawArgs.length - 1];
-        last.push(arg);
+        if (this.piping) {
+            this.pipe.push(arg);
+        } else if (!this.named) {
+            let last = this.rawArgs[this.rawArgs.length - 1];
+            last.push(arg);
+        } else if (arg instanceof SubTagArg) {
+            this.namedArgs.push(arg);
+        }
     }
 
     toString() {

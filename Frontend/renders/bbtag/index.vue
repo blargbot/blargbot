@@ -1,8 +1,11 @@
 <template>
     <div>
-        bbtag
+        <h2 class='title'>BBTag</h2>
+        <blockquote>Not to be confused with BBCode!</blockquote>
+        <p class='flow-text'>BBTag is a template-based language, designed to provide a powerful framework to create advanced custom commands.</p>
 
-        <router-view></router-view>
+        <h4>SubTags</h4>
+
     </div>
 </template>
 

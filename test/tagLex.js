@@ -20,3 +20,4 @@ function LexInput(input) {
 
 LexInput(`one {two;three} {four; \n five;six {seven;eight {nine;[1;2;[3;4];{ten;elevent} 5;6]}}}`);
 LexInput(`[1;2;[3;4;5];6]`);
+LexInput(`{math.randint!var{userid}={*min;1}{*max;10}}`);

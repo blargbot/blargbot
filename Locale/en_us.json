@@ -197,82 +197,100 @@
         "notenough": ""
       },
       "tag": {
-        "info": "",
-        "dontown": "",
-        "alreadyexists": "",
-        "notag": "",
-        "tagset": "",
-        "tagrename": "",
-        "raw": "",
-        "testoutput": "",
+        "info": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>).",
+        "usage": "tag <name | subcommand> [args]",
+        "dontown": "[[emote.x]] You don't own that tag!",
+        "alreadyexists": "[[emote.x]] A tag with that name already exists!",
+        "notag": "[[emote.x]] There is no tag with that name.",
+        "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
+        "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`.",
+        "raw": "The code for {{name}} is:\n```{{code}}```",
+        "testoutput": "Test Output:\n\n{{output}}",
         "subcommand": {
           "set": {
-            "info": ""
+            "usage": "tag set <name> <content>",
+            "info": "Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
           },
           "delete": {
-            "info": ""
+            "usage": "tag delete <name>",
+            "info": "Deletes a tag that you own."
           },
           "rename": {
-            "info": ""
+            "usage": "tag rename <name> <new name>",
+            "info": "Renames a tag that you own."
           },
           "raw": {
-            "info": ""
+            "usage": "tag raw <name>",
+            "info": "Gets the raw code of a tag."
           },
           "info": {
-            "info": ""
+            "usage": "tag info <name>",
+            "info": "Displays information about a tag."
           },
           "transfer": {
-            "info": ""
+            "usage": "tag transfer <name> <user>",
+            "info": "Transfers a tag to the specified user. Variables will not be transferred."
           },
           "top": {
-            "info": ""
+            "usage": "tag top",
+            "info": "Displays the tags that have been the most favourited."
           },
           "author": {
-            "info": ""
+            "usage": "tag author <name>",
+            "info": "Displays the author of a tag."
           },
           "search": {
-            "info": ""
+            "usage": "tag search <query>",
+            "info": "Searches for a tag with a name containing your query."
           },
           "list": {
-            "info": ""
+            "usage": "tag list [@user]",
+            "info": "Lists all the tags, or optionally all the tags created by a specific user."
           },
           "favorite": {
-            "info": ""
+            "usage": "tag favourite <name>",
+            "info": "Favourites the specified tag."
           },
           "report": {
-            "info": ""
+            "usage": "tag report <name>",
+            "info": "Reports a tag for violating the ToS. Please use responsibly."
           },
           "test": {
-            "info": ""
+            "usage": "tag test <code>",
+            "info": "Executes the given code in a test environment."
           },
           "help": {
-            "info": ""
+            "usage": "tag help [subcommand]",
+            "info": "Displays this!"
           },
           "docs": {
-            "info": ""
+            "usage": "tag docs [subtag]",
+            "info": "Gives a link to the BBTag documentation, or provides information about a specific subtag."
           },
           "setdesc": {
-            "info": ""
+            "usage": "usage",
+            "info": "info"
           },
           "setusage": {
-            "info": ""
+            "usage": "usage",
+            "info": "info"
           }
         },
-        "subcommandnotfound": "",
-        "transferprompt": "",
-        "nobots": "",
-        "transfercancelled": "",
-        "transfercomplete": "",
-        "taginfo": "",
-        "descupdate": "",
-        "descreset": "",
-        "subcommandconflict": "",
-        "toptagformat": "",
-        "toptags": "",
-        "tagauthor": "",
-        "favouriteadd": "",
-        "favouriteremove": "",
-        "favourites": ""
+        "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`.",
+        "transferprompt": "{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
+        "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
+        "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
+        "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
+        "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
+        "descupdate": "The description for `{{tag}}` has been updated.",
+        "descreset": "The description for `{{tag}}` has been reset.",
+        "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",
+        "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+        "toptags": "Here are the top 10 tags!\n\n{{tags}}",
+        "tagauthor": "The tag `{{tag}}` was created by **{{author}}**",
+        "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
+        "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
+        "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
       },
       "locale": {
         "info": "",

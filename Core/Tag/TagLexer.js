@@ -2,6 +2,7 @@ const chevrotain = require('chevrotain');
 const Lexer = chevrotain.Lexer;
 const TagError = require('./TagError');
 const SubTag = require('./SubTag');
+const SubTagArg = require('./SubTagArg');
 const TagArray = require('./TagArray');
 
 function createToken(name, pattern, group) {
@@ -14,14 +15,17 @@ class TagLexer {
         this.tokens = {
             Escaped: createToken('Escaped', /\\[\\{}\[\]]/),
             SemiEscaped: createToken('SemiEscaped', /\\;/),
+            TagArgOpen: createToken('TagArgOpen', /\{\*/),
             TagOpen: createToken('TagOpen', /\{/),
             TagClose: createToken('TagClose', /\}/),
+            TagPipe: createToken('TagPipe', /!/),
+            TagNamedArg: createToken('TagNamedArg', /=/),
             ArrayOpen: createToken('ArrayOpen', /\[/),
             ArrayClose: createToken('ArrayClose', /\]/),
             ArgumentSeparator: createToken('ArgumentSeparator', /;/),
             NewLine: chevrotain.createToken({ name: 'NewLine', pattern: / *\n/ }),
             Escape: createToken('Escape', /\\/),
-            Identifier: createToken('Text', /[^\{\};\\\[\]]*/)
+            Identifier: createToken('Text', /[^\{\};\\\[\]=!]*/)
         };
         this.SelectLexer = new Lexer(Object.values(this.tokens));
 
@@ -53,7 +57,7 @@ class TagLexer {
             const lastThing = last(arr);
             if (lastThing == undefined) {
                 arr.push([token]);
-            } else if (lastThing instanceof SubTag || lastThing instanceof TagArray) {
+            } else if (lastThing instanceof SubTag || lastThing instanceof TagArray || lastThing instanceof SubTagArg) {
                 lastThing.addArgument(token);
             } else {
                 lastThing.push(token);
@@ -74,11 +78,14 @@ class TagLexer {
                     }
                     stack.pop();
                     break;
+                case tokenTypes.TagArgOpen:
+                    stack.push(add(new SubTagArg(token.startColumn - 1, token.startLine - 1)));
+                    break;
                 case tokenTypes.TagOpen:
                     stack.push(add(new SubTag(token.startColumn - 1, token.startLine - 1)));
                     break;
                 case tokenTypes.TagClose:
-                    if (!last() instanceof SubTag) {
+                    if (!(last() instanceof SubTag) && !(last() instanceof SubTagArg)) {
                         throw new TagError('error.tag.unopened', {
                             column: token.startColumn - 1,
                             row: token.startLine - 1
@@ -88,9 +95,12 @@ class TagLexer {
                     break;
                 case tokenTypes.ArgumentSeparator:
                     if (last() instanceof SubTag) {
+                        last().piping = false;
                         last().rawArgs.push([]);
                     } else if (last() instanceof TagArray) {
                         last().push([]);
+                    } else if ((last() instanceof SubTagArg) && !last().separated) {
+                        last().separated = true;
                     } else {
                         add(token.image);
                     }
@@ -98,6 +108,20 @@ class TagLexer {
                 case tokenTypes.Escape:
                 case tokenTypes.Identifier:
                     add(token.image);
+                    break;
+                case tokenTypes.TagPipe:
+                    if (last() instanceof SubTag) {
+                        last().piping = true;
+                        last().pipe = [];
+                    } else add(token.image);
+                    break;
+                case tokenTypes.TagNamedArg:
+                    if (last() instanceof SubTag) {
+                        if (last().rawArgs.length === 1) {
+                            last().piping = false;
+                            last().named = true;
+                        } else add(token.image);
+                    } else add(token.image);
                     break;
                 case tokenTypes.NewLine:
                     add('\n');

@@ -49,6 +49,7 @@ export default {
 <style scoped>
 .brand-logo {
     position: unset;
+    transform: none;
 }
 
 .breadcrumb {

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <p class='main-desc'>
+        <p class='main-desc flow-text'>
             {{$t('website.index.desc')}}
         </p>
         <div class='card-row'>
