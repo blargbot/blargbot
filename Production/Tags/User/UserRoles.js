@@ -17,8 +17,8 @@ class UserStatusTag extends User {
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
         let user = ctx.user, member;
-        if (args[0]) {
-            user = await ctx.client.Helpers.Resolve.user(ctx, args[0].toString(), true);
+        if (args.parsedArgs.user) {
+            user = await ctx.client.Helpers.Resolve.user(ctx, args.parsedArgs.user.toString(), true);
         }
 
         if (user)
