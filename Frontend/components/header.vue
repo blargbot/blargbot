@@ -3,13 +3,14 @@
         <nav>
             <div class='container'>
                 <div class='nav-wrapper'>
-                    <a class='brand-logo' href='/'>blargbot</a>
+                    <router-link class='breadcrumb brand-logo' to='/'>blargbot</router-link>
+
                     <ul id='nav-mobile' class='right hide-on-med-and-down'>
                         <li>
-                            <a href='#'>{{$t('website.header.commands')}}</a>
+                            <router-link to='/commands'>{{$t('website.header.commands')}}</router-link>
                         </li>
                         <li>
-                            <a href='#'>{{$t('website.header.bbtag')}}</a>
+                            <router-link to='/bbtag'>{{$t('website.header.bbtag')}}</router-link>
                         </li>
                         <li class='login'>
                             <div v-if='$store.state.user == undefined'>
@@ -42,5 +43,7 @@ export default {
 </script>
 
 <style scoped>
-
+header {
+    width: 100%;
+}
 </style>

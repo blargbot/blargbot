@@ -4,8 +4,10 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 const _f4024f3e = () => import('../Frontend/pages/index.vue' /* webpackChunkName: "pages/index" */).then(m => m.default || m)
-const _085f188c = () => import('../Frontend/pages/userinfo.vue' /* webpackChunkName: "pages/userinfo" */).then(m => m.default || m)
-const _e02ee55a = () => import('../Frontend/pages/test.vue' /* webpackChunkName: "pages/test" */).then(m => m.default || m)
+const _1ef45bb8 = () => import('../Frontend/pages/index/index.vue' /* webpackChunkName: "pages/index/index" */).then(m => m.default || m)
+const _173c73a2 = () => import('../Frontend/pages/index/bbtag/index.vue' /* webpackChunkName: "pages/index/bbtag/index" */).then(m => m.default || m)
+const _49bdb726 = () => import('../Frontend/pages/index/commands.vue' /* webpackChunkName: "pages/index/commands" */).then(m => m.default || m)
+const _6fed76f6 = () => import('../Frontend/pages/index/bbtag/subtags.vue' /* webpackChunkName: "pages/index/bbtag/subtags" */).then(m => m.default || m)
 
 
 
@@ -44,17 +46,28 @@ export function createRouter () {
 		{
 			path: "/",
 			component: _f4024f3e,
-			name: "index"
-		},
-		{
-			path: "/userinfo",
-			component: _085f188c,
-			name: "userinfo"
-		},
-		{
-			path: "/test",
-			component: _e02ee55a,
-			name: "test"
+			children: [
+				{
+					path: "",
+					component: _1ef45bb8,
+					name: "index"
+				},
+				{
+					path: "bbtag",
+					component: _173c73a2,
+					name: "index-bbtag"
+				},
+				{
+					path: "commands",
+					component: _49bdb726,
+					name: "index-commands"
+				},
+				{
+					path: "bbtag/subtags",
+					component: _6fed76f6,
+					name: "index-bbtag-subtags"
+				}
+			]
 		}
     ],
     fallback: false

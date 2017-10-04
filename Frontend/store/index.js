@@ -12,7 +12,8 @@ const store = () => new Vuex.Store({
         user: null,
         locale: 'en',
         locales: ['en'],
-        fact: ''
+        fact: '',
+        path: []
     },
 
     mutations: {
@@ -26,6 +27,9 @@ const store = () => new Vuex.Store({
         },
         SET_FACT(state, fact) {
             state.fact = fact;
+        },
+        SET_PATH(state, path) {
+            state.path = path;
         }
     },
 

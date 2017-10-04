@@ -23,6 +23,9 @@ module.exports = {
             { src: 'https://code.jquery.com/jquery-3.2.1.min.js' },
             { src: '/js/materialize.min.js' },
             { src: 'https://unpkg.com/axios/dist/axios.min.js' }
+        ],
+        link: [
+            { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons' }
         ]
     }
 };
