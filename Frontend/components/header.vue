@@ -4,6 +4,7 @@
             <div class='container'>
                 <div class='nav-wrapper'>
                     <router-link class='breadcrumb brand-logo' to='/'>blargbot</router-link>
+                    <router-link class='breadcrumb' v-for='crumb in $route.matched.slice(1)' :key='crumb.name' :to='crumb.path'>{{crumb.name}}</router-link>
 
                     <ul id='nav-mobile' class='right hide-on-med-and-down'>
                         <li>
@@ -11,6 +12,9 @@
                         </li>
                         <li>
                             <router-link to='/bbtag'>{{$t('website.header.bbtag')}}</router-link>
+                        </li>
+                        <li>
+                            <router-link to='/bbtag/subtags'>{{$t('website.header.subtags')}}</router-link>
                         </li>
                         <li class='login'>
                             <div v-if='$store.state.user == undefined'>
@@ -43,7 +47,12 @@ export default {
 </script>
 
 <style scoped>
-header {
-    width: 100%;
+.brand-logo {
+    position: unset;
+}
+
+.breadcrumb {
+    display: inline-block;
+    vertical-align: top;
 }
 </style>

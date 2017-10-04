@@ -40,7 +40,7 @@
 
 <script>
 import VueMarkdown from 'vue-markdown';
-import card from '../../components/card.vue';
+import card from '../components/card.vue';
 
 export default {
     data: () => ({

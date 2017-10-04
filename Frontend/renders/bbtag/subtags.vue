@@ -1,6 +1,6 @@
 <template>
     <div>
-        commands
+        subtags :/
     </div>
 </template>
 
@@ -10,6 +10,7 @@ import card from '../../components/card.vue';
 
 export default {
     data: () => ({
+
     }),
     components: {
         card, VueMarkdown

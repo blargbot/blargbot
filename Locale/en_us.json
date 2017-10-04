@@ -57,7 +57,8 @@
       "login": "Login",
       "logout": "Logout",
       "commands": "Commands",
-      "bbtag": "BBTag"
+      "bbtag": "BBTag",
+      "subtags": "SubTags"
     },
     "index": {
       "desc": "blargbot is a multipurpose Discord bot dedicated to providing quality commands and services, including chatlogs and an in-depth custom command system.",

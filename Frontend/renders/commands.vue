@@ -1,6 +1,7 @@
 <template>
-    <router-view>
-    </router-view>
+    <div>
+        commands
+    </div>
 </template>
 
 <script>
@@ -12,14 +13,13 @@ export default {
     }),
     components: {
         card, VueMarkdown
+    },
+    meta: {
+        name: 'Commands'
     }
 };
 </script>
 
 <style scoped>
-.main-desc {
-    max-width: 600px;
-    text-align: center;
-    margin: 20px auto;
-}
+
 </style>

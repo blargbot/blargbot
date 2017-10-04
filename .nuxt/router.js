@@ -3,11 +3,11 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-const _f4024f3e = () => import('../Frontend/pages/index.vue' /* webpackChunkName: "pages/index" */).then(m => m.default || m)
-const _1ef45bb8 = () => import('../Frontend/pages/index/index.vue' /* webpackChunkName: "pages/index/index" */).then(m => m.default || m)
-const _173c73a2 = () => import('../Frontend/pages/index/bbtag/index.vue' /* webpackChunkName: "pages/index/bbtag/index" */).then(m => m.default || m)
-const _49bdb726 = () => import('../Frontend/pages/index/commands.vue' /* webpackChunkName: "pages/index/commands" */).then(m => m.default || m)
-const _6fed76f6 = () => import('../Frontend/pages/index/bbtag/subtags.vue' /* webpackChunkName: "pages/index/bbtag/subtags" */).then(m => m.default || m)
+const _730255bb = () => import('../Frontend/renders/wrapper.vue' /* webpackChunkName: "" */).then(m => m.default || m)
+const _2fb2867a = () => import('../Frontend/renders/index.vue' /* webpackChunkName: "" */).then(m => m.default || m)
+const _9fb91568 = () => import('../Frontend/renders/bbtag/subtags.vue' /* webpackChunkName: "" */).then(m => m.default || m)
+const _6ce13bf6 = () => import('../Frontend/renders/bbtag/index.vue' /* webpackChunkName: "" */).then(m => m.default || m)
+const _05e8c9e0 = () => import('../Frontend/renders/commands.vue' /* webpackChunkName: "" */).then(m => m.default || m)
 
 
 
@@ -45,27 +45,34 @@ export function createRouter () {
     routes: [
 		{
 			path: "/",
-			component: _f4024f3e,
+			component: _730255bb,
 			children: [
 				{
-					path: "",
-					component: _1ef45bb8,
-					name: "index"
+					path: "/",
+					component: _2fb2867a,
+					name: "blargbot"
 				},
 				{
-					path: "bbtag",
-					component: _173c73a2,
-					name: "index-bbtag"
+					path: "/bbtag",
+					component: _730255bb,
+					name: "BBTag",
+					children: [
+						{
+							path: "/bbtag/subtags",
+							component: _9fb91568,
+							name: "SubTags"
+						},
+						{
+							path: "/bbtag",
+							component: _6ce13bf6,
+							name: "Docs"
+						}
+					]
 				},
 				{
-					path: "commands",
-					component: _49bdb726,
-					name: "index-commands"
-				},
-				{
-					path: "bbtag/subtags",
-					component: _6fed76f6,
-					name: "index-bbtag-subtags"
+					path: "/commands",
+					component: _05e8c9e0,
+					name: "Commands"
 				}
 			]
 		}
