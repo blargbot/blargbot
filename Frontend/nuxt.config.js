@@ -1,4 +1,7 @@
+const conf = require('../config.json');
+
 module.exports = {
+    dev: conf.beta,
     srcDir: 'Frontend/',
     build: {
         vendor: ['vue-i18n']
