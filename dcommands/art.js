@@ -22,7 +22,7 @@ e.flags = [{
     desc: 'A custom image.'
 }];
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words);
     let user = msg.author;
     let url;

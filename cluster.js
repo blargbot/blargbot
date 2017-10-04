@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:28:09
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-09-07 13:47:39
+ * @Last Modified time: 2017-10-04 10:48:51
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,7 +14,7 @@ module.exports = cluster;
 
 const reload = dep.reload;
 
-const numCPUs = dep.os.cpus().length;
+const numCPUs = Math.min(dep.os.cpus().length, 2);
 
 if (cluster.isMaster) {
     const Collection = dep.Eris.Collection;
