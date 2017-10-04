@@ -39,7 +39,7 @@ module.exports = {
             });
         }
     },
-    plugins: ['~/plugins/i18n.js', 'vue-markdown', 'vue-breadcrumbs'],
+    plugins: ['~/plugins/i18n.js', 'vue-markdown'],
     head: {
         meta: [{
             name: 'viewport',
