@@ -138,6 +138,14 @@ class Spawner extends EventEmitter {
         console.log('A shard died, how sad');
         if (this.respawn && shard.respawn) this.spawn(shard.id);
     }
+
+    killAll(code) {
+        this.respawn = false;
+
+        this.shards.forEach(s => s.kill());
+
+        console.log('All shards have been killed.');
+    }
 }
 
 module.exports = Spawner;

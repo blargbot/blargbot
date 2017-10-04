@@ -5,6 +5,8 @@ const Frontend = require('../Frontend');
 
 class Client {
     constructor() {
+        process.on('exit', this.onExit.bind(this));
+
         this.Emitter = new EventEmitter();
         //this.discord = new DiscordClient();
         this.spawner = new Spawner(this, {
@@ -26,6 +28,12 @@ class Client {
         console.init('All shards have spawned. Connecting...');
         await this.spawner.awaitBroadcast('connect');
         console.init('Shards connected');
+    }
+
+    onExit() {
+        console.log('Exiting.');
+        this.frontend.kill();
+        this.spawner.killAll();
     }
 }
 
