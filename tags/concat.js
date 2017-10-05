@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:03
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-05 17:01:01
+ * @Last Modified time: 2017-10-05 17:19:13
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,7 +17,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `concat`;
-e.args = `&lt;array1&gt; &lt;array2&gt;`;
+e.args = `&lt;arrays&gt;...`;
 e.usage = `{concat;arrays...}`;
 e.desc = `Combines multiple arrays and outputs the new array.`;
 e.exampleIn = `{concat;["this", "is"];["an", "array"]}`;
