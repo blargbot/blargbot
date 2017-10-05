@@ -1,11 +1,7 @@
 <template>
     <div>
-        <h2 class='title'>BBTag</h2>
-        <blockquote>Not to be confused with BBCode!</blockquote>
-        <p class='flow-text'>BBTag is a template-based language, designed to provide a powerful framework to create advanced custom commands.</p>
-
-        <h4>SubTags</h4>
-
+        <vue-markdown :source='$t("website.bbtag")' class='markdown'>
+        </vue-markdown>
     </div>
 </template>
 

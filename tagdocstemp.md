@@ -5,11 +5,9 @@ BBTag is a template-based programming language, designed to provide a powerful f
 
 ## Terminology
 
-A `tag` refers to a block of BBTag code, whether it be a public tag or a custom command.
-
-A `subtag` refers to a BBTag component. Advanced `tags` are made of many `subtags`.
-
-A `class` refers to a group of `subtags`.
+- A `tag` refers to a block of BBTag code, whether it be a public tag or a custom command.
+- A `subtag` refers to a BBTag component. Advanced `tags` are made of many `subtags`.
+- A `class` refers to a group of `subtags`.
 
 ## SubTags
 
@@ -27,7 +25,7 @@ As you can see, the `math.randint` subtag returns a random integer between the p
 
 A subtag is made of various components. A syntax diagram may look something like this:
 ```
-{[class.]name[![var]][;args]...}
+{[class.]name[![var]]([;args]...|=<namedArgs>...}
 ```
 Oh wow, ok. That's kinda confusing, but bear with me!
 
@@ -61,11 +59,17 @@ Piping output is slightly faster to execute than using the full syntax.
 
 #### Arguments
 
+> `[;args]...`
+
 You can pass parameters into subtags. These are separated by semicolons `;`. Arguments are different per-subtag, and documentation on these can be found on the subtag page.
 
 ##### Named Arguments
 
-Normally, the order of provided arguments is very important. However, you can use the named counterparts instead. For example, the usage of `{math.randint}` is `{math.randint;min;max}`. The names of the arguments are `min` and `max` respectively. The following usages are equivalent:
+> `=<namedArgs>...`
+
+Normally, the order of provided arguments is very important. However, you can use the named counterparts instead. This is done by using the `=` token instead of a semicolon, and then specifying key-value tags, in the format of `{*key;value}`.
+
+For example, the usage of `{math.randint}` is `{math.randint;min;max}`. The names of the arguments are `min` and `max` respectively. The following usages are equivalent:
 ```
 {math.randint;1;10}
 {math.randint=
