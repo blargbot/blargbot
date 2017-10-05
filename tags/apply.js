@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:25:58
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-05 16:49:53
+ * @Last Modified time: 2017-10-05 16:51:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -37,7 +37,6 @@ e.execute = async function (params) {
                 nArgs.push(deserialized.v);
             } else nArgs.push([params.args[i]]);
         }
-        logger.info(nArgs);
 
         let aArgs = [].concat(...nArgs);
         let title = params.args[1];
