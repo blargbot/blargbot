@@ -44,7 +44,9 @@ import card from '../components/card.vue';
 export default {
   data: () => ({
     content: '# Title\n\nPut fancy markdown here.',
-    title: ''
+    title: '',
+    denyChoices: ['lol no', 'fat chance', 'why bother', 'hahaha nice try', 'meh, nah',
+      'id rather not', 'please stop trying', 'it is futile', 'look behind you', 'meow', 'whats the point']
   }),
   computed: {
     jsoned() {
@@ -57,9 +59,7 @@ export default {
   },
   methods: {
     exportJson() {
-      let arr = ['lol no', 'fat chance', 'why bother', 'hahaha nice try', 'meh, nah',
-        'id rather not',
-        'please stop trying', 'it is futile', 'look behind you', 'meow', 'whats the point'];
+      let arr = this.denyChoices;
       Materialize.toast(arr[Math.floor(Math.random() * arr.length)], 1000);
     },
     copyClipboard() {
