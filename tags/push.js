@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:03
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:51:03
+ * @Last Modified time: 2017-10-05 16:49:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -23,7 +23,7 @@ e.desc = `Pushes values into an array. If used with {get} or {aget}, this will u
 e.exampleIn = `{push;["this", "is", "an"];array}`;
 e.exampleOut = `["this","is","an","array"]`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -33,7 +33,7 @@ e.execute = async function(params) {
         params.args[1] = await bu.processTagInner(params, 1);
         let args1 = params.args[1];
         let deserialized = await bu.getArray(params, args1);
-        
+
         if (deserialized && Array.isArray(deserialized.v)) {
             let toPush = params.args.slice(2);
             for (const val of toPush)
