@@ -6,7 +6,9 @@ BBTag is a template-based programming language, designed to provide a powerful f
 ## Terminology
 
 A `tag` refers to a block of BBTag code, whether it be a public tag or a custom command.
+
 A `subtag` refers to a BBTag component. Advanced `tags` are made of many `subtags`.
+
 A `class` refers to a group of `subtags`.
 
 ## SubTags

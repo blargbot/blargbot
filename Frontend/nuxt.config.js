@@ -4,7 +4,8 @@ module.exports = {
     dev: conf.beta,
     srcDir: 'Frontend/',
     build: {
-        vendor: ['vue-i18n']
+        vendor: ['vue-i18n', 'axios'],
+        extractCSS: true
     },
     css: [
         '@/public/scss/materialize.scss',
@@ -34,6 +35,9 @@ module.exports = {
                     }, {
                         name: 'Commands', path: '/commands',
                         component: resolve(__dirname, 'renders/commands.vue')
+                    }, {
+                        name: 'Escaper', path: '/escaper',
+                        component: resolve(__dirname, 'renders/escape.vue')
                     }
                 ]
             });
@@ -47,8 +51,7 @@ module.exports = {
         }],
         script: [
             { src: 'https://code.jquery.com/jquery-3.2.1.min.js' },
-            { src: '/js/materialize.min.js' },
-            { src: 'https://unpkg.com/axios/dist/axios.min.js' }
+            { src: '/js/materialize.min.js' }
         ],
         link: [
             { rel: 'stylesheet', href: 'https://fonts.googleapis.com/icon?family=Material+Icons' }
