@@ -1,26 +1,26 @@
 {
   "output":"Output:\n{{output}}",
-  "nooutput":"No output...",
-  "queryexpire":"This query will expire in {{length}} minutes.",
+  "nooutput":"Intet output...",
+  "queryexpire":"Søgningen vil udløbe om {{length}} minutter.",
   "resolveuser":{
-    "nousers":"No users found.",
-    "pickuser":"{{length}} users were found! Please select one from the list."
+    "nousers":"Ingen brugere fundet.",
+    "pickuser":"{{length}} brugere blev fundet! Vælg venligst en fra listen"
   },
   "resolverole":{
-    "noroles":"No roles found.",
-    "pickrole":"{{length}} roles were found! Please select one from the list."
+    "noroles":"Ingen roller fundet.",
+    "pickrole":"{{length}} roller blev fundet! Vælg venligst en fra listen."
   },
   "resolvechannel":{
-    "nochannels":"No channels found.",
-    "pickchannel":"{{length}} channels were found! Please select one from the list."
+    "nochannels":"Ingen kanaler fundet.",
+    "pickchannel":"{{length}} kanaler blev fundet! Vælg venligst en fra listen."
   },
-  "edited":"edited",
-  "created":"created",
-  "deleted":"deleted",
+  "edited":"redigeret",
+  "created":"skabt",
+  "deleted":"slettet",
   "menu":{
     "choices":"Page {{page}}/{{max}}"
   },
-  "nochange":"Nothing was changed.",
+  "nochange":"Intet blev ændret.",
   "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
   "example":{
     "id1":"111111111111111111",
@@ -28,7 +28,7 @@
     "id3":"333333333333333333"
   },
   "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"The query has been canceled.",
+  "querycancelled":"The query has been cancelled.",
   "user":"User",
   "role":"Role",
   "channel":"Channel"
