@@ -17,9 +17,10 @@ class LocaleManager extends Manager {
             this.modules = require(`../../Production/${this.name}`);
         this.localeList = {};
         for (const key in this.modules) {
-            if (key === 'index') continue;
+            if (key === 'index' || key === 'en-US') continue;
             let obj = this.modules[key];
-            this.build(key);
+            if (obj.percentComplete >= 60)
+                this.build(key);
         }
     }
 
