@@ -20,11 +20,11 @@
         "Kunne du tænke dig at lave en kontrakt?",
         "Giv slip, og kom videre med dit liv."
       ],
-      "final":""
+      "final":"Pong! ({{time}}ms)"
     },
     "brainfuck":{
       "info":"Udfører brainfuck kode",
-      "usage":"",
+      "usage":"<code>",
       "flags":{
         "p":"Viser en liste af pointere efter udførelsen.",
         "i":"Specificerer inputtet for `.` operatoren."
@@ -52,34 +52,34 @@
           "info":"Skaber eller redigerer et tag med det givne navn og indhold. Vil ikke erstatte tags andre har lavet."
         },
         "delete":{
-          "usage":"",
+          "usage":"<name>",
           "info":"Sletter et tag du ejer."
         },
         "rename":{
-          "usage":"",
+          "usage":"<name><new name>",
           "info":"Omdøber et tag du ejer."
         },
         "raw":{
-          "usage":"",
+          "usage":"<name>",
           "info":"Anskaffer rå kode for et tag."
         },
         "info":{
-          "usage":"",
+          "usage":"<name>",
           "info":"Viser info om et tag."
         },
         "transfer":{
-          "usage":"",
+          "usage":"<name><user>",
           "info":"Overfører et tag til den specifikke bruger. Variabler vil ikke blive overført."
         },
         "top":{
           "info":"Viser en liste over de tags der er blevet favoriseret flest gange."
         },
         "author":{
-          "usage":"",
+          "usage":"<name>",
           "info":"Viser forfatteren til et tag."
         },
         "search":{
-          "usage":"",
+          "usage":"<query>",
           "info":"Søger efter et tag med et navn der indeholder din forespørgsel."
         },
         "list":{
