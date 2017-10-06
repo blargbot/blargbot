@@ -23,8 +23,8 @@
     "invalidradix":"Cơ số phải trong khoảng 2 tới 36, nhưng nhận được '{{radix}}'",
     "notanarray":"Biến '{{name}}' không phải là mảng (Nhận được '{{value}}')",
     "notbool":"Biến '{{name}' không thuộc phép toán luận (Nhận được '{{value}}')",
-    "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
-    "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
+    "missingarg":"",
+    "namedunsupported":""
   },
-  "inputtoolong":"Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
+  "inputtoolong":""
 }
