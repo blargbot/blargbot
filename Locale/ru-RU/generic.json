@@ -1,34 +1,34 @@
 {
-  "output":"Output:\n{{output}}",
-  "nooutput":"No output...",
-  "queryexpire":"This query will expire in {{length}} minutes.",
+  "output":"Вывод:\n{{output}}",
+  "nooutput":"Вывода нет...",
+  "queryexpire":"Ваш запрос истечёт через {{length}} минут.",
   "resolveuser":{
-    "nousers":"No users found.",
-    "pickuser":"{{length}} users were found! Please select one from the list."
+    "nousers":"Пользователь не найден.",
+    "pickuser":"Найдено {{length}} пользователей! Выберите одного из списка."
   },
   "resolverole":{
-    "noroles":"No roles found.",
-    "pickrole":"{{length}} roles were found! Please select one from the list."
+    "noroles":"Роль не найдена.",
+    "pickrole":"Найдено {{length}} ролей! Выберите одного из списка"
   },
   "resolvechannel":{
-    "nochannels":"No channels found.",
-    "pickchannel":"{{length}} channels were found! Please select one from the list."
+    "nochannels":"Канал не найден.",
+    "pickchannel":"Найдено {{length}} каналов! Выберите одного из списка."
   },
-  "edited":"edited",
-  "created":"created",
-  "deleted":"deleted",
+  "edited":"изменено",
+  "created":"создано",
+  "deleted":"удалено",
   "menu":{
-    "choices":"Page {{page}}/{{max}}"
+    "choices":"Страница {{page}} из {{max}}"
   },
-  "nochange":"Nothing was changed.",
-  "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
+  "nochange":"Ничего не изменено.",
+  "commandhelp":"**Имя команды**: **__{{name}}__**\n\n**__Синтаксис__**\n```{{usage}}```\n**__Информация__**\n{{info}}\n\n**__Другие имена команды__**\n{{aliases}}",
   "example":{
     "id1":"111111111111111111",
     "id2":"222222222222222222",
     "id3":"333333333333333333"
   },
   "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"The query has been canceled.",
+  "querycancelled":"The query has been cancelled.",
   "user":"User",
   "role":"Role",
   "channel":"Channel"
