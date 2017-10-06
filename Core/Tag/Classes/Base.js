@@ -35,7 +35,7 @@ class TagBase {
         this.keys = options.keys === undefined ? {} : options.keys;
 
         if (_config.beta && process.env.SHARD_ID == 0) {
-            this._keys = [`${this.base}.desc`, `${this.base}.example.in`, `${this.base}.example.out`];
+            this._keys = [`${this.base}.desc`];
             if (options.keys) {
                 for (const key in options.keys) {
                     this._keys.push(options.keys[key]);
