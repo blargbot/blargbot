@@ -1,34 +1,34 @@
 {
-  "output":"Output:\n{{output}}",
-  "nooutput":"No output...",
-  "queryexpire":"This query will expire in {{length}} minutes.",
+  "output":"Résultat:\n{{output}}",
+  "nooutput":"Aucun résultat...",
+  "queryexpire":"Cette requête expirera dans {{length}} minutes.",
   "resolveuser":{
-    "nousers":"No users found.",
-    "pickuser":"{{length}} users were found! Please select one from the list."
+    "nousers":"Aucun utilisateur trouvé.",
+    "pickuser":"{{length}} utilisateurs trouvés! Veuillez en choisir un de la liste."
   },
   "resolverole":{
-    "noroles":"No roles found.",
-    "pickrole":"{{length}} roles were found! Please select one from the list."
+    "noroles":"Aucun rôle trouvé.",
+    "pickrole":"{{length}} rôles trouvés! Veuillez en choisir un de la liste."
   },
   "resolvechannel":{
-    "nochannels":"No channels found.",
-    "pickchannel":"{{length}} channels were found! Please select one from the list."
+    "nochannels":"Aucun canal trouvé.",
+    "pickchannel":"{{length}} canaux trouvés! Veuillez en choisir un de la liste."
   },
-  "edited":"edited",
-  "created":"created",
-  "deleted":"deleted",
+  "edited":"édité",
+  "created":"créé",
+  "deleted":"supprimé",
   "menu":{
     "choices":"Page {{page}}/{{max}}"
   },
-  "nochange":"Nothing was changed.",
-  "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
+  "nochange":"Aucun changement.",
+  "commandhelp":"**Nom de la commande**: **__{{name}}__**\n\n**__Utilisation__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Alias__**\n{{aliases}}",
   "example":{
     "id1":"111111111111111111",
     "id2":"222222222222222222",
     "id3":"333333333333333333"
   },
   "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"The query has been canceled.",
+  "querycancelled":"The query has been cancelled.",
   "user":"User",
   "role":"Role",
   "channel":"Channel"
