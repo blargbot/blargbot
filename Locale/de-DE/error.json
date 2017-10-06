@@ -18,13 +18,13 @@
     "authorstaff":"Author {{author}} muss admin sein zum benutzen",
     "noperms":"Bot fehlt Erlaubnis '{{perm}}' gebraucht von \ntag '{{tag}}'",
     "toolow":"Bot can nicht ausführen '{{tag}}' weil es ein niedrieger rank ist als '{{target}}'",
-    "unclosed":"Unmatched opening bracket [{{column}}:{{row}}]",
-    "unopened":"Unmatched closing bracket [{{column}}:{{row}}]",
+    "unclosed":"",
+    "unopened":"",
     "invalidradix":"Radix muss zwischen 2 und 36 sein, aber bekommen '{{radix}}'",
-    "notanarray":"Variable '{{name}}' is not an array (Received: '{{value}}')",
-    "notbool":"Variable '{{name}}' is not a boolean (Received: '{{value}}')",
-    "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
-    "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
+    "notanarray":"",
+    "notbool":"",
+    "missingarg":"",
+    "namedunsupported":""
   },
-  "inputtoolong":"Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
+  "inputtoolong":""
 }
