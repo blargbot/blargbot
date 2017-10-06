@@ -245,7 +245,7 @@
       "info":"Configura varie impostazioni.",
       "subcommand":{
         "staffuser":{
-          "usage":"mod user <add | remove> <utente>...",
+          "usage":"",
           "info":"Aggiunge o toglie l'utente(i) specificato(i) dalla lista staff."
         },
         "staffrole":{
