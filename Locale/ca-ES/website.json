@@ -1,38 +1,38 @@
 {
-  "language":"English",
+  "language":"",
   "header":{
-    "login":"Login",
-    "logout":"Logout",
-    "commands":"Commands",
-    "bbtag":"BBTag",
-    "subtags":"SubTags"
+    "login":"",
+    "logout":"",
+    "commands":"",
+    "bbtag":"",
+    "subtags":""
   },
   "index":{
-    "desc":"blargbot is a multipurpose Discord bot dedicated to providing quality commands and services, including chatlogs and an in-depth custom command system.",
+    "desc":"",
     "commands":{
-      "title":"Commands",
-      "desc":"blargbot is equipped with numerous commands, all of which are documented and categorized for your convenience."
+      "title":"",
+      "desc":""
     },
     "bbtag":{
-      "title":"BBTag",
-      "desc":"blargbot uses a sophisticated tag system called BBTag, which you can use to create advanced custom commands."
+      "title":"",
+      "desc":""
     },
     "customization":{
-      "title":"Customization",
-      "desc":"We understand that not every guild is the same, so blargbot has extensive customization. You can control exactly which roles can use which commands, specify custom prefixes, and even change the display language!"
+      "title":"",
+      "desc":""
     },
     "moderation":{
-      "title":"Moderation",
-      "desc":"Need something to moderate your chat? blargbot is equipped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+      "title":"",
+      "desc":""
     },
     "opensource":{
-      "title":"Open-Source",
-      "desc":"Sharing is caring! blargbot is completely open-source under the GNU AGPLv3 License. Feel free to take a look and learn how everything works. If you use any of my code in your own project, you are required to credit me. See the license for more details."
+      "title":"",
+      "desc":""
     },
     "suggestions":{
-      "title":"Open To Suggestions",
-      "desc":"Have a suggestion for the bot? I would be glad to hear it! Found a bug? I'd like to hear that too! You can suggest anything to me using the `suggest` command, by joining my guild, or by submitting a ticket."
+      "title":"",
+      "desc":""
     }
   },
-  "bbtag":"# BBTag\n> Not to be confused with BBCode!\n\nBBTag is a template-based programming language, designed to provide a powerful framework to create advanced custom commands.\n\n## Terminology\n\n- A `tag` refers to a block of BBTag code, whether it be a public tag or a custom command.\n- A `subtag` refers to a BBTag component. Advanced `tags` are made of many `subtags`.\n- A `class` refers to a group of `subtags`.\n\n## SubTags\n\nSubtags are the basic building block of BBTag. They perform dynamic functions, whether it be getting the name of a user or doing math. Let's take a look at a subtag now:\n```\n{math.randint;1;10}\n```\nWhen run, this may return something like this:\n```\n6\n```\nAs you can see, the `math.randint` subtag returns a random integer between the provided range.\n\n### Anatomy of a SubTag\n\nA subtag is made of various components. A syntax diagram may look something like this:\n```\n{[class.]name[![var]]([;args]...|=<namedArgs>...}\n```\nOh wow, ok. That's kinda confusing, but bear with me!\n\n#### Classes\n\n> `[class.]name`\n\nSubtags are split into groups, called **classes**. Each class is designated a specific type of purpose. For example, the `math` class would contain subtags that deal with numbers. Likewise, the `user` class would contain subtags that give information about users. Classes provide a system of organization.\n\nWhen using a subtag, the preferred usage would be `{class.name}`. This improves readability. However, explicitly stating the class is usually optional. BBTag knows that `{math.randint}` and `{randint}` are the same subtag. This is called **implicit classing**. The exception to this are subtags in the `general` class, which should be used *without* an explicit class.\n\nHowever, you should be careful with implicit classing! Sometimes, classes may have subtags with the same name. For example, `{user.id}` and `{channel.id}` both have subtags with the name `id`. If you attempt to use implicit classing with a subtag that exists in multiple classes, it will return an error!\n\n#### Piping\n\n> `[![var]]`\n\nPiping is a feature that allows you to redirect the output of a subtag, either to a variable or into a void. This can help to clean up your code.\n\nFor example, if for whatever reason you don't want a subtag to output anything, you can add a `!` after the subtag name to silence it. The following lines are equivalent:\n```\n{void;{math.randint;1;10}}\n{math.randint!;1;10}\n```\nIf you want to store the subtag's output to a variable, you can add `!variableName` after the subtag name. The following lines are equivalent:\n```\n{set;randomInteger;{math.randint;1;10}}\n{math.randint!randomInteger;1;10}\n```\nPiping output is slightly faster to execute than using the full syntax.\n\n#### Arguments\n\n> `[;args]...`\n\nYou can pass parameters into subtags. These are separated by semicolons `;`. Arguments are different per-subtag, and documentation on these can be found on the subtag page.\n\n##### Named Arguments\n\n> `=<namedArgs>...`\n\nNormally, the order of provided arguments is very important. However, you can use the named counterparts instead. This is done by using the `=` token instead of a semicolon, and then specifying key-value tags, in the format of `{*key;value}`.\n\nFor example, the usage of `{math.randint}` is `{math.randint;min;max}`. The names of the arguments are `min` and `max` respectively. The following usages are equivalent:\n```\n{math.randint;1;10}\n{math.randint=\n    {*min;1}\n    {*max;10}\n}\n```\nYou cannot use both named arguments and ordered arguments in the same subtag."
+  "bbtag":""
 }
