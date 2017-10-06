@@ -1,30 +1,30 @@
 {
   "specs":{
-    "lang":"English"
+    "lang":"Tiếng Việt"
   },
   "generic":{
-    "output":"Output:\n{{output}}",
-    "nooutput":"No output...",
-    "queryexpire":"This query will expire in {{length}} minutes.",
+    "output":"{{output}}",
+    "nooutput":"Thôi rồi đầu ra biến đi đâu rồi...",
+    "queryexpire":"Lựa chọn sẽ mất hiệu lực trong {{length}} phút.",
     "resolveuser":{
-      "nousers":"No users found.",
-      "pickuser":"{{length}} users were found! Please select one from the list."
+      "nousers":"Xin lỗi, nhưng mình không tìm thấy người dùng đó.",
+      "pickuser":"Có {{length}} người dùng trong danh sách! Chọn một trong số đó để tiếp tục."
     },
     "resolverole":{
-      "noroles":"No roles found.",
-      "pickrole":"{{length}} roles were found! Please select one from the list."
+      "noroles":"Không thể tìm thấy role bạn cần.",
+      "pickrole":"Có {{length}} roles được tìm thấy trong danh sách! Chọn một trong số đó để tiếp tục."
     },
     "resolvechannel":{
-      "nochannels":"No channels found.",
-      "pickchannel":"{{length}} channels were found! Please select one from the list."
+      "nochannels":"Sorry, mình không tìm thấy kênh đó.",
+      "pickchannel":"Có {{length}} kênh được tìm thấy trong danh sách! Chọn một trong số đó để tiếp tục."
     },
-    "edited":"edited",
-    "created":"created",
-    "deleted":"deleted",
+    "edited":"đã chỉnh sửa",
+    "created":"đã được tạo",
+    "deleted":"đã được xoá",
     "menu":{
-      "choices":"Page {{page}}/{{max}}"
+      "choices":"Trang {{page}}/{{max}}"
     },
-    "nochange":"Nothing was changed.",
+    "nochange":"Không có thay đổi.",
     "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
     "example":{
       "id1":"111111111111111111",
@@ -32,19 +32,19 @@
       "id3":"333333333333333333"
     },
     "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-    "querycancelled":"The query has been canceled.",
+    "querycancelled":"The query has been cancelled.",
     "user":"User",
     "role":"Role",
     "channel":"Channel"
   },
   "menu":{
     "cancel":{
-      "name":"Cancel",
-      "description":"Close this menu."
+      "name":"Hủy",
+      "description":"Đóng menu này."
     },
     "confirm":{
-      "name":"Confirm",
-      "description":"Confirms this menu."
+      "name":"Xác định",
+      "description":"Xác nhận menu này."
     }
   },
   "emote":{
@@ -53,30 +53,30 @@
     "okhand":":ok_hand:"
   },
   "error":{
-    "keyundef":"No such locale entry was found: '{{key}}'.",
-    "memberundef":"No such member was found: '{{member}}'.",
-    "userundef":"No such user was found: '{{user}}'.",
-    "channelundef":"No such channel was found: '{{channel}}'.",
-    "roleundef":"No such role was found: '{{role}}'.",
-    "pleasereport":"If you think this is an error, please report it!",
-    "generic":"Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
-    "messagetoolong":"Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
-    "notenoughparams":"Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
+    "keyundef":"Làm gì có ngôn ngữ này? '{{key}}'.",
+    "memberundef":"Không có thành viên nào là '{{member}}'.",
+    "userundef":"Không thấy người dùng: '{{user}}`.",
+    "channelundef":"Không tìm thấy kênh: '{{channel}}'.",
+    "roleundef":"Không thấy role: '{{role}}'.",
+    "pleasereport":"Nếu bạn nghi ngờ rằng đây là lỗi, xin hãy báo cáo cho chúng tôi!",
+    "generic":"Có gì đó không ổn...\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "messagetoolong":"Thôi rồi Lượm ơi! Mình knông thể gửi tin nhắn này được vì nó quá dài. [[error.pleasereport]]",
+    "notenoughparams":"Chưa đủ giá trị cần nhập! Gõ theo cú pháp `{{prefix}}help {{name}}` để biết thêm thông tin chi tiết.\n\nCần `{{expected}}` giá trị, thay vào đó mình chỉ nhận được `{{received}}`.",
     "tag":{
-      "notfound":"Subtag '{{tag}}' doesn't exist.",
-      "toomanyargs":"Too many args (r:{{received}} e:{{expected}})",
-      "toofewargs":"Not enough args (r:{{received}} e:{{expected}})",
-      "isnan":"Expected '{{arg}}' to be a number, but received '{{value}}'",
-      "maxlessthanmin":"Max must be greater than Min",
-      "ccommandonly":"'{{tag}}' may only be used in custom commands",
-      "authorstaff":"Author {{author}} must be staff to use '{{tag}}'",
-      "noperms":"Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
-      "toolow":"Bot cannot execute '{{tag}}' because it's lower-ranked than '{{target}}'",
-      "unclosed":"Unmatched opening bracket [{{column}}:{{row}}]",
-      "unopened":"Unmatched closing bracket [{{column}}:{{row}}]",
-      "invalidradix":"Radix must be between 2 and 36, but received '{{radix}}'",
-      "notanarray":"Variable '{{name}}' is not an array (Received: '{{value}}')",
-      "notbool":"Variable '{{name}}' is not a boolean (Received: '{{value}}')",
+      "notfound":"'{{tag}}' không tồn tại.",
+      "toomanyargs":"Quá nhiều đơn vị (nhận:{{received}} cần:{{expected}})",
+      "toofewargs":"Không đủ đơn vị (nhận:{{received}} cần:{{expected}})",
+      "isnan":"Cần '{{arg}}' là chữ số, nhưng nhận được '{{value}}'",
+      "maxlessthanmin":"Giá trị Max phải lớn hơn Min",
+      "ccommandonly":"'{{tag}}' chỉ có thể sử dụng cho ccommands",
+      "authorstaff":"{{author}} phải là mod mới được dùng '{{tag}}'",
+      "noperms":"Bot không được ủy quyền '{{perm}}' để thực hiện tag '{{tag}}'",
+      "toolow":"Bot không thể thực hiện tag '{{tag}}' vì nó là cấp dưới của '{{target}}'",
+      "unclosed":"Dấu ngoặc đầu không khớp [{{column}}:{{row}}]",
+      "unopened":"Dấu ngoặc cuối không khớp [{{column}}:{{row}}]",
+      "invalidradix":"Cơ số phải trong khoảng 2 tới 36, nhưng nhận được '{{radix}}'",
+      "notanarray":"Biến '{{name}}' không phải là mảng (Nhận được '{{value}}')",
+      "notbool":"Biến '{{name}' không thuộc phép toán luận (Nhận được '{{value}}')",
       "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
       "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
     },
@@ -85,116 +85,116 @@
   "command":{
     "general":{
       "ping":{
-        "info":"Pong!\nFinds the command latency.",
+        "info":"Pong!\nXác định thời gian lệnh được nhận từ máy chủ.",
         "usage":"ping",
         "randmsg":[
-          "Existence is a lie.",
-          "You're going to die some day, perhaps soon.",
-          "Nothing matters.",
-          "Where do you get off?",
-          "There is nothing out there.",
-          "You are alone in an infinite void.",
-          "Truth is false.",
-          "Forsake everything.",
-          "Your existence is pitiful.",
-          "We are all already dead.",
-          "Meow.",
-          "Fear is freedom.",
-          "Subjugation is liberation.",
-          "Contradiction is truth.",
-          "Would you like to make a contract?",
-          "Let it go, and move on."
+          "Sự tồn tại không là hiện thực.",
+          "Bạn không sở hữu một cơ thể vĩnh cửu, một ngày nào đó bạn sẽ tan biến khỏi thế gian này.",
+          "Không vấn đề gì.",
+          "Bạn đi đâu vậy?",
+          "Không có gì ở ngoài đâu.",
+          "Bạn không hề biết rằng, bạn đang cô đơn trong một vũ trụ rộng vô tận.",
+          "Sự thật trái ngược.",
+          "Bỏ đi mọi thứ.",
+          "Sự tồn tại của bạn thật đáng thương.",
+          "Chúng ta đều đã chết.",
+          "Meo.",
+          "Sự sợ hãi là tự do.",
+          "Sự chinh phục là giải phóng.",
+          "Mâu thuẫn là sự thật.",
+          "Bạn có muốn ký một hợp đồng không?",
+          "Hãy để nó đi, và tiếp tục."
         ],
         "final":"Pong! ({{time}}ms)"
       },
       "brainfuck":{
-        "info":"Executes brainfuck code.",
-        "usage":"brainfuck <code>",
+        "info":"Giải mã brainfuck.",
+        "usage":"brainfuck <mã>",
         "flags":{
-          "p":"Shows a list of pointers after the execution.",
-          "i":"Specifies the input for the `,` operator."
+          "p":"Mở danh sách các con trỏ sau khi giải mã.",
+          "i":"Xác định giá trị đầu vào cho `,`"
         }
       },
       "cat":{
-        "info":"Gets a picture of a cat.",
+        "info":"Tải hình ảnh một con mèo dễ thương (Chắc thế).",
         "usage":"cat"
       },
       "ship":{
-        "info":"Gives you the ship name for two users.",
-        "usage":"ship <user1> <user2>",
-        "final":"Your ship name is **{{name}}**!",
-        "notenough":"You have to tell me who to ship!"
+        "info":"Ghép đôi hai người và cho ra tên ship.",
+        "usage":"ship <người dùng 1> <người dùng 2>",
+        "final":"Tên ship của các bạn là **{{name}}**!",
+        "notenough":"Bạn phải nói cho mình biết ai với ai để rồi mình còn ship chớ!"
       },
       "tag":{
-        "info":"Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>).",
-        "usage":"tag <name | subcommand> [args]",
-        "dontown":"[[emote.x]] You don't own that tag!",
-        "alreadyexists":"[[emote.x]] A tag with that name already exists!",
-        "notag":"[[emote.x]] There is no tag with that name.",
+        "info":"Tag là một hệ thống các lệnh công cộng mà bất kỳ ai cũng có thể tạo hoặc thực thi bằng cách sử dụng ngôn ngữ BBTag.\n\n**Các lệnh con**:\n{{subcommands}}\n\nĐể biết thêm thông tin về một lệnh con, nhập `b!t help <subcommand>`\nĐể biết thêm thông tin về ngôn ngữ BBTag, truy cập <https://blargbot.xyz/tags>.\nBằng cách tạo một Tag mới, hãy xác nhận rằng bạn đồng ý với các Điều khoản về Dịch vụ (<https://blargbot.xyz/tags/tos>).",
+        "usage":"tag <tên | lệnh con> [giá trị]",
+        "dontown":"[[emote.x]] Bạn không sở hữu tag đó!",
+        "alreadyexists":"[[emote.x]] Tag đó đã tồn tại rồi!",
+        "notag":"[[emote.x]] Không có tag nào tồn tại có tên như thế cả.",
         "tagset":"[[emote.check]] Tag `{{name}}` {{process}}!",
-        "tagrename":"[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`.",
-        "raw":"The code for {{name}} is:\n```{{code}}```",
-        "testoutput":"Test Output:\n\n{{output}}",
+        "tagrename":"[[emote.check]] Tag `{{old}}` đã được đổi tên thành `{{new}}`!",
+        "raw":"Đây là dòng lệnh cho tag {{name}}:\n```{{code}}```",
+        "testoutput":"Đầu ra:\n\n{{output}}",
         "subcommand":{
           "set":{
-            "usage":"tag set <name> <content>",
-            "info":"Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
+            "usage":"tag set <tên> <nội dung>",
+            "info":"Tạo hoặc chỉnh sửa một tag với tên và nội dung đã cho. Nó sẽ không thay thế bất cứ tag nào được làm từ người khác."
           },
           "delete":{
-            "usage":"tag delete <name>",
-            "info":"Deletes a tag that you own."
+            "usage":"tag delete <tên>",
+            "info":"Xoá một tag mà bạn đã tạo ra trước đó."
           },
           "rename":{
-            "usage":"tag rename <name> <new name>",
-            "info":"Renames a tag that you own."
+            "usage":"tag rename <tên cũ> <tên mới>",
+            "info":"Đổi tên một tag mà bạn tạo ra."
           },
           "raw":{
-            "usage":"tag raw <name>",
-            "info":"Gets the raw code of a tag."
+            "usage":"tag raw <tên tag>",
+            "info":"Lấy nội dung/dòng mã của tag được xác định."
           },
           "info":{
-            "usage":"tag info <name>",
-            "info":"Displays information about a tag."
+            "usage":"tag info <tên tag>",
+            "info":"Gửi thông tin về một tag được xác định."
           },
           "transfer":{
-            "usage":"tag transfer <name> <user>",
-            "info":"Transfers a tag to the specified user. Variables will not be transferred."
+            "usage":"tag transfer <tên tag> <người dùng>",
+            "info":"Chuyển đổi quyền sở hữu tag được xác định cho một người dùng mà bạn muốn đổi. Tuy nhiên, các dữ liệu và hàm sẽ không được chuyển qua."
           },
           "top":{
             "usage":"tag top",
-            "info":"Displays the tags that have been the most favorited."
+            "info":"Hiện lên danh sách tags được yêu thích nhiều nhất."
           },
           "author":{
-            "usage":"tag author <name>",
-            "info":"Displays the author of a tag."
+            "usage":"tag author <tên tag>",
+            "info":"Hiện lên chủ sở hữu một tag được xác định."
           },
           "search":{
-            "usage":"tag search <query>",
-            "info":"Searches for a tag with a name containing your query."
+            "usage":"tag search <từ khoá>",
+            "info":"Tìm một tag với tên có chứa từ khoá mà bạn đưa ra."
           },
           "list":{
-            "usage":"tag list [@user]",
-            "info":"Lists all the tags, or optionally all the tags created by a specific user."
+            "usage":"tag list [@tên_người_dùng]",
+            "info":"Cho ra tất cả các tag đang hoạt động, hoặc các tag được tạo bởi một người dùng được xác định, nếu cần thiết."
           },
           "favorite":{
-            "usage":"tag favorite <name>",
-            "info":"Favorites the specified tag."
+            "usage":"tag favorite <tên tag>",
+            "info":"Đánh dấu tag đó là tag mà bạn yêu thích."
           },
           "report":{
-            "usage":"tag report <name>",
-            "info":"Reports a tag for violating the ToS. Please use responsibly."
+            "usage":"tag report <tên tag>",
+            "info":"Báo cáo một tag vi phạm Điều khoản về Dịch vụ của chúng tôi. Xin hãy dùng nó một cách chính đáng."
           },
           "test":{
-            "usage":"tag test <code>",
-            "info":"Executes the given code in a test environment."
+            "usage":"tag test <mã/nội dung>",
+            "info":"Cho ra kết quả từ dòng mã đã cho trong khung test."
           },
           "help":{
-            "usage":"tag help [subcommand]",
-            "info":"Displays this!"
+            "usage":"tag help [lệnh phụ]",
+            "info":"Hiện cái này nè!"
           },
           "docs":{
             "usage":"tag docs [subtag]",
-            "info":"Gives a link to the BBTag documentation, or provides information about a specific subtag."
+            "info":"Gửi một đường link tới thông tin và danh sách BBTag, hay cho ra một thông tin về một subtag mà bạn cho."
           },
           "setdesc":{
             "usage":"usage",
@@ -208,30 +208,30 @@
         "subcommandnotfound":"Couldn't find a subcommand with the name `{{subcommand}}`.",
         "transferprompt":"{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
         "nobots":"[[emote.x]] You cannot transfer a tag to a bot!",
-        "transfercancelled":"[[emote.x]] The transfer has been canceled.",
+        "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
         "transfercomplete":"[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
         "descupdate":"The description for `{{tag}}` has been updated.",
         "descreset":"The description for `{{tag}}` has been reset.",
         "subcommandconflict":"You can't use the name `{{name}}` because there is a subcommand with that name!",
-        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
         "toptags":"Here are the top 10 tags!\n\n{{tags}}",
         "tagauthor":"The tag `{{tag}}` was created by **{{author}}**",
-        "favouriteadd":"The tag `{{tag}}` has been added to your favorites list.",
-        "favouriteremove":"The tag `{{tag}}` has been removed from your favorites list.",
-        "favourites":"You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+        "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
+        "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+        "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
       },
       "ccommand":{
-        "info":"CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
-        "usage":"cc <subcommand> [args]",
+        "info":"CCommands là một hệ thống lệnh tuỳ chỉnh mà các mod có thể tạo chúng cho người dùng khác với ngôn ngữ lập trình BBTag.\n\n**Các lệnh phụ**\n{{subcommands}}\n\nĐể biết thêm thông tin về một câu lệnh phụ (subcommand), nhập `b!t help <lệnh phụ>`\nĐể biết thêm thông tin về BBTag, các bạn có thể truy cập <https://blargbot.xyz/tags>.",
+        "usage":"cc <câu lệnh phụ> [giá trị]",
         "subcommand":{
           "set":{
-            "usage":"cc set <name> <content>",
+            "usage":"cc set <tên> <nội dung>",
             "info":"Creates or edits a custom command with the provided name and content. Will not replace any tags made by anyone else."
           },
           "delete":{
-            "usage":"cc delete <name>",
-            "info":"Deletes a custom command."
+            "usage":"cc delete <tên lệnh>",
+            "info":"Xoá một câu lệnh tuỳ chỉnh được xác định."
           },
           "rename":{
             "usage":"cc rename <name> <newName>",
@@ -474,24 +474,24 @@
   },
   "tag":{
     "comment":{
-      "desc":"Specifies an area that will be ignored from parsing.",
+      "desc":"Xác định một vùng sẽ không được qua phân tích.",
       "example":{
-        "in":"This will be shown {//;This won't be}",
-        "out":"This will be shown"
+        "in":"Cái này sẽ hiện lên {//;Cái này ếu có}",
+        "out":"Cái này sẽ hiện lên"
       }
     },
     "void":{
-      "desc":"Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed.",
+      "desc":"Ngăn chặn hiển Thị đầu ra từ bên trong Tag phụ. Cái khác giữa comment, là mọi thứ trong Tag phụ đó được phân tích, chỉ không hiển thị mà thôi.",
       "example":{
-        "in":"This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
-        "out":"This will be shown  but this will be set"
+        "in":"Tui đê {void;Nhưng tui vô hình {set;~temp;nhưng tui được đặt giá trị từ trong tag void}} {get;~temp}",
+        "out":"Tui đê  nhưng tui được đặt giá trị từ trong tag void"
       }
     },
     "randint":{
-      "desc":"Returns a random integer between the provided range. `min` defaults to `0`.",
+      "desc":"Cho ra 1 dữ liệu integer (số) giữa một khoảng dữ liệu được xác định. `min` được đặt mặc định là `0`.",
       "example":{
-        "in":"One: {randint;5}, two: {randint;10;20}",
-        "out":"One: 2, two: 17"
+        "in":"Một: {randint;5}, hai: {randint;10;20}",
+        "out":"Một: 2, hai: 17"
       }
     },
     "array":{
@@ -1017,7 +1017,7 @@
       },
       "moderation":{
         "title":"Moderation",
-        "desc":"Need something to moderate your chat? blargbot is equipped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+        "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
       },
       "opensource":{
         "title":"Open-Source",
