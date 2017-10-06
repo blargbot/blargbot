@@ -1,110 +1,110 @@
 {
   "general":{
     "ping":{
-      "info":"Pong!\nFinds the command latency.",
+      "info":"Pong!\nFinder svartiden for kommandoen.",
       "randmsg":[
-        "Existence is a lie.",
-        "You're going to die some day, perhaps soon.",
-        "Nothing matters.",
-        "Where do you get off?",
-        "There is nothing out there.",
-        "You are alone in an infinite void.",
-        "Truth is false.",
-        "Forsake everything.",
-        "Your existence is pitiful.",
-        "We are all already dead.",
-        "Meow.",
-        "Fear is freedom.",
-        "Subjugation is liberation.",
-        "Contradiction is truth.",
-        "Would you like to make a contract?",
-        "Let it go, and move on."
+        "Eksistens er en løgn.",
+        "Du dør alligevel en eller anden dag, måske endda snart.",
+        "Alting er ligegyldigt.",
+        "Hvor er du på vej hen?",
+        "Der er intet derude.",
+        "Du er alene i en uendelig tomhed.",
+        "Sandhed er løgn.",
+        "Opgiv alt.",
+        "Din eksistens er en skam.",
+        "Vi er allesammen allerede døde.",
+        "Frygt er frihed.",
+        "Undertrykkelse er frigørende.",
+        "Selvmodsigelse er sandhed.",
+        "Ville du leve bare for at kunne blive bundet?",
+        "Kunne du tænke dig at lave en kontrakt?",
+        "Giv slip, og kom videre med dit liv."
       ],
       "final":"Pong! ({{time}}ms)"
     },
     "brainfuck":{
-      "info":"Executes brainfuck code.",
+      "info":"Udfører brainfuck kode",
       "usage":"<code>",
       "flags":{
-        "p":"Shows a list of pointers after the execution.",
-        "i":"Specifies the input for the `,` operator."
+        "p":"Viser en liste af pointere efter udførelsen.",
+        "i":"Specificerer inputtet for `.` operatoren."
       }
     },
     "ship":{
       "info":"Gives you the ship name for two users.",
       "usage":"<user1> <user2>",
-      "final":"Your ship name is **{{name}}**!",
-      "notenough":"You have to tell me who to ship!"
+      "final":"Your shipname is **{{name}}**!",
+      "notenough":"Du er nødt til at fortælle mig hvem jeg skal parre!"
     },
     "tag":{
       "info":"Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>).",
       "usage":"<name | subcommand> [args]",
-      "dontown":"[[emote.x]] You don't own that tag!",
-      "alreadyexists":"[[emote.x]] A tag with that name already exists!",
-      "notag":"[[emote.x]] There is no tag with that name.",
+      "dontown":"[[emote.x]] Du ejer ikke dette tag!",
+      "alreadyexists":"[[emote.x]] Et tag med dette navn findes allerede!",
+      "notag":"[[emote.x]] Der er intet tag med dette navn.",
       "tagset":"[[emote.check]] Tag `{{name}}` {{process}}!",
-      "tagrename":"[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`.",
-      "raw":"The code for {{name}} is:\n```{{code}}```",
+      "tagrename":"[[emote.check]] Tagget `{{old}}` er blevet omdøbt til `{{new}}`.",
+      "raw":"Koden for {{name}} er:\n```{{code}}```",
       "testoutput":"Test Output:\n\n{{output}}",
       "subcommand":{
         "set":{
           "usage":"<name> <content>",
-          "info":"Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
+          "info":"Skaber eller redigerer et tag med det givne navn og indhold. Vil ikke erstatte tags andre har lavet."
         },
         "delete":{
           "usage":"<name>",
-          "info":"Deletes a tag that you own."
+          "info":"Sletter et tag du ejer."
         },
         "rename":{
           "usage":"<name> <new name>",
-          "info":"Renames a tag that you own."
+          "info":"Omdøber et tag du ejer."
         },
         "raw":{
           "usage":"<name>",
-          "info":"Gets the raw code of a tag."
+          "info":"Anskaffer rå kode for et tag."
         },
         "info":{
           "usage":"<name>",
-          "info":"Displays information about a tag."
+          "info":"Viser info om et tag."
         },
         "transfer":{
           "usage":"<name> <user>",
-          "info":"Transfers a tag to the specified user. Variables will not be transferred."
+          "info":"Overfører et tag til den specifikke bruger. Variabler vil ikke blive overført."
         },
         "top":{
-          "info":"Displays the tags that have been the most favorited."
+          "info":"Viser en liste over de tags der er blevet favoriseret flest gange."
         },
         "author":{
           "usage":"<name>",
-          "info":"Displays the author of a tag."
+          "info":"Viser forfatteren til et tag."
         },
         "search":{
           "usage":"<query>",
-          "info":"Searches for a tag with a name containing your query."
+          "info":"Søger efter et tag med et navn der indeholder din forespørgsel."
         },
         "list":{
           "usage":"[@user]",
-          "info":"Lists all the tags, or optionally all the tags created by a specific user."
+          "info":"Viser en liste over alle tags, eller valgfrit alle tags skabt af en bestemt bruger."
         },
         "favorite":{
           "usage":"<name>",
-          "info":"Favorites the specified tag."
+          "info":"Favoriserer et bestemt tag."
         },
         "report":{
           "usage":"<name>",
-          "info":"Reports a tag for violating the ToS. Please use responsibly."
+          "info":"Raporterer et tag for at bryde brugervilkåerne. Venligst brug omhyggeligt."
         },
         "test":{
           "usage":"<code>",
-          "info":"Executes the given code in a test environment."
+          "info":"Udfører det givne stykke kode i et test miljø."
         },
         "help":{
           "usage":"[subcommand]",
-          "info":"Displays this!"
+          "info":"Viser dette!"
         },
         "docs":{
           "usage":"[subtag]",
-          "info":"Gives a link to the BBTag documentation, or provides information about a specific subtag."
+          "info":"Giver et link til BBTag dokumentationen, eller giver oplysninger om et bestemt undertag."
         },
         "setdesc":{
           "info":"info"
@@ -116,18 +116,18 @@
       "subcommandnotfound":"Couldn't find a subcommand with the name `{{subcommand}}`.",
       "transferprompt":"{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
       "nobots":"[[emote.x]] You cannot transfer a tag to a bot!",
-      "transfercancelled":"[[emote.x]] The transfer has been canceled.",
+      "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
       "transfercomplete":"[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
       "descupdate":"The description for `{{tag}}` has been updated.",
-      "descreset":"The description for `{{tag}}` has been reset.",
+      "descreset":"Beskrivelsen for `{{tag}}` er blevet nulstillet.",
       "subcommandconflict":"You can't use the name `{{name}}` because there is a subcommand with that name!",
-      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
-      "toptags":"Here are the top 10 tags!\n\n{{tags}}",
-      "tagauthor":"The tag `{{tag}}` was created by **{{author}}**",
-      "favouriteadd":"The tag `{{tag}}` has been added to your favorites list.",
-      "favouriteremove":"The tag `{{tag}}` has been removed from your favorites list.",
-      "favourites":"You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+      "toptags":"Her er en liste over de 10 mest brugte tags!\n\n{{tags}}",
+      "tagauthor":"Tagget `{{tag}}` er skabt af **{{author}}**",
+      "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
+      "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+      "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
     },
     "locale":{
       "info":"Sets what locale messages will be sent in.",
@@ -223,7 +223,7 @@
   },
   "image":{
     "cat":{
-      "info":"Gives you a lovely dear sweet precious kitty.\nD'awww!"
+      "info":"Giver dig en meget sød og kærlig kat. Nuuuurr!"
     },
     "delete":{
       "info":""
@@ -255,7 +255,7 @@
           "info":"Sets up the mute role."
         },
         "announcement":{
-          "info":"Sets up announcements."
+          "info":"Opsætter annonceringer."
         },
         "modlog":{
           "usage":"modlog [event]... [flags]",
