@@ -1,30 +1,30 @@
 {
   "specs":{
-    "lang":"English"
+    "lang":"Español"
   },
   "generic":{
-    "output":"Output:\n{{output}}",
-    "nooutput":"No output...",
-    "queryexpire":"This query will expire in {{length}} minutes.",
+    "output":"Salida:\n{{output}}",
+    "nooutput":"Ninguna salida...",
+    "queryexpire":"Esta consulta expirará en {{longitud}} minutos.",
     "resolveuser":{
-      "nousers":"No users found.",
-      "pickuser":"{{length}} users were found! Please select one from the list."
+      "nousers":"No se han encontrado usuarios.",
+      "pickuser":"{{length}} usuarios fueron encontrados! Por favor, selcciona uno de la lista."
     },
     "resolverole":{
-      "noroles":"No roles found.",
-      "pickrole":"{{length}} roles were found! Please select one from the list."
+      "noroles":"No se han encontrado roles.",
+      "pickrole":"{{length}} roles fueron encontrados! Por favor, selecciona uno de la lista."
     },
     "resolvechannel":{
-      "nochannels":"No channels found.",
-      "pickchannel":"{{length}} channels were found! Please select one from the list."
+      "nochannels":"No se han encontrado canales.",
+      "pickchannel":"{{length}} canales fueron encontrados! Por favor, selecciona uno de la lista."
     },
-    "edited":"edited",
-    "created":"created",
-    "deleted":"deleted",
+    "edited":"editado",
+    "created":"creado",
+    "deleted":"eliminado",
     "menu":{
-      "choices":"Page {{page}}/{{max}}"
+      "choices":"Página {{page}}/{{max}}"
     },
-    "nochange":"Nothing was changed.",
+    "nochange":"Nada ha sido modificado",
     "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
     "example":{
       "id1":"111111111111111111",
@@ -32,19 +32,19 @@
       "id3":"333333333333333333"
     },
     "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-    "querycancelled":"The query has been canceled.",
+    "querycancelled":"The query has been cancelled.",
     "user":"User",
     "role":"Role",
     "channel":"Channel"
   },
   "menu":{
     "cancel":{
-      "name":"Cancel",
-      "description":"Close this menu."
+      "name":"Cancelar",
+      "description":"Cerrar este menú"
     },
     "confirm":{
-      "name":"Confirm",
-      "description":"Confirms this menu."
+      "name":"Confirmar",
+      "description":"Confirma este menú."
     }
   },
   "emote":{
@@ -53,30 +53,30 @@
     "okhand":":ok_hand:"
   },
   "error":{
-    "keyundef":"No such locale entry was found: '{{key}}'.",
-    "memberundef":"No such member was found: '{{member}}'.",
-    "userundef":"No such user was found: '{{user}}'.",
-    "channelundef":"No such channel was found: '{{channel}}'.",
-    "roleundef":"No such role was found: '{{role}}'.",
-    "pleasereport":"If you think this is an error, please report it!",
-    "generic":"Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
-    "messagetoolong":"Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
-    "notenoughparams":"Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
+    "keyundef":"No se ha encontrado la entrada de lenguaje especificada: '{{key}}'.",
+    "memberundef":"No se ha encontrado el miembro especificado:'{{member}}'.",
+    "userundef":"No se ha encontrado el usuario especificado: '{{user}}'.",
+    "channelundef":"No se ha encontrado el canal especificado: '{{channel}}'.",
+    "roleundef":"No se ha encontrado el rol especificado : '{{role}}'.",
+    "pleasereport":"Si piensas que esto es un error, por favor, repórtalo!",
+    "generic":"Algo ha salido mal!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "messagetoolong":"Ooops! Intenté enviar un mensaje que era demasiado largo. [[error.pleasereport]]",
+    "notenoughparams":"No hay parámetros suficientes! Ejecuta `{{prefix}}help {{name}}` para más detalles.\n\nSe esperaban `{{parameters}}`, pero se obtuvieron `{{received}}`.",
     "tag":{
-      "notfound":"Subtag '{{tag}}' doesn't exist.",
-      "toomanyargs":"Too many args (r:{{received}} e:{{expected}})",
-      "toofewargs":"Not enough args (r:{{received}} e:{{expected}})",
-      "isnan":"Expected '{{arg}}' to be a number, but received '{{value}}'",
-      "maxlessthanmin":"Max must be greater than Min",
-      "ccommandonly":"'{{tag}}' may only be used in custom commands",
-      "authorstaff":"Author {{author}} must be staff to use '{{tag}}'",
-      "noperms":"Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
-      "toolow":"Bot cannot execute '{{tag}}' because it's lower-ranked than '{{target}}'",
-      "unclosed":"Unmatched opening bracket [{{column}}:{{row}}]",
-      "unopened":"Unmatched closing bracket [{{column}}:{{row}}]",
-      "invalidradix":"Radix must be between 2 and 36, but received '{{radix}}'",
-      "notanarray":"Variable '{{name}}' is not an array (Received: '{{value}}')",
-      "notbool":"Variable '{{name}}' is not a boolean (Received: '{{value}}')",
+      "notfound":"La tag '{{tag}}' no existe.",
+      "toomanyargs":"Demasiados argumentos (r:{{received}} e:{{expected}})",
+      "toofewargs":"Falta de argumentos (r:{{received}} e:{{expected}})",
+      "isnan":"Se esperaba que '{{arg}}' fuera un número, pero es '{{value}}'",
+      "maxlessthanmin":"El máximo debe ser más grande que el mínimo",
+      "ccommandonly":"'{{tag}}' solo debe ser usado en comandos",
+      "authorstaff":"El autor '{{author}}' debe ser staff para usar '{{tag}}'",
+      "noperms":"El bot no tiene el permiso '{{perm}}' requerido para la tag '{{tag}}'",
+      "toolow":"El bot no puede ejecutar la tag '{{tag}}' por que tiene un rango más bajo que '{{target}}'",
+      "unclosed":"Soporte de apertura insuperable [{{columna}}:{{fila}}]",
+      "unopened":"Soporte de bloqueo sin igual [{{columna}}:{{fila}}]",
+      "invalidradix":"Español",
+      "notanarray":"La variable '{{name}}' no es una agrupación (Recibido: '{{value}}')",
+      "notbool":"La variable '{{name}}' no es un booleano (Recibido: '{{value}}')",
       "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
       "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
     },
@@ -85,7 +85,7 @@
   "command":{
     "general":{
       "ping":{
-        "info":"Pong!\nFinds the command latency.",
+        "info":"Pong!\nMide la latencia del comando.",
         "usage":"ping",
         "randmsg":[
           "Existence is a lie.",
@@ -116,13 +116,13 @@
         }
       },
       "cat":{
-        "info":"Gets a picture of a cat.",
-        "usage":"cat"
+        "info":"Muestra una imagen de un gato.",
+        "usage":"Gato"
       },
       "ship":{
         "info":"Gives you the ship name for two users.",
-        "usage":"ship <user1> <user2>",
-        "final":"Your ship name is **{{name}}**!",
+        "usage":"ship <usuario1> <usuario2>",
+        "final":"Your shipname is **{{name}}**!",
         "notenough":"You have to tell me who to ship!"
       },
       "tag":{
@@ -137,89 +137,89 @@
         "testoutput":"Test Output:\n\n{{output}}",
         "subcommand":{
           "set":{
-            "usage":"tag set <name> <content>",
-            "info":"Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
+            "usage":"tag set <nombre> <contenido>",
+            "info":"Crea o edita una tag con el nombre y contenido previsto. No reemplazará alguna tag hecha por alguien más."
           },
           "delete":{
             "usage":"tag delete <name>",
-            "info":"Deletes a tag that you own."
+            "info":"Elimina una tag que poseeas."
           },
           "rename":{
-            "usage":"tag rename <name> <new name>",
-            "info":"Renames a tag that you own."
+            "usage":"tag rename <nombre> <nuevo nombre>",
+            "info":"Cambia el nombre a una tag que poseeas."
           },
           "raw":{
             "usage":"tag raw <name>",
-            "info":"Gets the raw code of a tag."
+            "info":"Muestra el código sin formato de una tag."
           },
           "info":{
-            "usage":"tag info <name>",
-            "info":"Displays information about a tag."
+            "usage":"tag info <nombre>",
+            "info":"Muestra la información de una tag."
           },
           "transfer":{
-            "usage":"tag transfer <name> <user>",
-            "info":"Transfers a tag to the specified user. Variables will not be transferred."
+            "usage":"tag transfer <nombre> <usuario>",
+            "info":"Transfiere la tag al usuario especificado. Las variables no serán transferidas."
           },
           "top":{
             "usage":"tag top",
-            "info":"Displays the tags that have been the most favorited."
+            "info":"Muestra las tags que tienen más Favoritos."
           },
           "author":{
-            "usage":"tag author <name>",
-            "info":"Displays the author of a tag."
+            "usage":"tag author <nombre>",
+            "info":"Muestra el autor de una tag."
           },
           "search":{
-            "usage":"tag search <query>",
-            "info":"Searches for a tag with a name containing your query."
+            "usage":"tag search <términos>",
+            "info":"Busca por una tag con un nombre que contenga los términos."
           },
           "list":{
-            "usage":"tag list [@user]",
-            "info":"Lists all the tags, or optionally all the tags created by a specific user."
+            "usage":"tag list [@usuario]",
+            "info":"Muestra todas las tags creadas por un usuario"
           },
           "favorite":{
             "usage":"tag favorite <name>",
-            "info":"Favorites the specified tag."
+            "info":"Marca como favorito la tag especificada."
           },
           "report":{
             "usage":"tag report <name>",
-            "info":"Reports a tag for violating the ToS. Please use responsibly."
+            "info":"Reporta una tag por violar los Términos de Servicio. Úsalo con responsabilidad."
           },
           "test":{
-            "usage":"tag test <code>",
-            "info":"Executes the given code in a test environment."
+            "usage":"tag test <código>",
+            "info":"Ejecuta el código previsto en un ambiente de pruebas."
           },
           "help":{
-            "usage":"tag help [subcommand]",
-            "info":"Displays this!"
+            "usage":"tag help [subcomando]",
+            "info":"Muestra esto!"
           },
           "docs":{
             "usage":"tag docs [subtag]",
-            "info":"Gives a link to the BBTag documentation, or provides information about a specific subtag."
+            "info":"Muestra un enlace a la documentación de BBTag, o enseña información acerca de una subtag específica."
           },
           "setdesc":{
             "usage":"usage",
-            "info":"info"
+            "info":"Información"
           },
           "setusage":{
             "usage":"usage",
-            "info":"info"
+            "info":"Información"
           }
         },
         "subcommandnotfound":"Couldn't find a subcommand with the name `{{subcommand}}`.",
         "transferprompt":"{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
         "nobots":"[[emote.x]] You cannot transfer a tag to a bot!",
-        "transfercancelled":"[[emote.x]] The transfer has been canceled.",
+        "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
         "transfercomplete":"[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
         "descupdate":"The description for `{{tag}}` has been updated.",
         "descreset":"The description for `{{tag}}` has been reset.",
         "subcommandconflict":"You can't use the name `{{name}}` because there is a subcommand with that name!",
-        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
         "toptags":"Here are the top 10 tags!\n\n{{tags}}",
         "tagauthor":"The tag `{{tag}}` was created by **{{author}}**",
-        "favouriteadd":"The tag `{{tag}}` has been added to your favorites list.",
-        "favouriteremove":"The tag `{{tag}}` has been removed from your favorites list.",
-        "favourites":"You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+        "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
+        "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+        "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
       },
       "ccommand":{
         "info":"CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
@@ -268,9 +268,9 @@
       },
       "locale":{
         "info":"Sets what locale messages will be sent in.",
-        "usage":"locale",
-        "set":"Your locale has been set to {{locale}}!",
-        "list":"Your current locale is: {{current}}\n\nPlease select which locale you want to use."
+        "usage":"ajuste",
+        "set":"Su configuración se ha establecido en {{ajuste}}!",
+        "list":"Su configuración actual es"
       },
       "tokenify":{
         "info":"",
@@ -363,7 +363,7 @@
     "image":{
       "cat":{
         "info":"Gives you a lovely dear sweet precious kitty.\nD'awww!",
-        "usage":"cat"
+        "usage":"Gato"
       },
       "delete":{
         "info":""
@@ -490,8 +490,8 @@
     "randint":{
       "desc":"Returns a random integer between the provided range. `min` defaults to `0`.",
       "example":{
-        "in":"One: {randint;5}, two: {randint;10;20}",
-        "out":"One: 2, two: 17"
+        "in":"Uno: {randint;5}, dos: {randint;10;20}",
+        "out":"Uno: 2, dos: 17"
       }
     },
     "array":{
@@ -620,7 +620,7 @@
         "desc":"Returns whether the current or specified channel is NSFW.",
         "example":{
           "in":"{channel.nsfw}",
-          "out":"false"
+          "out":"Falso"
         }
       },
       "name":{
@@ -657,7 +657,7 @@
         "desc":"Cleans the provided text by shrinking all whitespace.",
         "example":{
           "in":"{clean;  one\n\n                two\n  \n\n    three}",
-          "out":"one\ntwo\nthree"
+          "out":"uno\ndos\ntres"
         }
       },
       "//":{
@@ -685,7 +685,7 @@
         "desc":"Removes whitespace before and after the provided text. Consider using the {clean} tag to remove whitespace within the text.",
         "example":{
           "in":"{trim;{space;5}Hello{space;5}}",
-          "out":"Hello"
+          "out":"Hola"
         }
       },
       "void":{
@@ -699,14 +699,14 @@
         "desc":"Returns the specified number of newlines, defaulting to 1.",
         "example":{
           "in":"One{newline;5}Two",
-          "out":"One\n\n\n\n\nTwo"
+          "out":"Uno\n\n\n\n\nDos"
         }
       },
       "space":{
         "desc":"Returns the specified number of spaces, defaulting to 1.",
         "example":{
           "in":"One{space;5}Two",
-          "out":"One     Two"
+          "out":"Uno     Dos"
         }
       }
     },
@@ -984,7 +984,7 @@
         "desc":"Returns the status of the specified user, defaulting to the executing user. Can return \"online\", \"away\", \"dnd\", or \"offline\".",
         "example":{
           "in":"{user.status}",
-          "out":"online"
+          "out":"En línea"
         }
       }
     }
@@ -1017,7 +1017,7 @@
       },
       "moderation":{
         "title":"Moderation",
-        "desc":"Need something to moderate your chat? blargbot is equipped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+        "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
       },
       "opensource":{
         "title":"Open-Source",
