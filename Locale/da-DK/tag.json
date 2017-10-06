@@ -1,52 +1,52 @@
 {
   "array":{
     "filter":{
-      "desc":"Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array only containing the elements where the result of the iteration was `true` or `1`."
+      "desc":""
     },
     "foreach":{
-      "desc":"Iterates through an array, setting the local variable `i` to the current element. If `varName` is provided, sets that variable instead."
+      "desc":""
     },
     "get":{
-      "desc":"Gets an element from an array at the position `index`."
+      "desc":""
     },
     "isarray":{
-      "desc":"Returns true if the provided element is an array, and false otherwise. You cannot use variable names."
+      "desc":""
     },
     "join":{
-      "desc":"Joins an array with the provided `delimiter`."
+      "desc":""
     },
     "length":{
       "desc":"Returnerer længden af det givne array."
     },
     "map":{
-      "desc":"Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array where each element is the result of each iteration."
+      "desc":""
     },
     "pop":{
       "desc":"Fjerner og retunerer det sidste element i arrayet."
     },
     "push":{
-      "desc":"Pushes an element to the end of an array. Returns the modified array."
+      "desc":""
     },
     "set":{
-      "desc":"Sets an element on the array at the specified `index`."
+      "desc":""
     },
     "shift":{
       "desc":"Fjerner og retunerer det første element i arrayet."
     },
     "slice":{
-      "desc":"Returns a section of the array, including the `start` index and excluding the `end` index. If `end` is unspecified, defaults to all remaining elements."
+      "desc":""
     },
     "sort":{
-      "desc":"Sorts and returns an array, by default in ascending order.\n\nIf `function` is provided, sorting will occur based on the result of executing said function. This will set two local variables: `a` (or `varNameOne`) and `b` (or `varNameTwo`). \n\nThe function must return a number. If the number is greater than 0, `a` will be considered greater than `b`. If the number is lower than 0, `b` will be considered greater than `a`. Any non-number result will be converted to 0, where both elements are equal."
+      "desc":""
     },
     "splice":{
-      "desc":"Starting at the position `start`, removes `deleteCount` elements from the array and adds the remaining `items` at that position. Returns the removed elements."
+      "desc":""
     },
     "split":{
       "desc":"Splitter `teksten` ved `skilletegnet`, og returnerer det nye array."
     },
     "unshift":{
-      "desc":"Inserts `value` at the beginning of the array, and returns the modified array."
+      "desc":""
     }
   },
   "channel":{
@@ -57,124 +57,124 @@
       "desc":"Returner om kanalen er NSFW eller ej."
     },
     "name":{
-      "desc":"Returns the name of the current or specified channel."
+      "desc":""
     },
     "position":{
-      "desc":"Returns the position of the current or specified channel."
+      "desc":""
     },
     "topic":{
-      "desc":"Returns the topic of the current or specified channel (text only)."
+      "desc":""
     },
     "type":{
-      "desc":"Returns the type of the current or specified channel (returns \"text\" or \"voice\")."
+      "desc":""
     }
   },
   "general":{
     "clean":{
-      "desc":"Cleans the provided text by shrinking all whitespace."
+      "desc":""
     },
     "//":{
-      "desc":"Specifies an area that will be ignored from parsing"
+      "desc":""
     },
     "get":{
-      "desc":"Returns the stored variable with the supplied name. Variable prefixes can modify the pool in which to search."
+      "desc":""
     },
     "set":{
-      "desc":"Sets the stored variable with the supplied name to the supplied value. Variable prefixes can modify the pool in which to set."
+      "desc":""
     },
     "trim":{
-      "desc":"Removes whitespace before and after the provided text. Consider using the {clean} tag to remove whitespace within the text."
+      "desc":""
     },
     "void":{
-      "desc":"Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed."
+      "desc":""
     },
     "newline":{
-      "desc":"Returns the specified number of newlines, defaulting to 1."
+      "desc":""
     },
     "space":{
-      "desc":"Returns the specified number of spaces, defaulting to 1."
+      "desc":""
     }
   },
   "guild":{
     "createdat":{
-      "desc":"Returns when the current guild was created as a Unix timestamp (milliseconds)."
+      "desc":""
     },
     "channels":{
-      "desc":"Returns the channels in the current guild as an array."
+      "desc":""
     },
     "icon":{
-      "desc":"Returns the URL of the current guild's icon."
+      "desc":""
     },
     "id":{
-      "desc":"Returns the ID of the current guild."
+      "desc":""
     },
     "name":{
-      "desc":"Returns the name of the current guild."
+      "desc":""
     },
     "owner":{
-      "desc":"Returns the ID of the guild's owner."
+      "desc":""
     },
     "region":{
-      "desc":"Returns the region the current guild is in."
+      "desc":""
     },
     "roles":{
-      "desc":"Returns an array of roles in the current guild."
+      "desc":""
     }
   },
   "logic":{
     "if":{
-      "desc":"If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nUse this with the {logic} tag."
+      "desc":""
     },
     "logic":{
-      "desc":"Does logical operators on the `augend` and `operands`, returning `true` or `false`.\n\nEquivalence Operators:\n - `==` - equal\n - `!=` - not equal\n - `<` - less than\n - `<=` - less than or equal\n - `>` - greater than\n - `>=` - greater than or equal\n - `startswith` - the augend starts with the operand\n - `endswith` - the augend ends with the operand\n - `includes` - the augend includes the operand\n\nLogical Operators:\n - `&&` - returns true if the augend and operand are both true\n - `||` - returns true if either the augend or operand are true\n - `XOR` - returns true if only one of the augend and operand are true (not both)\n\nOther Operators:\n - `!` - inverts the next operand (true becomes false, etc.)"
+      "desc":""
     }
   },
   "math":{
     "abs":{
-      "desc":"Returns the absolute value of the provided number (no negatives)."
+      "desc":""
     },
     "base":{
-      "desc":"Parses the `number` using the provided base `origin` (defaulting to 10), and converts it to base `radix`."
+      "desc":""
     },
     "ceil":{
-      "desc":"Rounds the provided decimal up."
+      "desc":""
     },
     "floor":{
-      "desc":"Rounds the provided decimal down."
+      "desc":""
     },
     "math":{
-      "desc":"Calculates the value of the provided expression using the following operators:\n\n - `^` - exponents\n - `/` - division\n - `*` - multiplication\n - `+` - addition\n - `-` - subtraction\n - `&` - bitwise AND\n - `|` - bitwise OR\n - `XOR` - bitwise XOR\n\nOperators are executed using the Order of Operations (Brackets, Exponents, Division, Multiplication, Addition, Subtraction, Bitwise).\n\nIf an operator isn't specified, it uses the last-used operator (defaulting to addition).\n\nBrackets would be achieved by using another nested {math} tag.\n\nIf an `operand` or `augend` cannot be parsed as a number, a variable with the same name will be retrieved. If the retrieved variable is also not a number, throws an error."
+      "desc":""
     },
     "parsefloat":{
-      "desc":"Attempts to parse the given text as a decimal."
+      "desc":""
     },
     "parseint":{
-      "desc":"Attempts to parse the given text as an integer."
+      "desc":""
     },
     "randint":{
-      "desc":"Returns a random integer between the provided range. `min` defaults to `0`"
+      "desc":""
     },
     "round":{
-      "desc":"Rounds the given `number` to the specified decimal `places`, defaulting to 0."
+      "desc":""
     }
   },
   "message":{
     "id":{
-      "desc":"Returns the ID of the executing command message."
+      "desc":""
     }
   },
   "role":{
     "color":{
-      "desc":"Returns the color of the specified role in hexadecimal."
+      "desc":""
     },
     "id":{
-      "desc":"Returns the ID of the specified role."
+      "desc":""
     },
     "mention":{
-      "desc":"Returns a mention of the specified role."
+      "desc":""
     },
     "name":{
-      "desc":"Returns the name of the specified role."
+      "desc":""
     },
     "position":{
       "desc":"Returnerer placeringen af en bestemt rolle."
@@ -182,43 +182,43 @@
   },
   "user":{
     "avatar":{
-      "desc":"Returns the avatar URL of the specified user, defaulting to the executing user."
+      "desc":""
     },
     "createdat":{
-      "desc":"Returns the date that the specified user, defaulting to the executing user, was created as a Unix timestamp (milliseconds)."
+      "desc":""
     },
     "discrim":{
       "desc":"Returnerer diskrimanotoren af en specificeret bruger,"
     },
     "fullname":{
-      "desc":"Returns the name + discriminator of the specified user, defaulting to the executing user."
+      "desc":""
     },
     "game":{
-      "desc":"Returns the game the specified user is playing, defaulting to the executing user. If the user isn't playing a game, returns nothing."
+      "desc":""
     },
     "id":{
-      "desc":"Returns the ID of the specified user, defaulting to the executing user."
+      "desc":""
     },
     "joinedat":{
-      "desc":"Returns the date that the specified user, defaulting to the executing user, joined the current guild as a Unix timestamp (milliseconds)."
+      "desc":""
     },
     "mention":{
-      "desc":"Mentions the specified user, defaulting to the executing user."
+      "desc":""
     },
     "name":{
-      "desc":"Returns the name of the specified user, defaulting to the executing user."
+      "desc":""
     },
     "nick":{
-      "desc":"Returns the nickname of the specified user, defaulting to the executing user."
+      "desc":""
     },
     "roles":{
-      "desc":"Returns an array of the roles the specified user has, defaulting to the executing user."
+      "desc":""
     },
     "setnick":{
-      "desc":"Sets the nickname of the specified user, defaulting to the executing user."
+      "desc":""
     },
     "status":{
-      "desc":"Returns the status of the specified user, defaulting to the executing user. Can return \"online\", \"away\", \"dnd\", or \"offline\"."
+      "desc":""
     }
   }
 }
