@@ -1,224 +1,224 @@
 {
   "array":{
     "filter":{
-      "desc":"Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array only containing the elements where the result of the iteration was `true` or `1`."
+      "desc":"Проходит по массиву, запоминая в локальную переменную `i` текущий элемент массива. Если указано имя переменной `varName`, запоминает в неё.\n\nВозвращает новый массив только c теми элементами, которые в результате прохода вернули `true` или `1`."
     },
     "foreach":{
-      "desc":"Iterates through an array, setting the local variable `i` to the current element. If `varName` is provided, sets that variable instead."
+      "desc":"Прохожит по массиву, запоминая текущий элемент в локальную переменную `i`. Если указано имя переменной `varName`, запоминает в неё."
     },
     "get":{
-      "desc":"Gets an element from an array at the position `index`."
+      "desc":"Возвращает элемент массива под номером `index`."
     },
     "isarray":{
-      "desc":"Returns true if the provided element is an array, and false otherwise. You cannot use variable names."
+      "desc":"Возвращает true, если ланный элемент является массивом и false в противном случае. Вы не можете испоьзовать имена переменных."
     },
     "join":{
-      "desc":"Joins an array with the provided `delimiter`."
+      "desc":"Соединяет элементы массива указанным `разделителем`."
     },
     "length":{
-      "desc":"Returns the length of the given array."
+      "desc":"Возвращает длину указанного массива."
     },
     "map":{
-      "desc":"Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array where each element is the result of each iteration."
+      "desc":"Проходит по массиву, запоминая текущий элемент в локальную переменную `i`. Если указано имя переменной `varName`, запоминает в неё.\n\nВозвращает новый массив, в котором каждый элемент - результат прохода."
     },
     "pop":{
-      "desc":"Removes and returns the last element of the array."
+      "desc":"Возвращает последний элемент массива, удаляя элемент из него."
     },
     "push":{
-      "desc":"Pushes an element to the end of an array. Returns the modified array."
+      "desc":"Добавляет элемент в конец массива. Возвращает изменённый массив."
     },
     "set":{
-      "desc":"Sets an element on the array at the specified `index`."
+      "desc":"Устанавливает значение элемента массива в указанной позиции `index`."
     },
     "shift":{
-      "desc":"Removes and returns the first element in the array."
+      "desc":"Возвращает первый элемент массива, удаляя элемент из него."
     },
     "slice":{
-      "desc":"Returns a section of the array, including the `start` index and excluding the `end` index. If `end` is unspecified, defaults to all remaining elements."
+      "desc":"Возвращает часть массива, начиная с элемента у позиции `start` и окончивая элементом у позиции `end`. Если `end` не указан, возвращает до конца массива."
     },
     "sort":{
-      "desc":"Sorts and returns an array, by default in ascending order.\n\nIf `function` is provided, sorting will occur based on the result of executing said function. This will set two local variables: `a` (or `varNameOne`) and `b` (or `varNameTwo`). \n\nThe function must return a number. If the number is greater than 0, `a` will be considered greater than `b`. If the number is lower than 0, `b` will be considered greater than `a`. Any non-number result will be converted to 0, where both elements are equal."
+      "desc":"Возвращает отсортированный массив (по умолчанию по возрастанию).\n\nЕсли указана функция `funciton`, сортировка будет проводится на основе результатов её выполнения. Это задаст две локальные переменные: `a` (или `varNameOne`) и `b` (или `varNameTwo`).\n\nФункция должна возвращать число. Если число больше нуля, то`a` будет считаться больше `b`. Нечисленный результат будет конвертирован в 0, т.е. оба элемента будут считаться равными."
     },
     "splice":{
-      "desc":"Starting at the position `start`, removes `deleteCount` elements from the array and adds the remaining `items` at that position. Returns the removed elements."
+      "desc":"Удаляет из массива `deleteCount` элементов, начиная с элемента в позиции `start`. Оставшиеся элементы `items` в конце массива будут присоединены, начиная с позиции `start`\nВозвращает удалённые элементы."
     },
     "split":{
-      "desc":"Splits the `text` by the `delimiter`, returning the new array."
+      "desc":"Разделяет текст `text` по разделителю `delimiter`, возвращая массив строк."
     },
     "unshift":{
-      "desc":"Inserts `value` at the beginning of the array, and returns the modified array."
+      "desc":"Вставляет значение `value` в начало массива и возвращает изменённый массив."
     }
   },
   "channel":{
     "id":{
-      "desc":"Returns the ID of the current or specified channel."
+      "desc":"Возвращает ID текущего или указанного канала."
     },
     "nsfw":{
-      "desc":"Returns whether the current or specified channel is NSFW."
+      "desc":"Возвращает является ли текущий канал NSFW."
     },
     "name":{
-      "desc":"Returns the name of the current or specified channel."
+      "desc":"Возвращает имя текущего или указанного канала."
     },
     "position":{
-      "desc":"Returns the position of the current or specified channel."
+      "desc":"Вовращает позицию текущего или указанного канала."
     },
     "topic":{
-      "desc":"Returns the topic of the current or specified channel (text only)."
+      "desc":"Возвращает заголовок текущего или указанного канала (только текст)"
     },
     "type":{
-      "desc":"Returns the type of the current or specified channel (returns \"text\" or \"voice\")."
+      "desc":"Возвращает тип текущего или указанного канала (\"text\" для текстовых и \"voice\" для войса)."
     }
   },
   "general":{
     "clean":{
-      "desc":"Cleans the provided text by shrinking all whitespace."
+      "desc":"Очищает предоставленный текст, сокращая пробелы."
     },
     "//":{
-      "desc":"Specifies an area that will be ignored from parsing"
+      "desc":"Определяет область, которая не будет обработана ботом."
     },
     "get":{
-      "desc":"Returns the stored variable with the supplied name. Variable prefixes can modify the pool in which to search."
+      "desc":"Возвращает хранимую переменную с указанным именем. Префиксы переменных могут изменять пул, в котором производится поиск."
     },
     "set":{
-      "desc":"Sets the stored variable with the supplied name to the supplied value. Variable prefixes can modify the pool in which to set."
+      "desc":"Задаёт хранимую переменную с указанным именем. Префиксы переменных могут изменять пул, в котором переменная будет сохранена."
     },
     "trim":{
-      "desc":"Removes whitespace before and after the provided text. Consider using the {clean} tag to remove whitespace within the text."
+      "desc":"Удаляет пробелы до и после указанного текста. Чтобы удалить пробелы внутри текста используйте {clean} тег."
     },
     "void":{
-      "desc":"Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed."
+      "desc":"Не пропускает вывод из подтега. Отличается от комментариев тем, что парсится, но не отображается"
     },
     "newline":{
-      "desc":"Returns the specified number of newlines, defaulting to 1."
+      "desc":"Вовзращает указанное количество символов новой строки, по умолчанию 1."
     },
     "space":{
-      "desc":"Returns the specified number of spaces, defaulting to 1."
+      "desc":"Возвращает указанное количество пробелов, по умолчанию 1."
     }
   },
   "guild":{
     "createdat":{
-      "desc":"Returns when the current guild was created as a Unix timestamp (milliseconds)."
+      "desc":"Возвращает время сосздание гильдии в формате Unix (в милисекундах)."
     },
     "channels":{
-      "desc":"Returns the channels in the current guild as an array."
+      "desc":"Возвращает каналы текущей гильдии в виде массива."
     },
     "icon":{
-      "desc":"Returns the URL of the current guild's icon."
+      "desc":"Возвращает ссылку на аватар текущей гильдии."
     },
     "id":{
-      "desc":"Returns the ID of the current guild."
+      "desc":"Возврващает ID текущей гильдии."
     },
     "name":{
-      "desc":"Returns the name of the current guild."
+      "desc":"Возвращает имя текущей гильдии."
     },
     "owner":{
-      "desc":"Returns the ID of the guild's owner."
+      "desc":"Возвращает ID владельца гильдии."
     },
     "region":{
-      "desc":"Returns the region the current guild is in."
+      "desc":"Возвращает регион текущей гильдии."
     },
     "roles":{
-      "desc":"Returns an array of roles in the current guild."
+      "desc":"Возвращает роли текущей гильдии ввиде масива."
     }
   },
   "logic":{
     "if":{
-      "desc":"If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nUse this with the {logic} tag."
+      "desc":"Если значение `value` равно `true` или `1`, выполняет ветку `then`.\nЕсли значение `value` равно `false` или `0`, выполняет ветку `else`.\nВ других случаях, выдаёт ошибку.\n\nИспользуйте его с {logic} тегом."
     },
     "logic":{
-      "desc":"Does logical operators on the `augend` and `operands`, returning `true` or `false`.\n\nEquivalence Operators:\n - `==` - equal\n - `!=` - not equal\n - `<` - less than\n - `<=` - less than or equal\n - `>` - greater than\n - `>=` - greater than or equal\n - `startswith` - the augend starts with the operand\n - `endswith` - the augend ends with the operand\n - `includes` - the augend includes the operand\n\nLogical Operators:\n - `&&` - returns true if the augend and operand are both true\n - `||` - returns true if either the augend or operand are true\n - `XOR` - returns true if only one of the augend and operand are true (not both)\n\nOther Operators:\n - `!` - inverts the next operand (true becomes false, etc.)"
+      "desc":"Выполняет логические операции `augend` и `operands`, возвращая `true` или `false`.\n\nОператоры сравнения:\n - `==` - равно\n - `!=` - не равно\n - `<` - меньше\n - `<=` - меньше или равно\n - `>` - больше\n - `>=` - больше или равно\n - `startswith` - аргумент начинается с операнда\n - `endswith` - аргумент кончается операндом\n - `includes` - аргумент содержит операнд\n\nЛогические операторы:\n - `&&` - возвращает истину (true), если оба операнда истины (true)\n - `||` - возвращает истину (true), если хотя бы один операнд истинен (true)\n - `XOR` - возвращает истину (true) если один из операторов истинен (true) (но не оба)\n\nДругие операторы:\n - `!` - инвертирует операнд (истина (true) становится ложью (false) и наоборот)\n"
     }
   },
   "math":{
     "abs":{
-      "desc":"Returns the absolute value of the provided number (no negatives)."
+      "desc":"Возвращает абсолютное значение указанного числа (не отрицательное)."
     },
     "base":{
-      "desc":"Parses the `number` using the provided base `origin` (defaulting to 10), and converts it to base `radix`."
+      "desc":"Переводит число `number` из `origin` системы исчисления (по умолчанию 10) в `radix` систему исчисления."
     },
     "ceil":{
-      "desc":"Rounds the provided decimal up."
+      "desc":"Округляет указанное число до ближайшего целого сверху."
     },
     "floor":{
-      "desc":"Rounds the provided decimal down."
+      "desc":"Округляет указанное число до ближайшего целого снизу."
     },
     "math":{
-      "desc":"Calculates the value of the provided expression using the following operators:\n\n - `^` - exponents\n - `/` - division\n - `*` - multiplication\n - `+` - addition\n - `-` - subtraction\n - `&` - bitwise AND\n - `|` - bitwise OR\n - `XOR` - bitwise XOR\n\nOperators are executed using the Order of Operations (Brackets, Exponents, Division, Multiplication, Addition, Subtraction, Bitwise).\n\nIf an operator isn't specified, it uses the last-used operator (defaulting to addition).\n\nBrackets would be achieved by using another nested {math} tag.\n\nIf an `operand` or `augend` cannot be parsed as a number, a variable with the same name will be retrieved. If the retrieved variable is also not a number, throws an error."
+      "desc":"Вычисляет значение по указанным выражениям, с следующими операторами:\n\n- `^` - возвести в степень\n - `/` - разделить\n - `*` - умножить\n - `+` - прибавить\n - `-` - вычесть\n - `&` - побитовое умножение\n - `|` - побитовое сложение\n - `XOR` - побитовое вычитание\n\nОператоры исполняются в порядке выполнения операций (выражения в скобках, возведение в степень, деление, умножение, сложение, вычитание, побитовые операции).\n\nЕсли оператор не указан, берётся последний использованный оператор (по умолчанию сложение).\n\nСкобки можно получить путём использования вложенного {math} тега.\n\nЕсли первый операнд `operand` или второй `augend` не могут быть переведены в численное значение, переменная с тем же именем будет использована. Если и эта переменная не является числом, будет выдана ошибка."
     },
     "parsefloat":{
-      "desc":"Attempts to parse the given text as a decimal."
+      "desc":"Пытается перевести указанный текст в действительное число."
     },
     "parseint":{
-      "desc":"Attempts to parse the given text as an integer."
+      "desc":"Пытается перевести указанный текст в целое число."
     },
     "randint":{
-      "desc":"Returns a random integer between the provided range. `min` defaults to `0`"
+      "desc":"Возвращает случайное число в указаном диапазоне. `min` по умолчанию равен `0`"
     },
     "round":{
-      "desc":"Rounds the given `number` to the specified decimal `places`, defaulting to 0."
+      "desc":"Округляет данное число `number` до указанных десятичных знаков после запятой `plases`, по умолчанию 0."
     }
   },
   "message":{
     "id":{
-      "desc":"Returns the ID of the executing command message."
+      "desc":"Возвращает ID"
     }
   },
   "role":{
     "color":{
-      "desc":"Returns the color of the specified role in hexadecimal."
+      "desc":"Возвращает цвет указанной роли в шетснадцатиричном формате."
     },
     "id":{
-      "desc":"Returns the ID of the specified role."
+      "desc":"Возвращает ID указанной роли."
     },
     "mention":{
-      "desc":"Returns a mention of the specified role."
+      "desc":"Вовзращает упоминание указанной роли."
     },
     "name":{
-      "desc":"Returns the name of the specified role."
+      "desc":"Возвращает имя указанной роли"
     },
     "position":{
-      "desc":"Returns the position of the specified role."
+      "desc":"Возвращает позицию указанной роли."
     }
   },
   "user":{
     "avatar":{
-      "desc":"Returns the avatar URL of the specified user, defaulting to the executing user."
+      "desc":"Возвращает ссылку на аватарку цказанного пользователя, по умолчанию пользователя вызвавшего команду."
     },
     "createdat":{
-      "desc":"Returns the date that the specified user, defaulting to the executing user, was created as a Unix timestamp (milliseconds)."
+      "desc":"Возвращает дату создания указанного пользователя (по умолчанию пользователя вызвавшего команду) в формате Unix (в миллисекундах)"
     },
     "discrim":{
-      "desc":"Returns the discriminator of the specified user, defaulting to the executing user."
+      "desc":"Возвращает дискриминатор указанного пользователя, по умолчанию пользователя вызвавшего команду."
     },
     "fullname":{
-      "desc":"Returns the name + discriminator of the specified user, defaulting to the executing user."
+      "desc":"Возвращает имя и дискриминатор указанного пользователя, по умолчанию пользователя вызвавшего команду."
     },
     "game":{
-      "desc":"Returns the game the specified user is playing, defaulting to the executing user. If the user isn't playing a game, returns nothing."
+      "desc":"Возвращает игру, в которую играет указанный пользователь, по умолчанию пользователь вызвавший команду. Если пользователь ни во что не играет, ничего не возвращает."
     },
     "id":{
-      "desc":"Returns the ID of the specified user, defaulting to the executing user."
+      "desc":"Возвращает ID указанного пользователя, по умолчанию пользователя вызвавшего команду."
     },
     "joinedat":{
-      "desc":"Returns the date that the specified user, defaulting to the executing user, joined the current guild as a Unix timestamp (milliseconds)."
+      "desc":"Возвращает дату присоединение к гильдии указанного пользователя, по умолчанию пользователя вызвавшего команду, в формате Unix (в миллисекундах)."
     },
     "mention":{
-      "desc":"Mentions the specified user, defaulting to the executing user."
+      "desc":"Упоминает указанного пользователя, по умолчанию пользователя вызвавшего команду."
     },
     "name":{
-      "desc":"Returns the name of the specified user, defaulting to the executing user."
+      "desc":"Возвращает имя указанного пользователя, по умолчанию пользователя вызвавшего команду."
     },
     "nick":{
-      "desc":"Returns the nickname of the specified user, defaulting to the executing user."
+      "desc":"Вовзращает ник указанного пользователя, по умолчанию пользователя вызвавшего команду."
     },
     "roles":{
-      "desc":"Returns an array of the roles the specified user has, defaulting to the executing user."
+      "desc":"Возвращает роли которые имеет указанный пользователь, по умолчанию пользователь вызвавший команду, в виде массива."
     },
     "setnick":{
-      "desc":"Sets the nickname of the specified user, defaulting to the executing user."
+      "desc":"Устанавливает ник для указанного пользователя, по умолчанию пользователя вызвавшего команду."
     },
     "status":{
-      "desc":"Returns the status of the specified user, defaulting to the executing user. Can return \"online\", \"away\", \"dnd\", or \"offline\"."
+      "desc":"Возвращает статус указанного пользователя, по умолчанию пользователя вызвавшего команду. Возможные значения: \"online\" - В сети, \"away\" - Не активен, \"dnd\" - Не беспокоить, \"офлайн\" - Не в сети."
     }
   }
 }
