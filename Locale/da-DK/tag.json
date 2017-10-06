@@ -7,7 +7,7 @@
       "desc":""
     },
     "get":{
-      "desc":""
+      "desc":"Får et element fra en matrix på position 'index'."
     },
     "isarray":{
       "desc":""
@@ -46,7 +46,7 @@
       "desc":"Splitter `teksten` ved `skilletegnet`, og returnerer det nye array."
     },
     "unshift":{
-      "desc":""
+      "desc":"Indsætter 'værdi' i begyndelsen af matrixen og returnerer den modificerede matrix."
     }
   },
   "channel":{
@@ -123,7 +123,7 @@
   },
   "logic":{
     "if":{
-      "desc":""
+      "desc":"If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nBrug dette med {logic} tagget."
     },
     "logic":{
       "desc":""
@@ -137,10 +137,10 @@
       "desc":""
     },
     "ceil":{
-      "desc":""
+      "desc":"Runder den angivne decimale op."
     },
     "floor":{
-      "desc":""
+      "desc":"Runder den angivne decimal ned."
     },
     "math":{
       "desc":""
