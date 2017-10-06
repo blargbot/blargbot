@@ -23,8 +23,8 @@
     "invalidradix":"Ang radix ay dapat nasa pagitan ng 2 at 26 lamang, pero ang natanggap ay '{{radix}}'",
     "notanarray":"Ang variable '{{name}}' ay hindi isang array (Natanggap: '{{value}}')",
     "notbool":"Ang variable '{{name}}' ay hindi isang boolean (Natanggap: '{{value}}')",
-    "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
-    "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
+    "missingarg":"",
+    "namedunsupported":""
   },
-  "inputtoolong":"Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
+  "inputtoolong":""
 }
