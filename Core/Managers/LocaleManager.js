@@ -1,5 +1,8 @@
 const Manager = require('./Manager');
 const path = require('path');
+const fs = require('fs');
+const { promisify } = require('util');
+const writeFile = promisify(fs.writeFile);
 
 class LocaleManager extends Manager {
     constructor(client) {
@@ -17,6 +20,15 @@ class LocaleManager extends Manager {
             if (key === 'index') continue;
             let obj = this.modules[key];
             this.build(key);
+        }
+    }
+
+    async save(locale = 'en') {
+        let p = path.join(__dirname, '..', '..', 'Locale', locale);
+        console.log(p);
+        let l = this.localeList[locale];
+        for (const key in l) {
+            await writeFile(path.join(p, key + '.json'), JSON.stringify(l[key], null, 4));
         }
     }
 
