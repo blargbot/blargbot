@@ -1,30 +1,30 @@
 {
   "specs":{
-    "lang":"English"
+    "lang":"Tagalog"
   },
   "generic":{
     "output":"Output:\n{{output}}",
-    "nooutput":"No output...",
-    "queryexpire":"This query will expire in {{length}} minutes.",
+    "nooutput":"Walang output...",
+    "queryexpire":"Ang query na ito ay lilipas sa {{length}} minuto.",
     "resolveuser":{
-      "nousers":"No users found.",
-      "pickuser":"{{length}} users were found! Please select one from the list."
+      "nousers":"Walang user ang nakita.",
+      "pickuser":"{{length}} user ang nakita! Maaaring pumili ng isa mula sa listahan."
     },
     "resolverole":{
-      "noroles":"No roles found.",
-      "pickrole":"{{length}} roles were found! Please select one from the list."
+      "noroles":"Walang role ang nakita.",
+      "pickrole":"{{length}} role ang nakita! Maaaring pumili ng isa mula sa listahan."
     },
     "resolvechannel":{
-      "nochannels":"No channels found.",
-      "pickchannel":"{{length}} channels were found! Please select one from the list."
+      "nochannels":"Walang channel ang nakita.",
+      "pickchannel":"{{length}} channel ang nakita! Maaaring pumili ng isa mula sa listahan."
     },
-    "edited":"edited",
-    "created":"created",
-    "deleted":"deleted",
+    "edited":"In-edit",
+    "created":"Nilikha",
+    "deleted":"Binura",
     "menu":{
-      "choices":"Page {{page}}/{{max}}"
+      "choices":"Pahina {{page}}/{{max}}"
     },
-    "nochange":"Nothing was changed.",
+    "nochange":"Walang binago.",
     "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
     "example":{
       "id1":"111111111111111111",
@@ -32,19 +32,19 @@
       "id3":"333333333333333333"
     },
     "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-    "querycancelled":"The query has been canceled.",
+    "querycancelled":"The query has been cancelled.",
     "user":"User",
     "role":"Role",
     "channel":"Channel"
   },
   "menu":{
     "cancel":{
-      "name":"Cancel",
-      "description":"Close this menu."
+      "name":"Kansel",
+      "description":"Isara ang menu."
     },
     "confirm":{
-      "name":"Confirm",
-      "description":"Confirms this menu."
+      "name":"Kumpirma",
+      "description":"Kinukumpirma ang menu na ito."
     }
   },
   "emote":{
@@ -53,30 +53,30 @@
     "okhand":":ok_hand:"
   },
   "error":{
-    "keyundef":"No such locale entry was found: '{{key}}'.",
-    "memberundef":"No such member was found: '{{member}}'.",
-    "userundef":"No such user was found: '{{user}}'.",
-    "channelundef":"No such channel was found: '{{channel}}'.",
-    "roleundef":"No such role was found: '{{role}}'.",
-    "pleasereport":"If you think this is an error, please report it!",
-    "generic":"Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
-    "messagetoolong":"Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
-    "notenoughparams":"Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
+    "keyundef":"Walang ganitong locale entry ang nakita: '{{key}}'.",
+    "memberundef":"Walang ganitong miyembro ang nakita: '{{member}}'.",
+    "userundef":"Walang ganitong user ang nakita: '{{user}}'.",
+    "channelundef":"Walang ganitong channel ang nakita: '{{channel}}'.",
+    "roleundef":"Walang ganitong role ang nakita: '{{role}}'.",
+    "pleasereport":"Kung sa palagay mo error ito, paki-report!",
+    "generic":"May maling nangyari!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "messagetoolong":"Oops! Masyadong mahaba yung mensaheng sinusubukan kong ipadala. \n[[error.pleasereport]]",
+    "notenoughparams":"Kulang sa parameters! Para sa mga detalye, gawin ang `{{prefix}}help {{name}}`.\n\nInaasahan ang `{{expected}}` parameters, pero sa halip `{{received}}` ang nakuha.",
     "tag":{
-      "notfound":"Subtag '{{tag}}' doesn't exist.",
-      "toomanyargs":"Too many args (r:{{received}} e:{{expected}})",
-      "toofewargs":"Not enough args (r:{{received}} e:{{expected}})",
-      "isnan":"Expected '{{arg}}' to be a number, but received '{{value}}'",
-      "maxlessthanmin":"Max must be greater than Min",
-      "ccommandonly":"'{{tag}}' may only be used in custom commands",
-      "authorstaff":"Author {{author}} must be staff to use '{{tag}}'",
-      "noperms":"Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
-      "toolow":"Bot cannot execute '{{tag}}' because it's lower-ranked than '{{target}}'",
-      "unclosed":"Unmatched opening bracket [{{column}}:{{row}}]",
-      "unopened":"Unmatched closing bracket [{{column}}:{{row}}]",
-      "invalidradix":"Radix must be between 2 and 36, but received '{{radix}}'",
-      "notanarray":"Variable '{{name}}' is not an array (Received: '{{value}}')",
-      "notbool":"Variable '{{name}}' is not a boolean (Received: '{{value}}')",
+      "notfound":"Walang `{{tag}}` tag.",
+      "toomanyargs":"Sobra sa argumento (r:{{received}} e:{{expected}})",
+      "toofewargs":"Kulang sa argumento (r:{{received}} e:{{expected}})",
+      "isnan":"Inaasahan ang `{{args}` ay numero, pero ang natanggap ay `{{value}}`",
+      "maxlessthanmin":"Ang Max ay dapat mas malaki kaysa sa Min",
+      "ccommandonly":"Ang `{{tag}}` ay maaaring gamitin sa ccommands lamang.",
+      "authorstaff":"Ang may-akda {{author}} ay kailangan parte ng staff upang gamitin ang `{{tag}}`",
+      "noperms":"Ang Bot ay walang hintulot na '{{perm}}' na kinakailangan ng tag na '{{tag}}'",
+      "toolow":"Hindi maisagawa ng Bot ang '{{tag}}' dahil mas mababa ang ranggo nito kaysa sa '{{target}}'",
+      "unclosed":"Walang kapares ang pambukas na braket [{{column}}:{{row}}]",
+      "unopened":"Walang kapares ang pangsarang braket [{{column}}:{{row}}]",
+      "invalidradix":"Ang radix ay dapat nasa pagitan ng 2 at 26 lamang, pero ang natanggap ay '{{radix}}'",
+      "notanarray":"Ang variable '{{name}}' ay hindi isang array (Natanggap: '{{value}}')",
+      "notbool":"Ang variable '{{name}}' ay hindi isang boolean (Natanggap: '{{value}}')",
       "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
       "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
     },
@@ -85,20 +85,20 @@
   "command":{
     "general":{
       "ping":{
-        "info":"Pong!\nFinds the command latency.",
+        "info":"Pong!\nHinahanap ang command latency.",
         "usage":"ping",
         "randmsg":[
-          "Existence is a lie.",
-          "You're going to die some day, perhaps soon.",
-          "Nothing matters.",
-          "Where do you get off?",
-          "There is nothing out there.",
-          "You are alone in an infinite void.",
-          "Truth is false.",
-          "Forsake everything.",
-          "Your existence is pitiful.",
-          "We are all already dead.",
-          "Meow.",
+          "Ang hindi tumingin sa pinanggalingan...",
+          "Penpen de sarapen de kutsilyo de almasen.",
+          "Haw haw de karabao de batuten.",
+          "...nasa tao ang gawa.",
+          "Leron, Leron, sinta!",
+          "Kapus kapalaran! Humanap ng iba!",
+          "Pagtanim ay di biro",
+          "Tong, tong, tong. Pakitong-kitong!",
+          "Bakit ngayon ka lang dumating sa buhay ko?",
+          "Lalim ng hugot mo, day!",
+          "Buto't balat, lumilipad.",
           "Fear is freedom.",
           "Subjugation is liberation.",
           "Contradiction is truth.",
@@ -108,32 +108,32 @@
         "final":"Pong! ({{time}}ms)"
       },
       "brainfuck":{
-        "info":"Executes brainfuck code.",
+        "info":"Papairalin ang brainfuck code.",
         "usage":"brainfuck <code>",
         "flags":{
-          "p":"Shows a list of pointers after the execution.",
-          "i":"Specifies the input for the `,` operator."
+          "p":"Ipapakita ang listahan ng pointers pagkatapos pairalin.",
+          "i":"Tutukuyin ang input para sa `,` operator."
         }
       },
       "cat":{
-        "info":"Gets a picture of a cat.",
+        "info":"Kukuha ng litrato ng pusa.",
         "usage":"cat"
       },
       "ship":{
-        "info":"Gives you the ship name for two users.",
+        "info":"Ibibigay sa'yo ang ship name ng dalawang user.",
         "usage":"ship <user1> <user2>",
-        "final":"Your ship name is **{{name}}**!",
-        "notenough":"You have to tell me who to ship!"
+        "final":"Ang iyong shipname ay **{{name}}**!",
+        "notenough":"Kailangan mong sabihin kung sino ang i-shi-ship!"
       },
       "tag":{
-        "info":"Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>).",
-        "usage":"tag <name | subcommand> [args]",
-        "dontown":"[[emote.x]] You don't own that tag!",
-        "alreadyexists":"[[emote.x]] A tag with that name already exists!",
-        "notag":"[[emote.x]] There is no tag with that name.",
+        "info":"Ang Tags ay isang sistema ng publikong commands na kayang gawin o gamitin ng kahit na sino gamit ang BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nPara sa dagdag na kaalaman tungkol sa subcommand, gamitin ang `b!t help <subcommand>`\nPara sa dagdag na kaalaman tungkol sa BBTag, pumunta sa <https://blargbot.xyz/tags>\nSa paggawa ng tag, tinatanggap mo na ikaw ay sumasang-ayon sa Terms of Service (<http://blargbot.xyz/tags/tos>).",
+        "usage":"tag <pangalan | subcommand> [args]",
+        "dontown":"[[emote.x]] Hindi ikaw ang may-ari ng tag!",
+        "alreadyexists":"[[emote.x]] Mayroon nang tag na may gantong pangalan!",
+        "notag":"[[emote.x]] Walang tag ang may ganyan pangalan.",
         "tagset":"[[emote.check]] Tag `{{name}}` {{process}}!",
-        "tagrename":"[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`.",
-        "raw":"The code for {{name}} is:\n```{{code}}```",
+        "tagrename":"[[emote.check]] Ang pangalan ng tag na `{{old}}` ay napalitan ng `{{new}}`.",
+        "raw":"Ang code para sa {{name}} ay:\n```{{code}}```",
         "testoutput":"Test Output:\n\n{{output}}",
         "subcommand":{
           "set":{
@@ -141,48 +141,48 @@
             "info":"Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
           },
           "delete":{
-            "usage":"tag delete <name>",
-            "info":"Deletes a tag that you own."
+            "usage":"tag delete <pangalan>",
+            "info":"Tatanggalin ang tag na iyong pagmamay-ari."
           },
           "rename":{
-            "usage":"tag rename <name> <new name>",
-            "info":"Renames a tag that you own."
+            "usage":"tag rename <pangalan> <bagong pangalan>",
+            "info":"Papalitan ang pangalan ng tag na iyong pagmamay-ari."
           },
           "raw":{
-            "usage":"tag raw <name>",
-            "info":"Gets the raw code of a tag."
+            "usage":"tag raw <pangalan>",
+            "info":"Kukunin ang raw code ng tag."
           },
           "info":{
-            "usage":"tag info <name>",
-            "info":"Displays information about a tag."
+            "usage":"tag info <pangalan>",
+            "info":"Ipapakita ang impormasyon tungkol sa tag."
           },
           "transfer":{
-            "usage":"tag transfer <name> <user>",
-            "info":"Transfers a tag to the specified user. Variables will not be transferred."
+            "usage":"tag transfer <pangalan> <user>",
+            "info":"Ililipat ang tag sa tinutukoy na user. Ang mga variables ay hindi malilipat."
           },
           "top":{
             "usage":"tag top",
-            "info":"Displays the tags that have been the most favorited."
+            "info":"Ipapakita ang mga tags na mayroong pinakaraming favorite."
           },
           "author":{
-            "usage":"tag author <name>",
-            "info":"Displays the author of a tag."
+            "usage":"tag author <pangalan>",
+            "info":"Ipapakita ang may-akda ng tag."
           },
           "search":{
             "usage":"tag search <query>",
-            "info":"Searches for a tag with a name containing your query."
+            "info":"Hahanap ng tag na may pangalan na naglalaman ng iyong query."
           },
           "list":{
             "usage":"tag list [@user]",
-            "info":"Lists all the tags, or optionally all the tags created by a specific user."
+            "info":"Ililista ang lahat ng tags, or optionally lahat ng tags na gawa ng tinutukoy na user."
           },
           "favorite":{
             "usage":"tag favorite <name>",
-            "info":"Favorites the specified tag."
+            "info":"I-fafavorite ang tinutukoy na tag."
           },
           "report":{
-            "usage":"tag report <name>",
-            "info":"Reports a tag for violating the ToS. Please use responsibly."
+            "usage":"tag report <pangalan>",
+            "info":"I-rereport ang tag sa paglabag ng ToS. Gamitin ng responsable."
           },
           "test":{
             "usage":"tag test <code>",
@@ -190,7 +190,7 @@
           },
           "help":{
             "usage":"tag help [subcommand]",
-            "info":"Displays this!"
+            "info":"Ipakita ito!"
           },
           "docs":{
             "usage":"tag docs [subtag]",
@@ -208,18 +208,18 @@
         "subcommandnotfound":"Couldn't find a subcommand with the name `{{subcommand}}`.",
         "transferprompt":"{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
         "nobots":"[[emote.x]] You cannot transfer a tag to a bot!",
-        "transfercancelled":"[[emote.x]] The transfer has been canceled.",
+        "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
         "transfercomplete":"[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
         "descupdate":"The description for `{{tag}}` has been updated.",
         "descreset":"The description for `{{tag}}` has been reset.",
         "subcommandconflict":"You can't use the name `{{name}}` because there is a subcommand with that name!",
-        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
         "toptags":"Here are the top 10 tags!\n\n{{tags}}",
         "tagauthor":"The tag `{{tag}}` was created by **{{author}}**",
-        "favouriteadd":"The tag `{{tag}}` has been added to your favorites list.",
-        "favouriteremove":"The tag `{{tag}}` has been removed from your favorites list.",
-        "favourites":"You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+        "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
+        "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+        "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
       },
       "ccommand":{
         "info":"CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
@@ -476,8 +476,8 @@
     "comment":{
       "desc":"Specifies an area that will be ignored from parsing.",
       "example":{
-        "in":"This will be shown {//;This won't be}",
-        "out":"This will be shown"
+        "in":"Ito ay makikita. {//;Ito ay hindi}",
+        "out":"Ito ay makikita."
       }
     },
     "void":{
@@ -1017,7 +1017,7 @@
       },
       "moderation":{
         "title":"Moderation",
-        "desc":"Need something to moderate your chat? blargbot is equipped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+        "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
       },
       "opensource":{
         "title":"Open-Source",
