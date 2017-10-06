@@ -1,30 +1,30 @@
 {
   "specs":{
-    "lang":"English"
+    "lang":"中文"
   },
   "generic":{
-    "output":"Output:\n{{output}}",
-    "nooutput":"No output...",
-    "queryexpire":"This query will expire in {{length}} minutes.",
+    "output":"输出：\n{{output}}\n",
+    "nooutput":"没有输出...",
+    "queryexpire":"此查询将在 {{length}} 分钟内到期。",
     "resolveuser":{
-      "nousers":"No users found.",
-      "pickuser":"{{length}} users were found! Please select one from the list."
+      "nousers":"没有发现用户.",
+      "pickuser":"{{length}} 个用户发现! 请从用户名单里头选一个."
     },
     "resolverole":{
-      "noroles":"No roles found.",
-      "pickrole":"{{length}} roles were found! Please select one from the list."
+      "noroles":"没有角色发现.",
+      "pickrole":"{{length}} 角色被发现！请从列表中选择一个."
     },
     "resolvechannel":{
-      "nochannels":"No channels found.",
-      "pickchannel":"{{length}} channels were found! Please select one from the list."
+      "nochannels":"没有频道被发现!",
+      "pickchannel":"{{length}} 个频道发现! 请从用户名单里头选一个."
     },
-    "edited":"edited",
-    "created":"created",
-    "deleted":"deleted",
+    "edited":"修改了",
+    "created":"创建了",
+    "deleted":"删掉了",
     "menu":{
-      "choices":"Page {{page}}/{{max}}"
+      "choices":"页 {{页}}/{{最大}}"
     },
-    "nochange":"Nothing was changed.",
+    "nochange":"没有被改变",
     "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
     "example":{
       "id1":"111111111111111111",
@@ -32,18 +32,18 @@
       "id3":"333333333333333333"
     },
     "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-    "querycancelled":"The query has been canceled.",
+    "querycancelled":"The query has been cancelled.",
     "user":"User",
     "role":"Role",
     "channel":"Channel"
   },
   "menu":{
     "cancel":{
-      "name":"Cancel",
-      "description":"Close this menu."
+      "name":"取消",
+      "description":"关闭此菜单"
     },
     "confirm":{
-      "name":"Confirm",
+      "name":"确认",
       "description":"Confirms this menu."
     }
   },
@@ -68,7 +68,7 @@
       "toofewargs":"Not enough args (r:{{received}} e:{{expected}})",
       "isnan":"Expected '{{arg}}' to be a number, but received '{{value}}'",
       "maxlessthanmin":"Max must be greater than Min",
-      "ccommandonly":"'{{tag}}' may only be used in custom commands",
+      "ccommandonly":"'{{tag}}' may only be used in ccommands",
       "authorstaff":"Author {{author}} must be staff to use '{{tag}}'",
       "noperms":"Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
       "toolow":"Bot cannot execute '{{tag}}' because it's lower-ranked than '{{target}}'",
@@ -122,7 +122,7 @@
       "ship":{
         "info":"Gives you the ship name for two users.",
         "usage":"ship <user1> <user2>",
-        "final":"Your ship name is **{{name}}**!",
+        "final":"Your shipname is **{{name}}**!",
         "notenough":"You have to tell me who to ship!"
       },
       "tag":{
@@ -162,7 +162,7 @@
           },
           "top":{
             "usage":"tag top",
-            "info":"Displays the tags that have been the most favorited."
+            "info":"Displays the tags that have been the most favourited."
           },
           "author":{
             "usage":"tag author <name>",
@@ -177,8 +177,8 @@
             "info":"Lists all the tags, or optionally all the tags created by a specific user."
           },
           "favorite":{
-            "usage":"tag favorite <name>",
-            "info":"Favorites the specified tag."
+            "usage":"tag favourite <name>",
+            "info":"Favourites the specified tag."
           },
           "report":{
             "usage":"tag report <name>",
@@ -208,18 +208,18 @@
         "subcommandnotfound":"Couldn't find a subcommand with the name `{{subcommand}}`.",
         "transferprompt":"{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
         "nobots":"[[emote.x]] You cannot transfer a tag to a bot!",
-        "transfercancelled":"[[emote.x]] The transfer has been canceled.",
+        "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
         "transfercomplete":"[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
         "descupdate":"The description for `{{tag}}` has been updated.",
         "descreset":"The description for `{{tag}}` has been reset.",
         "subcommandconflict":"You can't use the name `{{name}}` because there is a subcommand with that name!",
-        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
         "toptags":"Here are the top 10 tags!\n\n{{tags}}",
         "tagauthor":"The tag `{{tag}}` was created by **{{author}}**",
-        "favouriteadd":"The tag `{{tag}}` has been added to your favorites list.",
-        "favouriteremove":"The tag `{{tag}}` has been removed from your favorites list.",
-        "favourites":"You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+        "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
+        "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+        "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
       },
       "ccommand":{
         "info":"CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
@@ -1017,7 +1017,7 @@
       },
       "moderation":{
         "title":"Moderation",
-        "desc":"Need something to moderate your chat? blargbot is equipped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+        "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
       },
       "opensource":{
         "title":"Open-Source",
