@@ -1,26 +1,26 @@
 {
   "output":"Output:\n{{output}}",
-  "nooutput":"No output...",
-  "queryexpire":"This query will expire in {{length}} minutes.",
+  "nooutput":"Walang output...",
+  "queryexpire":"Ang query na ito ay lilipas sa {{length}} minuto.",
   "resolveuser":{
-    "nousers":"No users found.",
-    "pickuser":"{{length}} users were found! Please select one from the list."
+    "nousers":"Walang user ang nakita.",
+    "pickuser":"{{length}} user ang nakita! Maaaring pumili ng isa mula sa listahan."
   },
   "resolverole":{
-    "noroles":"No roles found.",
-    "pickrole":"{{length}} roles were found! Please select one from the list."
+    "noroles":"Walang role ang nakita.",
+    "pickrole":"{{length}} role ang nakita! Maaaring pumili ng isa mula sa listahan."
   },
   "resolvechannel":{
-    "nochannels":"No channels found.",
-    "pickchannel":"{{length}} channels were found! Please select one from the list."
+    "nochannels":"Walang channel ang nakita.",
+    "pickchannel":"{{length}} channel ang nakita! Maaaring pumili ng isa mula sa listahan."
   },
-  "edited":"edited",
-  "created":"created",
-  "deleted":"deleted",
+  "edited":"In-edit",
+  "created":"Nilikha",
+  "deleted":"Binura",
   "menu":{
-    "choices":"Page {{page}}/{{max}}"
+    "choices":"Pahina {{page}}/{{max}}"
   },
-  "nochange":"Nothing was changed.",
+  "nochange":"Walang binago.",
   "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
   "example":{
     "id1":"111111111111111111",
@@ -28,7 +28,7 @@
     "id3":"333333333333333333"
   },
   "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"The query has been canceled.",
+  "querycancelled":"The query has been cancelled.",
   "user":"User",
   "role":"Role",
   "channel":"Channel"
