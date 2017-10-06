@@ -128,7 +128,7 @@ class GuildModel extends Base {
             locale: {
                 type: this.Sequelize.STRING(8),
                 allowNull: false,
-                defaultValue: 'en_US'
+                defaultValue: 'en'
             },
 
             blacklistedChannels: {

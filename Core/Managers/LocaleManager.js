@@ -26,8 +26,9 @@ class LocaleManager extends Manager {
         this.localeList[name] = mod;
     }
 
-    getTemplate(locale = 'en_us', key = '') {
+    getTemplate(locale = 'en', key = '') {
         let segments = key.split('.');
+        if (!this.localeList[locale.toLowerCase()]) locale = 'en';
         let temp = this.localeList[locale.toLowerCase()];
         for (const segment of segments) {
             if (temp.hasOwnProperty(segment))

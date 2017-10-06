@@ -1,22 +1,7 @@
 {
     "specs": {
-        "lang": "English",
-        "contributors": [
-            "103347843934212096"
-        ]
+        "lang": "English"
     },
-    "comments": [
-        "This is a locale file for blargbot.",
-        "For contribution, please use the following guidelines:",
-        "1. Arguments are passed into templates using {{name}}. Do not modify these.",
-        "2. Templates are used in templates by using [[path.to.key]]. Do not modify these.",
-        "3. All commands must contain an 'info' property. The 'usage' property is optional, and only contains the arguments after the command name.",
-        "4. For random outputs, terms are placed in a '.list' context. Each random output is specified on a new line. You may contribute random outputs as needed.",
-        "5. Terms should end with the same punctuation as in the en_US reference.",
-        "6. For credit, put your Discord ID (or desired name) on a new line in the `contributors` term. IDs will get parsed to whatever your username/discrim are.",
-        "7. Keep translations civil.",
-        "Thank you!"
-    ],
     "generic": {
         "output": "Output:\n{{output}}",
         "nooutput": "No output...",

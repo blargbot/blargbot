@@ -42,7 +42,7 @@ class MessageHelper extends BaseHelper {
             if (userLocale) localeName = userLocale;
         }
         if (!localeName) {
-            localeName = 'en_US';
+            localeName = 'en';
         }
         if (typeof key === 'object') key = key.key;
         let template = this.client.LocaleManager.getTemplate(localeName, key);

@@ -43,7 +43,7 @@ class TagBase {
             }
             let temp;
             for (const key of this._keys) {
-                temp = this.client.LocaleManager.localeList.en_us;
+                temp = this.client.LocaleManager.localeList.en;
                 let segments = key.split('.');
                 for (let i = 0; i < segments.length; i++) {
                     if (temp[segments[i]]) {

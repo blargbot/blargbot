@@ -12,7 +12,7 @@ class DataUser extends DataBase {
             discriminator: this.user.discriminator,
             username: this.user.username,
             variables: {},
-            local: 'en_US'
+            locale: 'en'
         };
     }
 
