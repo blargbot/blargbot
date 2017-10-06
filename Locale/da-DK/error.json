@@ -1,5 +1,5 @@
 {
-  "keyundef":"No such locale entry was found: '{{key}}'.",
+  "keyundef":"",
   "memberundef":"Intent lignende medlem blev fundet: `{{member}}`.",
   "userundef":"Ingen lignende bruger blev fundet: `{{user}}`.",
   "channelundef":"Ingen lignende kanal blev fundet: `{{channel}}`.",
@@ -15,7 +15,7 @@
     "isnan":"Forventede `{{arg}}` til at være et tal, men modtog istedet `{{value}}`",
     "maxlessthanmin":"Max skal være større end Min.",
     "ccommandonly":"`{{tag}}` kan kun bruges i ccommands.",
-    "authorstaff":"Author {{author}} must be staff to use '{{tag}}'",
+    "authorstaff":"",
     "noperms":"Botten mangler `{{perm}}` tilladelse, der er krævet af tagget `{{tag}}`",
     "toolow":"Bot kan ikke udføre `{{tag}}` fordi det er rankeret lavere end `{{target}}`",
     "unclosed":"Umatchet åbnings klammer [{{column}}:{{row}}]",
@@ -23,8 +23,8 @@
     "invalidradix":"Radix skal være mellem 2 og 36, men modtog `{{radix}}`",
     "notanarray":"Variablen `{{name}}` er ikke et array (Received: '{{value}}')",
     "notbool":"Variablen `{{name}}` er ikke en boolean (Received: '{{value}}')",
-    "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
-    "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
+    "missingarg":"",
+    "namedunsupported":""
   },
-  "inputtoolong":"Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
+  "inputtoolong":""
 }
