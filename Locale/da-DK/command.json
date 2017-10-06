@@ -32,7 +32,7 @@
     },
     "ship":{
       "info":"",
-      "usage":"",
+      "usage":"<user1><user2>",
       "final":"Your shipname is **{{name}}**!",
       "notenough":"Du er nødt til at fortælle mig hvem jeg skal parre!"
     },
@@ -42,13 +42,13 @@
       "dontown":"[[emote.x]] Du ejer ikke dette tag!",
       "alreadyexists":"[[emote.x]] Et tag med dette navn findes allerede!",
       "notag":"[[emote.x]] Der er intet tag med dette navn.",
-      "tagset":"",
+      "tagset":"[[emote.check]] Tag '{{name}}' {{process}}!",
       "tagrename":"[[emote.check]] Tagget `{{old}}` er blevet omdøbt til `{{new}}`.",
       "raw":"Koden for {{name}} er:\n```{{code}}```",
       "testoutput":"",
       "subcommand":{
         "set":{
-          "usage":"",
+          "usage":"<name><content>",
           "info":"Skaber eller redigerer et tag med det givne navn og indhold. Vil ikke erstatte tags andre har lavet."
         },
         "delete":{
@@ -83,34 +83,34 @@
           "info":"Søger efter et tag med et navn der indeholder din forespørgsel."
         },
         "list":{
-          "usage":"",
+          "usage":"[@user]",
           "info":"Viser en liste over alle tags, eller valgfrit alle tags skabt af en bestemt bruger."
         },
         "favorite":{
-          "usage":"",
+          "usage":"<name>",
           "info":"Favoriserer et bestemt tag."
         },
         "report":{
-          "usage":"",
+          "usage":"<name>",
           "info":"Raporterer et tag for at bryde brugervilkåerne. Venligst brug omhyggeligt."
         },
         "test":{
-          "usage":"",
+          "usage":"<code>",
           "info":"Udfører det givne stykke kode i et test miljø."
         },
         "help":{
-          "usage":"",
+          "usage":"[subcommand]",
           "info":"Viser dette!"
         },
         "docs":{
-          "usage":"",
+          "usage":"[subtag]",
           "info":"Giver et link til BBTag dokumentationen, eller giver oplysninger om et bestemt undertag."
         },
         "setdesc":{
-          "info":""
+          "info":"info"
         },
         "setusage":{
-          "info":""
+          "info":"info"
         }
       },
       "subcommandnotfound":"",
@@ -160,9 +160,9 @@
       "allcommands":"",
       "nocommand":"",
       "commandinfo":"",
-      "aliases":"",
-      "subcommand":"",
-      "command":"",
+      "aliases":"Ingen aliaser",
+      "subcommand":"Underkommando",
+      "command":"Kommando",
       "nosubcommand":"",
       "subcommands":""
     },
@@ -170,11 +170,11 @@
       "info":"",
       "subcommand":{
         "start":{
-          "usage":"",
-          "info":""
+          "usage":"<location>",
+          "info":"Starter en ekspedition!"
         },
         "end":{
-          "info":""
+          "info":"Slutter en ekspedition!"
         },
         "locations":{
           "info":""
