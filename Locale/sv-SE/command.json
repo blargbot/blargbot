@@ -33,7 +33,7 @@
     "ship":{
       "info":"Gives you the ship name for two users.",
       "usage":"<user1> <user2>",
-      "final":"Your ship name is **{{name}}**!",
+      "final":"Your shipname is **{{name}}**!",
       "notenough":"You have to tell me who to ship!"
     },
     "tag":{
@@ -72,7 +72,7 @@
           "info":"Transfers a tag to the specified user. Variables will not be transferred."
         },
         "top":{
-          "info":"Displays the tags that have been the most favorited."
+          "info":"Displays the tags that have been the most favourited."
         },
         "author":{
           "usage":"<name>",
@@ -88,7 +88,7 @@
         },
         "favorite":{
           "usage":"<name>",
-          "info":"Favorites the specified tag."
+          "info":"Favourites the specified tag."
         },
         "report":{
           "usage":"<name>",
@@ -116,18 +116,18 @@
       "subcommandnotfound":"Couldn't find a subcommand with the name `{{subcommand}}`.",
       "transferprompt":"{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
       "nobots":"[[emote.x]] You cannot transfer a tag to a bot!",
-      "transfercancelled":"[[emote.x]] The transfer has been canceled.",
+      "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
       "transfercomplete":"[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
       "descupdate":"The description for `{{tag}}` has been updated.",
       "descreset":"The description for `{{tag}}` has been reset.",
       "subcommandconflict":"You can't use the name `{{name}}` because there is a subcommand with that name!",
-      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
       "toptags":"Here are the top 10 tags!\n\n{{tags}}",
       "tagauthor":"The tag `{{tag}}` was created by **{{author}}**",
-      "favouriteadd":"The tag `{{tag}}` has been added to your favorites list.",
-      "favouriteremove":"The tag `{{tag}}` has been removed from your favorites list.",
-      "favourites":"You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+      "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
+      "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+      "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
     },
     "locale":{
       "info":"Sets what locale messages will be sent in.",
