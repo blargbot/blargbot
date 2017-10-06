@@ -1,10 +1,10 @@
 {
   "cancel":{
-    "name":"Cancel",
-    "description":"Close this menu."
+    "name":"Hủy",
+    "description":"Đóng menu này."
   },
   "confirm":{
-    "name":"Confirm",
-    "description":"Confirms this menu."
+    "name":"Xác định",
+    "description":"Xác nhận menu này."
   }
 }
