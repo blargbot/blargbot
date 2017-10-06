@@ -1,129 +1,129 @@
 {
   "array":{
     "filter":{
-      "desc":"Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array only containing the elements where the result of the iteration was `true` or `1`."
+      "desc":"Itère à travers un tableau en modifiant l'élément à une variable locale `i`. Si `varName` est spécifiée, remplace l'élément par cette variable à la place de `i`.\n\nRenvoie un nouveau tableau qui contient seulement les éléments où le résultat de l'itération était `vrai` ou `1`"
     },
     "foreach":{
-      "desc":"Iterates through an array, setting the local variable `i` to the current element. If `varName` is provided, sets that variable instead."
+      "desc":"Itère à travers un tableau en remplaçant l'élément actuel par la variable `i`. Si `varName` est donné, remplace l'élément actuel par celui-ci à la place de `i`."
     },
     "get":{
-      "desc":"Gets an element from an array at the position `index`."
+      "desc":"Obtient l'élément d'un tableau à la position `index`"
     },
     "isarray":{
-      "desc":"Returns true if the provided element is an array, and false otherwise. You cannot use variable names."
+      "desc":"Renvoie vrai si l'élément donné est un tableau, faux dans le cas contraire. Vous ne pouvez pas utiliser de noms de variable."
     },
     "join":{
-      "desc":"Joins an array with the provided `delimiter`."
+      "desc":"Unit un tableau avec le `délimiteur` fourni."
     },
     "length":{
-      "desc":"Returns the length of the given array."
+      "desc":"Renvoie la longueur du tableau donné."
     },
     "map":{
-      "desc":"Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array where each element is the result of each iteration."
+      "desc":"Itère à travers un tableau en remplaçant l'élément actuel par une variable `i`. Si `varName` est spécifié, remplace l'élément actuel par celui-ci plutôt que par `i`.\n\nRenvoie un nouveau tableau où chaque élément est le résultat d'une itération."
     },
     "pop":{
-      "desc":"Removes and returns the last element of the array."
+      "desc":"Supprime et renvoie le dernier élément du tableau."
     },
     "push":{
-      "desc":"Pushes an element to the end of an array. Returns the modified array."
+      "desc":"Pousse un élément à la fin d'un tableau. Renvoie ainsi le tableau modifié."
     },
     "set":{
-      "desc":"Sets an element on the array at the specified `index`."
+      "desc":"Définit un élément dans le tableau à l'`index` spécifié."
     },
     "shift":{
-      "desc":"Removes and returns the first element in the array."
+      "desc":"Supprime et renvoie le premier élément du tableau."
     },
     "slice":{
-      "desc":"Returns a section of the array, including the `start` index and excluding the `end` index. If `end` is unspecified, defaults to all remaining elements."
+      "desc":"Renvoie la partie du tableau incluant l'index de `début` et excluant l'index de `fin`. Si l'index de `fin` n'est pas spécifié, le définit par défaut à tous les éléments restants."
     },
     "sort":{
-      "desc":"Sorts and returns an array, by default in ascending order.\n\nIf `function` is provided, sorting will occur based on the result of executing said function. This will set two local variables: `a` (or `varNameOne`) and `b` (or `varNameTwo`). \n\nThe function must return a number. If the number is greater than 0, `a` will be considered greater than `b`. If the number is lower than 0, `b` will be considered greater than `a`. Any non-number result will be converted to 0, where both elements are equal."
+      "desc":"Trie et rassemble un tableau, par défaut dans l'ordre ascendant.\n\nSi la `fonction` est fournie, le tri se produira en fonction du résultat de l'exécution de ladite fonction. Cela va créer deux variables locales : `a` (ou `varNomUn`) et `b` (ou `varNomDeux`).\n\nLa fonction doit être un nombre. Si le nombre est plus grand que 0, `a` sera considérer plus grand que `b`. Si le nombre est plus petit que 0, `b` sera considérer plus grand que `a`. Tout les résultats qui ne sont pas des nombres seront convertis en 0, où tout les nombres seront alors égaux."
     },
     "splice":{
-      "desc":"Starting at the position `start`, removes `deleteCount` elements from the array and adds the remaining `items` at that position. Returns the removed elements."
+      "desc":"Départ sur la position `start`, supprimera les éléments `deleteCount` du tableau et ajouteront les `items` restants de la position.  Résultats des éléments supprimés."
     },
     "split":{
-      "desc":"Splits the `text` by the `delimiter`, returning the new array."
+      "desc":"Séparer le `text` par le `delimiter`, renvoyer au nouveau tableau."
     },
     "unshift":{
-      "desc":"Inserts `value` at the beginning of the array, and returns the modified array."
+      "desc":"Insère `valeur` au début du tableau, et renvoie le tableau modifié."
     }
   },
   "channel":{
     "id":{
-      "desc":"Returns the ID of the current or specified channel."
+      "desc":"Renvoie l'ID du canal actuel ou spécifié"
     },
     "nsfw":{
-      "desc":"Returns whether the current or specified channel is NSFW."
+      "desc":"Montre si le salon spécifié est NSFW ou pas."
     },
     "name":{
-      "desc":"Returns the name of the current or specified channel."
+      "desc":"montre le nom du salon actuel ou spécifié"
     },
     "position":{
-      "desc":"Returns the position of the current or specified channel."
+      "desc":"Montre la position du salon actuel ou spécifié"
     },
     "topic":{
-      "desc":"Returns the topic of the current or specified channel (text only)."
+      "desc":"montre le sujet du salon  actuel ou spécifié (texte uniquement)"
     },
     "type":{
-      "desc":"Returns the type of the current or specified channel (returns \"text\" or \"voice\")."
+      "desc":"Montre le type du salon actuel ou spécifié (renvoie \"textuel\" ou \"vocal\")."
     }
   },
   "general":{
     "clean":{
-      "desc":"Cleans the provided text by shrinking all whitespace."
+      "desc":"Nettoie le texte fourni en diminuant tout les espaces blanc."
     },
     "//":{
-      "desc":"Specifies an area that will be ignored from parsing"
+      "desc":"Spécifie une aire qui sera ignorer d'analyse."
     },
     "get":{
-      "desc":"Returns the stored variable with the supplied name. Variable prefixes can modify the pool in which to search."
+      "desc":"montre la variable mémorisée avec le nom donné. Les préfixes de la variable peuvent modifier la catégorie de la recherche."
     },
     "set":{
-      "desc":"Sets the stored variable with the supplied name to the supplied value. Variable prefixes can modify the pool in which to set."
+      "desc":"Modifie les variables stockées avec les nom et valeures données. Les préfixes de variables peuvent modifier leur catégories."
     },
     "trim":{
-      "desc":"Removes whitespace before and after the provided text. Consider using the {clean} tag to remove whitespace within the text."
+      "desc":"Enlève les espaces avant et après le texte donné. Veuillez utiliser le tag {clean} pour enlever les espaces dans le texte."
     },
     "void":{
-      "desc":"Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed."
+      "desc":"empêche ce qu'il y a dans la commande de s’afficher. Contrairement aux commentaires, les commandes s’exécuteront toujours."
     },
     "newline":{
-      "desc":"Returns the specified number of newlines, defaulting to 1."
+      "desc":"Montre le nombre spécifier de retour à la ligne, par défaut 1."
     },
     "space":{
-      "desc":"Returns the specified number of spaces, defaulting to 1."
+      "desc":"Renvoie le nombre spécifié d'espaces, par défaut 1."
     }
   },
   "guild":{
     "createdat":{
-      "desc":"Returns when the current guild was created as a Unix timestamp (milliseconds)."
+      "desc":"Affiche quand le serveur actuel a été créé en UNIX (en millisecondes)."
     },
     "channels":{
-      "desc":"Returns the channels in the current guild as an array."
+      "desc":"Renvoie les salons du serveur actuel sous forme de tableau."
     },
     "icon":{
-      "desc":"Returns the URL of the current guild's icon."
+      "desc":"Renvoie l'URL de l'icône du serveur actuelle."
     },
     "id":{
-      "desc":"Returns the ID of the current guild."
+      "desc":"Renvoie l'ID du serveur actuelle."
     },
     "name":{
-      "desc":"Returns the name of the current guild."
+      "desc":"montre le nom du serveur actuelle."
     },
     "owner":{
-      "desc":"Returns the ID of the guild's owner."
+      "desc":"Renvoie l'ID du propriétaire du serveur."
     },
     "region":{
-      "desc":"Returns the region the current guild is in."
+      "desc":"Renvoie la région du serveur actuel."
     },
     "roles":{
-      "desc":"Returns an array of roles in the current guild."
+      "desc":"Renvoie un tableau des rôles du serveur actuel."
     }
   },
   "logic":{
     "if":{
-      "desc":"If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nUse this with the {logic} tag."
+      "desc":"Si la `valeur` est égale à `vrai` ou `1`, exécute la partie `alors`.\nSi la `valeur` est égale à `faux` ou `0`, exécute la partie `sinon`.\nAutrement, affiche une erreur.\n\nUtilisez ceci avec le tag {logique}."
     },
     "logic":{
       "desc":"Does logical operators on the `augend` and `operands`, returning `true` or `false`.\n\nEquivalence Operators:\n - `==` - equal\n - `!=` - not equal\n - `<` - less than\n - `<=` - less than or equal\n - `>` - greater than\n - `>=` - greater than or equal\n - `startswith` - the augend starts with the operand\n - `endswith` - the augend ends with the operand\n - `includes` - the augend includes the operand\n\nLogical Operators:\n - `&&` - returns true if the augend and operand are both true\n - `||` - returns true if either the augend or operand are true\n - `XOR` - returns true if only one of the augend and operand are true (not both)\n\nOther Operators:\n - `!` - inverts the next operand (true becomes false, etc.)"
@@ -131,94 +131,94 @@
   },
   "math":{
     "abs":{
-      "desc":"Returns the absolute value of the provided number (no negatives)."
+      "desc":"Renvoie la valeur absolue du nombre fourni (pas de negatifs)."
     },
     "base":{
-      "desc":"Parses the `number` using the provided base `origin` (defaulting to 10), and converts it to base `radix`."
+      "desc":"Convertis le `nombre` utilisant la base donnée `original` (par défaut en base 10), et le convertis en base `radix`"
     },
     "ceil":{
-      "desc":"Rounds the provided decimal up."
+      "desc":"Arrondi le nombre donné à l'unité supérieure."
     },
     "floor":{
-      "desc":"Rounds the provided decimal down."
+      "desc":"Arrondis le nombre donné à l'unité inférieure."
     },
     "math":{
-      "desc":"Calculates the value of the provided expression using the following operators:\n\n - `^` - exponents\n - `/` - division\n - `*` - multiplication\n - `+` - addition\n - `-` - subtraction\n - `&` - bitwise AND\n - `|` - bitwise OR\n - `XOR` - bitwise XOR\n\nOperators are executed using the Order of Operations (Brackets, Exponents, Division, Multiplication, Addition, Subtraction, Bitwise).\n\nIf an operator isn't specified, it uses the last-used operator (defaulting to addition).\n\nBrackets would be achieved by using another nested {math} tag.\n\nIf an `operand` or `augend` cannot be parsed as a number, a variable with the same name will be retrieved. If the retrieved variable is also not a number, throws an error."
+      "desc":"Calcule  l'opération donnée avec les opérateurs suivant:\n\n- `^` - exponents\n- `/` - division\n- `*` - multiplication\n- `+` - addition\n- `-` - substraction\n- `&` - et\n- `|` - ou\n- `XOR` - (vérifie que c'est pas pareil)\n\nles opérateur respectent l'ordre de calcul (parenthèses, exposants, division, multiplication, addition, soustraction, logique (et/ou/xor))\n\nSi l'opérateur n'est pas spécifié, il utilise le dernier opérateur utilisé (l'addition par défaut)\n\nLes parenthèses doivent être finies avec un autre tag {math}.\n\nSi un des `thermes` ne peux pas être reconnu en tant que nombre, cherche un variable du même nom. Si la variable n'est pas un nombre, affiche une erreur."
     },
     "parsefloat":{
-      "desc":"Attempts to parse the given text as a decimal."
+      "desc":"affiche les nombres décimaux du texte donné."
     },
     "parseint":{
-      "desc":"Attempts to parse the given text as an integer."
+      "desc":"Tente d'analyser le texte donné en nombre entier."
     },
     "randint":{
-      "desc":"Returns a random integer between the provided range. `min` defaults to `0`"
+      "desc":"Donne un entier aléatoire entre les nombres spécifiés. le `minimum` est `0` par défaut"
     },
     "round":{
-      "desc":"Rounds the given `number` to the specified decimal `places`, defaulting to 0."
+      "desc":"arrondis le `nombre` donné à la `puissance de 10` spécifié, par défaut 0"
     }
   },
   "message":{
     "id":{
-      "desc":"Returns the ID of the executing command message."
+      "desc":"montre l'ID du message contenant la commande"
     }
   },
   "role":{
     "color":{
-      "desc":"Returns the color of the specified role in hexadecimal."
+      "desc":"Renvoie la couleur du rôle spécifié en hexadécimales."
     },
     "id":{
-      "desc":"Returns the ID of the specified role."
+      "desc":"Renvoie l'ID du rôle spécifié."
     },
     "mention":{
-      "desc":"Returns a mention of the specified role."
+      "desc":"Renvoie une mention du rôle spécifié."
     },
     "name":{
-      "desc":"Returns the name of the specified role."
+      "desc":"montre le nom du rôle spécifié."
     },
     "position":{
-      "desc":"Returns the position of the specified role."
+      "desc":"montre la position du rôle spécifié."
     }
   },
   "user":{
     "avatar":{
-      "desc":"Returns the avatar URL of the specified user, defaulting to the executing user."
+      "desc":"montre l'URL de l'avatar de l'utilisateur spécifié, par défaut celle de exécuteur."
     },
     "createdat":{
-      "desc":"Returns the date that the specified user, defaulting to the executing user, was created as a Unix timestamp (milliseconds)."
+      "desc":"Montre la date à laquelle l'utilisateur spécifié, par défaut l’exécuteur, a été créé en UNIX (en millisecondes) "
     },
     "discrim":{
-      "desc":"Returns the discriminator of the specified user, defaulting to the executing user."
+      "desc":"Renvoie le discriminant de l'utilisateur spécifié, par défaut celui de l'exécuteur."
     },
     "fullname":{
-      "desc":"Returns the name + discriminator of the specified user, defaulting to the executing user."
+      "desc":"affiche le nom et le surnom de l'utilisateur spécifié, par défaut ceux de l'executeur"
     },
     "game":{
-      "desc":"Returns the game the specified user is playing, defaulting to the executing user. If the user isn't playing a game, returns nothing."
+      "desc":"Renvoie le jeu auquel l'utilisateur spécifié est en train de jouer, par défaut celui de l'utilisateur.\nSi l'utilisateur n'est pas en train de jouer à un jeu, ça ne renvoie rien."
     },
     "id":{
-      "desc":"Returns the ID of the specified user, defaulting to the executing user."
+      "desc":"Affiche l'ID de l'utilisateur spécifié, par défaut celui de l'éxecuteur."
     },
     "joinedat":{
-      "desc":"Returns the date that the specified user, defaulting to the executing user, joined the current guild as a Unix timestamp (milliseconds)."
+      "desc":"Affiche la date a laquelle l'utilisateur spécifié, par défaut l’exécuteur, a rejoint le serveur actuel en UNIX (en millisecondes)."
     },
     "mention":{
-      "desc":"Mentions the specified user, defaulting to the executing user."
+      "desc":"Mentionne l'utilisateur spécifié, par défaut de l'utilisateur exécutif."
     },
     "name":{
-      "desc":"Returns the name of the specified user, defaulting to the executing user."
+      "desc":"Montre le nom de l'utilisateur spécifié, par défaut, renvoie le nom de l’exécuteur"
     },
     "nick":{
-      "desc":"Returns the nickname of the specified user, defaulting to the executing user."
+      "desc":"Affiche le surnom de l'utilisateur spécifié, par défaut celui de l'exécuteur."
     },
     "roles":{
-      "desc":"Returns an array of the roles the specified user has, defaulting to the executing user."
+      "desc":"Donne un tableau des rôle que l'utilisateur spécifié a, par défaut l'exécuteur."
     },
     "setnick":{
-      "desc":"Sets the nickname of the specified user, defaulting to the executing user."
+      "desc":"Donne un surnom à l'utilisateur spécifier, en donne un à l’exécuteur par défaut."
     },
     "status":{
-      "desc":"Returns the status of the specified user, defaulting to the executing user. Can return \"online\", \"away\", \"dnd\", or \"offline\"."
+      "desc":"Renvoie le statut de l'utilisateur spécifié, par défaut celui de l'utilisateur. Peut renvoyer \"en ligne\", \"absent\", \"npd\", ou \"hors-ligne\"."
     }
   }
 }
