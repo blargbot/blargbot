@@ -1,26 +1,26 @@
 {
-  "output":"Output:\n{{output}}",
-  "nooutput":"No output...",
-  "queryexpire":"This query will expire in {{length}} minutes.",
+  "output":"{{output}}",
+  "nooutput":"Thôi rồi đầu ra biến đi đâu rồi...",
+  "queryexpire":"Lựa chọn sẽ mất hiệu lực trong {{length}} phút.",
   "resolveuser":{
-    "nousers":"No users found.",
-    "pickuser":"{{length}} users were found! Please select one from the list."
+    "nousers":"Xin lỗi, nhưng mình không tìm thấy người dùng đó.",
+    "pickuser":"Có {{length}} người dùng trong danh sách! Chọn một trong số đó để tiếp tục."
   },
   "resolverole":{
-    "noroles":"No roles found.",
-    "pickrole":"{{length}} roles were found! Please select one from the list."
+    "noroles":"Không thể tìm thấy role bạn cần.",
+    "pickrole":"Có {{length}} roles được tìm thấy trong danh sách! Chọn một trong số đó để tiếp tục."
   },
   "resolvechannel":{
-    "nochannels":"No channels found.",
-    "pickchannel":"{{length}} channels were found! Please select one from the list."
+    "nochannels":"Sorry, mình không tìm thấy kênh đó.",
+    "pickchannel":"Có {{length}} kênh được tìm thấy trong danh sách! Chọn một trong số đó để tiếp tục."
   },
-  "edited":"edited",
-  "created":"created",
-  "deleted":"deleted",
+  "edited":"đã chỉnh sửa",
+  "created":"đã được tạo",
+  "deleted":"đã được xoá",
   "menu":{
-    "choices":"Page {{page}}/{{max}}"
+    "choices":"Trang {{page}}/{{max}}"
   },
-  "nochange":"Nothing was changed.",
+  "nochange":"Không có thay đổi.",
   "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
   "example":{
     "id1":"111111111111111111",
@@ -28,7 +28,7 @@
     "id3":"333333333333333333"
   },
   "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"The query has been canceled.",
+  "querycancelled":"The query has been cancelled.",
   "user":"User",
   "role":"Role",
   "channel":"Channel"
