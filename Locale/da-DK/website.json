@@ -5,7 +5,7 @@
     "logout":"Log af",
     "commands":"Kommandoer",
     "bbtag":"BBTag",
-    "subtags":""
+    "subtags":"SubTags"
   },
   "index":{
     "desc":"",
@@ -18,7 +18,7 @@
       "desc":""
     },
     "customization":{
-      "title":"",
+      "title":"Tilpasning",
       "desc":""
     },
     "moderation":{
@@ -30,7 +30,7 @@
       "desc":""
     },
     "suggestions":{
-      "title":"",
+      "title":"Åben for forslag",
       "desc":""
     }
   },
