@@ -10,7 +10,7 @@ export default ({ app, isClient, store }) => {
         locale: store.state.locale,
         fallbackLocale: 'en',
         messages: {
-            'en': require('~/../Locale/en.json')
+            'en': require('~/../Locale/en/website.json')
         }
     });
 };
