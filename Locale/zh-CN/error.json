@@ -14,7 +14,7 @@
     "toofewargs":"Not enough args (r:{{received}} e:{{expected}})",
     "isnan":"Expected '{{arg}}' to be a number, but received '{{value}}'",
     "maxlessthanmin":"Max must be greater than Min",
-    "ccommandonly":"'{{tag}}' may only be used in custom commands",
+    "ccommandonly":"'{{tag}}' may only be used in ccommands",
     "authorstaff":"Author {{author}} must be staff to use '{{tag}}'",
     "noperms":"Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
     "toolow":"Bot cannot execute '{{tag}}' because it's lower-ranked than '{{target}}'",
