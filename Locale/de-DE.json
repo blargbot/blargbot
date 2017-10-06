@@ -1,30 +1,30 @@
 {
   "specs":{
-    "lang":"English"
+    "lang":"German"
   },
   "generic":{
-    "output":"Output:\n{{output}}",
-    "nooutput":"No output...",
-    "queryexpire":"This query will expire in {{length}} minutes.",
+    "output":"Ausgabe:\n{{output}}",
+    "nooutput":"Keine Ausgabe...",
+    "queryexpire":"Diese Anfrage läuft in {{length}} minuten ab.",
     "resolveuser":{
-      "nousers":"No users found.",
-      "pickuser":"{{length}} users were found! Please select one from the list."
+      "nousers":"Kein Nutzer gefunden.",
+      "pickuser":"{{Length}} Nutzer gefunden! Bitte wähle einen aus der Liste."
     },
     "resolverole":{
-      "noroles":"No roles found.",
-      "pickrole":"{{length}} roles were found! Please select one from the list."
+      "noroles":"Keine Rollen gefunden.",
+      "pickrole":"{{Length}} Rollen wurden gefunden! Bitte wähle eine aus der Liste."
     },
     "resolvechannel":{
-      "nochannels":"No channels found.",
-      "pickchannel":"{{length}} channels were found! Please select one from the list."
+      "nochannels":"Keine Channel gefunden.",
+      "pickchannel":"{{Length}} Channel wurden gefunden! Bitte wähle einen aus der Liste."
     },
-    "edited":"edited",
-    "created":"created",
-    "deleted":"deleted",
+    "edited":"geändert",
+    "created":"erstellt",
+    "deleted":"gelöscht",
     "menu":{
-      "choices":"Page {{page}}/{{max}}"
+      "choices":"Seite {{page}}/{{max}}"
     },
-    "nochange":"Nothing was changed.",
+    "nochange":"Keine Änderungen wurden vorgenommen.",
     "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
     "example":{
       "id1":"111111111111111111",
@@ -32,19 +32,19 @@
       "id3":"333333333333333333"
     },
     "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-    "querycancelled":"The query has been canceled.",
+    "querycancelled":"The query has been cancelled.",
     "user":"User",
     "role":"Role",
     "channel":"Channel"
   },
   "menu":{
     "cancel":{
-      "name":"Cancel",
-      "description":"Close this menu."
+      "name":"Abbrechen",
+      "description":"Schließe dieses Menü."
     },
     "confirm":{
-      "name":"Confirm",
-      "description":"Confirms this menu."
+      "name":"Bestätigen",
+      "description":"Bestätigt dieses Menu."
     }
   },
   "emote":{
@@ -53,28 +53,28 @@
     "okhand":":ok_hand:"
   },
   "error":{
-    "keyundef":"No such locale entry was found: '{{key}}'.",
-    "memberundef":"No such member was found: '{{member}}'.",
-    "userundef":"No such user was found: '{{user}}'.",
-    "channelundef":"No such channel was found: '{{channel}}'.",
-    "roleundef":"No such role was found: '{{role}}'.",
-    "pleasereport":"If you think this is an error, please report it!",
-    "generic":"Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
-    "messagetoolong":"Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
-    "notenoughparams":"Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
+    "keyundef":"Kein lokaler Eintrag wurde gefunden für: '{{key}}'.",
+    "memberundef":"Kein Mitglied wurde gefunden für: '{{member}}'.",
+    "userundef":"Kein Nutzer wurde gefunden für: '{{user}}'.",
+    "channelundef":"Kein Channel wurde gefunden für: '{{channel}}'.",
+    "roleundef":"Keine Rolle wurde gefunden für: '{{role}}'.",
+    "pleasereport":"Wenn du denkst das ist ein fehler, bitte melde es! (In english)",
+    "generic":"Irgendwie ist etwas falsch gelaufen\n```\n{{Message}}\n```\n[[error.pleasereport]]",
+    "messagetoolong":"Whoops! Hab versucht eine nachricht zu shicken die zu lang war\n[[error.pleasereport]]",
+    "notenoughparams":"Nicht genug Parameter. Tu `{{prefix}}help\n{{name}}` für mehr Informationen\n\nErwartete `{{expected}}` parameter, aber geh\n`{{received}}` hin",
     "tag":{
-      "notfound":"Subtag '{{tag}}' doesn't exist.",
-      "toomanyargs":"Too many args (r:{{received}} e:{{expected}})",
-      "toofewargs":"Not enough args (r:{{received}} e:{{expected}})",
-      "isnan":"Expected '{{arg}}' to be a number, but received '{{value}}'",
-      "maxlessthanmin":"Max must be greater than Min",
-      "ccommandonly":"'{{tag}}' may only be used in custom commands",
-      "authorstaff":"Author {{author}} must be staff to use '{{tag}}'",
-      "noperms":"Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
-      "toolow":"Bot cannot execute '{{tag}}' because it's lower-ranked than '{{target}}'",
+      "notfound":"Tag '{{tag}}' existiert nicht",
+      "toomanyargs":"Zu viele argumente (r:{{received}} e:{{expected}})",
+      "toofewargs":"Nicht genug argumente (r:{{received}} e:{{expected}})",
+      "isnan":"Erwartete '{{arg}}' als Zahl, aber bekommen\n'{{value}}'",
+      "maxlessthanmin":"Max muss mehr sein als Min",
+      "ccommandonly":"'{{Tag}}' wird vielleicht nur in ccommands benutzt",
+      "authorstaff":"Author {{author}} muss admin sein zum benutzen",
+      "noperms":"Bot fehlt Erlaubnis '{{perm}}' gebraucht von \ntag '{{tag}}'",
+      "toolow":"Bot can nicht ausführen '{{tag}}' weil es ein niedrieger rank ist als '{{target}}'",
       "unclosed":"Unmatched opening bracket [{{column}}:{{row}}]",
       "unopened":"Unmatched closing bracket [{{column}}:{{row}}]",
-      "invalidradix":"Radix must be between 2 and 36, but received '{{radix}}'",
+      "invalidradix":"Radix muss zwischen 2 und 36 sein, aber bekommen '{{radix}}'",
       "notanarray":"Variable '{{name}}' is not an array (Received: '{{value}}')",
       "notbool":"Variable '{{name}}' is not a boolean (Received: '{{value}}')",
       "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
@@ -85,19 +85,19 @@
   "command":{
     "general":{
       "ping":{
-        "info":"Pong!\nFinds the command latency.",
-        "usage":"ping",
+        "info":"Pong!\nFindet den command frequency",
+        "usage":"Ping",
         "randmsg":[
-          "Existence is a lie.",
-          "You're going to die some day, perhaps soon.",
-          "Nothing matters.",
-          "Where do you get off?",
-          "There is nothing out there.",
-          "You are alone in an infinite void.",
-          "Truth is false.",
-          "Forsake everything.",
-          "Your existence is pitiful.",
-          "We are all already dead.",
+          "Existence ist eine lüge.",
+          "Du wirst irgendwann sterben,vielleicht bald.",
+          "Nichts lohn sich.",
+          "Nichts ist da draußen.",
+          "Moew.",
+          "Deine existence ist lächerlich.",
+          "Wir sind alle schon so gut wie tod.",
+          "Lass loß und zieh weiter.",
+          "Du bist alleine in einem unendlichen Universum.",
+          "Würdest du gerne einen vertrag mit mir machen?",
           "Meow.",
           "Fear is freedom.",
           "Subjugation is liberation.",
@@ -108,7 +108,7 @@
         "final":"Pong! ({{time}}ms)"
       },
       "brainfuck":{
-        "info":"Executes brainfuck code.",
+        "info":"Führt brainfuck code aus",
         "usage":"brainfuck <code>",
         "flags":{
           "p":"Shows a list of pointers after the execution.",
@@ -116,24 +116,24 @@
         }
       },
       "cat":{
-        "info":"Gets a picture of a cat.",
-        "usage":"cat"
+        "info":"Du bekommst das Bild einer katze",
+        "usage":"Katze"
       },
       "ship":{
-        "info":"Gives you the ship name for two users.",
-        "usage":"ship <user1> <user2>",
-        "final":"Your ship name is **{{name}}**!",
-        "notenough":"You have to tell me who to ship!"
+        "info":"Gibt dir den ship namen für zwei nutzer",
+        "usage":"Ship <user1> <user2>",
+        "final":"Dein shipname ist **{{name}**!",
+        "notenough":"Du musst mir sagen wen ich shipen soll!"
       },
       "tag":{
         "info":"Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>).",
         "usage":"tag <name | subcommand> [args]",
-        "dontown":"[[emote.x]] You don't own that tag!",
-        "alreadyexists":"[[emote.x]] A tag with that name already exists!",
-        "notag":"[[emote.x]] There is no tag with that name.",
+        "dontown":"[[emote.x]] dieser tag gehört nicht dir",
+        "alreadyexists":"[[emote.x]] ein tag mit diesem namen existiert bereits",
+        "notag":"[[emote.x]] da ist kein tag mit diesem namen",
         "tagset":"[[emote.check]] Tag `{{name}}` {{process}}!",
         "tagrename":"[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`.",
-        "raw":"The code for {{name}} is:\n```{{code}}```",
+        "raw":"Der code für {{name}} ist:\n```{{code}}```",
         "testoutput":"Test Output:\n\n{{output}}",
         "subcommand":{
           "set":{
@@ -141,44 +141,44 @@
             "info":"Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
           },
           "delete":{
-            "usage":"tag delete <name>",
-            "info":"Deletes a tag that you own."
+            "usage":"tag Löschen <name>",
+            "info":"Löscht ein tag der dir gehört"
           },
           "rename":{
-            "usage":"tag rename <name> <new name>",
-            "info":"Renames a tag that you own."
+            "usage":"Tag Umbenennen <name> <new name>",
+            "info":"Bennent einen tag der dir gehört um"
           },
           "raw":{
-            "usage":"tag raw <name>",
-            "info":"Gets the raw code of a tag."
+            "usage":"tag roh <name>",
+            "info":"Bekomst den rohen code eines tag."
           },
           "info":{
             "usage":"tag info <name>",
-            "info":"Displays information about a tag."
+            "info":"Zeight informationen über einen tag"
           },
           "transfer":{
-            "usage":"tag transfer <name> <user>",
+            "usage":"tag übergabe <name> <user>",
             "info":"Transfers a tag to the specified user. Variables will not be transferred."
           },
           "top":{
             "usage":"tag top",
-            "info":"Displays the tags that have been the most favorited."
+            "info":"Displays the tags that have been the most favourited."
           },
           "author":{
             "usage":"tag author <name>",
             "info":"Displays the author of a tag."
           },
           "search":{
-            "usage":"tag search <query>",
+            "usage":"tag suche <query>",
             "info":"Searches for a tag with a name containing your query."
           },
           "list":{
-            "usage":"tag list [@user]",
+            "usage":"tag liste [@user]",
             "info":"Lists all the tags, or optionally all the tags created by a specific user."
           },
           "favorite":{
             "usage":"tag favorite <name>",
-            "info":"Favorites the specified tag."
+            "info":"Favorisier dein markierten tag"
           },
           "report":{
             "usage":"tag report <name>",
@@ -186,10 +186,10 @@
           },
           "test":{
             "usage":"tag test <code>",
-            "info":"Executes the given code in a test environment."
+            "info":"Führt den gegebenen code aus in einer test Umgebung"
           },
           "help":{
-            "usage":"tag help [subcommand]",
+            "usage":"tag hilfe [subcommand]",
             "info":"Displays this!"
           },
           "docs":{
@@ -197,29 +197,29 @@
             "info":"Gives a link to the BBTag documentation, or provides information about a specific subtag."
           },
           "setdesc":{
-            "usage":"usage",
-            "info":"info"
+            "usage":"Benutzung",
+            "info":"Info"
           },
           "setusage":{
-            "usage":"usage",
+            "usage":"Benutzung",
             "info":"info"
           }
         },
         "subcommandnotfound":"Couldn't find a subcommand with the name `{{subcommand}}`.",
         "transferprompt":"{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
-        "nobots":"[[emote.x]] You cannot transfer a tag to a bot!",
-        "transfercancelled":"[[emote.x]] The transfer has been canceled.",
+        "nobots":"[[emote.x]] du kannst nicht einen tag zu einem bot übertragen",
+        "transfercancelled":"[[emote.x]] die übertragung wurde abgebrochen",
         "transfercomplete":"[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
         "descupdate":"The description for `{{tag}}` has been updated.",
         "descreset":"The description for `{{tag}}` has been reset.",
         "subcommandconflict":"You can't use the name `{{name}}` because there is a subcommand with that name!",
-        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
-        "toptags":"Here are the top 10 tags!\n\n{{tags}}",
-        "tagauthor":"The tag `{{tag}}` was created by **{{author}}**",
-        "favouriteadd":"The tag `{{tag}}` has been added to your favorites list.",
-        "favouriteremove":"The tag `{{tag}}` has been removed from your favorites list.",
-        "favourites":"You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+        "toptags":"Hier sind die top 10 tags\n\n{{tags}}",
+        "tagauthor":"Der tag '{{tag}}' wurde erstellt von **{{author}}**.",
+        "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
+        "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+        "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
       },
       "ccommand":{
         "info":"CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
@@ -230,11 +230,11 @@
             "info":"Creates or edits a custom command with the provided name and content. Will not replace any tags made by anyone else."
           },
           "delete":{
-            "usage":"cc delete <name>",
-            "info":"Deletes a custom command."
+            "usage":"cc löschen <name>",
+            "info":"Löscht einem einen selbst erstellten command"
           },
           "rename":{
-            "usage":"cc rename <name> <newName>",
+            "usage":"cc umbenennen <name> <newName>",
             "info":"Renames a custom command."
           },
           "author":{
@@ -254,7 +254,7 @@
             "info":"Executes code in the context of your account."
           },
           "help":{
-            "usage":"cc help [subcommand]",
+            "usage":"cc hilfe [subcommand]",
             "info":"Displays this!"
           }
         },
@@ -269,7 +269,7 @@
       "locale":{
         "info":"Sets what locale messages will be sent in.",
         "usage":"locale",
-        "set":"Your locale has been set to {{locale}}!",
+        "set":"Dein locale wurde festgelegt zu {{locale}}!",
         "list":"Your current locale is: {{current}}\n\nPlease select which locale you want to use."
       },
       "tokenify":{
@@ -362,8 +362,8 @@
     },
     "image":{
       "cat":{
-        "info":"Gives you a lovely dear sweet precious kitty.\nD'awww!",
-        "usage":"cat"
+        "info":"Gibt dir eine süße schöne liebvolle katze\nD'awww!",
+        "usage":"Katze"
       },
       "delete":{
         "info":""
@@ -407,8 +407,8 @@
           }
         },
         "mute":{
-          "setrole":"The muted role has been updated.",
-          "rolequery":"Select the muted role."
+          "setrole":"Die mute rolle wurde geupdatet",
+          "rolequery":"Wählt die mute rolle"
         },
         "announce":{
           "set":"Announcements have been set up.",
@@ -484,14 +484,14 @@
       "desc":"Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed.",
       "example":{
         "in":"This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
-        "out":"This will be shown  but this will be set"
+        "out":"Das wird eingezeight aber das wird gemacht"
       }
     },
     "randint":{
       "desc":"Returns a random integer between the provided range. `min` defaults to `0`.",
       "example":{
         "in":"One: {randint;5}, two: {randint;10;20}",
-        "out":"One: 2, two: 17"
+        "out":"Eins: 2, zwei: 17"
       }
     },
     "array":{
@@ -519,7 +519,7 @@
       "isarray":{
         "desc":"Returns true if the provided element is an array, and false otherwise. You cannot use variable names.",
         "example":{
-          "in":"{set;arr1;[this;is;an;array]}\n{set;arr2;this is not an array}\narr1: {array.isarray;{get;arr1}}\narr2: {array.isarray;{get;arr2}}",
+          "in":"{set;arr1;[this;is;an;array]} {set;arr2;this is not an array} arr1: {array.isarray;{get;arr1}} arr2: {array.isarray;{get;arr2}}",
           "out":"arr1: true\narr2: false"
         }
       },
@@ -527,7 +527,7 @@
         "desc":"Joins an array with the provided `delimiter`.",
         "example":{
           "in":"{set;array;[1;2;3;4;5]}\n{array.join;array;,{space}}",
-          "out":"1, 2, 3, 4, 5"
+          "out":"1 2, 3, 4, 5"
         }
       },
       "length":{
@@ -620,7 +620,7 @@
         "desc":"Returns whether the current or specified channel is NSFW.",
         "example":{
           "in":"{channel.nsfw}",
-          "out":"false"
+          "out":"Falsch"
         }
       },
       "name":{
@@ -657,7 +657,7 @@
         "desc":"Cleans the provided text by shrinking all whitespace.",
         "example":{
           "in":"{clean;  one\n\n                two\n  \n\n    three}",
-          "out":"one\ntwo\nthree"
+          "out":"Eins\nZwei\nDrei"
         }
       },
       "//":{
@@ -671,7 +671,7 @@
         "desc":"Returns the stored variable with the supplied name. Variable prefixes can modify the pool in which to search.",
         "example":{
           "in":"{set;var;This is a variable.}\n{get;var}",
-          "out":"This is a variable."
+          "out":"Das ist eine variable"
         }
       },
       "set":{
@@ -705,8 +705,8 @@
       "space":{
         "desc":"Returns the specified number of spaces, defaulting to 1.",
         "example":{
-          "in":"One{space;5}Two",
-          "out":"One     Two"
+          "in":"Eins{space;5}zwei",
+          "out":"Eins     Zwei"
         }
       }
     },
@@ -780,7 +780,7 @@
         "desc":"Does logical operators on the `augend` and `operands`, returning `true` or `false`.\n\nEquivalence Operators:\n - `==` - equal\n - `!=` - not equal\n - `<` - less than\n - `<=` - less than or equal\n - `>` - greater than\n - `>=` - greater than or equal\n - `startswith` - the augend starts with the operand\n - `endswith` - the augend ends with the operand\n - `includes` - the augend includes the operand\n\nLogical Operators:\n - `&&` - returns true if the augend and operand are both true\n - `||` - returns true if either the augend or operand are true\n - `XOR` - returns true if only one of the augend and operand are true (not both)\n\nOther Operators:\n - `!` - inverts the next operand (true becomes false, etc.)",
         "example":{
           "in":"{logic;5;==;6}\n{logic;5;!=;6;&&;5;>;6}\n{logic;5;>=;6;||;5;<;6}\n{logic;5;<=;6;xor;true}\n{logic;1234;startswith;12}\n{logic;1234;endswith;34}\n{logic;1234;includes;23}\n{logic;!;true}\n{logic;!;5;!=;5}",
-          "out":"false\nfalse\ntrue\nfalse\ntrue\ntrue\ntrue\nfalse\ntrue"
+          "out":"Falsch\nFalsch\nWarheit\nFalsch\nWarheit\nWarheit\nWarheit\nFalsch\nWarheit"
         }
       }
     },
@@ -1017,7 +1017,7 @@
       },
       "moderation":{
         "title":"Moderation",
-        "desc":"Need something to moderate your chat? blargbot is equipped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+        "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
       },
       "opensource":{
         "title":"Open-Source",
