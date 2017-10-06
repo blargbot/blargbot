@@ -1,30 +1,30 @@
 {
   "specs":{
-    "lang":"English"
+    "lang":"Dansk"
   },
   "generic":{
     "output":"Output:\n{{output}}",
-    "nooutput":"No output...",
-    "queryexpire":"This query will expire in {{length}} minutes.",
+    "nooutput":"Intet output...",
+    "queryexpire":"Søgningen vil udløbe om {{length}} minutter.",
     "resolveuser":{
-      "nousers":"No users found.",
-      "pickuser":"{{length}} users were found! Please select one from the list."
+      "nousers":"Ingen brugere fundet.",
+      "pickuser":"{{length}} brugere blev fundet! Vælg venligst en fra listen"
     },
     "resolverole":{
-      "noroles":"No roles found.",
-      "pickrole":"{{length}} roles were found! Please select one from the list."
+      "noroles":"Ingen roller fundet.",
+      "pickrole":"{{length}} roller blev fundet! Vælg venligst en fra listen."
     },
     "resolvechannel":{
-      "nochannels":"No channels found.",
-      "pickchannel":"{{length}} channels were found! Please select one from the list."
+      "nochannels":"Ingen kanaler fundet.",
+      "pickchannel":"{{length}} kanaler blev fundet! Vælg venligst en fra listen."
     },
-    "edited":"edited",
-    "created":"created",
-    "deleted":"deleted",
+    "edited":"redigeret",
+    "created":"skabt",
+    "deleted":"slettet",
     "menu":{
       "choices":"Page {{page}}/{{max}}"
     },
-    "nochange":"Nothing was changed.",
+    "nochange":"Intet blev ændret.",
     "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
     "example":{
       "id1":"111111111111111111",
@@ -32,19 +32,19 @@
       "id3":"333333333333333333"
     },
     "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-    "querycancelled":"The query has been canceled.",
+    "querycancelled":"The query has been cancelled.",
     "user":"User",
     "role":"Role",
     "channel":"Channel"
   },
   "menu":{
     "cancel":{
-      "name":"Cancel",
-      "description":"Close this menu."
+      "name":"Annuller",
+      "description":"Luk denne menu."
     },
     "confirm":{
-      "name":"Confirm",
-      "description":"Confirms this menu."
+      "name":"Bekræft",
+      "description":"Bekræfter denne menu."
     }
   },
   "emote":{
@@ -54,29 +54,29 @@
   },
   "error":{
     "keyundef":"No such locale entry was found: '{{key}}'.",
-    "memberundef":"No such member was found: '{{member}}'.",
-    "userundef":"No such user was found: '{{user}}'.",
-    "channelundef":"No such channel was found: '{{channel}}'.",
-    "roleundef":"No such role was found: '{{role}}'.",
-    "pleasereport":"If you think this is an error, please report it!",
-    "generic":"Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
-    "messagetoolong":"Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
-    "notenoughparams":"Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
+    "memberundef":"Intent lignende medlem blev fundet: `{{member}}`.",
+    "userundef":"Ingen lignende bruger blev fundet: `{{user}}`.",
+    "channelundef":"Ingen lignende kanal blev fundet: `{{channel}}`.",
+    "roleundef":"Ingen lignende rolle blev fundet: '{{role}}'.",
+    "pleasereport":"Hvis du mener dette er en fejl, venligst rapporter det!",
+    "generic":"Der er noget der gik galt!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "messagetoolong":"Ups! Jeg prøvede på at sende en besked der var for lang.\n[[error.pleasereport]]",
+    "notenoughparams":"Ikke nok parametre! Udfør `{{prefix}}help {{name}}` for flere detaljer.\n\nForventede `{{expected}}` parametre, men fik `{{recieved}}` istedet.",
     "tag":{
-      "notfound":"Subtag '{{tag}}' doesn't exist.",
-      "toomanyargs":"Too many args (r:{{received}} e:{{expected}})",
-      "toofewargs":"Not enough args (r:{{received}} e:{{expected}})",
-      "isnan":"Expected '{{arg}}' to be a number, but received '{{value}}'",
-      "maxlessthanmin":"Max must be greater than Min",
-      "ccommandonly":"'{{tag}}' may only be used in custom commands",
+      "notfound":"Tag '{{tag}}' findes ikke.",
+      "toomanyargs":"For mange argumenter (r:{{received}} e:{{expected}})",
+      "toofewargs":"Ikke tilstrækkeligt argumenter (r:{{received}} e:{{expected}})",
+      "isnan":"Forventede `{{arg}}` til at være et tal, men modtog istedet `{{value}}`",
+      "maxlessthanmin":"Max skal være større end Min.",
+      "ccommandonly":"`{{tag}}` kan kun bruges i ccommands.",
       "authorstaff":"Author {{author}} must be staff to use '{{tag}}'",
-      "noperms":"Bot is lacking permission '{{perm}}' required by tag '{{tag}}'",
-      "toolow":"Bot cannot execute '{{tag}}' because it's lower-ranked than '{{target}}'",
-      "unclosed":"Unmatched opening bracket [{{column}}:{{row}}]",
-      "unopened":"Unmatched closing bracket [{{column}}:{{row}}]",
-      "invalidradix":"Radix must be between 2 and 36, but received '{{radix}}'",
-      "notanarray":"Variable '{{name}}' is not an array (Received: '{{value}}')",
-      "notbool":"Variable '{{name}}' is not a boolean (Received: '{{value}}')",
+      "noperms":"Botten mangler `{{perm}}` tilladelse, der er krævet af tagget `{{tag}}`",
+      "toolow":"Bot kan ikke udføre `{{tag}}` fordi det er rankeret lavere end `{{target}}`",
+      "unclosed":"Umatchet åbnings klammer [{{column}}:{{row}}]",
+      "unopened":"Umatchet luknings klammer [{{column}}:{{row}}]",
+      "invalidradix":"Radix skal være mellem 2 og 36, men modtog `{{radix}}`",
+      "notanarray":"Variablen `{{name}}` er ikke et array (Received: '{{value}}')",
+      "notbool":"Variablen `{{name}}` er ikke en boolean (Received: '{{value}}')",
       "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
       "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
     },
@@ -85,116 +85,116 @@
   "command":{
     "general":{
       "ping":{
-        "info":"Pong!\nFinds the command latency.",
+        "info":"Pong!\nFinder svartiden for kommandoen.",
         "usage":"ping",
         "randmsg":[
-          "Existence is a lie.",
-          "You're going to die some day, perhaps soon.",
-          "Nothing matters.",
-          "Where do you get off?",
-          "There is nothing out there.",
-          "You are alone in an infinite void.",
-          "Truth is false.",
-          "Forsake everything.",
-          "Your existence is pitiful.",
-          "We are all already dead.",
-          "Meow.",
-          "Fear is freedom.",
-          "Subjugation is liberation.",
-          "Contradiction is truth.",
-          "Would you like to make a contract?",
-          "Let it go, and move on."
+          "Eksistens er en løgn.",
+          "Du dør alligevel en eller anden dag, måske endda snart.",
+          "Alting er ligegyldigt.",
+          "Hvor er du på vej hen?",
+          "Der er intet derude.",
+          "Du er alene i en uendelig tomhed.",
+          "Sandhed er løgn.",
+          "Opgiv alt.",
+          "Din eksistens er en skam.",
+          "Vi er allesammen allerede døde.",
+          "Frygt er frihed.",
+          "Undertrykkelse er frigørende.",
+          "Selvmodsigelse er sandhed.",
+          "Ville du leve bare for at kunne blive bundet?",
+          "Kunne du tænke dig at lave en kontrakt?",
+          "Giv slip, og kom videre med dit liv."
         ],
         "final":"Pong! ({{time}}ms)"
       },
       "brainfuck":{
-        "info":"Executes brainfuck code.",
+        "info":"Udfører brainfuck kode",
         "usage":"brainfuck <code>",
         "flags":{
-          "p":"Shows a list of pointers after the execution.",
-          "i":"Specifies the input for the `,` operator."
+          "p":"Viser en liste af pointere efter udførelsen.",
+          "i":"Specificerer inputtet for `.` operatoren."
         }
       },
       "cat":{
-        "info":"Gets a picture of a cat.",
+        "info":"Får et billede af en kat.",
         "usage":"cat"
       },
       "ship":{
         "info":"Gives you the ship name for two users.",
         "usage":"ship <user1> <user2>",
-        "final":"Your ship name is **{{name}}**!",
-        "notenough":"You have to tell me who to ship!"
+        "final":"Your shipname is **{{name}}**!",
+        "notenough":"Du er nødt til at fortælle mig hvem jeg skal parre!"
       },
       "tag":{
         "info":"Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>).",
         "usage":"tag <name | subcommand> [args]",
-        "dontown":"[[emote.x]] You don't own that tag!",
-        "alreadyexists":"[[emote.x]] A tag with that name already exists!",
-        "notag":"[[emote.x]] There is no tag with that name.",
+        "dontown":"[[emote.x]] Du ejer ikke dette tag!",
+        "alreadyexists":"[[emote.x]] Et tag med dette navn findes allerede!",
+        "notag":"[[emote.x]] Der er intet tag med dette navn.",
         "tagset":"[[emote.check]] Tag `{{name}}` {{process}}!",
-        "tagrename":"[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`.",
-        "raw":"The code for {{name}} is:\n```{{code}}```",
+        "tagrename":"[[emote.check]] Tagget `{{old}}` er blevet omdøbt til `{{new}}`.",
+        "raw":"Koden for {{name}} er:\n```{{code}}```",
         "testoutput":"Test Output:\n\n{{output}}",
         "subcommand":{
           "set":{
             "usage":"tag set <name> <content>",
-            "info":"Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
+            "info":"Skaber eller redigerer et tag med det givne navn og indhold. Vil ikke erstatte tags andre har lavet."
           },
           "delete":{
             "usage":"tag delete <name>",
-            "info":"Deletes a tag that you own."
+            "info":"Sletter et tag du ejer."
           },
           "rename":{
             "usage":"tag rename <name> <new name>",
-            "info":"Renames a tag that you own."
+            "info":"Omdøber et tag du ejer."
           },
           "raw":{
             "usage":"tag raw <name>",
-            "info":"Gets the raw code of a tag."
+            "info":"Anskaffer rå kode for et tag."
           },
           "info":{
             "usage":"tag info <name>",
-            "info":"Displays information about a tag."
+            "info":"Viser info om et tag."
           },
           "transfer":{
             "usage":"tag transfer <name> <user>",
-            "info":"Transfers a tag to the specified user. Variables will not be transferred."
+            "info":"Overfører et tag til den specifikke bruger. Variabler vil ikke blive overført."
           },
           "top":{
             "usage":"tag top",
-            "info":"Displays the tags that have been the most favorited."
+            "info":"Viser en liste over de tags der er blevet favoriseret flest gange."
           },
           "author":{
             "usage":"tag author <name>",
-            "info":"Displays the author of a tag."
+            "info":"Viser forfatteren til et tag."
           },
           "search":{
             "usage":"tag search <query>",
-            "info":"Searches for a tag with a name containing your query."
+            "info":"Søger efter et tag med et navn der indeholder din forespørgsel."
           },
           "list":{
             "usage":"tag list [@user]",
-            "info":"Lists all the tags, or optionally all the tags created by a specific user."
+            "info":"Viser en liste over alle tags, eller valgfrit alle tags skabt af en bestemt bruger."
           },
           "favorite":{
             "usage":"tag favorite <name>",
-            "info":"Favorites the specified tag."
+            "info":"Favoriserer et bestemt tag."
           },
           "report":{
             "usage":"tag report <name>",
-            "info":"Reports a tag for violating the ToS. Please use responsibly."
+            "info":"Raporterer et tag for at bryde brugervilkåerne. Venligst brug omhyggeligt."
           },
           "test":{
             "usage":"tag test <code>",
-            "info":"Executes the given code in a test environment."
+            "info":"Udfører det givne stykke kode i et test miljø."
           },
           "help":{
             "usage":"tag help [subcommand]",
-            "info":"Displays this!"
+            "info":"Viser dette!"
           },
           "docs":{
             "usage":"tag docs [subtag]",
-            "info":"Gives a link to the BBTag documentation, or provides information about a specific subtag."
+            "info":"Giver et link til BBTag dokumentationen, eller giver oplysninger om et bestemt undertag."
           },
           "setdesc":{
             "usage":"usage",
@@ -208,18 +208,18 @@
         "subcommandnotfound":"Couldn't find a subcommand with the name `{{subcommand}}`.",
         "transferprompt":"{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
         "nobots":"[[emote.x]] You cannot transfer a tag to a bot!",
-        "transfercancelled":"[[emote.x]] The transfer has been canceled.",
+        "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
         "transfercomplete":"[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+        "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
         "descupdate":"The description for `{{tag}}` has been updated.",
-        "descreset":"The description for `{{tag}}` has been reset.",
+        "descreset":"Beskrivelsen for `{{tag}}` er blevet nulstillet.",
         "subcommandconflict":"You can't use the name `{{name}}` because there is a subcommand with that name!",
-        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
-        "toptags":"Here are the top 10 tags!\n\n{{tags}}",
-        "tagauthor":"The tag `{{tag}}` was created by **{{author}}**",
-        "favouriteadd":"The tag `{{tag}}` has been added to your favorites list.",
-        "favouriteremove":"The tag `{{tag}}` has been removed from your favorites list.",
-        "favourites":"You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+        "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+        "toptags":"Her er en liste over de 10 mest brugte tags!\n\n{{tags}}",
+        "tagauthor":"Tagget `{{tag}}` er skabt af **{{author}}**",
+        "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
+        "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+        "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
       },
       "ccommand":{
         "info":"CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
@@ -231,19 +231,19 @@
           },
           "delete":{
             "usage":"cc delete <name>",
-            "info":"Deletes a custom command."
+            "info":"Sletter en brugerdefineret kommando."
           },
           "rename":{
             "usage":"cc rename <name> <newName>",
-            "info":"Renames a custom command."
+            "info":"Omdøber en brugerdefineret kommando."
           },
           "author":{
             "usage":"cc author <name>",
-            "info":"Returns the author of the custom command."
+            "info":"Viser navnet på forfatteren til den brugerdefinerede kommando."
           },
           "transfer":{
             "usage":"cc transfer <name> <user>",
-            "info":"Transfers ownership of a custom command to somebody else. Must be consensual."
+            "info":"Overfører ejerskab over en brugerdefineret kommando til en anden person. Der skal være givet samtykke først."
           },
           "list":{
             "usage":"cc list",
@@ -251,18 +251,18 @@
           },
           "test":{
             "usage":"cc test",
-            "info":"Executes code in the context of your account."
+            "info":"Udfører koden i kontekst af din konto."
           },
           "help":{
             "usage":"cc help [subcommand]",
-            "info":"Displays this!"
+            "info":"Viser dette!"
           }
         },
         "dontown":"[[emote.x]] You don't own that custom command!",
         "notag":"[[emote.x]] There is no custom command with that name.",
         "tagset":"[[emote.check]] Custom command `{{name}}` {{process}}!",
         "tagrename":"[[emote.check]] The custom command `{{old}}` has been renamed to `{{new}}`",
-        "raw":"The code for {{name}} is:\\n```{{code}}```",
+        "raw":"Koden for {{name}} er:\\n```{{code}}```",
         "alreadyexists":"A custom command with that name already exists.",
         "testoutput":"Test Output:\\n\\n{{output}}"
       },
@@ -362,7 +362,7 @@
     },
     "image":{
       "cat":{
-        "info":"Gives you a lovely dear sweet precious kitty.\nD'awww!",
+        "info":"Giver dig en meget sød og kærlig kat. Nuuuurr!",
         "usage":"cat"
       },
       "delete":{
@@ -399,7 +399,7 @@
           },
           "announcement":{
             "usage":"setup announcement",
-            "info":"Sets up announcements."
+            "info":"Opsætter annonceringer."
           },
           "modlog":{
             "usage":"modlog [event]... [flags]",
@@ -474,24 +474,24 @@
   },
   "tag":{
     "comment":{
-      "desc":"Specifies an area that will be ignored from parsing.",
+      "desc":"Specificerer et område der vil blive ignoreret fra at blive parset.",
       "example":{
-        "in":"This will be shown {//;This won't be}",
-        "out":"This will be shown"
+        "in":"Dette vil blive vist {//; Dette vil ikke}",
+        "out":"Dette vil blive vist"
       }
     },
     "void":{
       "desc":"Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed.",
       "example":{
         "in":"This will be shown {void;This won't be {set;~temp;but this will be set}} {get;~temp}",
-        "out":"This will be shown  but this will be set"
+        "out":"Dette vil blive vist  men dette vil blive sat"
       }
     },
     "randint":{
-      "desc":"Returns a random integer between the provided range. `min` defaults to `0`.",
+      "desc":"Returnerer et tilfældigt heltal i den angivne rækkevidde. `min` er som udgangspunkt sat til at være `0`.",
       "example":{
-        "in":"One: {randint;5}, two: {randint;10;20}",
-        "out":"One: 2, two: 17"
+        "in":"En: {randint;5}, to: {randint;10;20}",
+        "out":"En: 2, to: 17"
       }
     },
     "array":{
@@ -531,7 +531,7 @@
         }
       },
       "length":{
-        "desc":"Returns the length of the given array.",
+        "desc":"Returnerer længden af det givne array.",
         "example":{
           "in":"{set;array;[1;2;3;4;5]}\n{array.length;array}",
           "out":"5"
@@ -545,7 +545,7 @@
         }
       },
       "pop":{
-        "desc":"Removes and returns the last element of the array.",
+        "desc":"Fjerner og retunerer det sidste element i arrayet.",
         "example":{
           "in":"{set;array;[1;2;3;4;5]}\n{array.pop;array}\n{get;array}",
           "out":"5\n[1;2;3;4]"
@@ -566,7 +566,7 @@
         }
       },
       "shift":{
-        "desc":"Removes and returns the first element in the array.",
+        "desc":"Fjerner og retunerer det første element i arrayet.",
         "example":{
           "in":"{set;array;[1;2;3;4;5]}\n{array.shift;array}\n{get;array}",
           "out":"1\n[2;3;4;5]"
@@ -594,10 +594,10 @@
         }
       },
       "split":{
-        "desc":"Splits the `text` by the `delimiter`, returning the new array.",
+        "desc":"Splitter `teksten` ved `skilletegnet`, og returnerer det nye array.",
         "example":{
           "in":"{array.split;This will be split by spaces;{space}}",
-          "out":"[This;will;be;split;by;spaces]"
+          "out":"[Dette;vil;blive;splittet;med;mellemrum]"
         }
       },
       "unshift":{
@@ -610,14 +610,14 @@
     },
     "channel":{
       "id":{
-        "desc":"Returns the ID of the current or specified channel.",
+        "desc":"Returnerer ID'et af den nuværende eller specifierede kanal.",
         "example":{
           "in":"{channel.id}",
           "out":"[[generic.example.id1]]"
         }
       },
       "nsfw":{
-        "desc":"Returns whether the current or specified channel is NSFW.",
+        "desc":"Returner om kanalen er NSFW eller ej.",
         "example":{
           "in":"{channel.nsfw}",
           "out":"false"
@@ -648,7 +648,7 @@
         "desc":"Returns the type of the current or specified channel (returns \"text\" or \"voice\").",
         "example":{
           "in":"{channel.type}",
-          "out":"text"
+          "out":"tekst"
         }
       }
     },
@@ -663,7 +663,7 @@
       "//":{
         "desc":"Specifies an area that will be ignored from parsing",
         "example":{
-          "in":"This will be shown {//;This won't be}",
+          "in":"Dette vil blive vist {//; Dette vil ikke blive vist}",
           "out":"This will be shown"
         }
       },
@@ -698,15 +698,15 @@
       "newline":{
         "desc":"Returns the specified number of newlines, defaulting to 1.",
         "example":{
-          "in":"One{newline;5}Two",
-          "out":"One\n\n\n\n\nTwo"
+          "in":"En{newline;5}To",
+          "out":"En\n\n\n\n\nTo"
         }
       },
       "space":{
         "desc":"Returns the specified number of spaces, defaulting to 1.",
         "example":{
-          "in":"One{space;5}Two",
-          "out":"One     Two"
+          "in":"En{space;5}To",
+          "out":"En     To"
         }
       }
     },
@@ -888,7 +888,7 @@
         }
       },
       "position":{
-        "desc":"Returns the position of the specified role.",
+        "desc":"Returnerer placeringen af en bestemt rolle.",
         "example":{
           "in":"{role.position;coolrole}",
           "out":"5"
@@ -911,7 +911,7 @@
         }
       },
       "discrim":{
-        "desc":"Returns the discriminator of the specified user, defaulting to the executing user.",
+        "desc":"Returnerer diskrimanotoren af en specificeret bruger,",
         "example":{
           "in":"{user.discrim}",
           "out":"1111"
@@ -928,7 +928,7 @@
         "desc":"Returns the game the specified user is playing, defaulting to the executing user. If the user isn't playing a game, returns nothing.",
         "example":{
           "in":"{user.game}",
-          "out":"with BBTag!"
+          "out":"med BBTag!"
         }
       },
       "id":{
@@ -1017,7 +1017,7 @@
       },
       "moderation":{
         "title":"Moderation",
-        "desc":"Need something to moderate your chat? blargbot is equipped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+        "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
       },
       "opensource":{
         "title":"Open-Source",
