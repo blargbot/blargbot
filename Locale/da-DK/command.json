@@ -13,10 +13,10 @@
         "Opgiv alt.",
         "Din eksistens er en skam.",
         "Vi er allesammen allerede døde.",
+        "Miav.",
         "Frygt er frihed.",
         "Undertrykkelse er frigørende.",
         "Selvmodsigelse er sandhed.",
-        "Ville du leve bare for at kunne blive bundet?",
         "Kunne du tænke dig at lave en kontrakt?",
         "Giv slip, og kom videre med dit liv."
       ],
@@ -207,7 +207,7 @@
           "info":""
         },
         "remove":{
-          "usage":"",
+          "usage":"<prefix>",
           "info":""
         }
       },
@@ -218,7 +218,7 @@
       "defaultprefixes":"",
       "prefixadded":"",
       "prefixremoved":"",
-      "nothingchanged":""
+      "nothingchanged":"Intet blev ændret."
     }
   },
   "image":{
@@ -245,7 +245,7 @@
       "info":"",
       "subcommand":{
         "staffuser":{
-          "usage":"",
+          "usage":"<add | remove><user>...",
           "info":""
         },
         "staffrole":{
@@ -318,12 +318,12 @@
           "info":""
         },
         "test":{
-          "usage":"",
+          "usage":"<code>",
           "info":""
         },
         "help":{
           "usage":"",
-          "info":""
+          "info":"Viser dette!"
         }
       },
       "dontown":"",
