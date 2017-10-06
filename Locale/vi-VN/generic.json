@@ -1,0 +1,35 @@
+{
+  "output":"{{output}}",
+  "nooutput":"Thôi rồi đầu ra biến đi đâu rồi...",
+  "queryexpire":"Lựa chọn sẽ mất hiệu lực trong {{length}} phút.",
+  "resolveuser":{
+    "nousers":"Xin lỗi, nhưng mình không tìm thấy người dùng đó.",
+    "pickuser":"Có {{length}} người dùng trong danh sách! Chọn một trong số đó để tiếp tục."
+  },
+  "resolverole":{
+    "noroles":"Không thể tìm thấy role bạn cần.",
+    "pickrole":"Có {{length}} roles được tìm thấy trong danh sách! Chọn một trong số đó để tiếp tục."
+  },
+  "resolvechannel":{
+    "nochannels":"Sorry, mình không tìm thấy kênh đó.",
+    "pickchannel":"Có {{length}} kênh được tìm thấy trong danh sách! Chọn một trong số đó để tiếp tục."
+  },
+  "edited":"đã chỉnh sửa",
+  "created":"đã được tạo",
+  "deleted":"đã được xoá",
+  "menu":{
+    "choices":"Trang {{page}}/{{max}}"
+  },
+  "nochange":"Không có thay đổi.",
+  "commandhelp":"",
+  "example":{
+    "id1":"",
+    "id2":"",
+    "id3":""
+  },
+  "test":"",
+  "querycancelled":"The query has been cancelled.",
+  "user":"",
+  "role":"",
+  "channel":""
+}

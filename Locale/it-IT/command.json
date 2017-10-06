@@ -1,0 +1,338 @@
+{
+  "general":{
+    "ping":{
+      "info":"Pong!\nTrova la latenza del comando",
+      "randmsg":[
+        "L'esistenza è una bugia.",
+        "Morirai un giorno, forse presto.",
+        "Niente importa.",
+        "Da dove scendi?",
+        "Non c'è nulla là fuori.",
+        "Sei da solo in un vuoto infinito.",
+        "Il vero è falso.",
+        "La tua esistenza è pietosa.",
+        "Siamo tutti già morti.",
+        "Meow.",
+        "Paura è libertà.",
+        "Soggiogazione è liberazione.",
+        "Contraddizione è verità.",
+        "Vuoi formare un contratto?",
+        "Lascialo andare e vai avanti.",
+        ""
+      ],
+      "final":""
+    },
+    "brainfuck":{
+      "info":"Esegue codice brainfuck.",
+      "usage":"",
+      "flags":{
+        "p":"Mostra una lista di puntatori dopo l'esecuzione.",
+        "i":"Specifica l'input per l'operatore `,`."
+      }
+    },
+    "ship":{
+      "info":"Ricevi l'unione (ship) dei nickname di due utenti.",
+      "usage":"",
+      "final":"Il tuo nome (shipname) è **{{name}}**!",
+      "notenough":"Devi dirmi chi unire (ship)!"
+    },
+    "tag":{
+      "info":"Le tags sono un sistema pubblico di comandi che chiunque può creare o eseguire, usando il linguaggio BBTag.\n\n**Sottocomandi**:\n{{subcommands}}\n\nPer maggiori informazioni su un sottocomando, scrivi `b!t help <sottocomando>`\nPer maggiori informazioni su BBTag, visita <https://blargbot.xyz/tags>.\nCreando una tag, accetti i termini di servizio (<https://blargbot.xyz/tags/tos>).",
+      "usage":"",
+      "dontown":"[[emote.x]] Non possiedi questa tag!",
+      "alreadyexists":"[[emote.x]] Una tag con questo nome esiste già!",
+      "notag":"[[emote.x]] Non c'è nessuna tag con quel nome.",
+      "tagset":"",
+      "tagrename":"[[emote.check]] La tag `{{old}}` è stata rinominata come `{{new}}`.",
+      "raw":"Il codice per {{name}} è:\n```{{code}}```",
+      "testoutput":"",
+      "subcommand":{
+        "set":{
+          "usage":"",
+          "info":"Crea o modifica una tag con il nome e contenuto inseriti. Non rimpiazza alcuna tag creata da altri."
+        },
+        "delete":{
+          "usage":"",
+          "info":"Elimina una tag che possiedi."
+        },
+        "rename":{
+          "usage":"",
+          "info":"Rinomina una tag che possiedi."
+        },
+        "raw":{
+          "usage":"",
+          "info":"Restituisce il codice di una tag."
+        },
+        "info":{
+          "usage":"",
+          "info":"Fornisce informazioni su una tag."
+        },
+        "transfer":{
+          "usage":"",
+          "info":"Trasferisce una tag all'utente specificato. Le variabili non verranno trasferite."
+        },
+        "top":{
+          "info":"Visualizza le tag più preferite."
+        },
+        "author":{
+          "usage":"",
+          "info":"Visualizza l'autore di una tag."
+        },
+        "search":{
+          "usage":"",
+          "info":"Cerca una tag con un nome che contiene la tua query."
+        },
+        "list":{
+          "usage":"",
+          "info":"Mostra la lista di tutte le tag, o solo quelle di un utente specifico."
+        },
+        "favorite":{
+          "usage":"",
+          "info":"Preferisci una specifica tag."
+        },
+        "report":{
+          "usage":"",
+          "info":"Segnala una tag che viola i ToS. Usa con responsabilità."
+        },
+        "test":{
+          "usage":"",
+          "info":"Esegue il comando in un ambiente di test."
+        },
+        "help":{
+          "usage":"",
+          "info":"Visualizza questo!"
+        },
+        "docs":{
+          "usage":"",
+          "info":"Restituisce il link alla documentazione BBTag, o restituisce informazioni su una tag specifica."
+        },
+        "setdesc":{
+          "info":"Info"
+        },
+        "setusage":{
+          "info":"Info"
+        }
+      },
+      "subcommandnotfound":"Non ho trovato alcun sottocomando con il nome `{{subcommand}}`.",
+      "transferprompt":"{{target}}, {{user}} vuole trasferire a te la proprietà della tag `{{tag}}`. Accetti?\nNon verranno trasferite le variabili.",
+      "nobots":"[[emote.x]] Non puoi trasferire la proprietà ad un bot!",
+      "transfercancelled":"[[emote.x]] Il trasferimento è stato annullato.",
+      "transfercomplete":"[[emote.check]] {{user}} ora possiede la tag `{{tag}}`.",
+      "taginfo":"__**Tag | {{name}}**__\nAutore: **{{author}}**\nUltima modifica: **{{lastModified}}**\nE' stata usata un totale di **{{uses}} volte**!\nE' stata preferita per un totale di **{{favourites}} volte**!\n\n{{desc}}",
+      "descupdate":"La descrizione per `{{tag}}` è stata aggiornata.",
+      "descreset":"La descrizione per `{{tag}}` è stata resettata.",
+      "subcommandconflict":"Non puoi usare il nome `{{name}}` perchè esiste già un sottocomando con quel nome!",
+      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Preferiti: {{favourites}} Usi: {{uses}}",
+      "toptags":"Queste sono le prime 10 tags!\n\n{{tags}}",
+      "tagauthor":"La tag `{{tag}}` è stata creata da **{{author}}**.",
+      "favouriteadd":"La tag `{{tag}}` è stata aggiunta alla tua lista preferiti.",
+      "favouriteremove":"La tag `{{tag}}` è stata rimossa dalla tua lista preferiti.",
+      "favourites":"Hai {{count}} tags nella tua lista preferiti.\n```fix\n{{tags}}\n```"
+    },
+    "locale":{
+      "info":"Imposta il file (locale) in cui i messaggi saranno spediti.",
+      "set":"Il tuo locale è stato impostato a {{locale}}!",
+      "list":"Il tuo locale attuale è: {{current}}\n\nPer favore seleziona quale locale vuoi utilizzare."
+    },
+    "tokenify":{
+      "info":""
+    },
+    "nato":{
+      "info":""
+    },
+    "invite":{
+      "info":"",
+      "message":""
+    },
+    "donate":{
+      "info":"",
+      "willdm":"",
+      "message":""
+    },
+    "mods":{
+      "info":"",
+      "mods":"",
+      "nomods":"",
+      "nomodsonline":""
+    },
+    "help":{
+      "info":"",
+      "allcommands":"",
+      "nocommand":"",
+      "commandinfo":"",
+      "aliases":"",
+      "subcommand":"",
+      "command":"",
+      "nosubcommand":"",
+      "subcommands":""
+    },
+    "gamatoto":{
+      "info":"",
+      "subcommand":{
+        "start":{
+          "usage":"",
+          "info":""
+        },
+        "end":{
+          "info":""
+        },
+        "locations":{
+          "info":""
+        }
+      },
+      "stats":"",
+      "alreadystarted":"",
+      "notstarted":"",
+      "nolocation":"",
+      "invalidlocation":"",
+      "expeditionbeings":"",
+      "expeditionends":"",
+      "notimeelapsed":"",
+      "itemfound":"",
+      "levelup":"",
+      "gamatotoxp":"",
+      "itemincrease":"",
+      "locations":"",
+      "wronglevel":"",
+      "gamatotoitems":"",
+      "gamatotostats":"",
+      "gamatotocurrent":"",
+      "gamatotoidle":""
+    },
+    "prefix":{
+      "info":"",
+      "subcommand":{
+        "add":{
+          "usage":"",
+          "info":""
+        },
+        "remove":{
+          "usage":"",
+          "info":""
+        }
+      },
+      "prefixlist":"",
+      "userprefixes":"",
+      "guildprefixes":"",
+      "noprefixes":"",
+      "defaultprefixes":"",
+      "prefixadded":"",
+      "prefixremoved":"",
+      "nothingchanged":""
+    }
+  },
+  "image":{
+    "cat":{
+      "info":"Restituisce un grazioso e puccioso gatto.\nD'awww!"
+    },
+    "delete":{
+      "info":""
+    },
+    "thesearch":{
+      "info":"",
+      "defaulttext":""
+    },
+    "shit":{
+      "info":""
+    }
+  },
+  "admin":{
+    "setup":{
+      "staff":{
+        "setrole":"I ruoli staff sono stati aggiornati.",
+        "rolequery":"Seleziona i ruoli che dovranno essere considerati come moderatori. Gli utenti con questi ruoli potranno usare i comandi per amministratori."
+      },
+      "info":"Configura varie impostazioni.",
+      "subcommand":{
+        "staffuser":{
+          "usage":"mod user <add | remove> <utente>...",
+          "info":"Aggiunge o toglie l'utente(i) specificato(i) dalla lista staff."
+        },
+        "staffrole":{
+          "info":"Mostra un dialogo per selezionare o deselezionare i ruoli."
+        },
+        "mute":{
+          "info":"info"
+        },
+        "announcement":{
+          "info":"info"
+        },
+        "modlog":{
+          "usage":"",
+          "info":""
+        }
+      },
+      "mute":{
+        "setrole":"Il ruolo muto è stato aggiornato.",
+        "rolequery":"Seleziona il ruolo muto."
+      },
+      "announce":{
+        "set":"imposta",
+        "rolequery":"Seleziona il ruolo che dovrà essere menzionato per gli annunci.",
+        "channelquery":"Seleziona il canale in cui gli annunci dovrebbero apparire."
+      },
+      "modlog":{
+        "set":"",
+        "remove":"",
+        "invalid":"",
+        "hadinvalid":"",
+        "list":""
+      }
+    },
+    "reason":{
+      "info":"",
+      "nocase":"",
+      "reasonset":""
+    },
+    "help":{
+      "info":"",
+      "allcommands":"",
+      "nocommand":"",
+      "commandinfo":""
+    },
+    "ccommand":{
+      "info":"",
+      "usage":"",
+      "subcommand":{
+        "set":{
+          "usage":"",
+          "info":""
+        },
+        "delete":{
+          "usage":"",
+          "info":""
+        },
+        "rename":{
+          "usage":"",
+          "info":""
+        },
+        "author":{
+          "usage":"",
+          "info":""
+        },
+        "transfer":{
+          "usage":"",
+          "info":""
+        },
+        "list":{
+          "info":""
+        },
+        "test":{
+          "usage":"",
+          "info":""
+        },
+        "help":{
+          "usage":"",
+          "info":""
+        }
+      },
+      "dontown":"",
+      "notag":"",
+      "tagset":"",
+      "tagrename":"",
+      "raw":"",
+      "alreadyexists":"",
+      "testoutput":""
+    }
+  }
+}

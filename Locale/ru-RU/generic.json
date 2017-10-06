@@ -1,0 +1,35 @@
+{
+  "output":"Вывод:\n{{output}}",
+  "nooutput":"Вывода нет...",
+  "queryexpire":"Ваш запрос истечёт через {{length}} минут.",
+  "resolveuser":{
+    "nousers":"Пользователь не найден.",
+    "pickuser":"Найдено {{length}} пользователей! Выберите одного из списка."
+  },
+  "resolverole":{
+    "noroles":"Роль не найдена.",
+    "pickrole":"Найдено {{length}} ролей! Выберите одного из списка"
+  },
+  "resolvechannel":{
+    "nochannels":"Канал не найден.",
+    "pickchannel":"Найдено {{length}} каналов! Выберите одного из списка."
+  },
+  "edited":"изменено",
+  "created":"создано",
+  "deleted":"удалено",
+  "menu":{
+    "choices":"Страница {{page}} из {{max}}"
+  },
+  "nochange":"Ничего не изменено.",
+  "commandhelp":"**Имя команды**: **__{{name}}__**\n\n**__Синтаксис__**\n```{{usage}}```\n**__Информация__**\n{{info}}\n\n**__Другие имена команды__**\n{{aliases}}",
+  "example":{
+    "id1":"",
+    "id2":"",
+    "id3":""
+  },
+  "test":"",
+  "querycancelled":"The query has been cancelled.",
+  "user":"",
+  "role":"",
+  "channel":""
+}

@@ -1,0 +1,35 @@
+{
+  "output":"输出：\n{{output}}\n",
+  "nooutput":"没有输出...",
+  "queryexpire":"此查询将在 {{length}} 分钟内到期。",
+  "resolveuser":{
+    "nousers":"没有发现用户.",
+    "pickuser":"{{length}} 个用户发现! 请从用户名单里头选一个."
+  },
+  "resolverole":{
+    "noroles":"没有角色发现.",
+    "pickrole":"{{length}} 角色被发现！请从列表中选择一个."
+  },
+  "resolvechannel":{
+    "nochannels":"没有频道被发现!",
+    "pickchannel":"{{length}} 个频道发现! 请从用户名单里头选一个."
+  },
+  "edited":"修改了",
+  "created":"创建了",
+  "deleted":"删掉了",
+  "menu":{
+    "choices":"页 {{页}}/{{最大}}"
+  },
+  "nochange":"没有被改变",
+  "commandhelp":"",
+  "example":{
+    "id1":"",
+    "id2":"",
+    "id3":""
+  },
+  "test":"",
+  "querycancelled":"The query has been cancelled.",
+  "user":"",
+  "role":"",
+  "channel":""
+}

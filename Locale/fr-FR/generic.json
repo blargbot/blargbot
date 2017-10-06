@@ -1,0 +1,35 @@
+{
+  "output":"Résultat:\n{{output}}",
+  "nooutput":"Aucun résultat...",
+  "queryexpire":"Cette requête expirera dans {{length}} minutes.",
+  "resolveuser":{
+    "nousers":"Aucun utilisateur trouvé.",
+    "pickuser":"{{length}} utilisateurs trouvés! Veuillez en choisir un de la liste."
+  },
+  "resolverole":{
+    "noroles":"Aucun rôle trouvé.",
+    "pickrole":"{{length}} rôles trouvés! Veuillez en choisir un de la liste."
+  },
+  "resolvechannel":{
+    "nochannels":"Aucun canal trouvé.",
+    "pickchannel":"{{length}} canaux trouvés! Veuillez en choisir un de la liste."
+  },
+  "edited":"édité",
+  "created":"créé",
+  "deleted":"supprimé",
+  "menu":{
+    "choices":""
+  },
+  "nochange":"Aucun changement.",
+  "commandhelp":"**Nom de la commande**: **__{{name}}__**\n\n**__Utilisation__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Alias__**\n{{aliases}}",
+  "example":{
+    "id1":"",
+    "id2":"",
+    "id3":""
+  },
+  "test":"",
+  "querycancelled":"The query has been cancelled.",
+  "user":"",
+  "role":"",
+  "channel":""
+}

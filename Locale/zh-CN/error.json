@@ -1,0 +1,30 @@
+{
+  "keyundef":"",
+  "memberundef":"",
+  "userundef":"",
+  "channelundef":"",
+  "roleundef":"",
+  "pleasereport":"",
+  "generic":"",
+  "messagetoolong":"",
+  "notenoughparams":"",
+  "tag":{
+    "notfound":"",
+    "toomanyargs":"",
+    "toofewargs":"",
+    "isnan":"",
+    "maxlessthanmin":"",
+    "ccommandonly":"'{{tag}}' may only be used in ccommands",
+    "authorstaff":"",
+    "noperms":"",
+    "toolow":"",
+    "unclosed":"",
+    "unopened":"",
+    "invalidradix":"",
+    "notanarray":"",
+    "notbool":"",
+    "missingarg":"",
+    "namedunsupported":""
+  },
+  "inputtoolong":""
+}

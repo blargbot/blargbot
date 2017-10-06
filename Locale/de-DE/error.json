@@ -1,0 +1,30 @@
+{
+  "keyundef":"Kein lokaler Eintrag wurde gefunden für: '{{key}}'.",
+  "memberundef":"Kein Mitglied wurde gefunden für: '{{member}}'.",
+  "userundef":"Kein Nutzer wurde gefunden für: '{{user}}'.",
+  "channelundef":"Kein Channel wurde gefunden für: '{{channel}}'.",
+  "roleundef":"Keine Rolle wurde gefunden für: '{{role}}'.",
+  "pleasereport":"Wenn du denkst das ist ein fehler, bitte melde es! (In english)",
+  "generic":"Irgendwie ist etwas falsch gelaufen\n```\n{{Message}}\n```\n[[error.pleasereport]]",
+  "messagetoolong":"Whoops! Hab versucht eine nachricht zu shicken die zu lang war\n[[error.pleasereport]]",
+  "notenoughparams":"Nicht genug Parameter. Tu `{{prefix}}help\n{{name}}` für mehr Informationen\n\nErwartete `{{expected}}` parameter, aber geh\n`{{received}}` hin",
+  "tag":{
+    "notfound":"Tag '{{tag}}' existiert nicht",
+    "toomanyargs":"Zu viele argumente (r:{{received}} e:{{expected}})",
+    "toofewargs":"Nicht genug argumente (r:{{received}} e:{{expected}})",
+    "isnan":"Erwartete '{{arg}}' als Zahl, aber bekommen\n'{{value}}'",
+    "maxlessthanmin":"Max muss mehr sein als Min",
+    "ccommandonly":"'{{Tag}}' wird vielleicht nur in ccommands benutzt",
+    "authorstaff":"Author {{author}} muss admin sein zum benutzen",
+    "noperms":"Bot fehlt Erlaubnis '{{perm}}' gebraucht von \ntag '{{tag}}'",
+    "toolow":"Bot can nicht ausführen '{{tag}}' weil es ein niedrieger rank ist als '{{target}}'",
+    "unclosed":"",
+    "unopened":"",
+    "invalidradix":"Radix muss zwischen 2 und 36 sein, aber bekommen '{{radix}}'",
+    "notanarray":"",
+    "notbool":"",
+    "missingarg":"",
+    "namedunsupported":""
+  },
+  "inputtoolong":""
+}

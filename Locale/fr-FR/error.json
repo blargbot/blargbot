@@ -1,0 +1,30 @@
+{
+  "keyundef":"Aucune entrée locale de ce type n'a été trouvée: '{{key}}'.",
+  "memberundef":"Aucun membre de ce nom n'a été trouvé: '{{member}}'",
+  "userundef":"Aucun utilisateur de ce nom n'a été trouvé: '{{user}}'.",
+  "channelundef":"Aucun canal de ce nom n'a été trouvé: '{{channel}}'.",
+  "roleundef":"Aucun rôle de ce nom n'a été trouvé: '{{role}}'.",
+  "pleasereport":"Si vous pensez qu'il s'agit d'une erreur, veuillez la signaler (en anglais)!",
+  "generic":"Une erreur s'est produite!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+  "messagetoolong":"Oh-oh! J'ai tenté d'envoyer un message qui était trop long.\n[[error.pleasereport]]",
+  "notenoughparams":"Pas assez de paramètres. Utilisez `{{prefix}}help {{name}}` pour plus de détails.\n\nIl fallait `{{expected}}` parameters, mais j'ai reçu `{{received}}` à la place.",
+  "tag":{
+    "notfound":"Le tag `{{tag}}` n'existe pas.",
+    "toomanyargs":"Trop d'arguments! (r:{{received}} e:{{expected}})",
+    "toofewargs":"Pas assez d'arguments! (r:{{received}} e:{{expected}})",
+    "isnan":"'{{arg}}' s'attend à être un nombre, mais reçois une '{{value}}'",
+    "maxlessthanmin":"Le maximum doit être supérieur au minimum",
+    "ccommandonly":"'{{tag}}' ne peut être utilisé qu'avec les ccommands",
+    "authorstaff":"L'auteur {{author}} doit être un membre du staff pour utiliser '{{tag}}'",
+    "noperms":"Il manque au bot la permission '{{perm}}' requise par le tag '{{tag}}'",
+    "toolow":"Le bot ne peut exécuter '{{tag}}' car son rang est inférieur à celui de '{{target}}'",
+    "unclosed":"Accolade d'ouverture solitaire [{{column}}:{{row}}]",
+    "unopened":"Accolade de fermeture solitaire [{{column}}:{{row}}]",
+    "invalidradix":"La base doit être comprise entre 2 et 36, mais vaut '{{radix}}'",
+    "notanarray":"La variable '{{name}}' n'est pas un tableau (reçu: '{{value}}').",
+    "notbool":"La variable '{{name}}' n'est pas un booléen (reçu: '{{value}}').",
+    "missingarg":"",
+    "namedunsupported":""
+  },
+  "inputtoolong":"Votre saisie est trop longue! Le maximum de caractère pour ça est {{max}}, mais vous avez donné {{length}} caractères."
+}

@@ -1,0 +1,224 @@
+{
+  "array":{
+    "filter":{
+      "desc":"Cicla tutti gli elementi di un array, impostando l'elemento corrente ad una variabile locale `i`. Se `varName` è specificato, imposta quella variabile.\n\nRitorna un nuovo array contenente solo gli elementi il cui risultato del ciclo sia `true` o `1`."
+    },
+    "foreach":{
+      "desc":"Cicla tutti gli elementi di un array, impostando la variabile locale `i` all'elemento corrente. Se `varName` è specificato, imposta quella variabile."
+    },
+    "get":{
+      "desc":"Prende un elemento di un array alla posizione `indice`."
+    },
+    "isarray":{
+      "desc":"Ritorna true se l'elemento fornito è un array, false il contrario. Non puoi usare nomi di variabili."
+    },
+    "join":{
+      "desc":"Unisce un array con il `delimitatore` fornito."
+    },
+    "length":{
+      "desc":"Restituisce la lunghezza dell'array dato."
+    },
+    "map":{
+      "desc":"Cicla tutti gli elementi di un array, impostando l'elemento corrente in una variabile locale `i`. Se `varName` è specificato, imposta quella variabile.\n\nRestituisce un nuovo array in cui ogni elemento è il risultato del ciclo."
+    },
+    "pop":{
+      "desc":"Rimuove e restituisce l'ultimo elemento dell'array."
+    },
+    "push":{
+      "desc":"Mette un elemento alla fine di un array. Restituisce l'array modificato."
+    },
+    "set":{
+      "desc":"Imposta un elemento dell'array all' `indice` specificato."
+    },
+    "shift":{
+      "desc":"Rimuove e restituisce il primo elemento di un array."
+    },
+    "slice":{
+      "desc":"Ritorna una sezione dell'array, incluso l'indice `start` ed escluso l'indice `end`. Se `end` non è specificato, restituisce gli elementi rimanenti."
+    },
+    "sort":{
+      "desc":"Ordina e restituisce un array, con default in ordine crescente.\n\nSe `function` è fornita, l'ordinamento sarà eseguito in base al risultato della funzione. Questo imposterà due variabili: `a` (o `nomePrimaVariabile`) e `b` (o `nomeSecondaVariabile`). \n\nLa funzione deve restituire un numero. Se questo è più grande di 0, `a` verrà considerata più grande di `b`. Qualunque risultato non numerico sarà tradotto in 0, dove entrambi gli elementi sono uguali."
+    },
+    "splice":{
+      "desc":"Iniziando dalla posizione `start`, rimuove `deleteCount` elementi dall'array e aggiunge gli `oggetti` rimanenti a quella posizone. Restituisce gli elementi rimossi."
+    },
+    "split":{
+      "desc":"Divide il `testo` con un `delimitatore`, restituendo il nuovo array."
+    },
+    "unshift":{
+      "desc":"Inserisce il `valore` all'inizio dell'array, e restituisce l'array modificato."
+    }
+  },
+  "channel":{
+    "id":{
+      "desc":"Restituisce l'ID del canale corrente o specificato."
+    },
+    "nsfw":{
+      "desc":"Restituisce se il canale corrente o specificato è NSFW."
+    },
+    "name":{
+      "desc":"Restituisce il nome del canale corrente o specificato."
+    },
+    "position":{
+      "desc":"Restituisce la posizione del canale corrente o specificato."
+    },
+    "topic":{
+      "desc":"Restituisce l'argomento del canale corrente o specificato (solo canali testuali)."
+    },
+    "type":{
+      "desc":"Restituisce il tipo del canale corrente o specificato (ritorna \"text\" o \"voice\")."
+    }
+  },
+  "general":{
+    "clean":{
+      "desc":"Pulisce il testo fornito togliendo tutti gli spazi bianchi."
+    },
+    "//":{
+      "desc":"Specifica un area che non verrà analizzata."
+    },
+    "get":{
+      "desc":"Restituisce la variabile con il nome fornito. I prefissi possono modificare il pool (area) dove cercare."
+    },
+    "set":{
+      "desc":"Imposta la variabile con il nome fornito con il valore fornito. I prefissi possono modificare il pool (area) dove impostare."
+    },
+    "trim":{
+      "desc":"Rimuove gli spazi bianchi prima e dopo il testo fornito. Usa la tag {clean} per togliere gli spazi bianchi del testo."
+    },
+    "void":{
+      "desc":"Previene gli output dalla sottotag. Si differenzia dei commenti perchè viene analizzata, solo non visualizzata."
+    },
+    "newline":{
+      "desc":"Restituisce un numero specifico di nuove righe, 1 di default."
+    },
+    "space":{
+      "desc":"Restituisce un numero specifico di spazi, 1 di default."
+    }
+  },
+  "guild":{
+    "createdat":{
+      "desc":"Restituisce quando la gilda è stata creata con un timestamp Unix (millisecondi)."
+    },
+    "channels":{
+      "desc":"Restituisce i canali della gilda come array."
+    },
+    "icon":{
+      "desc":"Restituisce l'URL dell'icona della gilda"
+    },
+    "id":{
+      "desc":"Restituisce l'ID della gilda."
+    },
+    "name":{
+      "desc":"Restituisce il nome della gilda."
+    },
+    "owner":{
+      "desc":"Restituisce l'ID del proprietario della gilda."
+    },
+    "region":{
+      "desc":"Restituisce la regione in cui si trova la gilda."
+    },
+    "roles":{
+      "desc":"Restituisce un array dei ruoli della gilda."
+    }
+  },
+  "logic":{
+    "if":{
+      "desc":"Se il `valore` è uguale a `true` o `1`, esegue `then` (quindi).\nSe il `valore` è uguale a `false` o `0` esegue `else` (altrimenti).\nAltrimenti, lancia un errore.\n\nUsa con la tag {logic}."
+    },
+    "logic":{
+      "desc":"Gli operatori logici restituiscono `true` o `false`.\n\nOperatori:\n - `==` - uguale\n - `!=` - non uguale\n - `<` - meno di\n - `<=` - meno di o uguale\n - `>` - più grande di\n - `>=` - più grande di o uguale a\n - `startswith` - l'addendo inizia con l'operatore\n - `endswith` - l'addendo finisce con l'operatore\n - `includes` - l'addendo include l'operatore\n\nOperatori logici:\n - `&&` - restituisce true se entrambe le condizioni sono vere\n - `||` - restituisce true se almeno una delle due condizioni è vera\n - `XOR` - restituisce true solo se una delle due condizioni è vera\n\nAltri operatori:\n- `!` - inverte il risultato della prossima operazione (vero diventa falso, ecc.)"
+    }
+  },
+  "math":{
+    "abs":{
+      "desc":"Restituisce il valore assoluto del numero fornito (no negativo)"
+    },
+    "base":{
+      "desc":"Converte un `numero` usando la `base` fornita (default 10), e lo converte alla base `radice`."
+    },
+    "ceil":{
+      "desc":"Arrotonda per eccesso il numero decimale fornito."
+    },
+    "floor":{
+      "desc":"Arrotonda per difetto il numero decimale fornito."
+    },
+    "math":{
+      "desc":"Calcola il valore dell'espressione fornita usando questi operatori:\n\n - `^` - esponente\n - `/` - divisione\n - `*` - moltiplicazione\n - `+` - addizione\n - `-` - sottrazione\n - `&` - operatore AND\n - `|` - operatore OR\n - `XOR` - operatore XOR\n\nGli operatori sono eseguiti usando l'ordine di precedenza (Parentesi, esponenti, divisioni, moltiplicazioni, addizione, sottrazioni, operatori).\n\nSe un operatore non è specificato, verrà usato l'ultimo operatore usato (default addizione).\n\nLe parentesi possono essere ottenute usando un'altra tag {math}.\n\nSe un `operatore` o un `addendo` non possono essere convertiti in numeri, una sarà usata una variabile con lo stesso nome. Se anche questa variabile non è un numero, verrà lanciato un errore."
+    },
+    "parsefloat":{
+      "desc":"Cerca di convertire il testo come un numero decimale."
+    },
+    "parseint":{
+      "desc":"Cerca di convertire il testo come un numero intero."
+    },
+    "randint":{
+      "desc":"Restituisce un numero intero dato il range. `min` è `0` di default."
+    },
+    "round":{
+      "desc":"Arrotonda il `numero` fornito ad un numero fornito di decimali. 0 di default."
+    }
+  },
+  "message":{
+    "id":{
+      "desc":"Restituisce l'ID del comando eseguito."
+    }
+  },
+  "role":{
+    "color":{
+      "desc":"Restituisce il colore di un ruolo in esadecimale."
+    },
+    "id":{
+      "desc":"Restituisce l'ID di un ruolo specifico."
+    },
+    "mention":{
+      "desc":"Restituisce una menzione al ruolo specificato."
+    },
+    "name":{
+      "desc":"Restituisce il nome di un ruolo specifico."
+    },
+    "position":{
+      "desc":"Restituisce la posizione di un ruolo specifico."
+    }
+  },
+  "user":{
+    "avatar":{
+      "desc":"Restituisce l'avatar di un utente specifico, l'esecutore del comando di default."
+    },
+    "createdat":{
+      "desc":"Restituisce la data di un utente specifico, l'esecutore del comando di default, di quando è stato creato usando il timestamp Unix (millisecondi)"
+    },
+    "discrim":{
+      "desc":"Restituisce il discriminatore di un utente specifico, l'esecutore del comando di default."
+    },
+    "fullname":{
+      "desc":"Restituisce il nome + discriminatore di un utente specifico, l'esecutore del comando di default."
+    },
+    "game":{
+      "desc":"Restituisce il nome del gioco che un utente specifico sta giocando, l'esecutore del comando di default. Se non sta giocando a niente, restituisce nothing."
+    },
+    "id":{
+      "desc":"Restituisce l'ID di un giocatore specifico, l'esecutore del comando di default."
+    },
+    "joinedat":{
+      "desc":"Restituisce la data di un utente specifico, l'esecutore del comando di default, di quando è entrato nella gilda usando il timestamp Unix (millisecondi)"
+    },
+    "mention":{
+      "desc":"Menziona un utente specifico, l'esecutore del comando di default."
+    },
+    "name":{
+      "desc":"Restituisce il nome di un utente specifico, l'esecutore del comando di default."
+    },
+    "nick":{
+      "desc":"Restituisce il nickname di un giocatore specifico, l'esecutore del comando di default."
+    },
+    "roles":{
+      "desc":"Restituisce un array dei ruoli che un utente specifico possiede, l'esecutore del comando di default."
+    },
+    "setnick":{
+      "desc":"Imposta il nickname di un utente specifico, l'esecutore del comando di default."
+    },
+    "status":{
+      "desc":"Restituisce lo stato di un utente specifico, l'esecutore del comando di default. Può essere \"online\", \"away\", \"dnd\" o \"offline\"."
+    }
+  }
+}

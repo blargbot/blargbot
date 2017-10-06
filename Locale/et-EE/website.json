@@ -1,0 +1,38 @@
+{
+  "language":"",
+  "header":{
+    "login":"",
+    "logout":"",
+    "commands":"",
+    "bbtag":"",
+    "subtags":""
+  },
+  "index":{
+    "desc":"",
+    "commands":{
+      "title":"",
+      "desc":""
+    },
+    "bbtag":{
+      "title":"",
+      "desc":""
+    },
+    "customization":{
+      "title":"",
+      "desc":""
+    },
+    "moderation":{
+      "title":"",
+      "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+    },
+    "opensource":{
+      "title":"",
+      "desc":""
+    },
+    "suggestions":{
+      "title":"",
+      "desc":""
+    }
+  },
+  "bbtag":""
+}

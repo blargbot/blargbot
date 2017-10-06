@@ -1,0 +1,224 @@
+{
+  "array":{
+    "filter":{
+      "desc":"Itère à travers un tableau en modifiant l'élément à une variable locale `i`. Si `varName` est spécifiée, remplace l'élément par cette variable à la place de `i`.\n\nRenvoie un nouveau tableau qui contient seulement les éléments où le résultat de l'itération était `vrai` ou `1`"
+    },
+    "foreach":{
+      "desc":"Itère à travers un tableau en remplaçant l'élément actuel par la variable `i`. Si `varName` est donné, remplace l'élément actuel par celui-ci à la place de `i`."
+    },
+    "get":{
+      "desc":"Obtient l'élément d'un tableau à la position `index`"
+    },
+    "isarray":{
+      "desc":"Renvoie vrai si l'élément donné est un tableau, faux dans le cas contraire. Vous ne pouvez pas utiliser de noms de variable."
+    },
+    "join":{
+      "desc":"Unit un tableau avec le `délimiteur` fourni."
+    },
+    "length":{
+      "desc":"Renvoie la longueur du tableau donné."
+    },
+    "map":{
+      "desc":"Itère à travers un tableau en remplaçant l'élément actuel par une variable `i`. Si `varName` est spécifié, remplace l'élément actuel par celui-ci plutôt que par `i`.\n\nRenvoie un nouveau tableau où chaque élément est le résultat d'une itération."
+    },
+    "pop":{
+      "desc":"Supprime et renvoie le dernier élément du tableau."
+    },
+    "push":{
+      "desc":"Pousse un élément à la fin d'un tableau. Renvoie ainsi le tableau modifié."
+    },
+    "set":{
+      "desc":"Définit un élément dans le tableau à l'`index` spécifié."
+    },
+    "shift":{
+      "desc":"Supprime et renvoie le premier élément du tableau."
+    },
+    "slice":{
+      "desc":"Renvoie la partie du tableau incluant l'index de `début` et excluant l'index de `fin`. Si l'index de `fin` n'est pas spécifié, le définit par défaut à tous les éléments restants."
+    },
+    "sort":{
+      "desc":"Trie et rassemble un tableau, par défaut dans l'ordre ascendant.\n\nSi la `fonction` est fournie, le tri se produira en fonction du résultat de l'exécution de ladite fonction. Cela va créer deux variables locales : `a` (ou `varNomUn`) et `b` (ou `varNomDeux`).\n\nLa fonction doit être un nombre. Si le nombre est plus grand que 0, `a` sera considérer plus grand que `b`. Si le nombre est plus petit que 0, `b` sera considérer plus grand que `a`. Tout les résultats qui ne sont pas des nombres seront convertis en 0, où tout les nombres seront alors égaux."
+    },
+    "splice":{
+      "desc":"Départ sur la position `start`, supprimera les éléments `deleteCount` du tableau et ajouteront les `items` restants de la position.  Résultats des éléments supprimés."
+    },
+    "split":{
+      "desc":"Séparer le `text` par le `delimiter`, renvoyer au nouveau tableau."
+    },
+    "unshift":{
+      "desc":"Insère `valeur` au début du tableau, et renvoie le tableau modifié."
+    }
+  },
+  "channel":{
+    "id":{
+      "desc":"Renvoie l'ID du canal actuel ou spécifié"
+    },
+    "nsfw":{
+      "desc":"Montre si le salon spécifié est NSFW ou pas."
+    },
+    "name":{
+      "desc":"montre le nom du salon actuel ou spécifié"
+    },
+    "position":{
+      "desc":"Montre la position du salon actuel ou spécifié"
+    },
+    "topic":{
+      "desc":"montre le sujet du salon  actuel ou spécifié (texte uniquement)"
+    },
+    "type":{
+      "desc":"Montre le type du salon actuel ou spécifié (renvoie \"textuel\" ou \"vocal\")."
+    }
+  },
+  "general":{
+    "clean":{
+      "desc":"Nettoie le texte fourni en diminuant tout les espaces blanc."
+    },
+    "//":{
+      "desc":"Spécifie une aire qui sera ignorer d'analyse."
+    },
+    "get":{
+      "desc":"montre la variable mémorisée avec le nom donné. Les préfixes de la variable peuvent modifier la catégorie de la recherche."
+    },
+    "set":{
+      "desc":"Modifie les variables stockées avec les nom et valeures données. Les préfixes de variables peuvent modifier leur catégories."
+    },
+    "trim":{
+      "desc":"Enlève les espaces avant et après le texte donné. Veuillez utiliser le tag {clean} pour enlever les espaces dans le texte."
+    },
+    "void":{
+      "desc":"empêche ce qu'il y a dans la commande de s’afficher. Contrairement aux commentaires, les commandes s’exécuteront toujours."
+    },
+    "newline":{
+      "desc":"Montre le nombre spécifier de retour à la ligne, par défaut 1."
+    },
+    "space":{
+      "desc":"Renvoie le nombre spécifié d'espaces, par défaut 1."
+    }
+  },
+  "guild":{
+    "createdat":{
+      "desc":"Affiche quand le serveur actuel a été créé en UNIX (en millisecondes)."
+    },
+    "channels":{
+      "desc":"Renvoie les salons du serveur actuel sous forme de tableau."
+    },
+    "icon":{
+      "desc":"Renvoie l'URL de l'icône du serveur actuelle."
+    },
+    "id":{
+      "desc":"Renvoie l'ID du serveur actuelle."
+    },
+    "name":{
+      "desc":"montre le nom du serveur actuelle."
+    },
+    "owner":{
+      "desc":"Renvoie l'ID du propriétaire du serveur."
+    },
+    "region":{
+      "desc":"Renvoie la région du serveur actuel."
+    },
+    "roles":{
+      "desc":"Renvoie un tableau des rôles du serveur actuel."
+    }
+  },
+  "logic":{
+    "if":{
+      "desc":"Si la `valeur` est égale à `vrai` ou `1`, exécute la partie `alors`.\nSi la `valeur` est égale à `faux` ou `0`, exécute la partie `sinon`.\nAutrement, affiche une erreur.\n\nUtilisez ceci avec le tag {logique}."
+    },
+    "logic":{
+      "desc":""
+    }
+  },
+  "math":{
+    "abs":{
+      "desc":"Renvoie la valeur absolue du nombre fourni (pas de negatifs)."
+    },
+    "base":{
+      "desc":"Convertis le `nombre` utilisant la base donnée `original` (par défaut en base 10), et le convertis en base `radix`"
+    },
+    "ceil":{
+      "desc":"Arrondi le nombre donné à l'unité supérieure."
+    },
+    "floor":{
+      "desc":"Arrondis le nombre donné à l'unité inférieure."
+    },
+    "math":{
+      "desc":"Calcule  l'opération donnée avec les opérateurs suivant:\n\n- `^` - exponents\n- `/` - division\n- `*` - multiplication\n- `+` - addition\n- `-` - substraction\n- `&` - et\n- `|` - ou\n- `XOR` - (vérifie que c'est pas pareil)\n\nles opérateur respectent l'ordre de calcul (parenthèses, exposants, division, multiplication, addition, soustraction, logique (et/ou/xor))\n\nSi l'opérateur n'est pas spécifié, il utilise le dernier opérateur utilisé (l'addition par défaut)\n\nLes parenthèses doivent être finies avec un autre tag {math}.\n\nSi un des `thermes` ne peux pas être reconnu en tant que nombre, cherche un variable du même nom. Si la variable n'est pas un nombre, affiche une erreur."
+    },
+    "parsefloat":{
+      "desc":"affiche les nombres décimaux du texte donné."
+    },
+    "parseint":{
+      "desc":"Tente d'analyser le texte donné en nombre entier."
+    },
+    "randint":{
+      "desc":"Donne un entier aléatoire entre les nombres spécifiés. le `minimum` est `0` par défaut"
+    },
+    "round":{
+      "desc":"arrondis le `nombre` donné à la `puissance de 10` spécifié, par défaut 0"
+    }
+  },
+  "message":{
+    "id":{
+      "desc":"montre l'ID du message contenant la commande"
+    }
+  },
+  "role":{
+    "color":{
+      "desc":"Renvoie la couleur du rôle spécifié en hexadécimales."
+    },
+    "id":{
+      "desc":"Renvoie l'ID du rôle spécifié."
+    },
+    "mention":{
+      "desc":"Renvoie une mention du rôle spécifié."
+    },
+    "name":{
+      "desc":"montre le nom du rôle spécifié."
+    },
+    "position":{
+      "desc":"montre la position du rôle spécifié."
+    }
+  },
+  "user":{
+    "avatar":{
+      "desc":"montre l'URL de l'avatar de l'utilisateur spécifié, par défaut celle de exécuteur."
+    },
+    "createdat":{
+      "desc":"Montre la date à laquelle l'utilisateur spécifié, par défaut l’exécuteur, a été créé en UNIX (en millisecondes) "
+    },
+    "discrim":{
+      "desc":"Renvoie le discriminant de l'utilisateur spécifié, par défaut celui de l'exécuteur."
+    },
+    "fullname":{
+      "desc":"affiche le nom et le surnom de l'utilisateur spécifié, par défaut ceux de l'executeur"
+    },
+    "game":{
+      "desc":"Renvoie le jeu auquel l'utilisateur spécifié est en train de jouer, par défaut celui de l'utilisateur.\nSi l'utilisateur n'est pas en train de jouer à un jeu, ça ne renvoie rien."
+    },
+    "id":{
+      "desc":"Affiche l'ID de l'utilisateur spécifié, par défaut celui de l'éxecuteur."
+    },
+    "joinedat":{
+      "desc":"Affiche la date a laquelle l'utilisateur spécifié, par défaut l’exécuteur, a rejoint le serveur actuel en UNIX (en millisecondes)."
+    },
+    "mention":{
+      "desc":"Mentionne l'utilisateur spécifié, par défaut de l'utilisateur exécutif."
+    },
+    "name":{
+      "desc":"Montre le nom de l'utilisateur spécifié, par défaut, renvoie le nom de l’exécuteur"
+    },
+    "nick":{
+      "desc":"Affiche le surnom de l'utilisateur spécifié, par défaut celui de l'exécuteur."
+    },
+    "roles":{
+      "desc":"Donne un tableau des rôle que l'utilisateur spécifié a, par défaut l'exécuteur."
+    },
+    "setnick":{
+      "desc":"Donne un surnom à l'utilisateur spécifier, en donne un à l’exécuteur par défaut."
+    },
+    "status":{
+      "desc":"Renvoie le statut de l'utilisateur spécifié, par défaut celui de l'utilisateur. Peut renvoyer \"en ligne\", \"absent\", \"npd\", ou \"hors-ligne\"."
+    }
+  }
+}

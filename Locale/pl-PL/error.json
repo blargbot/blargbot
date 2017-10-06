@@ -1,0 +1,30 @@
+{
+  "keyundef":"Nie znaleziono takiego wpisu: '{{key}}'.",
+  "memberundef":"Nie znaleziono takiego członka: '{{member}}'.",
+  "userundef":"Nie znaleziono takiego użytkownika: '{{user}}'.",
+  "channelundef":"Nie znaleziono takiego kanału: '{{channel}}'.",
+  "roleundef":"Nie znaleziono takiej roli: '{{role}}'.",
+  "pleasereport":"Jeśli uważasz że jest to błąd, proszę zgłośić to!",
+  "generic":"Coś poszło nie tak! \n```\n{{message}}\n```\n[[error.pleasereport]]",
+  "messagetoolong":"Przepraszam! Próbowałem wysłać wiadomość która była za długa. [[error.pleasereport]]",
+  "notenoughparams":"",
+  "tag":{
+    "notfound":"Tag '{{tag}}' nie istnieje.",
+    "toomanyargs":"Za dużo argumentów (r:{{received}} e:{{expected}})",
+    "toofewargs":"Niewystarczająco argumentów  (r:{{received}} e:{{expected}})",
+    "isnan":"",
+    "maxlessthanmin":"Max musi być większy niż Min",
+    "ccommandonly":"'{{tag}}' może być używane tylko w ccommands",
+    "authorstaff":"Autor {{author}} musi być personelem żeby używać tagu \"{{tag}}\"",
+    "noperms":"",
+    "toolow":"",
+    "unclosed":"",
+    "unopened":"",
+    "invalidradix":"Radix musi być pomiędzy 2 a 36, ale otrzymany numer był '{{radix}}'",
+    "notanarray":"",
+    "notbool":"",
+    "missingarg":"",
+    "namedunsupported":""
+  },
+  "inputtoolong":""
+}

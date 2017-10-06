@@ -1,0 +1,10 @@
+{
+  "cancel":{
+    "name":"Annuleer",
+    "description":"Sluit dit menu."
+  },
+  "confirm":{
+    "name":"Bevestigen.",
+    "description":""
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "output":"",
+  "nooutput":"Intet output...",
+  "queryexpire":"Søgningen vil udløbe om {{length}} minutter.",
+  "resolveuser":{
+    "nousers":"Ingen brugere fundet.",
+    "pickuser":"{{length}} brugere blev fundet! Vælg venligst en fra listen"
+  },
+  "resolverole":{
+    "noroles":"Ingen roller fundet.",
+    "pickrole":"{{length}} roller blev fundet! Vælg venligst en fra listen."
+  },
+  "resolvechannel":{
+    "nochannels":"Ingen kanaler fundet.",
+    "pickchannel":"{{length}} kanaler blev fundet! Vælg venligst en fra listen."
+  },
+  "edited":"redigeret",
+  "created":"skabt",
+  "deleted":"slettet",
+  "menu":{
+    "choices":""
+  },
+  "nochange":"Intet blev ændret.",
+  "commandhelp":"",
+  "example":{
+    "id1":"",
+    "id2":"",
+    "id3":""
+  },
+  "test":"",
+  "querycancelled":"The query has been cancelled.",
+  "user":"",
+  "role":"",
+  "channel":""
+}

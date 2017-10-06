@@ -1,0 +1,35 @@
+{
+  "output":"",
+  "nooutput":"",
+  "queryexpire":"",
+  "resolveuser":{
+    "nousers":"Niemand gevonden.",
+    "pickuser":""
+  },
+  "resolverole":{
+    "noroles":"Geen rollen gevonden.",
+    "pickrole":""
+  },
+  "resolvechannel":{
+    "nochannels":"Geen kanalen gevonden.",
+    "pickchannel":""
+  },
+  "edited":"bewerkt",
+  "created":"gemaakt",
+  "deleted":"verwijdert",
+  "menu":{
+    "choices":""
+  },
+  "nochange":"Niks is veranderd.",
+  "commandhelp":"",
+  "example":{
+    "id1":"",
+    "id2":"",
+    "id3":""
+  },
+  "test":"",
+  "querycancelled":"The query has been cancelled.",
+  "user":"",
+  "role":"",
+  "channel":""
+}

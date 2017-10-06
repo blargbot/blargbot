@@ -1,0 +1,338 @@
+{
+  "general":{
+    "ping":{
+      "info":"Pong!\nFinder svartiden for kommandoen.",
+      "randmsg":[
+        "Eksistens er en løgn.",
+        "Du dør alligevel en eller anden dag, måske endda snart.",
+        "Alting er ligegyldigt.",
+        "Hvor er du på vej hen?",
+        "Der er intet derude.",
+        "Du er alene i en uendelig tomhed.",
+        "Sandhed er løgn.",
+        "Opgiv alt.",
+        "Din eksistens er en skam.",
+        "Vi er allesammen allerede døde.",
+        "Frygt er frihed.",
+        "Undertrykkelse er frigørende.",
+        "Selvmodsigelse er sandhed.",
+        "Ville du leve bare for at kunne blive bundet?",
+        "Kunne du tænke dig at lave en kontrakt?",
+        "Giv slip, og kom videre med dit liv."
+      ],
+      "final":""
+    },
+    "brainfuck":{
+      "info":"Udfører brainfuck kode",
+      "usage":"",
+      "flags":{
+        "p":"Viser en liste af pointere efter udførelsen.",
+        "i":"Specificerer inputtet for `.` operatoren."
+      }
+    },
+    "ship":{
+      "info":"",
+      "usage":"",
+      "final":"Your shipname is **{{name}}**!",
+      "notenough":"Du er nødt til at fortælle mig hvem jeg skal parre!"
+    },
+    "tag":{
+      "info":"",
+      "usage":"",
+      "dontown":"[[emote.x]] Du ejer ikke dette tag!",
+      "alreadyexists":"[[emote.x]] Et tag med dette navn findes allerede!",
+      "notag":"[[emote.x]] Der er intet tag med dette navn.",
+      "tagset":"",
+      "tagrename":"[[emote.check]] Tagget `{{old}}` er blevet omdøbt til `{{new}}`.",
+      "raw":"Koden for {{name}} er:\n```{{code}}```",
+      "testoutput":"",
+      "subcommand":{
+        "set":{
+          "usage":"",
+          "info":"Skaber eller redigerer et tag med det givne navn og indhold. Vil ikke erstatte tags andre har lavet."
+        },
+        "delete":{
+          "usage":"",
+          "info":"Sletter et tag du ejer."
+        },
+        "rename":{
+          "usage":"",
+          "info":"Omdøber et tag du ejer."
+        },
+        "raw":{
+          "usage":"",
+          "info":"Anskaffer rå kode for et tag."
+        },
+        "info":{
+          "usage":"",
+          "info":"Viser info om et tag."
+        },
+        "transfer":{
+          "usage":"",
+          "info":"Overfører et tag til den specifikke bruger. Variabler vil ikke blive overført."
+        },
+        "top":{
+          "info":"Viser en liste over de tags der er blevet favoriseret flest gange."
+        },
+        "author":{
+          "usage":"",
+          "info":"Viser forfatteren til et tag."
+        },
+        "search":{
+          "usage":"",
+          "info":"Søger efter et tag med et navn der indeholder din forespørgsel."
+        },
+        "list":{
+          "usage":"",
+          "info":"Viser en liste over alle tags, eller valgfrit alle tags skabt af en bestemt bruger."
+        },
+        "favorite":{
+          "usage":"",
+          "info":"Favoriserer et bestemt tag."
+        },
+        "report":{
+          "usage":"",
+          "info":"Raporterer et tag for at bryde brugervilkåerne. Venligst brug omhyggeligt."
+        },
+        "test":{
+          "usage":"",
+          "info":"Udfører det givne stykke kode i et test miljø."
+        },
+        "help":{
+          "usage":"",
+          "info":"Viser dette!"
+        },
+        "docs":{
+          "usage":"",
+          "info":"Giver et link til BBTag dokumentationen, eller giver oplysninger om et bestemt undertag."
+        },
+        "setdesc":{
+          "info":""
+        },
+        "setusage":{
+          "info":""
+        }
+      },
+      "subcommandnotfound":"",
+      "transferprompt":"",
+      "nobots":"",
+      "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
+      "transfercomplete":"",
+      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
+      "descupdate":"",
+      "descreset":"Beskrivelsen for `{{tag}}` er blevet nulstillet.",
+      "subcommandconflict":"",
+      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+      "toptags":"Her er en liste over de 10 mest brugte tags!\n\n{{tags}}",
+      "tagauthor":"Tagget `{{tag}}` er skabt af **{{author}}**",
+      "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
+      "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+      "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
+    },
+    "locale":{
+      "info":"",
+      "set":"",
+      "list":""
+    },
+    "tokenify":{
+      "info":""
+    },
+    "nato":{
+      "info":""
+    },
+    "invite":{
+      "info":"",
+      "message":""
+    },
+    "donate":{
+      "info":"",
+      "willdm":"",
+      "message":""
+    },
+    "mods":{
+      "info":"",
+      "mods":"",
+      "nomods":"",
+      "nomodsonline":""
+    },
+    "help":{
+      "info":"",
+      "allcommands":"",
+      "nocommand":"",
+      "commandinfo":"",
+      "aliases":"",
+      "subcommand":"",
+      "command":"",
+      "nosubcommand":"",
+      "subcommands":""
+    },
+    "gamatoto":{
+      "info":"",
+      "subcommand":{
+        "start":{
+          "usage":"",
+          "info":""
+        },
+        "end":{
+          "info":""
+        },
+        "locations":{
+          "info":""
+        }
+      },
+      "stats":"",
+      "alreadystarted":"",
+      "notstarted":"",
+      "nolocation":"",
+      "invalidlocation":"",
+      "expeditionbeings":"",
+      "expeditionends":"",
+      "notimeelapsed":"",
+      "itemfound":"",
+      "levelup":"",
+      "gamatotoxp":"",
+      "itemincrease":"",
+      "locations":"",
+      "wronglevel":"",
+      "gamatotoitems":"",
+      "gamatotostats":"",
+      "gamatotocurrent":"",
+      "gamatotoidle":""
+    },
+    "prefix":{
+      "info":"",
+      "subcommand":{
+        "add":{
+          "usage":"",
+          "info":""
+        },
+        "remove":{
+          "usage":"",
+          "info":""
+        }
+      },
+      "prefixlist":"",
+      "userprefixes":"",
+      "guildprefixes":"",
+      "noprefixes":"",
+      "defaultprefixes":"",
+      "prefixadded":"",
+      "prefixremoved":"",
+      "nothingchanged":""
+    }
+  },
+  "image":{
+    "cat":{
+      "info":"Giver dig en meget sød og kærlig kat. Nuuuurr!"
+    },
+    "delete":{
+      "info":""
+    },
+    "thesearch":{
+      "info":"",
+      "defaulttext":""
+    },
+    "shit":{
+      "info":""
+    }
+  },
+  "admin":{
+    "setup":{
+      "staff":{
+        "setrole":"",
+        "rolequery":""
+      },
+      "info":"",
+      "subcommand":{
+        "staffuser":{
+          "usage":"",
+          "info":""
+        },
+        "staffrole":{
+          "info":""
+        },
+        "mute":{
+          "info":""
+        },
+        "announcement":{
+          "info":"Opsætter annonceringer."
+        },
+        "modlog":{
+          "usage":"",
+          "info":""
+        }
+      },
+      "mute":{
+        "setrole":"",
+        "rolequery":""
+      },
+      "announce":{
+        "set":"",
+        "rolequery":"",
+        "channelquery":""
+      },
+      "modlog":{
+        "set":"",
+        "remove":"",
+        "invalid":"",
+        "hadinvalid":"",
+        "list":""
+      }
+    },
+    "reason":{
+      "info":"",
+      "nocase":"",
+      "reasonset":""
+    },
+    "help":{
+      "info":"",
+      "allcommands":"",
+      "nocommand":"",
+      "commandinfo":""
+    },
+    "ccommand":{
+      "info":"",
+      "usage":"",
+      "subcommand":{
+        "set":{
+          "usage":"",
+          "info":""
+        },
+        "delete":{
+          "usage":"",
+          "info":""
+        },
+        "rename":{
+          "usage":"",
+          "info":""
+        },
+        "author":{
+          "usage":"",
+          "info":""
+        },
+        "transfer":{
+          "usage":"",
+          "info":""
+        },
+        "list":{
+          "info":""
+        },
+        "test":{
+          "usage":"",
+          "info":""
+        },
+        "help":{
+          "usage":"",
+          "info":""
+        }
+      },
+      "dontown":"",
+      "notag":"",
+      "tagset":"",
+      "tagrename":"",
+      "raw":"",
+      "alreadyexists":"",
+      "testoutput":""
+    }
+  }
+}
