@@ -1,10 +1,10 @@
 {
   "cancel":{
-    "name":"Cancel",
-    "description":"Close this menu."
+    "name":"Kansel",
+    "description":"Isara ang menu."
   },
   "confirm":{
-    "name":"Confirm",
-    "description":"Confirms this menu."
+    "name":"Kumpirma",
+    "description":"Kinukumpirma ang menu na ito."
   }
 }
