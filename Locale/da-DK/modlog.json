@@ -1,26 +1,26 @@
 {
   "events":{
-    "kick":"",
-    "ban":"",
-    "unban":"",
-    "mute":"",
-    "unmute":"",
-    "warn":"",
-    "pardon":"",
-    "rename":"",
-    "specialroleadd":"",
-    "specialroleremove":""
+    "kick":"Smid ud",
+    "ban":"Udeluk",
+    "unban":"Ophæv udelukkelse",
+    "mute":"Ignorer",
+    "unmute":"Annuller Ignorering",
+    "warn":"Advarsel",
+    "pardon":"Undskyld",
+    "rename":"Omdøb",
+    "specialroleadd":"Særlige rolle tilføjet",
+    "specialroleremove":"Særlige rolle fjernet"
   },
-  "case":"",
-  "setreason":"",
+  "case":"{{icon}} Case {{number}}: {{event}}",
+  "setreason":"Ansvarlige moderator, venligst skriv 'reason {{number}}' for at angive årsagen.",
   "warnings":{
-    "given":"",
-    "removed":"",
-    "total":""
+    "given":"Advarsler givet",
+    "removed":"Advarsler benådet",
+    "total":"Nye samlede"
   },
   "rename":{
-    "old":"",
-    "new":""
+    "old":"Tidligere navn",
+    "new":"Nyt navn"
   },
-  "duration":""
+  "duration":"Varighed"
 }
