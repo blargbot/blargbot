@@ -23,8 +23,8 @@
     "invalidradix":"Основание должно быть от 2 до 36, а получено '{{radix}}'",
     "notanarray":"Переменная '{{name}}' не является массивом (Получено: '{{value}}')",
     "notbool":"Переменная '{{name}}' не является логическим значением (Получено: '{{value}}')",
-    "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
-    "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
+    "missingarg":"",
+    "namedunsupported":""
   },
   "inputtoolong":"Ваш ввод был слишком длинным! Максимальное количество символов - {{max}} для данной операции, но вы написали {{length}}."
 }
