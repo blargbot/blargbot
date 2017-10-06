@@ -47,6 +47,11 @@ class LocaleManager extends Manager {
                 temp = temp[segment];
             else return null;
         }
+        if (temp === '') {
+            if (locale === 'en') {
+                temp = `The locale key '${key}' is blank. Please contact stupid cat#8160 to populate it.`;
+            } else temp = this.getTemplate('en', key);
+        }
         return temp;
     }
 }
