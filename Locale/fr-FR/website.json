@@ -23,7 +23,7 @@
     },
     "moderation":{
       "title":"Moderation",
-      "desc":"Need something to moderate your chat? blargbot is equipped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+      "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
     },
     "opensource":{
       "title":"Open-Source",
