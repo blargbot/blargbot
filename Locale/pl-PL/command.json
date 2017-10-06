@@ -26,22 +26,22 @@
       "info":"Executes brainfuck code.",
       "usage":"<code>",
       "flags":{
-        "p":"Shows a list of pointers after the execution.",
+        "p":"Pokazuje listę wskaźników po wykonaniu.",
         "i":"Specifies the input for the `,` operator."
       }
     },
     "ship":{
       "info":"Gives you the ship name for two users.",
       "usage":"<user1> <user2>",
-      "final":"Your ship name is **{{name}}**!",
+      "final":"Your shipname is **{{name}}**!",
       "notenough":"You have to tell me who to ship!"
     },
     "tag":{
       "info":"Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>).",
       "usage":"<name | subcommand> [args]",
-      "dontown":"[[emote.x]] You don't own that tag!",
-      "alreadyexists":"[[emote.x]] A tag with that name already exists!",
-      "notag":"[[emote.x]] There is no tag with that name.",
+      "dontown":"[[emote.x]] Nie jestes wlascicielem tego tagu!",
+      "alreadyexists":"[[emote.x]] Tag z tym imieniem już istnieje!",
+      "notag":"[[emote.x]] Nie ma tagu z tym imieniem.",
       "tagset":"[[emote.check]] Tag `{{name}}` {{process}}!",
       "tagrename":"[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`.",
       "raw":"The code for {{name}} is:\n```{{code}}```",
@@ -53,11 +53,11 @@
         },
         "delete":{
           "usage":"<name>",
-          "info":"Deletes a tag that you own."
+          "info":"Usuwa tag którego jesteś właścicielem"
         },
         "rename":{
           "usage":"<name> <new name>",
-          "info":"Renames a tag that you own."
+          "info":"Zmienić nazwę tagu którego jesteś właścicielem"
         },
         "raw":{
           "usage":"<name>",
@@ -65,14 +65,14 @@
         },
         "info":{
           "usage":"<name>",
-          "info":"Displays information about a tag."
+          "info":"Wyświetla informacje o tagu"
         },
         "transfer":{
           "usage":"<name> <user>",
           "info":"Transfers a tag to the specified user. Variables will not be transferred."
         },
         "top":{
-          "info":"Displays the tags that have been the most favorited."
+          "info":"Displays the tags that have been the most favourited."
         },
         "author":{
           "usage":"<name>",
@@ -84,11 +84,11 @@
         },
         "list":{
           "usage":"[@user]",
-          "info":"Lists all the tags, or optionally all the tags created by a specific user."
+          "info":"Wyświetla informacje o tagu."
         },
         "favorite":{
           "usage":"<name>",
-          "info":"Favorites the specified tag."
+          "info":"Favourites the specified tag."
         },
         "report":{
           "usage":"<name>",
@@ -100,7 +100,7 @@
         },
         "help":{
           "usage":"[subcommand]",
-          "info":"Displays this!"
+          "info":"Wyświetla to!"
         },
         "docs":{
           "usage":"[subtag]",
@@ -116,18 +116,18 @@
       "subcommandnotfound":"Couldn't find a subcommand with the name `{{subcommand}}`.",
       "transferprompt":"{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
       "nobots":"[[emote.x]] You cannot transfer a tag to a bot!",
-      "transfercancelled":"[[emote.x]] The transfer has been canceled.",
+      "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
       "transfercomplete":"[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
       "descupdate":"The description for `{{tag}}` has been updated.",
       "descreset":"The description for `{{tag}}` has been reset.",
       "subcommandconflict":"You can't use the name `{{name}}` because there is a subcommand with that name!",
-      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
       "toptags":"Here are the top 10 tags!\n\n{{tags}}",
       "tagauthor":"The tag `{{tag}}` was created by **{{author}}**",
-      "favouriteadd":"The tag `{{tag}}` has been added to your favorites list.",
-      "favouriteremove":"The tag `{{tag}}` has been removed from your favorites list.",
-      "favourites":"You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+      "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
+      "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+      "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
     },
     "locale":{
       "info":"Sets what locale messages will be sent in.",
