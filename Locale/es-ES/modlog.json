@@ -1,26 +1,26 @@
 {
   "events":{
-    "kick":"Kick",
-    "ban":"Ban",
-    "unban":"Unban",
-    "mute":"Mute",
-    "unmute":"Unmute",
-    "warn":"Warning",
-    "pardon":"Pardon",
-    "rename":"Rename",
-    "specialroleadd":"Special Role Added",
-    "specialroleremove":"Special Role Removed"
+    "kick":"",
+    "ban":"",
+    "unban":"",
+    "mute":"",
+    "unmute":"",
+    "warn":"",
+    "pardon":"",
+    "rename":"",
+    "specialroleadd":"",
+    "specialroleremove":""
   },
-  "case":"{{icon}} Case {{number}}: {{event}}",
-  "setreason":"Responsible moderator, please do `reason {{number}}` to set the reason.",
+  "case":"",
+  "setreason":"",
   "warnings":{
-    "given":"Warnings Given",
-    "removed":"Warnings Pardoned",
-    "total":"New Total"
+    "given":"",
+    "removed":"",
+    "total":""
   },
   "rename":{
-    "old":"Old Name",
-    "new":"New Name"
+    "old":"",
+    "new":""
   },
-  "duration":"Duration"
+  "duration":""
 }
