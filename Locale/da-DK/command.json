@@ -45,7 +45,7 @@
       "tagset":"[[emote.check]] Tag '{{name}}' {{process}}!",
       "tagrename":"[[emote.check]] Tagget `{{old}}` er blevet omdøbt til `{{new}}`.",
       "raw":"Koden for {{name}} er:\n```{{code}}```",
-      "testoutput":"",
+      "testoutput":"Teste Output:\n\n{{output}}",
       "subcommand":{
         "set":{
           "usage":"<name><content>",
@@ -180,9 +180,9 @@
           "info":""
         }
       },
-      "stats":"",
-      "alreadystarted":"",
-      "notstarted":"",
+      "stats":"<:bc_cat:345081695990710272> her er dine genstande! \n\n{{stats}}",
+      "alreadystarted":"En ekspedition er allerede i gang!",
+      "notstarted":"Du har ikke startet en ekspedition!",
       "nolocation":"",
       "invalidlocation":"",
       "expeditionbeings":"",
@@ -193,8 +193,8 @@
       "gamatotoxp":"",
       "itemincrease":"",
       "locations":"",
-      "wronglevel":"",
-      "gamatotoitems":"",
+      "wronglevel":"Desværre, skal du være level {{level}} for at udforske dette sted!",
+      "gamatotoitems":"Her er dine genstande:\n{{items}}",
       "gamatotostats":"",
       "gamatotocurrent":"",
       "gamatotoidle":""
@@ -203,7 +203,7 @@
       "info":"",
       "subcommand":{
         "add":{
-          "usage":"",
+          "usage":"<prefix>",
           "info":""
         },
         "remove":{
