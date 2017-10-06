@@ -23,8 +23,8 @@
     "invalidradix":"Español",
     "notanarray":"La variable '{{name}}' no es una agrupación (Recibido: '{{value}}')",
     "notbool":"La variable '{{name}}' no es un booleano (Recibido: '{{value}}')",
-    "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
-    "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
+    "missingarg":"",
+    "namedunsupported":""
   },
-  "inputtoolong":"Your input was too long! The maximum characters for this was {{max}}, but you gave {{length}} characters."
+  "inputtoolong":""
 }
