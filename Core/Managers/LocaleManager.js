@@ -3,7 +3,7 @@ const path = require('path');
 
 class LocaleManager extends Manager {
     constructor(client) {
-        super(client, 'Locale', undefined, 'json');
+        super(client, 'Locale', undefined);
         this.localeList = {};
     }
 
