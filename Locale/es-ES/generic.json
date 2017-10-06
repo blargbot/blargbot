@@ -1,26 +1,26 @@
 {
-  "output":"Output:\n{{output}}",
-  "nooutput":"No output...",
-  "queryexpire":"This query will expire in {{length}} minutes.",
+  "output":"Salida:\n{{output}}",
+  "nooutput":"Ninguna salida...",
+  "queryexpire":"Esta consulta expirará en {{longitud}} minutos.",
   "resolveuser":{
-    "nousers":"No users found.",
-    "pickuser":"{{length}} users were found! Please select one from the list."
+    "nousers":"No se han encontrado usuarios.",
+    "pickuser":"{{length}} usuarios fueron encontrados! Por favor, selcciona uno de la lista."
   },
   "resolverole":{
-    "noroles":"No roles found.",
-    "pickrole":"{{length}} roles were found! Please select one from the list."
+    "noroles":"No se han encontrado roles.",
+    "pickrole":"{{length}} roles fueron encontrados! Por favor, selecciona uno de la lista."
   },
   "resolvechannel":{
-    "nochannels":"No channels found.",
-    "pickchannel":"{{length}} channels were found! Please select one from the list."
+    "nochannels":"No se han encontrado canales.",
+    "pickchannel":"{{length}} canales fueron encontrados! Por favor, selecciona uno de la lista."
   },
-  "edited":"edited",
-  "created":"created",
-  "deleted":"deleted",
+  "edited":"editado",
+  "created":"creado",
+  "deleted":"eliminado",
   "menu":{
-    "choices":"Page {{page}}/{{max}}"
+    "choices":"Página {{page}}/{{max}}"
   },
-  "nochange":"Nothing was changed.",
+  "nochange":"Nada ha sido modificado",
   "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
   "example":{
     "id1":"111111111111111111",
@@ -28,7 +28,7 @@
     "id3":"333333333333333333"
   },
   "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"The query has been canceled.",
+  "querycancelled":"The query has been cancelled.",
   "user":"User",
   "role":"Role",
   "channel":"Channel"
