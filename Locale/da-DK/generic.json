@@ -23,13 +23,13 @@
   "nochange":"Intet blev ændret.",
   "commandhelp":"",
   "example":{
-    "id1":"",
-    "id2":"",
-    "id3":""
+    "id1":"111111111111111111",
+    "id2":"222222222222222222",
+    "id3":"333333333333333333"
   },
   "test":"",
-  "querycancelled":"The query has been cancelled.",
-  "user":"",
-  "role":"",
-  "channel":""
+  "querycancelled":"Efterspørgslen blev annulleret.",
+  "user":"Bruger",
+  "role":"Rolle",
+  "channel":"Kanal"
 }
