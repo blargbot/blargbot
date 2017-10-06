@@ -1,26 +1,26 @@
 {
-  "output":"Output:\n{{output}}",
-  "nooutput":"No output...",
-  "queryexpire":"This query will expire in {{length}} minutes.",
+  "output":"输出：\n{{output}}\n",
+  "nooutput":"没有输出...",
+  "queryexpire":"此查询将在 {{length}} 分钟内到期。",
   "resolveuser":{
-    "nousers":"No users found.",
-    "pickuser":"{{length}} users were found! Please select one from the list."
+    "nousers":"没有发现用户.",
+    "pickuser":"{{length}} 个用户发现! 请从用户名单里头选一个."
   },
   "resolverole":{
-    "noroles":"No roles found.",
-    "pickrole":"{{length}} roles were found! Please select one from the list."
+    "noroles":"没有角色发现.",
+    "pickrole":"{{length}} 角色被发现！请从列表中选择一个."
   },
   "resolvechannel":{
-    "nochannels":"No channels found.",
-    "pickchannel":"{{length}} channels were found! Please select one from the list."
+    "nochannels":"没有频道被发现!",
+    "pickchannel":"{{length}} 个频道发现! 请从用户名单里头选一个."
   },
-  "edited":"edited",
-  "created":"created",
-  "deleted":"deleted",
+  "edited":"修改了",
+  "created":"创建了",
+  "deleted":"删掉了",
   "menu":{
-    "choices":"Page {{page}}/{{max}}"
+    "choices":"页 {{页}}/{{最大}}"
   },
-  "nochange":"Nothing was changed.",
+  "nochange":"没有被改变",
   "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
   "example":{
     "id1":"111111111111111111",
@@ -28,7 +28,7 @@
     "id3":"333333333333333333"
   },
   "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"The query has been canceled.",
+  "querycancelled":"The query has been cancelled.",
   "user":"User",
   "role":"Role",
   "channel":"Channel"
