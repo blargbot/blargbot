@@ -1,35 +1,35 @@
 {
-  "output":"Output:\n{{output}}",
-  "nooutput":"No output...",
-  "queryexpire":"This query will expire in {{length}} minutes.",
+  "output":"",
+  "nooutput":"",
+  "queryexpire":"",
   "resolveuser":{
-    "nousers":"No users found.",
-    "pickuser":"{{length}} users were found! Please select one from the list."
+    "nousers":"",
+    "pickuser":""
   },
   "resolverole":{
-    "noroles":"No roles found.",
-    "pickrole":"{{length}} roles were found! Please select one from the list."
+    "noroles":"",
+    "pickrole":""
   },
   "resolvechannel":{
-    "nochannels":"No channels found.",
-    "pickchannel":"{{length}} channels were found! Please select one from the list."
+    "nochannels":"",
+    "pickchannel":""
   },
-  "edited":"edited",
-  "created":"created",
-  "deleted":"deleted",
+  "edited":"",
+  "created":"",
+  "deleted":"",
   "menu":{
-    "choices":"Page {{page}}/{{max}}"
+    "choices":""
   },
-  "nochange":"Nothing was changed.",
-  "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
+  "nochange":"",
+  "commandhelp":"",
   "example":{
-    "id1":"111111111111111111",
-    "id2":"222222222222222222",
-    "id3":"333333333333333333"
+    "id1":"",
+    "id2":"",
+    "id3":""
   },
-  "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"The query has been canceled.",
-  "user":"User",
-  "role":"Role",
-  "channel":"Channel"
+  "test":"",
+  "querycancelled":"",
+  "user":"",
+  "role":"",
+  "channel":""
 }
