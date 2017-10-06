@@ -23,8 +23,8 @@
     "invalidradix":"Radice deve essere tra 2 e 36, ma ho ricevuto '{{radix}}'",
     "notanarray":"La variabilie '{{name}}' non è un array (Ricevuto: '{{value}}')",
     "notbool":"La variabile '{{name}}' non è booleana (Ricevuto: '{{value}}')",
-    "missingarg":"Subtag '{{tag}}' is missing argument: '{{arg}}'",
-    "namedunsupported":"Subtag '{{tag}}' does not support named arguments"
+    "missingarg":"",
+    "namedunsupported":""
   },
   "inputtoolong":"L'input è troppo lungo! Il massimo di caratteri è {{max}}, ma me ne hai forniti {{length}}."
 }
