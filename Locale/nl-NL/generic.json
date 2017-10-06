@@ -3,24 +3,24 @@
   "nooutput":"No output...",
   "queryexpire":"This query will expire in {{length}} minutes.",
   "resolveuser":{
-    "nousers":"No users found.",
+    "nousers":"Niemand gevonden.",
     "pickuser":"{{length}} users were found! Please select one from the list."
   },
   "resolverole":{
-    "noroles":"No roles found.",
+    "noroles":"Geen rollen gevonden.",
     "pickrole":"{{length}} roles were found! Please select one from the list."
   },
   "resolvechannel":{
-    "nochannels":"No channels found.",
+    "nochannels":"Geen kanalen gevonden.",
     "pickchannel":"{{length}} channels were found! Please select one from the list."
   },
-  "edited":"edited",
-  "created":"created",
-  "deleted":"deleted",
+  "edited":"bewerkt",
+  "created":"gemaakt",
+  "deleted":"verwijdert",
   "menu":{
     "choices":"Page {{page}}/{{max}}"
   },
-  "nochange":"Nothing was changed.",
+  "nochange":"Niks is veranderd.",
   "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
   "example":{
     "id1":"111111111111111111",
@@ -28,7 +28,7 @@
     "id3":"333333333333333333"
   },
   "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"The query has been canceled.",
+  "querycancelled":"The query has been cancelled.",
   "user":"User",
   "role":"Role",
   "channel":"Channel"
