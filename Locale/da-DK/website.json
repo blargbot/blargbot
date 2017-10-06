@@ -1,20 +1,20 @@
 {
-  "language":"",
+  "language":"Dansk",
   "header":{
-    "login":"",
-    "logout":"",
-    "commands":"",
-    "bbtag":"",
+    "login":"Log på",
+    "logout":"Log af",
+    "commands":"Kommandoer",
+    "bbtag":"BBTag",
     "subtags":""
   },
   "index":{
     "desc":"",
     "commands":{
-      "title":"",
+      "title":"Kommandoer",
       "desc":""
     },
     "bbtag":{
-      "title":"",
+      "title":"BBTag",
       "desc":""
     },
     "customization":{
