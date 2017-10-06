@@ -21,15 +21,15 @@
     "choices":"Seite {{page}}/{{max}}"
   },
   "nochange":"Keine Änderungen wurden vorgenommen.",
-  "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
+  "commandhelp":"",
   "example":{
-    "id1":"111111111111111111",
-    "id2":"222222222222222222",
-    "id3":"333333333333333333"
+    "id1":"",
+    "id2":"",
+    "id3":""
   },
-  "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
+  "test":"",
   "querycancelled":"The query has been cancelled.",
-  "user":"User",
-  "role":"Role",
-  "channel":"Channel"
+  "user":"",
+  "role":"",
+  "channel":""
 }
