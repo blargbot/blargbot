@@ -14,13 +14,13 @@
   "case":"{{icon}} Case {{number}}: {{event}}",
   "setreason":"Ansvarlige moderator, venligst skriv 'reason {{number}}' for at angive årsagen.",
   "warnings":{
-    "given":"Advarsler givet",
-    "removed":"Advarsler benådet",
-    "total":"Nye samlede"
+    "given":"Advarsler Givet",
+    "removed":"Advarsler Benådet",
+    "total":"Nye Samlede"
   },
   "rename":{
-    "old":"Tidligere navn",
-    "new":"Nyt navn"
+    "old":"Tidligere Navn",
+    "new":"Nyt Navn"
   },
   "duration":"Varighed"
 }
