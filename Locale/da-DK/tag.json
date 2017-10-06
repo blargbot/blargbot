@@ -16,13 +16,13 @@
       "desc":"Joins an array with the provided `delimiter`."
     },
     "length":{
-      "desc":"Returns the length of the given array."
+      "desc":"Returnerer længden af det givne array."
     },
     "map":{
       "desc":"Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array where each element is the result of each iteration."
     },
     "pop":{
-      "desc":"Removes and returns the last element of the array."
+      "desc":"Fjerner og retunerer det sidste element i arrayet."
     },
     "push":{
       "desc":"Pushes an element to the end of an array. Returns the modified array."
@@ -31,7 +31,7 @@
       "desc":"Sets an element on the array at the specified `index`."
     },
     "shift":{
-      "desc":"Removes and returns the first element in the array."
+      "desc":"Fjerner og retunerer det første element i arrayet."
     },
     "slice":{
       "desc":"Returns a section of the array, including the `start` index and excluding the `end` index. If `end` is unspecified, defaults to all remaining elements."
@@ -43,7 +43,7 @@
       "desc":"Starting at the position `start`, removes `deleteCount` elements from the array and adds the remaining `items` at that position. Returns the removed elements."
     },
     "split":{
-      "desc":"Splits the `text` by the `delimiter`, returning the new array."
+      "desc":"Splitter `teksten` ved `skilletegnet`, og returnerer det nye array."
     },
     "unshift":{
       "desc":"Inserts `value` at the beginning of the array, and returns the modified array."
@@ -51,10 +51,10 @@
   },
   "channel":{
     "id":{
-      "desc":"Returns the ID of the current or specified channel."
+      "desc":"Returnerer ID'et af den nuværende eller specifierede kanal."
     },
     "nsfw":{
-      "desc":"Returns whether the current or specified channel is NSFW."
+      "desc":"Returner om kanalen er NSFW eller ej."
     },
     "name":{
       "desc":"Returns the name of the current or specified channel."
@@ -177,7 +177,7 @@
       "desc":"Returns the name of the specified role."
     },
     "position":{
-      "desc":"Returns the position of the specified role."
+      "desc":"Returnerer placeringen af en bestemt rolle."
     }
   },
   "user":{
@@ -188,7 +188,7 @@
       "desc":"Returns the date that the specified user, defaulting to the executing user, was created as a Unix timestamp (milliseconds)."
     },
     "discrim":{
-      "desc":"Returns the discriminator of the specified user, defaulting to the executing user."
+      "desc":"Returnerer diskrimanotoren af en specificeret bruger,"
     },
     "fullname":{
       "desc":"Returns the name + discriminator of the specified user, defaulting to the executing user."
