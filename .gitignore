@@ -35,5 +35,5 @@ backend/public/codemirror/*
 backend/public/fonts/*
 /avatar.js
 testkek1.js
-Locale/*.json
+Locale/*/*.json
 package-locl.json

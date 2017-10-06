@@ -1,0 +1,338 @@
+{
+    "general": {
+        "ping": {
+            "info": "Pong!\nFinds the command latency.",
+            "randmsg": [
+                "Existence is a lie.",
+                "You're going to die some day, perhaps soon.",
+                "Nothing matters.",
+                "Where do you get off?",
+                "There is nothing out there.",
+                "You are alone in an infinite void.",
+                "Truth is false.",
+                "Forsake everything.",
+                "Your existence is pitiful.",
+                "We are all already dead.",
+                "Meow.",
+                "Fear is freedom.",
+                "Subjugation is liberation.",
+                "Contradiction is truth.",
+                "Would you like to make a contract?",
+                "Let it go, and move on."
+            ],
+            "final": "Pong! ({{time}}ms)"
+        },
+        "brainfuck": {
+            "info": "Executes brainfuck code.",
+            "usage": "<code>",
+            "flags": {
+                "p": "Shows a list of pointers after the execution.",
+                "i": "Specifies the input for the `,` operator."
+            }
+        },
+        "ship": {
+            "info": "Gives you the ship name for two users.",
+            "usage": "<user1> <user2>",
+            "final": "Your ship name is **{{name}}**!",
+            "notenough": "You have to tell me who to ship!"
+        },
+        "tag": {
+            "info": "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>).",
+            "usage": "<name | subcommand> [args]",
+            "dontown": "[[emote.x]] You don't own that tag!",
+            "alreadyexists": "[[emote.x]] A tag with that name already exists!",
+            "notag": "[[emote.x]] There is no tag with that name.",
+            "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
+            "tagrename": "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`.",
+            "raw": "The code for {{name}} is:\n```{{code}}```",
+            "testoutput": "Test Output:\n\n{{output}}",
+            "subcommand": {
+                "set": {
+                    "usage": "<name> <content>",
+                    "info": "Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
+                },
+                "delete": {
+                    "usage": "<name>",
+                    "info": "Deletes a tag that you own."
+                },
+                "rename": {
+                    "usage": "<name> <new name>",
+                    "info": "Renames a tag that you own."
+                },
+                "raw": {
+                    "usage": "<name>",
+                    "info": "Gets the raw code of a tag."
+                },
+                "info": {
+                    "usage": "<name>",
+                    "info": "Displays information about a tag."
+                },
+                "transfer": {
+                    "usage": "<name> <user>",
+                    "info": "Transfers a tag to the specified user. Variables will not be transferred."
+                },
+                "top": {
+                    "info": "Displays the tags that have been the most favorited."
+                },
+                "author": {
+                    "usage": "<name>",
+                    "info": "Displays the author of a tag."
+                },
+                "search": {
+                    "usage": "<query>",
+                    "info": "Searches for a tag with a name containing your query."
+                },
+                "list": {
+                    "usage": "[@user]",
+                    "info": "Lists all the tags, or optionally all the tags created by a specific user."
+                },
+                "favorite": {
+                    "usage": "<name>",
+                    "info": "Favorites the specified tag."
+                },
+                "report": {
+                    "usage": "<name>",
+                    "info": "Reports a tag for violating the ToS. Please use responsibly."
+                },
+                "test": {
+                    "usage": "<code>",
+                    "info": "Executes the given code in a test environment."
+                },
+                "help": {
+                    "usage": "[subcommand]",
+                    "info": "Displays this!"
+                },
+                "docs": {
+                    "usage": "[subtag]",
+                    "info": "Gives a link to the BBTag documentation, or provides information about a specific subtag."
+                },
+                "setdesc": {
+                    "info": "info"
+                },
+                "setusage": {
+                    "info": "info"
+                }
+            },
+            "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`.",
+            "transferprompt": "{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
+            "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
+            "transfercancelled": "[[emote.x]] The transfer has been canceled.",
+            "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
+            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+            "descupdate": "The description for `{{tag}}` has been updated.",
+            "descreset": "The description for `{{tag}}` has been reset.",
+            "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",
+            "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
+            "toptags": "Here are the top 10 tags!\n\n{{tags}}",
+            "tagauthor": "The tag `{{tag}}` was created by **{{author}}**",
+            "favouriteadd": "The tag `{{tag}}` has been added to your favorites list.",
+            "favouriteremove": "The tag `{{tag}}` has been removed from your favorites list.",
+            "favourites": "You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+        },
+        "locale": {
+            "info": "Sets what locale messages will be sent in.",
+            "set": "Your locale has been set to {{locale}}!",
+            "list": "Your current locale is: {{current}}\n\nPlease select which locale you want to use."
+        },
+        "tokenify": {
+            "info": ""
+        },
+        "nato": {
+            "info": ""
+        },
+        "invite": {
+            "info": "",
+            "message": ""
+        },
+        "donate": {
+            "info": "",
+            "willdm": "Ok, I'll send you my donation information in a DM.",
+            "message": "placeholder"
+        },
+        "mods": {
+            "info": "",
+            "mods": "Mods on **{{guild}}**",
+            "nomods": "There are no mods on this guild.",
+            "nomodsonline": "There are no online mods."
+        },
+        "help": {
+            "info": "",
+            "allcommands": "Here are all the commands you can execute on **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor more information about commands, do `help <commandname>` or visit <https://blargbot.xyz/commands>.",
+            "nocommand": "Sorry, there's no command with the name '{{name}}'!",
+            "commandinfo": "**{{type}}: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}",
+            "aliases": "No aliases",
+            "subcommand": "Subcommand",
+            "command": "Command",
+            "nosubcommand": "Sorry, there's no subcommand for '{{command}}' with the name '{{name}}'!",
+            "subcommands": "**Subcommands**: {{subcommands}}\n\nDo `help <command> <subcommand>` to get more information about a subcommand!"
+        },
+        "gamatoto": {
+            "info": "Go on a magical expedition with Gamatoto! Use this command to check on your stats, or use a subcommand to go on an adventure!",
+            "subcommand": {
+                "start": {
+                    "usage": "<location>",
+                    "info": "Starts an expedition!"
+                },
+                "end": {
+                    "info": "Ends an expedition!"
+                },
+                "locations": {
+                    "info": "Lists all the expedition locations."
+                }
+            },
+            "stats": "<:bc_cat:345081695990710272> Here are your items!\n\n{{stats}}",
+            "alreadystarted": "An expedition is already in progress!",
+            "notstarted": "You haven't started an expedition!",
+            "nolocation": "Sorry, that wasn't a valid location. The locations you can currently visit are:\n\n{{locations}}",
+            "invalidlocation": "Something weird happened. The place you were exploring no longer exists! Please start another expedition.",
+            "expeditionbeings": "<:bc_cat:345081695990710272> THE SEARCH BEGINS! <:bc_cat:345081695990710272>\n\nLocation: {{location}}\n\nPlease check back later by doing `gamatoto end`!",
+            "expeditionends": "<:bc_cat:345081695990710272> EXPEDITION RESULTS! <:bc_cat:345081695990710272>\n\nLocation: {{location}}\nDuration: {{minutes}} minutes\n\n{{results}}",
+            "notimeelapsed": "No time has elapsed since the expedition started. Gamatoto didn't find anything!",
+            "itemfound": "Gamatoto found {{amount}} {{item}} at the {{location}}.",
+            "levelup": ":fireworks: Gamatoto is now level {{level}}!",
+            "gamatotoxp": "Gamatoto gained **{{amount}}**XP ({{old}} → **{{new}}**)",
+            "itemincrease": "{{item}} You found **{{amount}}** ({{old}} → **{{new}}**)",
+            "locations": "Here are all the expedition locations!\n\n{{locations}}",
+            "wronglevel": "Sorry, you need to be level {{level}} in order to explore that place!",
+            "gamatotoitems": "Here are your items:\n{{items}}",
+            "gamatotostats": "Gamatoto is currently level {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
+            "gamatotocurrent": "Gamatoto has been exploring the **{{location}}** for **{{minutes}}** minutes.\n\nUse `gamatoto end` to end the expedition.",
+            "gamatotoidle": "Gamatoto isn't on an expedition right now. Send him on an adventure by doing `gamatoto start [location]`!"
+        },
+        "prefix": {
+            "info": "Gets or sets your command prefixes. This command configures user prefixes. For guild prefixes, use the `setup` command.",
+            "subcommand": {
+                "add": {
+                    "usage": "<prefix>",
+                    "info": "Adds a prefix to your list."
+                },
+                "remove": {
+                    "usage": "<prefix>",
+                    "info": "Removes a prefix from your list."
+                }
+            },
+            "prefixlist": "{{content}}\nTo configure your prefixes, use the `add` and `remove` subcommands. To configure the guild prefixes, use the `setup` command.",
+            "userprefixes": "Here are your prefixes:\n```md\n{{userprefixes}}\n```",
+            "guildprefixes": "Here are the prefixes on this guild:\n```md\n{{guildprefixes}}\n```",
+            "noprefixes": "You have no custom prefixes.",
+            "defaultprefixes": "You can always use these prefixes:\n{{prefixes}}",
+            "prefixadded": "That prefix has been added!",
+            "prefixremoved": "That prefix has been removed!",
+            "nothingchanged": "Nothing was changed."
+        }
+    },
+    "image": {
+        "cat": {
+            "info": "Gives you a lovely dear sweet precious kitty.\nD'awww!"
+        },
+        "delete": {
+            "info": ""
+        },
+        "thesearch": {
+            "info": "",
+            "defaulttext": ""
+        },
+        "shit": {
+            "info": ""
+        }
+    },
+    "admin": {
+        "setup": {
+            "staff": {
+                "setrole": "The staff roles have been updated.",
+                "rolequery": "Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands."
+            },
+            "info": "Configures various settings.",
+            "subcommand": {
+                "staffuser": {
+                    "usage": "staffuser <add | remove> <user>...",
+                    "info": "Adds or removes users to the staff list."
+                },
+                "staffrole": {
+                    "info": "Brings up a dialog to select or deselect staff roles."
+                },
+                "mute": {
+                    "info": "Sets up the mute role."
+                },
+                "announcement": {
+                    "info": "Sets up announcements."
+                },
+                "modlog": {
+                    "usage": "modlog [event]... [flags]",
+                    "info": "Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events."
+                }
+            },
+            "mute": {
+                "setrole": "The muted role has been updated.",
+                "rolequery": "Select the muted role."
+            },
+            "announce": {
+                "set": "Announcements have been set up.",
+                "rolequery": "Select the role that should be pinged for announcements.",
+                "channelquery": "Select the channel that announcements should go into."
+            },
+            "modlog": {
+                "set": "The modlog has been set to the channel {{channel}} with the following events:\n```\n{{events}}\n```\n{{hadInvalid}}",
+                "remove": "The modlog for the following events has been removed:\n```\n{{events}}\n```\n{{hadInvalid}}",
+                "invalid": "No valid events were provided. The list of valid events is:\n```\n{{eventList}}\n```",
+                "hadinvalid": "You had some invalid events in your command. The list of valid events is:\n```\n{{eventList}}\n```",
+                "list": "Here are the modlogs that are active on your guild:\n\n{{events}}"
+            }
+        },
+        "reason": {
+            "info": "",
+            "nocase": "",
+            "reasonset": ""
+        },
+        "help": {
+            "info": "",
+            "allcommands": "Here are all the commands you can execute on **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor more information about commands, do `help <commandname>` or visit <https://blargbot.xyz/commands>.",
+            "nocommand": "Sorry, there's no command with the name '{{name}}'!",
+            "commandinfo": "**Command: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}"
+        },
+        "ccommand": {
+            "info": "CCommands are a system of custom commands that moderators can create for their users, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.",
+            "usage": "<subcommand> [args]",
+            "subcommand": {
+                "set": {
+                    "usage": "<name> <content>",
+                    "info": "Creates or edits a custom command with the provided name and content. Will not replace any tags made by anyone else."
+                },
+                "delete": {
+                    "usage": "<name>",
+                    "info": "Deletes a custom command."
+                },
+                "rename": {
+                    "usage": "<name> <newName>",
+                    "info": "Renames a custom command."
+                },
+                "author": {
+                    "usage": "<name>",
+                    "info": "Returns the author of the custom command."
+                },
+                "transfer": {
+                    "usage": "<name> <user>",
+                    "info": "Transfers ownership of a custom command to somebody else. Must be consensual."
+                },
+                "list": {
+                    "info": "Lists the custom commands on the guild."
+                },
+                "test": {
+                    "usage": "<code>",
+                    "info": "Executes code in the context of your account."
+                },
+                "help": {
+                    "usage": "[subcommand]",
+                    "info": "Displays this!"
+                }
+            },
+            "dontown": "[[emote.x]] You don't own that custom command!",
+            "notag": "[[emote.x]] There is no custom command with that name.",
+            "tagset": "[[emote.check]] Custom command `{{name}}` {{process}}!",
+            "tagrename": "[[emote.check]] The custom command `{{old}}` has been renamed to `{{new}}`",
+            "raw": "The code for {{name}} is:\\n```{{code}}```",
+            "alreadyexists": "A custom command with that name already exists.",
+            "testoutput": "Test Output:\\n\\n{{output}}"
+        }
+    }
+}

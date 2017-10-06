@@ -48,11 +48,11 @@ class PoeCommand extends CatCommand {
         let msg2 = await ctx.send(message);
         for (const lang of res.body) {
             if (!(ctx.input._[0] && ctx.input._[0] === 'en') && lang.code === 'en') continue;
-            if (lang.translated_progress >= 50) {
+            if (lang.translated_progress >= 0) {
                 try {
                     let res2 = await superagent.post('https://api.crowdin.com/api/project/blargbot/export-file').query(args)
                         .query({
-                            file: 'en_us.json',
+                            file: 'rewrite/Locale/en.json',
                             language: lang.code
                         });
                     console.log(res2.body);

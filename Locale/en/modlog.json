@@ -1,0 +1,26 @@
+{
+    "events": {
+        "kick": "Kick",
+        "ban": "Ban",
+        "unban": "Unban",
+        "mute": "Mute",
+        "unmute": "Unmute",
+        "warn": "Warning",
+        "pardon": "Pardon",
+        "rename": "Rename",
+        "specialroleadd": "Special Role Added",
+        "specialroleremove": "Special Role Removed"
+    },
+    "case": "{{icon}} Case {{number}}: {{event}}",
+    "setreason": "Responsible moderator, please do `reason {{number}}` to set the reason.",
+    "warnings": {
+        "given": "Warnings Given",
+        "removed": "Warnings Pardoned",
+        "total": "New Total"
+    },
+    "rename": {
+        "old": "Old Name",
+        "new": "New Name"
+    },
+    "duration": "Duration"
+}
