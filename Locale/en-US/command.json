@@ -245,7 +245,7 @@
       "info":"Configures various settings.",
       "subcommand":{
         "staffuser":{
-          "usage":"",
+          "usage":"<add | remove> <user>...",
           "info":"Adds or removes users to the staff list."
         },
         "staffrole":{
@@ -258,7 +258,7 @@
           "info":"Sets up announcements."
         },
         "modlog":{
-          "usage":"",
+          "usage":"[event]... [flags]",
           "info":"Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events."
         }
       },
