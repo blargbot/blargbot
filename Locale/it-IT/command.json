@@ -1,138 +1,138 @@
 {
   "general":{
     "ping":{
-      "info":"Pong!\nFinds the command latency.",
+      "info":"Pong!\nTrova la latenza del comando",
       "randmsg":[
-        "Existence is a lie.",
-        "You're going to die some day, perhaps soon.",
-        "Nothing matters.",
-        "Where do you get off?",
-        "There is nothing out there.",
-        "You are alone in an infinite void.",
-        "Truth is false.",
-        "Forsake everything.",
-        "Your existence is pitiful.",
-        "We are all already dead.",
+        "L'esistenza è una bugia.",
+        "Morirai un giorno, forse presto.",
+        "Niente importa.",
+        "Da dove scendi?",
+        "Non c'è nulla là fuori.",
+        "Sei da solo in un vuoto infinito.",
+        "Il vero è falso.",
+        "La tua esistenza è pietosa.",
+        "Siamo tutti già morti.",
         "Meow.",
-        "Fear is freedom.",
-        "Subjugation is liberation.",
-        "Contradiction is truth.",
-        "Would you like to make a contract?",
+        "Paura è libertà.",
+        "Soggiogazione è liberazione.",
+        "Contraddizione è verità.",
+        "Vuoi formare un contratto?",
+        "Lascialo andare e vai avanti.",
         "Let it go, and move on."
       ],
       "final":"Pong! ({{time}}ms)"
     },
     "brainfuck":{
-      "info":"Executes brainfuck code.",
+      "info":"Esegue codice brainfuck.",
       "usage":"<code>",
       "flags":{
-        "p":"Shows a list of pointers after the execution.",
-        "i":"Specifies the input for the `,` operator."
+        "p":"Mostra una lista di puntatori dopo l'esecuzione.",
+        "i":"Specifica l'input per l'operatore `,`."
       }
     },
     "ship":{
-      "info":"Gives you the ship name for two users.",
+      "info":"Ricevi l'unione (ship) dei nickname di due utenti.",
       "usage":"<user1> <user2>",
-      "final":"Your ship name is **{{name}}**!",
-      "notenough":"You have to tell me who to ship!"
+      "final":"Il tuo nome (shipname) è **{{name}}**!",
+      "notenough":"Devi dirmi chi unire (ship)!"
     },
     "tag":{
-      "info":"Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>).",
+      "info":"Le tags sono un sistema pubblico di comandi che chiunque può creare o eseguire, usando il linguaggio BBTag.\n\n**Sottocomandi**:\n{{subcommands}}\n\nPer maggiori informazioni su un sottocomando, scrivi `b!t help <sottocomando>`\nPer maggiori informazioni su BBTag, visita <https://blargbot.xyz/tags>.\nCreando una tag, accetti i termini di servizio (<https://blargbot.xyz/tags/tos>).",
       "usage":"<name | subcommand> [args]",
-      "dontown":"[[emote.x]] You don't own that tag!",
-      "alreadyexists":"[[emote.x]] A tag with that name already exists!",
-      "notag":"[[emote.x]] There is no tag with that name.",
+      "dontown":"[[emote.x]] Non possiedi questa tag!",
+      "alreadyexists":"[[emote.x]] Una tag con questo nome esiste già!",
+      "notag":"[[emote.x]] Non c'è nessuna tag con quel nome.",
       "tagset":"[[emote.check]] Tag `{{name}}` {{process}}!",
-      "tagrename":"[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`.",
-      "raw":"The code for {{name}} is:\n```{{code}}```",
+      "tagrename":"[[emote.check]] La tag `{{old}}` è stata rinominata come `{{new}}`.",
+      "raw":"Il codice per {{name}} è:\n```{{code}}```",
       "testoutput":"Test Output:\n\n{{output}}",
       "subcommand":{
         "set":{
           "usage":"<name> <content>",
-          "info":"Creates or edits a tag with the provided name and content. Will not replace any tags made by anyone else."
+          "info":"Crea o modifica una tag con il nome e contenuto inseriti. Non rimpiazza alcuna tag creata da altri."
         },
         "delete":{
           "usage":"<name>",
-          "info":"Deletes a tag that you own."
+          "info":"Elimina una tag che possiedi."
         },
         "rename":{
           "usage":"<name> <new name>",
-          "info":"Renames a tag that you own."
+          "info":"Rinomina una tag che possiedi."
         },
         "raw":{
           "usage":"<name>",
-          "info":"Gets the raw code of a tag."
+          "info":"Restituisce il codice di una tag."
         },
         "info":{
           "usage":"<name>",
-          "info":"Displays information about a tag."
+          "info":"Fornisce informazioni su una tag."
         },
         "transfer":{
           "usage":"<name> <user>",
-          "info":"Transfers a tag to the specified user. Variables will not be transferred."
+          "info":"Trasferisce una tag all'utente specificato. Le variabili non verranno trasferite."
         },
         "top":{
-          "info":"Displays the tags that have been the most favorited."
+          "info":"Visualizza le tag più preferite."
         },
         "author":{
           "usage":"<name>",
-          "info":"Displays the author of a tag."
+          "info":"Visualizza l'autore di una tag."
         },
         "search":{
           "usage":"<query>",
-          "info":"Searches for a tag with a name containing your query."
+          "info":"Cerca una tag con un nome che contiene la tua query."
         },
         "list":{
           "usage":"[@user]",
-          "info":"Lists all the tags, or optionally all the tags created by a specific user."
+          "info":"Mostra la lista di tutte le tag, o solo quelle di un utente specifico."
         },
         "favorite":{
           "usage":"<name>",
-          "info":"Favorites the specified tag."
+          "info":"Preferisci una specifica tag."
         },
         "report":{
           "usage":"<name>",
-          "info":"Reports a tag for violating the ToS. Please use responsibly."
+          "info":"Segnala una tag che viola i ToS. Usa con responsabilità."
         },
         "test":{
           "usage":"<code>",
-          "info":"Executes the given code in a test environment."
+          "info":"Esegue il comando in un ambiente di test."
         },
         "help":{
           "usage":"[subcommand]",
-          "info":"Displays this!"
+          "info":"Visualizza questo!"
         },
         "docs":{
           "usage":"[subtag]",
-          "info":"Gives a link to the BBTag documentation, or provides information about a specific subtag."
+          "info":"Restituisce il link alla documentazione BBTag, o restituisce informazioni su una tag specifica."
         },
         "setdesc":{
-          "info":"info"
+          "info":"Info"
         },
         "setusage":{
-          "info":"info"
+          "info":"Info"
         }
       },
-      "subcommandnotfound":"Couldn't find a subcommand with the name `{{subcommand}}`.",
-      "transferprompt":"{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables.",
-      "nobots":"[[emote.x]] You cannot transfer a tag to a bot!",
-      "transfercancelled":"[[emote.x]] The transfer has been canceled.",
-      "transfercomplete":"[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
-      "descupdate":"The description for `{{tag}}` has been updated.",
-      "descreset":"The description for `{{tag}}` has been reset.",
-      "subcommandconflict":"You can't use the name `{{name}}` because there is a subcommand with that name!",
-      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}",
-      "toptags":"Here are the top 10 tags!\n\n{{tags}}",
-      "tagauthor":"The tag `{{tag}}` was created by **{{author}}**",
-      "favouriteadd":"The tag `{{tag}}` has been added to your favorites list.",
-      "favouriteremove":"The tag `{{tag}}` has been removed from your favorites list.",
-      "favourites":"You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```"
+      "subcommandnotfound":"Non ho trovato alcun sottocomando con il nome `{{subcommand}}`.",
+      "transferprompt":"{{target}}, {{user}} vuole trasferire a te la proprietà della tag `{{tag}}`. Accetti?\nNon verranno trasferite le variabili.",
+      "nobots":"[[emote.x]] Non puoi trasferire la proprietà ad un bot!",
+      "transfercancelled":"[[emote.x]] Il trasferimento è stato annullato.",
+      "transfercomplete":"[[emote.check]] {{user}} ora possiede la tag `{{tag}}`.",
+      "taginfo":"__**Tag | {{name}}**__\nAutore: **{{author}}**\nUltima modifica: **{{lastModified}}**\nE' stata usata un totale di **{{uses}} volte**!\nE' stata preferita per un totale di **{{favourites}} volte**!\n\n{{desc}}",
+      "descupdate":"La descrizione per `{{tag}}` è stata aggiornata.",
+      "descreset":"La descrizione per `{{tag}}` è stata resettata.",
+      "subcommandconflict":"Non puoi usare il nome `{{name}}` perchè esiste già un sottocomando con quel nome!",
+      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Preferiti: {{favourites}} Usi: {{uses}}",
+      "toptags":"Queste sono le prime 10 tags!\n\n{{tags}}",
+      "tagauthor":"La tag `{{tag}}` è stata creata da **{{author}}**.",
+      "favouriteadd":"La tag `{{tag}}` è stata aggiunta alla tua lista preferiti.",
+      "favouriteremove":"La tag `{{tag}}` è stata rimossa dalla tua lista preferiti.",
+      "favourites":"Hai {{count}} tags nella tua lista preferiti.\n```fix\n{{tags}}\n```"
     },
     "locale":{
-      "info":"Sets what locale messages will be sent in.",
-      "set":"Your locale has been set to {{locale}}!",
-      "list":"Your current locale is: {{current}}\n\nPlease select which locale you want to use."
+      "info":"Imposta il file (locale) in cui i messaggi saranno spediti.",
+      "set":"Il tuo locale è stato impostato a {{locale}}!",
+      "list":"Il tuo locale attuale è: {{current}}\n\nPer favore seleziona quale locale vuoi utilizzare."
     },
     "tokenify":{
       "info":""
@@ -223,7 +223,7 @@
   },
   "image":{
     "cat":{
-      "info":"Gives you a lovely dear sweet precious kitty.\nD'awww!"
+      "info":"Restituisce un grazioso e puccioso gatto.\nD'awww!"
     },
     "delete":{
       "info":""
@@ -239,23 +239,23 @@
   "admin":{
     "setup":{
       "staff":{
-        "setrole":"The staff roles have been updated.",
-        "rolequery":"Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands."
+        "setrole":"I ruoli staff sono stati aggiornati.",
+        "rolequery":"Seleziona i ruoli che dovranno essere considerati come moderatori. Gli utenti con questi ruoli potranno usare i comandi per amministratori."
       },
-      "info":"Configures various settings.",
+      "info":"Configura varie impostazioni.",
       "subcommand":{
         "staffuser":{
-          "usage":"staffuser <add | remove> <user>...",
-          "info":"Adds or removes users to the staff list."
+          "usage":"mod user <add | remove> <utente>...",
+          "info":"Aggiunge o toglie l'utente(i) specificato(i) dalla lista staff."
         },
         "staffrole":{
-          "info":"Brings up a dialog to select or deselect staff roles."
+          "info":"Mostra un dialogo per selezionare o deselezionare i ruoli."
         },
         "mute":{
-          "info":"Sets up the mute role."
+          "info":"info"
         },
         "announcement":{
-          "info":"Sets up announcements."
+          "info":"info"
         },
         "modlog":{
           "usage":"modlog [event]... [flags]",
@@ -263,13 +263,13 @@
         }
       },
       "mute":{
-        "setrole":"The muted role has been updated.",
-        "rolequery":"Select the muted role."
+        "setrole":"Il ruolo muto è stato aggiornato.",
+        "rolequery":"Seleziona il ruolo muto."
       },
       "announce":{
-        "set":"Announcements have been set up.",
-        "rolequery":"Select the role that should be pinged for announcements.",
-        "channelquery":"Select the channel that announcements should go into."
+        "set":"imposta",
+        "rolequery":"Seleziona il ruolo che dovrà essere menzionato per gli annunci.",
+        "channelquery":"Seleziona il canale in cui gli annunci dovrebbero apparire."
       },
       "modlog":{
         "set":"The modlog has been set to the channel {{channel}} with the following events:\n```\n{{events}}\n```\n{{hadInvalid}}",
