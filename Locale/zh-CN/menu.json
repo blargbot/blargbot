@@ -1,10 +1,10 @@
 {
   "cancel":{
-    "name":"Cancel",
-    "description":"Close this menu."
+    "name":"取消",
+    "description":"关闭此菜单"
   },
   "confirm":{
-    "name":"Confirm",
+    "name":"确认",
     "description":"Confirms this menu."
   }
 }
