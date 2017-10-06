@@ -126,7 +126,7 @@
       "desc":"Si la `valeur` est égale à `vrai` ou `1`, exécute la partie `alors`.\nSi la `valeur` est égale à `faux` ou `0`, exécute la partie `sinon`.\nAutrement, affiche une erreur.\n\nUtilisez ceci avec le tag {logique}."
     },
     "logic":{
-      "desc":"Does logical operators on the `augend` and `operands`, returning `true` or `false`.\n\nEquivalence Operators:\n - `==` - equal\n - `!=` - not equal\n - `<` - less than\n - `<=` - less than or equal\n - `>` - greater than\n - `>=` - greater than or equal\n - `startswith` - the augend starts with the operand\n - `endswith` - the augend ends with the operand\n - `includes` - the augend includes the operand\n\nLogical Operators:\n - `&&` - returns true if the augend and operand are both true\n - `||` - returns true if either the augend or operand are true\n - `XOR` - returns true if only one of the augend and operand are true (not both)\n\nOther Operators:\n - `!` - inverts the next operand (true becomes false, etc.)"
+      "desc":""
     }
   },
   "math":{
