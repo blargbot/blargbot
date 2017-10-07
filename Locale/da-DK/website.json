@@ -34,5 +34,5 @@
       "desc":"Har et forslag til botten? Jeg vil være glad for at høre det! Fundet en fejl? Jeg vil gerne høre der også! Du kan foreslå noget for mig ved hjælp af kommandoen `suggest`, ved at tilslutte min server, eller ved at indsende en anmodning om support."
     }
   },
-  "bbtag":""
+  "bbtag":"# BBTag\n> Ikke at forveksle med BBCode!\n\nBBTag er et skabelon-baseret programmeringssprog, der er designet til at give en kraftfuld ramme for skabelse af avancerede brugerdefinerede kommandoer.\n\n## Termer\n- Et `tag` henviser til en blok af BBTag kode, uanset om det er et offentligt tag eller en brugerdefineret kommando.\n- Et `subtag` henviser til et BBTag komponent. Avancerede `tags` er lavet af mange `subtags`.\n- En `class`henvise til en gruppe af `subtags`.\n\n## SubTags\n\nSubtags er de basale byggesten af BBTag."
 }
