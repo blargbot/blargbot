@@ -51,7 +51,7 @@
   },
   "channel":{
     "id":{
-      "desc":"Renvoie l'ID du canal actuel ou spécifié"
+      "desc":"Renvoie l'ID du canal actuel ou spécifié."
     },
     "nsfw":{
       "desc":"Montre si le salon spécifié est NSFW ou pas."
