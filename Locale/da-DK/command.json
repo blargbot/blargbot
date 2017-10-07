@@ -288,7 +288,7 @@
       "info":"",
       "allcommands":"",
       "nocommand":"",
-      "commandinfo":""
+      "commandinfo":"**Kommando: {{name}}**\n\n**Aliaser**: {{aliases}}\n**Brug**: {{usage}}\n\n{{description}}"
     },
     "ccommand":{
       "info":"",
@@ -327,12 +327,12 @@
         }
       },
       "dontown":"[[emote.x]] Du ejer ikke denne brugerdefinerede kommando!",
-      "notag":"",
-      "tagset":"",
-      "tagrename":"",
-      "raw":"",
-      "alreadyexists":"",
-      "testoutput":""
+      "notag":"[[emote.x]] Der findes ingen brugerdefinerede kommando med det navn.",
+      "tagset":"[[emote.check]] Brugerdefinerede kommando `{{name}}` {{process}}!",
+      "tagrename":"[[emote.check]] Brugerdefinerede kommandoen `{{old}}` er blevet imdøbt til `{{new}}`",
+      "raw":"Koden for {{name}} er:\\n```{{code}}```",
+      "alreadyexists":"Der findes allerede en brugerdefineret kommando med det navn.",
+      "testoutput":"Test Output:\\n\\n{{output}}"
     }
   }
 }
