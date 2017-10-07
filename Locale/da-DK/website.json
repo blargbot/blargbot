@@ -23,10 +23,10 @@
     },
     "moderation":{
       "title":"",
-      "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+      "desc":"Brug for noget til at overvåge din chat? blargbot er udstyret med mange moderation hjælpeværktøjer, fra grundlæggende operationer som udelukkelse og muting, til mere avancerede ting som chatlogging eller automatiske censur."
     },
     "opensource":{
-      "title":"",
+      "title":"Open Source",
       "desc":""
     },
     "suggestions":{
