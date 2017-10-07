@@ -31,7 +31,7 @@
       }
     },
     "ship":{
-      "info":"",
+      "info":"Giver dig parringnavnet på to brugere.",
       "usage":"<user1><user2>",
       "final":"Jeres parringsnavn er **{{name}}**!",
       "notenough":"Du er nødt til at fortælle mig hvem jeg skal parre!"
@@ -130,7 +130,7 @@
       "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
     },
     "locale":{
-      "info":"",
+      "info":"Angiver, hvad landestandard beskeder vil blive sendt i.",
       "set":"",
       "list":""
     },
