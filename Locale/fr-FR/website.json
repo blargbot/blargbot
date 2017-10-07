@@ -5,33 +5,33 @@
     "logout":"Se déconnecter",
     "commands":"Commandes",
     "bbtag":"BBTag",
-    "subtags":""
+    "subtags":"SubTags"
   },
   "index":{
-    "desc":"",
+    "desc":"blargbot est un bot Discord polyvalent dédié à fournir des commandes et des services de qualité, incluant l'historique de chats et un système de commandes personnalisées approfondi.",
     "commands":{
-      "title":"",
-      "desc":""
+      "title":"Commandes",
+      "desc":"blargbot est équipé de nombreuses commandes, qui sont documentées et classées pour votre commodité."
     },
     "bbtag":{
-      "title":"",
-      "desc":""
+      "title":"BBTag",
+      "desc":"blargbot utilise un système de tag sophistiqué appelé BBTag, que vous pouvez utiliser pour créer des commandes personnalisées avancées."
     },
     "customization":{
-      "title":"",
+      "title":"Personnalisation",
       "desc":""
     },
     "moderation":{
-      "title":"",
+      "title":"Modération",
       "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
     },
     "opensource":{
-      "title":"",
-      "desc":""
+      "title":"Open Source",
+      "desc":"On partage, entre amis! blargbot est complètement open source sous la license GNU AGPLv3. N'hésitez pas à jeter un œil et à apprendre comment tout fonctionne. Si vous utilisez une partie de mon code dans votre propre projet, vous devrez néanmoins me créditer. Voir la licence pour plus de détails."
     },
     "suggestions":{
-      "title":"",
-      "desc":""
+      "title":"Ouvert aux Suggestions",
+      "desc":"Vous avez une suggestion pour le bot? Je serais heureux de l'entendre! Vous avez trouvé un bug? Je voudrais l'entendre aussi! Vous pouvez me suggérer ce que vous souhaitez en utilisant la commande `suggest`, en rejoignant mon serveur ou en envoyant un ticket."
     }
   },
   "bbtag":""
