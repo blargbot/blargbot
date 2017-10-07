@@ -1,17 +1,17 @@
 {
   "events":{
-    "kick":"",
-    "ban":"",
-    "unban":"",
-    "mute":"",
-    "unmute":"",
-    "warn":"",
-    "pardon":"",
-    "rename":"",
-    "specialroleadd":"",
-    "specialroleremove":""
+    "kick":"Éjection",
+    "ban":"Bannissement",
+    "unban":"Dé-bannissement",
+    "mute":"Rendre muet",
+    "unmute":"Rendre la parole",
+    "warn":"Mise en garde",
+    "pardon":"Pardon",
+    "rename":"Changement de nom",
+    "specialroleadd":"Rôle particulier ajouté",
+    "specialroleremove":"Rôle particulier supprimé"
   },
-  "case":"",
+  "case":"{{icon}} Cas {{number}} : {{event}}",
   "setreason":"",
   "warnings":{
     "given":"",
