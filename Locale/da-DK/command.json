@@ -116,7 +116,7 @@
       "subcommandnotfound":"",
       "transferprompt":"",
       "nobots":"",
-      "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
+      "transfercancelled":"[[emote.x]] Overførslen er blevet annulleret.",
       "transfercomplete":"[[emote.check]] {{user}} ejer nu tagget '{{tag}}'.",
       "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
       "descupdate":"Beskrivelsen af '{{tag}}' er blevet opdateret.",
@@ -158,12 +158,12 @@
     "help":{
       "info":"",
       "allcommands":"",
-      "nocommand":"",
+      "nocommand":"Beklager, der er ingen kommando med navnet '{{name}}'!",
       "commandinfo":"**{{type}}: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}",
       "aliases":"Ingen aliaser",
       "subcommand":"Underkommando",
       "command":"Kommando",
-      "nosubcommand":"",
+      "nosubcommand":"Desværre, er der ingen underkommando for '{{command}}' med navnet '{{name}}'!",
       "subcommands":""
     },
     "gamatoto":{
@@ -183,7 +183,7 @@
       "stats":"<:bc_cat:345081695990710272> her er dine genstande! \n\n{{stats}}",
       "alreadystarted":"En ekspedition er allerede i gang!",
       "notstarted":"Du har ikke startet en ekspedition!",
-      "nolocation":"",
+      "nolocation":"Desværre, det var ikke en gyldig placering. De steder, du kan i øjeblikket besøge er:\n\n{{locations}}",
       "invalidlocation":"",
       "expeditionbeings":"",
       "expeditionends":"",
@@ -204,17 +204,17 @@
       "subcommand":{
         "add":{
           "usage":"<prefix>",
-          "info":""
+          "info":"Tilføjer et fortegn til din liste."
         },
         "remove":{
           "usage":"<prefix>",
-          "info":""
+          "info":"Fjerner et fortegn fra din liste."
         }
       },
       "prefixlist":"",
       "userprefixes":"",
       "guildprefixes":"",
-      "noprefixes":"",
+      "noprefixes":"Du har ingen brugerdefinerede fortegn.",
       "defaultprefixes":"",
       "prefixadded":"Dette fortegn er blevet tilføjet!",
       "prefixremoved":"Dette fortegn er blevet fjernet!",
@@ -246,7 +246,7 @@
       "subcommand":{
         "staffuser":{
           "usage":"<add | remove><user>...",
-          "info":""
+          "info":"Tilføjer eller fjerner brugere til listen over personale."
         },
         "staffrole":{
           "info":""
@@ -263,8 +263,8 @@
         }
       },
       "mute":{
-        "setrole":"",
-        "rolequery":""
+        "setrole":"Den dæmpede rolle er blevet opdateret.",
+        "rolequery":"Vælg den dæmpede rolle."
       },
       "announce":{
         "set":"",
