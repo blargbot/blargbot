@@ -10,7 +10,7 @@
       "desc":"Får et element fra en matrix på position 'index'."
     },
     "isarray":{
-      "desc":""
+      "desc":"Returnerer true hvis det angivne element er et array, og false ellers. Du kan ikke bruge variabelnavne."
     },
     "join":{
       "desc":""
@@ -66,7 +66,7 @@
       "desc":"Returnerer emnet for den aktuelle eller angivne kanal (kun tekst)."
     },
     "type":{
-      "desc":""
+      "desc":"Returnerer typen af den aktuelle eller angivne kanal (returnerer \"text\" eller \"voice\")."
     }
   },
   "general":{
@@ -109,7 +109,7 @@
       "desc":""
     },
     "name":{
-      "desc":""
+      "desc":"Returnerer navnet på den aktuelle guild."
     },
     "owner":{
       "desc":"Returnerer ID'ET for serverens ejer."
