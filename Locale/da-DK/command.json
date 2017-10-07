@@ -33,7 +33,7 @@
     "ship":{
       "info":"",
       "usage":"<user1><user2>",
-      "final":"Your shipname is **{{name}}**!",
+      "final":"Jeres parringsnavn er **{{name}}**!",
       "notenough":"Du er nødt til at fortælle mig hvem jeg skal parre!"
     },
     "tag":{
