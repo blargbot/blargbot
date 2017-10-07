@@ -18,7 +18,7 @@
   "created":"créé",
   "deleted":"supprimé",
   "menu":{
-    "choices":""
+    "choices":"Page {{page}}/{{max}}"
   },
   "nochange":"Aucun changement.",
   "commandhelp":"**Nom de la commande**: **__{{name}}__**\n\n**__Utilisation__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Alias__**\n{{aliases}}",
@@ -29,7 +29,7 @@
   },
   "test":"",
   "querycancelled":"The query has been cancelled.",
-  "user":"",
-  "role":"",
-  "channel":""
+  "user":"Utilisateur",
+  "role":"Rôle",
+  "channel":"Salon"
 }
