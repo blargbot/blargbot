@@ -322,11 +322,11 @@
           "info":""
         },
         "help":{
-          "usage":"",
+          "usage":"[subcommand]",
           "info":"Viser dette!"
         }
       },
-      "dontown":"",
+      "dontown":"[[emote.x]] Du ejer ikke denne brugerdefinerede kommando!",
       "notag":"",
       "tagset":"",
       "tagrename":"",
