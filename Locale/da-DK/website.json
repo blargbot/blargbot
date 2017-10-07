@@ -15,14 +15,14 @@
     },
     "bbtag":{
       "title":"BBTag",
-      "desc":""
+      "desc":"blargbot bruger et sofistikeret tag system kaldet BBTag, som du kan bruge til at oprette avancerede brugerdefinerede kommandoer."
     },
     "customization":{
       "title":"Tilpasning",
-      "desc":""
+      "desc":"Vi forstår, at ikke alle servere er ens, så blargbot har omfattende tilpasning. Du kan styre, nøjagtigt hvilke roller kan bruge hvilke kommandoer, angive brugerdefinerede fortegn, og endda ændre grænsefladesproget!"
     },
     "moderation":{
-      "title":"",
+      "title":"Moderation",
       "desc":"Brug for noget til at overvåge din chat? blargbot er udstyret med mange moderation hjælpeværktøjer, fra grundlæggende operationer som udelukkelse og muting, til mere avancerede ting som chatlogging eller automatiske censur."
     },
     "opensource":{
