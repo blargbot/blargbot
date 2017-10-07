@@ -1,10 +1,10 @@
 {
-  "language":"",
+  "language":"Français",
   "header":{
-    "login":"",
-    "logout":"",
-    "commands":"",
-    "bbtag":"",
+    "login":"Se connecter",
+    "logout":"Se déconnecter",
+    "commands":"Commandes",
+    "bbtag":"BBTag",
     "subtags":""
   },
   "index":{
