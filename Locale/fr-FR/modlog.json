@@ -12,15 +12,15 @@
     "specialroleremove":"Rôle particulier supprimé"
   },
   "case":"{{icon}} Cas {{number}} : {{event}}",
-  "setreason":"",
+  "setreason":"Modérateur responsable, merci de faire `raison {{number}}` pour donner la raison.",
   "warnings":{
-    "given":"",
-    "removed":"",
-    "total":""
+    "given":"Avertissements donnés",
+    "removed":"Avertissements retirés",
+    "total":"Nouveau total"
   },
   "rename":{
-    "old":"",
-    "new":""
+    "old":"Ancien nom",
+    "new":"Nouveau nom"
   },
-  "duration":""
+  "duration":"Durée"
 }
