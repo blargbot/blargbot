@@ -25,7 +25,7 @@
       "desc":"Fjerner og retunerer det sidste element i arrayet."
     },
     "push":{
-      "desc":""
+      "desc":"Skubber et element til slutningen af et array. Returnerer den modificerede matrix."
     },
     "set":{
       "desc":""
@@ -71,7 +71,7 @@
   },
   "general":{
     "clean":{
-      "desc":""
+      "desc":"Renser det angivne tekst ved at skrumpe alle mellemrum."
     },
     "//":{
       "desc":""
@@ -112,13 +112,13 @@
       "desc":""
     },
     "owner":{
-      "desc":""
+      "desc":"Returnerer ID'ET for serverens ejer."
     },
     "region":{
       "desc":""
     },
     "roles":{
-      "desc":""
+      "desc":"Returnerer en matrix af roller i den aktuelle server."
     }
   },
   "logic":{
