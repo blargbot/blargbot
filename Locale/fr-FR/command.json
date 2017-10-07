@@ -157,13 +157,13 @@
     },
     "help":{
       "info":"",
-      "allcommands":"",
-      "nocommand":"",
-      "commandinfo":"",
-      "aliases":"",
-      "subcommand":"",
-      "command":"",
-      "nosubcommand":"",
+      "allcommands":"Voici toutes les commandes que vous pouvez exécuter sur **{{guild}} **.\n```markdown\n{{commands}}\n ``` pour plus d’informations sur les commandes, tapez `help <commande>` ou visitez < https://blargbot.xyz/commands >.",
+      "nocommand":"Désolé, il n’y a pas de commande avec le nom « {{name}} » !",
+      "commandinfo":"**{{type}}: {{name}}**\n\n**Alias**: {{aliases}}\n**utilisation**: {{usage}}\n\n{{description}}",
+      "aliases":"Pas d'alias",
+      "subcommand":"Sous-commande",
+      "command":"Commande",
+      "nosubcommand":"Désolé, il n’y a aucune sous-commande de `{{command}}` avec le nom `{{name}}` !",
       "subcommands":""
     },
     "gamatoto":{
