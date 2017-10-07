@@ -113,9 +113,9 @@
           "info":"info"
         }
       },
-      "subcommandnotfound":"",
-      "transferprompt":"",
-      "nobots":"",
+      "subcommandnotfound":"Kunne ikke finde en underkommando med navnet '{{subcommand}}'.",
+      "transferprompt":"{{target}}, {{user}} ønsker at overdrage ejerskabet af tagget '{{tag}}' til dig. Vil du acceptere? Dette vil ikke overføre variabler.",
+      "nobots":"[[emote.x]] Du kan ikke overføre et tag til en bot!",
       "transfercancelled":"[[emote.x]] Overførslen er blevet annulleret.",
       "transfercomplete":"[[emote.check]] {{user}} ejer nu tagget '{{tag}}'.",
       "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
@@ -189,7 +189,7 @@
       "expeditionends":"",
       "notimeelapsed":"",
       "itemfound":"",
-      "levelup":"",
+      "levelup":":fireworks: Gamatoto er nu niveau {{level}}!",
       "gamatotoxp":"",
       "itemincrease":"",
       "locations":"",
@@ -239,10 +239,10 @@
   "admin":{
     "setup":{
       "staff":{
-        "setrole":"",
+        "setrole":"Personale-roller er blevet opdateret.",
         "rolequery":""
       },
-      "info":"",
+      "info":"Konfigurerer forskellige indstillinger.",
       "subcommand":{
         "staffuser":{
           "usage":"<add | remove><user>...",
@@ -252,7 +252,7 @@
           "info":""
         },
         "mute":{
-          "info":""
+          "info":"Sætter op den dæmpede rolle."
         },
         "announcement":{
           "info":"Opsætter annonceringer."
@@ -292,10 +292,10 @@
     },
     "ccommand":{
       "info":"",
-      "usage":"",
+      "usage":"<subcommand>[args]",
       "subcommand":{
         "set":{
-          "usage":"",
+          "usage":"<name><content>",
           "info":""
         },
         "delete":{
