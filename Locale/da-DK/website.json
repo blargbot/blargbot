@@ -8,7 +8,7 @@
     "subtags":"SubTags"
   },
   "index":{
-    "desc":"",
+    "desc":"blargbot er en multifunktionel Discord bot dedikeret til at levere kvalitets kommandoer og tjenester, herunder chatlogs og et dybdegående brugerdefinerede kommando system.",
     "commands":{
       "title":"Kommandoer",
       "desc":"blargbot er udstyret med talrige kommandoer, som alle er dokumenteret og kategoriseret for din bekvemmelighed."
@@ -27,11 +27,11 @@
     },
     "opensource":{
       "title":"Open Source",
-      "desc":""
+      "desc":"Deling er omsorgsfulde! blargbot er helt open source under licensen GNU AGPLv3. Du er velkommen til at tage et kig og lær hvordan det hele fungerer. Hvis du bruger noget af min kode i dit eget projekt, er du forpligtet til at angive mig som kilde. Se licens for flere detaljer."
     },
     "suggestions":{
       "title":"Åben for forslag",
-      "desc":""
+      "desc":"Har et forslag til botten? Jeg vil være glad for at høre det! Fundet en fejl? Jeg vil gerne høre der også! Du kan foreslå noget for mig ved hjælp af kommandoen `suggest`, ved at tilslutte min server, eller ved at indsende en anmodning om support."
     }
   },
   "bbtag":""
