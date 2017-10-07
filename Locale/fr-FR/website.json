@@ -19,7 +19,7 @@
     },
     "customization":{
       "title":"Personnalisation",
-      "desc":""
+      "desc":"Nous comprenons que tout serveur est unique, c'est pourquoi blargbot est hautement personnalisable. Vous pouvez contrôler exactement quels rôles peut utiliser quelles commandes, spécifier des préfixes personnalisés et même changer la langue!"
     },
     "moderation":{
       "title":"Modération",
@@ -34,5 +34,5 @@
       "desc":"Vous avez une suggestion pour le bot? Je serais heureux de l'entendre! Vous avez trouvé un bug? Je voudrais l'entendre aussi! Vous pouvez me suggérer ce que vous souhaitez en utilisant la commande `suggest`, en rejoignant mon serveur ou en envoyant un ticket."
     }
   },
-  "bbtag":""
+  "bbtag":"# BBTag\n> Ne pas confondre avec le BBCode!\n\nLe BBTag est un langage de programmation basé sur modèle, conçu pour fournir un cadre puissant à la création de commandes personnalisées avancées.\n\n## Terminologie\n\n- Un `tag` réfère à un bloc de code BBTag, que ce soit un tag public ou une commande personnalisée.\n- Un `subtag` réfère à un composant BBTag. Les `tags` avancés sont fait de nombreux `subtags`.\n- Une `classe` réfère à un groupe de `subtags`.\n\n## SubTags\n\nLes subtags sont la composante fondamentale du BBTag. Ils agissent comme des fonctions dynamiques, que ce soit obtenir le nom d'un utilisateur ou faire des maths. Jetons un œil à un subtag :\n```\n{math.randint;1;10}\n```\nQuand utilisée, cela renverra quelque chose comme:\n```\n6\n```\nComme vous pouvez le voir, le subtag `math.randint` renvoie un entier aléatoire se trouvant entre les deux nombres fournis."
 }
