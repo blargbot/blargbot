@@ -185,14 +185,14 @@
       "notstarted":"Du har ikke startet en ekspedition!",
       "nolocation":"Desværre, det var ikke en gyldig placering. De steder, du kan i øjeblikket besøge er:\n\n{{locations}}",
       "invalidlocation":"",
-      "expeditionbeings":"",
-      "expeditionends":"",
-      "notimeelapsed":"",
-      "itemfound":"",
+      "expeditionbeings":"<:bc_cat:345081695990710272> SØGNINGEN STARTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\n\nTjek igen senere ved at skrive `gamatoto end`!",
+      "expeditionends":":bc_cat:345081695990710272> EXPEDITIONS RESULTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\nVarighed: {{minutes}} minutter\n\n{{results}}",
+      "notimeelapsed":"Ingen tid er forløbet, siden ekspeditionen startede. Gamatoto fandt ikke noget!",
+      "itemfound":"Gamatoto fandt {{amount}} {{item}} på {{location}}.",
       "levelup":":fireworks: Gamatoto er nu niveau {{level}}!",
       "gamatotoxp":"",
       "itemincrease":"",
-      "locations":"",
+      "locations":"Her er alle ekspedition stederne! \n\n{{locations}}",
       "wronglevel":"Desværre, skal du være level {{level}} for at udforske dette sted!",
       "gamatotoitems":"Her er dine genstande:\n{{items}}",
       "gamatotostats":"Gamatoto er i øjeblikket niveau {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
@@ -287,7 +287,7 @@
     "help":{
       "info":"",
       "allcommands":"",
-      "nocommand":"",
+      "nocommand":"Beklager, der er ingen kommando med navnet '{{name}}'!",
       "commandinfo":"**Kommando: {{name}}**\n\n**Aliaser**: {{aliases}}\n**Brug**: {{usage}}\n\n{{description}}"
     },
     "ccommand":{
@@ -319,7 +319,7 @@
         },
         "test":{
           "usage":"<code>",
-          "info":""
+          "info":"Udfører koden i kontekst af din konto."
         },
         "help":{
           "usage":"[subcommand]",
