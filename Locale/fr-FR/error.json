@@ -23,8 +23,8 @@
     "invalidradix":"La base doit être comprise entre 2 et 36, mais vaut '{{radix}}'",
     "notanarray":"La variable '{{name}}' n'est pas un tableau (reçu: '{{value}}').",
     "notbool":"La variable '{{name}}' n'est pas un booléen (reçu: '{{value}}').",
-    "missingarg":"",
-    "namedunsupported":""
+    "missingarg":"Le subtag '{{tag}}'' manque d'arguments: '{{arg}}'",
+    "namedunsupported":"Le subtag '{{tag}}' ne supporte pas les arguments nommés"
   },
   "inputtoolong":"Votre saisie est trop longue! Le maximum de caractère pour ça est {{max}}, mais vous avez donné {{length}} caractères."
 }
