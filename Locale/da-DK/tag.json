@@ -60,10 +60,10 @@
       "desc":""
     },
     "position":{
-      "desc":""
+      "desc":"Returnerer positionen for den aktuelle eller angivne kanal."
     },
     "topic":{
-      "desc":""
+      "desc":"Returnerer emnet for den aktuelle eller angivne kanal (kun tekst)."
     },
     "type":{
       "desc":""
@@ -77,7 +77,7 @@
       "desc":""
     },
     "get":{
-      "desc":""
+      "desc":"Returnerer den gemte variabel med den medfølgende navn. Variabel fortegn kan ændre den pool hvor der skal søges."
     },
     "set":{
       "desc":""
@@ -165,16 +165,16 @@
   },
   "role":{
     "color":{
-      "desc":""
+      "desc":"Returnerer farven af den angivne rolle i hexadecimal."
     },
     "id":{
-      "desc":""
+      "desc":"Returnerer ID'ET for den angivne rolle."
     },
     "mention":{
-      "desc":""
+      "desc":"Returnerer en omtale af den angivne rolle."
     },
     "name":{
-      "desc":""
+      "desc":"Returnerer navnet på den angivne rolle."
     },
     "position":{
       "desc":"Returnerer placeringen af en bestemt rolle."
@@ -215,7 +215,7 @@
       "desc":""
     },
     "setnick":{
-      "desc":""
+      "desc":"Angiver kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
     },
     "status":{
       "desc":""
