@@ -117,9 +117,9 @@
       "transferprompt":"",
       "nobots":"",
       "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
-      "transfercomplete":"",
+      "transfercomplete":"[[emote.check]] {{user}} ejer nu tagget '{{tag}}'.",
       "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
-      "descupdate":"",
+      "descupdate":"Beskrivelsen af '{{tag}}' er blevet opdateret.",
       "descreset":"Beskrivelsen for `{{tag}}` er blevet nulstillet.",
       "subcommandconflict":"Du kan ikke bruge navnet '{{name}}', fordi der er en underkommando med navnet!",
       "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
@@ -195,8 +195,8 @@
       "locations":"",
       "wronglevel":"Desværre, skal du være level {{level}} for at udforske dette sted!",
       "gamatotoitems":"Her er dine genstande:\n{{items}}",
-      "gamatotostats":"",
-      "gamatotocurrent":"",
+      "gamatotostats":"Gamatoto er i øjeblikket niveau {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
+      "gamatotocurrent":"Gamatoto har været ved at udforske **{{location}} ** på **{{minutes}} ** minutter. Brug 'gamatoto end' for at afslutte ekspeditionen.",
       "gamatotoidle":""
     },
     "prefix":{
@@ -216,8 +216,8 @@
       "guildprefixes":"",
       "noprefixes":"",
       "defaultprefixes":"",
-      "prefixadded":"",
-      "prefixremoved":"",
+      "prefixadded":"Dette fortegn er blevet tilføjet!",
+      "prefixremoved":"Dette fortegn er blevet fjernet!",
       "nothingchanged":"Intet blev ændret."
     }
   },
@@ -258,7 +258,7 @@
           "info":"Opsætter annonceringer."
         },
         "modlog":{
-          "usage":"",
+          "usage":"[event]... [flags]",
           "info":""
         }
       },
