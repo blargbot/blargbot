@@ -184,7 +184,7 @@
       "alreadystarted":"En ekspedition er allerede i gang!",
       "notstarted":"Du har ikke startet en ekspedition!",
       "nolocation":"Desværre, det var ikke en gyldig placering. De steder, du kan i øjeblikket besøge er:\n\n{{locations}}",
-      "invalidlocation":"",
+      "invalidlocation":"Noget underligt skete. Det sted du udforskede findes ikke længere! Start venligst en ny ekspedition.",
       "expeditionbeings":"<:bc_cat:345081695990710272> SØGNINGEN STARTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\n\nTjek igen senere ved at skrive `gamatoto end`!",
       "expeditionends":":bc_cat:345081695990710272> EXPEDITIONS RESULTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\nVarighed: {{minutes}} minutter\n\n{{results}}",
       "notimeelapsed":"Ingen tid er forløbet, siden ekspeditionen startede. Gamatoto fandt ikke noget!",
