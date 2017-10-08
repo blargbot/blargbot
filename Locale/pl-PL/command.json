@@ -92,11 +92,11 @@
         },
         "report":{
           "usage":"",
-          "info":""
+          "info":"Raporty tag za naruszenie ToS. Proszę używać odpowiedzialnie."
         },
         "test":{
           "usage":"",
-          "info":""
+          "info":"Wykonuję kod w środowisku testowym."
         },
         "help":{
           "usage":"",
