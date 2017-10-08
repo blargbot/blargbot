@@ -1,16 +1,16 @@
 {
-  "language":"",
+  "language":"Angielski",
   "header":{
-    "login":"",
-    "logout":"",
-    "commands":"",
+    "login":"Zaloguj się",
+    "logout":"Wyloguj się",
+    "commands":"Komendy",
     "bbtag":"",
     "subtags":""
   },
   "index":{
     "desc":"",
     "commands":{
-      "title":"",
+      "title":"Komendy",
       "desc":""
     },
     "bbtag":{
