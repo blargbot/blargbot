@@ -12,15 +12,15 @@
     "specialroleremove":"Specjalna rola usunięte"
   },
   "case":"Sprawa {{number}} {{icon}}: {{event}}",
-  "setreason":"",
+  "setreason":"Odpowiedzialny moderatora, proszę zrobić 'reason{{number}}' i ustawić powód.",
   "warnings":{
-    "given":"",
-    "removed":"",
-    "total":""
+    "given":"Dane Ostrzeżenia",
+    "removed":"Ułaskawiony ostrzeżenia",
+    "total":"Nowa ilość"
   },
   "rename":{
-    "old":"",
-    "new":""
+    "old":"Stare imię",
+    "new":"Nowe imię"
   },
-  "duration":""
+  "duration":"Okres"
 }
