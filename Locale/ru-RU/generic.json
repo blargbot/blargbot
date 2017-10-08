@@ -28,7 +28,7 @@
     "id3":""
   },
   "test":"",
-  "querycancelled":"The query has been cancelled.",
+  "querycancelled":"Запрос был отменён.",
   "user":"",
   "role":"",
   "channel":""
