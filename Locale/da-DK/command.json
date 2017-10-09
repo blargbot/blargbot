@@ -125,14 +125,14 @@
       "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
       "toptags":"Her er en liste over de 10 mest brugte tags!\n\n{{tags}}",
       "tagauthor":"Tagget `{{tag}}` er skabt af **{{author}}**",
-      "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
-      "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
+      "favouriteadd":"Tagget '{{tag}}' er blevet føjet til din liste over favoritter.",
+      "favouriteremove":"Tagget '{{tag}}' er blevet fjernet fra din liste over favoritter.",
       "favourites":"Du har {{count}} tags på din liste over favoritter. \n' ' '\nfix{{tags}}\n ' ' '"
     },
     "locale":{
       "info":"Angiver, hvad landestandard beskeder vil blive sendt i.",
-      "set":"",
-      "list":""
+      "set":"Din landestandard er indstillet til {{locale}}!",
+      "list":"Din nuværende landestandard er: {{current}} \n\nVælg venligst hvilken landestandard du vil bruge."
     },
     "tokenify":{
       "info":""
@@ -197,10 +197,10 @@
       "gamatotoitems":"Her er dine genstande:\n{{items}}",
       "gamatotostats":"Gamatoto er i øjeblikket niveau {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
       "gamatotocurrent":"Gamatoto har været ved at udforske **{{location}} ** på **{{minutes}} ** minutter. Brug 'gamatoto end' for at afslutte ekspeditionen.",
-      "gamatotoidle":""
+      "gamatotoidle":"Gamatoto er ikke på en ekspedition lige nu. Send ham på et eventyr ved at bruge 'gamatoto start [location]'!"
     },
     "prefix":{
-      "info":"",
+      "info":"Henter eller angiver dine kommando præfikser. Denne kommando konfigurerer bruger præfikser. For Guild præfikser, brug kommandoen 'setup'.",
       "subcommand":{
         "add":{
           "usage":"<prefix>",
@@ -212,7 +212,7 @@
         }
       },
       "prefixlist":"",
-      "userprefixes":"",
+      "userprefixes":"Her er dine præfikser:\n```md\n{{userprefixes}}\n```",
       "guildprefixes":"",
       "noprefixes":"Du har ingen brugerdefinerede præfikser.",
       "defaultprefixes":"",
