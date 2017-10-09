@@ -27,10 +27,10 @@
     },
     "opensource":{
       "title":"Açık Kaynak",
-      "desc":""
+      "desc":"Paylaşım bakmakta olduğunu! blargbot altında belgili tanımlık GNU AGPLv3 ruhsat tamamen açık kaynak. Bir göz atın ve nasıl her şey çalışır öğrenmek çekinmeyin. Kendi projesinde kodumu birini kullanıyorsanız, bana kredi için gereklidir. Daha fazla ayrıntı için lisansa bakın."
     },
     "suggestions":{
-      "title":"",
+      "title":"Önerilere açık",
       "desc":""
     }
   },
