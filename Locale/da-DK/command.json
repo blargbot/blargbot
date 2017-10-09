@@ -127,7 +127,7 @@
       "tagauthor":"Tagget `{{tag}}` er skabt af **{{author}}**",
       "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
       "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
-      "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
+      "favourites":"Du har {{count}} tags på din liste over favoritter. \n' ' '\nfix{{tags}}\n ' ' '"
     },
     "locale":{
       "info":"Angiver, hvad landestandard beskeder vil blive sendt i.",
@@ -204,20 +204,20 @@
       "subcommand":{
         "add":{
           "usage":"<prefix>",
-          "info":"Tilføjer et fortegn til din liste."
+          "info":"Tilføjer et præfix til din liste."
         },
         "remove":{
           "usage":"<prefix>",
-          "info":"Fjerner et fortegn fra din liste."
+          "info":"Fjerner et præfix fra din liste."
         }
       },
       "prefixlist":"",
       "userprefixes":"",
       "guildprefixes":"",
-      "noprefixes":"Du har ingen brugerdefinerede fortegn.",
+      "noprefixes":"Du har ingen brugerdefinerede præfikser.",
       "defaultprefixes":"",
-      "prefixadded":"Dette fortegn er blevet tilføjet!",
-      "prefixremoved":"Dette fortegn er blevet fjernet!",
+      "prefixadded":"Dette præfiks er blevet tilføjet!",
+      "prefixremoved":"Dette præfiks er blevet fjernet!",
       "nothingchanged":"Intet blev ændret."
     }
   },
