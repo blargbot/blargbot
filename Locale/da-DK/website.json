@@ -19,7 +19,7 @@
     },
     "customization":{
       "title":"Tilpasning",
-      "desc":"Vi forstår, at ikke alle servere er ens, så blargbot har omfattende tilpasning. Du kan styre, nøjagtigt hvilke roller kan bruge hvilke kommandoer, angive brugerdefinerede fortegn, og endda ændre grænsefladesproget!"
+      "desc":"Vi forstår, at ikke alle servere er ens, så blargbot har omfattende tilpasning. Du kan styre, nøjagtigt hvilke roller kan bruge hvilke kommandoer, angive brugerdefinerede præfikser, og endda ændre grænsefladesproget!"
     },
     "moderation":{
       "title":"Moderation",
