@@ -1,7 +1,7 @@
 {
   "array":{
     "filter":{
-      "desc":""
+      "desc":"Geçerli öğe yerel bir değişkene 'i' ayarlama bir dizi aracılığıyla sırayla dolaşır. 'Değişken ' adı belirtilirse, bu değişken yerine ayarlar. Yeni bir dizi öğelerini içeren sadece nereye yineleme sonucu 'true' veya '1' verir."
     },
     "foreach":{
       "desc":""
