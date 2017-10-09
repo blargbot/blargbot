@@ -1,32 +1,32 @@
 {
-  "language":"",
+  "language":"İngilizce",
   "header":{
-    "login":"",
-    "logout":"",
-    "commands":"",
-    "bbtag":"",
-    "subtags":""
+    "login":"Giriş Yap",
+    "logout":"Çıkış Yap",
+    "commands":"Komutlar",
+    "bbtag":"BBTag",
+    "subtags":"Biçiminde"
   },
   "index":{
-    "desc":"",
+    "desc":"blargbot kalite komutları ve chatlogs ve derinlemesine özel komut sistemi gibi hizmetler sunmak için adanmış çok amaçlı bir anlaşmazlık bot olduğunu.",
     "commands":{
-      "title":"",
-      "desc":""
+      "title":"Komutlar",
+      "desc":"blargbot çok sayıda komutları, hepsi de belgelenmiş ve size kolaylık sağlamak için kategorize bulunuyor."
     },
     "bbtag":{
-      "title":"",
-      "desc":""
+      "title":"BBTag",
+      "desc":"blargbot BBTag, gelişmiş özel komutlar oluşturmak için kullanabileceğiniz denilen bir sofistike etiket sistemi kullanır."
     },
     "customization":{
-      "title":"",
-      "desc":""
+      "title":"Kişiselleştirme",
+      "desc":"Biz kapsamlı özelleştirme blargbot sahiptir, bu nedenle her lonca aynı şey anlıyorum. Tam olarak hangi rollerin hangi komutları, özel önekleri belirtin ve hatta değişmek göstermek dil kullanıp kullanamayacağınızı denetleyebilir!"
     },
     "moderation":{
-      "title":"",
-      "desc":""
+      "title":"Moderasyon",
+      "desc":"Sohbet orta mi ihtiyacınız var? blargbot kısma, daha fazla bilgi için chatlogging veya otomatik sansür gibi şeyler gelişmiş ve temel faaliyetlerden yasaklanması gibi birçok ılımlılık yarar ile donatılmıştır."
     },
     "opensource":{
-      "title":"",
+      "title":"Açık Kaynak",
       "desc":""
     },
     "suggestions":{
