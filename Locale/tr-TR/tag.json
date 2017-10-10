@@ -10,19 +10,19 @@
       "desc":"Bir diziden bir öğe konumunda 'index' alır."
     },
     "isarray":{
-      "desc":""
+      "desc":"Sağlanan öğe bir dizi ve yanlış ise aksi takdirde ise true döner. Değişken adları kullanamazsınız."
     },
     "join":{
-      "desc":""
+      "desc":"Bir dizi sağlanan 'ayırıcı' ile katıldı."
     },
     "length":{
-      "desc":""
+      "desc":"Verilen dizi uzunluğu döndürür."
     },
     "map":{
       "desc":""
     },
     "pop":{
-      "desc":""
+      "desc":"Kaldırır ve dizinin son öğesi döndürür."
     },
     "push":{
       "desc":""
