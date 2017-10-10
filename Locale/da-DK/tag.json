@@ -74,7 +74,7 @@
       "desc":"Renser det angivne tekst ved at skrumpe alle mellemrum."
     },
     "//":{
-      "desc":""
+      "desc":"Angiver et område der vil blive ignoreret fra parsing"
     },
     "get":{
       "desc":"Returnerer den gemte variabel med den medfølgende navn. Variabel fortegn kan ændre den pool hvor der skal søges."
@@ -86,7 +86,7 @@
       "desc":""
     },
     "void":{
-      "desc":""
+      "desc":"Forhindrer output fra indenfor undertagget. Adskiller sig fra kommentar som ting er parset, bare ikke vises."
     },
     "newline":{
       "desc":""
