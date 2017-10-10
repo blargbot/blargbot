@@ -4,10 +4,10 @@
       "desc":"Geçerli öğe yerel bir değişkene 'i' ayarlama bir dizi aracılığıyla sırayla dolaşır. 'Değişken ' adı belirtilirse, bu değişken yerine ayarlar. Yeni bir dizi öğelerini içeren sadece nereye yineleme sonucu 'true' veya '1' verir."
     },
     "foreach":{
-      "desc":""
+      "desc":"Geçerli öğeye yerel değişken 'i' ayarlama bir dizi aracılığıyla sırayla dolaşır. 'Değişken ' adı verdiyse, bu değişken yerine ayarlar."
     },
     "get":{
-      "desc":""
+      "desc":"Bir diziden bir öğe konumunda 'index' alır."
     },
     "isarray":{
       "desc":""
