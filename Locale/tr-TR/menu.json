@@ -1,10 +1,10 @@
 {
   "cancel":{
-    "name":"",
-    "description":""
+    "name":"Iptal",
+    "description":"Bu menüyü kapat."
   },
   "confirm":{
-    "name":"",
-    "description":""
+    "name":"Onayla",
+    "description":"Bu menü onaylayın."
   }
 }
