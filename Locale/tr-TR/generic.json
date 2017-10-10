@@ -1,14 +1,14 @@
 {
-  "output":"",
-  "nooutput":"",
-  "queryexpire":"",
+  "output":"Çıkış Formatı:{{output}}",
+  "nooutput":"Hiç bir Çıkış yok...",
+  "queryexpire":"Bu sorgu {{length}} dakika içinde sona erecek.",
   "resolveuser":{
-    "nousers":"",
-    "pickuser":""
+    "nousers":"Kullanıcı bulunamadı.",
+    "pickuser":"{{length}} kullanıcı bulunamadı! Lütfen listeden seçin."
   },
   "resolverole":{
-    "noroles":"",
-    "pickrole":""
+    "noroles":"Herhangi bir rol bulunamadı.",
+    "pickrole":"{{length}} kullanıcı bulunamadı! Lütfen listeden seçin."
   },
   "resolvechannel":{
     "nochannels":"",
