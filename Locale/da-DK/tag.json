@@ -13,7 +13,7 @@
       "desc":"Returnerer true hvis det angivne element er et array, og false ellers. Du kan ikke bruge variabelnavne."
     },
     "join":{
-      "desc":""
+      "desc":"Slutter et array med den medfølgende 'delimiter'."
     },
     "length":{
       "desc":"Returnerer længden af det givne array."
