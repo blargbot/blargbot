@@ -89,7 +89,7 @@
       "desc":"Forhindrer output fra indenfor undertagget. Adskiller sig fra kommentar som ting er parset, bare ikke vises."
     },
     "newline":{
-      "desc":""
+      "desc":"Returnerer det angivne antal newlines, misligholdende til 1."
     },
     "space":{
       "desc":""
