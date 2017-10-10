@@ -200,21 +200,21 @@
       "gamatotoidle":"Gamatoto non è in una spedizione. Mandalo in un'avventura digitando 'gamatoto start [location]'!"
     },
     "prefix":{
-      "info":"",
+      "info":"Ottiene o imposta i prefissi dei comandi. Questo comando consente di configurare i prefissi degli utenti. Per i prefissi di Gilda, utilizza il comando `setup`.",
       "subcommand":{
         "add":{
-          "usage":"",
-          "info":""
+          "usage":"<prefisso>",
+          "info":"Aggiunge un prefisso alla tua lista."
         },
         "remove":{
-          "usage":"",
-          "info":""
+          "usage":"<prefisso>",
+          "info":"Rimuove un prefisso dalla tua lista."
         }
       },
-      "prefixlist":"",
-      "userprefixes":"",
-      "guildprefixes":"",
-      "noprefixes":"",
+      "prefixlist":"{{content}}\nPer configurare i tuoi prefissi, usa i sottocomandi `add` e `remove`. Per configurare i prefissi di gilda, utilizza il comando `setup`.",
+      "userprefixes":"Ecco i tuoi prefissi:\n```md\n{{userprefixes}}\n```",
+      "guildprefixes":"Ecco i prefissi su questa gilda:\n```md\n{{guildprefixes}}\n```",
+      "noprefixes":"Non hai nessun prefisso personalizzato.",
       "defaultprefixes":"",
       "prefixadded":"",
       "prefixremoved":"",
