@@ -11,20 +11,20 @@
         "Je bent alleen, in een oneindige leegte.",
         "De waarheid is een leugen.",
         "Verzaak alles.",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "Je bestaan is betreurenswaardig.",
+        "We zijn allemaal al dood.",
+        "Miauw.",
+        "Angst is vrijheid.",
+        "Onderwerping is bevrijding.",
+        "Tegenstrijdigheid is waarheid.",
+        "Zou je een contract willen aangaan?",
+        "Laat het los, en ga door."
       ],
-      "final":""
+      "final":"Pong! ({{time}}ms)"
     },
     "brainfuck":{
-      "info":"",
-      "usage":"",
+      "info":"Breinfuck code uitgevoerd.",
+      "usage":"<code>",
       "flags":{
         "p":"",
         "i":""
