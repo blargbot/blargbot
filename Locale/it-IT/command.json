@@ -18,9 +18,9 @@
         "Contraddizione è verità.",
         "Vuoi formare un contratto?",
         "Lascialo andare e vai avanti.",
-        ""
+        "Lascialo andare e prosegui."
       ],
-      "final":""
+      "final":"Pong! ({{time}}ms)"
     },
     "brainfuck":{
       "info":"Esegue codice brainfuck.",
