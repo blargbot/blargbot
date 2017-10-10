@@ -167,37 +167,37 @@
       "subcommands":"**Sottocomandi**: {{subcommands}}\n\nDigita `help <comando> <sottocomando>` per avere più informazioni su un sottocomando!"
     },
     "gamatoto":{
-      "info":"",
+      "info":"Vai in una spedizione magica con Gamatoto! Usa questo comando per controllare le tue statistiche, o usa un sottocomando per partire all'avventura!",
       "subcommand":{
         "start":{
-          "usage":"",
-          "info":""
+          "usage":"<luogo>",
+          "info":"Inizia la spedizione!"
         },
         "end":{
-          "info":""
+          "info":"Finisci una spedizione!"
         },
         "locations":{
-          "info":""
+          "info":"Elenca tutti i luoghi di spedizione."
         }
       },
-      "stats":"",
-      "alreadystarted":"",
-      "notstarted":"",
-      "nolocation":"",
-      "invalidlocation":"",
-      "expeditionbeings":"",
-      "expeditionends":"",
-      "notimeelapsed":"",
-      "itemfound":"",
-      "levelup":"",
-      "gamatotoxp":"",
-      "itemincrease":"",
-      "locations":"",
-      "wronglevel":"",
-      "gamatotoitems":"",
-      "gamatotostats":"",
-      "gamatotocurrent":"",
-      "gamatotoidle":""
+      "stats":"<:bc_cat:345081695990710272> Ecco i tuoi oggetti!\n\n{{stats}}",
+      "alreadystarted":"Una spedizione è già in corso!",
+      "notstarted":"Non hai iniziato alcuna spedizione!",
+      "nolocation":"Non è un luogo valido. I luoghi che puoi visitare sono:\n\n{{locations}}",
+      "invalidlocation":"E' successo qualcosa di strano. Il posto che stavi esplorando non esiste più! Inizia un'altra spedizione.",
+      "expeditionbeings":"<:bc_cat:345081695990710272> LA RICERCA INIZIA! <:bc_cat:345081695990710272>\n\nLuogo: {{location}}\n\nControlla dopo digitando `gamatoto end`!",
+      "expeditionends":"<:bc_cat:345081695990710272> RISULTATI SPEDIZIONE! <:bc_cat:345081695990710272>\n\nLuogo: {{location}}\nDurata: {{minutes}} minuti\n\n{{results}}",
+      "notimeelapsed":"Nessun tempo è trascorso da quando hai iniziato la spedizione. Gamatoto non ha trovato nulla!",
+      "itemfound":"Gamatoto ha trovato {{amount}} {{item}} al {{location}}.",
+      "levelup":":fireworks: Gamatoto è ora al {{level}} livello!",
+      "gamatotoxp":"Gamatoto ha guadagnato **{{amount}}**XP ({{old}} → **{{new}}**)",
+      "itemincrease":"{{item}} hai trovato **{{amount}}** ({{old}} → **{{new}}**)",
+      "locations":"Qui ci sono tutte le località di spedizione! \n\n{{locations}}",
+      "wronglevel":"Devi essere di livello {{level}} per esplorare quel posto!",
+      "gamatotoitems":"Ecco i tuoi oggetti:\n{{items}}",
+      "gamatotostats":"Gamatoto è al livello {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
+      "gamatotocurrent":"Gamatoto ha esplorato la **{{location}} ** per **{{minutes}}** minuti.\n\nDigita 'gamatoto end' per finire la spedizione.",
+      "gamatotoidle":"Gamatoto non è in una spedizione. Mandalo in un'avventura digitando 'gamatoto start [location]'!"
     },
     "prefix":{
       "info":"",
