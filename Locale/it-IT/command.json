@@ -24,7 +24,7 @@
     },
     "brainfuck":{
       "info":"Esegue codice brainfuck.",
-      "usage":"",
+      "usage":"<codice>",
       "flags":{
         "p":"Mostra una lista di puntatori dopo l'esecuzione.",
         "i":"Specifica l'input per l'operatore `,`."
@@ -32,78 +32,78 @@
     },
     "ship":{
       "info":"Ricevi l'unione (ship) dei nickname di due utenti.",
-      "usage":"",
+      "usage":"<utente1><utente2>",
       "final":"Il tuo nome (shipname) è **{{name}}**!",
       "notenough":"Devi dirmi chi unire (ship)!"
     },
     "tag":{
       "info":"Le tags sono un sistema pubblico di comandi che chiunque può creare o eseguire, usando il linguaggio BBTag.\n\n**Sottocomandi**:\n{{subcommands}}\n\nPer maggiori informazioni su un sottocomando, scrivi `b!t help <sottocomando>`\nPer maggiori informazioni su BBTag, visita <https://blargbot.xyz/tags>.\nCreando una tag, accetti i termini di servizio (<https://blargbot.xyz/tags/tos>).",
-      "usage":"",
+      "usage":"<nome | sottocomando> [args]",
       "dontown":"[[emote.x]] Non possiedi questa tag!",
       "alreadyexists":"[[emote.x]] Una tag con questo nome esiste già!",
       "notag":"[[emote.x]] Non c'è nessuna tag con quel nome.",
-      "tagset":"",
+      "tagset":"[[emote.check]] Tag `{{name}}` {{process}}!",
       "tagrename":"[[emote.check]] La tag `{{old}}` è stata rinominata come `{{new}}`.",
       "raw":"Il codice per {{name}} è:\n```{{code}}```",
-      "testoutput":"",
+      "testoutput":"Test Output:\n\n{{output}}",
       "subcommand":{
         "set":{
-          "usage":"",
+          "usage":"<nome><contenuto>",
           "info":"Crea o modifica una tag con il nome e contenuto inseriti. Non rimpiazza alcuna tag creata da altri."
         },
         "delete":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Elimina una tag che possiedi."
         },
         "rename":{
-          "usage":"",
+          "usage":"<nome><nuovo nome>",
           "info":"Rinomina una tag che possiedi."
         },
         "raw":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Restituisce il codice di una tag."
         },
         "info":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Fornisce informazioni su una tag."
         },
         "transfer":{
-          "usage":"",
+          "usage":"<nome><utente>",
           "info":"Trasferisce una tag all'utente specificato. Le variabili non verranno trasferite."
         },
         "top":{
           "info":"Visualizza le tag più preferite."
         },
         "author":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Visualizza l'autore di una tag."
         },
         "search":{
-          "usage":"",
+          "usage":"<query>",
           "info":"Cerca una tag con un nome che contiene la tua query."
         },
         "list":{
-          "usage":"",
+          "usage":"[@utente]",
           "info":"Mostra la lista di tutte le tag, o solo quelle di un utente specifico."
         },
         "favorite":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Preferisci una specifica tag."
         },
         "report":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Segnala una tag che viola i ToS. Usa con responsabilità."
         },
         "test":{
-          "usage":"",
+          "usage":"<codice>",
           "info":"Esegue il comando in un ambiente di test."
         },
         "help":{
-          "usage":"",
+          "usage":"[subcommand]",
           "info":"Visualizza questo!"
         },
         "docs":{
-          "usage":"",
+          "usage":"[subtag]",
           "info":"Restituisce il link alla documentazione BBTag, o restituisce informazioni su una tag specifica."
         },
         "setdesc":{
@@ -146,25 +146,25 @@
     },
     "donate":{
       "info":"",
-      "willdm":"",
-      "message":""
+      "willdm":"Ok, ti ho inviato le informazioni per le donazioni in DM.",
+      "message":"placeholder"
     },
     "mods":{
       "info":"",
-      "mods":"",
-      "nomods":"",
-      "nomodsonline":""
+      "mods":"Moderatori su **{{guild}}**",
+      "nomods":"Non ci sono moderatori in questa gilda.",
+      "nomodsonline":"Non ci sono moderatori online."
     },
     "help":{
       "info":"",
-      "allcommands":"",
-      "nocommand":"",
-      "commandinfo":"",
-      "aliases":"",
-      "subcommand":"",
-      "command":"",
-      "nosubcommand":"",
-      "subcommands":""
+      "allcommands":"Ecco tutti i comandi che puoi eseguire su **{{guild}}**.\n```markdown\n{{commands}}\n```\n\nPer maggiori informazioni su un comando, digita `help <nomecomando>` o visita <https://blargbot.xyz/commands>.",
+      "nocommand":"Non c'è nessuno comando '{{name}}'!",
+      "commandinfo":"**{{type}}: {{name}}**\n\n**Aliases**: {{aliases}}\n**Utilizzo**: {{usage}}\n\n{{description}}",
+      "aliases":"Nessun alias",
+      "subcommand":"Sottocomando",
+      "command":"Comando",
+      "nosubcommand":"Non c'è nessun sottocomando per '{{command}}' col nome '{{name}}'!",
+      "subcommands":"**Sottocomandi**: {{subcommands}}\n\nDigita `help <comando> <sottocomando>` per avere più informazioni su un sottocomando!"
     },
     "gamatoto":{
       "info":"",
