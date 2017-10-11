@@ -47,19 +47,19 @@ let func = function (dirname, require2) {
         Object.defineProperty(files, 'count', {
             get() {
                 return function count(obj = this) {
-                    let count = [0, 0];
+                    let cc = [0, 0];
                     for (const key in obj) {
                         if (obj[key] instanceof Object) {
                             let c = this.count(obj[key]);
-                            count[0] += c[0];
-                            count[1] += c[1];
+                            cc[0] += c[0];
+                            cc[1] += c[1];
                         } else if (typeof obj[key] === 'string') {
-                            count[0]++;
+                            cc[0]++;
                             if (obj[key] !== '')
-                                count[1]++;
+                                cc[1]++;
                         }
                     }
-                    return count;
+                    return cc;
                 };
             },
             enumerable: false

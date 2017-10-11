@@ -22,6 +22,11 @@ class LocaleManager extends Manager {
             if (obj.percentComplete >= 60)
                 this.build(key);
         }
+        if (process.env.SHARD_ID == 0) {
+            fs.writeFile(path.join(__dirname, '..', '..', 'Locale', 'total.json'), JSON.stringify(this.modules), () => {
+                // no-op
+            });
+        }
     }
 
     async save(locale = 'en') {

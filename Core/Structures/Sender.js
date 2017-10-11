@@ -2,10 +2,10 @@ const EventEmitter = require('eventemitter3');
 const Random = new (require('../Helpers/Random'))({});
 
 class Sender extends EventEmitter {
-    constructor(client, process) {
+    constructor(client, proc) {
         super();
         this.client = client;
-        this.process = process || undefined;
+        this.process = proc || process;
     }
 
     send(code, data) {

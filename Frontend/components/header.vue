@@ -8,17 +8,17 @@
 
                     <ul id='nav-mobile' class='right hide-on-med-and-down'>
                         <li>
-                            <router-link to='/commands'>{{$t('header.commands')}}</router-link>
+                            <router-link to='/commands'>{{$t('website.header.commands')}}</router-link>
                         </li>
                         <li>
-                            <router-link to='/bbtag'>{{$t('header.bbtag')}}</router-link>
+                            <router-link to='/bbtag'>{{$t('website.header.bbtag')}}</router-link>
                         </li>
                         <li>
-                            <router-link to='/bbtag/subtags'>{{$t('header.subtags')}}</router-link>
+                            <router-link to='/bbtag/subtags'>{{$t('website.header.subtags')}}</router-link>
                         </li>
                         <li class='login'>
                             <div v-if='$store.state.user == undefined'>
-                                <a href='/login' class='waves-effect waves-light btn allcaps'>{{$t('header.login')}}</a>
+                                <a href='/login' class='waves-effect waves-light btn allcaps'>{{$t('website.header.login')}}</a>
                             </div>
                             <div v-else>
                                 <div class='logged-in'>
@@ -26,7 +26,7 @@
                                         <img :src="`https://cdn.discordapp.com/avatars/${$store.state.user.id}/${$store.state.user.avatar}.${$store.state.user.avatar.startsWith('a_') ? 'gif' : 'png'}`">
                                         <span>{{$store.state.user.username}}#{{$store.state.user.discriminator}}</span>
                                     </div>
-                                    <a href='/logout' class='waves-effect waves-light btn allcaps btn-small'>{{$t('header.logout')}}</a>
+                                    <a href='/logout' class='waves-effect waves-light btn allcaps btn-small'>{{$t('website.header.logout')}}</a>
                                 </div>
                             </div>
                         </li>

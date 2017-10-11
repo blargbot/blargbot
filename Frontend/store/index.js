@@ -13,7 +13,7 @@ const store = () => new Vuex.Store({
         locale: 'en',
         locales: ['en'],
         fact: '',
-        path: []
+        subtags: {}
     },
 
     mutations: {
@@ -30,6 +30,9 @@ const store = () => new Vuex.Store({
         },
         SET_PATH(state, path) {
             state.path = path;
+        },
+        setTags(state, tags) {
+            state.subtags = tags;
         }
     },
 

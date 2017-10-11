@@ -42,6 +42,37 @@ nav {
     border: 0px;
     border-bottom: 0px !important;
 }
+.collapse-header {
+    @extend .blue-grey.darken-1;
+    cursor: pointer;
+    padding: 15px;
+    margin: 0;
+}
+.collapse {
+    border: 0px;
+    box-shadow: none;
+}
+.collapse-body {
+    @extend .blue-grey.darken-2;
+    border: 0px;
+}
+
+.collapse li {
+    margin: 15px 0;
+    display: block;
+}
+.collapse li .collapse-body {
+    padding: 0 15px;
+    margin: 0;
+    height: 0;
+    overflow: hidden;
+    transition: .6s ease;
+}
+.collapse li.active .collapse-body {
+    height: auto;
+    padding: 15px;
+    transition: .6s ease;        
+}
 
 .allcaps {
     text-transform: uppercase;

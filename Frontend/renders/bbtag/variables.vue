@@ -1,6 +1,6 @@
 <template>
     <div>
-        <vue-markdown :source='$t("bbtag.variables.desc")' class='markdown'>
+        <vue-markdown :source='$t("website.bbtag.variables.desc")' class='markdown'>
         </vue-markdown>
     </div>
 </template>

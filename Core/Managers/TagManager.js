@@ -18,7 +18,6 @@ class TagManager extends Manager {
             if (built.implicit) {
                 this.tagMap._[built.name] = built;
             }
-
             return true;
         }
         else {

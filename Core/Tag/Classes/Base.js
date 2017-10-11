@@ -207,7 +207,7 @@ class TagBase {
         for (const arg of this.argList) {
             if (arg.optional)
                 output += `[${arg.name}]`;
-            else output += `&lt;${arg.name}&gt;`;
+            else output += `<${arg.name}>`;
             if (arg.repeat) output += '...';
             output += ' ';
         }
@@ -242,6 +242,21 @@ class TagBase {
 
     get base() {
         return `tag.${this.category}.${this.name}`;
+    }
+
+    serialize() {
+        return {
+            name: this.name,
+            args: this.args,
+            named: this.named,
+            array: this.array,
+            desc: `${this.base}.desc`,
+            ccommand: this.ccommand,
+            requiresStaff: this.requiresStaff,
+            permissions: this.permissions,
+            implicit: this.implicit,
+            category: this.category
+        };
     }
 
 }

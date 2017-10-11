@@ -152,6 +152,17 @@ process.on('message', async msg => {
         case 'await':
             const eventKey = 'await:' + data.key;
             switch (data.message) {
+                case 'tagList':
+                    let tags = {};
+                    let map = discord.TagManager.tagMap;
+                    for (const key in map) {
+                        if (key !== '_') {
+                            let t = Object.values(map[key]).map(t => t.serialize());
+                            tags[key] = t;
+                        }
+                    }
+                    discord.sender.send(eventKey, tags);
+                    break;
                 case 'connect':
                     await discord.connect();
                     discord.sender.send(eventKey, true);

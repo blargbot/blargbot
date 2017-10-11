@@ -13,6 +13,9 @@ class CommentTag extends General {
             ]
         });
     }
+    get base() {
+        return `tag.${this.category}.comment`;
+    }
 
     async execute(ctx, args) {
         // no-op

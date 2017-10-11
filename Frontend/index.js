@@ -21,16 +21,34 @@ class Frontend extends Sender {
 
         this.process.on('message', msg => {
             const message = JSON.parse(msg);
-            if (message.code.startsWith('await:')) {
-                this.emit(message.code, message.data);
-            } else
-                this.manager.handleMessage(this, message.code, message.data);
+            this.handleMessage(message.code, message.data);
         });
 
     }
     kill(code) {
         this.respawn = false;
         this.process.kill(code);
+    }
+
+    async handleMessage(code, data) {
+        console.log(code, data);
+        if (code.startsWith('await:')) {
+            this.emit(code, data);
+        }
+        switch (code) {
+            case 'await':
+                const eventKey = 'await:' + data.key;
+                switch (data.message) {
+                    case 'tagList':
+                        let shard = this.client.spawner.shards.get(0);
+                        let res = await shard.awaitMessage('tagList');
+                        this.send(eventKey, res);
+                        break;
+                    default:
+                        this.send(eventKey, { code: 404, mes: 'not found' });
+                }
+                break;
+        }
     }
 }
 

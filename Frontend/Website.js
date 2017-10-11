@@ -1,3 +1,4 @@
+const Sender = require('../Core/Structures/Sender');
 const path = require('path');
 const express = require('express');
 const sassMiddleware = require('node-sass-middleware');
@@ -17,8 +18,9 @@ process.on('unhandledRejection', (err, p) => {
     console.error('Unhandled Promise Rejection:', err.stack);
 });
 
-class Website {
+class Website extends Sender {
     constructor(port = 8078) {
+        super();
         this.sessionUserMap = {};
         this.port = port;
         this.app = express();
@@ -81,7 +83,7 @@ class Website {
         this.app.use('/', express.static(path.join(__dirname, 'public')));
         this.app.use('/locale', express.static(path.join(__dirname, '..', 'Locale')));
         this.app.use('/dist', express.static(path.join(__dirname, 'Vue', 'dist')));
-        this.app.use('/api', require('./routes/api'));
+        this.app.use('/api', new (require('./routes/api'))(this).router);
         //this.app.use('/', require('./routes/main'));
         this.app.use(nuxt.render);
     }
@@ -133,3 +135,21 @@ module.exports = Website;
 
 const website = new Website();
 website.start();
+
+process.on('message', async msg => {
+    const { data, code } = JSON.parse(msg);
+    if (code.startsWith('await:')) {
+        website.emit(code, data);
+        return;
+    }
+    switch (code) {
+        case 'await':
+            const eventKey = 'await:' + data.key;
+            switch (data.message) {
+
+            }
+            break;
+        default:
+            break;
+    }
+});

@@ -9,8 +9,6 @@ export default ({ app, isClient, store }) => {
     app.i18n = new VueI18n({
         locale: store.state.locale,
         fallbackLocale: 'en',
-        messages: {
-            'en': require('~/../Locale/en/website.json')
-        }
+        messages: require('~/../Locale/total.json')
     });
 };

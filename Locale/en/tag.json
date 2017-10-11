@@ -73,7 +73,7 @@
         "clean": {
             "desc": "Cleans the provided text by shrinking all whitespace."
         },
-        "//": {
+        "comment": {
             "desc": "Specifies an area that will be ignored from parsing"
         },
         "get": {
