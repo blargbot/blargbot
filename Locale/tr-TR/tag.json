@@ -143,7 +143,7 @@
       "desc":"Sağlanan ondalık tamsayýya yuvarlar."
     },
     "math":{
-      "desc":""
+      "desc":"Aşağıdaki işleçleri kullanarak sağlanan ifadenin değeri hesaplar:\n\n -' ^' - üs\n - '/' - division \n - ' *' - çarpma\n - '+' - ek\n - '-' - çıkarma - 've' - bit seviyesinde\n - ' |' - bit düzey veya - 'XOR' - Bitsel XOR işleçler t kullanılarak yürütülür o sıralı işlemler (köşeli ayraçlar, Çin'li, bölüm, çarpma, toplama, çıkarma, Bitdüzeyi). Bir işleç belirtilmezse, son kullanılan işleç (ek olarak varsaymak) kullanır. Köşeli ayraçlar başka bir iç içe geçmiş {math} etiketi kullanılarak elde. 'Augend' veya 'işleneni' sayı olarak ayrıştırılamıyor, aynı ada sahip bir değişken alınacaktır. Alınan değişken de bir sayı değil, bir hata görüntüler."
     },
     "parsefloat":{
       "desc":"Verilen metin bir ondalık olarak ayrıştırmak çalışır."
@@ -152,73 +152,73 @@
       "desc":"Verilen metin bir tamsayı olarak ayrıştırmak çalışır."
     },
     "randint":{
-      "desc":""
+      "desc":"Bir rasgele tamsayı arasında sağlanan aralığını döndürür. 'min' varsayılan '0' olarak"
     },
     "round":{
-      "desc":""
+      "desc":"'0'a varsaymak verilen sayıyı' belirtilen ondalık 'yer', yuvarlar."
     }
   },
   "message":{
     "id":{
-      "desc":""
+      "desc":"Yürütülen komut ileti Kımlığı döndürür."
     }
   },
   "role":{
     "color":{
-      "desc":""
+      "desc":"Belirtilen rol rengi onaltılık olarak döndürür."
     },
     "id":{
-      "desc":""
+      "desc":"Belirtilen rol Kımlığı döndürür."
     },
     "mention":{
-      "desc":""
+      "desc":"Belirtilen rol bir söz verir."
     },
     "name":{
-      "desc":""
+      "desc":"Belirtilen rol adını döndürür."
     },
     "position":{
-      "desc":""
+      "desc":"Belirtilen rol konumunu verir."
     }
   },
   "user":{
     "avatar":{
-      "desc":""
+      "desc":"Yürütülen kullanıcıya varsaymak avatar URL'sini belirtilen kullanıcı döndürür."
     },
     "createdat":{
-      "desc":""
+      "desc":"Belirtilen kullanıcı yürütme kullanıcıya varsaymak, bir Unix zaman damgası olarak (milisaniye) oluşturulduğu tarih verir."
     },
     "discrim":{
-      "desc":""
+      "desc":"Belirtilen kullanıcı için yürütülen kullanıcı varsaymak, ayrıştırıcı döndürür."
     },
     "fullname":{
-      "desc":""
+      "desc":"Adı + ayrıştırıcı varsaymak için yürütülen kullanıcı belirtilen kullanıcının döndürür."
     },
     "game":{
-      "desc":""
+      "desc":"Belirtilen kullanıcı oyun oynarken, yürütülen kullanıcıya varsaymak verir. Kullanıcı bir oyun oynamak değil, hiçbir şey verir."
     },
     "id":{
-      "desc":""
+      "desc":"Yürütülen kullanıcıya varsaymak belirtilen kullanıcı Kımlığı döndürür."
     },
     "joinedat":{
-      "desc":""
+      "desc":"İade tarihi yürütülen kullanıcıya varsaymak belirtilen kullanıcı geçerli lonca bir Unix zaman damgası olarak (milisaniye) katıldı."
     },
     "mention":{
-      "desc":""
+      "desc":"Belirtilen kullanıcı için yürütülen kullanıcı varsaymak, bahseder."
     },
     "name":{
-      "desc":""
+      "desc":"Yürütülen kullanıcıya varsaymak belirtilen kullanıcı adını döndürür."
     },
     "nick":{
-      "desc":""
+      "desc":"Takma yürütülen kullanıcıya varsaymak belirtilen kullanıcı adını döndürür."
     },
     "roles":{
-      "desc":""
+      "desc":"Belirtilen kullanıcının sahip, yürütme kullanıcıya varsaymak rolleri bir dizi döndürür."
     },
     "setnick":{
-      "desc":""
+      "desc":"Takma yürütülen kullanıcıya varsaymak belirtilen kullanıcı adını ayarlar."
     },
     "status":{
-      "desc":""
+      "desc":"Yürütülen kullanıcıya varsaymak belirtilen kullanıcı durumunu verir. \"Online\", \"uzak\", \"dnd\" veya \"Çevrimdışı\" dönebilirsiniz."
     }
   }
 }
