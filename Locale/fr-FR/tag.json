@@ -73,8 +73,8 @@
     "clean":{
       "desc":"Nettoie le texte fourni en diminuant tout les espaces blanc."
     },
-    "//":{
-      "desc":"Spécifie une aire qui sera ignorer d'analyse."
+    "comment":{
+      "desc":""
     },
     "get":{
       "desc":"montre la variable mémorisée avec le nom donné. Les préfixes de la variable peuvent modifier la catégorie de la recherche."
