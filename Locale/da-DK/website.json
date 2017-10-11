@@ -1,38 +1,44 @@
 {
-  "language":"Dansk",
-  "header":{
-    "login":"Log på",
-    "logout":"Log af",
-    "commands":"Kommandoer",
-    "bbtag":"BBTag",
-    "subtags":"SubTags"
+  "language": "Dansk",
+  "header": {
+    "login": "Log på",
+    "logout": "Log af",
+    "commands": "Kommandoer",
+    "bbtag": "BBTag",
+    "subtags": "SubTags"
   },
-  "index":{
-    "desc":"blargbot er en multifunktionel Discord bot dedikeret til at levere kvalitets kommandoer og tjenester, herunder chatlogs og et dybdegående brugerdefinerede kommando system.",
-    "commands":{
-      "title":"Kommandoer",
-      "desc":"blargbot er udstyret med talrige kommandoer, som alle er dokumenteret og kategoriseret for din bekvemmelighed."
+  "index": {
+    "desc": "blargbot er en multifunktionel Discord bot dedikeret til at levere kvalitets kommandoer og tjenester, herunder chatlogs og et dybdegående brugerdefinerede kommando system.",
+    "commands": {
+      "title": "Kommandoer",
+      "desc": "blargbot er udstyret med talrige kommandoer, som alle er dokumenteret og kategoriseret for din bekvemmelighed."
     },
-    "bbtag":{
-      "title":"BBTag",
-      "desc":"blargbot bruger et sofistikeret tag system kaldet BBTag, som du kan bruge til at oprette avancerede brugerdefinerede kommandoer."
+    "bbtag": {
+      "title": "BBTag",
+      "desc": "blargbot bruger et sofistikeret tag system kaldet BBTag, som du kan bruge til at oprette avancerede brugerdefinerede kommandoer."
     },
-    "customization":{
-      "title":"Tilpasning",
-      "desc":"Vi forstår, at ikke alle servere er ens, så blargbot har omfattende tilpasning. Du kan styre, nøjagtigt hvilke roller kan bruge hvilke kommandoer, angive brugerdefinerede præfikser, og endda ændre grænsefladesproget!"
+    "customization": {
+      "title": "Tilpasning",
+      "desc": "Vi forstår, at ikke alle servere er ens, så blargbot har omfattende tilpasning. Du kan styre, nøjagtigt hvilke roller kan bruge hvilke kommandoer, angive brugerdefinerede præfikser, og endda ændre grænsefladesproget!"
     },
-    "moderation":{
-      "title":"Moderation",
-      "desc":"Brug for noget til at overvåge din chat? blargbot er udstyret med mange moderation hjælpeværktøjer, fra grundlæggende operationer som udelukkelse og muting, til mere avancerede ting som chatlogging eller automatiske censur."
+    "moderation": {
+      "title": "Moderation",
+      "desc": "Brug for noget til at overvåge din chat? blargbot er udstyret med mange moderation hjælpeværktøjer, fra grundlæggende operationer som udelukkelse og muting, til mere avancerede ting som chatlogging eller automatiske censur."
     },
-    "opensource":{
-      "title":"Open Source",
-      "desc":"Deling er omsorgsfulde! blargbot er helt open source under licensen GNU AGPLv3. Du er velkommen til at tage et kig og lær hvordan det hele fungerer. Hvis du bruger noget af min kode i dit eget projekt, er du forpligtet til at angive mig som kilde. Se licens for flere detaljer."
+    "opensource": {
+      "title": "Open Source",
+      "desc": "Deling er omsorgsfulde! blargbot er helt open source under licensen GNU AGPLv3. Du er velkommen til at tage et kig og lær hvordan det hele fungerer. Hvis du bruger noget af min kode i dit eget projekt, er du forpligtet til at angive mig som kilde. Se licens for flere detaljer."
     },
-    "suggestions":{
-      "title":"Åben for forslag",
-      "desc":"Har et forslag til botten? Jeg vil være glad for at høre det! Fundet en fejl? Jeg vil gerne høre der også! Du kan foreslå noget for mig ved hjælp af kommandoen `suggest`, ved at tilslutte min server, eller ved at indsende en anmodning om support."
+    "suggestions": {
+      "title": "Åben for forslag",
+      "desc": "Har et forslag til botten? Jeg vil være glad for at høre det! Fundet en fejl? Jeg vil gerne høre der også! Du kan foreslå noget for mig ved hjælp af kommandoen `suggest`, ved at tilslutte min server, eller ved at indsende en anmodning om support."
     }
   },
-  "bbtag":"# BBTag\n> Ikke at forveksle med BBCode!\n\nBBTag er et skabelon-baseret programmeringssprog, der er designet til at give en kraftfuld ramme for skabelse af avancerede brugerdefinerede kommandoer.\n\n## Termer\n- Et `tag` henviser til en blok af BBTag kode, uanset om det er et offentligt tag eller en brugerdefineret kommando.\n- Et `subtag` henviser til et BBTag komponent. Avancerede `tags` er lavet af mange `subtags`.\n- En `class`henvise til en gruppe af `subtags`.\n\n## SubTags\n\nSubtags er de basale byggesten af BBTag. De udfører dynamiske funktioner, uanset om det er at få navnet på en bruger eller om det er at udføre matematiske regnestykker. Lad os nu tage et kig på et subtag:\n```\n{math.randint;1;10}\n```\nNår udført, kan det returnere følgende:\n```\n6\n```\nSom du kan se, returner `math.randint` subtagget et tilfældigt heltal indenfor de angivne rammer.\n\n## SubTaggens anatomi\n\nEt SubTag består af adskillige komponenter. Et syntax diagram kan se således ud:\n```\n{[class.]name[![var]]([;args]...|=<namedArgs>...}\n```\nJa okay. Det kan godt være forvirrende men bær lige over med mig.\n\n> `[class.]name`\n\nSubtags er delt op i grupper, ved navn **classes**. Hver class er designet med en bestemt type formål. For eksempel vil `math` classen indeholde subtags der tager sig af tal. På samme måde vil `user` classen indeholde subtags der giver oplysninger om brugere. Classer giver et organiserings system.\n\nNår subtags bruges, vil den foretrukne benyttelse være `{class.name}`. Dette forbedrer læsbarheden. Det er dog normalt valgfrit om classen skal anføres utvetydeligt. BBTag ved, at `{math.randint}` og `{randint}` er den samme subtag. Dette kaldes for **implicit classing**. Undtagelsen til dette er subtags i `general` classen, der skal bruges *uden* en explicit class.\n\nDu bør dog være forsigtig med explicit classing! Nogle gange kan classes godt have subtags med det samme navn. For eksempel har både `{user.id}` og `{channel.id}` subtags med navnet `id`. Hvis du forsøger at bruge implicit classing der findes i adskillige classes, vil den returnere en fejl!\n\n#### Piping\n\n> `[![var]]`\n\nPiping er en feature der tillader dig at omdirigere outputtet fra et subtag, til enten en variabel eller til en void. Dette kan hjælpe med at rydde op i din kode.\n\nHvis du for eksempel, af en eller anden årsag, ikke vil have et subtag til at give noget output, kan du tilføje et `1` efter navnet på subtagget for at få det til at tie stille. De følgende linjer gør det samme:\n```\n{void;{math.radiant;1;10}}\n{math.radiant!;1;10}\n```\nPiping output er en anelse hurtigere at udføre end at bruge den fulde syntax.\n\n#### Argumenter\n> `[;args]...`\n\nDu kan lade parametre passere ind i subtags. Disse adskilles med semikolon `;`. Argumenter er forskellige fra subtag til subtag, og dokumentationen for disse kan findes på subtag siden.\n\n##### Navngivne argumenter\n\n>`=<namedArgs>...`\n\nNormalt er rækkefølgen på de angivne argumenter meget vigtig. Du kan dog bruge de navngivne modstykke istedet for. Dette gøres ved at bruge `=` istedet for et semikolon og derefter ved at angive key-value tags i form af `{*key;value}`.\n\nFor eksempel vil brugen af `{math.randint}` være `{math.randint;min;max}`. Navnene på argumenterne er henholdsvis `min` og `max`. De bruges på følgende måde: \n```\n{math.randint;1;10}\n{math.randint=\n    {*min;1}\n    {*max;10}\n}\n```\nDu kan ikke bruge både navngivne argumenter og rangerede argumenter i samme subtag."
+  "bbtag": {
+    "main": "# BBTag\n> Ikke at forveksle med BBCode!\n\nBBTag er et skabelon-baseret programmeringssprog, der er designet til at give en kraftfuld ramme for skabelse af avancerede brugerdefinerede kommandoer.\n\n## Termer\n- Et `tag` henviser til en blok af BBTag kode, uanset om det er et offentligt tag eller en brugerdefineret kommando.\n- Et `subtag` henviser til et BBTag komponent. Avancerede `tags` er lavet af mange `subtags`.\n- En `class`henvise til en gruppe af `subtags`.",
+    "subtags": {
+      "title": "SubTags",
+      "desc": "## SubTags\n\nSubtags er de basale byggesten af BBTag. De udfører dynamiske funktioner, uanset om det er at få navnet på en bruger eller om det er at udføre matematiske regnestykker. Lad os nu tage et kig på et subtag:\n```\n{math.randint;1;10}\n```\nNår udført, kan det returnere følgende:\n```\n6\n```\nSom du kan se, returner `math.randint` subtagget et tilfældigt heltal indenfor de angivne rammer.\n\n## SubTaggens anatomi\n\nEt SubTag består af adskillige komponenter. Et syntax diagram kan se således ud:\n```\n{[class.]name[![var]]([;args]...|=<namedArgs>...}\n```\nJa okay. Det kan godt være forvirrende men bær lige over med mig.\n\n> `[class.]name`\n\nSubtags er delt op i grupper, ved navn **classes**. Hver class er designet med en bestemt type formål. For eksempel vil `math` classen indeholde subtags der tager sig af tal. På samme måde vil `user` classen indeholde subtags der giver oplysninger om brugere. Classer giver et organiserings system.\n\nNår subtags bruges, vil den foretrukne benyttelse være `{class.name}`. Dette forbedrer læsbarheden. Det er dog normalt valgfrit om classen skal anføres utvetydeligt. BBTag ved, at `{math.randint}` og `{randint}` er den samme subtag. Dette kaldes for **implicit classing**. Undtagelsen til dette er subtags i `general` classen, der skal bruges *uden* en explicit class.\n\nDu bør dog være forsigtig med explicit classing! Nogle gange kan classes godt have subtags med det samme navn. For eksempel har både `{user.id}` og `{channel.id}` subtags med navnet `id`. Hvis du forsøger at bruge implicit classing der findes i adskillige classes, vil den returnere en fejl!\n\n#### Piping\n\n> `[![var]]`\n\nPiping er en feature der tillader dig at omdirigere outputtet fra et subtag, til enten en variabel eller til en void. Dette kan hjælpe med at rydde op i din kode.\n\nHvis du for eksempel, af en eller anden årsag, ikke vil have et subtag til at give noget output, kan du tilføje et `1` efter navnet på subtagget for at få det til at tie stille. De følgende linjer gør det samme:\n```\n{void;{math.radiant;1;10}}\n{math.radiant!;1;10}\n```\nPiping output er en anelse hurtigere at udføre end at bruge den fulde syntax.\n\n#### Argumenter\n> `[;args]...`\n\nDu kan lade parametre passere ind i subtags. Disse adskilles med semikolon `;`. Argumenter er forskellige fra subtag til subtag, og dokumentationen for disse kan findes på subtag siden.\n\n##### Navngivne argumenter\n\n>`=<namedArgs>...`\n\nNormalt er rækkefølgen på de angivne argumenter meget vigtig. Du kan dog bruge de navngivne modstykke istedet for. Dette gøres ved at bruge `=` istedet for et semikolon og derefter ved at angive key-value tags i form af `{*key;value}`.\n\nFor eksempel vil brugen af `{math.randint}` være `{math.randint;min;max}`. Navnene på argumenterne er henholdsvis `min` og `max`. De bruges på følgende måde: \n```\n{math.randint;1;10}\n{math.randint=\n    {*min;1}\n    {*max;10}\n}\n```\nDu kan ikke bruge både navngivne argumenter og rangerede argumenter i samme subtag."
+    }
+  }
 }
