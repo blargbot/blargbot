@@ -1,10 +1,10 @@
 {
   "array":{
     "filter":{
-      "desc":""
+      "desc":"Gennemløber en matrix, hvis det aktuelle element til en lokal variabel \"i\". Hvis 'varName' er angivet, angiver denne variabel i stedet.\n\nReturnerer en ny matrix der kun indeholder elementer hvor resultatet af Iterationen var 'true' eller '1'."
     },
     "foreach":{
-      "desc":""
+      "desc":"Gennemløber et array, hvis den lokale variabel `i` til det aktuelle element. Hvis `varName`, angiver denne variabel i stedet."
     },
     "get":{
       "desc":"Får et element fra en matrix på position 'index'."
@@ -28,7 +28,7 @@
       "desc":"Skubber et element til slutningen af et array. Returnerer den modificerede matrix."
     },
     "set":{
-      "desc":""
+      "desc":"Angiver et element i matrixen på det angivne `index`."
     },
     "shift":{
       "desc":"Fjerner og retunerer det første element i arrayet."
@@ -57,7 +57,7 @@
       "desc":"Returner om kanalen er NSFW eller ej."
     },
     "name":{
-      "desc":""
+      "desc":"Returnerer navnet på den aktuelle eller angivne kanal."
     },
     "position":{
       "desc":"Returnerer positionen for den aktuelle eller angivne kanal."
@@ -80,7 +80,7 @@
       "desc":"Returnerer den gemte variabel med den medfølgende navn. Variabel fortegn kan ændre den pool hvor der skal søges."
     },
     "set":{
-      "desc":""
+      "desc":"Indstiller variablen gemt med det angivne navn til den angivne værdi. Variabel præfikser kan ændre puljen til at indstille."
     },
     "trim":{
       "desc":""
