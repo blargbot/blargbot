@@ -34,5 +34,19 @@
       "desc":""
     }
   },
-  "bbtag":""
+  "bbtag":{
+    "main":"",
+    "subtags":{
+      "title":"",
+      "desc":""
+    },
+    "variables":{
+      "title":"",
+      "desc":""
+    },
+    "arrays":{
+      "title":"",
+      "desc":""
+    }
+  }
 }
