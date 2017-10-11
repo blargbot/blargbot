@@ -151,27 +151,27 @@
     },
     "mods":{
       "info":"",
-      "mods":"",
-      "nomods":"",
-      "nomodsonline":""
+      "mods":"Mods **{{guild}} **",
+      "nomods":"Guildde hiçbir mod yok.",
+      "nomodsonline":"Online Hayır mods vardır."
     },
     "help":{
       "info":"",
-      "allcommands":"",
-      "nocommand":"",
-      "commandinfo":"",
-      "aliases":"",
-      "subcommand":"",
-      "command":"",
-      "nosubcommand":"",
-      "subcommands":""
+      "allcommands":"Üzerinde çalıştırabilirsiniz tüm komutlar şunlardır **{{guild}} **. \n```markdown\n{{commands}}\n```\n\nKomutlar hakkında Daha Fazla bilgi icin `help <commandname>` yazın yada <https://blargbot.xyz/commands> ziyaret edin.",
+      "nocommand":"Üzgünüz, hiçbir komut adı '{{name}}' ile vardır!",
+      "commandinfo":"**{{type}}: {{name}} ** ** diğer adları **: {{aliases}} * kullanım **: {{usage}}{{description}}",
+      "aliases":"Aliases Yok",
+      "subcommand":"Alt komutu",
+      "command":"Komut",
+      "nosubcommand":"Üzgünüz, hiçbir alt komutu adı '{{name}}' ile '{{command}}' için vardır!",
+      "subcommands":"** Alt komutları **: {{subcommands}} 'a alt komutu hakkında daha fazla bilgi almak için yardım <command><subcommand>'!"
     },
     "gamatoto":{
-      "info":"",
+      "info":"Büyülü bir sefer Gamatoto ile devam! İstatistiklerinizi üzerinde denetlemek için bu komutu kullanın veya bir maceraya gitmek için bir alt komutunu kullanın!",
       "subcommand":{
         "start":{
-          "usage":"",
-          "info":""
+          "usage":"<location>",
+          "info":"Bir sefer başlıyor!"
         },
         "end":{
           "info":"Bir sefer biter!"
@@ -273,10 +273,10 @@
       },
       "modlog":{
         "set":"Modlog kanal {{channel}} ile aşağıdaki olaylar için ayarlayın: '''{{events}} '''{{hadInvalid}}",
-        "remove":"",
-        "invalid":"",
-        "hadinvalid":"",
-        "list":""
+        "remove":"Aşağıdaki olaylar için modlog kaldırıldı: '''{{events}} '''{{hadInvalid}}",
+        "invalid":"Geçerli hiçbir olayın temin edilmiştir. Geçerli olaylar listesi: \n```\n{{eventList}}\n```",
+        "hadinvalid":"Komutunuza geçersiz bazı olaylar vardı. Geçerli olaylar listesi: \n```\n{{eventList}}\n```",
+        "list":"İşte senin guild üzerinde etkin olan modlogs:\n\n{{events}}"
       }
     },
     "reason":{
@@ -286,53 +286,53 @@
     },
     "help":{
       "info":"",
-      "allcommands":"",
-      "nocommand":"",
-      "commandinfo":""
+      "allcommands":"Üzerinde çalıştırabilirsiniz tüm komutlar şunlardır **{{guild}} **. \n```markdown\n{{commands}}\n```\n\nKomutlar hakkında Daha Fazla bilgi icin `help <commandname>` yazın yada <https://blargbot.xyz/commands> ziyaret edin.",
+      "nocommand":"Üzgünüz, hiçbir komut adı '{{name}}' ile vardır!",
+      "commandinfo":"** Komut: {{name}} ** \n\n**diğer adları **: {{aliases}}\n**kullanım **: {{usage}}\n\n{{description}}"
     },
     "ccommand":{
-      "info":"",
-      "usage":"",
+      "info":"Etiketler herkes oluşturma veya yürütme, BBTag dilini kullanarak genel komutlar bir sistemi vardır. \n** Alt komutları **: \nbir alt komutu hakkında daha fazla bilgi için{{subcommands}} yapmak ' b! t yardım <subcommand>' \n\nBBTag hakkında daha fazla bilgi için < https://blargbot.xyz/tags > ziyaret edin. Bir etiket oluşturarak, hizmet şartları (< https://blargbot.xyz/tags/tos >) için kabul etmiş oluyorsunuz.",
+      "usage":"<subcommand>[args]",
       "subcommand":{
         "set":{
-          "usage":"",
-          "info":""
+          "usage":"<name><content>",
+          "info":"Oluşturur veya sağlanan adı ve içeriği ile özel bir komut düzenler. Başkaları tarafından yapılan herhangi bir etiket değiştirmez."
         },
         "delete":{
-          "usage":"",
-          "info":""
+          "usage":"<name>",
+          "info":"Özel bir komut siler."
         },
         "rename":{
-          "usage":"",
-          "info":""
+          "usage":"<name><newName>",
+          "info":"Özel bir komut yeniden adlandırır."
         },
         "author":{
-          "usage":"",
-          "info":""
+          "usage":"<name>",
+          "info":"Özel komut yazar döndürür."
         },
         "transfer":{
-          "usage":"",
-          "info":""
+          "usage":"<name><user>",
+          "info":"Özel bir komut sahipliğini başkasına aktarır. Kabul edilemez olması gerekir."
         },
         "list":{
-          "info":""
+          "info":"Lonca özel komutları listeler."
         },
         "test":{
-          "usage":"",
-          "info":""
+          "usage":"<code>",
+          "info":"Senin hesabının bağlamında kod çalıştırır."
         },
         "help":{
-          "usage":"",
-          "info":""
+          "usage":"[subcommand]",
+          "info":"Bu görüntüler!"
         }
       },
-      "dontown":"",
-      "notag":"",
-      "tagset":"",
-      "tagrename":"",
-      "raw":"",
-      "alreadyexists":"",
-      "testoutput":""
+      "dontown":"[[emote.x]] Bu özel komut sahip değilsin!",
+      "notag":"[[emote.x]] Bu adda özel komut vardır.",
+      "tagset":"[[emote.check]] Özel komut '{{name}}' {{process}}!",
+      "tagrename":"[[emote.check]] Özel komut '{{old}}' '{{new}}' adını vardır",
+      "raw":"{{name}} için kod: \\n'' '{{code}}'' '",
+      "alreadyexists":"Bu adda özel bir komut zaten var.",
+      "testoutput":"Test çıktı: \\n\\n{{output}}"
     }
   }
 }
