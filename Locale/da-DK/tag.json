@@ -73,8 +73,8 @@
     "clean":{
       "desc":"Renser det angivne tekst ved at skrumpe alle mellemrum."
     },
-    "//":{
-      "desc":"Angiver et område der vil blive ignoreret fra parsing"
+    "comment":{
+      "desc":""
     },
     "get":{
       "desc":"Returnerer den gemte variabel med den medfølgende navn. Variabel fortegn kan ændre den pool hvor der skal søges."
