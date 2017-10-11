@@ -34,5 +34,19 @@
       "desc":"Bot için bir öneriniz var mı? Bunu duyduğuna memnun olurdu! Bir hata mi buldunuz? Bu çok isteriz! Bana 'Öner' komutunu kullanarak benim lonca katılarak ya da bir bilet göndererek bir şey önerebilirsiniz."
     }
   },
-  "bbtag":"# BBTag > BBCode ile karıştırılmamalıdır değildir!  BBTag gelişmiş özel komutlar oluşturmak için güçlü bir çerçeve sağlamak üzere tasarlanmış bir şablon tabanlı programlama dili olduğunu.  ## Terminoloji - bir 'etiket' BBTag kodu, bir blok için genel bir etiket veya özel bir komut olsun anlamına gelir. -Bir 'alt etiket' BBTag bileşeni ifade eder. Gelişmiş 'Etiketler' çok 'biçiminde' yapılır. -Bir 'class', 'biçiminde' bir grup gösterir.  ## Biçiminde biçiminde BBTag temel yapı taşı vardır. Onlar olup olmadığını o bir kullanıcı adı almak ya da matematik yapıyor dinamik işlevleri gerçekleştirir. Bir alt etiket bir göz atalım: ''' {math.randint;1;10} ''' çalıştırdığınızda, bu böyle bir şey verebilir: ''' 6 ''' gördüğünüz gibi 'math.randint' ise bu alt yaftalarla sağlanan Aralık arasında bir rasgele tamsayı döndürür.  ### Bir alt etiket A ise bu alt yaftalarla anatomisi çeşitli bileşenlerinin yapılır. Sözdizimi Diyagram şuna benzer: ''' {[class.]name [![var]] ([; args]... | <namedArgs>... =} ''' Oh wow, tamam. Bu biraz kafa karıştırıcı, ama ayı ile beni!  ### Sınıfları > '[class.]name' biçiminde adı verilen gruplar halinde bölünmüş ** sınıfları **. Her sınıf belirli türde bir amaç belirlenmiştir. Örneğin, 'matematik' sınıf numaraları ile anlaşma biçiminde içerir. Aynı şekilde, 'kullanıcı' sınıfı kullanıcılar hakkında bilgi vermek biçiminde içerir. Sınıflar organizasyon sistemi sağlar.  Bir alt etiket kullanırken, tercih edilen kullanım '{class.name}' olacaktır. Bu okunabilirliğini artırır. Ancak, açıkça belirten sınıf genellikle isteğe bağlıdır. BBTag '{math.randint}' ve '{randint}' aynı alt etiket olduğunu biliyor. Bu denir ** örtülü sınıflandırmaya **. Bunun istisnası etiketlerinden kullanılması gereken 'genel' sınıfta * olmayan * açık bir sınıf.  Bununla birlikte, örtülü sınıflandırması ile dikkatli olmalısınız! Bazen, sınıflar biçiminde aynı ada sahip olabilir. Örneğin, '{user.id}' ve '{channel.id}' biçiminde adı 'kimlikli' var. Birden çok sınıflarda bulunan bir alt etiket ile örtülü sınıflandırmaya kullanmayı denerseniz, bir hata döndürecektir.  ### Boru > ' [! [var]]' boru bir değişken veya bir boşluğa bir alt etiket çıktısını yönlendirmek sağlayan bir özelliktir. Bu senin kodu temizlemek için yardımcı olabilir.  Örneğin, sebebi ne olursa olsun hiçbir şey alt etiket istemiyorsanız, sen-ebilmek eklemek bir '!' onu susturmak için alt etiket adından sonra. Aşağıdaki satırları eşdeğerdir: ''' {boşluğu; {} Math.randint; 1; 10}} {math.randint!; 1; 10} '' 'Alt'ın etiket çıktısı bir değişkene saklamak isterseniz, sen-ebilmek eklemek'! variableName' alt etiket adından sonra. Aşağıdaki satırları eşdeğerdir: ''' {ayarla; randomInteger; {} Math.randint; 1; 10}} {math.randint!randomInteger;1;10} ''' çıkış boru olduğunu biraz daha hızlı tam sözdizimini kullanarak daha çalıştırmak için.  ### Bağımsız değişkenleri > ' [; args]...' biçiminde parametreleri geçirebilirsiniz. Bunlar noktalı virgülle ';'. Farklı ücret-ise bu alt yaftalarla argümanlar ve bu belgeler ise bu alt yaftalarla sayfasında bulunabilir.  ### Adlandırılmış bağımsız değişkenleri > = '<namedArgs>...' normalde, sağlanan bağımsız değişkenler sırasını çok önemlidir. Ancak, bunun yerine adlandırılmış karşıtları kullanabilirsiniz. Bu '=' belirteci yerine noktalı virgül kullanarak ve anahtar-değer etiketleri, biçiminde belirterek yapılır ' {* anahtar; değer}'.  Örneğin, '{math.randint}' kullanım '{math.randint;min;max}' dir. Bağımsız değişkenler 'min' ve 'max' isimleri anılan sıraya göre. Aşağıdaki kullanımlar eşdeğerdir: ''' {math.randint;1;10} {math.randint= {* min; 1} {* max; 10}} ''' adlandırılmış bağımsız değişkenleri ve sipariş edilen bağımsız değişkenleri aynı alt etiket içinde kullanamazsınız."
+  "bbtag":{
+    "main":"",
+    "subtags":{
+      "title":"",
+      "desc":""
+    },
+    "variables":{
+      "title":"",
+      "desc":""
+    },
+    "arrays":{
+      "title":"",
+      "desc":""
+    }
+  }
 }
