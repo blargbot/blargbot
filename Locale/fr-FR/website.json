@@ -7,6 +7,9 @@
     "bbtag":"BBTag",
     "subtags":"SubTags"
   },
+  "generic":{
+    "loading":""
+  },
   "index":{
     "desc":"blargbot est un bot Discord polyvalent dédié à fournir des commandes et des services de qualité, incluant l'historique de chats et un système de commandes personnalisées approfondi.",
     "commands":{
@@ -47,6 +50,15 @@
     "arrays":{
       "title":"",
       "desc":""
+    }
+  },
+  "subtags":{
+    "components":{
+      "argument":"",
+      "named":"",
+      "array":"",
+      "staff":"",
+      "noimplicit":""
     }
   }
 }
