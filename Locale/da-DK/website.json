@@ -7,6 +7,9 @@
     "bbtag":"BBTag",
     "subtags":"SubTags"
   },
+  "generic":{
+    "loading":""
+  },
   "index":{
     "desc":"blargbot er en multifunktionel Discord bot dedikeret til at levere kvalitets kommandoer og tjenester, herunder chatlogs og et dybdegående brugerdefinerede kommando system.",
     "commands":{
@@ -47,6 +50,15 @@
     "arrays":{
       "title":"Arrays",
       "desc":""
+    }
+  },
+  "subtags":{
+    "components":{
+      "argument":"",
+      "named":"",
+      "array":"",
+      "staff":"",
+      "noimplicit":""
     }
   }
 }
