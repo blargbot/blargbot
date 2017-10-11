@@ -245,7 +245,7 @@
       "info":"Konfigurerer forskellige indstillinger.",
       "subcommand":{
         "staffuser":{
-          "usage":"<add | remove><user>...",
+          "usage":"",
           "info":"Tilføjer eller fjerner brugere til listen over personale."
         },
         "staffrole":{
@@ -258,7 +258,7 @@
           "info":"Opsætter annonceringer."
         },
         "modlog":{
-          "usage":"[event]... [flags]",
+          "usage":"",
           "info":""
         }
       },
