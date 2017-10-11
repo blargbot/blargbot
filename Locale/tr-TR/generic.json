@@ -11,25 +11,25 @@
     "pickrole":"{{length}} kullanıcı bulunamadı! Lütfen listeden seçin."
   },
   "resolvechannel":{
-    "nochannels":"",
-    "pickchannel":""
+    "nochannels":"Hiç bir Kanal bulunamadı.",
+    "pickchannel":"{{length}} kullanıcı bulunamadı! Lütfen listeden seçin."
   },
-  "edited":"",
-  "created":"",
-  "deleted":"",
+  "edited":"düzenlenmiş",
+  "created":"oluşturuldu",
+  "deleted":"silindi",
   "menu":{
-    "choices":""
+    "choices":"Sayfa {{page}}/{{max}}"
   },
-  "nochange":"",
-  "commandhelp":"",
+  "nochange":"Hiçbir şey değişmedi.",
+  "commandhelp":"** Komut adı *: ** __{{name}}__ **\n **__Kullanım Şekli__ **\n '''{{usage}} ''' *\n*__Info__ **\n{{info}} \n\n**__aliases__ **\n{{aliases}}",
   "example":{
-    "id1":"",
-    "id2":"",
-    "id3":""
+    "id1":"111111111111111111",
+    "id2":"222222222222222222",
+    "id3":"333333333333333333"
   },
-  "test":"",
-  "querycancelled":"",
-  "user":"",
-  "role":"",
-  "channel":""
+  "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
+  "querycancelled":"Kuyruk iptal edildi.",
+  "user":"Kullanıcı",
+  "role":"Rol",
+  "channel":"Kanal"
 }
