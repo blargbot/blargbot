@@ -73,8 +73,8 @@
     "clean":{
       "desc":"Tüm boşluk daralma tarafından sağlanan metni temizler."
     },
-    "//":{
-      "desc":"Ayrıştırması gözardı edilecek bir alanı belirtir"
+    "comment":{
+      "desc":""
     },
     "get":{
       "desc":"Sağlanan adıyla depolanmış Değişken döndürür. Değişken önekleri aranacak havuzunda değişiklik yapabilirsiniz."
