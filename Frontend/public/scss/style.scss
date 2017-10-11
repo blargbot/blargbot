@@ -117,3 +117,13 @@ pre code {
 strong {
     font-weight: 700;
 }
+
+ul.tabs {
+    @extend .blue-grey.darken-2;
+}
+ul.tabs li.tab a {
+    @extend .white-text;
+}
+ul.tabs li.indicator {
+    @extend .teal.accent-2;
+}

@@ -24,20 +24,16 @@ module.exports = {
                     },
                     {
                         name: 'BBTag', path: '/bbtag',
-                        component: resolve(__dirname, 'renders/wrapper.vue'),
-                        children: [{
-                            name: 'SubTags', path: '/bbtag/subtags',
-                            component: resolve(__dirname, 'renders/bbtag/subtags.vue')
-                        }, {
-                            name: 'Docs', path: '/bbtag',
-                            component: resolve(__dirname, 'renders/bbtag/index.vue')
-                        }]
+                        component: resolve(__dirname, 'renders/bbtag/index.vue')
                     }, {
                         name: 'Commands', path: '/commands',
                         component: resolve(__dirname, 'renders/commands.vue')
                     }, {
                         name: 'Escaper', path: '/escaper',
                         component: resolve(__dirname, 'renders/escape.vue')
+                    }, {
+                        name: 'SubTags', path: '/subtags',
+                        component: resolve(__dirname, 'renders/subtags.vue')
                     }
                 ]
             });

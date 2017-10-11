@@ -22,10 +22,13 @@
     <div class='row'>
       <div class='col s12 blue-grey darken-2 bevel'>
         <div class='row button-bar'>
-          <div class='col s6'>
+          <div class='col s4'>
             <button class='waves-effect waves-light btn full' v-on:click='copyClipboard'>Copy</button>
           </div>
-          <div class='col s6'>
+          <div class='col s4'>
+            <button class='waves-effect waves-light btn full' v-on:click='reformat'>Reformat</button>
+          </div>
+          <div class='col s4'>
             <button class='waves-effect waves-light btn full' v-on:click='exportJson'>Export</button>
           </div>
         </div>
@@ -50,7 +53,12 @@ export default {
   }),
   computed: {
     jsoned() {
-      let obj = { [this.title]: this.content }
+      let obj = {
+        [this.title.toLowerCase()]: {
+          title: this.title,
+          desc: this.content
+        }
+      }
       return JSON.stringify(obj, null, 2);
     },
     jsonedCodeblock() {
@@ -61,6 +69,23 @@ export default {
     exportJson() {
       let arr = this.denyChoices;
       Materialize.toast(arr[Math.floor(Math.random() * arr.length)], 1000);
+    },
+    reformat() {
+      let thing = JSON.parse(this.content);
+      if (typeof thing === 'string') {
+        this.content = thing;
+      } else if (thing instanceof Object) {
+        if (thing.hasOwnProperty('title') || thing.hasOwnProperty('desc')) {
+          this.content = thing.desc || '';
+          this.title = thing.title || '';
+        } else {
+          for (const key in thing) {
+            this.content = thing[key].desc;
+            this.title = thing[key].title;
+            break;
+          }
+        }
+      }
     },
     copyClipboard() {
       console.log(this.$refs.hah);

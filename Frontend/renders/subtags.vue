@@ -1,13 +1,12 @@
 <template>
     <div>
-        <vue-markdown :source='$t("bbtag.subtags.desc")' class='markdown'>
-        </vue-markdown>
+        subtags :/
     </div>
 </template>
 
 <script>
 import VueMarkdown from 'vue-markdown';
-import card from '../../components/card.vue';
+import card from '../components/card.vue';
 
 export default {
     data: () => ({

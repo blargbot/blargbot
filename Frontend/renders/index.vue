@@ -1,37 +1,37 @@
 <template>
     <div>
         <p class='main-desc flow-text'>
-            {{$t('website.index.desc')}}
+            {{$t('index.desc')}}
         </p>
         <div class='card-row'>
-            <card :title="$t('website.index.commands.title')">
+            <card :title="$t('index.commands.title')">
                 <div slot='content'>
-                    {{$t('website.index.commands.desc')}}
+                    {{$t('index.commands.desc')}}
                 </div>
             </card>
-            <card :title="$t('website.index.bbtag.title')">
+            <card :title="$t('index.bbtag.title')">
                 <div slot='content'>
-                    {{$t('website.index.bbtag.desc')}}
+                    {{$t('index.bbtag.desc')}}
                 </div>
             </card>
-            <card :title="$t('website.index.customization.title')">
+            <card :title="$t('index.customization.title')">
                 <div slot='content'>
-                    {{$t('website.index.customization.desc')}}
+                    {{$t('index.customization.desc')}}
                 </div>
             </card>
-            <card :title="$t('website.index.moderation.title')">
+            <card :title="$t('index.moderation.title')">
                 <div slot='content'>
-                    {{$t('website.index.moderation.desc')}}
+                    {{$t('index.moderation.desc')}}
                 </div>
             </card>
-            <card :title="$t('website.index.opensource.title')">
+            <card :title="$t('index.opensource.title')">
                 <div slot='content'>
-                    {{$t('website.index.opensource.desc')}}
+                    {{$t('index.opensource.desc')}}
                 </div>
             </card>
-            <card :title="$t('website.index.suggestions.title')">
+            <card :title="$t('index.suggestions.title')">
                 <div slot='content'>
-                    <vue-markdown :source='$t("website.index.suggestions.desc")'></vue-markdown>
+                    <vue-markdown :source='$t("index.suggestions.desc")'></vue-markdown>
                 </div>
             </card>
         </div>
