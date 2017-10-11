@@ -73,8 +73,8 @@
     "clean":{
       "desc":"Cleans the provided text by shrinking all whitespace."
     },
-    "//":{
-      "desc":"Specifies an area that will be ignored from parsing"
+    "comment":{
+      "desc":""
     },
     "get":{
       "desc":"Returns the stored variable with the supplied name. Variable prefixes can modify the pool in which to search."
