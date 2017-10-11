@@ -1,11 +1,11 @@
 {
   "events":{
-    "kick":"",
-    "ban":"",
-    "unban":"",
-    "mute":"",
-    "unmute":"",
-    "warn":"",
+    "kick":"At",
+    "ban":"Ban",
+    "unban":"Ban kaldır",
+    "mute":"Sustur",
+    "unmute":"Susturmayı Aç",
+    "warn":"Uyarı",
     "pardon":"",
     "rename":"",
     "specialroleadd":"",
