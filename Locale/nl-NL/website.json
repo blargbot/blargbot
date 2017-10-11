@@ -7,6 +7,9 @@
     "bbtag":"",
     "subtags":""
   },
+  "generic":{
+    "loading":""
+  },
   "index":{
     "desc":"",
     "commands":{
@@ -47,6 +50,15 @@
     "arrays":{
       "title":"",
       "desc":""
+    }
+  },
+  "subtags":{
+    "components":{
+      "argument":"",
+      "named":"",
+      "array":"",
+      "staff":"",
+      "noimplicit":""
     }
   }
 }
