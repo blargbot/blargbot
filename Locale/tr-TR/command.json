@@ -245,7 +245,7 @@
       "info":"Çeşitli ayarlarını yapılandırır.",
       "subcommand":{
         "staffuser":{
-          "usage":"<add | remove> <user>...",
+          "usage":"",
           "info":"Ekler veya personel listesi kullanıcılara kaldırır."
         },
         "staffrole":{
@@ -258,7 +258,7 @@
           "info":"Duyurular kanalını kurar."
         },
         "modlog":{
-          "usage":"[event]... [flags]",
+          "usage":"",
           "info":"Modlog belirtilen olaylar için ayarlar. Kanal yok belirtilirse, geçerli kanal için varsayılan olarak ayarlanır. Hiçbir olay belirttiyseniz, tüm olaylara varsayılan olarak ayarlanır."
         }
       },
