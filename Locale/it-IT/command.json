@@ -18,13 +18,13 @@
         "Contraddizione è verità.",
         "Vuoi formare un contratto?",
         "Lascialo andare e vai avanti.",
-        ""
+        "Lascialo andare e prosegui."
       ],
-      "final":""
+      "final":"Pong! ({{time}}ms)"
     },
     "brainfuck":{
       "info":"Esegue codice brainfuck.",
-      "usage":"",
+      "usage":"<codice>",
       "flags":{
         "p":"Mostra una lista di puntatori dopo l'esecuzione.",
         "i":"Specifica l'input per l'operatore `,`."
@@ -32,78 +32,78 @@
     },
     "ship":{
       "info":"Ricevi l'unione (ship) dei nickname di due utenti.",
-      "usage":"",
+      "usage":"<utente1><utente2>",
       "final":"Il tuo nome (shipname) è **{{name}}**!",
       "notenough":"Devi dirmi chi unire (ship)!"
     },
     "tag":{
       "info":"Le tags sono un sistema pubblico di comandi che chiunque può creare o eseguire, usando il linguaggio BBTag.\n\n**Sottocomandi**:\n{{subcommands}}\n\nPer maggiori informazioni su un sottocomando, scrivi `b!t help <sottocomando>`\nPer maggiori informazioni su BBTag, visita <https://blargbot.xyz/tags>.\nCreando una tag, accetti i termini di servizio (<https://blargbot.xyz/tags/tos>).",
-      "usage":"",
+      "usage":"<nome | sottocomando> [args]",
       "dontown":"[[emote.x]] Non possiedi questa tag!",
       "alreadyexists":"[[emote.x]] Una tag con questo nome esiste già!",
       "notag":"[[emote.x]] Non c'è nessuna tag con quel nome.",
-      "tagset":"",
+      "tagset":"[[emote.check]] Tag `{{name}}` {{process}}!",
       "tagrename":"[[emote.check]] La tag `{{old}}` è stata rinominata come `{{new}}`.",
       "raw":"Il codice per {{name}} è:\n```{{code}}```",
-      "testoutput":"",
+      "testoutput":"Test Output:\n\n{{output}}",
       "subcommand":{
         "set":{
-          "usage":"",
+          "usage":"<nome><contenuto>",
           "info":"Crea o modifica una tag con il nome e contenuto inseriti. Non rimpiazza alcuna tag creata da altri."
         },
         "delete":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Elimina una tag che possiedi."
         },
         "rename":{
-          "usage":"",
+          "usage":"<nome><nuovo nome>",
           "info":"Rinomina una tag che possiedi."
         },
         "raw":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Restituisce il codice di una tag."
         },
         "info":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Fornisce informazioni su una tag."
         },
         "transfer":{
-          "usage":"",
+          "usage":"<nome><utente>",
           "info":"Trasferisce una tag all'utente specificato. Le variabili non verranno trasferite."
         },
         "top":{
           "info":"Visualizza le tag più preferite."
         },
         "author":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Visualizza l'autore di una tag."
         },
         "search":{
-          "usage":"",
+          "usage":"<query>",
           "info":"Cerca una tag con un nome che contiene la tua query."
         },
         "list":{
-          "usage":"",
+          "usage":"[@utente]",
           "info":"Mostra la lista di tutte le tag, o solo quelle di un utente specifico."
         },
         "favorite":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Preferisci una specifica tag."
         },
         "report":{
-          "usage":"",
+          "usage":"<nome>",
           "info":"Segnala una tag che viola i ToS. Usa con responsabilità."
         },
         "test":{
-          "usage":"",
+          "usage":"<codice>",
           "info":"Esegue il comando in un ambiente di test."
         },
         "help":{
-          "usage":"",
+          "usage":"[subcommand]",
           "info":"Visualizza questo!"
         },
         "docs":{
-          "usage":"",
+          "usage":"[subtag]",
           "info":"Restituisce il link alla documentazione BBTag, o restituisce informazioni su una tag specifica."
         },
         "setdesc":{
@@ -146,75 +146,75 @@
     },
     "donate":{
       "info":"",
-      "willdm":"",
-      "message":""
+      "willdm":"Ok, ti ho inviato le informazioni per le donazioni in DM.",
+      "message":"placeholder"
     },
     "mods":{
       "info":"",
-      "mods":"",
-      "nomods":"",
-      "nomodsonline":""
+      "mods":"Moderatori su **{{guild}}**",
+      "nomods":"Non ci sono moderatori in questa gilda.",
+      "nomodsonline":"Non ci sono moderatori online."
     },
     "help":{
       "info":"",
-      "allcommands":"",
-      "nocommand":"",
-      "commandinfo":"",
-      "aliases":"",
-      "subcommand":"",
-      "command":"",
-      "nosubcommand":"",
-      "subcommands":""
+      "allcommands":"Ecco tutti i comandi che puoi eseguire su **{{guild}}**.\n```markdown\n{{commands}}\n```\n\nPer maggiori informazioni su un comando, digita `help <nomecomando>` o visita <https://blargbot.xyz/commands>.",
+      "nocommand":"Non c'è nessuno comando '{{name}}'!",
+      "commandinfo":"**{{type}}: {{name}}**\n\n**Aliases**: {{aliases}}\n**Utilizzo**: {{usage}}\n\n{{description}}",
+      "aliases":"Nessun alias",
+      "subcommand":"Sottocomando",
+      "command":"Comando",
+      "nosubcommand":"Non c'è nessun sottocomando per '{{command}}' col nome '{{name}}'!",
+      "subcommands":"**Sottocomandi**: {{subcommands}}\n\nDigita `help <comando> <sottocomando>` per avere più informazioni su un sottocomando!"
     },
     "gamatoto":{
-      "info":"",
+      "info":"Vai in una spedizione magica con Gamatoto! Usa questo comando per controllare le tue statistiche, o usa un sottocomando per partire all'avventura!",
       "subcommand":{
         "start":{
-          "usage":"",
-          "info":""
+          "usage":"<luogo>",
+          "info":"Inizia la spedizione!"
         },
         "end":{
-          "info":""
+          "info":"Finisci una spedizione!"
         },
         "locations":{
-          "info":""
+          "info":"Elenca tutti i luoghi di spedizione."
         }
       },
-      "stats":"",
-      "alreadystarted":"",
-      "notstarted":"",
-      "nolocation":"",
-      "invalidlocation":"",
-      "expeditionbeings":"",
-      "expeditionends":"",
-      "notimeelapsed":"",
-      "itemfound":"",
-      "levelup":"",
-      "gamatotoxp":"",
-      "itemincrease":"",
-      "locations":"",
-      "wronglevel":"",
-      "gamatotoitems":"",
-      "gamatotostats":"",
-      "gamatotocurrent":"",
-      "gamatotoidle":""
+      "stats":"<:bc_cat:345081695990710272> Ecco i tuoi oggetti!\n\n{{stats}}",
+      "alreadystarted":"Una spedizione è già in corso!",
+      "notstarted":"Non hai iniziato alcuna spedizione!",
+      "nolocation":"Non è un luogo valido. I luoghi che puoi visitare sono:\n\n{{locations}}",
+      "invalidlocation":"E' successo qualcosa di strano. Il posto che stavi esplorando non esiste più! Inizia un'altra spedizione.",
+      "expeditionbeings":"<:bc_cat:345081695990710272> LA RICERCA INIZIA! <:bc_cat:345081695990710272>\n\nLuogo: {{location}}\n\nControlla dopo digitando `gamatoto end`!",
+      "expeditionends":"<:bc_cat:345081695990710272> RISULTATI SPEDIZIONE! <:bc_cat:345081695990710272>\n\nLuogo: {{location}}\nDurata: {{minutes}} minuti\n\n{{results}}",
+      "notimeelapsed":"Nessun tempo è trascorso da quando hai iniziato la spedizione. Gamatoto non ha trovato nulla!",
+      "itemfound":"Gamatoto ha trovato {{amount}} {{item}} al {{location}}.",
+      "levelup":":fireworks: Gamatoto è ora al {{level}} livello!",
+      "gamatotoxp":"Gamatoto ha guadagnato **{{amount}}**XP ({{old}} → **{{new}}**)",
+      "itemincrease":"{{item}} hai trovato **{{amount}}** ({{old}} → **{{new}}**)",
+      "locations":"Qui ci sono tutte le località di spedizione! \n\n{{locations}}",
+      "wronglevel":"Devi essere di livello {{level}} per esplorare quel posto!",
+      "gamatotoitems":"Ecco i tuoi oggetti:\n{{items}}",
+      "gamatotostats":"Gamatoto è al livello {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
+      "gamatotocurrent":"Gamatoto ha esplorato la **{{location}} ** per **{{minutes}}** minuti.\n\nDigita 'gamatoto end' per finire la spedizione.",
+      "gamatotoidle":"Gamatoto non è in una spedizione. Mandalo in un'avventura digitando 'gamatoto start [location]'!"
     },
     "prefix":{
-      "info":"",
+      "info":"Ottiene o imposta i prefissi dei comandi. Questo comando consente di configurare i prefissi degli utenti. Per i prefissi di Gilda, utilizza il comando `setup`.",
       "subcommand":{
         "add":{
-          "usage":"",
-          "info":""
+          "usage":"<prefisso>",
+          "info":"Aggiunge un prefisso alla tua lista."
         },
         "remove":{
-          "usage":"",
-          "info":""
+          "usage":"<prefisso>",
+          "info":"Rimuove un prefisso dalla tua lista."
         }
       },
-      "prefixlist":"",
-      "userprefixes":"",
-      "guildprefixes":"",
-      "noprefixes":"",
+      "prefixlist":"{{content}}\nPer configurare i tuoi prefissi, usa i sottocomandi `add` e `remove`. Per configurare i prefissi di gilda, utilizza il comando `setup`.",
+      "userprefixes":"Ecco i tuoi prefissi:\n```md\n{{userprefixes}}\n```",
+      "guildprefixes":"Ecco i prefissi su questa gilda:\n```md\n{{guildprefixes}}\n```",
+      "noprefixes":"Non hai nessun prefisso personalizzato.",
       "defaultprefixes":"",
       "prefixadded":"",
       "prefixremoved":"",
@@ -245,7 +245,7 @@
       "info":"Configura varie impostazioni.",
       "subcommand":{
         "staffuser":{
-          "usage":"mod user <add | remove> <utente>...",
+          "usage":"",
           "info":"Aggiunge o toglie l'utente(i) specificato(i) dalla lista staff."
         },
         "staffrole":{

@@ -1,16 +1,16 @@
 {
-  "language":"",
+  "language":"Angielski",
   "header":{
-    "login":"",
-    "logout":"",
-    "commands":"",
+    "login":"Zaloguj się",
+    "logout":"Wyloguj się",
+    "commands":"Komendy",
     "bbtag":"",
     "subtags":""
   },
   "index":{
     "desc":"",
     "commands":{
-      "title":"",
+      "title":"Komendy",
       "desc":""
     },
     "bbtag":{
@@ -18,19 +18,19 @@
       "desc":""
     },
     "customization":{
-      "title":"",
-      "desc":""
+      "title":"Dostosowywanie",
+      "desc":"Rozumiemy, że nie każda gildia jest taka sama, więc blargbot ma rozbudowane możliwości dostosowania. Można kontrolować dokładnie która rola może użyć polecenia, określ niestandardowe prefiksy, a nawet zmienić język wyświetlania!"
     },
     "moderation":{
-      "title":"",
-      "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+      "title":"Moderacja",
+      "desc":"Potrzebujesz czegoś do umiarkownia czata? blargbot jest wyposażony w wiele narzędzi, od podstawowych operacji, takich jak zakaz i wyciszanie, bardziej zaawansowane rzeczy, jak chatlogging lub automatyczna cenzurowanie."
     },
     "opensource":{
       "title":"",
       "desc":""
     },
     "suggestions":{
-      "title":"",
+      "title":"Otwarte na propozycje",
       "desc":""
     }
   },

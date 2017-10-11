@@ -1,26 +1,26 @@
 {
   "events":{
-    "kick":"",
-    "ban":"",
-    "unban":"",
-    "mute":"",
-    "unmute":"",
-    "warn":"",
-    "pardon":"",
-    "rename":"",
-    "specialroleadd":"",
-    "specialroleremove":""
+    "kick":"At",
+    "ban":"Ban",
+    "unban":"Ban kaldır",
+    "mute":"Sustur",
+    "unmute":"Susturmayı Aç",
+    "warn":"Uyarı",
+    "pardon":"Pardon",
+    "rename":"Yeniden adlandır",
+    "specialroleadd":"Özel rol eklendi",
+    "specialroleremove":"Özel rol kaldırıldı"
   },
-  "case":"",
-  "setreason":"",
+  "case":"{{icon}} büyük {{number}}: {{event}}",
+  "setreason":"Sorumlu moderatör, neden ayarlamak için '{{number}} nedeni' Lütfen yapın.",
   "warnings":{
-    "given":"",
-    "removed":"",
-    "total":""
+    "given":"Verilen uyarılar",
+    "removed":"Uyarılar affedildi",
+    "total":"Yeni toplam"
   },
   "rename":{
-    "old":"",
-    "new":""
+    "old":"Eski adı",
+    "new":"Yeni adı"
   },
-  "duration":""
+  "duration":"Süreç"
 }

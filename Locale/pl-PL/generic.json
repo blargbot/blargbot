@@ -29,7 +29,7 @@
   },
   "test":"",
   "querycancelled":"The query has been cancelled.",
-  "user":"",
-  "role":"",
-  "channel":""
+  "user":"Użytkownik",
+  "role":"Rola",
+  "channel":"Kanał"
 }

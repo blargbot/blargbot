@@ -51,7 +51,7 @@
   },
   "channel":{
     "id":{
-      "desc":"Renvoie l'ID du canal actuel ou spécifié"
+      "desc":"Renvoie l'ID du canal actuel ou spécifié."
     },
     "nsfw":{
       "desc":"Montre si le salon spécifié est NSFW ou pas."
@@ -126,7 +126,7 @@
       "desc":"Si la `valeur` est égale à `vrai` ou `1`, exécute la partie `alors`.\nSi la `valeur` est égale à `faux` ou `0`, exécute la partie `sinon`.\nAutrement, affiche une erreur.\n\nUtilisez ceci avec le tag {logique}."
     },
     "logic":{
-      "desc":""
+      "desc":"Réalise des opérations logiques sur la première opérande et la seconde, renvoyant `true` ou `false`.\n\nOpérateurs d'équivalence:\n - `==` - égal\n - `!=` - différent\n - `<` - plus petit que\n - `<=` - plus petit ou égal à\n - `>` - plus grand que\n - `>=` - plus grand ou égal à\n - `startswith` - la première opérande commence par la seconde\n - `endswith` - la première opérande termine par la seconde\n - `includes` - la première opérande contient la seconde\n\nOpérateurs logiques:\n - `&&` - renvoie vrai si les deux opérandes sont toutes deux égales à vrai\n - `||` - renvoie vrai si l'une des deux (ou les deux) opérandes est vraie\n - `XOR` - renvoie vrai si l'une des deux (et uniquement l'une des deux) opérandes est vraie\n\nAutres opérateurs:\n - `!` - inverse l'opération logique (vrai devient faux, etc.)"
     }
   },
   "math":{

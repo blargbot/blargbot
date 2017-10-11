@@ -7,13 +7,13 @@
       "desc":""
     },
     "get":{
-      "desc":""
+      "desc":"Får et element fra en matrix på position 'index'."
     },
     "isarray":{
-      "desc":""
+      "desc":"Returnerer true hvis det angivne element er et array, og false ellers. Du kan ikke bruge variabelnavne."
     },
     "join":{
-      "desc":""
+      "desc":"Slutter et array med den medfølgende 'delimiter'."
     },
     "length":{
       "desc":"Returnerer længden af det givne array."
@@ -25,7 +25,7 @@
       "desc":"Fjerner og retunerer det sidste element i arrayet."
     },
     "push":{
-      "desc":""
+      "desc":"Skubber et element til slutningen af et array. Returnerer den modificerede matrix."
     },
     "set":{
       "desc":""
@@ -46,7 +46,7 @@
       "desc":"Splitter `teksten` ved `skilletegnet`, og returnerer det nye array."
     },
     "unshift":{
-      "desc":""
+      "desc":"Indsætter 'værdi' i begyndelsen af matrixen og returnerer den modificerede matrix."
     }
   },
   "channel":{
@@ -60,24 +60,24 @@
       "desc":""
     },
     "position":{
-      "desc":""
+      "desc":"Returnerer positionen for den aktuelle eller angivne kanal."
     },
     "topic":{
-      "desc":""
+      "desc":"Returnerer emnet for den aktuelle eller angivne kanal (kun tekst)."
     },
     "type":{
-      "desc":""
+      "desc":"Returnerer typen af den aktuelle eller angivne kanal (returnerer \"text\" eller \"voice\")."
     }
   },
   "general":{
     "clean":{
-      "desc":""
+      "desc":"Renser det angivne tekst ved at skrumpe alle mellemrum."
     },
     "//":{
-      "desc":""
+      "desc":"Angiver et område der vil blive ignoreret fra parsing"
     },
     "get":{
-      "desc":""
+      "desc":"Returnerer den gemte variabel med den medfølgende navn. Variabel fortegn kan ændre den pool hvor der skal søges."
     },
     "set":{
       "desc":""
@@ -86,10 +86,10 @@
       "desc":""
     },
     "void":{
-      "desc":""
+      "desc":"Forhindrer output fra indenfor undertagget. Adskiller sig fra kommentar som ting er parset, bare ikke vises."
     },
     "newline":{
-      "desc":""
+      "desc":"Returnerer det angivne antal newlines, misligholdende til 1."
     },
     "space":{
       "desc":""
@@ -109,21 +109,21 @@
       "desc":""
     },
     "name":{
-      "desc":""
+      "desc":"Returnerer navnet på den aktuelle guild."
     },
     "owner":{
-      "desc":""
+      "desc":"Returnerer ID'ET for serverens ejer."
     },
     "region":{
       "desc":""
     },
     "roles":{
-      "desc":""
+      "desc":"Returnerer en matrix af roller i den aktuelle server."
     }
   },
   "logic":{
     "if":{
-      "desc":""
+      "desc":"If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nBrug dette med {logic} tagget."
     },
     "logic":{
       "desc":""
@@ -137,10 +137,10 @@
       "desc":""
     },
     "ceil":{
-      "desc":""
+      "desc":"Runder den angivne decimale op."
     },
     "floor":{
-      "desc":""
+      "desc":"Runder den angivne decimal ned."
     },
     "math":{
       "desc":""
@@ -165,16 +165,16 @@
   },
   "role":{
     "color":{
-      "desc":""
+      "desc":"Returnerer farven af den angivne rolle i hexadecimal."
     },
     "id":{
-      "desc":""
+      "desc":"Returnerer ID'ET for den angivne rolle."
     },
     "mention":{
-      "desc":""
+      "desc":"Returnerer en omtale af den angivne rolle."
     },
     "name":{
-      "desc":""
+      "desc":"Returnerer navnet på den angivne rolle."
     },
     "position":{
       "desc":"Returnerer placeringen af en bestemt rolle."
@@ -215,7 +215,7 @@
       "desc":""
     },
     "setnick":{
-      "desc":""
+      "desc":"Angiver kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
     },
     "status":{
       "desc":""
