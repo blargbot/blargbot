@@ -1,82 +1,82 @@
 {
   "general":{
     "ping":{
-      "info":"",
+      "info":"Pong! \nKomut gecikme süresi bulunur.",
       "randmsg":[
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
+        "Varlığı bir yalandır.",
+        "Belki yakında bir gün, ölmeye gidiyoruz.",
+        "Hiçbir şeyin önemi yok.",
+        "Nerede bitiyor?",
+        "Orada bir şey yoktur.",
+        "Bir sonsuz boşlukta yalnızsın.",
+        "Gerçek şu ki yanlıştır.",
+        "Her şeyi terketmek.",
+        "Acınacak varlığıdır.",
+        "Hepimiz zaten ölü.",
+        "Miyav.",
+        "Özgürlük korkudur.",
+        "Boyun eğdirme kurtuluş olduğunu.",
+        "Gerçek çelişkidir.",
+        "Bir sözleşme yapmak ister misiniz?",
+        "Git ve devam edelim."
       ],
-      "final":""
+      "final":"Pong! ({{time}}ms)"
     },
     "brainfuck":{
-      "info":"",
-      "usage":"",
+      "info":"Brainfuck kod çalıştırır.",
+      "usage":"<code>",
       "flags":{
-        "p":"",
-        "i":""
+        "p":"Yürütme sonrasında işaretçiler listesini gösterir.",
+        "i":"Giriş ',' işleç belirtir."
       }
     },
     "ship":{
-      "info":"",
-      "usage":"",
-      "final":"",
-      "notenough":""
+      "info":"İki kullanıcı için gemi ad verir.",
+      "usage":"<user1><user2>",
+      "final":"Gemi adın **{{name}} **!",
+      "notenough":"Bana söylemek zorunda kim sevk etmek!"
     },
     "tag":{
-      "info":"",
-      "usage":"",
-      "dontown":"",
-      "alreadyexists":"",
-      "notag":"",
-      "tagset":"",
-      "tagrename":"",
-      "raw":"",
-      "testoutput":"",
+      "info":"Etiketler herkes oluşturma veya yürütme, BBTag dilini kullanarak genel komutlar bir sistemi vardır. \n** Alt komutları **: \nbir alt komutu hakkında daha fazla bilgi için{{subcommands}} yapmak ' b! t yardım <subcommand>' \n\nBBTag hakkında daha fazla bilgi için < https://blargbot.xyz/tags > ziyaret edin. Bir etiket oluşturarak, hizmet şartları (< https://blargbot.xyz/tags/tos >) için kabul etmiş oluyorsunuz.",
+      "usage":"<name | subcommand> [args]",
+      "dontown":"[[emote.x]] Bu etikete sahip değilsin!",
+      "alreadyexists":"[[emote.x]] Bu adda bir etiket zaten var!",
+      "notag":"[[emote.x]] Bu ada sahip bir etikettir.",
+      "tagset":"[[emote.check]] Etiket '{{name}}' {{process}}!",
+      "tagrename":"[[emote.check]] Etiket '{{old}}' '{{new}}' adı değiştirilmiş.",
+      "raw":"{{name}} için kod: '''{{code}} '''",
+      "testoutput":"Test çıktı:{{output}}",
       "subcommand":{
         "set":{
-          "usage":"",
-          "info":""
+          "usage":"<name><content>",
+          "info":"Oluşturur veya bir etiket sağlanan adı ve içeriği düzenler. Başkaları tarafından yapılan herhangi bir etiket değiştirmez."
         },
         "delete":{
-          "usage":"",
-          "info":""
+          "usage":"<name>",
+          "info":"Size ait bir etiketi siler."
         },
         "rename":{
-          "usage":"",
-          "info":""
+          "usage":"<name> <new name>",
+          "info":"Size ait bir etiketi yeniden adlandırır."
         },
         "raw":{
-          "usage":"",
-          "info":""
+          "usage":"<name>",
+          "info":"Bir etiket ham kodu alır."
         },
         "info":{
-          "usage":"",
-          "info":""
+          "usage":"<name>",
+          "info":"Bir etiketi hakkındaki bilgileri görüntüler."
         },
         "transfer":{
-          "usage":"",
-          "info":""
+          "usage":"<name><user>",
+          "info":"Bir etiketi belirtilen kullanıcıya aktarır. Değişkenleri aktarılmaz."
         },
         "top":{
-          "info":""
+          "info":"En çok beğenilen olmuştur etiketleri görüntüler."
         },
         "author":{
-          "usage":"",
-          "info":""
+          "usage":"<name>",
+          "info":"Görüntüler bir etiketi yazar."
         },
         "search":{
           "usage":"",
@@ -174,18 +174,18 @@
           "info":""
         },
         "end":{
-          "info":""
+          "info":"Bir sefer biter!"
         },
         "locations":{
-          "info":""
+          "info":"Sefer konumları listeler."
         }
       },
-      "stats":"",
-      "alreadystarted":"",
-      "notstarted":"",
-      "nolocation":"",
-      "invalidlocation":"",
-      "expeditionbeings":"",
+      "stats":"<:bc_cat:345081695990710272> işte senin konular! \n\n{{stats}}",
+      "alreadystarted":"Bir sefer devam ediyor!",
+      "notstarted":"Bir sefer başlamadım!",
+      "nolocation":"Üzgünüz, bu geçerli bir konum değil. Şu anda ziyaret edebilirsiniz yerlerdir:\n\n{{locations}}",
+      "invalidlocation":"Tuhaf bir şey oldu. Artık keşfediyorlardı yerin var! Lütfen başka bir sefer başlatın.",
+      "expeditionbeings":"<:bc_cat:345081695990710272> arama başlar! <:bc_cat:345081695990710272> \n\nyeri: {{location}} \n\nLütfen onay geri daha sonra 'gamatoto end' yaparak!",
       "expeditionends":"",
       "notimeelapsed":"",
       "itemfound":"",
