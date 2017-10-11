@@ -7,6 +7,9 @@
     "bbtag":"BBTag",
     "subtags":"Biçiminde"
   },
+  "generic":{
+    "loading":""
+  },
   "index":{
     "desc":"blargbot kalite komutları ve chatlogs ve derinlemesine özel komut sistemi gibi hizmetler sunmak için adanmış çok amaçlı bir anlaşmazlık bot olduğunu.",
     "commands":{
@@ -47,6 +50,15 @@
     "arrays":{
       "title":"",
       "desc":""
+    }
+  },
+  "subtags":{
+    "components":{
+      "argument":"",
+      "named":"",
+      "array":"",
+      "staff":"",
+      "noimplicit":""
     }
   }
 }
