@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:04
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-07-17 09:03:37
+ * @Last Modified time: 2017-10-12 14:07:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -38,16 +38,14 @@ router.get('/editor', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/tags' + req.path;
 
-    res.locals.startText = `{//;Start by typing an opening brace.
-Documentation is available here: https://blargbot.xyz/tags/ }`;
+    res.locals.startText = ``;
     renderEditor(req, res);
 });
 
 router.post('/editor', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/tags' + req.path;
-    res.locals.startText = `{//;Start by typing an opening brace.
-Documentation is available here: https://blargbot.xyz/tags/ }`;
+    res.locals.startText = ``;
     renderEditor(req, res);
 });
 
@@ -258,6 +256,7 @@ async function renderEditor(req, res) {
                 break;
         }
     }
+    res.locals.startText = JSON.stringify(res.locals.startText);
     res.render('editor');
 }
 

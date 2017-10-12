@@ -128,6 +128,7 @@
                                     ],
                                     meta: {}
                                 });
+                              
                             </script>
                             <style>
                                 .CodeMirror {
@@ -196,6 +197,10 @@
                                 </div>
                                 <textarea id="yayEditor" style="height: 100%; font-size: 20px" name='content'>{{startText}}</textarea>
                                 <script> 
+                                    let teditor = document.getElementById('yayEditor');
+                                    if (teditor.innerText === '') {
+                                        teditor.innerText = {{{startText}}} || localStorage.content || '{//;Start by typing an opening brace.\nDocumentation is available here: https://blargbot.xyz/tags/ }';
+                                    }
                                     var words = {{#tagseditor}}{{/tagseditor}};
                                     words.length--;
                                     var editor = CodeMirror.fromTextArea(document.getElementById("yayEditor"), {
@@ -213,12 +218,12 @@
                                             words: words
                                         }
                                     });
-
                                     editor.on("inputRead", function (editor, change) {
                                         if (change.text[0] == '{') {
                                             editor.showHint();
                                         }
                                         editor.save();
+                                        localStorage.content = editor.getValue();
                                     });
 
                                     function setFontSize(val) {
