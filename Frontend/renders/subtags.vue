@@ -38,7 +38,9 @@
                     <ul>
                         <li v-for='key in keys' :key='key'>
                             <div v-if='filteredSubtags(key).length > 0'>
-                                <h3>{{key}}</h3>
+                                <div class='blue-grey darken-3 categoryHeader z-depth-2'>
+                                    <h3>{{key}}</h3>
+                                </div>
                                 <ul class='collapse'>
                                     <li v-for='(subtag, index) in filteredSubtags(key)' :key='subtag.name' :id='key + "." + subtag.name' :class='subtag.active ? "active" : ""'>
                                         <div class='collapse-header' v-on:click='toggle(key, index)'>{{subtag.name}}</div>
@@ -185,5 +187,9 @@ export default {
 <style scoped>
 .loading {
     padding: 30px;
+}
+
+.categoryHeader {
+    padding: 15px;
 }
 </style>

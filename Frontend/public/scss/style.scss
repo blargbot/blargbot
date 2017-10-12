@@ -59,6 +59,7 @@ nav {
 }
 
 .collapse li {
+    @extend .z-depth-1;
     margin: 15px 0;
     display: block;
 }
