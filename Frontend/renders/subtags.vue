@@ -74,7 +74,7 @@ export default {
         filteredSubtags(key) {
             return this.subtags[key].filter(s => {
                 if (this.filter === '') return true;
-                return `${key}.${s.name}`.includes(this.filter.toLowerCase());
+                return `${key}.${s.name}`.includes((this.filter || '').toLowerCase());
             });
         },
         collapseAll() {
