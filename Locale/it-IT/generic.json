@@ -1,5 +1,5 @@
 {
-  "output":"",
+  "output":"Output:\n{{output}}",
   "nooutput":"Nessun output...",
   "queryexpire":"La richiesta scadrà in {{length}} minuti.",
   "resolveuser":{
@@ -23,13 +23,13 @@
   "nochange":"Non è stato cambiato niente.",
   "commandhelp":"**Nome comando**: **__{{name}}__**\n\n**__Utilizzo__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Alias__**\n{{aliases}}",
   "example":{
-    "id1":"",
-    "id2":"",
-    "id3":""
+    "id1":"111111111111111111",
+    "id2":"222222222222222222",
+    "id3":"333333333333333333"
   },
-  "test":"",
+  "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
   "querycancelled":"The query has been cancelled.",
-  "user":"",
-  "role":"",
-  "channel":""
+  "user":"Utente",
+  "role":"Ruolo",
+  "channel":"Canale"
 }
