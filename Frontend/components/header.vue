@@ -14,7 +14,7 @@
                             <router-link to='/bbtag'>{{$t('website.header.bbtag')}}</router-link>
                         </li>
                         <li>
-                            <router-link to='/bbtag/subtags'>{{$t('website.header.subtags')}}</router-link>
+                            <router-link to='/subtags'>{{$t('website.header.subtags')}}</router-link>
                         </li>
                         <li class='login'>
                             <div v-if='$store.state.user == undefined'>
