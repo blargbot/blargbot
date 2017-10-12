@@ -291,48 +291,48 @@
       "commandinfo":"**Comando: {{name}}**\n\n**Aliases**: {{aliases}}\n**Utilizzo**: {{usage}}\n\n{{description}}"
     },
     "ccommand":{
-      "info":"",
-      "usage":"",
+      "info":"I CCommands sono un sistema di comandi personalizzati che i moderatori possono creare per i loro utente, usando il linguaggio BBTag.\n\n**Sottocomandi**:\n{{subcommands}}\n\nPer maggiori informazioni riguardo un sottocomando, scrivi `b!t help <sottocomando>`\nPer maggiori informazioni rigardo BBTag, visita <https://blargbot.xyz/tags>.",
+      "usage":"<sottocomando> [args]",
       "subcommand":{
         "set":{
-          "usage":"",
-          "info":""
+          "usage":"<nome> <contenuto>",
+          "info":"Crea o modifica un comando personalizzato con il nome e contenuto forniti. Non rimpiazzerà tag create da qualcun altro."
         },
         "delete":{
-          "usage":"",
-          "info":""
+          "usage":"<nome>",
+          "info":"Elimina un comando personalizzato."
         },
         "rename":{
-          "usage":"",
-          "info":""
+          "usage":"<nome><nuovo nome>",
+          "info":"Rinomina un comando personalizzato."
         },
         "author":{
-          "usage":"",
-          "info":""
+          "usage":"<nome>",
+          "info":"Restituisce l'autore del comando personalizzato."
         },
         "transfer":{
-          "usage":"",
-          "info":""
+          "usage":"<nome> <utente>",
+          "info":"Trasferisce la proprietà di un comando personalizzato a qualcun altro. Deve acconsentire."
         },
         "list":{
-          "info":""
+          "info":"Mostra tutti i comandi personalizzati della gilda."
         },
         "test":{
-          "usage":"",
-          "info":""
+          "usage":"<codice>",
+          "info":"Esegue il codice tenendo in considerazione il tuo account."
         },
         "help":{
-          "usage":"",
-          "info":""
+          "usage":"[subcommand]",
+          "info":"Visualizza questo!"
         }
       },
-      "dontown":"",
-      "notag":"",
-      "tagset":"",
-      "tagrename":"",
-      "raw":"",
-      "alreadyexists":"",
-      "testoutput":""
+      "dontown":"[[emote.x]] Non possiedi quel comando personalizzato!",
+      "notag":"[[emote.x]] Non c'è alcun comando personalizzato con quel nome.",
+      "tagset":"[[emote.check]] Comando personalizzato `{{name}}` {{process}}!",
+      "tagrename":"[[emote.check]] Il comando personalizzato `{{old}}` è stato rinominato come `{{new}}`",
+      "raw":"Il codice per {{name}} è:\\n```{{code}}```",
+      "alreadyexists":"Esiste già un comando personalizzato con quel nome.",
+      "testoutput":"Test Output:\\n\\n{{output}}"
     }
   }
 }
