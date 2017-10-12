@@ -174,7 +174,9 @@ export default {
             this.keys = keys;
             let subtags = res.data;
             for (const key of this.keys) {
-                subtags[key].sort();
+                subtags[key].sort((a, b) => {
+                    return a.name > b.name ? 1 : -1
+                });
             }
             this.subtags = subtags;
         }).catch(err => {
