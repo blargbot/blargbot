@@ -10,10 +10,10 @@
   "generic":{
     "loading":"Indlæser",
     "collapse":"Skjul alle",
-    "expand":"",
-    "search":"",
-    "noresults":"",
-    "resultsfound":""
+    "expand":"Udvid alle",
+    "search":"Filter...",
+    "noresults":"Åh nej! Der kunne ikke blive fundet noget resultat.",
+    "resultsfound":"Tilsvarende resultater:"
   },
   "index":{
     "desc":"blargbot er en multifunktionel Discord bot dedikeret til at levere kvalitets kommandoer og tjenester, herunder chatlogs og et dybdegående brugerdefinerede kommando system.",
@@ -61,10 +61,10 @@
     "components":{
       "argument":"Argumenter:",
       "named":"",
-      "array":"",
-      "staff":"",
+      "array":"Understøtter arrays",
+      "staff":"Kræver forfatter er personale",
       "noimplicit":""
     },
-    "referdocs":""
+    "referdocs":"Der henvises til [documentation](/bbtag) for at få flere instrukser for benyttelse."
   }
 }
