@@ -65,7 +65,6 @@
             "staff": "Requires author to be staff",
             "noimplicit": "Does not support implicit classing"
         },
-        "subtags": "SubTags",
-        "referdocs": "Please refer to the documentation for more usage instructions."
+        "referdocs": "Please refer to the [documentation](/bbtag) for more usage instructions."
     }
 }

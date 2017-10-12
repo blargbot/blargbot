@@ -33,6 +33,13 @@ footer, header {
     @extend .z-depth-1;
 }
 
+main a {
+    @extend .teal-text.text-accent-2;
+}
+main a:hover {
+    @extend .teal-text.text-accent-1;
+}
+
 nav {
     @extend .blue-grey.darken-2;
 }

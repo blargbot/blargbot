@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>SubTags</h1>
-        <p>{{$t('website.subtags.referdocs')}}</p>
+        <vue-markdown :source='$t("website.subtags.referdocs")'></vue-markdown>
         <div v-if='Object.keys(subtags).length === 0'>
             <div class='center loading'>
                 <h1>{{$t('website.generic.loading')}}</h1>
