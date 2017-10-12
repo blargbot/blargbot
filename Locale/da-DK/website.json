@@ -8,7 +8,12 @@
     "subtags":"SubTags"
   },
   "generic":{
-    "loading":""
+    "loading":"",
+    "collapse":"",
+    "expand":"",
+    "search":"",
+    "noresults":"",
+    "resultsfound":""
   },
   "index":{
     "desc":"blargbot er en multifunktionel Discord bot dedikeret til at levere kvalitets kommandoer og tjenester, herunder chatlogs og et dybdegående brugerdefinerede kommando system.",
@@ -59,6 +64,8 @@
       "array":"",
       "staff":"",
       "noimplicit":""
-    }
+    },
+    "subtags":"",
+    "referdocs":""
   }
 }
