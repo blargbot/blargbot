@@ -1,5 +1,7 @@
 <template>
     <div>
+        <h1>SubTags</h1>
+        <p>{{$t('website.subtags.referdocs')}}</p>
         <div v-if='Object.keys(subtags).length === 0'>
             <div class='center loading'>
                 <h1>{{$t('website.generic.loading')}}</h1>
@@ -8,18 +10,44 @@
         </div>
         <div v-else>
             <div class='row'>
-                <div class='col s12 m10 offset-m1'>
+                <div class='col s12 m12'>
+                    <div class='row'>
+                        <div class='input-field col s12'>
+                            <input id='search' type='text' class='validate' v-model='filter'>
+                            <label for='search'>{{$t('website.generic.search')}}</label>
+                        </div>
+                        <div class='col s12 m6'>
+                            <button class='waves-effect waves-light btn full' v-on:click='expandAll()'>
+                                {{$t('website.generic.expand')}}
+                            </button>
+                        </div>
+                        <div class='col s12 m6'>
+                            <button class='waves-effect waves-light btn full' v-on:click='collapseAll()'>
+                                {{$t('website.generic.collapse')}}
+                            </button>
+                        </div>
+                    </div>
+                    <div v-if='filter !== ""'>
+                        <p v-if='totalCount === 0' class='flow-text center'>
+                            {{$t('website.generic.noresults')}}
+                        </p>
+                        <p v-else class='flow-text center'>
+                            {{$t('website.generic.resultsfound') + ' ' + totalCount}}
+                        </p>
+                    </div>
                     <ul>
-                        <li v-for='(value, key) in subtags' :key='key'>
-                            <h2>{{key}}</h2>
-                            <ul class='collapse' data-collapsible='accordion'>
-                                <li v-for='(subtag, name) in value' :key='subtag.name' :class='subtag.active ? "active" : ""'>
-                                    <div class='collapse-header' v-on:click='toggle(key, name)' :class='subtag.active ? "active" : ""'>{{subtag.name}}</div>
-                                    <div class='collapse-body'>
-                                        <vue-markdown :source='format(subtag)'></vue-markdown>
-                                    </div>
-                                </li>
-                            </ul>
+                        <li v-for='key in keys' :key='key'>
+                            <div v-if='filteredSubtags(key).length > 0'>
+                                <h3>{{key}}</h3>
+                                <ul class='collapse'>
+                                    <li v-for='(subtag, index) in filteredSubtags(key)' :key='subtag.name' :id='key + "." + subtag.name' :class='subtag.active ? "active" : ""'>
+                                        <div class='collapse-header' v-on:click='toggle(key, index)'>{{subtag.name}}</div>
+                                        <div class='collapse-body'>
+                                            <vue-markdown :linkify='false' :source='format(subtag)'></vue-markdown>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -36,18 +64,66 @@ import spinner from '../components/spinner.vue';
 
 export default {
     data: () => ({
-        subtags: {}
+        subtags: {},
+        keys: [],
+        filter: ''
     }),
     methods: {
-        toggle(key, name) {
-            let subtag = this.subtags[key][name];
-            if (subtag.active)
+        filteredSubtags(key) {
+            return this.subtags[key].filter(s => {
+                if (this.filter === '') return true;
+                return `${key}.${s.name}`.includes(this.filter.toLowerCase());
+            });
+        },
+        collapseAll() {
+            for (const key in this.subtags) {
+                let filtered = this.filteredSubtags(key);
+                for (const index in filtered) {
+                    let subtag = filtered[index];
+                    if (subtag.active) {
+                        subtag.active = false;
+                        let body = document.getElementById(`${key}.${subtag.name}`).children[1];
+                        $(body).slideUp();
+                        this.$set(this.subtags[key], this.subtags[key].indexOf(subtag), subtag)
+                    }
+                }
+            }
+        },
+        expandAll() {
+            for (const key in this.subtags) {
+                let filtered = this.filteredSubtags(key);
+                for (const index in filtered) {
+                    let subtag = filtered[index];
+                    if (!subtag.active) {
+                        subtag.active = true;
+                        let body = document.getElementById(`${key}.${subtag.name}`).children[1];
+                        $(body).slideDown();
+                        this.$set(this.subtags[key], this.subtags[key].indexOf(subtag), subtag)
+                    }
+                }
+            }
+        },
+        toggle(key, index) {
+            let subtag = this.filteredSubtags(key)[index];
+            let element = document.getElementById(`${key}.${subtag.name}`);
+            let body = element.children[1];
+
+            if (subtag.active) {
+                $(body).slideUp();
                 subtag.active = false;
-            else subtag.active = true;
-            this.$set(this.subtags[key], name, subtag);
+            } else {
+                $(body).slideDown();
+                subtag.active = true;
+            }
+            this.$set(this.subtags[key], this.subtags[key].indexOf(subtag), subtag);
         },
         format(subtag) {
             let output = [];
+            if (subtag.category === 'general') {
+                output.push(`#### ${subtag.name}`)
+            } else {
+                output.push(`#### ${subtag.category}.${subtag.name}`)
+            }
             if (subtag.args)
                 output.push(`> ${this.$t('website.subtags.components.argument')} \`${subtag.args}\``);
             if (subtag.named)
@@ -67,9 +143,38 @@ export default {
     components: {
         card, VueMarkdown, spinner
     },
+    computed: {
+        totalCount() {
+            return this.keys.reduce((a, c) => {
+                return a + this.filteredSubtags(c).length;
+            }, 0);
+        }
+    },
     mounted() {
+        this.filter = this.$route.params.name;
         axios.get('/api/subtags').then(res => {
-            this.subtags = res.data;
+            let keys = Object.keys(res.data);
+            let order = ['general', 'array', 'math', 'logic'].reverse();
+            keys.sort((a, b) => {
+                let c = 0;
+                if (order.includes(a)) {
+                    let index = order.indexOf(a) + 2;
+                    c += 10 ** index;
+                }
+                if (order.includes(b)) {
+                    let index = order.indexOf(b) + 2;
+                    c -= 10 ** index;
+                }
+                if (c === 0) c = a < b ? 1 : -1;
+                return c;
+            });
+            keys = keys.reverse();
+            this.keys = keys;
+            let subtags = res.data;
+            for (const key of this.keys) {
+                subtags[key].sort();
+            }
+            this.subtags = subtags;
         }).catch(err => {
             console.error(err);
         });

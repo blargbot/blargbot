@@ -27,6 +27,8 @@ class SetTag extends Array {
 
         return res;
     }
+    get implicit() { return false; }
+
 }
 
 module.exports = SetTag;

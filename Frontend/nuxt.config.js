@@ -32,7 +32,7 @@ module.exports = {
                         name: 'Escaper', path: '/escaper',
                         component: resolve(__dirname, 'renders/escape.vue')
                     }, {
-                        name: 'SubTags', path: '/subtags',
+                        name: 'SubTags', path: '/subtags/:name?',
                         component: resolve(__dirname, 'renders/subtags.vue')
                     }
                 ]

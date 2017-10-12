@@ -47,6 +47,7 @@ nav {
     cursor: pointer;
     padding: 15px;
     margin: 0;
+    font-size: 1.3em;
 }
 .collapse {
     border: 0px;
@@ -62,16 +63,8 @@ nav {
     display: block;
 }
 .collapse li .collapse-body {
-    padding: 0 15px;
-    margin: 0;
-    height: 0;
-    overflow: hidden;
-    transition: .6s ease;
-}
-.collapse li.active .collapse-body {
-    height: auto;
     padding: 15px;
-    transition: .6s ease;        
+    display: none;
 }
 
 .allcaps {

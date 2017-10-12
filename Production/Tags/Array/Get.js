@@ -22,6 +22,8 @@ class GetTag extends Array {
 
         return res.setContent(arr[index]);
     }
+    get implicit() { return false; }
+
 }
 
 module.exports = GetTag;
