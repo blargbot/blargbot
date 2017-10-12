@@ -29,7 +29,7 @@ class ApiRoute {
             const res = await superagent.get('https://catfact.ninja/fact');
             this.info.cat = res.body.fact;
         }
-        return this.info.fact;
+        return this.info.cat;
     }
     async getInfo(name, code) {
         if (this.info[name] === '' || this.lastTime[name] !== moment().format('DDD-HH')) {
