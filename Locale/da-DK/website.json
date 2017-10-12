@@ -8,8 +8,8 @@
     "subtags":"SubTags"
   },
   "generic":{
-    "loading":"",
-    "collapse":"",
+    "loading":"Indlæser",
+    "collapse":"Skjul alle",
     "expand":"",
     "search":"",
     "noresults":"",
@@ -59,7 +59,7 @@
   },
   "subtags":{
     "components":{
-      "argument":"",
+      "argument":"Argumenter:",
       "named":"",
       "array":"",
       "staff":"",
