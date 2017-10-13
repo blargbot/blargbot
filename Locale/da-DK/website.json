@@ -60,10 +60,10 @@
   "subtags":{
     "components":{
       "argument":"Argumenter:",
-      "named":"",
+      "named":"Understøtter navngivne argumenter",
       "array":"Understøtter arrays",
       "staff":"Kræver forfatter er personale",
-      "noimplicit":""
+      "noimplicit":"Understøtter ikke implicit klassificering"
     },
     "referdocs":"Der henvises til [documentation](/bbtag) for at få flere instrukser for benyttelse."
   }
