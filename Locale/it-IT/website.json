@@ -43,9 +43,9 @@
     }
   },
   "bbtag":{
-    "main":"",
+    "main":"# BBTag\n> Non deve essere confuso con il BBCode!\n\nBBTag è un linguaggio template-based, costruito per fornire un framework potente per creare comandi personalizzati avanzati.\n\n### Terminologia\n\n- Una `tag` si riferisce ad un blocco del codice BBTag, non importa se è una tag pubblica o un comando personalizzato.\n- Una `sottotag` (subtag) si riferisce ad un componente BBTag. `tags` avanzate sono composte da molte `sottotag`.\n- Una `classe` (class) si riferisce ad un gruppo di`sottotag`.",
     "subtags":{
-      "title":"",
+      "title":"Sottotags",
       "desc":""
     },
     "variables":{
