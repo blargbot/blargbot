@@ -50,7 +50,7 @@
     },
     "variables":{
       "title":"Variabler",
-      "desc":""
+      "desc":"## Variabler\n\nBBTag kommer med flere typer af variabler, hver med sit eget scope. Disse variabler kan bruges i adskillige handlinger og funktioner.\n\n### Navne\n\nNavnet på et variable består af to dele: et `prefix` og et `name`. Her er et diagram over syntaxen:\n\n> `[prefix]name`\n\nEnkelt, ikke sandt?\n\n### Scopes\n\nEt **scope** henviser til der hvor du kan få adgang kan få adgang til variabler fra, og hvor lang tid de holder. Det at vide hvilket scope der skal bruges kan være en stor hjælp til at skabe tags!\n\nEn anden måde at se på scopes er hvor de er *stored*."
     },
     "arrays":{
       "title":"Arrays",
