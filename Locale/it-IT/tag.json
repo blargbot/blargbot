@@ -74,7 +74,7 @@
       "desc":"Pulisce il testo fornito togliendo tutti gli spazi bianchi."
     },
     "comment":{
-      "desc":""
+      "desc":"Specifica un area che non verrà analizzata"
     },
     "get":{
       "desc":"Restituisce la variabile con il nome fornito. I prefissi possono modificare il pool (area) dove cercare."
