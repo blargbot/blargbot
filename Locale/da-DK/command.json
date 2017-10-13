@@ -204,20 +204,20 @@
       "subcommand":{
         "add":{
           "usage":"<prefix>",
-          "info":""
+          "info":"Tilføjer et præfiks til din liste."
         },
         "remove":{
           "usage":"<prefix>",
-          "info":""
+          "info":"Fjerner et præfiks fra din liste."
         }
       },
       "prefixlist":"",
       "userprefixes":"Her er dine præfikser:\n```md\n{{userprefixes}}\n```",
-      "guildprefixes":"",
-      "noprefixes":"",
-      "defaultprefixes":"",
-      "prefixadded":"",
-      "prefixremoved":"",
+      "guildprefixes":"Her er præfikserne i denne server: ' ' 'md\n{{guildprefixes}} \n' ' '",
+      "noprefixes":"Du har ingen brugerdefinerede præfikser.",
+      "defaultprefixes":"Du kan altid bruge disse præfikser:\n{{prefixes}}",
+      "prefixadded":"Dette præfiks er blevet tilføjet!",
+      "prefixremoved":"Dette præfiks er blevet fjernet!",
       "nothingchanged":"Intet blev ændret."
     }
   },
@@ -240,7 +240,7 @@
     "setup":{
       "staff":{
         "setrole":"Personale-roller er blevet opdateret.",
-        "rolequery":""
+        "rolequery":"Vælg de roller, der vil blive betragtet som moderator roller. Brugere med disse roller vil være i stand til at bruge admin-kommandoer."
       },
       "info":"Konfigurerer forskellige indstillinger.",
       "subcommand":{
