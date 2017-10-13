@@ -34,9 +34,9 @@ const operators = {
     '>': (a, b) => a > b,
     '<=': (a, b) => a <= b,
     '<': (a, b) => a < b,
-    'startswith': (a, b) => a.startsWith(b),
-    'endswith': (a, b) => a.endsWith(b),
-    'includes': (a, b) => a.includes(b)
+    'startswith': (a, b) => a.toString().startsWith(b.toString()),
+    'endswith': (a, b) => a.toString().endsWith(b.toString()),
+    'includes': (a, b) => a.toString().includes(b.toString())
 };
 
 e.execute = async function (params) {
