@@ -40,7 +40,7 @@
       "desc":""
     },
     "splice":{
-      "desc":""
+      "desc":"Startende fra position 'start', fjerner 'deleteCount' elementer fra matrixen og tilføjer de resterende elementer i denne stilling. Returnerer de fjernede elementer."
     },
     "split":{
       "desc":"Splitter `teksten` ved `skilletegnet`, og returnerer det nye array."
@@ -203,13 +203,13 @@
       "desc":""
     },
     "mention":{
-      "desc":""
+      "desc":"Nævner den angivne bruger, misligholdende til den fuldbyrdende bruger."
     },
     "name":{
       "desc":""
     },
     "nick":{
-      "desc":""
+      "desc":"Returnerer kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
     },
     "roles":{
       "desc":""
