@@ -204,20 +204,20 @@
       "subcommand":{
         "add":{
           "usage":"<prefix>",
-          "info":"Tilføjer et præfix til din liste."
+          "info":""
         },
         "remove":{
           "usage":"<prefix>",
-          "info":"Fjerner et præfix fra din liste."
+          "info":""
         }
       },
       "prefixlist":"",
       "userprefixes":"Her er dine præfikser:\n```md\n{{userprefixes}}\n```",
       "guildprefixes":"",
-      "noprefixes":"Du har ingen brugerdefinerede præfikser.",
+      "noprefixes":"",
       "defaultprefixes":"",
-      "prefixadded":"Dette præfiks er blevet tilføjet!",
-      "prefixremoved":"Dette præfiks er blevet fjernet!",
+      "prefixadded":"",
+      "prefixremoved":"",
       "nothingchanged":"Intet blev ændret."
     }
   },
