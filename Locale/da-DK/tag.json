@@ -106,7 +106,7 @@
       "desc":""
     },
     "id":{
-      "desc":""
+      "desc":"Returnerer ID'ET på den nuværende server."
     },
     "name":{
       "desc":"Returnerer navnet på den aktuelle guild."
