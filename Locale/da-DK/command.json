@@ -315,7 +315,7 @@
           "info":"Overfører ejerskab over en brugerdefineret kommando til en anden person. Der skal være givet samtykke først."
         },
         "list":{
-          "info":""
+          "info":"Viser de brugerdefinerede kommandoer i serveren."
         },
         "test":{
           "usage":"<code>",
