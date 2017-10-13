@@ -1,26 +1,26 @@
 {
   "events":{
-    "kick":"",
-    "ban":"",
-    "unban":"",
-    "mute":"",
-    "unmute":"",
-    "warn":"",
-    "pardon":"",
-    "rename":"",
-    "specialroleadd":"",
-    "specialroleremove":""
+    "kick":"Espulso",
+    "ban":"Bandito",
+    "unban":"Rimosso ban",
+    "mute":"Mutato",
+    "unmute":"Smutato",
+    "warn":"Avvertimento",
+    "pardon":"Perdonato",
+    "rename":"Rinominato",
+    "specialroleadd":"Ruolo speciale aggiunto",
+    "specialroleremove":"Ruolo speciale rimosso"
   },
-  "case":"",
-  "setreason":"",
+  "case":"{{icon}} Caso {{number}}: {{event}}",
+  "setreason":"Responsabile moderatore, digita `reason {{number}}` per impostare il motivo.",
   "warnings":{
-    "given":"",
-    "removed":"",
-    "total":""
+    "given":"Avvertimenti aggiunti",
+    "removed":"Avvertimenti rimossi",
+    "total":"Nuovo totale"
   },
   "rename":{
-    "old":"",
-    "new":""
+    "old":"Vecchio Nome",
+    "new":"Nuovo Nome"
   },
-  "duration":""
+  "duration":"Durata"
 }
