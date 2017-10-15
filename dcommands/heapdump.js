@@ -51,7 +51,7 @@ e.execute = async function (msg, words) {
                             inline: true
                         }],
                         timestamp: dep.moment(dep.moment() + interval),
-                        footer: 'Next Dump'
+                        footer: { text: 'Next Dump' }
                     }]
                 });
                 i++;
