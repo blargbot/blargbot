@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-07-13 15:01:49
+ * @Last Modified time: 2017-10-15 14:31:30
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -187,13 +187,7 @@ bu.send = async function (channel, message, file, embed) {
     try {
         return await bot.createMessage(channelid, content, file);
     } catch (err) {
-        if (channelid == '250859956989853696') {
-            bot.createMessage('250859956989853696', 'An error occurred logging an error: \n' + err.stack);
-            logger.error(err);
-            logger.info(content);
-            return;
-        };
-        let warnMsg;
+
         try {
             let response;
             if (err.response)
@@ -201,7 +195,6 @@ bu.send = async function (channel, message, file, embed) {
             else {
                 response = {};
             }
-            logger.debug(response);
             let dmMsg;
             switch (response.code) {
                 case 10003:
@@ -254,108 +247,8 @@ bu.send = async function (channel, message, file, embed) {
                     bu.sendDM(channel.author.id, dmMsg + '\nGuild: ' + channel.guild.name + '\nChannel: ' + channel.channel.name + '\nCommand: ' + channel.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
                 }
             }
-            if (warnMsg) logger.warn(warnMsg, response);
-            if (/^\s$/.test(content.content)) content.content == undefined;
-            if (channel instanceof dep.Eris.Message) {
-                bu.send('250859956989853696', {
-                    content: " ",
-                    embed: {
-                        title: response.code + ' - ' + response.message,
-                        color: warnMsg ? 0xe27900 : 0xAD1111,
-                        description: warnMsg || err.stack,
-                        timestamp: dep.moment(channel.timestamp),
-                        author: {
-                            name: bu.getFullName(channel.author),
-                            icon_url: channel.author.avatarURL,
-                            url: `https://blargbot.xyz/user/${channel.author.id}`
-                        },
-                        footer: {
-                            text: `MSG: ${channel.id}`
-                        },
-                        fields: [{
-                            name: channel.guild ? channel.guild.name : 'DM',
-                            value: channel.guild ? channel.guild.id : 'null',
-                            inline: true
-                        }, {
-                            name: channel.channel.name || 'DM',
-                            value: channel.channel.id,
-                            inline: true
-                        }, {
-                            name: 'Full Command',
-                            value: channel.content || 'empty',
-                            inline: true
-                        }, {
-                            name: 'Content',
-                            value: content.content || 'empty'
-                        }]
-                    }
-                });
-
-            } else {
-                let channel = bot.getChannel(channelid);
-                bu.send('250859956989853696', {
-                    content: " ",
-                    embed: {
-                        title: response.code + ' - ' + response.message,
-                        color: warnMsg ? 0xe27900 : 0xAD1111,
-                        description: warnMsg || err.stack,
-                        timestamp: dep.moment(),
-                        fields: [{
-                            name: channel.guild ? channel.guild.name : 'DM',
-                            value: channel.guild ? channel.guild.id : 'null',
-                            inline: true
-                        }, {
-                            name: channel.name || 'DM',
-                            value: channel.id,
-                            inline: true
-                        }, {
-                            name: 'Content',
-                            value: content.content || 'empty'
-                        }]
-                    }
-                });
-            }
-            return null;
         } catch (err2) {
-            logger.error(err2);
-            let errEmbed = {
-                title: err.message.split('\n')[0],
-                description: err.stack,
-                fields: [{
-                    name: 'response',
-                    value: err.response || "null",
-                    inline: true
-                }, {
-                    name: 'channel',
-                    value: channelid,
-                    inline: true
-                }],
-                color: 0x00aa55
-            };
-            let channel = bot.getChannel(channelid);
-            if (channel) {
-                errEmbed.fields[1].name = channel.name;
-                errEmbed.fields.splice(1, 0, {
-                    name: channel.guild ? channel.guild.name : 'DM',
-                    value: channel.guild ? channel.guild.id : 'DM',
-                    inline: true
-                });
-            }
-            errEmbed.fields.push({
-                name: 'content',
-                value: content.content || 'empty'
-            });
-            errEmbed.fields.push({
-                name: 'embed',
-                value: content.embed ? JSON.stringify(content.embed) : 'none'
-            });
-            logger.debug('aaa', errEmbed, embed);
-            bu.send('250859956989853696', {
-                embed: errEmbed
-            });
-
-            if (err2.throwOriginal) throw err;
-
+            // no-op
         }
     }
 };
