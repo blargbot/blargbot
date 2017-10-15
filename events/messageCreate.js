@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-08-02 13:55:08
+ * @Last Modified time: 2017-10-14 18:50:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -492,7 +492,7 @@ async function handleRoleme(msg, storedGuild) {
 
 async function handleBlacklist(msg, storedGuild, prefix) {
     let blacklisted;
-    if (msg.guild && storedGuild.channels[msg.channel.id])
+    if (msg.guild && storedGuild && storedGuild.channels[msg.channel.id])
         blacklisted = storedGuild.channels[msg.channel.id].blacklisted;
 
     return (blacklisted && !(await bu.isUserStaff(msg.author.id, msg.guild.id)));
