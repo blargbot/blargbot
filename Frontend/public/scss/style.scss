@@ -65,14 +65,15 @@ nav {
     border: 0px;
 }
 
-.collapse li {
+.collapse > li {
     @extend .z-depth-1;
     margin: 15px 0;
     display: block;
 }
-.collapse li .collapse-body {
+.collapse > li .collapse-body {
     padding: 15px;
     display: none;
+    box-sizing: content-box;
 }
 
 .allcaps {

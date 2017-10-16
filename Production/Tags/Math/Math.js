@@ -25,7 +25,7 @@ class MathTag extends Math {
 
     get operators() {
         return [
-            '^', '/', '*', '+', '-', '&', '|', 'xor'
+            '**', '/', '*', '+', '-', '&', '|', '^'
         ];
     }
 

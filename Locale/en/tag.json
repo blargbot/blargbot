@@ -143,7 +143,7 @@
             "desc": "Rounds the provided decimal down."
         },
         "math": {
-            "desc": "Calculates the value of the provided expression using the following operators:\n\n - `^` - exponents\n - `/` - division\n - `*` - multiplication\n - `+` - addition\n - `-` - subtraction\n - `&` - bitwise AND\n - `|` - bitwise OR\n - `XOR` - bitwise XOR\n\nOperators are executed using the Order of Operations (Brackets, Exponents, Division, Multiplication, Addition, Subtraction, Bitwise).\n\nIf an operator isn't specified, it uses the last-used operator (defaulting to addition).\n\nBrackets would be achieved by using another nested {math} tag.\n\nIf an `operand` or `augend` cannot be parsed as a number, a variable with the same name will be retrieved. If the retrieved variable is also not a number, throws an error."
+            "desc": "Calculates the value of the provided expression using the following operators:\n\n - `**` - exponents\n - `/` - division\n - `*` - multiplication\n - `+` - addition\n - `-` - subtraction\n - `&` - bitwise AND\n - `|` - bitwise OR\n - `^` - bitwise XOR\n\nOperators are executed using the Order of Operations (Brackets, Exponents, Division, Multiplication, Addition, Subtraction, Bitwise).\n\nIf an operator isn't specified, it uses the last-used operator (defaulting to addition).\n\nBrackets would be achieved by using another nested {math} tag.\n\nIf an `operand` or `augend` cannot be parsed as a number, a variable with the same name will be retrieved. If the retrieved variable is also not a number, throws an error."
         },
         "parsefloat": {
             "desc": "Attempts to parse the given text as a decimal."
