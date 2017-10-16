@@ -48,9 +48,9 @@ e.init = async function (v, em) {
     bot = new dep.Eris.Client(config.discord.token, {
         autoReconnect: true,
         disableEveryone: true,
+        getAllUsers: true,
         disableEvents: {
             TYPING_START: true,
-            PRESENCE_UPDATE: true,
             VOICE_STATE_UPDATE: true
         },
         maxShards: config.discord.shards || 1,
