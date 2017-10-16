@@ -8,10 +8,10 @@ class MathBaseTag extends Math {
                 {
                     name: 'number'
                 }, {
-                    name: 'radix'
-                }, {
                     name: 'origin',
                     optional: true
+                }, {
+                    name: 'radix'
                 }
             ],
             minArgs: 2, maxArgs: 3

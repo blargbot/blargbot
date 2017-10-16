@@ -6,11 +6,10 @@ class RandIntTag extends Math {
             name: 'randint',
             args: [
                 {
-                    name: 'max'
-                },
-                {
                     name: 'min',
                     optional: true
+                }, {
+                    name: 'max'
                 }
             ],
             minArgs: 1, maxArgs: 2
