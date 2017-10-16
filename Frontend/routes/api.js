@@ -17,7 +17,6 @@ class ApiRoute {
         });
 
         router.get('/subtags', async (req, res) => {
-            console.log('aaa');
             let tags = await this.getInfo('subtags', 'tagList');
             res.end(JSON.stringify(tags));
         });

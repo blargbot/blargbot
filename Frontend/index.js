@@ -31,7 +31,6 @@ class Frontend extends Sender {
     }
 
     async handleMessage(code, data) {
-        console.log(code, data);
         if (code.startsWith('await:')) {
             this.emit(code, data);
         }
