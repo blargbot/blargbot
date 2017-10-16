@@ -111,6 +111,8 @@ class TagBase {
                 for (const arg of args) {
                     if (arg instanceof SubTagArg) {
                         let name = (await ctx.processSub(arg.name)).join('').toLowerCase();
+                        let filtered = this.argList.filter(t => t.name.toLowerCase() === name);
+                        if (filtered.length > 0) name = filtered[0].name;
                         let value = arg.value;
                         namedList.push({ name, value });
                     }
