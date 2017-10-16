@@ -21,9 +21,8 @@ module.exports = {
                     {
                         name: 'blargbot', path: '/',
                         component: resolve(__dirname, 'renders/index.vue')
-                    },
-                    {
-                        name: 'BBTag', path: '/bbtag',
+                    }, {
+                        name: 'BBTag', path: '/bbtag/:name?',
                         component: resolve(__dirname, 'renders/bbtag/index.vue')
                     }, {
                         name: 'Commands', path: '/commands',
