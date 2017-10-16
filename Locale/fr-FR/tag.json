@@ -143,7 +143,7 @@
       "desc":"Arrondis le nombre donné à l'unité inférieure."
     },
     "math":{
-      "desc":"Calcule  l'opération donnée avec les opérateurs suivant:\n\n- `^` - exponents\n- `/` - division\n- `*` - multiplication\n- `+` - addition\n- `-` - substraction\n- `&` - et\n- `|` - ou\n- `XOR` - (vérifie que c'est pas pareil)\n\nles opérateur respectent l'ordre de calcul (parenthèses, exposants, division, multiplication, addition, soustraction, logique (et/ou/xor))\n\nSi l'opérateur n'est pas spécifié, il utilise le dernier opérateur utilisé (l'addition par défaut)\n\nLes parenthèses doivent être finies avec un autre tag {math}.\n\nSi un des `thermes` ne peux pas être reconnu en tant que nombre, cherche un variable du même nom. Si la variable n'est pas un nombre, affiche une erreur."
+      "desc":""
     },
     "parsefloat":{
       "desc":"affiche les nombres décimaux du texte donné."
