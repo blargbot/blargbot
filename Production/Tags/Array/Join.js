@@ -17,7 +17,8 @@ class JoinTag extends Array {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
-        let arr = await this.loadArray(ctx, args[0]);
+        args = args.parsedArgs;
+        let arr = await this.loadArray(ctx, args.array);
         for (let i = 0; i < arr.length; i++) {
             if (arr[i] instanceof this.TagArray) arr[i] = arr[i].toString();
             else if (global.Array.isArray(arr[i])) arr[i] = arr[i].join('');

@@ -18,7 +18,7 @@ class GetTag extends Array {
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
         args = args.parsedArgs;
-        let arr = await this.loadArray(ctx, args.arr);
+        let arr = await this.loadArray(ctx, args.array);
         let index = this.parseInt(args.index, 'index');
 
         return res.setContent(arr[index]);
