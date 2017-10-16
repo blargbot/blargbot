@@ -31,6 +31,7 @@ export default {
                 output.push(`> ${this.$t('website.subtags.components.argument')} \`${subtag.args}\``);
             if (subtag.named)
                 output.push(`> ${this.$t('website.subtags.components.named')}`);
+            else output.push(`> ${this.$t('website.subtags.components.unnamed')}`)
             if (subtag.array)
                 output.push(`> ${this.$t('website.subtags.components.array')}`);
             if (subtag.requiresStaff)

@@ -61,6 +61,7 @@
         "components": {
             "argument": "Arguments:",
             "named": "Supports named arguments",
+            "unnamed": "Does **not** support named arguments",
             "array": "Supports arrays",
             "staff": "Requires author to be staff",
             "noimplicit": "Does not support implicit classing"
