@@ -31,7 +31,7 @@ class MathTag extends Math {
 
     get operations() {
         return {
-            '^': (augend, operands) => {
+            '**': (augend, operands) => {
                 let out = augend;
                 for (const operand of operands) out **= operand;
                 return out;
@@ -66,7 +66,7 @@ class MathTag extends Math {
                 for (const operand of operands) out |= operand;
                 return out;
             },
-            'xor': (augend, operands) => {
+            '^': (augend, operands) => {
                 let out = augend;
                 for (const operand of operands) out ^= operand;
                 return out;
