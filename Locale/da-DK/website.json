@@ -61,6 +61,7 @@
     "components":{
       "argument":"Argumenter:",
       "named":"Understøtter navngivne argumenter",
+      "unnamed":"",
       "array":"Understøtter arrays",
       "staff":"Kræver forfatter er personale",
       "noimplicit":"Understøtter ikke implicit klassificering"
