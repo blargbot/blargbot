@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-04 10:48:23
+ * @Last Modified time: 2017-10-14 18:39:17
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -48,15 +48,16 @@ e.init = async function (v, em) {
     bot = new dep.Eris.Client(config.discord.token, {
         autoReconnect: true,
         disableEveryone: true,
-        disableEvents: {
-            TYPING_START: true
-        },
         getAllUsers: true,
+        disableEvents: {
+            TYPING_START: true,
+            VOICE_STATE_UPDATE: true
+        },
         maxShards: config.discord.shards || 1,
         restMode: true,
         defaultImageFormat: 'png',
         defaultImageSize: 512,
-        messageLimit: 1
+        messageLimit: 0
     });
     global.bot = bot;
 

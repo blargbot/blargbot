@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:21:55
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:21:55
+ * @Last Modified time: 2017-10-15 14:39:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,7 +10,7 @@
 bot.on('guildMemberAdd', async function (guild, member) {
     let val = await bu.guildSettings.get(guild.id, 'greeting');
     let chan = await bu.guildSettings.get(guild.id, 'greetchan');
-    if (val) {
+    if (chan && val) {
         let ccommandContent;
         let author;
         if (typeof val == "object") {
@@ -20,12 +20,12 @@ bot.on('guildMemberAdd', async function (guild, member) {
             ccommandContent = val;
         }
         var message = await tags.processTag({
-            channel: chan ? bot.getChannel(chan) : guild.defaultChannel,
+            channel: bot.getChannel(chan),
             author: member.user,
             member: member,
             guild: guild
         }, ccommandContent, '', undefined, author, true);
-        bu.send(chan || guild.defaultChannel.id, {
+        bu.send(chan, {
             content: message,
             disableEveryone: false
         });

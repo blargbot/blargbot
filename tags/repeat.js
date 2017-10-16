@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:54:06
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:54:06
+ * @Last Modified time: 2017-10-15 14:36:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -48,13 +48,6 @@ e.execute = async function (params) {
             return {
                 terminate: params.terminate,
                 replaceString: await bu.tagProcessError(params, '`Can\'t be negative`'),
-                replaceContent: replaceContent
-            };
-        }
-        if (args2 > 500) {
-            return {
-                terminate: params.terminate,
-                replaceString: await bu.tagProcessError(params, '`Too Many Loops`'),
                 replaceContent: replaceContent
             };
         }

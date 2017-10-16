@@ -14,7 +14,7 @@ e.hidden = false;
 e.usage = 'heapdump [interval (ms)]';
 e.info = 'Does heapdumps.';
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (msg.author.id == bu.CAT_ID) {
         let interval = 1800000;
         if (words[1]) interval = parseInt(words[1]);
@@ -33,9 +33,10 @@ e.execute = async function(msg, words) {
             await bu.send(msg, 'Writing snapshot...');
             heapdump.writeSnapshot(dep.path.join(__dirname, '..', `blargdump${i}.heapsnapshot`), (err, filename) => {
                 let diff = dep.moment.duration(dep.moment() - startTime);
-                bu.send(msg, {
+                // https://canary.discordapp.com/api/webhooks/368920953356288001/
+                bot.executeWebhook('368920953356288001', config.emerg.heap, {
                     content: `${msg.author.mention} Snapshot ${i + 1} complete.`,
-                    embed: {
+                    embeds: [{
                         fields: [{
                             name: 'Errors',
                             value: err ? err.message : 'None',
@@ -48,8 +49,10 @@ e.execute = async function(msg, words) {
                             name: 'Filename',
                             value: filename,
                             inline: true
-                        }]
-                    }
+                        }],
+                        timestamp: dep.moment(dep.moment() + interval),
+                        footer: { text: 'Next Dump' }
+                    }]
                 });
                 i++;
                 if (i == 4) onComplete();

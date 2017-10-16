@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-08-02 13:55:08
+ * @Last Modified time: 2017-10-15 14:24:33
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -91,16 +91,10 @@ async function handleUserMessage(msg, storedGuild) {
         try {
             let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
             if (wasCommand) {
-                logCommand(msg);
+                // logCommand(msg);
 
                 if (msg.guild) {
                     handleDeleteNotif(msg, storedGuild);
-                    if (msg.channel.guild) {
-                        r.table('user').get(msg.author.id).update({
-                            lastcommand: msg.cleanContent,
-                            lastcommanddate: r.epochTime(dep.moment() / 1000)
-                        }).run();
-                    }
                 }
             } else {
                 if (doCleverbot && !msg.author.bot) {
@@ -137,16 +131,12 @@ var processUser = async function (msg) {
             lastspoke: r.epochTime(dep.moment() / 1000),
             lastcommand: null,
             lastcommanddate: null,
-            messagecount: 1,
             discriminator: msg.author.discriminator,
             todo: []
         }).run();
     } else {
-        let newUser = {
-            lastspoke: r.epochTime(dep.moment() / 1000),
-            lastchannel: msg.channel.id,
-            messagecount: storedUser.messagecount + 1
-        };
+        let newUser = {};
+        let update = false;
         if (storedUser.username != msg.author.username) {
             newUser.username = msg.author.username;
             newUser.usernames = storedUser.usernames;
@@ -154,14 +144,18 @@ var processUser = async function (msg) {
                 name: msg.author.username,
                 date: r.epochTime(dep.moment() / 1000)
             });
+            update = true;
         }
         if (storedUser.discriminator != msg.author.discriminator) {
             newUser.discriminator = msg.author.discriminator;
+            update = true;
         }
         if (storedUser.avatarURL != msg.author.avatarURL) {
             newUser.avatarURL = msg.author.avatarURL;
+            update = true;
         }
-        r.table('user').get(msg.author.id).update(newUser).run();
+        if (update)
+            r.table('user').get(msg.author.id).update(newUser).run();
     }
 };
 
@@ -211,10 +205,11 @@ var flipTables = async function (msg, unflip) {
 
 var handleDiscordCommand = async function (channel, user, text, msg) {
     let words = bu.splitInput(text);
+    let outputLog = '';
     if (msg.channel.guild)
-        logger.command(`Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`);
+        outputLog = `Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`;
     else
-        logger.command(`Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`);
+        outputLog = `Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`;
 
     if (msg.author.bot) {
         return false;
@@ -235,10 +230,10 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
         }
 
         if (await bu.canExecuteCcommand(msg, ccommandName, true)) {
+            logger.command(outputLog);
             var command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
             var response = await tags.processTag(msg, ccommandContent, command, ccommandName, author, true);
-            logger.debug(response, msg.channel.id, msg.channel.name);
             if (response !== 'null' && response !== '') {
                 bu.send(msg, {
                     content: response,
@@ -250,46 +245,14 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
     } else {
         if (CommandManager.commandList.hasOwnProperty(words[0].toLowerCase())) {
             let commandName = CommandManager.commandList[words[0].toLowerCase()].name;
-            logger.debug(commandName);
             let val2 = await bu.canExecuteCommand(msg, commandName);
             if (val2[0]) {
                 try {
+                    logger.command(outputLog);
+
                     await executeCommand(commandName, msg, words, text);
                 } catch (err) {
                     logger.error(err.stack);
-                    bu.send('250859956989853696', {
-                        embed: {
-                            title: err.message.toString(),
-                            color: 0xAD1111,
-                            description: err.stack.toString(),
-                            timestamp: dep.moment(msg.timestamp),
-                            author: {
-                                name: bu.getFullName(msg.author),
-                                icon_url: msg.author.avatarURL,
-                                url: `https://blargbot.xyz/user/${msg.author.id}`
-                            },
-                            footer: {
-                                text: `MSG: ${msg.id}`
-                            },
-                            fields: [{
-                                name: msg.guild ? msg.guild.name : 'DM',
-                                value: msg.guild ? msg.guild.id : 'null',
-                                inline: true
-                            }, {
-                                name: msg.channel.name || 'DM',
-                                value: msg.channel.id,
-                                inline: true
-                            }, {
-                                name: 'Command',
-                                value: commandName,
-                                inline: true
-                            }, {
-                                name: 'Complete Command',
-                                value: text,
-                                inline: true
-                            }]
-                        }
-                    });
                 }
             }
             return val2[0];
@@ -300,16 +263,17 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
 };
 var executeCommand = async function (commandName, msg, words, text) {
     // logger.debug(commandName);
-    r.table('stats').get(commandName).update({
-        uses: r.row('uses').add(1),
-        lastused: r.epochTime(dep.moment() / 1000)
-    }).run();
+    // r.table('stats').get(commandName).update({
+    //     uses: r.row('uses').add(1),
+    //     lastused: r.epochTime(dep.moment() / 1000)
+    // }).run();
     if (bu.commandStats.hasOwnProperty(commandName)) {
         bu.commandStats[commandName]++;
     } else {
         bu.commandStats[commandName] = 1;
     }
     bu.commandUses++;
+
     try {
         await CommandManager.list[commandName].execute(msg, words, text);
     } catch (err) {
@@ -407,7 +371,7 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                         let regex = bu.createRegExp(term);
                         if (regex.test(msg.content)) violation = true;
                     } catch (err) { }
-                } else if (msg.content.indexOf(term) > -1) violation = true;
+                } else if (msg.content.toLowerCase().indexOf(term.toLowerCase()) > -1) violation = true;
                 if (violation == true) { // Uh oh, they did a bad!
                     let res = await bu.issueWarning(msg.author, msg.guild, cens.weight);
                     if (cens.weight > 0) {
@@ -420,7 +384,7 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                     try {
                         await msg.delete();
                     } catch (err) {
-                        bu.send(msg, `${bu.getFullName(msg.author)} said a blacklisted word, but I was not able to delete it.`);
+                        // bu.send(msg, `${bu.getFullName(msg.author)} said a blacklisted word, but I was not able to delete it.`);
                     }
                     let message = '';
                     switch (res.type) {
@@ -462,7 +426,7 @@ async function handleRoleme(msg, storedGuild) {
                     content = content.toLowerCase();
                 }
                 if (message == content) {
-                    console.info(`A roleme was triggered > ${msg.guild.name} (${msg.guild.id}) > ${msg.channel.name} (${msg.channel.id}) > ${msg.author.username} (${msg.author.id})`);
+                    // console.info(`A roleme was triggered > ${msg.guild.name} (${msg.guild.id}) > ${msg.channel.name} (${msg.channel.id}) > ${msg.author.username} (${msg.author.id})`);
                     let roleList = msg.member.roles;
                     let add = roleme[i].add;
                     let del = roleme[i].remove;
@@ -492,7 +456,7 @@ async function handleRoleme(msg, storedGuild) {
 
 async function handleBlacklist(msg, storedGuild, prefix) {
     let blacklisted;
-    if (msg.guild && storedGuild.channels[msg.channel.id])
+    if (msg.guild && storedGuild && storedGuild.channels[msg.channel.id])
         blacklisted = storedGuild.channels[msg.channel.id].blacklisted;
 
     return (blacklisted && !(await bu.isUserStaff(msg.author.id, msg.guild.id)));

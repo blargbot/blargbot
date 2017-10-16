@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:27:16
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-16 19:38:55
+ * @Last Modified time: 2017-10-12 18:53:46
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -32,9 +32,9 @@ const operators = {
     '>': (a, b) => a > b,
     '<=': (a, b) => a <= b,
     '<': (a, b) => a < b,
-    'startswith': (a, b) => a.startsWith(b),
-    'endswith': (a, b) => a.endsWith(b),
-    'includes': (a, b) => a.includes(b)
+    'startswith': (a, b) => a.toString().startsWith(b),
+    'endswith': (a, b) => a.toString().endsWith(b),
+    'includes': (a, b) => a.toString().includes(b)
 };
 
 e.execute = async function (params) {
