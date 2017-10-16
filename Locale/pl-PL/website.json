@@ -61,6 +61,7 @@
     "components":{
       "argument":"",
       "named":"",
+      "unnamed":"",
       "array":"",
       "staff":"",
       "noimplicit":""
