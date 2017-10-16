@@ -15,7 +15,8 @@ class PopTag extends Array {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
-        let arr = await this.loadArray(ctx, args[0]);
+        args = args.parsedArgs;
+        let arr = await this.loadArray(ctx, args.array);
 
         let popped = arr.pop();
         if (arr.ctx && arr.name) await arr.save();

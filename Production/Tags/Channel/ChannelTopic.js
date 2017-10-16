@@ -16,9 +16,10 @@ class ChannelTopicTag extends Channel {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
+        args = args.parsedArgs;
         let channel = ctx.channel;
-        if (args[0]) {
-            channel = await ctx.client.Helpers.Resolve.channel(ctx, args[0].toString(), true);
+        if (args.channel) {
+            channel = await ctx.client.Helpers.Resolve.channel(ctx, args.channel.toString(), true);
         }
         return res.setContent(channel ? channel.topic : '');
     }

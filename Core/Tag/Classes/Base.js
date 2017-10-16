@@ -118,13 +118,20 @@ class TagBase {
             } else {
                 for (let i = 0; i < args.length; i++) {
                     let template = this.argList[i];
-                    if (template)
+                    let ii = i;
+                    while (template && template.optional &&
+                        i >= args.length - 1 && ii < this.argList.length - 1 &&
+                        !this.argList[ii + 1].optional) {
+                        template = this.argList[++ii];
+                    }
+                    if (template) {
                         if (template.repeat) {
                             let repeated = args.slice(i);
                             for (const arg of repeated)
-                                namedList.push({ name: template.name, value: args[i] });
+                                namedList.push({ name: template.name, value: arg });
                         } else
                             namedList.push({ name: template.name, value: args[i] });
+                    }
                 }
             }
 

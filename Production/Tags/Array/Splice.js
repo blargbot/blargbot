@@ -24,13 +24,12 @@ class SpliceTag extends Array {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
-        let arr = await this.loadArray(ctx, args[0]);
+        args = args.parsedArgs;
+        let arr = await this.loadArray(ctx, args.array);
 
-        let start = this.parseInt(args[1], 'start');
-        let deleteCount = arr.length - start;
-        if (args[2])
-            deleteCount = this.parseInt(args[2], 'deleteCount');
-        let insert = args[3] ? args.slice(3) : [];
+        let start = this.parseInt(args.start, 'start');
+        let deleteCount = args.deleteCount ? this.parseInt(args.deleteCount, 'deleteCount') : arr.length - start;
+        let insert = args.items || [];
 
         let newArr = new this.TagArray(...arr.splice(start, deleteCount, ...insert));
         if (arr.ctx && arr.name) await arr.save();

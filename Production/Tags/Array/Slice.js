@@ -20,12 +20,13 @@ class SliceTag extends Array {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
-        let arr = await this.loadArray(ctx, args[0]);
+        args = args.parsedArgs;
+        let arr = await this.loadArray(ctx, args.array);
 
-        let start = this.parseInt(args[1], 'start');
+        let start = this.parseInt(args.start, 'start');
         let end;
         if (args[2])
-            end = this.parseInt(args[2], 'end');
+            end = this.parseInt(args.end, 'end');
 
         let newArr = new this.TagArray(...arr.slice(start, end));
         return res.setContent(newArr);

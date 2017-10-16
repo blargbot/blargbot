@@ -21,7 +21,7 @@ class RoundTag extends Math {
         args = args.parsedArgs;
 
         let parsed = this.parseFloat(args.number, 'number');
-        let places = args[1] ? this.parseFloat(args.places, 'places') : 0;
+        let places = args.places ? this.parseFloat(args.places, 'places') : 0;
 
         let output = global.Math.round(parsed * (10 ** places)) / (10 ** places);
 

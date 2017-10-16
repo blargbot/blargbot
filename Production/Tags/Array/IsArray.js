@@ -15,7 +15,9 @@ class IsArrayTag extends Array {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
-        return res.setContent(args[0].length === 1 && args[0][0] instanceof this.TagArray);
+        args = args.parsedArgs;
+        console.log(args.array);
+        return res.setContent(args.array.length === 1 && args.array[0] instanceof this.TagArray);
     }
 }
 

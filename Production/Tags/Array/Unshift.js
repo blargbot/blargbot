@@ -18,9 +18,10 @@ class UnshiftTag extends Array {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
-        let arr = await this.loadArray(ctx, args[0]);
-
-        arr.unshift(...args.slice(1));
+        args = args.parsedArgs;
+        let arr = await this.loadArray(ctx, args.array);
+        console.log(args.value);
+        arr.unshift(...args.value);
         if (arr.ctx && arr.name) await arr.save();
 
         return res.setContent(arr);

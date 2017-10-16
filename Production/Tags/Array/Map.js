@@ -20,13 +20,14 @@ class MapTag extends Array {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, false);
-        args[0] = await ctx.processSub(args[0]);
-        if (args.length === 3)
-            args[1] = await ctx.processSub(args[1]);
+        args = args.parsedArgs;
+        args.array = await ctx.processSub(args.array);
+        if (args.varName)
+            args.varName = await ctx.processSub(args.varName);
 
-        let arr = await this.loadArray(ctx, args[0]);
-        let name = args.length === 3 ? args[1] : 'i';
-        let code = args.length === 3 ? args[2] : args[1];
+        let arr = await this.loadArray(ctx, args.array);
+        let name = args.varName || 'i';
+        let code = args.function;
 
         let newArr = new this.TagArray();
 

@@ -29,12 +29,14 @@ class SortTag extends Array {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, false);
-        if (args.length === 4)
-            for (let i = 0; i < args.length && i < 3; i++)
-                args[i] = await ctx.processSub(args[i]);
-        else args[0] = await ctx.processSub(args[0]);
+        args = args.parsedArgs;
+        args.array = await ctx.processSub(args.array);
+        if (args.varNameOne)
+            args.varNameOne = await ctx.processSub(args.varNameOne);
+        if (args.varNameTwo)
+            args.varNameTwo = await ctx.processSub(args.varNameTwo);
 
-        let arr = await this.loadArray(ctx, args[0]);
+        let arr = await this.loadArray(ctx, args.array);
 
         arr = arr.map(a => {
             // Normalize sub-elements
@@ -49,16 +51,10 @@ class SortTag extends Array {
 
         let newArr;
 
-        if (args.length === 1) newArr = arr.sort((a, b) => a - b);
-        else if (args.length === 2) {
-            newArr = await this.sort(ctx, arr, 'a', 'b', args[1]);
-        } else if (args.length === 4) {
-            newArr = await this.sort(ctx, arr, args[1], args[2], args[3]);
-        } else this.throw(ctx.client.Constants.TagError.TOO_FEW_ARGS, {
-            expected: 4,
-            received: args.length
-        });
-
+        if (!args.function) newArr = arr.sort((a, b) => a - b);
+        else {
+            newArr = await this.sort(ctx, arr, args.varNameOne || 'a', args.varNameTwo || 'b', args.function);
+        }
         arr.splice(0, arr.length, ...newArr);
 
         if (arr.ctx && arr.name) await arr.save();

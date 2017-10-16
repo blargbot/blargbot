@@ -18,7 +18,8 @@ class SplitTag extends Array {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args, true);
-        let arr = new this.TagArray(...args[0].toString().split(args[1] || ''));
+        args = args.parsedArgs;
+        let arr = new this.TagArray(...args.text.toString().split(args.delimiter || ''));
 
         return res.setContent(arr);
     }

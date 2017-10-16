@@ -20,7 +20,6 @@ class MathBaseTag extends Math {
 
     async execute(ctx, args) {
         const res = await super.execute(ctx, args);
-
         let { number, origin = 10, radix } = args.parsedArgs;
 
         if (radix < 2 || radix > 36) {
@@ -29,7 +28,7 @@ class MathBaseTag extends Math {
             });
         }
 
-        number = this.parseInt(args[0], 'number', origin);
+        number = this.parseInt(number, 'number', origin);
 
         return res.setContent(number.toString(radix));
     }
