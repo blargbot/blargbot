@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 16:16:59
+ * @Last Modified time: 2017-10-16 12:09:38
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -244,7 +244,34 @@ bu.processTag = async function (params) {
                     replaceContent: false
                 };
             } else
-                replaceObj = await TagManager.list[title].execute(parameters);
+                try {
+                    replaceObj = await TagManager.list[title].execute(parameters);
+                } catch (err) {
+                    replaceObj.replaceString = await bu.tagProcessError({
+                        msg: msg,
+                        contents: fallback,
+                        fallback: fallback,
+                        words: words,
+                        author: author,
+                        tagName: tagName,
+                        ccommand: params.ccommand,
+                        terminate,
+                        isStaff, vars
+                    }, `\`An internal error occurred. This has been reported.\``);
+
+                    bu.send('250859956989853696', {
+                        content: 'A tag error occurred.',
+                        embed: {
+                            title: err.message,
+                            description: err.stack,
+                            fields: [
+                                { name: 'Tag Name', value: tagName, inline: true },
+                                { name: 'Channel | Guild', value: `${msg.channel.id} | ${msg.guild.id}`, inline: true },
+                                { name: 'CCommand', value: params.ccommand ? 'Yes' : 'No', inline: true }
+                            ]
+                        }
+                    })
+                }
         } else {
             replaceObj.replaceString = await bu.tagProcessError({
                 msg: msg,

@@ -196,6 +196,13 @@
                                     </div>
                                 </div>
                                 <textarea id="yayEditor" style="height: 100%; font-size: 20px" name='content'>{{startText}}</textarea>
+                                <div class='row'>
+                                    <div class='col s12'>
+                                        <button type='button' class="cyan accent-3 white-text btn waves-effect waves-light full" onclick='exportFile()'>
+										Export
+                                        </button>
+                                    </div>
+                                </div>
                                 <script> 
                                     let teditor = document.getElementById('yayEditor');
                                     if (teditor.innerText === '') {
@@ -231,6 +238,17 @@
                                         if (!isNaN(parsedVal)) {
                                             document.getElementsByClassName("CodeMirror")[0].style.fontSize = parsedVal + 'px';
                                         }
+                                    }
+                                    function exportFile() {
+                                        console.log('exporting', editor.getValue())
+                                        var pom = document.createElement('a');
+                                        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
+                                        encodeURIComponent(editor.getValue()));
+                                        pom.setAttribute('download', (document.getElementById('tagname').value || 'tag') + '.bbtag');
+                                        pom.style.display = 'none';
+                                        document.body.appendChild(pom);
+                                        pom.click();
+                                        document.body.removeChild(pom);
                                     }
 
 
