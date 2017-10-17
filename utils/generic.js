@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-15 14:31:30
+ * @Last Modified time: 2017-10-17 11:58:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1112,6 +1112,10 @@ bu.unmakeSnowflake = function (snowflake) {
 bu.createRegExp = function (term) {
     if (/^\/?.*\/.*/.test(term)) {
         let regexList = term.match(/^\/?(.*)\/(.*)/);
+
+        if (regexList[1].match(/\(.*[*+].*\)[+*]/))
+            throw 'Unsafe Regex';
+
         let temp = new RegExp(regexList[1], regexList[2]);
         if (!dep.safe(temp)) {
             throw 'Unsafe Regex';

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:46
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-17 11:46:13
+ * @Last Modified time: 2017-10-17 11:59:38
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -28,10 +28,6 @@ e.execute = async function (params) {
     //for (let i = 1; i < params.args.length; i++) {
     //    params.args[i] = await bu.processTagInner(params, i);
     //}
-    if (params.msg.author.id === '238841636581277698') return { // temporary until I sort the issue out
-        replaceContent: false,
-        replaceString: ':('
-    };
     let fallback = params.fallback;
     var returnObj = {
         replaceContent: false
@@ -44,7 +40,7 @@ e.execute = async function (params) {
             params.args[1] = await bu.processTagInner(params, 1);
             returnObj.replaceString = regex.test(params.args[1]);
         } catch (err) {
-            returnObj.replaceString = await bu.tagProcessError(params, `\`${err.message}\``)
+            returnObj.replaceString = await bu.tagProcessError(params, `\`${err}\``)
         }
     } else {
         returnObj.replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
