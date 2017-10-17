@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:46
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-17 12:01:19
+ * @Last Modified time: 2017-10-17 12:11:20
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -42,7 +42,7 @@ e.execute = async function (params) {
             params.args[1] = await bu.processTagInner(params, 1);
             params.args[3] = await bu.processTagInner(params, 3);
             returnObj.replaceString = regex.test(params.args[1]);
-            returnObj.replaceString = params.args[1].replace(new RegExp(regexList[1], regexList[2]), params.args[3]);
+            returnObj.replaceString = params.args[1].replace(regex), params.args[3]);
         } catch (err) {
             returnObj.replaceString = await bu.tagProcessError(params, `\`${err}\``)
         }
