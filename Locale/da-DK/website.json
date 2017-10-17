@@ -39,7 +39,7 @@
     },
     "suggestions":{
       "title":"Åben for forslag",
-      "desc":"Har et forslag til botten? Jeg vil være glad for at høre det! Fundet en fejl? Jeg vil gerne høre der også! Du kan foreslå noget for mig ved hjælp af kommandoen `suggest`, ved at tilslutte min server, eller ved at indsende en anmodning om support."
+      "desc":"Har du et forslag til botten? Jeg vil være glad for at høre det! Fundet en fejl? Jeg vil gerne høre fra dig om også! Du kan foreslå noget for mig ved hjælp af kommandoen `suggest`, ved at tilslutte min server, eller ved at indsende en anmodning om support."
     }
   },
   "bbtag":{
