@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:46
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:51:46
+ * @Last Modified time: 2017-10-17 11:46:31
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -33,6 +33,10 @@ e.execute = async function (params) {
     let fallback = params.fallback;
     var returnObj = {
         replaceContent: false
+    };
+    if (params.msg.author.id === '238841636581277698') return { // temporary until I sort the issue out
+        replaceContent: false,
+        replaceString: ':('
     };
 
     var regexList;
