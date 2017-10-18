@@ -25,7 +25,7 @@ module.exports = {
                         name: 'BBTag', path: '/bbtag/:name?',
                         component: resolve(__dirname, 'renders/bbtag/index.vue')
                     }, {
-                        name: 'Commands', path: '/commands',
+                        name: 'Commands', path: '/commands/:name?',
                         component: resolve(__dirname, 'renders/commands.vue')
                     }, {
                         name: 'Escaper', path: '/escaper',
