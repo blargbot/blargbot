@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:25:36
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-18 13:08:25
+ * @Last Modified time: 2017-10-18 13:08:52
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -46,7 +46,6 @@ e.execute = async function (params) {
                         nick: params.args[1]
                     });
                 } catch (err) {
-                    logger.error(err);
                     replaceString = await bu.tagProcessError(params, '`Could not change nickname`');
                 }
             } else {
