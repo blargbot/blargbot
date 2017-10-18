@@ -5,7 +5,6 @@ const seqErrors = require('sequelize/lib/errors');
 class CommandManager extends Manager {
     constructor(client) {
         super(client, 'Commands', Base);
-        this.fullList = {};
         this.commandList = {};
     }
 

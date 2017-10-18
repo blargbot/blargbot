@@ -20,6 +20,10 @@ class ApiRoute {
             let tags = await this.getInfo('subtags', 'tagList');
             res.end(JSON.stringify(tags));
         });
+        router.get('/commands', async (req, res) => {
+            let tags = await this.getInfo('commands', 'commandList');
+            res.end(JSON.stringify(tags));
+        });
     }
 
     async getCatFact() {

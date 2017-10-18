@@ -163,6 +163,19 @@ process.on('message', async msg => {
                     }
                     discord.sender.send(eventKey, tags);
                     break;
+                case 'commandList':
+                    let commands = {};
+                    let list = discord.CommandManager.commandList;
+                    for (const key in list) {
+                        let c = list[key];
+                        if (c.category !== 'cat') {
+                            if (!commands.hasOwnProperty(c.category))
+                                commands[c.category] = [];
+                            commands[c.category].push(c.serialize());
+                        }
+                    }
+                    discord.sender.send(eventKey, commands);
+                    break;
                 case 'connect':
                     await discord.connect();
                     discord.sender.send(eventKey, true);

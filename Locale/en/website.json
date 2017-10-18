@@ -67,5 +67,15 @@
             "noimplicit": "Does not support implicit classing"
         },
         "referdocs": "Please refer to the [documentation](/bbtag) for more usage instructions."
+    },
+    "commands": {
+        "title": "Commands",
+        "desc": "blargbot is equipped with numerous commands. By default, blargbot responds to the prefixes `b!`, `blargbot`, and mentions. You can add additional prefixes for both yourself and guilds.\n\nSome commands may only be used by members whom you define as staff. You can also customize the usage restrictions of each command individually.\n\nSome commands have special permission requirements in order to be executed, such as uploading images. Please make sure the bot has the proper permissions when attempting to use a command.\n\n## Arguments \n- `<>` - denotes a required argument\n- `[]` - denotes an optional argument\n- `...` - denotes a repeated argument\n\n### Flags\n\nSome commands are able to take commandline-like flag parameters. All flags are divided into flag codes (prefixed by `-`) and words (prefixed by --). Flags can be provided in any order, but must be after normal arguments.\n\nFor example, if a command takes a user input, you'd be able to use `-u` or `--user`.\n```\nb!command --user @user#1234\nb!command -u @user#1234\n```\nYou can also chain flag codes together. For example, `-flag test` would activate flags `-f`, `-l`, `-a`, and give the content 'test' to `-g`.",
+        "components": {
+            "usage": "Usage:",
+            "flags": "Flags:",
+            "aliases": "Aliases:",
+            "subcommands": "Subcommands:"
+        }
     }
 }

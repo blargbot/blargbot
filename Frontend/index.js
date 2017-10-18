@@ -38,11 +38,18 @@ class Frontend extends Sender {
             case 'await':
                 const eventKey = 'await:' + data.key;
                 switch (data.message) {
-                    case 'tagList':
+                    case 'tagList': {
                         let shard = this.client.spawner.shards.get(0);
                         let res = await shard.awaitMessage('tagList');
                         this.send(eventKey, res);
                         break;
+                    }
+                    case 'commandList': {
+                        let shard = this.client.spawner.shards.get(0);
+                        let res = await shard.awaitMessage('commandList');
+                        this.send(eventKey, res);
+                        break;
+                    }
                     default:
                         this.send(eventKey, { code: 404, mes: 'not found' });
                 }

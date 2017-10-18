@@ -244,6 +244,28 @@ class BaseCommand {
     get base() {
         return `command.${this.category}.${this.name}`;
     }
+
+    serialize() {
+        return {
+            name: this.name,
+            category: this.category,
+            aliases: this.aliases,
+            info: `${this.base}.info`,
+            usage: `${this.base}.usage`,
+            flags: this.flags,
+            permissions: this.permissions,
+            subcommands: Object.keys(this.subcommands).map(s => {
+                return {
+                    name: s,
+                    flags: this.subcommands[s].flags || [],
+                    aliases: [].concat(this.subcommandAliases[s] || [], this.subcommands[s].aliases || []),
+                    minArgs: this.subcommands[s].minArgs,
+                    info: `${this.base}.subcommand.${s}.info`,
+                    usage: `${this.base}.subcommand.${s}.usage`
+                };
+            })
+        };
+    }
 }
 
 module.exports = BaseCommand;
