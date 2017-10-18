@@ -67,5 +67,15 @@
       "noimplicit":"Understøtter ikke implicit klassificering"
     },
     "referdocs":"Der henvises til [documentation](/bbtag) for at få flere instrukser for benyttelse."
+  },
+  "commands":{
+    "title":"",
+    "desc":"",
+    "components":{
+      "usage":"",
+      "flags":"",
+      "aliases":"",
+      "subcommands":""
+    }
   }
 }
