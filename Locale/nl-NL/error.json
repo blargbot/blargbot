@@ -9,7 +9,7 @@
   "messagetoolong":"Oeps! Ik probeerde een bericht te sturen dat te lang was. [[error.pleasereport]]",
   "notenoughparams":"Niet genoeg parameters! Gebruik `{{prefix}}help {{name}}` voor meer details.\n\nVerwachtte '{{expected}}' parameters, maar kreeg in plaats daarvan '{{received}}'.",
   "tag":{
-    "notfound":"",
+    "notfound":"Subtag '{{tag}}' bestaat niet.",
     "toomanyargs":"",
     "toofewargs":"",
     "isnan":"",
