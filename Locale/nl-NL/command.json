@@ -26,7 +26,7 @@
       "info":"Breinfuck code uitgevoerd.",
       "usage":"<code>",
       "flags":{
-        "p":"",
+        "p":"Toont een lijst van pointers na het uitvoeren.",
         "i":""
       }
     },
