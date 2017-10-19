@@ -69,13 +69,13 @@
     "referdocs":"Der henvises til [documentation](/bbtag) for at få flere instrukser for benyttelse."
   },
   "commands":{
-    "title":"",
+    "title":"Kommandoer",
     "desc":"",
     "components":{
-      "usage":"",
-      "flags":"",
-      "aliases":"",
-      "subcommands":""
+      "usage":"Brug:",
+      "flags":"Flag:",
+      "aliases":"Aliaser:",
+      "subcommands":"Underkommandoer:"
     }
   }
 }
