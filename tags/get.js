@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:38:55
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-09-13 11:45:36
+ * @Last Modified time: 2017-10-19 18:12:29
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -62,7 +62,7 @@ e.execute = async function (params) {
     };
 };
 
-e.getVar = async function (params, varName) {
+e.getVar = async function (params, varName = '') {
     let vars = {};
     let subVarName = varName.substring(1);
     let prefix = varName.substring(0, 1);
