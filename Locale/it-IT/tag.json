@@ -143,7 +143,7 @@
       "desc":"Arrotonda per difetto il numero decimale fornito."
     },
     "math":{
-      "desc":""
+      "desc":"Calcola il valore dell'espressione fornita usando questi operatori:\n\n - `^` - esponente\n - `/` - divisione\n - `*` - moltiplicazione\n - `+` - addizione\n - `-` - sottrazione\n - `&` - operatore AND\n - `|` - operatore OR\n - `XOR` - operatore XOR\n\nGli operatori sono eseguiti usando l'ordine di precedenza (Parentesi, esponenti, divisioni, moltiplicazioni, addizione, sottrazioni, operatori).\n\nSe un operatore non è specificato, verrà usato l'ultimo operatore usato (default addizione).\n\nLe parentesi possono essere ottenute usando un'altra tag {math}.\n\nSe un `operatore` o un `addendo` non possono essere convertiti in numeri, una sarà usata una variabile con lo stesso nome. Se anche questa variabile non è un numero, verrà lanciato un errore."
     },
     "parsefloat":{
       "desc":"Cerca di convertire il testo come un numero decimale."
