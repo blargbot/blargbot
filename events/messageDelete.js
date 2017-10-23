@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:22:41
+ * @Last Modified time: 2017-10-23 17:42:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -66,7 +66,7 @@ async function handleDelete(msg, quiet) {
                 logger.error(err);
             }
         }
-    let newMsg = msg.content || 'uncached :(';
+    let newMsg = msg.content || 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';
     if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
     if (!quiet)
         bu.logEvent(msg.channel.guild.id, 'messagedelete', [{
