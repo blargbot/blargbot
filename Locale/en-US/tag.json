@@ -1,224 +1,224 @@
 {
-  "array":{
-    "filter":{
-      "desc":"Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array only containing the elements where the result of the iteration was `true` or `1`."
+    "array": {
+        "filter": {
+            "desc": "Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array only containing the elements where the result of the iteration was `true` or `1`."
+        },
+        "foreach": {
+            "desc": "Iterates through an array, setting the local variable `i` to the current element. If `varName` is provided, sets that variable instead."
+        },
+        "get": {
+            "desc": "Gets an element from an array at the position `index`."
+        },
+        "isarray": {
+            "desc": "Returns true if the provided element is an array, and false otherwise. You cannot use variable names."
+        },
+        "join": {
+            "desc": "Joins an array with the provided `delimiter`."
+        },
+        "length": {
+            "desc": "Returns the length of the given array."
+        },
+        "map": {
+            "desc": "Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array where each element is the result of each iteration."
+        },
+        "pop": {
+            "desc": "Removes and returns the last element of the array."
+        },
+        "push": {
+            "desc": "Pushes an element to the end of an array. Returns the modified array."
+        },
+        "set": {
+            "desc": "Sets an element on the array at the specified `index`."
+        },
+        "shift": {
+            "desc": "Removes and returns the first element in the array."
+        },
+        "slice": {
+            "desc": "Returns a section of the array, including the `start` index and excluding the `end` index. If `end` is unspecified, defaults to all remaining elements."
+        },
+        "sort": {
+            "desc": "Sorts and returns an array, by default in ascending order.\n\nIf `function` is provided, sorting will occur based on the result of executing said function. This will set two local variables: `a` (or `varNameOne`) and `b` (or `varNameTwo`). \n\nThe function must return a number. If the number is greater than 0, `a` will be considered greater than `b`. If the number is lower than 0, `b` will be considered greater than `a`. Any non-number result will be converted to 0, where both elements are equal."
+        },
+        "splice": {
+            "desc": "Starting at the position `start`, removes `deleteCount` elements from the array and adds the remaining `items` at that position. Returns the removed elements."
+        },
+        "split": {
+            "desc": "Splits the `text` by the `delimiter`, returning the new array."
+        },
+        "unshift": {
+            "desc": "Inserts `value` at the beginning of the array, and returns the modified array."
+        }
     },
-    "foreach":{
-      "desc":"Iterates through an array, setting the local variable `i` to the current element. If `varName` is provided, sets that variable instead."
+    "channel": {
+        "id": {
+            "desc": "Returns the ID of the current or specified channel."
+        },
+        "nsfw": {
+            "desc": "Returns whether the current or specified channel is NSFW."
+        },
+        "name": {
+            "desc": "Returns the name of the current or specified channel."
+        },
+        "position": {
+            "desc": "Returns the position of the current or specified channel."
+        },
+        "topic": {
+            "desc": "Returns the topic of the current or specified channel (text only)."
+        },
+        "type": {
+            "desc": "Returns the type of the current or specified channel (returns \"text\" or \"voice\")."
+        }
     },
-    "get":{
-      "desc":"Gets an element from an array at the position `index`."
+    "general": {
+        "clean": {
+            "desc": "Cleans the provided text by shrinking all whitespace."
+        },
+        "comment": {
+            "desc": ""
+        },
+        "get": {
+            "desc": "Returns the stored variable with the supplied name. Variable prefixes can modify the pool in which to search."
+        },
+        "set": {
+            "desc": "Sets the stored variable with the supplied name to the supplied value. Variable prefixes can modify the pool in which to set."
+        },
+        "trim": {
+            "desc": "Removes whitespace before and after the provided text. Consider using the {clean} tag to remove whitespace within the text."
+        },
+        "void": {
+            "desc": "Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed."
+        },
+        "newline": {
+            "desc": "Returns the specified number of newlines, defaulting to 1."
+        },
+        "space": {
+            "desc": "Returns the specified number of spaces, defaulting to 1."
+        }
     },
-    "isarray":{
-      "desc":"Returns true if the provided element is an array, and false otherwise. You cannot use variable names."
+    "guild": {
+        "createdat": {
+            "desc": "Returns when the current guild was created as a Unix timestamp (milliseconds)."
+        },
+        "channels": {
+            "desc": "Returns the channels in the current guild as an array."
+        },
+        "icon": {
+            "desc": "Returns the URL of the current guild's icon."
+        },
+        "id": {
+            "desc": "Returns the ID of the current guild."
+        },
+        "name": {
+            "desc": "Returns the name of the current guild."
+        },
+        "owner": {
+            "desc": "Returns the ID of the guild's owner."
+        },
+        "region": {
+            "desc": "Returns the region the current guild is in."
+        },
+        "roles": {
+            "desc": "Returns an array of roles in the current guild."
+        }
     },
-    "join":{
-      "desc":"Joins an array with the provided `delimiter`."
+    "logic": {
+        "if": {
+            "desc": "If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nUse this with the {logic} tag."
+        },
+        "logic": {
+            "desc": "Does logical operators on the `augend` and `operands`, returning `true` or `false`.\n\nEquivalence Operators:\n - `==` - equal\n - `!=` - not equal\n - `<` - less than\n - `<=` - less than or equal\n - `>` - greater than\n - `>=` - greater than or equal\n - `startswith` - the augend starts with the operand\n - `endswith` - the augend ends with the operand\n - `includes` - the augend includes the operand\n\nLogical Operators:\n - `&&` - returns true if the augend and operand are both true\n - `||` - returns true if either the augend or operand are true\n - `XOR` - returns true if only one of the augend and operand are true (not both)\n\nOther Operators:\n - `!` - inverts the next operand (true becomes false, etc.)"
+        }
     },
-    "length":{
-      "desc":"Returns the length of the given array."
+    "math": {
+        "abs": {
+            "desc": "Returns the absolute value of the provided number (no negatives)."
+        },
+        "base": {
+            "desc": "Parses the `number` using the provided base `origin` (defaulting to 10), and converts it to base `radix`."
+        },
+        "ceil": {
+            "desc": "Rounds the provided decimal up."
+        },
+        "floor": {
+            "desc": "Rounds the provided decimal down."
+        },
+        "math": {
+            "desc": ""
+        },
+        "parsefloat": {
+            "desc": "Attempts to parse the given text as a decimal."
+        },
+        "parseint": {
+            "desc": "Attempts to parse the given text as an integer."
+        },
+        "randint": {
+            "desc": "Returns a random integer between the provided range. `min` defaults to `0`"
+        },
+        "round": {
+            "desc": "Rounds the given `number` to the specified decimal `places`, defaulting to 0."
+        }
     },
-    "map":{
-      "desc":"Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array where each element is the result of each iteration."
+    "message": {
+        "id": {
+            "desc": "Returns the ID of the executing command message."
+        }
     },
-    "pop":{
-      "desc":"Removes and returns the last element of the array."
+    "role": {
+        "color": {
+            "desc": "Returns the color of the specified role in hexadecimal."
+        },
+        "id": {
+            "desc": "Returns the ID of the specified role."
+        },
+        "mention": {
+            "desc": "Returns a mention of the specified role."
+        },
+        "name": {
+            "desc": "Returns the name of the specified role."
+        },
+        "position": {
+            "desc": "Returns the position of the specified role."
+        }
     },
-    "push":{
-      "desc":"Pushes an element to the end of an array. Returns the modified array."
-    },
-    "set":{
-      "desc":"Sets an element on the array at the specified `index`."
-    },
-    "shift":{
-      "desc":"Removes and returns the first element in the array."
-    },
-    "slice":{
-      "desc":"Returns a section of the array, including the `start` index and excluding the `end` index. If `end` is unspecified, defaults to all remaining elements."
-    },
-    "sort":{
-      "desc":"Sorts and returns an array, by default in ascending order.\n\nIf `function` is provided, sorting will occur based on the result of executing said function. This will set two local variables: `a` (or `varNameOne`) and `b` (or `varNameTwo`). \n\nThe function must return a number. If the number is greater than 0, `a` will be considered greater than `b`. If the number is lower than 0, `b` will be considered greater than `a`. Any non-number result will be converted to 0, where both elements are equal."
-    },
-    "splice":{
-      "desc":"Starting at the position `start`, removes `deleteCount` elements from the array and adds the remaining `items` at that position. Returns the removed elements."
-    },
-    "split":{
-      "desc":"Splits the `text` by the `delimiter`, returning the new array."
-    },
-    "unshift":{
-      "desc":"Inserts `value` at the beginning of the array, and returns the modified array."
+    "user": {
+        "avatar": {
+            "desc": "Returns the avatar URL of the specified user, defaulting to the executing user."
+        },
+        "createdat": {
+            "desc": "Returns the date that the specified user, defaulting to the executing user, was created as a Unix timestamp (milliseconds)."
+        },
+        "discrim": {
+            "desc": "Returns the discriminator of the specified user, defaulting to the executing user."
+        },
+        "fullname": {
+            "desc": "Returns the name + discriminator of the specified user, defaulting to the executing user."
+        },
+        "game": {
+            "desc": "Returns the game the specified user is playing, defaulting to the executing user. If the user isn't playing a game, returns nothing."
+        },
+        "id": {
+            "desc": "Returns the ID of the specified user, defaulting to the executing user."
+        },
+        "joinedat": {
+            "desc": "Returns the date that the specified user, defaulting to the executing user, joined the current guild as a Unix timestamp (milliseconds)."
+        },
+        "mention": {
+            "desc": "Mentions the specified user, defaulting to the executing user."
+        },
+        "name": {
+            "desc": "Returns the name of the specified user, defaulting to the executing user."
+        },
+        "nick": {
+            "desc": "Returns the nickname of the specified user, defaulting to the executing user."
+        },
+        "roles": {
+            "desc": "Returns an array of the roles the specified user has, defaulting to the executing user."
+        },
+        "setnick": {
+            "desc": "Sets the nickname of the specified user, defaulting to the executing user."
+        },
+        "status": {
+            "desc": "Returns the status of the specified user, defaulting to the executing user. Can return \"online\", \"away\", \"dnd\", or \"offline\"."
+        }
     }
-  },
-  "channel":{
-    "id":{
-      "desc":"Returns the ID of the current or specified channel."
-    },
-    "nsfw":{
-      "desc":"Returns whether the current or specified channel is NSFW."
-    },
-    "name":{
-      "desc":"Returns the name of the current or specified channel."
-    },
-    "position":{
-      "desc":"Returns the position of the current or specified channel."
-    },
-    "topic":{
-      "desc":"Returns the topic of the current or specified channel (text only)."
-    },
-    "type":{
-      "desc":"Returns the type of the current or specified channel (returns \"text\" or \"voice\")."
-    }
-  },
-  "general":{
-    "clean":{
-      "desc":"Cleans the provided text by shrinking all whitespace."
-    },
-    "comment":{
-      "desc":""
-    },
-    "get":{
-      "desc":"Returns the stored variable with the supplied name. Variable prefixes can modify the pool in which to search."
-    },
-    "set":{
-      "desc":"Sets the stored variable with the supplied name to the supplied value. Variable prefixes can modify the pool in which to set."
-    },
-    "trim":{
-      "desc":"Removes whitespace before and after the provided text. Consider using the {clean} tag to remove whitespace within the text."
-    },
-    "void":{
-      "desc":"Prevents output from within the subtag. Differs from comment as things are parsed, just not displayed."
-    },
-    "newline":{
-      "desc":"Returns the specified number of newlines, defaulting to 1."
-    },
-    "space":{
-      "desc":"Returns the specified number of spaces, defaulting to 1."
-    }
-  },
-  "guild":{
-    "createdat":{
-      "desc":"Returns when the current guild was created as a Unix timestamp (milliseconds)."
-    },
-    "channels":{
-      "desc":"Returns the channels in the current guild as an array."
-    },
-    "icon":{
-      "desc":"Returns the URL of the current guild's icon."
-    },
-    "id":{
-      "desc":"Returns the ID of the current guild."
-    },
-    "name":{
-      "desc":"Returns the name of the current guild."
-    },
-    "owner":{
-      "desc":"Returns the ID of the guild's owner."
-    },
-    "region":{
-      "desc":"Returns the region the current guild is in."
-    },
-    "roles":{
-      "desc":"Returns an array of roles in the current guild."
-    }
-  },
-  "logic":{
-    "if":{
-      "desc":"If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nUse this with the {logic} tag."
-    },
-    "logic":{
-      "desc":"Does logical operators on the `augend` and `operands`, returning `true` or `false`.\n\nEquivalence Operators:\n - `==` - equal\n - `!=` - not equal\n - `<` - less than\n - `<=` - less than or equal\n - `>` - greater than\n - `>=` - greater than or equal\n - `startswith` - the augend starts with the operand\n - `endswith` - the augend ends with the operand\n - `includes` - the augend includes the operand\n\nLogical Operators:\n - `&&` - returns true if the augend and operand are both true\n - `||` - returns true if either the augend or operand are true\n - `XOR` - returns true if only one of the augend and operand are true (not both)\n\nOther Operators:\n - `!` - inverts the next operand (true becomes false, etc.)"
-    }
-  },
-  "math":{
-    "abs":{
-      "desc":"Returns the absolute value of the provided number (no negatives)."
-    },
-    "base":{
-      "desc":"Parses the `number` using the provided base `origin` (defaulting to 10), and converts it to base `radix`."
-    },
-    "ceil":{
-      "desc":"Rounds the provided decimal up."
-    },
-    "floor":{
-      "desc":"Rounds the provided decimal down."
-    },
-    "math":{
-      "desc":""
-    },
-    "parsefloat":{
-      "desc":"Attempts to parse the given text as a decimal."
-    },
-    "parseint":{
-      "desc":"Attempts to parse the given text as an integer."
-    },
-    "randint":{
-      "desc":"Returns a random integer between the provided range. `min` defaults to `0`"
-    },
-    "round":{
-      "desc":"Rounds the given `number` to the specified decimal `places`, defaulting to 0."
-    }
-  },
-  "message":{
-    "id":{
-      "desc":"Returns the ID of the executing command message."
-    }
-  },
-  "role":{
-    "color":{
-      "desc":"Returns the color of the specified role in hexadecimal."
-    },
-    "id":{
-      "desc":"Returns the ID of the specified role."
-    },
-    "mention":{
-      "desc":"Returns a mention of the specified role."
-    },
-    "name":{
-      "desc":"Returns the name of the specified role."
-    },
-    "position":{
-      "desc":"Returns the position of the specified role."
-    }
-  },
-  "user":{
-    "avatar":{
-      "desc":"Returns the avatar URL of the specified user, defaulting to the executing user."
-    },
-    "createdat":{
-      "desc":"Returns the date that the specified user, defaulting to the executing user, was created as a Unix timestamp (milliseconds)."
-    },
-    "discrim":{
-      "desc":"Returns the discriminator of the specified user, defaulting to the executing user."
-    },
-    "fullname":{
-      "desc":"Returns the name + discriminator of the specified user, defaulting to the executing user."
-    },
-    "game":{
-      "desc":"Returns the game the specified user is playing, defaulting to the executing user. If the user isn't playing a game, returns nothing."
-    },
-    "id":{
-      "desc":"Returns the ID of the specified user, defaulting to the executing user."
-    },
-    "joinedat":{
-      "desc":"Returns the date that the specified user, defaulting to the executing user, joined the current guild as a Unix timestamp (milliseconds)."
-    },
-    "mention":{
-      "desc":"Mentions the specified user, defaulting to the executing user."
-    },
-    "name":{
-      "desc":"Returns the name of the specified user, defaulting to the executing user."
-    },
-    "nick":{
-      "desc":"Returns the nickname of the specified user, defaulting to the executing user."
-    },
-    "roles":{
-      "desc":"Returns an array of the roles the specified user has, defaulting to the executing user."
-    },
-    "setnick":{
-      "desc":"Sets the nickname of the specified user, defaulting to the executing user."
-    },
-    "status":{
-      "desc":"Returns the status of the specified user, defaulting to the executing user. Can return \"online\", \"away\", \"dnd\", or \"offline\"."
-    }
-  }
 }
