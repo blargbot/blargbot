@@ -1,35 +1,35 @@
 {
-  "output":"Output:\n{{output}}",
-  "nooutput":"Nessun output...",
-  "queryexpire":"La richiesta scadrà in {{length}} minuti.",
-  "resolveuser":{
-    "nousers":"Nessun utente trovato.",
-    "pickuser":"Sono stati trovati {{length}} utenti! Selezionane uno dalla lista."
-  },
-  "resolverole":{
-    "noroles":"Nessun ruolo trovato.",
-    "pickrole":"Sono stati trovati {{length}} ruoli! Selezionane uno dalla lista."
-  },
-  "resolvechannel":{
-    "nochannels":"Nessun canale trovato.",
-    "pickchannel":"Sono stati trovati {{length}} canali! Selezionane uno dalla lista"
-  },
-  "edited":"modificato",
-  "created":"creato",
-  "deleted":"eliminato",
-  "menu":{
-    "choices":"Pagina {{page}}/{{max}}"
-  },
-  "nochange":"Non è stato cambiato niente.",
-  "commandhelp":"**Nome comando**: **__{{name}}__**\n\n**__Utilizzo__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Alias__**\n{{aliases}}",
-  "example":{
-    "id1":"111111111111111111",
-    "id2":"222222222222222222",
-    "id3":"333333333333333333"
-  },
-  "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"The query has been cancelled.",
-  "user":"Utente",
-  "role":"Ruolo",
-  "channel":"Canale"
+    "output": "Output:\n{{output}}",
+    "nooutput": "Nessun output...",
+    "queryexpire": "La richiesta scadrà in {{length}} minuti.",
+    "resolveuser": {
+        "nousers": "Nessun utente trovato.",
+        "pickuser": "Sono stati trovati {{length}} utenti! Selezionane uno dalla lista."
+    },
+    "resolverole": {
+        "noroles": "Nessun ruolo trovato.",
+        "pickrole": "Sono stati trovati {{length}} ruoli! Selezionane uno dalla lista."
+    },
+    "resolvechannel": {
+        "nochannels": "Nessun canale trovato.",
+        "pickchannel": "Sono stati trovati {{length}} canali! Selezionane uno dalla lista"
+    },
+    "edited": "modificato",
+    "created": "creato",
+    "deleted": "eliminato",
+    "menu": {
+        "choices": "Pagina {{page}}/{{max}}"
+    },
+    "nochange": "Non è stato cambiato niente.",
+    "commandhelp": "**Nome comando**: **__{{name}}__**\n\n**__Utilizzo__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Alias__**\n{{aliases}}",
+    "example": {
+        "id1": "111111111111111111",
+        "id2": "222222222222222222",
+        "id3": "333333333333333333"
+    },
+    "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
+    "querycancelled": "The query has been cancelled.",
+    "user": "Utente",
+    "role": "Ruolo",
+    "channel": "Canale"
 }
