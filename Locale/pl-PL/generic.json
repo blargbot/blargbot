@@ -1,35 +1,35 @@
 {
-  "output":"Wyjście: {{output}}",
-  "nooutput":"Brak wyjścia...",
-  "queryexpire":"To zapytanie wygasnie za {{length}} minut.",
-  "resolveuser":{
-    "nousers":"Nie znaleziono żadnych użytkowników.",
-    "pickuser":"Znaleziono {{length}} użytkowników! Proszę wybrać jednego z listy."
-  },
-  "resolverole":{
-    "noroles":"Nie znaleziono żadnych ról.",
-    "pickrole":"Znaleziono {{length}} roli! Proszę wybrać jednego z listy."
-  },
-  "resolvechannel":{
-    "nochannels":"Nie znaleziono żadnych kanałów",
-    "pickchannel":"Znaleziono {[length}} kanałów! Proszę wybrać jednego z listy."
-  },
-  "edited":"edytowane",
-  "created":"stworzone",
-  "deleted":"usunięte",
-  "menu":{
-    "choices":"Strona {{page}}/{{max}}"
-  },
-  "nochange":"Nic nie bylo zmienione.",
-  "commandhelp":"",
-  "example":{
-    "id1":"",
-    "id2":"",
-    "id3":""
-  },
-  "test":"",
-  "querycancelled":"The query has been cancelled.",
-  "user":"Użytkownik",
-  "role":"Rola",
-  "channel":"Kanał"
+    "output": "Wyjście: {{output}}",
+    "nooutput": "Brak wyjścia...",
+    "queryexpire": "To zapytanie wygasnie za {{length}} minut.",
+    "resolveuser": {
+        "nousers": "Nie znaleziono żadnych użytkowników.",
+        "pickuser": "Znaleziono {{length}} użytkowników! Proszę wybrać jednego z listy."
+    },
+    "resolverole": {
+        "noroles": "Nie znaleziono żadnych ról.",
+        "pickrole": "Znaleziono {{length}} roli! Proszę wybrać jednego z listy."
+    },
+    "resolvechannel": {
+        "nochannels": "Nie znaleziono żadnych kanałów",
+        "pickchannel": "Znaleziono {[length}} kanałów! Proszę wybrać jednego z listy."
+    },
+    "edited": "edytowane",
+    "created": "stworzone",
+    "deleted": "usunięte",
+    "menu": {
+        "choices": "Strona {{page}}/{{max}}"
+    },
+    "nochange": "Nic nie bylo zmienione.",
+    "commandhelp": "",
+    "example": {
+        "id1": "",
+        "id2": "",
+        "id3": ""
+    },
+    "test": "",
+    "querycancelled": "The query has been cancelled.",
+    "user": "Użytkownik",
+    "role": "Rola",
+    "channel": "Kanał"
 }
