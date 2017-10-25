@@ -1,35 +1,35 @@
 {
-  "output":"Вывод:\n{{output}}",
-  "nooutput":"Вывода нет...",
-  "queryexpire":"Ваш запрос истечёт через {{length}} минут.",
-  "resolveuser":{
-    "nousers":"Пользователь не найден.",
-    "pickuser":"Найдено {{length}} пользователей! Выберите одного из списка."
-  },
-  "resolverole":{
-    "noroles":"Роль не найдена.",
-    "pickrole":"Найдено {{length}} ролей! Выберите одну из списка."
-  },
-  "resolvechannel":{
-    "nochannels":"Канал не найден.",
-    "pickchannel":"Найдено {{length}} каналов! Выберите одного из списка."
-  },
-  "edited":"изменено",
-  "created":"создано",
-  "deleted":"удалено",
-  "menu":{
-    "choices":"Страница {{page}} из {{max}}"
-  },
-  "nochange":"Ничего не изменено.",
-  "commandhelp":"**Имя команды**: **__{{name}}__**\n\n**__Синтаксис__**\n```{{usage}}```\n**__Информация__**\n{{info}}\n\n**__Другие имена команды__**\n{{aliases}}",
-  "example":{
-    "id1":"111111111111111111",
-    "id2":"222222222222222222",
-    "id3":"333333333333333333"
-  },
-  "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"Запрос был отменён.",
-  "user":"Пользователь",
-  "role":"Роль",
-  "channel":"Канал"
+    "output": "Вывод:\n{{output}}",
+    "nooutput": "Вывода нет...",
+    "queryexpire": "Ваш запрос истечёт через {{length}} минут.",
+    "resolveuser": {
+        "nousers": "Пользователь не найден.",
+        "pickuser": "Найдено {{length}} пользователей! Выберите одного из списка."
+    },
+    "resolverole": {
+        "noroles": "Роль не найдена.",
+        "pickrole": "Найдено {{length}} ролей! Выберите одну из списка."
+    },
+    "resolvechannel": {
+        "nochannels": "Канал не найден.",
+        "pickchannel": "Найдено {{length}} каналов! Выберите одного из списка."
+    },
+    "edited": "изменено",
+    "created": "создано",
+    "deleted": "удалено",
+    "menu": {
+        "choices": "Страница {{page}} из {{max}}"
+    },
+    "nochange": "Ничего не изменено.",
+    "commandhelp": "**Имя команды**: **__{{name}}__**\n\n**__Синтаксис__**\n```{{usage}}```\n**__Информация__**\n{{info}}\n\n**__Другие имена команды__**\n{{aliases}}",
+    "example": {
+        "id1": "111111111111111111",
+        "id2": "222222222222222222",
+        "id3": "333333333333333333"
+    },
+    "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
+    "querycancelled": "Запрос был отменён.",
+    "user": "Пользователь",
+    "role": "Роль",
+    "channel": "Канал"
 }
