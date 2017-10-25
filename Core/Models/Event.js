@@ -10,6 +10,15 @@ class EventModel extends Base {
                 primaryKey: true,
                 autoIncrement: true
             },
+            guild: {
+                type: this.Sequelize.BIGINT,
+                allowNull: true
+            },
+            start: {
+                type: this.Sequelize.DATE,
+                allowNull: false,
+                defaultValue: Date.now()
+            },
             expiry: {
                 type: this.Sequelize.DATE,
                 allowNull: false

@@ -13,7 +13,7 @@ class RespawnCommand extends CatCommand {
         let shard = process.env.SHARD_ID || ctx.input._.join(' ');
         shard = parseInt(shard);
         await ctx.send(`I'll try my best to respawn shard ${shard}!`);
-        ctx.client.sender.send('respawn', { id: shard });
+        ctx.client.sender.send('respawn', { id: shard, channel: ctx.channel.id });
     }
 }
 

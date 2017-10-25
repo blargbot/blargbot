@@ -6,8 +6,7 @@ const seqErrors = require('sequelize/lib/errors');
 class Logger {
     constructor(shardId, level) {
         this.shard = shardId;
-        if (typeof this.shard === 'string') this.shard = 'MS';
-        else if (this.shard < 10) this.shard = '0' + this.shard;
+        if (typeof this.shard === 'number' && this.shard < 10) this.shard = '0' + this.shard;
         this._level = level;
         this.levels = {};
         let max = 0;

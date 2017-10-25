@@ -1,6 +1,7 @@
 const { Shard } = require('./Structures');
 const EventEmitter = require('eventemitter3');
 const moment = require('moment');
+const Timer = require('./Timer');
 
 class Spawner extends EventEmitter {
     constructor(client, options = {}) {
@@ -34,12 +35,22 @@ class Spawner extends EventEmitter {
         });
     }
 
-    spawn(id, set = true) {
+    spawnFrontend() {
+        return this.spawn('FE', true, 'Frontend/Website.js');
+    }
+
+    spawnEventTimer() {
+        return this.spawn('ET', true, 'Core/EventTimer.js');
+    }
+
+    spawn(id, set = true, file) {
         return new Promise((resolve, reject) => {
-            const shard = new Shard(id, this);
+            const shard = new Shard(id, this, file);
             if (set) {
-                if (this.shards.get(id) !== undefined)
+                if (this.shards.get(id) !== undefined) {
+                    this.shards.get(id).kill();
                     this.shards.delete(id);
+                }
                 this.shards.set(id, shard);
             }
             shard.once('threadReady', () => {
@@ -49,7 +60,7 @@ class Spawner extends EventEmitter {
     }
 
     async spawnAll() {
-        let spawned = [];
+        let spawned = [await this.spawnFrontend(), await this.spawnEventTimer()];
         for (let i = 0; i < this.max; i++) {
             spawned.push(await this.spawn(i));
         }
@@ -58,7 +69,8 @@ class Spawner extends EventEmitter {
 
     broadcast(code, data) {
         for (const [id, shard] of this.shards) {
-            shard.send(code, data);
+            if (shard.file === this.file)
+                shard.send(code, data);
         }
     }
 
@@ -73,10 +85,12 @@ class Spawner extends EventEmitter {
                     fulfill(datum);
             }
             for (const [id, shard] of shards) {
-                i++;
-                shard.awaitMessage(data).then(received => {
-                    onComplete(received);
-                }).catch(reject);
+                if (shard.file === this.file) {
+                    i++;
+                    shard.awaitMessage(data).then(received => {
+                        onComplete(received);
+                    }).catch(reject);
+                }
             }
         });
     }
@@ -90,10 +104,28 @@ class Spawner extends EventEmitter {
                         let statuses = await this.awaitBroadcast('shardStatus');
                         await shard.send(eventKey, { message: statuses });
                         break;
+                    case 'tagList': {
+                        let shard0 = this.client.spawner.shards.get(0);
+                        let res = await shard0.awaitMessage('tagList');
+                        shard.send(eventKey, res);
+                        break;
+                    }
+                    case 'commandList': {
+                        let shard0 = this.client.spawner.shards.get(0);
+                        let res = await shard0.awaitMessage('commandList');
+                        shard.send(eventKey, res);
+                        break;
+                    }
                     default:
                         await shard.send(eventKey, 'Unknown await key: ' + data.message);
                         break;
                 }
+                break;
+            case 'eventGuild':
+                console.log(data);
+                break;
+            case 'eventGeneric':
+                console.log(data);
                 break;
             case 'threadReady':
                 shard.emit('threadReady');
@@ -105,19 +137,23 @@ class Spawner extends EventEmitter {
                 for (const guild of data)
                     this.guildShardMap[guild] = shard.id;
                 break;
-            case 'respawn':
+            case 'respawn': {
                 console.log('Respawning a shard');
+                let timer = new Timer().start();
                 await this.respawnShard(data.id || shard.id);
+                timer.end();
+                await this.client.discord.createMessage(data.channel, `The shard has been successfully respawned! It only took me ${timer.format()}`);
                 break;
-            case 'respawnAll':
+            }
+            case 'respawnAll': {
                 console.log('Respawning all shards');
-                console.log(data);
-                let start = moment();;
+                let timer = new Timer().start();
                 await this.respawnAll();
-                let diff = moment.duration(moment() - start);
-                await this.client.discord.createMessage(data.message, `I'm back! It only took me ${diff.minutes()} minutes, ${diff.seconds()} seconds, and ${diff.milliseconds()} milliseconds.`);
+                timer.end();
+                await this.client.discord.createMessage(data.message, `I'm back! It only took me ${timer.format()}.`);
                 console.log('Respawn complete.');
                 break;
+            }
             case 'guildCreate':
                 this.guildShardMap[data] = shard.js;
                 break;

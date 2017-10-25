@@ -14,7 +14,7 @@ const fs = require('fs'), path = require('path');
 
 global.Promise = require('bluebird');
 global._config = require('../config.json');
-global.console = new core.Logger(parseInt(process.env.SHARD_ID), _config.log.level || 'info').setGlobal();
+new core.Logger(parseInt(process.env.SHARD_ID), _config.log.level || 'info').setGlobal();
 
 class DiscordClient extends Eris.Client {
     constructor() {

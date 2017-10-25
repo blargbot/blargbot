@@ -219,6 +219,9 @@
             "prefixadded": "That prefix has been added!",
             "prefixremoved": "That prefix has been removed!",
             "nothingchanged": "Nothing was changed."
+        },
+        "warnings": {
+            "output": "**{{user}}** has accumulated **{{amount}}** warning(s) in **{{guild}}**."
         }
     },
     "image": {

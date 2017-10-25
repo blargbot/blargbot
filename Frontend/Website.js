@@ -13,7 +13,8 @@ const nuxt = new Nuxt(nuxtConfig);
 if (nuxt.options.dev) {
     new Builder(nuxt).build();
 }
-
+const Logger = require('../Core/Logger');
+new Logger(process.env.SHARD_ID, config.log.level || 'info').setGlobal();
 process.on('unhandledRejection', (err, p) => {
     console.error('Unhandled Promise Rejection:', err.stack);
 });
@@ -102,6 +103,7 @@ class Website extends Sender {
     start() {
         this.app.listen(this.port, () => {
             console.log('Website listening on port', this.port);
+            this.send('threadReady', process.env.SHARD_ID);
         });
     }
 

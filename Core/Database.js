@@ -8,6 +8,7 @@ class Database {
         this.sequelize = new sequelize(_config.database.postgres.database,
             _config.database.postgres.user,
             _config.database.postgres.pass, {
+                operatorsAliases: false,
                 host: _config.database.postgres.host,
                 dialect: 'postgres',
                 logging: console.database
@@ -42,7 +43,7 @@ class Database {
             this.client.models[key] = this.models[key].model;
         }
         console.init('Database models loaded. Loading Clyde');
-        const clyde = await this.client.getData(this.client.Constants.Types.Data.USER, 0, {
+        const clyde = await this.client.getData('User', 0, {
             username: 'Clyde',
             discriminator: '0000'
         });

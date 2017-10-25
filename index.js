@@ -15,7 +15,7 @@ global._config = require('./config.json');
 
 const core = require('./Core');
 
-new core.Logger('master', _config.log.level || 'info').setGlobal();
+new core.Logger('MS', _config.log.level || 'info').setGlobal();
 //_config.avatars = require(_config.general.isbeta ? './Data/avatarsBeta.json' : './Data/avatars.json');
 
 process.env['SHARD_ID'] = -1;

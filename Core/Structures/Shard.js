@@ -2,10 +2,11 @@ const Sender = require('./Sender');
 const childProcess = require('child_process');
 
 class Shard extends Sender {
-    constructor(id, manager) {
+    constructor(id, manager, file) {
         super();
         this.id = id;
         this.manager = manager;
+        this.file = file || this.manager.file;
         this.respawn = true;
 
         this.env = Object.assign({}, process.env, this.manager.env, {
@@ -18,7 +19,7 @@ class Shard extends Sender {
             return !/debug-brk/.test(a);
         });
 
-        this.process = childProcess.fork(this.manager.file, process.argv, {
+        this.process = childProcess.fork(this.file, process.argv, {
             env: this.env,
             execArgv
         });
