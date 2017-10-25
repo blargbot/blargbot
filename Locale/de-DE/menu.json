@@ -1,10 +1,10 @@
 {
-  "cancel":{
-    "name":"Abbrechen",
-    "description":"Schließe dieses Menü."
-  },
-  "confirm":{
-    "name":"Bestätigen",
-    "description":"Bestätigt dieses Menu."
-  }
+    "cancel": {
+        "name": "Abbrechen",
+        "description": "Schließe dieses Menü."
+    },
+    "confirm": {
+        "name": "Bestätigen",
+        "description": "Bestätigt dieses Menu."
+    }
 }
