@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-25 16:35:47
+ * @Last Modified time: 2017-10-25 16:38:38
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -20,12 +20,12 @@ bot.on('guildMemberUpdate', (guild, member, oldMember) => {
                 });
                 fields.push({
                     name: 'Old Nickname',
-                    value: oldMember.nick,
+                    value: oldMember.nick || member.user.username,
                     inline: true
                 });
                 fields.push({
                     name: 'New Nickname',
-                    value: member.nick,
+                    value: member.nick || member.user.username,
                     inline: true
                 });
 
