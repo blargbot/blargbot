@@ -1,81 +1,81 @@
 {
-  "language":"Italiano",
-  "header":{
-    "login":"Login",
-    "logout":"Logout",
-    "commands":"Comandi",
-    "bbtag":"BBTag",
-    "subtags":"Sottotag"
-  },
-  "generic":{
-    "loading":"Caricamento in corso",
-    "collapse":"Comprimi Tutto",
-    "expand":"Espandi Tutto",
-    "search":"Filtro...",
-    "noresults":"Uh oh! Non sono stati trovati risultati.",
-    "resultsfound":"Risultati corrispondenti:"
-  },
-  "index":{
-    "desc":"blargbot è un bot multipurpose di Discord dedicato a portare comandi e servizi di alta qualità, chatlogs e creazione di comandi personalizzati inclusi.",
-    "commands":{
-      "title":"Comandi",
-      "desc":"blargbot è dotato di numerosi comandi, ognuno dei quali sono documentati e classificati per la vostra comodità."
+    "language": "Italiano",
+    "header": {
+        "login": "Login",
+        "logout": "Logout",
+        "commands": "Comandi",
+        "bbtag": "BBTag",
+        "subtags": "Sottotag"
     },
-    "bbtag":{
-      "title":"BBTag",
-      "desc":"blargbot utilizza un sistema di tag sofisticato chiamato BBTag, che è possibile utilizzare per creare comandi personalizzati avanzati."
+    "generic": {
+        "loading": "Caricamento in corso",
+        "collapse": "Comprimi Tutto",
+        "expand": "Espandi Tutto",
+        "search": "Filtro...",
+        "noresults": "Uh oh! Non sono stati trovati risultati.",
+        "resultsfound": "Risultati corrispondenti:"
     },
-    "customization":{
-      "title":"Personalizzazione",
-      "desc":"Siamo consapevoli che non ogni gilda è la stessa, così blargbot ha personalizzazione estesa. È possibile controllare esattamente quali ruoli possono utilizzate quali comandi, specificare i prefissi personalizzati e anche cambiare la lingua di visualizzazione!"
+    "index": {
+        "desc": "blargbot è un bot multipurpose di Discord dedicato a portare comandi e servizi di alta qualità, chatlogs e creazione di comandi personalizzati inclusi.",
+        "commands": {
+            "title": "Comandi",
+            "desc": "blargbot è dotato di numerosi comandi, ognuno dei quali sono documentati e classificati per la vostra comodità."
+        },
+        "bbtag": {
+            "title": "BBTag",
+            "desc": "blargbot utilizza un sistema di tag sofisticato chiamato BBTag, che è possibile utilizzare per creare comandi personalizzati avanzati."
+        },
+        "customization": {
+            "title": "Personalizzazione",
+            "desc": "Siamo consapevoli che non ogni gilda è la stessa, così blargbot ha personalizzazione estesa. È possibile controllare esattamente quali ruoli possono utilizzate quali comandi, specificare i prefissi personalizzati e anche cambiare la lingua di visualizzazione!"
+        },
+        "moderation": {
+            "title": "Moderazione",
+            "desc": "Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+        },
+        "opensource": {
+            "title": "Open-Source",
+            "desc": "Condivisione è la cura! blargbot è completamente open-source sotto la licenza AGPLv3 GNU. Sentitevi liberi di dare un'occhiata e imparare come funziona il tutto. Se si utilizza uno qualsiasi dei miei codici nel proprio progetto, è necessario creditarmi. Vedere la licenza per ulteriori dettagli."
+        },
+        "suggestions": {
+            "title": "Aperti ai suggerimenti",
+            "desc": "Hai un suggerimento per il bot? Sarei felice di sentirlo! Trovato un bug? Mi piacerebbe sentire anche questo! Puoi suggerirmi qualunque cosa usando il comando `suggest`, entrando nella mia gilda o inviando un ticket."
+        }
     },
-    "moderation":{
-      "title":"Moderazione",
-      "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+    "bbtag": {
+        "main": "# BBTag\n> Non deve essere confuso con il BBCode!\n\nBBTag è un linguaggio template-based, costruito per fornire un framework potente per creare comandi personalizzati avanzati.\n\n### Terminologia\n\n- Una `tag` si riferisce ad un blocco del codice BBTag, non importa se è una tag pubblica o un comando personalizzato.\n- Una `sottotag` (subtag) si riferisce ad un componente BBTag. `tags` avanzate sono composte da molte `sottotag`.\n- Una `classe` (class) si riferisce ad un gruppo di`sottotag`.",
+        "subtags": {
+            "title": "Sottotags",
+            "desc": ""
+        },
+        "variables": {
+            "title": "",
+            "desc": ""
+        },
+        "arrays": {
+            "title": "",
+            "desc": ""
+        }
     },
-    "opensource":{
-      "title":"Open-Source",
-      "desc":"Condivisione è la cura! blargbot è completamente open-source sotto la licenza AGPLv3 GNU. Sentitevi liberi di dare un'occhiata e imparare come funziona il tutto. Se si utilizza uno qualsiasi dei miei codici nel proprio progetto, è necessario creditarmi. Vedere la licenza per ulteriori dettagli."
+    "subtags": {
+        "components": {
+            "argument": "",
+            "named": "",
+            "unnamed": "",
+            "array": "",
+            "staff": "",
+            "noimplicit": ""
+        },
+        "referdocs": ""
     },
-    "suggestions":{
-      "title":"Aperti ai suggerimenti",
-      "desc":"Hai un suggerimento per il bot? Sarei felice di sentirlo! Trovato un bug? Mi piacerebbe sentire anche questo! Puoi suggerirmi qualunque cosa usando il comando `suggest`, entrando nella mia gilda o inviando un ticket."
+    "commands": {
+        "title": "",
+        "desc": "",
+        "components": {
+            "usage": "",
+            "flags": "",
+            "aliases": "",
+            "subcommands": ""
+        }
     }
-  },
-  "bbtag":{
-    "main":"# BBTag\n> Non deve essere confuso con il BBCode!\n\nBBTag è un linguaggio template-based, costruito per fornire un framework potente per creare comandi personalizzati avanzati.\n\n### Terminologia\n\n- Una `tag` si riferisce ad un blocco del codice BBTag, non importa se è una tag pubblica o un comando personalizzato.\n- Una `sottotag` (subtag) si riferisce ad un componente BBTag. `tags` avanzate sono composte da molte `sottotag`.\n- Una `classe` (class) si riferisce ad un gruppo di`sottotag`.",
-    "subtags":{
-      "title":"Sottotags",
-      "desc":""
-    },
-    "variables":{
-      "title":"",
-      "desc":""
-    },
-    "arrays":{
-      "title":"",
-      "desc":""
-    }
-  },
-  "subtags":{
-    "components":{
-      "argument":"",
-      "named":"",
-      "unnamed":"",
-      "array":"",
-      "staff":"",
-      "noimplicit":""
-    },
-    "referdocs":""
-  },
-  "commands":{
-    "title":"",
-    "desc":"",
-    "components":{
-      "usage":"",
-      "flags":"",
-      "aliases":"",
-      "subcommands":""
-    }
-  }
 }
