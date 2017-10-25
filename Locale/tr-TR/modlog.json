@@ -1,26 +1,26 @@
 {
-  "events":{
-    "kick":"At",
-    "ban":"Ban",
-    "unban":"Ban kaldır",
-    "mute":"Sustur",
-    "unmute":"Susturmayı Aç",
-    "warn":"Uyarı",
-    "pardon":"Pardon",
-    "rename":"Yeniden adlandır",
-    "specialroleadd":"Özel rol eklendi",
-    "specialroleremove":"Özel rol kaldırıldı"
-  },
-  "case":"{{icon}} büyük {{number}}: {{event}}",
-  "setreason":"Sorumlu moderatör, neden ayarlamak için '{{number}} nedeni' Lütfen yapın.",
-  "warnings":{
-    "given":"Verilen uyarılar",
-    "removed":"Uyarılar affedildi",
-    "total":"Yeni toplam"
-  },
-  "rename":{
-    "old":"Eski adı",
-    "new":"Yeni adı"
-  },
-  "duration":"Süreç"
+    "events": {
+        "kick": "At",
+        "ban": "Ban",
+        "unban": "Ban kaldır",
+        "mute": "Sustur",
+        "unmute": "Susturmayı Aç",
+        "warn": "Uyarı",
+        "pardon": "Pardon",
+        "rename": "Yeniden adlandır",
+        "specialroleadd": "Özel rol eklendi",
+        "specialroleremove": "Özel rol kaldırıldı"
+    },
+    "case": "{{icon}} büyük {{number}}: {{event}}",
+    "setreason": "Sorumlu moderatör, neden ayarlamak için '{{number}} nedeni' Lütfen yapın.",
+    "warnings": {
+        "given": "Verilen uyarılar",
+        "removed": "Uyarılar affedildi",
+        "total": "Yeni toplam"
+    },
+    "rename": {
+        "old": "Eski adı",
+        "new": "Yeni adı"
+    },
+    "duration": "Süreç"
 }
