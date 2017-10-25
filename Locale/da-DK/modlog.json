@@ -1,26 +1,26 @@
 {
-  "events":{
-    "kick":"Smid ud",
-    "ban":"Udeluk",
-    "unban":"Ophæv udelukkelse",
-    "mute":"Ignorer",
-    "unmute":"Annuller Ignorering",
-    "warn":"Advarsel",
-    "pardon":"Undskyld",
-    "rename":"Omdøb",
-    "specialroleadd":"Særlige rolle tilføjet",
-    "specialroleremove":"Særlige rolle fjernet"
-  },
-  "case":"{{icon}} Case {{number}}: {{event}}",
-  "setreason":"Ansvarlige moderator, venligst skriv 'reason {{number}}' for at angive årsagen.",
-  "warnings":{
-    "given":"Advarsler Givet",
-    "removed":"Advarsler Benådet",
-    "total":"Nye Samlede"
-  },
-  "rename":{
-    "old":"Tidligere Navn",
-    "new":"Nyt Navn"
-  },
-  "duration":"Varighed"
+    "events": {
+        "kick": "Smid ud",
+        "ban": "Udeluk",
+        "unban": "Ophæv udelukkelse",
+        "mute": "Ignorer",
+        "unmute": "Annuller Ignorering",
+        "warn": "Advarsel",
+        "pardon": "Undskyld",
+        "rename": "Omdøb",
+        "specialroleadd": "Særlige rolle tilføjet",
+        "specialroleremove": "Særlige rolle fjernet"
+    },
+    "case": "{{icon}} Case {{number}}: {{event}}",
+    "setreason": "Ansvarlige moderator, venligst skriv 'reason {{number}}' for at angive årsagen.",
+    "warnings": {
+        "given": "Advarsler Givet",
+        "removed": "Advarsler Benådet",
+        "total": "Nye Samlede"
+    },
+    "rename": {
+        "old": "Tidligere Navn",
+        "new": "Nyt Navn"
+    },
+    "duration": "Varighed"
 }
