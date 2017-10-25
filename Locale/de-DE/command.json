@@ -1,338 +1,341 @@
 {
-  "general":{
-    "ping":{
-      "info":"Pong!\nFindet den command frequency",
-      "randmsg":[
-        "Existence ist eine lüge.",
-        "Du wirst irgendwann sterben,vielleicht bald.",
-        "Nichts lohn sich.",
-        "Nichts ist da draußen.",
-        "Moew.",
-        "Deine existence ist lächerlich.",
-        "Wir sind alle schon so gut wie tod.",
-        "Lass loß und zieh weiter.",
-        "Du bist alleine in einem unendlichen Universum.",
-        "Würdest du gerne einen vertrag mit mir machen?",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "final":""
-    },
-    "brainfuck":{
-      "info":"Führt brainfuck code aus",
-      "usage":"",
-      "flags":{
-        "p":"",
-        "i":""
-      }
-    },
-    "ship":{
-      "info":"Gibt dir den ship namen für zwei nutzer",
-      "usage":"",
-      "final":"Dein shipname ist **{{name}**!",
-      "notenough":"Du musst mir sagen wen ich shipen soll!"
-    },
-    "tag":{
-      "info":"",
-      "usage":"",
-      "dontown":"[[emote.x]] dieser tag gehört nicht dir",
-      "alreadyexists":"[[emote.x]] ein tag mit diesem namen existiert bereits",
-      "notag":"[[emote.x]] da ist kein tag mit diesem namen",
-      "tagset":"",
-      "tagrename":"",
-      "raw":"Der code für {{name}} ist:\n```{{code}}```",
-      "testoutput":"",
-      "subcommand":{
-        "set":{
-          "usage":"",
-          "info":""
+    "general": {
+        "ping": {
+            "info": "Pong!\nFindet den command frequency",
+            "randmsg": [
+                "Existence ist eine lüge.",
+                "Du wirst irgendwann sterben,vielleicht bald.",
+                "Nichts lohn sich.",
+                "Nichts ist da draußen.",
+                "Moew.",
+                "Deine existence ist lächerlich.",
+                "Wir sind alle schon so gut wie tod.",
+                "Lass loß und zieh weiter.",
+                "Du bist alleine in einem unendlichen Universum.",
+                "Würdest du gerne einen vertrag mit mir machen?",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "final": ""
         },
-        "delete":{
-          "usage":"",
-          "info":"Löscht ein tag der dir gehört"
+        "brainfuck": {
+            "info": "Führt brainfuck code aus",
+            "usage": "",
+            "flags": {
+                "p": "",
+                "i": ""
+            }
         },
-        "rename":{
-          "usage":"",
-          "info":"Bennent einen tag der dir gehört um"
+        "ship": {
+            "info": "Gibt dir den ship namen für zwei nutzer",
+            "usage": "",
+            "final": "Dein shipname ist **{{name}**!",
+            "notenough": "Du musst mir sagen wen ich shipen soll!"
         },
-        "raw":{
-          "usage":"",
-          "info":"Bekomst den rohen code eines tag."
+        "tag": {
+            "info": "",
+            "usage": "",
+            "dontown": "[[emote.x]] dieser tag gehört nicht dir",
+            "alreadyexists": "[[emote.x]] ein tag mit diesem namen existiert bereits",
+            "notag": "[[emote.x]] da ist kein tag mit diesem namen",
+            "tagset": "",
+            "tagrename": "",
+            "raw": "Der code für {{name}} ist:\n```{{code}}```",
+            "testoutput": "",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": ""
+                },
+                "delete": {
+                    "usage": "",
+                    "info": "Löscht ein tag der dir gehört"
+                },
+                "rename": {
+                    "usage": "",
+                    "info": "Bennent einen tag der dir gehört um"
+                },
+                "raw": {
+                    "usage": "",
+                    "info": "Bekomst den rohen code eines tag."
+                },
+                "info": {
+                    "usage": "",
+                    "info": "Zeight informationen über einen tag"
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": ""
+                },
+                "top": {
+                    "info": "Displays the tags that have been the most favourited."
+                },
+                "author": {
+                    "usage": "",
+                    "info": ""
+                },
+                "search": {
+                    "usage": "",
+                    "info": ""
+                },
+                "list": {
+                    "usage": "",
+                    "info": ""
+                },
+                "favorite": {
+                    "usage": "",
+                    "info": "Favorisier dein markierten tag"
+                },
+                "report": {
+                    "usage": "",
+                    "info": ""
+                },
+                "test": {
+                    "usage": "",
+                    "info": "Führt den gegebenen code aus in einer test Umgebung"
+                },
+                "help": {
+                    "usage": "",
+                    "info": ""
+                },
+                "docs": {
+                    "usage": "",
+                    "info": ""
+                },
+                "setdesc": {
+                    "info": "Info"
+                },
+                "setusage": {
+                    "info": ""
+                }
+            },
+            "subcommandnotfound": "",
+            "transferprompt": "",
+            "nobots": "[[emote.x]] du kannst nicht einen tag zu einem bot übertragen",
+            "transfercancelled": "[[emote.x]] die übertragung wurde abgebrochen",
+            "transfercomplete": "",
+            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
+            "descupdate": "",
+            "descreset": "",
+            "subcommandconflict": "",
+            "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+            "toptags": "Hier sind die top 10 tags\n\n{{tags}}",
+            "tagauthor": "Der tag '{{tag}}' wurde erstellt von **{{author}}**.",
+            "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
+            "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
+            "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
         },
-        "info":{
-          "usage":"",
-          "info":"Zeight informationen über einen tag"
+        "locale": {
+            "info": "",
+            "set": "Dein locale wurde festgelegt zu {{locale}}!",
+            "list": ""
         },
-        "transfer":{
-          "usage":"",
-          "info":""
+        "tokenify": {
+            "info": ""
         },
-        "top":{
-          "info":"Displays the tags that have been the most favourited."
+        "nato": {
+            "info": ""
         },
-        "author":{
-          "usage":"",
-          "info":""
+        "invite": {
+            "info": "",
+            "message": ""
         },
-        "search":{
-          "usage":"",
-          "info":""
+        "donate": {
+            "info": "",
+            "willdm": "",
+            "message": ""
         },
-        "list":{
-          "usage":"",
-          "info":""
+        "mods": {
+            "info": "",
+            "mods": "",
+            "nomods": "",
+            "nomodsonline": ""
         },
-        "favorite":{
-          "usage":"",
-          "info":"Favorisier dein markierten tag"
+        "help": {
+            "info": "",
+            "allcommands": "",
+            "nocommand": "",
+            "commandinfo": "",
+            "aliases": "",
+            "subcommand": "",
+            "command": "",
+            "nosubcommand": "",
+            "subcommands": ""
         },
-        "report":{
-          "usage":"",
-          "info":""
+        "gamatoto": {
+            "info": "",
+            "subcommand": {
+                "start": {
+                    "usage": "",
+                    "info": ""
+                },
+                "end": {
+                    "info": ""
+                },
+                "locations": {
+                    "info": ""
+                }
+            },
+            "stats": "",
+            "alreadystarted": "",
+            "notstarted": "",
+            "nolocation": "",
+            "invalidlocation": "",
+            "expeditionbeings": "",
+            "expeditionends": "",
+            "notimeelapsed": "",
+            "itemfound": "",
+            "levelup": "",
+            "gamatotoxp": "",
+            "itemincrease": "",
+            "locations": "",
+            "wronglevel": "",
+            "gamatotoitems": "",
+            "gamatotostats": "",
+            "gamatotocurrent": "",
+            "gamatotoidle": ""
         },
-        "test":{
-          "usage":"",
-          "info":"Führt den gegebenen code aus in einer test Umgebung"
+        "prefix": {
+            "info": "",
+            "subcommand": {
+                "add": {
+                    "usage": "",
+                    "info": ""
+                },
+                "remove": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "prefixlist": "",
+            "userprefixes": "",
+            "guildprefixes": "",
+            "noprefixes": "",
+            "defaultprefixes": "",
+            "prefixadded": "",
+            "prefixremoved": "",
+            "nothingchanged": ""
         },
-        "help":{
-          "usage":"",
-          "info":""
-        },
-        "docs":{
-          "usage":"",
-          "info":""
-        },
-        "setdesc":{
-          "info":"Info"
-        },
-        "setusage":{
-          "info":""
+        "warnings": {
+            "output": ""
         }
-      },
-      "subcommandnotfound":"",
-      "transferprompt":"",
-      "nobots":"[[emote.x]] du kannst nicht einen tag zu einem bot übertragen",
-      "transfercancelled":"[[emote.x]] die übertragung wurde abgebrochen",
-      "transfercomplete":"",
-      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
-      "descupdate":"",
-      "descreset":"",
-      "subcommandconflict":"",
-      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
-      "toptags":"Hier sind die top 10 tags\n\n{{tags}}",
-      "tagauthor":"Der tag '{{tag}}' wurde erstellt von **{{author}}**.",
-      "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
-      "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
-      "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
     },
-    "locale":{
-      "info":"",
-      "set":"Dein locale wurde festgelegt zu {{locale}}!",
-      "list":""
-    },
-    "tokenify":{
-      "info":""
-    },
-    "nato":{
-      "info":""
-    },
-    "invite":{
-      "info":"",
-      "message":""
-    },
-    "donate":{
-      "info":"",
-      "willdm":"",
-      "message":""
-    },
-    "mods":{
-      "info":"",
-      "mods":"",
-      "nomods":"",
-      "nomodsonline":""
-    },
-    "help":{
-      "info":"",
-      "allcommands":"",
-      "nocommand":"",
-      "commandinfo":"",
-      "aliases":"",
-      "subcommand":"",
-      "command":"",
-      "nosubcommand":"",
-      "subcommands":""
-    },
-    "gamatoto":{
-      "info":"",
-      "subcommand":{
-        "start":{
-          "usage":"",
-          "info":""
+    "image": {
+        "cat": {
+            "info": "Gibt dir eine süße schöne liebvolle katze\nD'awww!"
         },
-        "end":{
-          "info":""
+        "delete": {
+            "info": ""
         },
-        "locations":{
-          "info":""
+        "thesearch": {
+            "info": "",
+            "defaulttext": ""
+        },
+        "shit": {
+            "info": ""
         }
-      },
-      "stats":"",
-      "alreadystarted":"",
-      "notstarted":"",
-      "nolocation":"",
-      "invalidlocation":"",
-      "expeditionbeings":"",
-      "expeditionends":"",
-      "notimeelapsed":"",
-      "itemfound":"",
-      "levelup":"",
-      "gamatotoxp":"",
-      "itemincrease":"",
-      "locations":"",
-      "wronglevel":"",
-      "gamatotoitems":"",
-      "gamatotostats":"",
-      "gamatotocurrent":"",
-      "gamatotoidle":""
     },
-    "prefix":{
-      "info":"",
-      "subcommand":{
-        "add":{
-          "usage":"",
-          "info":""
+    "admin": {
+        "setup": {
+            "staff": {
+                "setrole": "",
+                "rolequery": ""
+            },
+            "info": "",
+            "subcommand": {
+                "staffuser": {
+                    "usage": "",
+                    "info": ""
+                },
+                "staffrole": {
+                    "info": ""
+                },
+                "mute": {
+                    "info": ""
+                },
+                "announcement": {
+                    "info": ""
+                },
+                "modlog": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "mute": {
+                "setrole": "Die mute rolle wurde geupdatet",
+                "rolequery": "Wählt die mute rolle"
+            },
+            "announce": {
+                "set": "",
+                "rolequery": "",
+                "channelquery": ""
+            },
+            "modlog": {
+                "set": "",
+                "remove": "",
+                "invalid": "",
+                "hadinvalid": "",
+                "list": ""
+            }
         },
-        "remove":{
-          "usage":"",
-          "info":""
+        "reason": {
+            "info": "",
+            "nocase": "",
+            "reasonset": ""
+        },
+        "help": {
+            "info": "",
+            "allcommands": "",
+            "nocommand": "",
+            "commandinfo": ""
+        },
+        "ccommand": {
+            "info": "",
+            "usage": "",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": ""
+                },
+                "delete": {
+                    "usage": "",
+                    "info": ""
+                },
+                "rename": {
+                    "usage": "",
+                    "info": ""
+                },
+                "author": {
+                    "usage": "",
+                    "info": ""
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": ""
+                },
+                "list": {
+                    "info": ""
+                },
+                "test": {
+                    "usage": "",
+                    "info": ""
+                },
+                "help": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dontown": "",
+            "notag": "",
+            "tagset": "",
+            "tagrename": "",
+            "raw": "",
+            "alreadyexists": "",
+            "testoutput": ""
         }
-      },
-      "prefixlist":"",
-      "userprefixes":"",
-      "guildprefixes":"",
-      "noprefixes":"",
-      "defaultprefixes":"",
-      "prefixadded":"",
-      "prefixremoved":"",
-      "nothingchanged":""
     }
-  },
-  "image":{
-    "cat":{
-      "info":"Gibt dir eine süße schöne liebvolle katze\nD'awww!"
-    },
-    "delete":{
-      "info":""
-    },
-    "thesearch":{
-      "info":"",
-      "defaulttext":""
-    },
-    "shit":{
-      "info":""
-    }
-  },
-  "admin":{
-    "setup":{
-      "staff":{
-        "setrole":"",
-        "rolequery":""
-      },
-      "info":"",
-      "subcommand":{
-        "staffuser":{
-          "usage":"",
-          "info":""
-        },
-        "staffrole":{
-          "info":""
-        },
-        "mute":{
-          "info":""
-        },
-        "announcement":{
-          "info":""
-        },
-        "modlog":{
-          "usage":"",
-          "info":""
-        }
-      },
-      "mute":{
-        "setrole":"Die mute rolle wurde geupdatet",
-        "rolequery":"Wählt die mute rolle"
-      },
-      "announce":{
-        "set":"",
-        "rolequery":"",
-        "channelquery":""
-      },
-      "modlog":{
-        "set":"",
-        "remove":"",
-        "invalid":"",
-        "hadinvalid":"",
-        "list":""
-      }
-    },
-    "reason":{
-      "info":"",
-      "nocase":"",
-      "reasonset":""
-    },
-    "help":{
-      "info":"",
-      "allcommands":"",
-      "nocommand":"",
-      "commandinfo":""
-    },
-    "ccommand":{
-      "info":"",
-      "usage":"",
-      "subcommand":{
-        "set":{
-          "usage":"",
-          "info":""
-        },
-        "delete":{
-          "usage":"",
-          "info":""
-        },
-        "rename":{
-          "usage":"",
-          "info":""
-        },
-        "author":{
-          "usage":"",
-          "info":""
-        },
-        "transfer":{
-          "usage":"",
-          "info":""
-        },
-        "list":{
-          "info":""
-        },
-        "test":{
-          "usage":"",
-          "info":""
-        },
-        "help":{
-          "usage":"",
-          "info":""
-        }
-      },
-      "dontown":"",
-      "notag":"",
-      "tagset":"",
-      "tagrename":"",
-      "raw":"",
-      "alreadyexists":"",
-      "testoutput":""
-    }
-  }
 }
