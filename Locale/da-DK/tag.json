@@ -1,224 +1,224 @@
 {
-  "array":{
-    "filter":{
-      "desc":"Gennemløber en matrix, hvis det aktuelle element til en lokal variabel \"i\". Hvis 'varName' er angivet, angiver denne variabel i stedet.\n\nReturnerer en ny matrix der kun indeholder elementer hvor resultatet af Iterationen var 'true' eller '1'."
+    "array": {
+        "filter": {
+            "desc": "Gennemløber en matrix, hvis det aktuelle element til en lokal variabel \"i\". Hvis 'varName' er angivet, angiver denne variabel i stedet.\n\nReturnerer en ny matrix der kun indeholder elementer hvor resultatet af Iterationen var 'true' eller '1'."
+        },
+        "foreach": {
+            "desc": "Gennemløber et array, hvis den lokale variabel `i` til det aktuelle element. Hvis `varName`, angiver denne variabel i stedet."
+        },
+        "get": {
+            "desc": "Får et element fra en matrix på position 'index'."
+        },
+        "isarray": {
+            "desc": "Returnerer true hvis det angivne element er et array, og false ellers. Du kan ikke bruge variabelnavne."
+        },
+        "join": {
+            "desc": "Slutter et array med den medfølgende 'delimiter'."
+        },
+        "length": {
+            "desc": "Returnerer længden af det givne array."
+        },
+        "map": {
+            "desc": ""
+        },
+        "pop": {
+            "desc": "Fjerner og retunerer det sidste element i arrayet."
+        },
+        "push": {
+            "desc": "Skubber et element til slutningen af et array. Returnerer den modificerede matrix."
+        },
+        "set": {
+            "desc": "Angiver et element i matrixen på det angivne `index`."
+        },
+        "shift": {
+            "desc": "Fjerner og retunerer det første element i arrayet."
+        },
+        "slice": {
+            "desc": ""
+        },
+        "sort": {
+            "desc": ""
+        },
+        "splice": {
+            "desc": "Startende fra position 'start', fjerner 'deleteCount' elementer fra matrixen og tilføjer de resterende elementer i denne stilling. Returnerer de fjernede elementer."
+        },
+        "split": {
+            "desc": "Splitter `teksten` ved `skilletegnet`, og returnerer det nye array."
+        },
+        "unshift": {
+            "desc": "Indsætter 'værdi' i begyndelsen af matrixen og returnerer den modificerede matrix."
+        }
     },
-    "foreach":{
-      "desc":"Gennemløber et array, hvis den lokale variabel `i` til det aktuelle element. Hvis `varName`, angiver denne variabel i stedet."
+    "channel": {
+        "id": {
+            "desc": "Returnerer ID'et af den nuværende eller specifierede kanal."
+        },
+        "nsfw": {
+            "desc": "Returner om kanalen er NSFW eller ej."
+        },
+        "name": {
+            "desc": "Returnerer navnet på den aktuelle eller angivne kanal."
+        },
+        "position": {
+            "desc": "Returnerer positionen for den aktuelle eller angivne kanal."
+        },
+        "topic": {
+            "desc": "Returnerer emnet for den aktuelle eller angivne kanal (kun tekst)."
+        },
+        "type": {
+            "desc": "Returnerer typen af den aktuelle eller angivne kanal (returnerer \"text\" eller \"voice\")."
+        }
     },
-    "get":{
-      "desc":"Får et element fra en matrix på position 'index'."
+    "general": {
+        "clean": {
+            "desc": "Renser det angivne tekst ved at skrumpe alle mellemrum."
+        },
+        "comment": {
+            "desc": ""
+        },
+        "get": {
+            "desc": "Returnerer den gemte variabel med den medfølgende navn. Variabel fortegn kan ændre den pool hvor der skal søges."
+        },
+        "set": {
+            "desc": "Indstiller variablen gemt med det angivne navn til den angivne værdi. Variabel præfikser kan ændre puljen til at indstille."
+        },
+        "trim": {
+            "desc": ""
+        },
+        "void": {
+            "desc": "Forhindrer output fra indenfor undertagget. Adskiller sig fra kommentar som ting er parset, bare ikke vises."
+        },
+        "newline": {
+            "desc": "Returnerer det angivne antal newlines, misligholdende til 1."
+        },
+        "space": {
+            "desc": ""
+        }
     },
-    "isarray":{
-      "desc":"Returnerer true hvis det angivne element er et array, og false ellers. Du kan ikke bruge variabelnavne."
+    "guild": {
+        "createdat": {
+            "desc": ""
+        },
+        "channels": {
+            "desc": ""
+        },
+        "icon": {
+            "desc": ""
+        },
+        "id": {
+            "desc": "Returnerer ID'ET på den nuværende server."
+        },
+        "name": {
+            "desc": "Returnerer navnet på den aktuelle guild."
+        },
+        "owner": {
+            "desc": "Returnerer ID'ET for serverens ejer."
+        },
+        "region": {
+            "desc": ""
+        },
+        "roles": {
+            "desc": "Returnerer en matrix af roller i den aktuelle server."
+        }
     },
-    "join":{
-      "desc":"Slutter et array med den medfølgende 'delimiter'."
+    "logic": {
+        "if": {
+            "desc": "If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nBrug dette med {logic} tagget."
+        },
+        "logic": {
+            "desc": ""
+        }
     },
-    "length":{
-      "desc":"Returnerer længden af det givne array."
+    "math": {
+        "abs": {
+            "desc": ""
+        },
+        "base": {
+            "desc": ""
+        },
+        "ceil": {
+            "desc": "Runder den angivne decimale op."
+        },
+        "floor": {
+            "desc": "Runder den angivne decimal ned."
+        },
+        "math": {
+            "desc": ""
+        },
+        "parsefloat": {
+            "desc": ""
+        },
+        "parseint": {
+            "desc": ""
+        },
+        "randint": {
+            "desc": ""
+        },
+        "round": {
+            "desc": ""
+        }
     },
-    "map":{
-      "desc":""
+    "message": {
+        "id": {
+            "desc": ""
+        }
     },
-    "pop":{
-      "desc":"Fjerner og retunerer det sidste element i arrayet."
+    "role": {
+        "color": {
+            "desc": "Returnerer farven af den angivne rolle i hexadecimal."
+        },
+        "id": {
+            "desc": "Returnerer ID'ET for den angivne rolle."
+        },
+        "mention": {
+            "desc": "Returnerer en omtale af den angivne rolle."
+        },
+        "name": {
+            "desc": "Returnerer navnet på den angivne rolle."
+        },
+        "position": {
+            "desc": "Returnerer placeringen af en bestemt rolle."
+        }
     },
-    "push":{
-      "desc":"Skubber et element til slutningen af et array. Returnerer den modificerede matrix."
-    },
-    "set":{
-      "desc":"Angiver et element i matrixen på det angivne `index`."
-    },
-    "shift":{
-      "desc":"Fjerner og retunerer det første element i arrayet."
-    },
-    "slice":{
-      "desc":""
-    },
-    "sort":{
-      "desc":""
-    },
-    "splice":{
-      "desc":"Startende fra position 'start', fjerner 'deleteCount' elementer fra matrixen og tilføjer de resterende elementer i denne stilling. Returnerer de fjernede elementer."
-    },
-    "split":{
-      "desc":"Splitter `teksten` ved `skilletegnet`, og returnerer det nye array."
-    },
-    "unshift":{
-      "desc":"Indsætter 'værdi' i begyndelsen af matrixen og returnerer den modificerede matrix."
+    "user": {
+        "avatar": {
+            "desc": ""
+        },
+        "createdat": {
+            "desc": ""
+        },
+        "discrim": {
+            "desc": "Returnerer diskrimanotoren af en specificeret bruger,"
+        },
+        "fullname": {
+            "desc": ""
+        },
+        "game": {
+            "desc": ""
+        },
+        "id": {
+            "desc": ""
+        },
+        "joinedat": {
+            "desc": ""
+        },
+        "mention": {
+            "desc": "Nævner den angivne bruger, misligholdende til den fuldbyrdende bruger."
+        },
+        "name": {
+            "desc": ""
+        },
+        "nick": {
+            "desc": "Returnerer kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
+        },
+        "roles": {
+            "desc": ""
+        },
+        "setnick": {
+            "desc": "Angiver kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
+        },
+        "status": {
+            "desc": ""
+        }
     }
-  },
-  "channel":{
-    "id":{
-      "desc":"Returnerer ID'et af den nuværende eller specifierede kanal."
-    },
-    "nsfw":{
-      "desc":"Returner om kanalen er NSFW eller ej."
-    },
-    "name":{
-      "desc":"Returnerer navnet på den aktuelle eller angivne kanal."
-    },
-    "position":{
-      "desc":"Returnerer positionen for den aktuelle eller angivne kanal."
-    },
-    "topic":{
-      "desc":"Returnerer emnet for den aktuelle eller angivne kanal (kun tekst)."
-    },
-    "type":{
-      "desc":"Returnerer typen af den aktuelle eller angivne kanal (returnerer \"text\" eller \"voice\")."
-    }
-  },
-  "general":{
-    "clean":{
-      "desc":"Renser det angivne tekst ved at skrumpe alle mellemrum."
-    },
-    "comment":{
-      "desc":""
-    },
-    "get":{
-      "desc":"Returnerer den gemte variabel med den medfølgende navn. Variabel fortegn kan ændre den pool hvor der skal søges."
-    },
-    "set":{
-      "desc":"Indstiller variablen gemt med det angivne navn til den angivne værdi. Variabel præfikser kan ændre puljen til at indstille."
-    },
-    "trim":{
-      "desc":""
-    },
-    "void":{
-      "desc":"Forhindrer output fra indenfor undertagget. Adskiller sig fra kommentar som ting er parset, bare ikke vises."
-    },
-    "newline":{
-      "desc":"Returnerer det angivne antal newlines, misligholdende til 1."
-    },
-    "space":{
-      "desc":""
-    }
-  },
-  "guild":{
-    "createdat":{
-      "desc":""
-    },
-    "channels":{
-      "desc":""
-    },
-    "icon":{
-      "desc":""
-    },
-    "id":{
-      "desc":"Returnerer ID'ET på den nuværende server."
-    },
-    "name":{
-      "desc":"Returnerer navnet på den aktuelle guild."
-    },
-    "owner":{
-      "desc":"Returnerer ID'ET for serverens ejer."
-    },
-    "region":{
-      "desc":""
-    },
-    "roles":{
-      "desc":"Returnerer en matrix af roller i den aktuelle server."
-    }
-  },
-  "logic":{
-    "if":{
-      "desc":"If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nBrug dette med {logic} tagget."
-    },
-    "logic":{
-      "desc":""
-    }
-  },
-  "math":{
-    "abs":{
-      "desc":""
-    },
-    "base":{
-      "desc":""
-    },
-    "ceil":{
-      "desc":"Runder den angivne decimale op."
-    },
-    "floor":{
-      "desc":"Runder den angivne decimal ned."
-    },
-    "math":{
-      "desc":""
-    },
-    "parsefloat":{
-      "desc":""
-    },
-    "parseint":{
-      "desc":""
-    },
-    "randint":{
-      "desc":""
-    },
-    "round":{
-      "desc":""
-    }
-  },
-  "message":{
-    "id":{
-      "desc":""
-    }
-  },
-  "role":{
-    "color":{
-      "desc":"Returnerer farven af den angivne rolle i hexadecimal."
-    },
-    "id":{
-      "desc":"Returnerer ID'ET for den angivne rolle."
-    },
-    "mention":{
-      "desc":"Returnerer en omtale af den angivne rolle."
-    },
-    "name":{
-      "desc":"Returnerer navnet på den angivne rolle."
-    },
-    "position":{
-      "desc":"Returnerer placeringen af en bestemt rolle."
-    }
-  },
-  "user":{
-    "avatar":{
-      "desc":""
-    },
-    "createdat":{
-      "desc":""
-    },
-    "discrim":{
-      "desc":"Returnerer diskrimanotoren af en specificeret bruger,"
-    },
-    "fullname":{
-      "desc":""
-    },
-    "game":{
-      "desc":""
-    },
-    "id":{
-      "desc":""
-    },
-    "joinedat":{
-      "desc":""
-    },
-    "mention":{
-      "desc":"Nævner den angivne bruger, misligholdende til den fuldbyrdende bruger."
-    },
-    "name":{
-      "desc":""
-    },
-    "nick":{
-      "desc":"Returnerer kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
-    },
-    "roles":{
-      "desc":""
-    },
-    "setnick":{
-      "desc":"Angiver kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
-    },
-    "status":{
-      "desc":""
-    }
-  }
 }
