@@ -1,338 +1,341 @@
 {
-  "general":{
-    "ping":{
-      "info":"Pong!\nMide la latencia del comando.",
-      "randmsg":[
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "final":""
-    },
-    "brainfuck":{
-      "info":"",
-      "usage":"",
-      "flags":{
-        "p":"",
-        "i":""
-      }
-    },
-    "ship":{
-      "info":"",
-      "usage":"",
-      "final":"Your shipname is **{{name}}**!",
-      "notenough":""
-    },
-    "tag":{
-      "info":"",
-      "usage":"",
-      "dontown":"",
-      "alreadyexists":"",
-      "notag":"",
-      "tagset":"",
-      "tagrename":"",
-      "raw":"",
-      "testoutput":"",
-      "subcommand":{
-        "set":{
-          "usage":"",
-          "info":"Crea o edita una tag con el nombre y contenido previsto. No reemplazará alguna tag hecha por alguien más."
+    "general": {
+        "ping": {
+            "info": "Pong!\nMide la latencia del comando.",
+            "randmsg": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "final": ""
         },
-        "delete":{
-          "usage":"",
-          "info":"Elimina una tag que poseeas."
+        "brainfuck": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "p": "",
+                "i": ""
+            }
         },
-        "rename":{
-          "usage":"",
-          "info":"Cambia el nombre a una tag que poseeas."
+        "ship": {
+            "info": "",
+            "usage": "",
+            "final": "Your shipname is **{{name}}**!",
+            "notenough": ""
         },
-        "raw":{
-          "usage":"",
-          "info":"Muestra el código sin formato de una tag."
+        "tag": {
+            "info": "",
+            "usage": "",
+            "dontown": "",
+            "alreadyexists": "",
+            "notag": "",
+            "tagset": "",
+            "tagrename": "",
+            "raw": "",
+            "testoutput": "",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": "Crea o edita una tag con el nombre y contenido previsto. No reemplazará alguna tag hecha por alguien más."
+                },
+                "delete": {
+                    "usage": "",
+                    "info": "Elimina una tag que poseeas."
+                },
+                "rename": {
+                    "usage": "",
+                    "info": "Cambia el nombre a una tag que poseeas."
+                },
+                "raw": {
+                    "usage": "",
+                    "info": "Muestra el código sin formato de una tag."
+                },
+                "info": {
+                    "usage": "",
+                    "info": "Muestra la información de una tag."
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": "Transfiere la tag al usuario especificado. Las variables no serán transferidas."
+                },
+                "top": {
+                    "info": "Muestra las tags que tienen más Favoritos."
+                },
+                "author": {
+                    "usage": "",
+                    "info": "Muestra el autor de una tag."
+                },
+                "search": {
+                    "usage": "",
+                    "info": "Busca por una tag con un nombre que contenga los términos."
+                },
+                "list": {
+                    "usage": "",
+                    "info": "Muestra todas las tags creadas por un usuario"
+                },
+                "favorite": {
+                    "usage": "",
+                    "info": "Marca como favorito la tag especificada."
+                },
+                "report": {
+                    "usage": "",
+                    "info": "Reporta una tag por violar los Términos de Servicio. Úsalo con responsabilidad."
+                },
+                "test": {
+                    "usage": "",
+                    "info": "Ejecuta el código previsto en un ambiente de pruebas."
+                },
+                "help": {
+                    "usage": "",
+                    "info": "Muestra esto!"
+                },
+                "docs": {
+                    "usage": "",
+                    "info": "Muestra un enlace a la documentación de BBTag, o enseña información acerca de una subtag específica."
+                },
+                "setdesc": {
+                    "info": "Información"
+                },
+                "setusage": {
+                    "info": "Información"
+                }
+            },
+            "subcommandnotfound": "",
+            "transferprompt": "",
+            "nobots": "",
+            "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
+            "transfercomplete": "",
+            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
+            "descupdate": "",
+            "descreset": "",
+            "subcommandconflict": "",
+            "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+            "toptags": "",
+            "tagauthor": "",
+            "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
+            "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
+            "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
         },
-        "info":{
-          "usage":"",
-          "info":"Muestra la información de una tag."
+        "locale": {
+            "info": "",
+            "set": "Su configuración se ha establecido en {{ajuste}}!",
+            "list": "Su configuración actual es"
         },
-        "transfer":{
-          "usage":"",
-          "info":"Transfiere la tag al usuario especificado. Las variables no serán transferidas."
+        "tokenify": {
+            "info": ""
         },
-        "top":{
-          "info":"Muestra las tags que tienen más Favoritos."
+        "nato": {
+            "info": ""
         },
-        "author":{
-          "usage":"",
-          "info":"Muestra el autor de una tag."
+        "invite": {
+            "info": "",
+            "message": ""
         },
-        "search":{
-          "usage":"",
-          "info":"Busca por una tag con un nombre que contenga los términos."
+        "donate": {
+            "info": "",
+            "willdm": "",
+            "message": ""
         },
-        "list":{
-          "usage":"",
-          "info":"Muestra todas las tags creadas por un usuario"
+        "mods": {
+            "info": "",
+            "mods": "",
+            "nomods": "",
+            "nomodsonline": ""
         },
-        "favorite":{
-          "usage":"",
-          "info":"Marca como favorito la tag especificada."
+        "help": {
+            "info": "",
+            "allcommands": "",
+            "nocommand": "",
+            "commandinfo": "",
+            "aliases": "",
+            "subcommand": "",
+            "command": "",
+            "nosubcommand": "",
+            "subcommands": ""
         },
-        "report":{
-          "usage":"",
-          "info":"Reporta una tag por violar los Términos de Servicio. Úsalo con responsabilidad."
+        "gamatoto": {
+            "info": "",
+            "subcommand": {
+                "start": {
+                    "usage": "",
+                    "info": ""
+                },
+                "end": {
+                    "info": ""
+                },
+                "locations": {
+                    "info": ""
+                }
+            },
+            "stats": "",
+            "alreadystarted": "",
+            "notstarted": "",
+            "nolocation": "",
+            "invalidlocation": "",
+            "expeditionbeings": "",
+            "expeditionends": "",
+            "notimeelapsed": "",
+            "itemfound": "",
+            "levelup": "",
+            "gamatotoxp": "",
+            "itemincrease": "",
+            "locations": "",
+            "wronglevel": "",
+            "gamatotoitems": "",
+            "gamatotostats": "",
+            "gamatotocurrent": "",
+            "gamatotoidle": ""
         },
-        "test":{
-          "usage":"",
-          "info":"Ejecuta el código previsto en un ambiente de pruebas."
+        "prefix": {
+            "info": "",
+            "subcommand": {
+                "add": {
+                    "usage": "",
+                    "info": ""
+                },
+                "remove": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "prefixlist": "",
+            "userprefixes": "",
+            "guildprefixes": "",
+            "noprefixes": "",
+            "defaultprefixes": "",
+            "prefixadded": "",
+            "prefixremoved": "",
+            "nothingchanged": ""
         },
-        "help":{
-          "usage":"",
-          "info":"Muestra esto!"
-        },
-        "docs":{
-          "usage":"",
-          "info":"Muestra un enlace a la documentación de BBTag, o enseña información acerca de una subtag específica."
-        },
-        "setdesc":{
-          "info":"Información"
-        },
-        "setusage":{
-          "info":"Información"
+        "warnings": {
+            "output": ""
         }
-      },
-      "subcommandnotfound":"",
-      "transferprompt":"",
-      "nobots":"",
-      "transfercancelled":"[[emote.x]] The transfer has been cancelled.",
-      "transfercomplete":"",
-      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
-      "descupdate":"",
-      "descreset":"",
-      "subcommandconflict":"",
-      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
-      "toptags":"",
-      "tagauthor":"",
-      "favouriteadd":"The tag `{{tag}}` has been added to your favourites list.",
-      "favouriteremove":"The tag `{{tag}}` has been removed from your favourites list.",
-      "favourites":"You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
     },
-    "locale":{
-      "info":"",
-      "set":"Su configuración se ha establecido en {{ajuste}}!",
-      "list":"Su configuración actual es"
-    },
-    "tokenify":{
-      "info":""
-    },
-    "nato":{
-      "info":""
-    },
-    "invite":{
-      "info":"",
-      "message":""
-    },
-    "donate":{
-      "info":"",
-      "willdm":"",
-      "message":""
-    },
-    "mods":{
-      "info":"",
-      "mods":"",
-      "nomods":"",
-      "nomodsonline":""
-    },
-    "help":{
-      "info":"",
-      "allcommands":"",
-      "nocommand":"",
-      "commandinfo":"",
-      "aliases":"",
-      "subcommand":"",
-      "command":"",
-      "nosubcommand":"",
-      "subcommands":""
-    },
-    "gamatoto":{
-      "info":"",
-      "subcommand":{
-        "start":{
-          "usage":"",
-          "info":""
+    "image": {
+        "cat": {
+            "info": ""
         },
-        "end":{
-          "info":""
+        "delete": {
+            "info": ""
         },
-        "locations":{
-          "info":""
+        "thesearch": {
+            "info": "",
+            "defaulttext": ""
+        },
+        "shit": {
+            "info": ""
         }
-      },
-      "stats":"",
-      "alreadystarted":"",
-      "notstarted":"",
-      "nolocation":"",
-      "invalidlocation":"",
-      "expeditionbeings":"",
-      "expeditionends":"",
-      "notimeelapsed":"",
-      "itemfound":"",
-      "levelup":"",
-      "gamatotoxp":"",
-      "itemincrease":"",
-      "locations":"",
-      "wronglevel":"",
-      "gamatotoitems":"",
-      "gamatotostats":"",
-      "gamatotocurrent":"",
-      "gamatotoidle":""
     },
-    "prefix":{
-      "info":"",
-      "subcommand":{
-        "add":{
-          "usage":"",
-          "info":""
+    "admin": {
+        "setup": {
+            "staff": {
+                "setrole": "",
+                "rolequery": ""
+            },
+            "info": "",
+            "subcommand": {
+                "staffuser": {
+                    "usage": "",
+                    "info": ""
+                },
+                "staffrole": {
+                    "info": ""
+                },
+                "mute": {
+                    "info": ""
+                },
+                "announcement": {
+                    "info": ""
+                },
+                "modlog": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "mute": {
+                "setrole": "",
+                "rolequery": ""
+            },
+            "announce": {
+                "set": "",
+                "rolequery": "",
+                "channelquery": ""
+            },
+            "modlog": {
+                "set": "",
+                "remove": "",
+                "invalid": "",
+                "hadinvalid": "",
+                "list": ""
+            }
         },
-        "remove":{
-          "usage":"",
-          "info":""
+        "reason": {
+            "info": "",
+            "nocase": "",
+            "reasonset": ""
+        },
+        "help": {
+            "info": "",
+            "allcommands": "",
+            "nocommand": "",
+            "commandinfo": ""
+        },
+        "ccommand": {
+            "info": "",
+            "usage": "",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": ""
+                },
+                "delete": {
+                    "usage": "",
+                    "info": ""
+                },
+                "rename": {
+                    "usage": "",
+                    "info": ""
+                },
+                "author": {
+                    "usage": "",
+                    "info": ""
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": ""
+                },
+                "list": {
+                    "info": ""
+                },
+                "test": {
+                    "usage": "",
+                    "info": ""
+                },
+                "help": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dontown": "",
+            "notag": "",
+            "tagset": "",
+            "tagrename": "",
+            "raw": "",
+            "alreadyexists": "",
+            "testoutput": ""
         }
-      },
-      "prefixlist":"",
-      "userprefixes":"",
-      "guildprefixes":"",
-      "noprefixes":"",
-      "defaultprefixes":"",
-      "prefixadded":"",
-      "prefixremoved":"",
-      "nothingchanged":""
     }
-  },
-  "image":{
-    "cat":{
-      "info":""
-    },
-    "delete":{
-      "info":""
-    },
-    "thesearch":{
-      "info":"",
-      "defaulttext":""
-    },
-    "shit":{
-      "info":""
-    }
-  },
-  "admin":{
-    "setup":{
-      "staff":{
-        "setrole":"",
-        "rolequery":""
-      },
-      "info":"",
-      "subcommand":{
-        "staffuser":{
-          "usage":"",
-          "info":""
-        },
-        "staffrole":{
-          "info":""
-        },
-        "mute":{
-          "info":""
-        },
-        "announcement":{
-          "info":""
-        },
-        "modlog":{
-          "usage":"",
-          "info":""
-        }
-      },
-      "mute":{
-        "setrole":"",
-        "rolequery":""
-      },
-      "announce":{
-        "set":"",
-        "rolequery":"",
-        "channelquery":""
-      },
-      "modlog":{
-        "set":"",
-        "remove":"",
-        "invalid":"",
-        "hadinvalid":"",
-        "list":""
-      }
-    },
-    "reason":{
-      "info":"",
-      "nocase":"",
-      "reasonset":""
-    },
-    "help":{
-      "info":"",
-      "allcommands":"",
-      "nocommand":"",
-      "commandinfo":""
-    },
-    "ccommand":{
-      "info":"",
-      "usage":"",
-      "subcommand":{
-        "set":{
-          "usage":"",
-          "info":""
-        },
-        "delete":{
-          "usage":"",
-          "info":""
-        },
-        "rename":{
-          "usage":"",
-          "info":""
-        },
-        "author":{
-          "usage":"",
-          "info":""
-        },
-        "transfer":{
-          "usage":"",
-          "info":""
-        },
-        "list":{
-          "info":""
-        },
-        "test":{
-          "usage":"",
-          "info":""
-        },
-        "help":{
-          "usage":"",
-          "info":""
-        }
-      },
-      "dontown":"",
-      "notag":"",
-      "tagset":"",
-      "tagrename":"",
-      "raw":"",
-      "alreadyexists":"",
-      "testoutput":""
-    }
-  }
 }
