@@ -1,338 +1,341 @@
 {
-  "general":{
-    "ping":{
-      "info":"Pong! \nKomut gecikme süresi bulunur.",
-      "randmsg":[
-        "Varlığı bir yalandır.",
-        "Belki yakında bir gün, ölmeye gidiyoruz.",
-        "Hiçbir şeyin önemi yok.",
-        "Nerede bitiyor?",
-        "Orada bir şey yoktur.",
-        "Bir sonsuz boşlukta yalnızsın.",
-        "Gerçek şu ki yanlıştır.",
-        "Her şeyi terketmek.",
-        "Acınacak varlığıdır.",
-        "Hepimiz zaten ölü.",
-        "Miyav.",
-        "Özgürlük korkudur.",
-        "Boyun eğdirme kurtuluş olduğunu.",
-        "Gerçek çelişkidir.",
-        "Bir sözleşme yapmak ister misiniz?",
-        "Git ve devam edelim."
-      ],
-      "final":"Pong! ({{time}}ms)"
-    },
-    "brainfuck":{
-      "info":"Brainfuck kod çalıştırır.",
-      "usage":"<code>",
-      "flags":{
-        "p":"Yürütme sonrasında işaretçiler listesini gösterir.",
-        "i":"Giriş ',' işleç belirtir."
-      }
-    },
-    "ship":{
-      "info":"İki kullanıcı için gemi ad verir.",
-      "usage":"<user1><user2>",
-      "final":"Gemi adın **{{name}} **!",
-      "notenough":"Bana söylemek zorunda kim sevk etmek!"
-    },
-    "tag":{
-      "info":"Etiketler herkes oluşturma veya yürütme, BBTag dilini kullanarak genel komutlar bir sistemi vardır. \n** Alt komutları **: \nbir alt komutu hakkında daha fazla bilgi için{{subcommands}} yapmak ' b! t yardım <subcommand>' \n\nBBTag hakkında daha fazla bilgi için < https://blargbot.xyz/tags > ziyaret edin. Bir etiket oluşturarak, hizmet şartları (< https://blargbot.xyz/tags/tos >) için kabul etmiş oluyorsunuz.",
-      "usage":"<name | subcommand> [args]",
-      "dontown":"[[emote.x]] Bu etikete sahip değilsin!",
-      "alreadyexists":"[[emote.x]] Bu adda bir etiket zaten var!",
-      "notag":"[[emote.x]] Bu ada sahip bir etikettir.",
-      "tagset":"[[emote.check]] Etiket '{{name}}' {{process}}!",
-      "tagrename":"[[emote.check]] Etiket '{{old}}' '{{new}}' adı değiştirilmiş.",
-      "raw":"{{name}} için kod: '''{{code}} '''",
-      "testoutput":"Test çıktı:{{output}}",
-      "subcommand":{
-        "set":{
-          "usage":"<name><content>",
-          "info":"Oluşturur veya bir etiket sağlanan adı ve içeriği düzenler. Başkaları tarafından yapılan herhangi bir etiket değiştirmez."
+    "general": {
+        "ping": {
+            "info": "Pong! \nKomut gecikme süresi bulunur.",
+            "randmsg": [
+                "Varlığı bir yalandır.",
+                "Belki yakında bir gün, ölmeye gidiyoruz.",
+                "Hiçbir şeyin önemi yok.",
+                "Nerede bitiyor?",
+                "Orada bir şey yoktur.",
+                "Bir sonsuz boşlukta yalnızsın.",
+                "Gerçek şu ki yanlıştır.",
+                "Her şeyi terketmek.",
+                "Acınacak varlığıdır.",
+                "Hepimiz zaten ölü.",
+                "Miyav.",
+                "Özgürlük korkudur.",
+                "Boyun eğdirme kurtuluş olduğunu.",
+                "Gerçek çelişkidir.",
+                "Bir sözleşme yapmak ister misiniz?",
+                "Git ve devam edelim."
+            ],
+            "final": "Pong! ({{time}}ms)"
         },
-        "delete":{
-          "usage":"<name>",
-          "info":"Size ait bir etiketi siler."
+        "brainfuck": {
+            "info": "Brainfuck kod çalıştırır.",
+            "usage": "<code>",
+            "flags": {
+                "p": "Yürütme sonrasında işaretçiler listesini gösterir.",
+                "i": "Giriş ',' işleç belirtir."
+            }
         },
-        "rename":{
-          "usage":"<name> <new name>",
-          "info":"Size ait bir etiketi yeniden adlandırır."
+        "ship": {
+            "info": "İki kullanıcı için gemi ad verir.",
+            "usage": "<user1><user2>",
+            "final": "Gemi adın **{{name}} **!",
+            "notenough": "Bana söylemek zorunda kim sevk etmek!"
         },
-        "raw":{
-          "usage":"<name>",
-          "info":"Bir etiket ham kodu alır."
+        "tag": {
+            "info": "Etiketler herkes oluşturma veya yürütme, BBTag dilini kullanarak genel komutlar bir sistemi vardır. \n** Alt komutları **: \nbir alt komutu hakkında daha fazla bilgi için{{subcommands}} yapmak ' b! t yardım <subcommand>' \n\nBBTag hakkında daha fazla bilgi için < https://blargbot.xyz/tags > ziyaret edin. Bir etiket oluşturarak, hizmet şartları (< https://blargbot.xyz/tags/tos >) için kabul etmiş oluyorsunuz.",
+            "usage": "<name | subcommand> [args]",
+            "dontown": "[[emote.x]] Bu etikete sahip değilsin!",
+            "alreadyexists": "[[emote.x]] Bu adda bir etiket zaten var!",
+            "notag": "[[emote.x]] Bu ada sahip bir etikettir.",
+            "tagset": "[[emote.check]] Etiket '{{name}}' {{process}}!",
+            "tagrename": "[[emote.check]] Etiket '{{old}}' '{{new}}' adı değiştirilmiş.",
+            "raw": "{{name}} için kod: '''{{code}} '''",
+            "testoutput": "Test çıktı:{{output}}",
+            "subcommand": {
+                "set": {
+                    "usage": "<name><content>",
+                    "info": "Oluşturur veya bir etiket sağlanan adı ve içeriği düzenler. Başkaları tarafından yapılan herhangi bir etiket değiştirmez."
+                },
+                "delete": {
+                    "usage": "<name>",
+                    "info": "Size ait bir etiketi siler."
+                },
+                "rename": {
+                    "usage": "<name> <new name>",
+                    "info": "Size ait bir etiketi yeniden adlandırır."
+                },
+                "raw": {
+                    "usage": "<name>",
+                    "info": "Bir etiket ham kodu alır."
+                },
+                "info": {
+                    "usage": "<name>",
+                    "info": "Bir etiketi hakkındaki bilgileri görüntüler."
+                },
+                "transfer": {
+                    "usage": "<name><user>",
+                    "info": "Bir etiketi belirtilen kullanıcıya aktarır. Değişkenleri aktarılmaz."
+                },
+                "top": {
+                    "info": "En çok beğenilen olmuştur etiketleri görüntüler."
+                },
+                "author": {
+                    "usage": "<name>",
+                    "info": "Görüntüler bir etiketi yazar."
+                },
+                "search": {
+                    "usage": "<query>",
+                    "info": "Sorgu içeren bir adla bir etiket arar."
+                },
+                "list": {
+                    "usage": "[@user]",
+                    "info": "Tüm etiketleri veya belirli bir kullanıcı tarafından oluşturulan isteğe bağlı olarak tüm etiketleri listeler."
+                },
+                "favorite": {
+                    "usage": "<name>",
+                    "info": "Sık Kullanılanlar belirtilen etiket."
+                },
+                "report": {
+                    "usage": "<name>",
+                    "info": "ToS ihlal için bir etiket bildirir. Lütfen sorumlu bir şekilde kullanın."
+                },
+                "test": {
+                    "usage": "<code>",
+                    "info": "Verilen kodu bir sınama ortamında tam olarak yürütür."
+                },
+                "help": {
+                    "usage": "[subcommand]",
+                    "info": "Bu görüntüler!"
+                },
+                "docs": {
+                    "usage": "[subtag]",
+                    "info": "BBTag belgeler için bir bağlantı sunar veya belirli bir alt etiket hakkında bilgi sağlar."
+                },
+                "setdesc": {
+                    "info": "info"
+                },
+                "setusage": {
+                    "info": "info"
+                }
+            },
+            "subcommandnotfound": "'{{subcommand}}' adı ile bir alt bulamadım.",
+            "transferprompt": "{{target}}, {{user}} '{{tag}}' etiketi sahipliğini aktarmak istiyor. Kabul ediyor musunuz? Bu değişkenler aktarılamayan.",
+            "nobots": "[[emote.x]] Bir bot için bir etiket aktaramazsınız!",
+            "transfercancelled": "[[emote.x]] Aktarımı iptal edildi.",
+            "transfercomplete": "[[emote.check]] {{user}} şimdi etiket '{{tag}}' sahibi.",
+            "taginfo": "__ ** Etiketi | {{name}} ** \n__ Yazar: **{{author}} ** \nson değişiklik: **{{lastModified}} ** \nbu kez kullanılan toplam **{{uses}} kez **! \nÇok beğenilen oldu **{{favourites}} kez **!",
+            "descupdate": "'{{tag}}' için açıklama güncelleştirildi.",
+            "descreset": "'{{tag}}' için açıklama sıfırlandı.",
+            "subcommandconflict": "Bu ada sahip bir alt olduğu '{{name}}' adı kullanılamaz!",
+            "toptagformat": "{{index}}. **{{name}} ** ({{author}}) - \nSık Kullanılanlar: {{favourites}} kullanır: {{uses}}",
+            "toptags": "İşte en iyi 10 Etiketler var! \n\n{{tags}}",
+            "tagauthor": "Etiket '{{tag}}' tarafından oluşturuldu **{{author}} **",
+            "favouriteadd": "Etiket '{{tag}}' Sık Kullanılanlar listenize eklendi.",
+            "favouriteremove": "Etiket '{{tag}}' Sık Kullanılanlar listenizden kaldırıldı.",
+            "favourites": "Sık Kullanılanlar listenizde {{count}} Etiketler var. '''{{tags}} tamir '''"
         },
-        "info":{
-          "usage":"<name>",
-          "info":"Bir etiketi hakkındaki bilgileri görüntüler."
+        "locale": {
+            "info": "Yerel iletiler gönderilir ayarlar.",
+            "set": "Yerel {{locale}} için ayarlanmış!",
+            "list": "Geçerli yerel ayarları: {{current}} lütfen kullanmak istediğiniz yerel ayarı seçin."
         },
-        "transfer":{
-          "usage":"<name><user>",
-          "info":"Bir etiketi belirtilen kullanıcıya aktarır. Değişkenleri aktarılmaz."
+        "tokenify": {
+            "info": ""
         },
-        "top":{
-          "info":"En çok beğenilen olmuştur etiketleri görüntüler."
+        "nato": {
+            "info": ""
         },
-        "author":{
-          "usage":"<name>",
-          "info":"Görüntüler bir etiketi yazar."
+        "invite": {
+            "info": "",
+            "message": ""
         },
-        "search":{
-          "usage":"<query>",
-          "info":"Sorgu içeren bir adla bir etiket arar."
+        "donate": {
+            "info": "",
+            "willdm": "Tamam, sana bir DM benim bağış bilgi göndereceğiz.",
+            "message": "yer Tutucu"
         },
-        "list":{
-          "usage":"[@user]",
-          "info":"Tüm etiketleri veya belirli bir kullanıcı tarafından oluşturulan isteğe bağlı olarak tüm etiketleri listeler."
+        "mods": {
+            "info": "",
+            "mods": "Mods **{{guild}} **",
+            "nomods": "Guildde hiçbir mod yok.",
+            "nomodsonline": "Online Hayır mods vardır."
         },
-        "favorite":{
-          "usage":"<name>",
-          "info":"Sık Kullanılanlar belirtilen etiket."
+        "help": {
+            "info": "",
+            "allcommands": "Üzerinde çalıştırabilirsiniz tüm komutlar şunlardır **{{guild}} **. \n```markdown\n{{commands}}\n```\n\nKomutlar hakkında Daha Fazla bilgi icin `help <commandname>` yazın yada <https://blargbot.xyz/commands> ziyaret edin.",
+            "nocommand": "Üzgünüz, hiçbir komut adı '{{name}}' ile vardır!",
+            "commandinfo": "**{{type}}: {{name}} ** ** diğer adları **: {{aliases}} * kullanım **: {{usage}}{{description}}",
+            "aliases": "Aliases Yok",
+            "subcommand": "Alt komutu",
+            "command": "Komut",
+            "nosubcommand": "Üzgünüz, hiçbir alt komutu adı '{{name}}' ile '{{command}}' için vardır!",
+            "subcommands": "** Alt komutları **: {{subcommands}} 'a alt komutu hakkında daha fazla bilgi almak için yardım <command><subcommand>'!"
         },
-        "report":{
-          "usage":"<name>",
-          "info":"ToS ihlal için bir etiket bildirir. Lütfen sorumlu bir şekilde kullanın."
+        "gamatoto": {
+            "info": "Büyülü bir sefer Gamatoto ile devam! İstatistiklerinizi üzerinde denetlemek için bu komutu kullanın veya bir maceraya gitmek için bir alt komutunu kullanın!",
+            "subcommand": {
+                "start": {
+                    "usage": "<location>",
+                    "info": "Bir sefer başlıyor!"
+                },
+                "end": {
+                    "info": "Bir sefer biter!"
+                },
+                "locations": {
+                    "info": "Sefer konumları listeler."
+                }
+            },
+            "stats": "<:bc_cat:345081695990710272> işte senin konular! \n\n{{stats}}",
+            "alreadystarted": "Bir sefer devam ediyor!",
+            "notstarted": "Bir sefer başlamadım!",
+            "nolocation": "Üzgünüz, bu geçerli bir konum değil. Şu anda ziyaret edebilirsiniz yerlerdir:\n\n{{locations}}",
+            "invalidlocation": "Tuhaf bir şey oldu. Artık keşfediyorlardı yerin var! Lütfen başka bir sefer başlatın.",
+            "expeditionbeings": "<:bc_cat:345081695990710272> arama başlar! <:bc_cat:345081695990710272> \n\nyeri: {{location}} \n\nLütfen onay geri daha sonra 'gamatoto end' yaparak!",
+            "expeditionends": "<:bc_cat:345081695990710272> sefer sonuçlar! <:bc_cat:345081695990710272> \n\nyeri: {{location}} \nsüresi: {{minutes}} dakika\n\n{{results}}",
+            "notimeelapsed": "Sefer başladığından beri hiçbir zaman süre geçti. Gamatoto bir şey bulamadı!",
+            "itemfound": "Gamatoto, {{location}} {{amount}} {{item}} bulundu.",
+            "levelup": ":fireworks: Gamatoto seviye {{level}} şimdi!",
+            "gamatotoxp": "Elde Gamatoto **{{amount}} ** XP ({{old}} → **{{new}} **)",
+            "itemincrease": "Bulduğun {{item}} **{{amount}} ** ({{old}} → **{{new}} **)",
+            "locations": "İşte sefer yerleri var! \n\n{{locations}}",
+            "wronglevel": "Üzgünüz, o yer keşfetmek için düzey {{level}} olması gerekiyor!",
+            "gamatotoitems": "İşte senin konular:\n{{items}}",
+            "gamatotostats": "Gamatoto şu anda seviye {{level}} olduğunu! [{{currentxp}}XP/{{neededxp}}XP]",
+            "gamatotocurrent": "Gamatoto keşfetmek **{{location}} ** **{{minutes}} ** dakika. Son sefer ' gamatoto end' kullanın.",
+            "gamatotoidle": "Gamatoto bir sefer şu anda değil. Bir maceraya 'gamatoto start [location]' yaparak gönderin onu!"
         },
-        "test":{
-          "usage":"<code>",
-          "info":"Verilen kodu bir sınama ortamında tam olarak yürütür."
+        "prefix": {
+            "info": "Alır veya ayarlar komut önekleri. Bu komut, kullanıcı önekleri yapılandırır. Guild önekleri için 'Kur' komutunu kullanın.",
+            "subcommand": {
+                "add": {
+                    "usage": "<prefix>",
+                    "info": "Bir önek listenize ekler."
+                },
+                "remove": {
+                    "usage": "<prefix>",
+                    "info": "Bir prefix listenizden kaldırır."
+                }
+            },
+            "prefixlist": "{{content}} \nsenin önekleri yapılandırmak için 'Ekle' ve 'Kaldır' alt komutlarını kullanın. Guild önekleri yapılandırmak için 'Kur' komutunu kullanın.",
+            "userprefixes": "Here are your prefixes:\n```md\n{{userprefixes}}\n```",
+            "guildprefixes": "Bu Server için Tüm prefixler:\n```md\n{{guildprefixes}}\n```",
+            "noprefixes": "Hiçbir özel önekleri var.",
+            "defaultprefixes": "Her zaman bu prefixleri kullanabilirsiniz:\n{{prefixes}}",
+            "prefixadded": "Bu prefix eklendi!",
+            "prefixremoved": "Bu prefix kaldırıldı!",
+            "nothingchanged": "Hiçbir şey değiştirmedi."
         },
-        "help":{
-          "usage":"[subcommand]",
-          "info":"Bu görüntüler!"
-        },
-        "docs":{
-          "usage":"[subtag]",
-          "info":"BBTag belgeler için bir bağlantı sunar veya belirli bir alt etiket hakkında bilgi sağlar."
-        },
-        "setdesc":{
-          "info":"info"
-        },
-        "setusage":{
-          "info":"info"
+        "warnings": {
+            "output": ""
         }
-      },
-      "subcommandnotfound":"'{{subcommand}}' adı ile bir alt bulamadım.",
-      "transferprompt":"{{target}}, {{user}} '{{tag}}' etiketi sahipliğini aktarmak istiyor. Kabul ediyor musunuz? Bu değişkenler aktarılamayan.",
-      "nobots":"[[emote.x]] Bir bot için bir etiket aktaramazsınız!",
-      "transfercancelled":"[[emote.x]] Aktarımı iptal edildi.",
-      "transfercomplete":"[[emote.check]] {{user}} şimdi etiket '{{tag}}' sahibi.",
-      "taginfo":"__ ** Etiketi | {{name}} ** \n__ Yazar: **{{author}} ** \nson değişiklik: **{{lastModified}} ** \nbu kez kullanılan toplam **{{uses}} kez **! \nÇok beğenilen oldu **{{favourites}} kez **!",
-      "descupdate":"'{{tag}}' için açıklama güncelleştirildi.",
-      "descreset":"'{{tag}}' için açıklama sıfırlandı.",
-      "subcommandconflict":"Bu ada sahip bir alt olduğu '{{name}}' adı kullanılamaz!",
-      "toptagformat":"{{index}}. **{{name}} ** ({{author}}) - \nSık Kullanılanlar: {{favourites}} kullanır: {{uses}}",
-      "toptags":"İşte en iyi 10 Etiketler var! \n\n{{tags}}",
-      "tagauthor":"Etiket '{{tag}}' tarafından oluşturuldu **{{author}} **",
-      "favouriteadd":"Etiket '{{tag}}' Sık Kullanılanlar listenize eklendi.",
-      "favouriteremove":"Etiket '{{tag}}' Sık Kullanılanlar listenizden kaldırıldı.",
-      "favourites":"Sık Kullanılanlar listenizde {{count}} Etiketler var. '''{{tags}} tamir '''"
     },
-    "locale":{
-      "info":"Yerel iletiler gönderilir ayarlar.",
-      "set":"Yerel {{locale}} için ayarlanmış!",
-      "list":"Geçerli yerel ayarları: {{current}} lütfen kullanmak istediğiniz yerel ayarı seçin."
-    },
-    "tokenify":{
-      "info":""
-    },
-    "nato":{
-      "info":""
-    },
-    "invite":{
-      "info":"",
-      "message":""
-    },
-    "donate":{
-      "info":"",
-      "willdm":"Tamam, sana bir DM benim bağış bilgi göndereceğiz.",
-      "message":"yer Tutucu"
-    },
-    "mods":{
-      "info":"",
-      "mods":"Mods **{{guild}} **",
-      "nomods":"Guildde hiçbir mod yok.",
-      "nomodsonline":"Online Hayır mods vardır."
-    },
-    "help":{
-      "info":"",
-      "allcommands":"Üzerinde çalıştırabilirsiniz tüm komutlar şunlardır **{{guild}} **. \n```markdown\n{{commands}}\n```\n\nKomutlar hakkında Daha Fazla bilgi icin `help <commandname>` yazın yada <https://blargbot.xyz/commands> ziyaret edin.",
-      "nocommand":"Üzgünüz, hiçbir komut adı '{{name}}' ile vardır!",
-      "commandinfo":"**{{type}}: {{name}} ** ** diğer adları **: {{aliases}} * kullanım **: {{usage}}{{description}}",
-      "aliases":"Aliases Yok",
-      "subcommand":"Alt komutu",
-      "command":"Komut",
-      "nosubcommand":"Üzgünüz, hiçbir alt komutu adı '{{name}}' ile '{{command}}' için vardır!",
-      "subcommands":"** Alt komutları **: {{subcommands}} 'a alt komutu hakkında daha fazla bilgi almak için yardım <command><subcommand>'!"
-    },
-    "gamatoto":{
-      "info":"Büyülü bir sefer Gamatoto ile devam! İstatistiklerinizi üzerinde denetlemek için bu komutu kullanın veya bir maceraya gitmek için bir alt komutunu kullanın!",
-      "subcommand":{
-        "start":{
-          "usage":"<location>",
-          "info":"Bir sefer başlıyor!"
+    "image": {
+        "cat": {
+            "info": "Çok hoş bir sevgili tatlı değerli kitty verir.\nD'awww!"
         },
-        "end":{
-          "info":"Bir sefer biter!"
+        "delete": {
+            "info": ""
         },
-        "locations":{
-          "info":"Sefer konumları listeler."
+        "thesearch": {
+            "info": "",
+            "defaulttext": ""
+        },
+        "shit": {
+            "info": ""
         }
-      },
-      "stats":"<:bc_cat:345081695990710272> işte senin konular! \n\n{{stats}}",
-      "alreadystarted":"Bir sefer devam ediyor!",
-      "notstarted":"Bir sefer başlamadım!",
-      "nolocation":"Üzgünüz, bu geçerli bir konum değil. Şu anda ziyaret edebilirsiniz yerlerdir:\n\n{{locations}}",
-      "invalidlocation":"Tuhaf bir şey oldu. Artık keşfediyorlardı yerin var! Lütfen başka bir sefer başlatın.",
-      "expeditionbeings":"<:bc_cat:345081695990710272> arama başlar! <:bc_cat:345081695990710272> \n\nyeri: {{location}} \n\nLütfen onay geri daha sonra 'gamatoto end' yaparak!",
-      "expeditionends":"<:bc_cat:345081695990710272> sefer sonuçlar! <:bc_cat:345081695990710272> \n\nyeri: {{location}} \nsüresi: {{minutes}} dakika\n\n{{results}}",
-      "notimeelapsed":"Sefer başladığından beri hiçbir zaman süre geçti. Gamatoto bir şey bulamadı!",
-      "itemfound":"Gamatoto, {{location}} {{amount}} {{item}} bulundu.",
-      "levelup":":fireworks: Gamatoto seviye {{level}} şimdi!",
-      "gamatotoxp":"Elde Gamatoto **{{amount}} ** XP ({{old}} → **{{new}} **)",
-      "itemincrease":"Bulduğun {{item}} **{{amount}} ** ({{old}} → **{{new}} **)",
-      "locations":"İşte sefer yerleri var! \n\n{{locations}}",
-      "wronglevel":"Üzgünüz, o yer keşfetmek için düzey {{level}} olması gerekiyor!",
-      "gamatotoitems":"İşte senin konular:\n{{items}}",
-      "gamatotostats":"Gamatoto şu anda seviye {{level}} olduğunu! [{{currentxp}}XP/{{neededxp}}XP]",
-      "gamatotocurrent":"Gamatoto keşfetmek **{{location}} ** **{{minutes}} ** dakika. Son sefer ' gamatoto end' kullanın.",
-      "gamatotoidle":"Gamatoto bir sefer şu anda değil. Bir maceraya 'gamatoto start [location]' yaparak gönderin onu!"
     },
-    "prefix":{
-      "info":"Alır veya ayarlar komut önekleri. Bu komut, kullanıcı önekleri yapılandırır. Guild önekleri için 'Kur' komutunu kullanın.",
-      "subcommand":{
-        "add":{
-          "usage":"<prefix>",
-          "info":"Bir önek listenize ekler."
+    "admin": {
+        "setup": {
+            "staff": {
+                "setrole": "Personel roller güncellendi.",
+                "rolequery": "Moderatör roller kabul rolleri seçin. Bu rollere sahip kullanıcılar admin komutları kullanmak mümkün olacak."
+            },
+            "info": "Çeşitli ayarlarını yapılandırır.",
+            "subcommand": {
+                "staffuser": {
+                    "usage": "",
+                    "info": "Ekler veya personel listesi kullanıcılara kaldırır."
+                },
+                "staffrole": {
+                    "info": "Seçin veya personel rolleri seçimi kaldırmak için bir iletişim kutusunu getirir."
+                },
+                "mute": {
+                    "info": "Muted rolü kurar."
+                },
+                "announcement": {
+                    "info": "Duyurular kanalını kurar."
+                },
+                "modlog": {
+                    "usage": "",
+                    "info": "Modlog belirtilen olaylar için ayarlar. Kanal yok belirtilirse, geçerli kanal için varsayılan olarak ayarlanır. Hiçbir olay belirttiyseniz, tüm olaylara varsayılan olarak ayarlanır."
+                }
+            },
+            "mute": {
+                "setrole": "Muted rolü güncelleştirildi.",
+                "rolequery": "Muted rolünü seçin."
+            },
+            "announce": {
+                "set": "Duyurular kuruldu.",
+                "rolequery": "Duyurular için ping rolü seçin.",
+                "channelquery": "Duyurular içine gitmeli kanalı seçin."
+            },
+            "modlog": {
+                "set": "Modlog kanal {{channel}} ile aşağıdaki olaylar için ayarlayın: '''{{events}} '''{{hadInvalid}}",
+                "remove": "Aşağıdaki olaylar için modlog kaldırıldı: '''{{events}} '''{{hadInvalid}}",
+                "invalid": "Geçerli hiçbir olayın temin edilmiştir. Geçerli olaylar listesi: \n```\n{{eventList}}\n```",
+                "hadinvalid": "Komutunuza geçersiz bazı olaylar vardı. Geçerli olaylar listesi: \n```\n{{eventList}}\n```",
+                "list": "İşte senin guild üzerinde etkin olan modlogs:\n\n{{events}}"
+            }
         },
-        "remove":{
-          "usage":"<prefix>",
-          "info":"Bir prefix listenizden kaldırır."
+        "reason": {
+            "info": "",
+            "nocase": "",
+            "reasonset": ""
+        },
+        "help": {
+            "info": "",
+            "allcommands": "Üzerinde çalıştırabilirsiniz tüm komutlar şunlardır **{{guild}} **. \n```markdown\n{{commands}}\n```\n\nKomutlar hakkında Daha Fazla bilgi icin `help <commandname>` yazın yada <https://blargbot.xyz/commands> ziyaret edin.",
+            "nocommand": "Üzgünüz, hiçbir komut adı '{{name}}' ile vardır!",
+            "commandinfo": "** Komut: {{name}} ** \n\n**diğer adları **: {{aliases}}\n**kullanım **: {{usage}}\n\n{{description}}"
+        },
+        "ccommand": {
+            "info": "Etiketler herkes oluşturma veya yürütme, BBTag dilini kullanarak genel komutlar bir sistemi vardır. \n** Alt komutları **: \nbir alt komutu hakkında daha fazla bilgi için{{subcommands}} yapmak ' b! t yardım <subcommand>' \n\nBBTag hakkında daha fazla bilgi için < https://blargbot.xyz/tags > ziyaret edin. Bir etiket oluşturarak, hizmet şartları (< https://blargbot.xyz/tags/tos >) için kabul etmiş oluyorsunuz.",
+            "usage": "<subcommand>[args]",
+            "subcommand": {
+                "set": {
+                    "usage": "<name><content>",
+                    "info": "Oluşturur veya sağlanan adı ve içeriği ile özel bir komut düzenler. Başkaları tarafından yapılan herhangi bir etiket değiştirmez."
+                },
+                "delete": {
+                    "usage": "<name>",
+                    "info": "Özel bir komut siler."
+                },
+                "rename": {
+                    "usage": "<name><newName>",
+                    "info": "Özel bir komut yeniden adlandırır."
+                },
+                "author": {
+                    "usage": "<name>",
+                    "info": "Özel komut yazar döndürür."
+                },
+                "transfer": {
+                    "usage": "<name><user>",
+                    "info": "Özel bir komut sahipliğini başkasına aktarır. Kabul edilemez olması gerekir."
+                },
+                "list": {
+                    "info": "Lonca özel komutları listeler."
+                },
+                "test": {
+                    "usage": "<code>",
+                    "info": "Senin hesabının bağlamında kod çalıştırır."
+                },
+                "help": {
+                    "usage": "[subcommand]",
+                    "info": "Bu görüntüler!"
+                }
+            },
+            "dontown": "[[emote.x]] Bu özel komut sahip değilsin!",
+            "notag": "[[emote.x]] Bu adda özel komut vardır.",
+            "tagset": "[[emote.check]] Özel komut '{{name}}' {{process}}!",
+            "tagrename": "[[emote.check]] Özel komut '{{old}}' '{{new}}' adını vardır",
+            "raw": "{{name}} için kod: \\n'' '{{code}}'' '",
+            "alreadyexists": "Bu adda özel bir komut zaten var.",
+            "testoutput": "Test çıktı: \\n\\n{{output}}"
         }
-      },
-      "prefixlist":"{{content}} \nsenin önekleri yapılandırmak için 'Ekle' ve 'Kaldır' alt komutlarını kullanın. Guild önekleri yapılandırmak için 'Kur' komutunu kullanın.",
-      "userprefixes":"Here are your prefixes:\n```md\n{{userprefixes}}\n```",
-      "guildprefixes":"Bu Server için Tüm prefixler:\n```md\n{{guildprefixes}}\n```",
-      "noprefixes":"Hiçbir özel önekleri var.",
-      "defaultprefixes":"Her zaman bu prefixleri kullanabilirsiniz:\n{{prefixes}}",
-      "prefixadded":"Bu prefix eklendi!",
-      "prefixremoved":"Bu prefix kaldırıldı!",
-      "nothingchanged":"Hiçbir şey değiştirmedi."
     }
-  },
-  "image":{
-    "cat":{
-      "info":"Çok hoş bir sevgili tatlı değerli kitty verir.\nD'awww!"
-    },
-    "delete":{
-      "info":""
-    },
-    "thesearch":{
-      "info":"",
-      "defaulttext":""
-    },
-    "shit":{
-      "info":""
-    }
-  },
-  "admin":{
-    "setup":{
-      "staff":{
-        "setrole":"Personel roller güncellendi.",
-        "rolequery":"Moderatör roller kabul rolleri seçin. Bu rollere sahip kullanıcılar admin komutları kullanmak mümkün olacak."
-      },
-      "info":"Çeşitli ayarlarını yapılandırır.",
-      "subcommand":{
-        "staffuser":{
-          "usage":"",
-          "info":"Ekler veya personel listesi kullanıcılara kaldırır."
-        },
-        "staffrole":{
-          "info":"Seçin veya personel rolleri seçimi kaldırmak için bir iletişim kutusunu getirir."
-        },
-        "mute":{
-          "info":"Muted rolü kurar."
-        },
-        "announcement":{
-          "info":"Duyurular kanalını kurar."
-        },
-        "modlog":{
-          "usage":"",
-          "info":"Modlog belirtilen olaylar için ayarlar. Kanal yok belirtilirse, geçerli kanal için varsayılan olarak ayarlanır. Hiçbir olay belirttiyseniz, tüm olaylara varsayılan olarak ayarlanır."
-        }
-      },
-      "mute":{
-        "setrole":"Muted rolü güncelleştirildi.",
-        "rolequery":"Muted rolünü seçin."
-      },
-      "announce":{
-        "set":"Duyurular kuruldu.",
-        "rolequery":"Duyurular için ping rolü seçin.",
-        "channelquery":"Duyurular içine gitmeli kanalı seçin."
-      },
-      "modlog":{
-        "set":"Modlog kanal {{channel}} ile aşağıdaki olaylar için ayarlayın: '''{{events}} '''{{hadInvalid}}",
-        "remove":"Aşağıdaki olaylar için modlog kaldırıldı: '''{{events}} '''{{hadInvalid}}",
-        "invalid":"Geçerli hiçbir olayın temin edilmiştir. Geçerli olaylar listesi: \n```\n{{eventList}}\n```",
-        "hadinvalid":"Komutunuza geçersiz bazı olaylar vardı. Geçerli olaylar listesi: \n```\n{{eventList}}\n```",
-        "list":"İşte senin guild üzerinde etkin olan modlogs:\n\n{{events}}"
-      }
-    },
-    "reason":{
-      "info":"",
-      "nocase":"",
-      "reasonset":""
-    },
-    "help":{
-      "info":"",
-      "allcommands":"Üzerinde çalıştırabilirsiniz tüm komutlar şunlardır **{{guild}} **. \n```markdown\n{{commands}}\n```\n\nKomutlar hakkında Daha Fazla bilgi icin `help <commandname>` yazın yada <https://blargbot.xyz/commands> ziyaret edin.",
-      "nocommand":"Üzgünüz, hiçbir komut adı '{{name}}' ile vardır!",
-      "commandinfo":"** Komut: {{name}} ** \n\n**diğer adları **: {{aliases}}\n**kullanım **: {{usage}}\n\n{{description}}"
-    },
-    "ccommand":{
-      "info":"Etiketler herkes oluşturma veya yürütme, BBTag dilini kullanarak genel komutlar bir sistemi vardır. \n** Alt komutları **: \nbir alt komutu hakkında daha fazla bilgi için{{subcommands}} yapmak ' b! t yardım <subcommand>' \n\nBBTag hakkında daha fazla bilgi için < https://blargbot.xyz/tags > ziyaret edin. Bir etiket oluşturarak, hizmet şartları (< https://blargbot.xyz/tags/tos >) için kabul etmiş oluyorsunuz.",
-      "usage":"<subcommand>[args]",
-      "subcommand":{
-        "set":{
-          "usage":"<name><content>",
-          "info":"Oluşturur veya sağlanan adı ve içeriği ile özel bir komut düzenler. Başkaları tarafından yapılan herhangi bir etiket değiştirmez."
-        },
-        "delete":{
-          "usage":"<name>",
-          "info":"Özel bir komut siler."
-        },
-        "rename":{
-          "usage":"<name><newName>",
-          "info":"Özel bir komut yeniden adlandırır."
-        },
-        "author":{
-          "usage":"<name>",
-          "info":"Özel komut yazar döndürür."
-        },
-        "transfer":{
-          "usage":"<name><user>",
-          "info":"Özel bir komut sahipliğini başkasına aktarır. Kabul edilemez olması gerekir."
-        },
-        "list":{
-          "info":"Lonca özel komutları listeler."
-        },
-        "test":{
-          "usage":"<code>",
-          "info":"Senin hesabının bağlamında kod çalıştırır."
-        },
-        "help":{
-          "usage":"[subcommand]",
-          "info":"Bu görüntüler!"
-        }
-      },
-      "dontown":"[[emote.x]] Bu özel komut sahip değilsin!",
-      "notag":"[[emote.x]] Bu adda özel komut vardır.",
-      "tagset":"[[emote.check]] Özel komut '{{name}}' {{process}}!",
-      "tagrename":"[[emote.check]] Özel komut '{{old}}' '{{new}}' adını vardır",
-      "raw":"{{name}} için kod: \\n'' '{{code}}'' '",
-      "alreadyexists":"Bu adda özel bir komut zaten var.",
-      "testoutput":"Test çıktı: \\n\\n{{output}}"
-    }
-  }
 }
