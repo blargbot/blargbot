@@ -1,35 +1,35 @@
 {
-  "output":"Ausgabe:\n{{output}}",
-  "nooutput":"Keine Ausgabe...",
-  "queryexpire":"Diese Anfrage läuft in {{length}} minuten ab.",
-  "resolveuser":{
-    "nousers":"Kein Nutzer gefunden.",
-    "pickuser":"{{Length}} Nutzer gefunden! Bitte wähle einen aus der Liste."
-  },
-  "resolverole":{
-    "noroles":"Keine Rollen gefunden.",
-    "pickrole":"{{Length}} Rollen wurden gefunden! Bitte wähle eine aus der Liste."
-  },
-  "resolvechannel":{
-    "nochannels":"Keine Channel gefunden.",
-    "pickchannel":"{{Length}} Channel wurden gefunden! Bitte wähle einen aus der Liste."
-  },
-  "edited":"geändert",
-  "created":"erstellt",
-  "deleted":"gelöscht",
-  "menu":{
-    "choices":"Seite {{page}}/{{max}}"
-  },
-  "nochange":"Keine Änderungen wurden vorgenommen.",
-  "commandhelp":"",
-  "example":{
-    "id1":"",
-    "id2":"",
-    "id3":""
-  },
-  "test":"",
-  "querycancelled":"The query has been cancelled.",
-  "user":"",
-  "role":"",
-  "channel":""
+    "output": "Ausgabe:\n{{output}}",
+    "nooutput": "Keine Ausgabe...",
+    "queryexpire": "Diese Anfrage läuft in {{length}} minuten ab.",
+    "resolveuser": {
+        "nousers": "Kein Nutzer gefunden.",
+        "pickuser": "{{Length}} Nutzer gefunden! Bitte wähle einen aus der Liste."
+    },
+    "resolverole": {
+        "noroles": "Keine Rollen gefunden.",
+        "pickrole": "{{Length}} Rollen wurden gefunden! Bitte wähle eine aus der Liste."
+    },
+    "resolvechannel": {
+        "nochannels": "Keine Channel gefunden.",
+        "pickchannel": "{{Length}} Channel wurden gefunden! Bitte wähle einen aus der Liste."
+    },
+    "edited": "geändert",
+    "created": "erstellt",
+    "deleted": "gelöscht",
+    "menu": {
+        "choices": "Seite {{page}}/{{max}}"
+    },
+    "nochange": "Keine Änderungen wurden vorgenommen.",
+    "commandhelp": "",
+    "example": {
+        "id1": "",
+        "id2": "",
+        "id3": ""
+    },
+    "test": "",
+    "querycancelled": "The query has been cancelled.",
+    "user": "",
+    "role": "",
+    "channel": ""
 }
