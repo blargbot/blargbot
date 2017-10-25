@@ -1,26 +1,26 @@
 {
-  "events":{
-    "kick":"Espulso",
-    "ban":"Bandito",
-    "unban":"Rimosso ban",
-    "mute":"Mutato",
-    "unmute":"Smutato",
-    "warn":"Avvertimento",
-    "pardon":"Perdonato",
-    "rename":"Rinominato",
-    "specialroleadd":"Ruolo speciale aggiunto",
-    "specialroleremove":"Ruolo speciale rimosso"
-  },
-  "case":"{{icon}} Caso {{number}}: {{event}}",
-  "setreason":"Responsabile moderatore, digita `reason {{number}}` per impostare il motivo.",
-  "warnings":{
-    "given":"Avvertimenti aggiunti",
-    "removed":"Avvertimenti rimossi",
-    "total":"Nuovo totale"
-  },
-  "rename":{
-    "old":"Vecchio Nome",
-    "new":"Nuovo Nome"
-  },
-  "duration":"Durata"
+    "events": {
+        "kick": "Espulso",
+        "ban": "Bandito",
+        "unban": "Rimosso ban",
+        "mute": "Mutato",
+        "unmute": "Smutato",
+        "warn": "Avvertimento",
+        "pardon": "Perdonato",
+        "rename": "Rinominato",
+        "specialroleadd": "Ruolo speciale aggiunto",
+        "specialroleremove": "Ruolo speciale rimosso"
+    },
+    "case": "{{icon}} Caso {{number}}: {{event}}",
+    "setreason": "Responsabile moderatore, digita `reason {{number}}` per impostare il motivo.",
+    "warnings": {
+        "given": "Avvertimenti aggiunti",
+        "removed": "Avvertimenti rimossi",
+        "total": "Nuovo totale"
+    },
+    "rename": {
+        "old": "Vecchio Nome",
+        "new": "Nuovo Nome"
+    },
+    "duration": "Durata"
 }
