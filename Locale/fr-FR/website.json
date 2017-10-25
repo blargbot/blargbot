@@ -1,81 +1,81 @@
 {
-  "language":"Français",
-  "header":{
-    "login":"Se connecter",
-    "logout":"Se déconnecter",
-    "commands":"Commandes",
-    "bbtag":"BBTag",
-    "subtags":"SubTags"
-  },
-  "generic":{
-    "loading":"",
-    "collapse":"",
-    "expand":"",
-    "search":"",
-    "noresults":"",
-    "resultsfound":""
-  },
-  "index":{
-    "desc":"blargbot est un bot Discord polyvalent dédié à fournir des commandes et des services de qualité, incluant l'historique de chats et un système de commandes personnalisées approfondi.",
-    "commands":{
-      "title":"Commandes",
-      "desc":"blargbot est équipé de nombreuses commandes, qui sont documentées et classées pour votre commodité."
+    "language": "Français",
+    "header": {
+        "login": "Se connecter",
+        "logout": "Se déconnecter",
+        "commands": "Commandes",
+        "bbtag": "BBTag",
+        "subtags": "SubTags"
     },
-    "bbtag":{
-      "title":"BBTag",
-      "desc":"blargbot utilise un système de tag sophistiqué appelé BBTag, que vous pouvez utiliser pour créer des commandes personnalisées avancées."
+    "generic": {
+        "loading": "",
+        "collapse": "",
+        "expand": "",
+        "search": "",
+        "noresults": "",
+        "resultsfound": ""
     },
-    "customization":{
-      "title":"Personnalisation",
-      "desc":"Nous comprenons que tout serveur est unique, c'est pourquoi blargbot est hautement personnalisable. Vous pouvez contrôler exactement quels rôles peut utiliser quelles commandes, spécifier des préfixes personnalisés et même changer la langue!"
+    "index": {
+        "desc": "blargbot est un bot Discord polyvalent dédié à fournir des commandes et des services de qualité, incluant l'historique de chats et un système de commandes personnalisées approfondi.",
+        "commands": {
+            "title": "Commandes",
+            "desc": "blargbot est équipé de nombreuses commandes, qui sont documentées et classées pour votre commodité."
+        },
+        "bbtag": {
+            "title": "BBTag",
+            "desc": "blargbot utilise un système de tag sophistiqué appelé BBTag, que vous pouvez utiliser pour créer des commandes personnalisées avancées."
+        },
+        "customization": {
+            "title": "Personnalisation",
+            "desc": "Nous comprenons que tout serveur est unique, c'est pourquoi blargbot est hautement personnalisable. Vous pouvez contrôler exactement quels rôles peut utiliser quelles commandes, spécifier des préfixes personnalisés et même changer la langue!"
+        },
+        "moderation": {
+            "title": "Modération",
+            "desc": "Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+        },
+        "opensource": {
+            "title": "Open Source",
+            "desc": "On partage, entre amis! blargbot est complètement open source sous la license GNU AGPLv3. N'hésitez pas à jeter un œil et à apprendre comment tout fonctionne. Si vous utilisez une partie de mon code dans votre propre projet, vous devrez néanmoins me créditer. Voir la licence pour plus de détails."
+        },
+        "suggestions": {
+            "title": "Ouvert aux Suggestions",
+            "desc": "Vous avez une suggestion pour le bot? Je serais heureux de l'entendre! Vous avez trouvé un bug? Je voudrais l'entendre aussi! Vous pouvez me suggérer ce que vous souhaitez en utilisant la commande `suggest`, en rejoignant mon serveur ou en envoyant un ticket."
+        }
     },
-    "moderation":{
-      "title":"Modération",
-      "desc":"Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+    "bbtag": {
+        "main": "",
+        "subtags": {
+            "title": "",
+            "desc": ""
+        },
+        "variables": {
+            "title": "",
+            "desc": ""
+        },
+        "arrays": {
+            "title": "",
+            "desc": ""
+        }
     },
-    "opensource":{
-      "title":"Open Source",
-      "desc":"On partage, entre amis! blargbot est complètement open source sous la license GNU AGPLv3. N'hésitez pas à jeter un œil et à apprendre comment tout fonctionne. Si vous utilisez une partie de mon code dans votre propre projet, vous devrez néanmoins me créditer. Voir la licence pour plus de détails."
+    "subtags": {
+        "components": {
+            "argument": "",
+            "named": "",
+            "unnamed": "",
+            "array": "",
+            "staff": "",
+            "noimplicit": ""
+        },
+        "referdocs": ""
     },
-    "suggestions":{
-      "title":"Ouvert aux Suggestions",
-      "desc":"Vous avez une suggestion pour le bot? Je serais heureux de l'entendre! Vous avez trouvé un bug? Je voudrais l'entendre aussi! Vous pouvez me suggérer ce que vous souhaitez en utilisant la commande `suggest`, en rejoignant mon serveur ou en envoyant un ticket."
+    "commands": {
+        "title": "",
+        "desc": "",
+        "components": {
+            "usage": "",
+            "flags": "",
+            "aliases": "",
+            "subcommands": ""
+        }
     }
-  },
-  "bbtag":{
-    "main":"",
-    "subtags":{
-      "title":"",
-      "desc":""
-    },
-    "variables":{
-      "title":"",
-      "desc":""
-    },
-    "arrays":{
-      "title":"",
-      "desc":""
-    }
-  },
-  "subtags":{
-    "components":{
-      "argument":"",
-      "named":"",
-      "unnamed":"",
-      "array":"",
-      "staff":"",
-      "noimplicit":""
-    },
-    "referdocs":""
-  },
-  "commands":{
-    "title":"",
-    "desc":"",
-    "components":{
-      "usage":"",
-      "flags":"",
-      "aliases":"",
-      "subcommands":""
-    }
-  }
 }
