@@ -111,7 +111,6 @@ class TagLexer {
                     break;
                 case tokenTypes.TagPipe:
                     if (last() instanceof SubTag && last().pipe === false && last().piping === false) {
-                        console.log(last().pipe);
                         last().piping = true;
                         last().pipe = [];
                     } else add(token.image);
