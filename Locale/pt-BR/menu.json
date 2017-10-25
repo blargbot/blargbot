@@ -1,10 +1,10 @@
 {
-  "cancel":{
-    "name":"",
-    "description":""
-  },
-  "confirm":{
-    "name":"",
-    "description":""
-  }
+    "cancel": {
+        "name": "",
+        "description": ""
+    },
+    "confirm": {
+        "name": "",
+        "description": ""
+    }
 }
