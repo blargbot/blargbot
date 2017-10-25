@@ -1,26 +1,26 @@
 {
-  "events":{
-    "kick":"Wyrzuć",
-    "ban":"Zbanowany",
-    "unban":"Odbanowany",
-    "mute":"Wyciszony",
-    "unmute":" ",
-    "warn":"Uwaga",
-    "pardon":"Przeproszenie",
-    "rename":"Zmiana Nazwy",
-    "specialroleadd":"Specjalna rola dodana",
-    "specialroleremove":"Specjalna rola usunięte"
-  },
-  "case":"Sprawa {{number}} {{icon}}: {{event}}",
-  "setreason":"Odpowiedzialny moderatora, proszę zrobić 'reason{{number}}' i ustawić powód.",
-  "warnings":{
-    "given":"Dane Ostrzeżenia",
-    "removed":"Ułaskawiony ostrzeżenia",
-    "total":"Nowa ilość"
-  },
-  "rename":{
-    "old":"Stare imię",
-    "new":"Nowe imię"
-  },
-  "duration":"Okres"
+    "events": {
+        "kick": "Wyrzuć",
+        "ban": "Zbanowany",
+        "unban": "Odbanowany",
+        "mute": "Wyciszony",
+        "unmute": " ",
+        "warn": "Uwaga",
+        "pardon": "Przeproszenie",
+        "rename": "Zmiana Nazwy",
+        "specialroleadd": "Specjalna rola dodana",
+        "specialroleremove": "Specjalna rola usunięte"
+    },
+    "case": "Sprawa {{number}} {{icon}}: {{event}}",
+    "setreason": "Odpowiedzialny moderatora, proszę zrobić 'reason{{number}}' i ustawić powód.",
+    "warnings": {
+        "given": "Dane Ostrzeżenia",
+        "removed": "Ułaskawiony ostrzeżenia",
+        "total": "Nowa ilość"
+    },
+    "rename": {
+        "old": "Stare imię",
+        "new": "Nowe imię"
+    },
+    "duration": "Okres"
 }
