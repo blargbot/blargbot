@@ -1,338 +1,341 @@
 {
-  "general":{
-    "ping":{
-      "info":"Pong!\nFinder svartiden for kommandoen.",
-      "randmsg":[
-        "Eksistens er en løgn.",
-        "Du dør alligevel en eller anden dag, måske endda snart.",
-        "Alting er ligegyldigt.",
-        "Hvor er du på vej hen?",
-        "Der er intet derude.",
-        "Du er alene i en uendelig tomhed.",
-        "Sandhed er løgn.",
-        "Opgiv alt.",
-        "Din eksistens er en skam.",
-        "Vi er allesammen allerede døde.",
-        "Miav.",
-        "Frygt er frihed.",
-        "Undertrykkelse er frigørende.",
-        "Selvmodsigelse er sandhed.",
-        "Kunne du tænke dig at lave en kontrakt?",
-        "Giv slip, og kom videre med dit liv."
-      ],
-      "final":"Pong! ({{time}}ms)"
-    },
-    "brainfuck":{
-      "info":"Udfører brainfuck kode",
-      "usage":"<code>",
-      "flags":{
-        "p":"Viser en liste af pointere efter udførelsen.",
-        "i":"Specificerer inputtet for `.` operatoren."
-      }
-    },
-    "ship":{
-      "info":"Giver dig parringnavnet på to brugere.",
-      "usage":"<user1><user2>",
-      "final":"Jeres parringsnavn er **{{name}}**!",
-      "notenough":"Du er nødt til at fortælle mig hvem jeg skal parre!"
-    },
-    "tag":{
-      "info":"",
-      "usage":"<name | subcommand>[args]",
-      "dontown":"[[emote.x]] Du ejer ikke dette tag!",
-      "alreadyexists":"[[emote.x]] Et tag med dette navn findes allerede!",
-      "notag":"[[emote.x]] Der er intet tag med dette navn.",
-      "tagset":"[[emote.check]] Tag '{{name}}' {{process}}!",
-      "tagrename":"[[emote.check]] Tagget `{{old}}` er blevet omdøbt til `{{new}}`.",
-      "raw":"Koden for {{name}} er:\n```{{code}}```",
-      "testoutput":"Teste Output:\n\n{{output}}",
-      "subcommand":{
-        "set":{
-          "usage":"<name><content>",
-          "info":"Skaber eller redigerer et tag med det givne navn og indhold. Vil ikke erstatte tags andre har lavet."
+    "general": {
+        "ping": {
+            "info": "Pong!\nFinder svartiden for kommandoen.",
+            "randmsg": [
+                "Eksistens er en løgn.",
+                "Du dør alligevel en eller anden dag, måske endda snart.",
+                "Alting er ligegyldigt.",
+                "Hvor er du på vej hen?",
+                "Der er intet derude.",
+                "Du er alene i en uendelig tomhed.",
+                "Sandhed er løgn.",
+                "Opgiv alt.",
+                "Din eksistens er en skam.",
+                "Vi er allesammen allerede døde.",
+                "Miav.",
+                "Frygt er frihed.",
+                "Undertrykkelse er frigørende.",
+                "Selvmodsigelse er sandhed.",
+                "Kunne du tænke dig at lave en kontrakt?",
+                "Giv slip, og kom videre med dit liv."
+            ],
+            "final": "Pong! ({{time}}ms)"
         },
-        "delete":{
-          "usage":"<name>",
-          "info":"Sletter et tag du ejer."
+        "brainfuck": {
+            "info": "Udfører brainfuck kode",
+            "usage": "<code>",
+            "flags": {
+                "p": "Viser en liste af pointere efter udførelsen.",
+                "i": "Specificerer inputtet for `.` operatoren."
+            }
         },
-        "rename":{
-          "usage":"<name><new name>",
-          "info":"Omdøber et tag du ejer."
+        "ship": {
+            "info": "Giver dig parringnavnet på to brugere.",
+            "usage": "<user1><user2>",
+            "final": "Jeres parringsnavn er **{{name}}**!",
+            "notenough": "Du er nødt til at fortælle mig hvem jeg skal parre!"
         },
-        "raw":{
-          "usage":"<name>",
-          "info":"Anskaffer rå kode for et tag."
+        "tag": {
+            "info": "",
+            "usage": "<name | subcommand>[args]",
+            "dontown": "[[emote.x]] Du ejer ikke dette tag!",
+            "alreadyexists": "[[emote.x]] Et tag med dette navn findes allerede!",
+            "notag": "[[emote.x]] Der er intet tag med dette navn.",
+            "tagset": "[[emote.check]] Tag '{{name}}' {{process}}!",
+            "tagrename": "[[emote.check]] Tagget `{{old}}` er blevet omdøbt til `{{new}}`.",
+            "raw": "Koden for {{name}} er:\n```{{code}}```",
+            "testoutput": "Teste Output:\n\n{{output}}",
+            "subcommand": {
+                "set": {
+                    "usage": "<name><content>",
+                    "info": "Skaber eller redigerer et tag med det givne navn og indhold. Vil ikke erstatte tags andre har lavet."
+                },
+                "delete": {
+                    "usage": "<name>",
+                    "info": "Sletter et tag du ejer."
+                },
+                "rename": {
+                    "usage": "<name><new name>",
+                    "info": "Omdøber et tag du ejer."
+                },
+                "raw": {
+                    "usage": "<name>",
+                    "info": "Anskaffer rå kode for et tag."
+                },
+                "info": {
+                    "usage": "<name>",
+                    "info": "Viser info om et tag."
+                },
+                "transfer": {
+                    "usage": "<name><user>",
+                    "info": "Overfører et tag til den specifikke bruger. Variabler vil ikke blive overført."
+                },
+                "top": {
+                    "info": "Viser en liste over de tags der er blevet favoriseret flest gange."
+                },
+                "author": {
+                    "usage": "<name>",
+                    "info": "Viser forfatteren til et tag."
+                },
+                "search": {
+                    "usage": "<query>",
+                    "info": "Søger efter et tag med et navn der indeholder din forespørgsel."
+                },
+                "list": {
+                    "usage": "[@user]",
+                    "info": "Viser en liste over alle tags, eller valgfrit alle tags skabt af en bestemt bruger."
+                },
+                "favorite": {
+                    "usage": "<name>",
+                    "info": "Favoriserer et bestemt tag."
+                },
+                "report": {
+                    "usage": "<name>",
+                    "info": "Raporterer et tag for at bryde brugervilkåerne. Venligst brug omhyggeligt."
+                },
+                "test": {
+                    "usage": "<code>",
+                    "info": "Udfører det givne stykke kode i et test miljø."
+                },
+                "help": {
+                    "usage": "[subcommand]",
+                    "info": "Viser dette!"
+                },
+                "docs": {
+                    "usage": "[subtag]",
+                    "info": "Giver et link til BBTag dokumentationen, eller giver oplysninger om et bestemt undertag."
+                },
+                "setdesc": {
+                    "info": "info"
+                },
+                "setusage": {
+                    "info": "info"
+                }
+            },
+            "subcommandnotfound": "Kunne ikke finde en underkommando med navnet '{{subcommand}}'.",
+            "transferprompt": "{{target}}, {{user}} ønsker at overdrage ejerskabet af tagget '{{tag}}' til dig. Vil du acceptere? Dette vil ikke overføre variabler.",
+            "nobots": "[[emote.x]] Du kan ikke overføre et tag til en bot!",
+            "transfercancelled": "[[emote.x]] Overførslen er blevet annulleret.",
+            "transfercomplete": "[[emote.check]] {{user}} ejer nu tagget '{{tag}}'.",
+            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
+            "descupdate": "Beskrivelsen af '{{tag}}' er blevet opdateret.",
+            "descreset": "Beskrivelsen for `{{tag}}` er blevet nulstillet.",
+            "subcommandconflict": "Du kan ikke bruge navnet '{{name}}', fordi der er en underkommando med navnet!",
+            "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+            "toptags": "Her er en liste over de 10 mest brugte tags!\n\n{{tags}}",
+            "tagauthor": "Tagget `{{tag}}` er skabt af **{{author}}**",
+            "favouriteadd": "Tagget '{{tag}}' er blevet føjet til din liste over favoritter.",
+            "favouriteremove": "Tagget '{{tag}}' er blevet fjernet fra din liste over favoritter.",
+            "favourites": "Du har {{count}} tags på din liste over favoritter. \n' ' '\nfix{{tags}}\n ' ' '"
         },
-        "info":{
-          "usage":"<name>",
-          "info":"Viser info om et tag."
+        "locale": {
+            "info": "Angiver, hvad landestandard beskeder vil blive sendt i.",
+            "set": "Din landestandard er indstillet til {{locale}}!",
+            "list": "Din nuværende landestandard er: {{current}} \n\nVælg venligst hvilken landestandard du vil bruge."
         },
-        "transfer":{
-          "usage":"<name><user>",
-          "info":"Overfører et tag til den specifikke bruger. Variabler vil ikke blive overført."
+        "tokenify": {
+            "info": ""
         },
-        "top":{
-          "info":"Viser en liste over de tags der er blevet favoriseret flest gange."
+        "nato": {
+            "info": ""
         },
-        "author":{
-          "usage":"<name>",
-          "info":"Viser forfatteren til et tag."
+        "invite": {
+            "info": "",
+            "message": ""
         },
-        "search":{
-          "usage":"<query>",
-          "info":"Søger efter et tag med et navn der indeholder din forespørgsel."
+        "donate": {
+            "info": "",
+            "willdm": "OK, vil jeg sende dig mine donations oplysninger i en privat besked.",
+            "message": "placeholder"
         },
-        "list":{
-          "usage":"[@user]",
-          "info":"Viser en liste over alle tags, eller valgfrit alle tags skabt af en bestemt bruger."
+        "mods": {
+            "info": "",
+            "mods": "Mods i **{{guild}} **",
+            "nomods": "Der er ingen mods i denne server.",
+            "nomodsonline": "Der er ingen online mods."
         },
-        "favorite":{
-          "usage":"<name>",
-          "info":"Favoriserer et bestemt tag."
+        "help": {
+            "info": "",
+            "allcommands": "",
+            "nocommand": "Beklager, der er ingen kommando med navnet '{{name}}'!",
+            "commandinfo": "**{{type}}: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}",
+            "aliases": "Ingen aliaser",
+            "subcommand": "Underkommando",
+            "command": "Kommando",
+            "nosubcommand": "Desværre, er der ingen underkommando for '{{command}}' med navnet '{{name}}'!",
+            "subcommands": ""
         },
-        "report":{
-          "usage":"<name>",
-          "info":"Raporterer et tag for at bryde brugervilkåerne. Venligst brug omhyggeligt."
+        "gamatoto": {
+            "info": "",
+            "subcommand": {
+                "start": {
+                    "usage": "<location>",
+                    "info": "Starter en ekspedition!"
+                },
+                "end": {
+                    "info": "Slutter en ekspedition!"
+                },
+                "locations": {
+                    "info": "Viser en liste over alle ekspeditions steder."
+                }
+            },
+            "stats": "<:bc_cat:345081695990710272> her er dine genstande! \n\n{{stats}}",
+            "alreadystarted": "En ekspedition er allerede i gang!",
+            "notstarted": "Du har ikke startet en ekspedition!",
+            "nolocation": "Desværre, det var ikke en gyldig placering. De steder, du kan i øjeblikket besøge er:\n\n{{locations}}",
+            "invalidlocation": "Noget underligt skete. Det sted du udforskede findes ikke længere! Start venligst en ny ekspedition.",
+            "expeditionbeings": "<:bc_cat:345081695990710272> SØGNINGEN STARTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\n\nTjek igen senere ved at skrive `gamatoto end`!",
+            "expeditionends": ":bc_cat:345081695990710272> EXPEDITIONS RESULTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\nVarighed: {{minutes}} minutter\n\n{{results}}",
+            "notimeelapsed": "Ingen tid er forløbet, siden ekspeditionen startede. Gamatoto fandt ikke noget!",
+            "itemfound": "Gamatoto fandt {{amount}} {{item}} på {{location}}.",
+            "levelup": ":fireworks: Gamatoto er nu niveau {{level}}!",
+            "gamatotoxp": "",
+            "itemincrease": "",
+            "locations": "Her er alle ekspedition stederne! \n\n{{locations}}",
+            "wronglevel": "Desværre, skal du være level {{level}} for at udforske dette sted!",
+            "gamatotoitems": "Her er dine genstande:\n{{items}}",
+            "gamatotostats": "Gamatoto er i øjeblikket niveau {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
+            "gamatotocurrent": "Gamatoto har været ved at udforske **{{location}} ** på **{{minutes}} ** minutter. Brug 'gamatoto end' for at afslutte ekspeditionen.",
+            "gamatotoidle": "Gamatoto er ikke på en ekspedition lige nu. Send ham på et eventyr ved at bruge 'gamatoto start [location]'!"
         },
-        "test":{
-          "usage":"<code>",
-          "info":"Udfører det givne stykke kode i et test miljø."
+        "prefix": {
+            "info": "Henter eller angiver dine kommando præfikser. Denne kommando konfigurerer bruger præfikser. For Guild præfikser, brug kommandoen 'setup'.",
+            "subcommand": {
+                "add": {
+                    "usage": "<prefix>",
+                    "info": "Tilføjer et præfiks til din liste."
+                },
+                "remove": {
+                    "usage": "<prefix>",
+                    "info": "Fjerner et præfiks fra din liste."
+                }
+            },
+            "prefixlist": "",
+            "userprefixes": "Her er dine præfikser:\n```md\n{{userprefixes}}\n```",
+            "guildprefixes": "Her er præfikserne i denne server: ' ' 'md\n{{guildprefixes}} \n' ' '",
+            "noprefixes": "Du har ingen brugerdefinerede præfikser.",
+            "defaultprefixes": "Du kan altid bruge disse præfikser:\n{{prefixes}}",
+            "prefixadded": "Dette præfiks er blevet tilføjet!",
+            "prefixremoved": "Dette præfiks er blevet fjernet!",
+            "nothingchanged": "Intet blev ændret."
         },
-        "help":{
-          "usage":"[subcommand]",
-          "info":"Viser dette!"
-        },
-        "docs":{
-          "usage":"[subtag]",
-          "info":"Giver et link til BBTag dokumentationen, eller giver oplysninger om et bestemt undertag."
-        },
-        "setdesc":{
-          "info":"info"
-        },
-        "setusage":{
-          "info":"info"
+        "warnings": {
+            "output": ""
         }
-      },
-      "subcommandnotfound":"Kunne ikke finde en underkommando med navnet '{{subcommand}}'.",
-      "transferprompt":"{{target}}, {{user}} ønsker at overdrage ejerskabet af tagget '{{tag}}' til dig. Vil du acceptere? Dette vil ikke overføre variabler.",
-      "nobots":"[[emote.x]] Du kan ikke overføre et tag til en bot!",
-      "transfercancelled":"[[emote.x]] Overførslen er blevet annulleret.",
-      "transfercomplete":"[[emote.check]] {{user}} ejer nu tagget '{{tag}}'.",
-      "taginfo":"__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
-      "descupdate":"Beskrivelsen af '{{tag}}' er blevet opdateret.",
-      "descreset":"Beskrivelsen for `{{tag}}` er blevet nulstillet.",
-      "subcommandconflict":"Du kan ikke bruge navnet '{{name}}', fordi der er en underkommando med navnet!",
-      "toptagformat":"{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
-      "toptags":"Her er en liste over de 10 mest brugte tags!\n\n{{tags}}",
-      "tagauthor":"Tagget `{{tag}}` er skabt af **{{author}}**",
-      "favouriteadd":"Tagget '{{tag}}' er blevet føjet til din liste over favoritter.",
-      "favouriteremove":"Tagget '{{tag}}' er blevet fjernet fra din liste over favoritter.",
-      "favourites":"Du har {{count}} tags på din liste over favoritter. \n' ' '\nfix{{tags}}\n ' ' '"
     },
-    "locale":{
-      "info":"Angiver, hvad landestandard beskeder vil blive sendt i.",
-      "set":"Din landestandard er indstillet til {{locale}}!",
-      "list":"Din nuværende landestandard er: {{current}} \n\nVælg venligst hvilken landestandard du vil bruge."
-    },
-    "tokenify":{
-      "info":""
-    },
-    "nato":{
-      "info":""
-    },
-    "invite":{
-      "info":"",
-      "message":""
-    },
-    "donate":{
-      "info":"",
-      "willdm":"OK, vil jeg sende dig mine donations oplysninger i en privat besked.",
-      "message":"placeholder"
-    },
-    "mods":{
-      "info":"",
-      "mods":"Mods i **{{guild}} **",
-      "nomods":"Der er ingen mods i denne server.",
-      "nomodsonline":"Der er ingen online mods."
-    },
-    "help":{
-      "info":"",
-      "allcommands":"",
-      "nocommand":"Beklager, der er ingen kommando med navnet '{{name}}'!",
-      "commandinfo":"**{{type}}: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}",
-      "aliases":"Ingen aliaser",
-      "subcommand":"Underkommando",
-      "command":"Kommando",
-      "nosubcommand":"Desværre, er der ingen underkommando for '{{command}}' med navnet '{{name}}'!",
-      "subcommands":""
-    },
-    "gamatoto":{
-      "info":"",
-      "subcommand":{
-        "start":{
-          "usage":"<location>",
-          "info":"Starter en ekspedition!"
+    "image": {
+        "cat": {
+            "info": "Giver dig en meget sød og kærlig kat. Nuuuurr!"
         },
-        "end":{
-          "info":"Slutter en ekspedition!"
+        "delete": {
+            "info": ""
         },
-        "locations":{
-          "info":"Viser en liste over alle ekspeditions steder."
+        "thesearch": {
+            "info": "",
+            "defaulttext": ""
+        },
+        "shit": {
+            "info": ""
         }
-      },
-      "stats":"<:bc_cat:345081695990710272> her er dine genstande! \n\n{{stats}}",
-      "alreadystarted":"En ekspedition er allerede i gang!",
-      "notstarted":"Du har ikke startet en ekspedition!",
-      "nolocation":"Desværre, det var ikke en gyldig placering. De steder, du kan i øjeblikket besøge er:\n\n{{locations}}",
-      "invalidlocation":"Noget underligt skete. Det sted du udforskede findes ikke længere! Start venligst en ny ekspedition.",
-      "expeditionbeings":"<:bc_cat:345081695990710272> SØGNINGEN STARTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\n\nTjek igen senere ved at skrive `gamatoto end`!",
-      "expeditionends":":bc_cat:345081695990710272> EXPEDITIONS RESULTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\nVarighed: {{minutes}} minutter\n\n{{results}}",
-      "notimeelapsed":"Ingen tid er forløbet, siden ekspeditionen startede. Gamatoto fandt ikke noget!",
-      "itemfound":"Gamatoto fandt {{amount}} {{item}} på {{location}}.",
-      "levelup":":fireworks: Gamatoto er nu niveau {{level}}!",
-      "gamatotoxp":"",
-      "itemincrease":"",
-      "locations":"Her er alle ekspedition stederne! \n\n{{locations}}",
-      "wronglevel":"Desværre, skal du være level {{level}} for at udforske dette sted!",
-      "gamatotoitems":"Her er dine genstande:\n{{items}}",
-      "gamatotostats":"Gamatoto er i øjeblikket niveau {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
-      "gamatotocurrent":"Gamatoto har været ved at udforske **{{location}} ** på **{{minutes}} ** minutter. Brug 'gamatoto end' for at afslutte ekspeditionen.",
-      "gamatotoidle":"Gamatoto er ikke på en ekspedition lige nu. Send ham på et eventyr ved at bruge 'gamatoto start [location]'!"
     },
-    "prefix":{
-      "info":"Henter eller angiver dine kommando præfikser. Denne kommando konfigurerer bruger præfikser. For Guild præfikser, brug kommandoen 'setup'.",
-      "subcommand":{
-        "add":{
-          "usage":"<prefix>",
-          "info":"Tilføjer et præfiks til din liste."
+    "admin": {
+        "setup": {
+            "staff": {
+                "setrole": "Personale-roller er blevet opdateret.",
+                "rolequery": "Vælg de roller, der vil blive betragtet som moderator roller. Brugere med disse roller vil være i stand til at bruge admin-kommandoer."
+            },
+            "info": "Konfigurerer forskellige indstillinger.",
+            "subcommand": {
+                "staffuser": {
+                    "usage": "",
+                    "info": "Tilføjer eller fjerner brugere til listen over personale."
+                },
+                "staffrole": {
+                    "info": ""
+                },
+                "mute": {
+                    "info": "Sætter op den dæmpede rolle."
+                },
+                "announcement": {
+                    "info": "Opsætter annonceringer."
+                },
+                "modlog": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "mute": {
+                "setrole": "Den dæmpede rolle er blevet opdateret.",
+                "rolequery": "Vælg den dæmpede rolle."
+            },
+            "announce": {
+                "set": "",
+                "rolequery": "",
+                "channelquery": ""
+            },
+            "modlog": {
+                "set": "",
+                "remove": "",
+                "invalid": "",
+                "hadinvalid": "",
+                "list": ""
+            }
         },
-        "remove":{
-          "usage":"<prefix>",
-          "info":"Fjerner et præfiks fra din liste."
+        "reason": {
+            "info": "",
+            "nocase": "",
+            "reasonset": ""
+        },
+        "help": {
+            "info": "",
+            "allcommands": "",
+            "nocommand": "Beklager, der er ingen kommando med navnet '{{name}}'!",
+            "commandinfo": "**Kommando: {{name}}**\n\n**Aliaser**: {{aliases}}\n**Brug**: {{usage}}\n\n{{description}}"
+        },
+        "ccommand": {
+            "info": "",
+            "usage": "<subcommand>[args]",
+            "subcommand": {
+                "set": {
+                    "usage": "<name><content>",
+                    "info": ""
+                },
+                "delete": {
+                    "usage": "<name>",
+                    "info": "Sletter en brugerdefineret kommando."
+                },
+                "rename": {
+                    "usage": "<name><newName>",
+                    "info": "Omdøber en brugerdefineret kommando."
+                },
+                "author": {
+                    "usage": "<name>",
+                    "info": ""
+                },
+                "transfer": {
+                    "usage": "<name><user>",
+                    "info": "Overfører ejerskab over en brugerdefineret kommando til en anden person. Der skal være givet samtykke først."
+                },
+                "list": {
+                    "info": "Viser de brugerdefinerede kommandoer i serveren."
+                },
+                "test": {
+                    "usage": "<code>",
+                    "info": "Udfører koden i kontekst af din konto."
+                },
+                "help": {
+                    "usage": "[subcommand]",
+                    "info": "Viser dette!"
+                }
+            },
+            "dontown": "[[emote.x]] Du ejer ikke denne brugerdefinerede kommando!",
+            "notag": "[[emote.x]] Der findes ingen brugerdefinerede kommando med det navn.",
+            "tagset": "[[emote.check]] Brugerdefinerede kommando `{{name}}` {{process}}!",
+            "tagrename": "[[emote.check]] Brugerdefinerede kommandoen `{{old}}` er blevet imdøbt til `{{new}}`",
+            "raw": "Koden for {{name}} er:\\n```{{code}}```",
+            "alreadyexists": "Der findes allerede en brugerdefineret kommando med det navn.",
+            "testoutput": "Test Output:\\n\\n{{output}}"
         }
-      },
-      "prefixlist":"",
-      "userprefixes":"Her er dine præfikser:\n```md\n{{userprefixes}}\n```",
-      "guildprefixes":"Her er præfikserne i denne server: ' ' 'md\n{{guildprefixes}} \n' ' '",
-      "noprefixes":"Du har ingen brugerdefinerede præfikser.",
-      "defaultprefixes":"Du kan altid bruge disse præfikser:\n{{prefixes}}",
-      "prefixadded":"Dette præfiks er blevet tilføjet!",
-      "prefixremoved":"Dette præfiks er blevet fjernet!",
-      "nothingchanged":"Intet blev ændret."
     }
-  },
-  "image":{
-    "cat":{
-      "info":"Giver dig en meget sød og kærlig kat. Nuuuurr!"
-    },
-    "delete":{
-      "info":""
-    },
-    "thesearch":{
-      "info":"",
-      "defaulttext":""
-    },
-    "shit":{
-      "info":""
-    }
-  },
-  "admin":{
-    "setup":{
-      "staff":{
-        "setrole":"Personale-roller er blevet opdateret.",
-        "rolequery":"Vælg de roller, der vil blive betragtet som moderator roller. Brugere med disse roller vil være i stand til at bruge admin-kommandoer."
-      },
-      "info":"Konfigurerer forskellige indstillinger.",
-      "subcommand":{
-        "staffuser":{
-          "usage":"",
-          "info":"Tilføjer eller fjerner brugere til listen over personale."
-        },
-        "staffrole":{
-          "info":""
-        },
-        "mute":{
-          "info":"Sætter op den dæmpede rolle."
-        },
-        "announcement":{
-          "info":"Opsætter annonceringer."
-        },
-        "modlog":{
-          "usage":"",
-          "info":""
-        }
-      },
-      "mute":{
-        "setrole":"Den dæmpede rolle er blevet opdateret.",
-        "rolequery":"Vælg den dæmpede rolle."
-      },
-      "announce":{
-        "set":"",
-        "rolequery":"",
-        "channelquery":""
-      },
-      "modlog":{
-        "set":"",
-        "remove":"",
-        "invalid":"",
-        "hadinvalid":"",
-        "list":""
-      }
-    },
-    "reason":{
-      "info":"",
-      "nocase":"",
-      "reasonset":""
-    },
-    "help":{
-      "info":"",
-      "allcommands":"",
-      "nocommand":"Beklager, der er ingen kommando med navnet '{{name}}'!",
-      "commandinfo":"**Kommando: {{name}}**\n\n**Aliaser**: {{aliases}}\n**Brug**: {{usage}}\n\n{{description}}"
-    },
-    "ccommand":{
-      "info":"",
-      "usage":"<subcommand>[args]",
-      "subcommand":{
-        "set":{
-          "usage":"<name><content>",
-          "info":""
-        },
-        "delete":{
-          "usage":"<name>",
-          "info":"Sletter en brugerdefineret kommando."
-        },
-        "rename":{
-          "usage":"<name><newName>",
-          "info":"Omdøber en brugerdefineret kommando."
-        },
-        "author":{
-          "usage":"<name>",
-          "info":""
-        },
-        "transfer":{
-          "usage":"<name><user>",
-          "info":"Overfører ejerskab over en brugerdefineret kommando til en anden person. Der skal være givet samtykke først."
-        },
-        "list":{
-          "info":"Viser de brugerdefinerede kommandoer i serveren."
-        },
-        "test":{
-          "usage":"<code>",
-          "info":"Udfører koden i kontekst af din konto."
-        },
-        "help":{
-          "usage":"[subcommand]",
-          "info":"Viser dette!"
-        }
-      },
-      "dontown":"[[emote.x]] Du ejer ikke denne brugerdefinerede kommando!",
-      "notag":"[[emote.x]] Der findes ingen brugerdefinerede kommando med det navn.",
-      "tagset":"[[emote.check]] Brugerdefinerede kommando `{{name}}` {{process}}!",
-      "tagrename":"[[emote.check]] Brugerdefinerede kommandoen `{{old}}` er blevet imdøbt til `{{new}}`",
-      "raw":"Koden for {{name}} er:\\n```{{code}}```",
-      "alreadyexists":"Der findes allerede en brugerdefineret kommando med det navn.",
-      "testoutput":"Test Output:\\n\\n{{output}}"
-    }
-  }
 }
