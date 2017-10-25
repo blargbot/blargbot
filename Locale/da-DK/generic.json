@@ -1,35 +1,35 @@
 {
-  "output":"Output:\n{{output}}",
-  "nooutput":"Intet output...",
-  "queryexpire":"Søgningen vil udløbe om {{length}} minutter.",
-  "resolveuser":{
-    "nousers":"Ingen brugere fundet.",
-    "pickuser":"{{length}} brugere blev fundet! Vælg venligst en fra listen"
-  },
-  "resolverole":{
-    "noroles":"Ingen roller fundet.",
-    "pickrole":"{{length}} roller blev fundet! Vælg venligst en fra listen."
-  },
-  "resolvechannel":{
-    "nochannels":"Ingen kanaler fundet.",
-    "pickchannel":"{{length}} kanaler blev fundet! Vælg venligst en fra listen."
-  },
-  "edited":"redigeret",
-  "created":"skabt",
-  "deleted":"slettet",
-  "menu":{
-    "choices":"Side {{page}}/{{max}}"
-  },
-  "nochange":"Intet blev ændret.",
-  "commandhelp":"**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
-  "example":{
-    "id1":"111111111111111111",
-    "id2":"222222222222222222",
-    "id3":"333333333333333333"
-  },
-  "test":"[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-  "querycancelled":"Efterspørgslen blev annulleret.",
-  "user":"Bruger",
-  "role":"Rolle",
-  "channel":"Kanal"
+    "output": "Output:\n{{output}}",
+    "nooutput": "Intet output...",
+    "queryexpire": "Søgningen vil udløbe om {{length}} minutter.",
+    "resolveuser": {
+        "nousers": "Ingen brugere fundet.",
+        "pickuser": "{{length}} brugere blev fundet! Vælg venligst en fra listen"
+    },
+    "resolverole": {
+        "noroles": "Ingen roller fundet.",
+        "pickrole": "{{length}} roller blev fundet! Vælg venligst en fra listen."
+    },
+    "resolvechannel": {
+        "nochannels": "Ingen kanaler fundet.",
+        "pickchannel": "{{length}} kanaler blev fundet! Vælg venligst en fra listen."
+    },
+    "edited": "redigeret",
+    "created": "skabt",
+    "deleted": "slettet",
+    "menu": {
+        "choices": "Side {{page}}/{{max}}"
+    },
+    "nochange": "Intet blev ændret.",
+    "commandhelp": "**Command Name**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
+    "example": {
+        "id1": "111111111111111111",
+        "id2": "222222222222222222",
+        "id3": "333333333333333333"
+    },
+    "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
+    "querycancelled": "Efterspørgslen blev annulleret.",
+    "user": "Bruger",
+    "role": "Rolle",
+    "channel": "Kanal"
 }
