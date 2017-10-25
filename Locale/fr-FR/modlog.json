@@ -1,26 +1,26 @@
 {
-  "events":{
-    "kick":"Éjection",
-    "ban":"Bannissement",
-    "unban":"Dé-bannissement",
-    "mute":"Rendre muet",
-    "unmute":"Rendre la parole",
-    "warn":"Mise en garde",
-    "pardon":"Pardon",
-    "rename":"Changement de nom",
-    "specialroleadd":"Rôle particulier ajouté",
-    "specialroleremove":"Rôle particulier supprimé"
-  },
-  "case":"{{icon}} Cas {{number}} : {{event}}",
-  "setreason":"Modérateur responsable, merci de faire `raison {{number}}` pour donner la raison.",
-  "warnings":{
-    "given":"Avertissements donnés",
-    "removed":"Avertissements retirés",
-    "total":"Nouveau total"
-  },
-  "rename":{
-    "old":"Ancien nom",
-    "new":"Nouveau nom"
-  },
-  "duration":"Durée"
+    "events": {
+        "kick": "Éjection",
+        "ban": "Bannissement",
+        "unban": "Dé-bannissement",
+        "mute": "Rendre muet",
+        "unmute": "Rendre la parole",
+        "warn": "Mise en garde",
+        "pardon": "Pardon",
+        "rename": "Changement de nom",
+        "specialroleadd": "Rôle particulier ajouté",
+        "specialroleremove": "Rôle particulier supprimé"
+    },
+    "case": "{{icon}} Cas {{number}} : {{event}}",
+    "setreason": "Modérateur responsable, merci de faire `raison {{number}}` pour donner la raison.",
+    "warnings": {
+        "given": "Avertissements donnés",
+        "removed": "Avertissements retirés",
+        "total": "Nouveau total"
+    },
+    "rename": {
+        "old": "Ancien nom",
+        "new": "Nouveau nom"
+    },
+    "duration": "Durée"
 }
