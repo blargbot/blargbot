@@ -1,81 +1,81 @@
 {
-  "language":"İngilizce",
-  "header":{
-    "login":"Giriş Yap",
-    "logout":"Çıkış Yap",
-    "commands":"Komutlar",
-    "bbtag":"BBTag",
-    "subtags":"Biçiminde"
-  },
-  "generic":{
-    "loading":"",
-    "collapse":"",
-    "expand":"",
-    "search":"",
-    "noresults":"",
-    "resultsfound":""
-  },
-  "index":{
-    "desc":"blargbot kalite komutları ve chatlogs ve derinlemesine özel komut sistemi gibi hizmetler sunmak için adanmış çok amaçlı bir anlaşmazlık bot olduğunu.",
-    "commands":{
-      "title":"Komutlar",
-      "desc":"blargbot çok sayıda komutları, hepsi de belgelenmiş ve size kolaylık sağlamak için kategorize bulunuyor."
+    "language": "İngilizce",
+    "header": {
+        "login": "Giriş Yap",
+        "logout": "Çıkış Yap",
+        "commands": "Komutlar",
+        "bbtag": "BBTag",
+        "subtags": "Biçiminde"
     },
-    "bbtag":{
-      "title":"BBTag",
-      "desc":"blargbot BBTag, gelişmiş özel komutlar oluşturmak için kullanabileceğiniz denilen bir sofistike etiket sistemi kullanır."
+    "generic": {
+        "loading": "",
+        "collapse": "",
+        "expand": "",
+        "search": "",
+        "noresults": "",
+        "resultsfound": ""
     },
-    "customization":{
-      "title":"Kişiselleştirme",
-      "desc":"Biz kapsamlı özelleştirme blargbot sahiptir, bu nedenle her lonca aynı şey anlıyorum. Tam olarak hangi rollerin hangi komutları, özel önekleri belirtin ve hatta değişmek göstermek dil kullanıp kullanamayacağınızı denetleyebilir!"
+    "index": {
+        "desc": "blargbot kalite komutları ve chatlogs ve derinlemesine özel komut sistemi gibi hizmetler sunmak için adanmış çok amaçlı bir anlaşmazlık bot olduğunu.",
+        "commands": {
+            "title": "Komutlar",
+            "desc": "blargbot çok sayıda komutları, hepsi de belgelenmiş ve size kolaylık sağlamak için kategorize bulunuyor."
+        },
+        "bbtag": {
+            "title": "BBTag",
+            "desc": "blargbot BBTag, gelişmiş özel komutlar oluşturmak için kullanabileceğiniz denilen bir sofistike etiket sistemi kullanır."
+        },
+        "customization": {
+            "title": "Kişiselleştirme",
+            "desc": "Biz kapsamlı özelleştirme blargbot sahiptir, bu nedenle her lonca aynı şey anlıyorum. Tam olarak hangi rollerin hangi komutları, özel önekleri belirtin ve hatta değişmek göstermek dil kullanıp kullanamayacağınızı denetleyebilir!"
+        },
+        "moderation": {
+            "title": "Moderasyon",
+            "desc": "Sohbet orta mi ihtiyacınız var? blargbot kısma, daha fazla bilgi için chatlogging veya otomatik sansür gibi şeyler gelişmiş ve temel faaliyetlerden yasaklanması gibi birçok ılımlılık yarar ile donatılmıştır."
+        },
+        "opensource": {
+            "title": "Açık Kaynak",
+            "desc": "Paylaşım bakmakta olduğunu! blargbot altında belgili tanımlık GNU AGPLv3 ruhsat tamamen açık kaynak. Bir göz atın ve nasıl her şey çalışır öğrenmek çekinmeyin. Kendi projesinde kodumu birini kullanıyorsanız, bana kredi için gereklidir. Daha fazla ayrıntı için lisansa bakın."
+        },
+        "suggestions": {
+            "title": "Önerilere açık",
+            "desc": "Bot için bir öneriniz var mı? Bunu duyduğuna memnun olurdu! Bir hata mi buldunuz? Bu çok isteriz! Bana 'Öner' komutunu kullanarak benim lonca katılarak ya da bir bilet göndererek bir şey önerebilirsiniz."
+        }
     },
-    "moderation":{
-      "title":"Moderasyon",
-      "desc":"Sohbet orta mi ihtiyacınız var? blargbot kısma, daha fazla bilgi için chatlogging veya otomatik sansür gibi şeyler gelişmiş ve temel faaliyetlerden yasaklanması gibi birçok ılımlılık yarar ile donatılmıştır."
+    "bbtag": {
+        "main": "",
+        "subtags": {
+            "title": "",
+            "desc": ""
+        },
+        "variables": {
+            "title": "",
+            "desc": ""
+        },
+        "arrays": {
+            "title": "",
+            "desc": ""
+        }
     },
-    "opensource":{
-      "title":"Açık Kaynak",
-      "desc":"Paylaşım bakmakta olduğunu! blargbot altında belgili tanımlık GNU AGPLv3 ruhsat tamamen açık kaynak. Bir göz atın ve nasıl her şey çalışır öğrenmek çekinmeyin. Kendi projesinde kodumu birini kullanıyorsanız, bana kredi için gereklidir. Daha fazla ayrıntı için lisansa bakın."
+    "subtags": {
+        "components": {
+            "argument": "",
+            "named": "",
+            "unnamed": "",
+            "array": "",
+            "staff": "",
+            "noimplicit": ""
+        },
+        "referdocs": ""
     },
-    "suggestions":{
-      "title":"Önerilere açık",
-      "desc":"Bot için bir öneriniz var mı? Bunu duyduğuna memnun olurdu! Bir hata mi buldunuz? Bu çok isteriz! Bana 'Öner' komutunu kullanarak benim lonca katılarak ya da bir bilet göndererek bir şey önerebilirsiniz."
+    "commands": {
+        "title": "",
+        "desc": "",
+        "components": {
+            "usage": "",
+            "flags": "",
+            "aliases": "",
+            "subcommands": ""
+        }
     }
-  },
-  "bbtag":{
-    "main":"",
-    "subtags":{
-      "title":"",
-      "desc":""
-    },
-    "variables":{
-      "title":"",
-      "desc":""
-    },
-    "arrays":{
-      "title":"",
-      "desc":""
-    }
-  },
-  "subtags":{
-    "components":{
-      "argument":"",
-      "named":"",
-      "unnamed":"",
-      "array":"",
-      "staff":"",
-      "noimplicit":""
-    },
-    "referdocs":""
-  },
-  "commands":{
-    "title":"",
-    "desc":"",
-    "components":{
-      "usage":"",
-      "flags":"",
-      "aliases":"",
-      "subcommands":""
-    }
-  }
 }
