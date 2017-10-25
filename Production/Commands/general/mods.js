@@ -13,17 +13,21 @@ class ModsCommand extends GeneralCommand {
         });
     }
 
-    get online() { return '<:online:313956277808005120>'; }
-    get away() { return '<:away:313956277220802560>'; }
-    get dnd() { return '<:dnd:313956276893646850>'; }
-    get offline() { return '<:offline:313956277237710868>'; }
+    get online() { return '<:statusOnline:372798973867720715>'; }
+    get away() { return '<:statusIdle:372798973880041484>'; }
+    get dnd() { return '<:statusDnd:372798973359947777>'; }
+    get offline() { return '<:statusOffline:372798973930635274>'; }
 
     sortUsers(a, b) { return a.user.fullName.toLowerCase() > b.user.fullName.toLowerCase(); }
 
     async execute(ctx) {
+        let guild = await ctx.guild.data.getOrCreateObject();
+        let roles = await guild.get('staffRoles');
+        let staffPerms = await guild.get('staffPerms');
+
         const mods = (await Promise.filter(ctx.channel.guild.members, async m => {
             if (m[1].bot) return false;
-            return await ctx.checkStaff(m[0], false);
+            return await ctx.checkStaff(m[0], false, roles, staffPerms);
         }))
             .map(m => m[1]);
         if (mods.length === 0)
@@ -43,11 +47,15 @@ class ModsCommand extends GeneralCommand {
 
         let msg = await ctx.decode(this.keys.mods, { guild: ctx.guild.name }) + '\n';
         let arrs = [];
-        arrs.push(online.map(m => `${this.online} **${m.user.fullName}** (${m.user.id})`).join('\n'));
+        if (online.length > 0)
+            arrs.push(this.online + ' ' + online.map(m => `**${m.user.fullName}**`).join(', '));
         if (!onlineOnly) {
-            arrs.push(away.map(m => `${this.away} **${m.user.fullName}** (${m.user.id})`).join('\n'));
-            arrs.push(dnd.map(m => `${this.dnd} **${m.user.fullName}** (${m.user.id})`).join('\n'));
-            arrs.push(offline.map(m => `${this.offline} **${m.user.fullName}** (${m.user.id})`).join('\n'));
+            if (away.length > 0)
+                arrs.push(this.away + ' ' + away.map(m => `**${m.user.fullName}**`).join(', '));
+            if (dnd.length > 0)
+                arrs.push(this.dnd + ' ' + dnd.map(m => `**${m.user.fullName}**`).join(', '));
+            if (offline.length > 0)
+                arrs.push(this.offline + ' ' + offline.map(m => `**${m.user.fullName}**`).join(', '));
         }
         msg += arrs.filter(m => m.length > 0).join('\n');
         return await ctx.send(msg);
