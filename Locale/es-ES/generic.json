@@ -1,35 +1,35 @@
 {
-  "output":"Salida:\n{{output}}",
-  "nooutput":"Ninguna salida...",
-  "queryexpire":"Esta consulta expirará en {{longitud}} minutos.",
-  "resolveuser":{
-    "nousers":"No se han encontrado usuarios.",
-    "pickuser":"{{length}} usuarios fueron encontrados! Por favor, selcciona uno de la lista."
-  },
-  "resolverole":{
-    "noroles":"No se han encontrado roles.",
-    "pickrole":"{{length}} roles fueron encontrados! Por favor, selecciona uno de la lista."
-  },
-  "resolvechannel":{
-    "nochannels":"No se han encontrado canales.",
-    "pickchannel":"{{length}} canales fueron encontrados! Por favor, selecciona uno de la lista."
-  },
-  "edited":"editado",
-  "created":"creado",
-  "deleted":"eliminado",
-  "menu":{
-    "choices":"Página {{page}}/{{max}}"
-  },
-  "nochange":"Nada ha sido modificado",
-  "commandhelp":"",
-  "example":{
-    "id1":"",
-    "id2":"",
-    "id3":""
-  },
-  "test":"",
-  "querycancelled":"The query has been cancelled.",
-  "user":"",
-  "role":"",
-  "channel":""
+    "output": "Salida:\n{{output}}",
+    "nooutput": "Ninguna salida...",
+    "queryexpire": "Esta consulta expirará en {{longitud}} minutos.",
+    "resolveuser": {
+        "nousers": "No se han encontrado usuarios.",
+        "pickuser": "{{length}} usuarios fueron encontrados! Por favor, selcciona uno de la lista."
+    },
+    "resolverole": {
+        "noroles": "No se han encontrado roles.",
+        "pickrole": "{{length}} roles fueron encontrados! Por favor, selecciona uno de la lista."
+    },
+    "resolvechannel": {
+        "nochannels": "No se han encontrado canales.",
+        "pickchannel": "{{length}} canales fueron encontrados! Por favor, selecciona uno de la lista."
+    },
+    "edited": "editado",
+    "created": "creado",
+    "deleted": "eliminado",
+    "menu": {
+        "choices": "Página {{page}}/{{max}}"
+    },
+    "nochange": "Nada ha sido modificado",
+    "commandhelp": "",
+    "example": {
+        "id1": "",
+        "id2": "",
+        "id3": ""
+    },
+    "test": "",
+    "querycancelled": "The query has been cancelled.",
+    "user": "",
+    "role": "",
+    "channel": ""
 }
