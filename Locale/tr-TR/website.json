@@ -8,12 +8,12 @@
         "subtags": "Biçiminde"
     },
     "generic": {
-        "loading": "",
-        "collapse": "",
-        "expand": "",
-        "search": "",
-        "noresults": "",
-        "resultsfound": ""
+        "loading": "Yükleniyor",
+        "collapse": "Tümünü Daralt",
+        "expand": "Tüm kategorileri aç",
+        "search": "Filtre...",
+        "noresults": "Ah ah! Sonuç bulunamadı.",
+        "resultsfound": "Eşleşen sonuçlar:"
     },
     "index": {
         "desc": "blargbot kalite komutları ve chatlogs ve derinlemesine özel komut sistemi gibi hizmetler sunmak için adanmış çok amaçlı bir anlaşmazlık bot olduğunu.",
@@ -45,37 +45,37 @@
     "bbtag": {
         "main": "",
         "subtags": {
-            "title": "",
+            "title": "Biçiminde",
             "desc": ""
         },
         "variables": {
-            "title": "",
+            "title": "Değişkenler",
             "desc": ""
         },
         "arrays": {
-            "title": "",
+            "title": "Diziler",
             "desc": ""
         }
     },
     "subtags": {
         "components": {
-            "argument": "",
-            "named": "",
-            "unnamed": "",
-            "array": "",
-            "staff": "",
-            "noimplicit": ""
+            "argument": "Bağımsız değişkenler:",
+            "named": "Adlandırılmış bağımsız değişkenleri destekler",
+            "unnamed": "Yok ** değil ** destek adlı bağımsız değişkenler",
+            "array": "Dizileri destekler",
+            "staff": "Buna yazmak için staff olman gerekiyor",
+            "noimplicit": "Örtülü sınıflandırmaya desteklemiyor"
         },
-        "referdocs": ""
+        "referdocs": "Daha fazla kullanım yönergeleri için [documentation](/bbtag) başvurun."
     },
     "commands": {
-        "title": "",
+        "title": "Komutlar",
         "desc": "",
         "components": {
-            "usage": "",
-            "flags": "",
-            "aliases": "",
-            "subcommands": ""
+            "usage": "Kullanım Şekli:",
+            "flags": "İşaretler:",
+            "aliases": "Diğer Adlar:",
+            "subcommands": "Alt komutlar:"
         }
     }
 }
