@@ -221,7 +221,7 @@
             "nothingchanged": "Hiçbir şey değiştirmedi."
         },
         "warnings": {
-            "output": ""
+            "output": "**{{user}} ** birikmiş **{{amount}} ** uyarı içinde **{{guild}} **."
         }
     },
     "image": {
@@ -248,7 +248,7 @@
             "info": "Çeşitli ayarlarını yapılandırır.",
             "subcommand": {
                 "staffuser": {
-                    "usage": "",
+                    "usage": "staffuser <add | remove><user>...",
                     "info": "Ekler veya personel listesi kullanıcılara kaldırır."
                 },
                 "staffrole": {
@@ -261,7 +261,7 @@
                     "info": "Duyurular kanalını kurar."
                 },
                 "modlog": {
-                    "usage": "",
+                    "usage": "modLog [event]... [flags]",
                     "info": "Modlog belirtilen olaylar için ayarlar. Kanal yok belirtilirse, geçerli kanal için varsayılan olarak ayarlanır. Hiçbir olay belirttiyseniz, tüm olaylara varsayılan olarak ayarlanır."
                 }
             },
