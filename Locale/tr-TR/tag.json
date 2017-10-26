@@ -74,7 +74,7 @@
             "desc": "Tüm boşluk daralma tarafından sağlanan metni temizler."
         },
         "comment": {
-            "desc": ""
+            "desc": "Ayrıştırması gözardı edilecek bir alanı belirtir"
         },
         "get": {
             "desc": "Sağlanan adıyla depolanmış Değişken döndürür. Değişken önekleri aranacak havuzunda değişiklik yapabilirsiniz."
@@ -143,7 +143,7 @@
             "desc": "Sağlanan ondalık tamsayýya yuvarlar."
         },
         "math": {
-            "desc": ""
+            "desc": "Aşağıdaki işleçleri kullanarak sağlanan ifadenin değeri hesaplar:\n\n -' ^' - üs\n - '/' - division \n - ' *' - çarpma\n - '+' - ek\n - '-' - çıkarma - 've' - bit seviyesinde\n - ' |' - bit düzey veya - 'XOR' - Bitsel XOR işleçler t kullanılarak yürütülür o sıralı işlemler (köşeli ayraçlar, Çin'li, bölüm, çarpma, toplama, çıkarma, Bitdüzeyi). Bir işleç belirtilmezse, son kullanılan işleç (ek olarak varsaymak) kullanır. Köşeli ayraçlar başka bir iç içe geçmiş {math} etiketi kullanılarak elde. 'Augend' veya 'işleneni' sayı olarak ayrıştırılamıyor, aynı ada sahip bir değişken alınacaktır. Alınan değişken de bir sayı değil, bir hata görüntüler."
         },
         "parsefloat": {
             "desc": "Verilen metin bir ondalık olarak ayrıştırmak çalışır."
