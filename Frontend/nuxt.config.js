@@ -31,6 +31,9 @@ module.exports = {
                         name: 'Escaper', path: '/escaper',
                         component: resolve(__dirname, 'renders/escape.vue')
                     }, {
+                        name: 'Embeds', path: '/embeds',
+                        component: resolve(__dirname, 'renders/embeds.vue')
+                    }, {
                         name: 'V1Escaper', path: '/v1escaper',
                         component: resolve(__dirname, 'renders/v1escaper.vue')
                     }, {
