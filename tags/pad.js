@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:50:26
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-30 12:23:23
+ * @Last Modified time: 2017-10-30 12:46:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -16,6 +16,7 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
+e.deprecated = '{pad} will be replaced by {realpad} in v2';
 e.name = 'pad';
 e.args = '&lt;direction&gt; &lt;back&gt; &lt;text&gt;';
 e.usage = '{pad;direction;text;back}';
