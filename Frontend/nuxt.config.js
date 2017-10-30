@@ -1,7 +1,7 @@
 const conf = require('../config.json');
 
 module.exports = {
-    dev: false,
+    dev: conf.beta,
     srcDir: 'Frontend/',
     build: {
         vendor: ['vue-i18n', 'axios'],
@@ -30,6 +30,9 @@ module.exports = {
                     }, {
                         name: 'Escaper', path: '/escaper',
                         component: resolve(__dirname, 'renders/escape.vue')
+                    }, {
+                        name: 'V1Escaper', path: '/v1escaper',
+                        component: resolve(__dirname, 'renders/v1escaper.vue')
                     }, {
                         name: 'SubTags', path: '/subtags/:name?',
                         component: resolve(__dirname, 'renders/subtags.vue')

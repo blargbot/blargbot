@@ -22,19 +22,17 @@ class Timer {
         return `${diff.minutes()} minutes, ${diff.seconds()} seconds, and ${diff.milliseconds()} milliseconds`;
     }
 
-    start() {
+    start(reset = true) {
         if (this._start !== null)
             throw new Error('Cannot start an already started timer');
-        this._elapsed = 0;
+        if (reset)
+            this._elapsed = 0;
         this._start = Date.now();
         return this;
     }
 
     resume() {
-        if (this._start !== null)
-            throw new Error('Cannot resume an already started timer');
-        this._start = Date.now();
-        return this;
+        return this.start(false);
     }
 
     end() {
