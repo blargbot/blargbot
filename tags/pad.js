@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:50:26
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-30 12:15:02
+ * @Last Modified time: 2017-10-30 12:18:39
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -20,7 +20,7 @@ e.name = 'pad';
 e.args = '&lt;direction&gt; &lt;back&gt; &lt;text&gt;';
 e.usage = '{pad;direction;text;back}';
 e.desc = 'Pads <code>back</code> to the <code>direction</code> of <code>text</code>';
-e.exampleIn = '{pad;left;000000;ABC}';
+e.exampleIn = '{pad;right;000000;ABC}';
 e.exampleOut = '000ABC';
 
 e.execute = async function (params) {
