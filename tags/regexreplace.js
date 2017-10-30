@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:46
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:51:46
+ * @Last Modified time: 2017-10-17 12:12:28
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -37,27 +37,24 @@ e.execute = async function (params) {
 
     var regexList;
     if (params.args.length > 3) {
-        if (/^\/?.*\/.*/.test(params.args[2])) {
+        try {
+            let regex = bu.createRegExp(params.args[2]);
             params.args[1] = await bu.processTagInner(params, 1);
             params.args[3] = await bu.processTagInner(params, 3);
-            regexList = params.args[2].match(/^\/?(.*)\/(.*)/);
-            returnObj.replaceString = params.args[1].replace(new RegExp(regexList[1], regexList[2]), params.args[3]);
-        } else {
-            returnObj.replaceString = await bu.tagProcessError(params, '`Invalid regex string`');
+            returnObj.replaceString = regex.test(params.args[1]);
+            returnObj.replaceString = params.args[1].replace(regex, params.args[3]);
+        } catch (err) {
+            returnObj.replaceString = await bu.tagProcessError(params, `\`${err}\``)
         }
     } else if (params.args.length == 3) {
-        if (/^\/?.*\/.*/.test(params.args[1])) {
-            try {
-                regexList = params.args[1].match(/^\/?(.*)\/(.*)/);
-                params.args[2] = await bu.processTagInner(params, 2);
-                returnObj.replace = new RegExp(regexList[1], regexList[2]);
-                returnObj.replaceString = params.args[2];
-                returnObj.replaceContent = true;
-            } catch (err) {
-                returnObj.replaceString = await bu.tagProcessError(params, err.message);
-            }
-        } else {
-            returnObj.replaceString = await bu.tagProcessError(params, '`Invalid regex string`');
+        try {
+            let regex = bu.createRegExp(params.args[1]);
+            params.args[2] = await bu.processTagInner(params, 2);
+            returnObj.replace = regex;
+            returnObj.replaceString = params.args[2];
+            returnObj.replaceContent = true;
+        } catch (err) {
+            returnObj.replaceString = await bu.tagProcessError(params, `\`${err}\``)
         }
     } else {
         returnObj.replaceString = await bu.tagProcessError(params, '`Not enough arguments`');

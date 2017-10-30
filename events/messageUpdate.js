@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:57
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:22:52
+ * @Last Modified time: 2017-10-23 17:42:43
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,7 +10,11 @@
 bot.on('messageUpdate', async function (msg, oldmsg) {
     if (oldmsg == undefined) {
         if (bot.channelGuildMap.hasOwnProperty(msg.channel.id)) {
-            msg = await bot.getMessage(msg.channel.id, msg.id);
+            try {
+                msg = await bot.getMessage(msg.channel.id, msg.id);
+            } catch (err) {
+                return; // Message wasn't found
+            }
         } else return; // Don't handle DM
     }
     const storedGuild = await bu.getGuild(msg.guild.id);
@@ -57,7 +61,7 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
                 if (msg.author)
                     bu.insertChatlog(msg, 1);
             }
-        let oldMsg = oldmsg.content || 'uncached :(';
+        let oldMsg = oldmsg.content || 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';
         let newMsg = msg.content || '""';
         if (oldMsg.length + newMsg.length > 1900) {
             if (oldMsg.length > 900) oldMsg = oldMsg.substring(0, 900) + '... (too long to display)';
