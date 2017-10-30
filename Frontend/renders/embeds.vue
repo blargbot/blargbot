@@ -145,6 +145,18 @@ export default {
       let date = moment(embed.timestamp);
       if (date.isValid()) embed.timestamp = date.format();
       else embed.timestamp = "";
+
+      for (const key in embed) {
+        if (!embed[key]) embed[key] = undefined;
+        if (typeof embed[key] === "object") {
+          let empty = true;
+          for (const key2 in embed[key]) {
+            if (!embed[key][key2]) embed[key][key2] = undefined;
+            else empty = false;
+          }
+          if (empty) embed[key] = undefined;
+        }
+      }
       return JSON.stringify(embed, null, 2);
     },
     jsonedCodeblock() {
