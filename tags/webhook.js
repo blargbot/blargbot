@@ -18,7 +18,7 @@ e.requireCtx = require;
 e.isTag = true;
 e.name = `webhook`;
 e.args = `&lt;id&gt; &lt;token&gt; [content] [embed] [username] [avatarURL]`;
-e.usage = `{send;id;token[;content[;embed[;username[;avatarURL]]]]}`;
+e.usage = `{webhook;id;token[;content[;embed[;username[;avatarURL]]]]}`;
 e.desc = `Executes a webhook. The <code>embed</code> must be provided in a raw JSON format, properly escaped for BBTag. A simple escaping utility can be accessed <a href='https://rewrite.blargbot.xyz/v1escaper'>here</a>. Please assign your webhook credentials to private variables! Do not leave them in your code.`;
 e.exampleIn = `{webhook;1111111111111111;t.OK-en;Hello!}`;
 e.exampleOut = `In the webhook channel: Hello!`;
