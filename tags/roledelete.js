@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-07-17 13:23:10
+ * @Last Modified time: 2017-11-01 09:52:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,7 +17,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `roledelete`;
-e.args = `<name>`;
+e.args = `&lt;name&gt;`;
 e.usage = `{roledelete;name}`;
 e.desc = `Deletes a role.`;
 e.exampleIn = `{roledelete;Super Cool Role!}`;

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-07-17 13:19:30
+ * @Last Modified time: 2017-11-01 09:52:12
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,7 +17,7 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `rolecreate`;
-e.args = `<name> [color] [permissions] [mentionable] [hoisted]`;
+e.args = `&lt;name&gt; [color] [permissions] [mentionable] [hoisted]`;
 e.usage = `{rolesetmentionable;name[;color[;permissions[;mentionable[;hoisted]]]]}`;
 e.desc = `Creates a role with the given information. Provide color in hex. Provide permissions as a number, which can be calculated <a href="https://discordapi.com/permissions.html">here</a>. Color defaults to 000000 (uncolored role), permissions defaults to 0, mentionable defaults to false, hoisted defaults to false. Returns the new role's ID.`;
 e.exampleIn = `{rolecreate;Super Cool Role!;ff0000;0;false;true}`;
