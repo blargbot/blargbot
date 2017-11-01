@@ -222,6 +222,18 @@
         },
         "warnings": {
             "output": "**{{user}} ** birikmiş **{{amount}} ** uyarı içinde **{{guild}} **."
+        },
+        "usettings": {
+            "info": "",
+            "subcommand": {
+                "dmerrors": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dmerrorsenabled": "",
+            "dmerrorsdisabled": "",
+            "userinfo": ""
         }
     },
     "image": {
