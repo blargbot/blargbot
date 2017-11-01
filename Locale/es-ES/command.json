@@ -222,6 +222,18 @@
         },
         "warnings": {
             "output": ""
+        },
+        "usettings": {
+            "info": "",
+            "subcommand": {
+                "dmerrors": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dmerrorsenabled": "",
+            "dmerrorsdisabled": "",
+            "userinfo": ""
         }
     },
     "image": {
