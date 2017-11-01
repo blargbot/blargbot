@@ -6,6 +6,7 @@
     "roleundef": "Aucun rôle de ce nom n'a été trouvé: '{{role}}'.",
     "pleasereport": "Si vous pensez qu'il s'agit d'une erreur, veuillez la signaler (en anglais)!",
     "generic": "Une erreur s'est produite!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "couldnotsend": "",
     "messagetoolong": "Oh-oh! J'ai tenté d'envoyer un message qui était trop long.\n[[error.pleasereport]]",
     "notenoughparams": "Pas assez de paramètres. Utilisez `{{prefix}}help {{name}}` pour plus de détails.\n\nIl fallait `{{expected}}` parameters, mais j'ai reçu `{{received}}` à la place.",
     "tag": {
