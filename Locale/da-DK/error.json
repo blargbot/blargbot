@@ -6,6 +6,7 @@
     "roleundef": "Ingen lignende rolle blev fundet: '{{role}}'.",
     "pleasereport": "Hvis du mener dette er en fejl, venligst rapporter det!",
     "generic": "Der er noget der gik galt!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "couldnotsend": "",
     "messagetoolong": "Ups! Jeg prøvede på at sende en besked der var for lang.\n[[error.pleasereport]]",
     "notenoughparams": "Ikke nok parametre! Udfør `{{prefix}}help {{name}}` for flere detaljer.\n\nForventede `{{expected}}` parametre, men fik `{{recieved}}` istedet.",
     "tag": {
