@@ -6,6 +6,7 @@
     "roleundef": "Nie znaleziono takiej roli: '{{role}}'.",
     "pleasereport": "Jeśli uważasz że jest to błąd, proszę zgłośić to!",
     "generic": "Coś poszło nie tak! \n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "couldnotsend": "",
     "messagetoolong": "Przepraszam! Próbowałem wysłać wiadomość która była za długa. [[error.pleasereport]]",
     "notenoughparams": "",
     "tag": {
