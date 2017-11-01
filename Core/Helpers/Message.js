@@ -81,9 +81,6 @@ class MessageHelper extends BaseHelper {
         let { channel, user, guild } = this.client.Helpers.Resolve.generic(dest);
         let destination = await this.client.Helpers.Resolve.destination(dest);
 
-        if (channel == undefined && guild == undefined) throw new Error('No such channel or guild');
-        else if (channel == undefined && guild != undefined) channel = this.client.getChannel(guild.id);
-        if (channel == undefined) throw new Error('No such channel');
         if (typeof content == 'string' || typeof content == 'number') {
             content = {
                 content: content.toString()
@@ -134,7 +131,6 @@ class MessageHelper extends BaseHelper {
                     icon_url: user.avatarURL
                 };
             }
-            console.dir(content);
             await this.client.createMessage(this.client.Constants.ERROR_CHANNEL, {
                 embed: Embed
             }, {

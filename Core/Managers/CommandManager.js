@@ -41,17 +41,47 @@ class CommandManager extends Manager {
                         await command.send(ctx, response);
                     }
                 } catch (err) {
-                    console.error(err);
+                    if (typeof err.response === 'string') {
+                        try {
+                            err.response = JSON.parse(err.response);
+                        } catch (err) { }
+                    } else
+                        console.error(err);
                     if (err instanceof seqErrors.BaseError) {
                         let msg = 'Database Error:\n';
                         for (const e of err.errors) msg += `${e.message} (${e.type})\n  Path: ${e.path}\n  Value: ${e.value}\n`;
-                        ctx.decodeAndSend('error.generic', {
+                        await ctx.decodeAndSend('error.generic', {
                             message: msg
                         });
-                    } else
-                        ctx.decodeAndSend('error.generic', {
+                    } else if (typeof err.response === 'object' && typeof err.response.code === 'number') {
+                        let commandText = ctx.text;
+                        if (commandText.length > 100)
+                            commandText = commandText.substring(0, 97) + '...';
+
+                        switch (err.response.code) {
+                            case 50001:
+                            case 50004:
+                            case 50009:
+                            case 50013: {
+                                if (await ctx.author.data.getKey('dmErrors'))
+                                    await this.client.Helpers.Message.decodeAndSend(ctx.author, 'error.couldnotsend', {
+                                        channel: ctx.channel.mention,
+                                        error: err.response.message,
+                                        command: commandText
+                                    });
+                                break;
+                            }
+                            default: {
+                                await ctx.decodeAndSend('error.generic', {
+                                    message: err.stack
+                                });
+                            }
+                        }
+                    } else {
+                        await ctx.decodeAndSend('error.generic', {
                             message: err.stack
                         });
+                    }
                 }
             }
         }

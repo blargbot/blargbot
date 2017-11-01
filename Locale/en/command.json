@@ -222,6 +222,18 @@
         },
         "warnings": {
             "output": "**{{user}}** has accumulated **{{amount}}** warning(s) in **{{guild}}**."
+        },
+        "usettings": {
+            "info": "Modifies or displays your user settings.",
+            "subcommand": {
+                "dmerrors": {
+                    "usage": "[true|false]",
+                    "info": "Enables or disables DMs for error notifications."
+                }
+            },
+            "dmerrorsenabled": "DM error notifications have been enabled.",
+            "dmerrorsdisabled": "DM error notifications have been disabled.",
+            "userinfo": "Here are your user settings:\n\n{{settings}}\n\nAvailable subcommands: {{sub}}"
         }
     },
     "image": {
