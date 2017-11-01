@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-17 11:58:10
+ * @Last Modified time: 2017-10-30 10:23:56
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -169,7 +169,7 @@ bu.send = async function (channel, message, file, embed) {
     content.content = content.content.trim();
 
     if (embed) content.embed = embed;
-    content.content = dep.emoji.emojify(content.content).trim();
+    // content.content = dep.emoji.emojify(content.content).trim();
 
     if (content.content.length <= 0 && !file && !embed && !content.embed) {
         logger.info('Tried to send a message with no content.');

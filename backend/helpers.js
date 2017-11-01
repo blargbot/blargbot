@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:35
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:20:35
+ * @Last Modified time: 2017-10-30 12:45:48
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -166,7 +166,7 @@ e.init = () => {
             toReturn += `<div class="card ${colour}"><div class="card-content">`;
             toReturn += `<h4 id='${keys[i]}'>${keys[i]}</h4>`;
             if (tags[keys[i]].deprecated) {
-                toReturn += `<p>This tag is deprecated. Avoid using it, as it will eventually become unsupported.</p>`;
+                toReturn += `<p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${typeof tags[keys[i]].deprecated === 'string' ? tags[keys[i]].deprecated : ''}</p>`;
             }
             if (lastType != 1) {
                 toReturn += `<p>Arguments: <code>${tags[keys[i]].args}</code></p>`;
