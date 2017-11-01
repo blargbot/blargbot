@@ -6,6 +6,7 @@
     "roleundef": "Не удалось найти роль '{{role}}'.",
     "pleasereport": "Если вы считаете, что это ошибка, сообщите нам!",
     "generic": "Что-то пошло не так!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "couldnotsend": "",
     "messagetoolong": "Ой! Я попытался отправить сообщение, но оно оказалось слишком длинным.\n[[error.pleasereport]]",
     "notenoughparams": "Недостаточно параметров! Введите `{{prefix}}help {{name}}` для справки.\n\nОжидал `{{expected}}` параметров, а получил `{{received}}`.",
     "tag": {
