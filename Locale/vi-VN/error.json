@@ -6,6 +6,7 @@
     "roleundef": "Không thấy role: '{{role}}'.",
     "pleasereport": "Nếu bạn nghi ngờ rằng đây là lỗi, xin hãy báo cáo cho chúng tôi!",
     "generic": "Có gì đó không ổn...\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "couldnotsend": "",
     "messagetoolong": "Thôi rồi Lượm ơi! Mình knông thể gửi tin nhắn này được vì nó quá dài. [[error.pleasereport]]",
     "notenoughparams": "Chưa đủ giá trị cần nhập! Gõ theo cú pháp `{{prefix}}help {{name}}` để biết thêm thông tin chi tiết.\n\nCần `{{expected}}` giá trị, thay vào đó mình chỉ nhận được `{{received}}`.",
     "tag": {
