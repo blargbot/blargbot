@@ -6,6 +6,7 @@
     "roleundef": "Böyle bir rol bulundu: '{{role}}'.",
     "pleasereport": "Bu bir hata olduğunu düşünüyorsanız, lütfen report edin!",
     "generic": "Bir şeyler ters gitti! \n```\n'''{{message}} ''' \n```\n[[error.pleasereport]]",
+    "couldnotsend": "",
     "messagetoolong": "Hoppala! Çok uzun bir ileti göndermeye çalıştı. [[error.pleasereport]]",
     "notenoughparams": "Yetersiz parametre. Daha fazla ayrıntı için '{{prefix}}help {{name}}' yapmak. \n\nBunun yerine '{{received}}' var, ama beklenen '{{expected}}' parametreleri.",
     "tag": {
