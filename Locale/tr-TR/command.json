@@ -224,16 +224,16 @@
             "output": "**{{user}} ** birikmiş **{{amount}} ** uyarı içinde **{{guild}} **."
         },
         "usettings": {
-            "info": "",
+            "info": "Kullanıcı ayarlarını görüntüler veya değiştirir.",
             "subcommand": {
                 "dmerrors": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[doğru | yanlış]",
+                    "info": "Etkinleştirir veya hata bildirimleri DMs için devre dışı bırakır."
                 }
             },
-            "dmerrorsenabled": "",
-            "dmerrorsdisabled": "",
-            "userinfo": ""
+            "dmerrorsenabled": "DM hata bildirimleri etkinleştirdi.",
+            "dmerrorsdisabled": "DM hata bildirimleri devre dışı bırakıldı.",
+            "userinfo": "Kullanıcı ayarlarını Buradasınız:\n\n{{settings}} \n\nKullanılabilir alt komutları: {{sub}}"
         }
     },
     "image": {
