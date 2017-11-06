@@ -6,7 +6,7 @@
     "roleundef": "Böyle bir rol bulundu: '{{role}}'.",
     "pleasereport": "Bu bir hata olduğunu düşünüyorsanız, lütfen report edin!",
     "generic": "Bir şeyler ters gitti! \n```\n'''{{message}} ''' \n```\n[[error.pleasereport]]",
-    "couldnotsend": "",
+    "couldnotsend": "Selam! Bu biraz utanç verici ama ben {{channel}} komutunuza yanıt mümkün değildi! \n\nİşte sorun: `{{error}}`\n\nKomutu kullanıldı: `{{command}}` \n\npersonel, varsa lütfen bu kanaldaki iletileri okumak ve göndermek için gerekli izinlere sahip emin olun. Aksi takdirde, lonca kadrosunda bu olduğunu bildirin. \n\nYaparak hataları için DM Bildirimleri almayı durdurabilirsiniz `b!usettings dmerrors false`.",
     "messagetoolong": "Hoppala! Çok uzun bir ileti göndermeye çalıştı. [[error.pleasereport]]",
     "notenoughparams": "Yetersiz parametre. Daha fazla ayrıntı için '{{prefix}}help {{name}}' yapmak. \n\nBunun yerine '{{received}}' var, ama beklenen '{{expected}}' parametreleri.",
     "tag": {
