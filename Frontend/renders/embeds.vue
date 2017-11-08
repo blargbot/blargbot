@@ -27,6 +27,10 @@
             <input type='text' v-model='embed.thumbnail.url' id='tbThumbnail'></input>
             <label for='tbThumbnail' class='grey-text text-lighten-2'>Thumbnail URL</label>
           </div>
+          <div class='input-field col s12'>
+            <input type='text' v-model='embed.timestamp' id='tbTimestamp'></input>
+            <label for='tbTimestamp' class='grey-text text-lighten-2 active'>Timestamp</label>
+          </div>
         </div>
         <h4>Author</h4>
         <div class='row'>
@@ -61,14 +65,21 @@
           </div>
           <div class='col s12'>
             <div class='col s12 blue-grey darken-2 field' v-for='(field, i) in embed.fields'>
-              <button type='button' v-on:click='removeField(i)' class='red darken-4 waves-effect waves-light btn-floating close-btn'>-</button>              
-              <div class='input-field col s12'>
-                <input type='text' maxlength='256' data-length='256' v-model='field.name'></input>
-                <label class='grey-text text-lighten-2'>Name</label>
-              </div>
-              <div class='input-field col s12'>
-                <textarea maxlength='1024' data-length='1024' type='text' v-model='field.value' class='materialize-textarea'></textarea>
-                <label class='grey-text text-lighten-2'>Value</label>
+              <button type='button' v-on:click='removeField(i)' class='red darken-4 waves-effect waves-light btn-floating close-btn'>-</button>
+              <div class='row'>
+                
+                <div class='input-field col s8'>
+                  <input type='text' maxlength='256' data-length='256' v-model='field.name'></input>
+                  <label class='grey-text text-lighten-2'>Name</label>
+                </div>
+                <div class='check col s4'>
+                  <input type='checkbox' :id="'check-' + i" v-model='field.inline'>
+                  <label :for="'check-' + i">Inline</label>
+                </div>
+                <div class='input-field col s12'>
+                  <textarea maxlength='1024' data-length='1024' type='text' v-model='field.value' class='materialize-textarea'></textarea>
+                  <label class='grey-text text-lighten-2'>Value</label>
+                </div>
               </div>
             </div>
           </div>
@@ -81,14 +92,8 @@
     <div class='row'>
       <div class='col s12 blue-grey darken-2 bevel'>
         <div class='row button-bar'>
-          <div class='col s4'>
+          <div class='col s12'>
             <button class='waves-effect waves-light btn full' v-on:click='copyClipboard'>Copy</button>
-          </div>
-          <div class='col s4'>
-            <button class='waves-effect waves-light btn full' v-on:click='reformat'>Reformat</button>
-          </div>
-          <div class='col s4'>
-            <button class='waves-effect waves-light btn full' v-on:click='exportJson'>Export</button>
           </div>
         </div>
         <textarea class='materialize-textarea grey-text text-lighten-3' ref='hah' v-model='jsoned' id='output' readonly>
@@ -103,14 +108,16 @@
 import VueMarkdown from "vue-markdown";
 import card from "../components/card.vue";
 import DiscordEmbed from "../components/embed.vue";
+import moment from "moment";
 
 export default {
   data: () => ({
     embed: {
-      title: "s",
+      title: "",
       description: "",
       url: "",
       color: "#000000",
+      timestamp: new Date().toISOString(),
       footer: {
         text: "",
         icon_url: ""
@@ -135,6 +142,21 @@ export default {
       let c = embed.color;
       if (c.startsWith("#")) c = c.substring(1);
       embed.color = parseInt(c, 16);
+      let date = moment(embed.timestamp);
+      if (date.isValid()) embed.timestamp = date.format();
+      else embed.timestamp = "";
+
+      for (const key in embed) {
+        if (!embed[key]) embed[key] = undefined;
+        if (typeof embed[key] === "object") {
+          let empty = true;
+          for (const key2 in embed[key]) {
+            if (!embed[key][key2]) embed[key][key2] = undefined;
+            else empty = false;
+          }
+          if (empty) embed[key] = undefined;
+        }
+      }
       return JSON.stringify(embed, null, 2);
     },
     jsonedCodeblock() {
@@ -239,5 +261,10 @@ input[type="color"] {
 .close-btn {
   position: absolute;
   right: 5px;
+}
+
+.check {
+  vertical-align: middle;
+  margin-top: 30px;
 }
 </style>

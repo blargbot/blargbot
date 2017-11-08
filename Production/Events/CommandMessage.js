@@ -17,7 +17,7 @@ class CommandMessageEvent extends Event {
     async execute(msg) {
         let prefix = false;
         let shouldBreak = false;
-        let prefixes = [].concat(this.prefixes, (await msg.guild.data.getPrefixes()).reverse(),
+        let prefixes = [].concat(this.prefixes, msg.guild ? (await msg.guild.data.getPrefixes()).reverse() : [],
             (await msg.author.data.getPrefixes()).reverse()).filter(p => !!p);
         for (const pref of prefixes) {
             if (msg.content.startsWith(pref)) {

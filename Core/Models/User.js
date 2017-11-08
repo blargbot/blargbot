@@ -39,6 +39,12 @@ class UserModel extends Base {
                 defaultValue: []
             },
 
+            dmErrors: {
+                type: this.Sequelize.BOOLEAN,
+                allowNull: false,
+                defaultValue: true
+            },
+
             gamatotoXp: {
                 type: this.Sequelize.INTEGER,
                 allowNull: false,
