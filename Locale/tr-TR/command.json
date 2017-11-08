@@ -223,6 +223,12 @@
         "warnings": {
             "output": "**{{user}} ** birikmiş **{{amount}} ** uyarı içinde **{{guild}} **."
         },
+        "economy": {
+            "info": "",
+            "invalidamount": "",
+            "invalidcode": "",
+            "converted": ""
+        },
         "usettings": {
             "info": "Kullanıcı ayarlarını görüntüler veya değiştirir.",
             "subcommand": {
