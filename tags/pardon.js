@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:50:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:50:33
+ * @Last Modified time: 2017-11-08 11:45:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -21,7 +21,7 @@ e.args = `[user] [count] [reason]`;
 e.usage = `{pardon[;user[;count[;reason]]]}`;
 e.desc = `Gives a user the specified number of pardons with the given reason, and returns their new warning count.`;
 e.exampleIn = `Be pardoned! {pardon}`;
-e.exampleOut = `Be warned! 0`;
+e.exampleOut = `Be pardoned! 0`;
 
 e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
