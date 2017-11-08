@@ -223,6 +223,12 @@
         "warnings": {
             "output": ""
         },
+        "economy": {
+            "info": "",
+            "invalidamount": "",
+            "invalidcode": "",
+            "converted": ""
+        },
         "usettings": {
             "info": "",
             "subcommand": {
