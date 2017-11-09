@@ -27,7 +27,9 @@
             "usage": "<codice>",
             "flags": {
                 "p": "Mostra una lista di puntatori dopo l'esecuzione.",
-                "i": "Specifica l'input per l'operatore `,`."
+                "i": "Specifica l'input per l'operatore `,`.",
+                "pointers": "",
+                "input": ""
             }
         },
         "ship": {
@@ -240,6 +242,41 @@
             "dmerrorsenabled": "",
             "dmerrorsdisabled": "",
             "userinfo": ""
+        },
+        "rr": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "capacity": "",
+                "emote": ""
+            },
+            "capacitylow": "",
+            "bulletslow": "",
+            "bulletshigh": "",
+            "begin": "",
+            "death": "",
+            "life": "",
+            "livemessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "deathmessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ]
         }
     },
     "image": {
@@ -254,7 +291,11 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": ""
+            "info": "",
+            "usage": "",
+            "flags": {
+                "plural": ""
+            }
         }
     },
     "admin": {
@@ -279,7 +320,7 @@
                     "info": "info"
                 },
                 "modlog": {
-                    "usage": "modlog [event]... [flags]",
+                    "usage": "",
                     "info": "Imposta il modlog per specifici eventi. Se nessun canale è specificato, il default sarà il canale corrente. Se nessun evento è specificato, il default sarà tutti gli eventi."
                 }
             },
@@ -298,6 +339,15 @@
                 "invalid": "Nessun evento valido fornito. La lista degli eventi validi è:\n```\n{{eventList}}\n```",
                 "hadinvalid": "C'erano alcuni eventi non validi nel comando. La lista degli eventi validi è:\n```\n{{eventList}}\n```",
                 "list": "Ecco i modlog attivi nella gilda:\n\n{{events}}"
+            },
+            "subcommands": {
+                "modlog": {
+                    "flags": {
+                        "channel": "",
+                        "remove": "",
+                        "list": ""
+                    }
+                }
             }
         },
         "reason": {
