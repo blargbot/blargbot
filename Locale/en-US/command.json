@@ -27,7 +27,9 @@
             "usage": "<code>",
             "flags": {
                 "p": "Shows a list of pointers after the execution.",
-                "i": "Specifies the input for the `,` operator."
+                "i": "Specifies the input for the `,` operator.",
+                "pointers": "",
+                "input": ""
             }
         },
         "ship": {
@@ -240,6 +242,41 @@
             "dmerrorsenabled": "",
             "dmerrorsdisabled": "",
             "userinfo": ""
+        },
+        "rr": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "capacity": "",
+                "emote": ""
+            },
+            "capacitylow": "",
+            "bulletslow": "",
+            "bulletshigh": "",
+            "begin": "",
+            "death": "",
+            "life": "",
+            "livemessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "deathmessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ]
         }
     },
     "image": {
@@ -254,7 +291,11 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": ""
+            "info": "",
+            "usage": "",
+            "flags": {
+                "plural": ""
+            }
         }
     },
     "admin": {
@@ -298,6 +339,15 @@
                 "invalid": "No valid events were provided. The list of valid events is:\n```\n{{eventList}}\n```",
                 "hadinvalid": "You had some invalid events in your command. The list of valid events is:\n```\n{{eventList}}\n```",
                 "list": "Here are the modlogs that are active on your guild:\n\n{{events}}"
+            },
+            "subcommands": {
+                "modlog": {
+                    "flags": {
+                        "channel": "",
+                        "remove": "",
+                        "list": ""
+                    }
+                }
             }
         },
         "reason": {
