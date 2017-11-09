@@ -6,8 +6,8 @@ class BrainfuckCommand extends GeneralCommand {
         super(client, {
             name: 'brainfuck',
             flags: [
-                { flag: 'p', name: 'pointers' },
-                { flag: 'i', name: 'input' }
+                { flag: 'p', name: 'pointers', info: 'Specifies that the resulting pointers should be outputted.' },
+                { flag: 'i', name: 'input', info: 'Specifies input parameters.' }
             ],
             aliases: ['bf', 'rainfuck'],
             minArgs: 1

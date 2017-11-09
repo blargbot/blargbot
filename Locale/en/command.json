@@ -27,7 +27,9 @@
             "usage": "<code>",
             "flags": {
                 "p": "Shows a list of pointers after the execution.",
-                "i": "Specifies the input for the `,` operator."
+                "i": "Specifies the input for the `,` operator.",
+                "pointers": "Specifies that the resulting pointers should be outputted.",
+                "input": "Specifies input parameters."
             }
         },
         "ship": {
@@ -234,6 +236,41 @@
             "dmerrorsenabled": "DM error notifications have been enabled.",
             "dmerrorsdisabled": "DM error notifications have been disabled.",
             "userinfo": "Here are your user settings:\n\n{{settings}}\n\nAvailable subcommands: {{sub}}"
+        },
+        "rr": {
+            "info": "Plays a game of russian roulette. By default, your revolver can hold 6 bullets.",
+            "usage": "[bullets]",
+            "flags": {
+                "capacity": "Sets how many bullets your revolver can hold.",
+                "emote": "Specifies what emote (or text) should be the one playing russian roulette."
+            },
+            "capacitylow": "Your revolver must be able to hold at least two bullets, any lower would be guaranteed death!",
+            "bulletslow": "You can't load less than one bullet, you wimp.",
+            "bulletshigh": "Whoa, your revolver can only hold {{capacity}} bullets! That would be guaranteed death! Do you have a deathwish or something?",
+            "begin": "You load {{bullets}} bullet(s) into your {{capacity}}-shot revolver, give it a spin, and place it against your head.",
+            "death": "{{content}}\n\n***BOOM!*** [[command.general.rr.deathmessages]]",
+            "life": "{{content}}\n\n*Click!* [[command.general.rr.livemessages]]",
+            "livemessages": [
+                "The gun clicks, empty. You get to live another day.",
+                "You breath a sign of relief as you realize that you aren't going to die today.",
+                "As if it would ever go off! Luck is on your side.",
+                "You thank RNGesus as you lower the gun.",
+                ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
+                "You smirk as you realize you survived."
+            ],
+            "deathmessages": [
+                "The gun goes off, splattering your brains across the wall. Unlucky!",
+                ":skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:",
+                "Before you know it, it's all over.",
+                "At least you had chicken!",
+                "I'm ***not*** cleaning that up.",
+                "Guns are not toys!",
+                "Well, you can't win them all!",
+                "W-well... If every porkchop were perfect, we wouldn't have hotdogs? Too bad you're dead either way.",
+                "Blame it on the lag!",
+                "Today just wasn't your lucky day.",
+                "Pssh, foresight is for losers."
+            ]
         }
     },
     "image": {
@@ -248,7 +285,11 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": ""
+            "info": "Tells everyone what you think is shit.",
+            "usage": "[text]",
+            "flags": {
+                "plural": "Specifies whether the given text should be plural."
+            }
         }
     },
     "admin": {
@@ -273,7 +314,7 @@
                     "info": "Sets up announcements."
                 },
                 "modlog": {
-                    "usage": "modlog [event]... [flags]",
+                    "usage": "modlog [event]...",
                     "info": "Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events."
                 }
             },
@@ -292,6 +333,15 @@
                 "invalid": "No valid events were provided. The list of valid events is:\n```\n{{eventList}}\n```",
                 "hadinvalid": "You had some invalid events in your command. The list of valid events is:\n```\n{{eventList}}\n```",
                 "list": "Here are the modlogs that are active on your guild:\n\n{{events}}"
+            },
+            "subcommands": {
+                "modlog": {
+                    "flags": {
+                        "channel": "Specifies which channel the modlog should be put in.",
+                        "remove": "Specifies that the modlog should be removed instead of added.",
+                        "list": "Return a list of configured modlogs."
+                    }
+                }
             }
         },
         "reason": {

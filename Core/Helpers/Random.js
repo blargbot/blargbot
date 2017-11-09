@@ -59,6 +59,10 @@ class RandomHelper extends BaseHelper {
             array[j] = temp;
         }
     }
+
+    choose(array) {
+        return array[this.randInt(0, array.length - 1)];
+    }
 }
 
 module.exports = RandomHelper;

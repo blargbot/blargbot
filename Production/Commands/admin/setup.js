@@ -23,12 +23,12 @@ class ModCommand extends AdminCommand {
                     info: 'Adds or removes users to the staff list.'
                 },
                 modlog: {
-                    usage: 'modlog [event]... [flags]',
+                    usage: 'modlog [event]...',
                     info: 'Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events.',
                     flags: [
-                        { flag: 'c', name: 'channel' },
-                        { flag: 'r', name: 'remove' },
-                        { flag: 'l', name: 'list' }
+                        { flag: 'c', name: 'channel', info: 'Specifies which channel the modlog should be put in.' },
+                        { flag: 'r', name: 'remove', info: 'Specifies that the modlog should be removed instead of added.' },
+                        { flag: 'l', name: 'list', info: 'Return a list of configured modlogs.' }
                     ]
                 }
             },

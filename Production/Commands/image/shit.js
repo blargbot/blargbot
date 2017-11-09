@@ -5,9 +5,10 @@ class DeleteCommand extends ImageCommand {
     constructor(client) {
         super(client, {
             name: 'shit',
-            minArgs: 1,
+            info: 'Tells everyone what you think is shit.',
+            usage: '[text]',
             flags: [
-                { flag: 'p', name: 'plural' }
+                { flag: 'p', name: 'plural', info: 'Specifies whether the given text should be plural.' }
             ]
         });
     }

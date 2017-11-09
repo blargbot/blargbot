@@ -12,6 +12,7 @@ class BaseCommand {
         this.minArgs = options.minArgs || 0;
         this.keys = options.keys === undefined ? {} : options.keys;
         this.autoType = options.autoType || true;
+        this.usage = options.usage;
 
         /**
          * Subcommands are objects with the following structure
@@ -60,6 +61,16 @@ class BaseCommand {
                     key: `${this.base}.subcommand.${subKey}.info`,
                     value: this.subcommands[subKey].info || ''
                 });
+
+                if (this.subcommands[subKey].flags)
+                    for (const flag of this.subcommands[subKey].flags) {
+                        if (flag.info)
+                            this._keys.push({ key: `${this.base}.subcommands.${subKey}.flags.${flag.name}`, value: flag.info });
+                    }
+            }
+            for (const flag of this.flags) {
+                if (flag.info)
+                    this._keys.push({ key: `${this.base}.flags.${flag.name}`, value: flag.info });
             }
 
             if (this.keys) {
