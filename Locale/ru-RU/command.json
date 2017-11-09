@@ -27,7 +27,9 @@
             "usage": "",
             "flags": {
                 "p": "Показывает список указателей после выполнения.",
-                "i": "Определяет ввод для `,` оператора."
+                "i": "Определяет ввод для `,` оператора.",
+                "pointers": "",
+                "input": ""
             }
         },
         "ship": {
@@ -240,6 +242,41 @@
             "dmerrorsenabled": "",
             "dmerrorsdisabled": "",
             "userinfo": ""
+        },
+        "rr": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "capacity": "",
+                "emote": ""
+            },
+            "capacitylow": "",
+            "bulletslow": "",
+            "bulletshigh": "",
+            "begin": "",
+            "death": "",
+            "life": "",
+            "livemessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "deathmessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ]
         }
     },
     "image": {
@@ -254,7 +291,11 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": ""
+            "info": "",
+            "usage": "",
+            "flags": {
+                "plural": ""
+            }
         }
     },
     "admin": {
@@ -298,6 +339,15 @@
                 "invalid": "",
                 "hadinvalid": "",
                 "list": ""
+            },
+            "subcommands": {
+                "modlog": {
+                    "flags": {
+                        "channel": "",
+                        "remove": "",
+                        "list": ""
+                    }
+                }
             }
         },
         "reason": {
