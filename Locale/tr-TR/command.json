@@ -27,7 +27,9 @@
             "usage": "<code>",
             "flags": {
                 "p": "Yürütme sonrasında işaretçiler listesini gösterir.",
-                "i": "Giriş ',' işleç belirtir."
+                "i": "Giriş ',' işleç belirtir.",
+                "pointers": "",
+                "input": ""
             }
         },
         "ship": {
@@ -240,6 +242,41 @@
             "dmerrorsenabled": "DM hata bildirimleri etkinleştirdi.",
             "dmerrorsdisabled": "DM hata bildirimleri devre dışı bırakıldı.",
             "userinfo": "Kullanıcı ayarlarını Buradasınız:\n\n{{settings}} \n\nKullanılabilir alt komutları: {{sub}}"
+        },
+        "rr": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "capacity": "",
+                "emote": ""
+            },
+            "capacitylow": "",
+            "bulletslow": "",
+            "bulletshigh": "",
+            "begin": "",
+            "death": "",
+            "life": "",
+            "livemessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "deathmessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ]
         }
     },
     "image": {
@@ -254,7 +291,11 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": ""
+            "info": "",
+            "usage": "",
+            "flags": {
+                "plural": ""
+            }
         }
     },
     "admin": {
@@ -279,7 +320,7 @@
                     "info": "Duyurular kanalını kurar."
                 },
                 "modlog": {
-                    "usage": "modLog [event]... [flags]",
+                    "usage": "",
                     "info": "Modlog belirtilen olaylar için ayarlar. Kanal yok belirtilirse, geçerli kanal için varsayılan olarak ayarlanır. Hiçbir olay belirttiyseniz, tüm olaylara varsayılan olarak ayarlanır."
                 }
             },
@@ -298,6 +339,15 @@
                 "invalid": "Geçerli hiçbir olayın temin edilmiştir. Geçerli olaylar listesi: \n```\n{{eventList}}\n```",
                 "hadinvalid": "Komutunuza geçersiz bazı olaylar vardı. Geçerli olaylar listesi: \n```\n{{eventList}}\n```",
                 "list": "İşte senin guild üzerinde etkin olan modlogs:\n\n{{events}}"
+            },
+            "subcommands": {
+                "modlog": {
+                    "flags": {
+                        "channel": "",
+                        "remove": "",
+                        "list": ""
+                    }
+                }
             }
         },
         "reason": {
