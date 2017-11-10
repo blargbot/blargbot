@@ -7,6 +7,7 @@ class WritePoemCommand extends ImageCommand {
             name: 'writepoem',
             info: 'Writes a lovely lovely poem.',
             usage: '[text]',
+            aliases: ['poem'],
             flags: [
                 { flag: 'm', name: 'monika', info: 'Just Monika.' },
                 { flag: 's', name: 'sayori', info: 'Just Monika.' },
