@@ -51,7 +51,7 @@ class ApiRoute {
             if (req.body.name && typeof req.body.name === 'string' && names.includes(req.body.name.toLowerCase()))
                 name = req.body.name.toLowerCase();
             else name = 'monika';
-            let poem = await getImage('poem', { text: req.body.text || 'Just Monika.', name });
+            let poem = await getImage('poem', { text: req.body.text || 'Just Monika.', name, yuri: req.body.yuri });
             res.set('Content-Type', 'image/png');
             res.send(new Buffer.from(poem, 'base64'));
         });
@@ -61,7 +61,7 @@ class ApiRoute {
             if (req.query.name && typeof req.query.name === 'string' && names.includes(req.query.name.toLowerCase()))
                 name = req.query.name.toLowerCase();
             else name = 'monika';
-            let poem = await getImage('poem', { text: req.query.text || 'Just Monika.', name });
+            let poem = await getImage('poem', { text: req.query.text || 'Just Monika.', name, yuri: req.query.yuri });
             res.set('Content-Type', 'image/png');
             res.send(new Buffer.from(poem, 'base64'));
         });

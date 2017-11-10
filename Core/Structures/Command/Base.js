@@ -206,7 +206,8 @@ class BaseCommand {
 
         let words = ctx.words;
         let output = {
-            _: []
+            _: [],
+            count: {}
         };
         output._.raw = [];
         let currentFlag = '';
@@ -217,6 +218,9 @@ class BaseCommand {
                 if (parseFlags.length > 0) {
                     currentFlag = parseFlags[0].flag;
                     output[currentFlag] = [];
+                    if (!output.count[currentFlag])
+                        output.count[currentFlag] = 1;
+                    else output.count[currentFlag]++;
                     pushFlag = false;
                 }
             } else if (words[i].startsWith('-')) {
@@ -227,6 +231,9 @@ class BaseCommand {
                 for (const char of tempFlag) {
                     if (parseFlags.includes(char)) {
                         currentFlag = char;
+                        if (!output.count[currentFlag])
+                            output.count[currentFlag] = 1;
+                        else output.count[currentFlag]++;
                         output[currentFlag] = [];
                     } else {
                         output = oldOutput;

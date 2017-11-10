@@ -18,14 +18,18 @@ class WritePoemCommand extends ImageCommand {
     }
 
     async execute(ctx) {
-        let name = 'monika';
+        let name = 'monika', yuri = '';
         if (ctx.input.m)
             name = 'monika';
         else if (ctx.input.s)
             name = 'sayori';
-        else if (ctx.input.y)
+        else if (ctx.input.y) {
             name = 'yuri';
-        else if (ctx.input.n)
+            if (ctx.input.count.y === 2)
+                yuri = '1';
+            else if (ctx.input.count.y >= 3)
+                yuri = '2';
+        } else if (ctx.input.n)
             name = 'natsuki';
 
         let text = ctx.input._.raw.join('');
@@ -41,7 +45,8 @@ class WritePoemCommand extends ImageCommand {
 
         await this.client.Helpers.Image.generate(ctx.channel, 'poem', {
             text,
-            name
+            name,
+            yuri
         });
     }
 }
