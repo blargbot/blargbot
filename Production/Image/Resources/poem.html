@@ -1,0 +1,89 @@
+<html>
+
+<head>
+    <script src="https://use.fontawesome.com/81a6f968b4.js"></script>
+    <style>
+        @font-face {
+            font-family: Monika;
+            font-style: normal;
+            font-weight: 500;
+            src: url(fonts/doki/journal.ttf)
+        }
+
+        @font-face {
+            font-family: Sayori;
+            font-style: normal;
+            font-weight: 500;
+            src: url(fonts/doki/Hashtag.ttf)
+        }
+
+        @font-face {
+            font-family: Yuri;
+            font-style: normal;
+            font-weight: 500;
+            src: url(fonts/doki/JPHSL.ttf)
+        }
+
+        @font-face {
+            font-family: Natsuki;
+            font-style: normal;
+            font-weight: 500;
+            src: url(fonts/doki/AmmysHandwriting.ttf)
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+        }
+
+        #workspace {
+            display: block;
+            padding: 0;
+            margin: 0;
+            width: 800px;
+            height: 720px;
+            background-image: url('poem.png');
+            position: relative;
+        }
+
+        .monika {
+            font-family: Monika;
+        }
+
+        .sayori {
+            font-family: Sayori;
+        }
+
+        .yuri {
+            font-family: Yuri;
+        }
+
+        .natsuki {
+            font-family: Natsuki;
+        }
+
+        #replace1 {
+            display: block;
+            position: absolute;
+            padding-top: 5px;
+            left: 54px;
+            right: 54px;
+            top: 54px;
+            bottom: 20px;
+            overflow: hidden;
+            font-size: 44px;
+            line-height: 46px;
+            text-overflow: ellipsis;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='workspace'>
+        <span id='replace1'></span>
+    </div>
+</body>
+
+</html>

@@ -30,22 +30,34 @@ class ImageGenerator {
     get phantom() { return phantom; }
 
     async generate(args) {
-        await this.bot.sendChannelTyping(this.channel);
+        if (this.channel)
+            await this.bot.sendChannelTyping(this.channel);
     }
 
     async send(name, data) {
         if (typeof data === 'string')
             data = Buffer.from(data, 'base64');
-        let msg = await this.bot.createMessage(this.channel, this.message, {
-            file: data,
-            name
-        });
-        process.send(msg.id);
+        if (process.env.DESTINATION === 'api') {
+            process.send(data.toString('base64'));
+        } else {
+            let msg = await this.bot.createMessage(this.channel, this.message, {
+                file: data,
+                name
+            });
+            process.send(msg.id);
+        }
     }
 
     async renderPhantom(file, replaces, scale = 1, format = 'PNG', extraFunction, extraFunctionArgs) {
-        const instance = await phantom.create();
+        const instance = await phantom.create(['--ignore-ssl-errors=true', '--ssl-protocol=TLSv1']);
         const page = await instance.createPage();
+
+        page.property('onConsoleMessage', function (msg) {
+            console.log('[IM]', msg);
+        });
+        // page.property('onResourceError', function (resourceError) {
+        //     console.error(resourceError.url + ': ' + resourceError.errorString);
+        // });
 
         let dPath = this.getLocalResourcePath(file);
         const status = await page.open(dPath);
@@ -56,10 +68,10 @@ class ImageGenerator {
         if (typeof extraFunction === 'function') {
             await page.evaluate(extraFunction, extraFunctionArgs);
         }
-
         let rect = await page.evaluate(function (message) {
             var keys = Object.keys(message);
             for (var i = 0; i < keys.length; i++) {
+                var thing = document.getElementById(keys[i]);
                 document.querySelector('#' + keys[i]).innerText = message[keys[i]];
             }
             return document.querySelector('#workspace').getBoundingClientRect();
@@ -77,6 +89,12 @@ class ImageGenerator {
         return base64;
     }
 
+    sleep(time = 1000) {
+        return new Promise(res => {
+            setTimeout(res, time);
+        });
+    }
+
     get resourceDir() {
         return this.path.join(__dirname, '..', '..', 'Production', 'Image');
     }
@@ -92,7 +110,7 @@ class ImageGenerator {
     }
 
     getLocalResourcePath(name) {
-        return this.path.join(this.resourceDir, 'Resources', name);
+        return this.path.join(this.resourceDir, 'Resources', name).replace(/\\/g, '/').replace(/^\w:/, '');
     }
 
     getResource(url) {

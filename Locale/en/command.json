@@ -229,7 +229,8 @@
             "info": "Converts currency using recent conversion rates.",
             "invalidamount": "Please specify a valid quantity to convert.",
             "invalidcode": "Unknown currency code: {{code}}",
-            "converted": "{{amount}} {{from}} is equivalent to {{converted}} {{to}}"
+            "converted": "{{amount}} {{from}} is equivalent to {{converted}} {{to}}",
+            "usage": "<from> <to> <amount>"
         },
         "usettings": {
             "info": "Modifies or displays your user settings.",
@@ -295,6 +296,16 @@
             "usage": "[text]",
             "flags": {
                 "plural": "Specifies whether the given text should be plural."
+            }
+        },
+        "writepoem": {
+            "usage": "[text]",
+            "info": "Writes a lovely lovely poem.",
+            "flags": {
+                "monika": "Just Monika.",
+                "sayori": "Just Monika.",
+                "yuri": "Just Monika.",
+                "natsuki": "Just Monika."
             }
         }
     },
