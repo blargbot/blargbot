@@ -93,18 +93,19 @@
             background-image: url('poem_y2.png') !important;
         }
 
-        #replace1 {
+        #wrapper {
             display: block;
             position: absolute;
             padding-top: 5px;
             left: 54px;
             right: 54px;
             top: 54px;
-            bottom: 20px;
-            overflow: hidden;
+            bottom: 30px;
+        }
+
+        #replace1 {
             font-size: 44px;
             line-height: 46px;
-            text-overflow: ellipsis;
             white-space: pre-wrap;
         }
     </style>
@@ -112,7 +113,9 @@
 
 <body>
     <div id='workspace'>
-        <span id='replace1'></span>
+        <div id='wrapper'>
+            <div id='replace1' class='resize'></div>
+        </div>
     </div>
 </body>
 

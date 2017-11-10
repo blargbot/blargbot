@@ -65,9 +65,8 @@ class ImageGenerator {
         await page.property('viewportSize', { width: 1440, height: 900 });
         await page.property('zoomFactor', scale);
 
-        if (typeof extraFunction === 'function') {
-            await page.evaluate(extraFunction, extraFunctionArgs);
-        }
+
+
         let rect = await page.evaluate(function (message) {
             var keys = Object.keys(message);
             for (var i = 0; i < keys.length; i++) {
@@ -83,6 +82,9 @@ class ImageGenerator {
             width: rect.width * scale,
             height: rect.height * scale
         });
+        if (typeof extraFunction === 'function') {
+            await page.evaluate(extraFunction, extraFunctionArgs);
+        }
 
         let base64 = await page.renderBase64(format);
         await instance.exit();
