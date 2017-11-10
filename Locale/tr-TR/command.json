@@ -229,7 +229,8 @@
             "info": "",
             "invalidamount": "",
             "invalidcode": "",
-            "converted": ""
+            "converted": "",
+            "usage": ""
         },
         "usettings": {
             "info": "Kullanıcı ayarlarını görüntüler veya değiştirir.",
@@ -295,6 +296,16 @@
             "usage": "",
             "flags": {
                 "plural": ""
+            }
+        },
+        "writepoem": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "monika": "",
+                "sayori": "",
+                "yuri": "",
+                "natsuki": ""
             }
         }
     },
