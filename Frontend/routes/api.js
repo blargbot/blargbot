@@ -55,7 +55,7 @@ class ApiRoute {
             if (req.query.base64 !== undefined) {
                 content = Buffer.from(content, 'base64').toString();
             }
-            let poem = await getImage('poem', { text: req.query.text || 'Just Monika.', name, yuri: req.query.yuri });
+            let poem = await getImage('poem', { text: content || 'Just Monika.', name, yuri: req.query.yuri });
             res.set('Content-Type', 'image/png');
             res.send(new Buffer.from(poem, 'base64'));
         });
