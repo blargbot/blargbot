@@ -5,7 +5,8 @@
         "logout": "Log af",
         "commands": "Kommandoer",
         "bbtag": "BBTag",
-        "subtags": "SubTags"
+        "subtags": "SubTags",
+        "dashboard": ""
     },
     "generic": {
         "loading": "Indlæser",
@@ -77,5 +78,9 @@
             "aliases": "Aliaser:",
             "subcommands": "Underkommandoer:"
         }
+    },
+    "dashboard": {
+        "userheader": "",
+        "guildheader": ""
     }
 }
