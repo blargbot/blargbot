@@ -30,7 +30,6 @@ class Client {
 
     onExit() {
         console.log('Exiting.');
-        this.frontend.kill();
         this.spawner.killAll();
     }
 }

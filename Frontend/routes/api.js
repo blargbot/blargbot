@@ -27,23 +27,32 @@ class ApiRoute {
     constructor(website) {
         this.website = website;
         this.router = router;
-        this.info = { cat: '', tags: {}, commands: {} };
+        this.info = { cat: '', subtags: {}, commands: {} };
         this.lastTime = { cat: '', tags: '', commands: '' };
+        setTimeout(() => {
+            this.getCatFact();
+            this.getInfo('subtags', 'tagList');
+            this.getInfo('commands', 'commandList');
+
+        }, 1000);
+        setInterval(this.getCatFact.bind(this), 60 * 1000);
+        setInterval(this.getInfo.bind(this), 15 * 60 * 1000, 'subtags', 'tagList');
+        setInterval(this.getInfo.bind(this), 15 * 60 * 1000, 'commands', 'commandList');
 
         this.tags = {};
         this.commands = {};
 
         router.get('/catfact', (req, res) => {
-            this.getCatFact().then(res.end);
+            res.end(this.info.cat);
         });
 
         router.get('/subtags', async (req, res) => {
             let tags = await this.getInfo('subtags', 'tagList');
-            res.end(JSON.stringify(tags));
+            res.end(JSON.stringify(this.info.subtags));
         });
         router.get('/commands', async (req, res) => {
             let tags = await this.getInfo('commands', 'commandList');
-            res.end(JSON.stringify(tags));
+            res.end(JSON.stringify(this.info.commands));
         });
         router.get('/poem', async (req, res) => {
             let names = ['monika', 'sayori', 'yuri', 'natsuki'];
@@ -70,12 +79,7 @@ class ApiRoute {
         return this.info.cat;
     }
     async getInfo(name, code) {
-        if (this.info[name] === '' || this.lastTime[name] !== moment().format('DDD-HH')) {
-            this.lastTime[name] = moment().format('DDD-HH');
-
-            this.info[name] = await this.website.awaitMessage(code);
-        }
-        return this.info[name];
+        this.info[name] = await this.website.awaitMessage(code);
     }
 }
 
