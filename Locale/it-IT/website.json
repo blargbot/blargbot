@@ -81,6 +81,10 @@
     },
     "dashboard": {
         "userheader": "",
-        "guildheader": ""
+        "guildheader": "",
+        "notauthed": "",
+        "user": {
+            "dmerrors": ""
+        }
     }
 }
