@@ -81,6 +81,10 @@
     },
     "dashboard": {
         "userheader": "User Settings",
-        "guildheader": "Guild Settings"
+        "guildheader": "Guild Settings",
+        "notauthed": "### Sorry, you can't access this page\n\nPlease log in to use the dashboard.",
+        "user": {
+            "dmerrors": "DM Errors"
+        }
     }
 }

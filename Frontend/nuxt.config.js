@@ -46,13 +46,7 @@ module.exports = {
                             {
                                 name: 'User Settings',
                                 path: 'user',
-                                component: resolve(__dirname, 'renders/dashboard/user/index.vue'),
-                                children: [
-                                    {
-                                        name: 'General User Settings', path: 'general',
-                                        component: resolve(__dirname, 'renders/dashboard/user/general.vue')
-                                    }
-                                ]
+                                component: resolve(__dirname, 'renders/dashboard/user/index.vue')
                             },
                             {
                                 name: 'Guild Settings',
