@@ -39,6 +39,33 @@ module.exports = {
                     }, {
                         name: 'SubTags', path: '/subtags/:name?',
                         component: resolve(__dirname, 'renders/subtags.vue')
+                    }, {
+                        name: 'Dashboard', path: '/dashboard/',
+                        component: resolve(__dirname, 'renders/dashboard/index.vue'),
+                        children: [
+                            {
+                                name: 'User Settings',
+                                path: 'user',
+                                component: resolve(__dirname, 'renders/dashboard/user/index.vue'),
+                                children: [
+                                    {
+                                        name: 'General User Settings', path: 'general',
+                                        component: resolve(__dirname, 'renders/dashboard/user/general.vue')
+                                    }
+                                ]
+                            },
+                            {
+                                name: 'Guild Settings',
+                                path: 'guild/:id?',
+                                component: resolve(__dirname, 'renders/dashboard/guild/index.vue'),
+                                children: [
+                                    {
+                                        name: 'General Guild Settings', path: 'general',
+                                        component: resolve(__dirname, 'renders/dashboard/guild/general.vue')
+                                    }
+                                ]
+                            }
+                        ]
                     }
                 ]
             });

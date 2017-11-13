@@ -45,6 +45,7 @@ class ApiRoute {
         router.get('/catfact', (req, res) => {
             res.end(this.info.cat);
         });
+        router.use('/user', new (require('./user'))(this.website).router);
 
         router.get('/subtags', async (req, res) => {
             let tags = await this.getInfo('subtags', 'tagList');

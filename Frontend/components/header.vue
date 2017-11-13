@@ -4,9 +4,12 @@
             <div class='container'>
                 <div class='nav-wrapper'>
                     <router-link class='breadcrumb brand-logo' to='/'>blargbot</router-link>
-                    <router-link class='breadcrumb' v-for='crumb in $route.matched.slice(1)' :key='crumb.name' :to='crumb.path'>{{crumb.name}}</router-link>
+                    <router-link class='breadcrumb' v-for='crumb in $route.matched.slice(1, 2)' :key='crumb.name' :to='crumb.path'>{{crumb.name}}</router-link>
 
                     <ul id='nav-mobile' class='right hide-on-med-and-down'>
+                        <li>
+                            <router-link to='/dashboard/user'>{{$t('website.header.dashboard')}}</router-link>
+                        </li>
                         <li>
                             <router-link to='/commands'>{{$t('website.header.commands')}}</router-link>
                         </li>
@@ -18,7 +21,7 @@
                         </li>
                         <li class='login'>
                             <div v-if='$store.state.user == undefined'>
-                                <a href='/login' class='waves-effect waves-light btn allcaps'>{{$t('website.header.login')}}</a>
+                                <a :href='"/login?path=" + $route.path' class='waves-effect waves-light btn allcaps'>{{$t('website.header.login')}}</a>
                             </div>
                             <div v-else>
                                 <div class='logged-in'>
@@ -39,21 +42,19 @@
 
 <script>
 export default {
-    data: () => ({
-    }),
-    created() {
-    }
+  data: () => ({}),
+  created() {}
 };
 </script>
 
 <style scoped>
 .brand-logo {
-    position: unset;
-    transform: none;
+  position: unset;
+  transform: none;
 }
 
 .breadcrumb {
-    display: inline-block;
-    vertical-align: top;
+  display: inline-block;
+  vertical-align: top;
 }
 </style>

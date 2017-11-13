@@ -1,3 +1,5 @@
+const Database = require('../Core/Database');
+
 const Sender = require('../Core/Structures/Sender');
 const path = require('path');
 const express = require('express');
@@ -6,6 +8,7 @@ const passport = require('passport');
 const Strategy = require('passport-discord').Strategy;
 const session = require('express-session');
 const config = require('../config');
+global._config = config;
 
 const { Nuxt, Builder } = require('nuxt');
 const nuxtConfig = require('./nuxt.config.js');
@@ -22,6 +25,10 @@ process.on('unhandledRejection', (err, p) => {
 class Website extends Sender {
     constructor(port = 8078) {
         super();
+        this.database = new Database(this);
+        this.database.authenticate().then(() => {
+        });
+
         this.sessionUserMap = {};
         this.port = port;
         this.app = express();
@@ -55,12 +62,17 @@ class Website extends Sender {
         this.app.use(passport.initialize());
         this.app.use(passport.session());
 
-        this.app.get('/login', passport.authorize('discord', {
+        this.app.get('/login', (req, res, next) => {
+            console.log(req.query);
+            req.session.returnTo = req.query.path || '/';
+            next();
+        }, passport.authorize('discord', {
             scope: this.scopes
-        }), (req, res) => { });
+        }));
         this.app.get('/callback', passport.authenticate('discord', {
             failureRedirect: '/'
         }), (req, res) => {
+            console.log(req.session.returnTo);
             req.session.user = req.user;
             this.sessionUserMap[req.sessionID] = req.user;
             res.redirect(req.session.returnTo || '/');
@@ -87,6 +99,10 @@ class Website extends Sender {
         this.app.use('/api', new (require('./routes/api'))(this).router);
         //this.app.use('/', require('./routes/main'));
         this.app.use(nuxt.render);
+    }
+
+    getData() {
+        return { getOrCreateObject() { } };
     }
 
     get nuxt() { return nuxt; }

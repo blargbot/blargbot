@@ -5,7 +5,8 @@
         "logout": "Logout",
         "commands": "Commands",
         "bbtag": "BBTag",
-        "subtags": "SubTags"
+        "subtags": "SubTags",
+        "dashboard": "Dashboard"
     },
     "generic": {
         "loading": "Loading",
@@ -77,5 +78,9 @@
             "aliases": "Aliases:",
             "subcommands": "Subcommands:"
         }
+    },
+    "dashboard": {
+        "userheader": "User Settings",
+        "guildheader": "Guild Settings"
     }
 }
