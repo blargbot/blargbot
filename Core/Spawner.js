@@ -16,7 +16,7 @@ class Spawner extends EventEmitter {
     }
 
     respawnAll() {
-        return Promise.all(Array.from(this.shards.values()).map(s => this.respawnShard(s.id)));
+        return Promise.all(Array.from(this.shards.values()).filter(s => !isNaN(parseInt(s.id))).map(s => this.respawnShard(s.id)));
     }
 
     respawnShard(id) {
