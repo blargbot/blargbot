@@ -5,7 +5,8 @@
         "logout": "Wyloguj się",
         "commands": "Komendy",
         "bbtag": "",
-        "subtags": ""
+        "subtags": "",
+        "dashboard": ""
     },
     "generic": {
         "loading": "",
@@ -77,5 +78,9 @@
             "aliases": "",
             "subcommands": ""
         }
+    },
+    "dashboard": {
+        "userheader": "",
+        "guildheader": ""
     }
 }
