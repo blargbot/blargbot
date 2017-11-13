@@ -63,7 +63,6 @@ class Website extends Sender {
         this.app.use(passport.session());
 
         this.app.get('/login', (req, res, next) => {
-            console.log(req.query);
             req.session.returnTo = req.query.path || '/';
             next();
         }, passport.authorize('discord', {
@@ -72,7 +71,6 @@ class Website extends Sender {
         this.app.get('/callback', passport.authenticate('discord', {
             failureRedirect: '/'
         }), (req, res) => {
-            console.log(req.session.returnTo);
             req.session.user = req.user;
             this.sessionUserMap[req.sessionID] = req.user;
             res.redirect(req.session.returnTo || '/');

@@ -3,12 +3,12 @@ const moment = require('moment');
 const superagent = require('superagent');
 const path = require('path');
 
-class UserApiRoute {
+class GuildApiRoute {
     constructor(website) {
         this.website = website;
         this.router = router;
 
-        router.get('/settings', async (req, res) => {
+        router.get('/settings/:id', async (req, res) => {
             if (!req.user) {
                 res.end(JSON.stringify({ error: '400', message: 'No user specified.' }));
             } else {
@@ -27,4 +27,4 @@ class UserApiRoute {
     }
 }
 
-module.exports = UserApiRoute;
+module.exports = GuildApiRoute;

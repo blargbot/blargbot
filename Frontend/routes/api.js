@@ -46,6 +46,7 @@ class ApiRoute {
             res.end(this.info.cat);
         });
         router.use('/user', new (require('./user'))(this.website).router);
+        router.use('/guild', new (require('./guild'))(this.website).router);
 
         router.get('/subtags', async (req, res) => {
             let tags = await this.getInfo('subtags', 'tagList');
