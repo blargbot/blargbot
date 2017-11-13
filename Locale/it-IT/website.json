@@ -5,7 +5,8 @@
         "logout": "Logout",
         "commands": "Comandi",
         "bbtag": "BBTag",
-        "subtags": "Sottotag"
+        "subtags": "Sottotag",
+        "dashboard": ""
     },
     "generic": {
         "loading": "Caricamento in corso",
@@ -77,5 +78,9 @@
             "aliases": "",
             "subcommands": ""
         }
+    },
+    "dashboard": {
+        "userheader": "",
+        "guildheader": ""
     }
 }
