@@ -116,7 +116,7 @@ class Website extends Sender {
 
     start() {
         this.app.listen(this.port, () => {
-            console.log('Website listening on port', this.port);
+            console.init('Website listening on port', this.port);
             this.send('threadReady', process.env.SHARD_ID);
         });
     }
