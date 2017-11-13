@@ -40,7 +40,7 @@
         "semi": "warn",
         "indent": [
             0,
-            4
+            2
         ],
         "no-undef": 1,
         "no-global-assign": 1,
