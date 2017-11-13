@@ -5,7 +5,8 @@
         "logout": "Çıkış Yap",
         "commands": "Komutlar",
         "bbtag": "BBTag",
-        "subtags": "Biçiminde"
+        "subtags": "Biçiminde",
+        "dashboard": ""
     },
     "generic": {
         "loading": "Yükleniyor",
@@ -77,5 +78,9 @@
             "aliases": "Diğer Adlar:",
             "subcommands": "Alt komutlar:"
         }
+    },
+    "dashboard": {
+        "userheader": "",
+        "guildheader": ""
     }
 }
