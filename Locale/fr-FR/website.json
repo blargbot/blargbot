@@ -5,7 +5,8 @@
         "logout": "Se déconnecter",
         "commands": "Commandes",
         "bbtag": "BBTag",
-        "subtags": "SubTags"
+        "subtags": "SubTags",
+        "dashboard": ""
     },
     "generic": {
         "loading": "",
@@ -77,5 +78,9 @@
             "aliases": "",
             "subcommands": ""
         }
+    },
+    "dashboard": {
+        "userheader": "",
+        "guildheader": ""
     }
 }
