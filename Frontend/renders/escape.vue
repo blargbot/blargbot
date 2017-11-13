@@ -41,15 +41,26 @@
 </template>
 
 <script>
-import VueMarkdown from 'vue-markdown';
-import card from '../components/card.vue';
+import VueMarkdown from "vue-markdown";
+import card from "../components/card.vue";
 
 export default {
   data: () => ({
-    content: '# Title\n\nPut fancy markdown here.',
-    title: '',
-    denyChoices: ['lol no', 'fat chance', 'why bother', 'hahaha nice try', 'meh, nah',
-      'id rather not', 'please stop trying', 'it is futile', 'look behind you', 'meow', 'whats the point']
+    content: "# Title\n\nPut fancy markdown here.",
+    title: "",
+    denyChoices: [
+      "lol no",
+      "fat chance",
+      "why bother",
+      "hahaha nice try",
+      "meh, nah",
+      "id rather not",
+      "please stop trying",
+      "it is futile",
+      "look behind you",
+      "meow",
+      "whats the point"
+    ]
   }),
   computed: {
     jsoned() {
@@ -58,11 +69,11 @@ export default {
           title: this.title,
           desc: this.content
         }
-      }
+      };
       return JSON.stringify(obj, null, 2);
     },
     jsonedCodeblock() {
-      return '```json\n' + this.jsoned + '\n```';
+      return "```json\n" + this.jsoned + "\n```";
     }
   },
   methods: {
@@ -72,12 +83,12 @@ export default {
     },
     reformat() {
       let thing = JSON.parse(this.content);
-      if (typeof thing === 'string') {
+      if (typeof thing === "string") {
         this.content = thing;
       } else if (thing instanceof Object) {
-        if (thing.hasOwnProperty('title') || thing.hasOwnProperty('desc')) {
-          this.content = thing.desc || '';
-          this.title = thing.title || '';
+        if (thing.hasOwnProperty("title") || thing.hasOwnProperty("desc")) {
+          this.content = thing.desc || "";
+          this.title = thing.title || "";
         } else {
           for (const key in thing) {
             this.content = thing[key].desc;
@@ -88,17 +99,17 @@ export default {
       }
     },
     copyClipboard() {
-      console.log(this.$refs.hah);
       this.$refs.hah.select();
-      document.execCommand('copy');
-      Materialize.toast('Copied!', 1000);
+      document.execCommand("copy");
+      Materialize.toast("Copied!", 1000);
     }
   },
   components: {
-    card, VueMarkdown
+    card,
+    VueMarkdown
   },
   meta: {
-    name: 'Commands'
+    name: "Commands"
   }
 };
 </script>

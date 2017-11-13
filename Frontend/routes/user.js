@@ -21,7 +21,6 @@ class UserApiRoute {
             }
         });
         router.post('/settings', async (req, res) => {
-            console.log(req.user, req.body);
             res.end('no');
         });
     }

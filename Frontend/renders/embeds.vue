@@ -210,7 +210,6 @@ export default {
       }
     },
     copyClipboard() {
-      console.log(this.$refs.hah);
       this.$refs.hah.select();
       document.execCommand("copy");
       Materialize.toast("Copied!", 1000);

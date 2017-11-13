@@ -42,16 +42,21 @@ class Database {
             await this.models[key].model.sync({ force: false, alter: false });
             this.client.models[key] = this.models[key].model;
         }
-        console.init('Database models loaded. Loading Clyde');
-        const clyde = await this.client.getData('User', 0, {
-            username: 'Clyde',
-            discriminator: '0000'
-        });
-        await clyde.getOrCreateObject();
-        console.init('Creating functions');
-        this.sequelize.query(`CREATE OR REPLACE FUNCTION countTagFavourites(text) RETURNS bigint AS $$ 
+        if (process.env.SHARD_ID !== '0')
+            console.init('Database models loaded.');
+        else {
+            console.init('Database models loaded. Loading Clyde');
+
+            const clyde = await this.client.getData('User', 0, {
+                username: 'Clyde',
+                discriminator: '0000'
+            });
+            await clyde.getOrCreateObject();
+            console.init('Creating functions');
+            this.sequelize.query(`CREATE OR REPLACE FUNCTION countTagFavourites(text) RETURNS bigint AS $$ 
                 SELECT count(*) as result FROM tag_favourites WHERE "tag_favourites"."tagName" = $1;
             $$ LANGUAGE sql;`);
+        }
     }
 }
 

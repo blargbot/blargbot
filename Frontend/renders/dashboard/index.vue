@@ -34,7 +34,6 @@ export default {
       $("ul.tabs").tabs();
     });
     this.active = this.$route.path.split("/")[2];
-    console.log(this.$route);
   }
 };
 </script>
