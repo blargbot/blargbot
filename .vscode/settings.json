@@ -1,4 +1,5 @@
 {
   "editor.tabSize": 2,
-  "editor.detectIndentation": false
+  "editor.detectIndentation": false,
+  "vetur.format.defaultFormatter.html": "js-beautify-html"
 }
