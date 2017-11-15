@@ -5,7 +5,7 @@
  */
 
 process.on('unhandledRejection', (err, p) => {
-    console.error('Unhandled Promise Rejection:', err.stack);
+  console.error('Unhandled Promise Rejection:', err.stack);
 });
 
 process.env.SHARD_ID = -1;

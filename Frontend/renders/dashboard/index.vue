@@ -12,11 +12,11 @@
             {{$t('website.dashboard.guildheader')}}
           </router-link>
         </li>
-    </ul>
+      </ul>
       <router-view></router-view>
     </div>
     <div v-else>
-       <vue-markdown :source="$t('website.dashboard.notauthed')"></vue-markdown>
+      <vue-markdown :source="$t('website.dashboard.notauthed')"></vue-markdown>
     </div>
   </div>
 </template>

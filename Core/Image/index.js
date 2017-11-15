@@ -4,5 +4,5 @@ const generator = new Generator();
 let args = JSON.parse(process.env.IMAGE_ARGS);
 
 generator.generate(args).catch(err => {
-    console.error('[IMG]' + err);
+  console.error('[IMG]' + err);
 });

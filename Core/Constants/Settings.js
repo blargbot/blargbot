@@ -1,8 +1,8 @@
 module.exports = {
-    Types: {
+  Types: {
 
-    },
-    Nodes: {
+  },
+  Nodes: {
 
-    }
+  }
 }

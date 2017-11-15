@@ -1,47 +1,47 @@
 <html>
 
 <head>
-    <style>
-        @font-face {
-            font-family: SFToontime;
-            font-style: normal;
-            font-weight: 500;
-            src: url(fonts/SFToontime.ttf)
-        }
+  <style>
+    @font-face {
+      font-family: SFToontime;
+      font-style: normal;
+      font-weight: 500;
+      src: url(fonts/SFToontime.ttf)
+    }
 
-        .replace-wrapper {
-            position: absolute;
-            top: 337px;
-            left: 62px;
-            width: 167px;
-            height: 75px;
-            font-family: 'SFToontime';
-            text-align: center;
-            padding: 0;
-        }
+    .replace-wrapper {
+      position: absolute;
+      top: 337px;
+      left: 62px;
+      width: 167px;
+      height: 75px;
+      font-family: 'SFToontime';
+      text-align: center;
+      padding: 0;
+    }
 
-        #workspace {
-            display: inline-block;
-        }
+    #workspace {
+      display: inline-block;
+    }
 
-        body,
-        html {
-            margin: 0;
-            padding: 0;
-        }
-    </style>
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+    }
+  </style>
 </head>
 
 <body>
-    <div id='workspace'>
-        <img src='thesearch.png'>
-        <div class='replace-wrapper'>
-            <div class='resize' id='replace1'>
-            </div>
-        </div>
+  <div id='workspace'>
+    <img src='thesearch.png'>
+    <div class='replace-wrapper'>
+      <div class='resize' id='replace1'>
+      </div>
     </div>
+  </div>
 
-    <script>
+  <script>
 var autoSizeText;
 
 document.autoSizeText = function() {

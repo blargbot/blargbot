@@ -1,25 +1,25 @@
 const { Math } = require.main.require('./Tag/Classes');
 
 class FloorTag extends Math {
-    constructor(client) {
-        super(client, {
-            name: 'floor',
-            args: [
-                {
-                    name: 'number'
-                }
-            ],
-            minArgs: 1, maxArgs: 1
-        });
-    }
+  constructor(client) {
+    super(client, {
+      name: 'floor',
+      args: [
+        {
+          name: 'number'
+        }
+      ],
+      minArgs: 1, maxArgs: 1
+    });
+  }
 
-    async execute(ctx, args) {
-        const res = await super.execute(ctx, args);
+  async execute(ctx, args) {
+    const res = await super.execute(ctx, args);
 
-        let parsed = this.parseFloat(args.parsedArgs.number, 'number');
+    let parsed = this.parseFloat(args.parsedArgs.number, 'number');
 
-        return res.setContent(global.Math.floor(parsed));
-    }
+    return res.setContent(global.Math.floor(parsed));
+  }
 }
 
 module.exports = FloorTag;

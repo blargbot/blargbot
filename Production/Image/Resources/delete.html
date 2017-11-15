@@ -1,78 +1,78 @@
 <html>
 
 <head>
-    <script src="https://use.fontawesome.com/81a6f968b4.js"></script>
-    <style>
-        @font-face {
-            font-family: Whitney;
-            font-style: normal;
-            font-weight: 500;
-            src: url(fonts/whitney.ttf)
-        }
+  <script src="https://use.fontawesome.com/81a6f968b4.js"></script>
+  <style>
+    @font-face {
+      font-family: Whitney;
+      font-style: normal;
+      font-weight: 500;
+      src: url(fonts/whitney.ttf)
+    }
 
-        .red {
-            color: #f04747;
-        }
+    .red {
+      color: #f04747;
+    }
 
-        .button-outline {
-            border: 1px solid #f04747;
-            background: none;
-            border-radius: 3px;
-            font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif;
-            font-weight: 500;
-            font-size: 14px;
-            line-height: 24px;
-            min-width: 60px;
-            height: 24px;
-            white-space: nowrap;
-            padding: 0px 6px;
-            text-align: center;
-            margin: 4px;
-        }
+    .button-outline {
+      border: 1px solid #f04747;
+      background: none;
+      border-radius: 3px;
+      font-family: Whitney, Helvetica Neue, Helvetica, Arial, sans-serif;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 24px;
+      min-width: 60px;
+      height: 24px;
+      white-space: nowrap;
+      padding: 0px 6px;
+      text-align: center;
+      margin: 4px;
+    }
 
-        body,
-        html {
-            margin: 0;
-            padding: 0;
-        }
+    body,
+    html {
+      margin: 0;
+      padding: 0;
+    }
 
-        #workspace {
-            display: inline-block;
-            padding: 2px;
-            height: 36px;
-        }
+    #workspace {
+      display: inline-block;
+      padding: 2px;
+      height: 36px;
+    }
 
-        .cursor {
-            image-rendering: optimizeSpeed;
-            position: absolute;
-            margin: 0 auto;
-            width: 14px;
-            left: 0;
-            right: 0;
-            top: 22px;
-        }
+    .cursor {
+      image-rendering: optimizeSpeed;
+      position: absolute;
+      margin: 0 auto;
+      width: 14px;
+      left: 0;
+      right: 0;
+      top: 22px;
+    }
 
-        .delete-icon {
-            float: left;
-            line-height: 24px;
-            font-size: 18px;
-        }
+    .delete-icon {
+      float: left;
+      line-height: 24px;
+      font-size: 18px;
+    }
 
-        #replace1 {
-            text-align: center;
-            margin: 0 10px 0 6px;
-        }
-    </style>
+    #replace1 {
+      text-align: center;
+      margin: 0 10px 0 6px;
+    }
+  </style>
 </head>
 
 <body>
-    <div id='workspace'>
-        <img class='cursor' src='cursor.png'>
-        <div class='button-outline red'>
-            <i class="fa fa-trash-o red delete-icon" aria-hidden="true"></i>
-            <span id='replace1'></span>
-        </div>
+  <div id='workspace'>
+    <img class='cursor' src='cursor.png'>
+    <div class='button-outline red'>
+      <i class="fa fa-trash-o red delete-icon" aria-hidden="true"></i>
+      <span id='replace1'></span>
     </div>
+  </div>
 
 </body>
 

@@ -17,7 +17,7 @@
           </div>
           <div class='input-field col s12 m6'>
             <input type='text' :style="'border-bottom: 5px solid ' + embed.color" v-on:change='validateColor' v-model='embed.color' id='tbColor'></input>
-            <label for='tbColor'  class='grey-text text-lighten-2 active'>Color</label>
+            <label for='tbColor' class='grey-text text-lighten-2 active'>Color</label>
           </div>
           <div class='input-field col s12 m6'>
             <input type='text' v-model='embed.image.url' id='tbImage'></input>
@@ -67,7 +67,7 @@
             <div class='col s12 blue-grey darken-2 field' v-for='(field, i) in embed.fields'>
               <button type='button' v-on:click='removeField(i)' class='red darken-4 waves-effect waves-light btn-floating close-btn'>-</button>
               <div class='row'>
-                
+
                 <div class='input-field col s8'>
                   <input type='text' maxlength='256' data-length='256' v-model='field.name'></input>
                   <label class='grey-text text-lighten-2'>Name</label>

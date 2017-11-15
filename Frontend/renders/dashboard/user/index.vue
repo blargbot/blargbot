@@ -1,17 +1,17 @@
 <template>
   <div>
     <h4>{{$t('website.dashboard.userheader')}}</h4>
-      <div class="switch">
-    <div class='col s12'>
-      {{$t('website.dashboard.user.dmerrors')}}
-    <label>
-      Off
-      <input type="checkbox">
-      <span class="lever"></span>
-      On
-    </label>
+    <div class="switch">
+      <div class='col s12'>
+        {{$t('website.dashboard.user.dmerrors')}}
+        <label>
+          Off
+          <input type="checkbox">
+          <span class="lever"></span>
+          On
+        </label>
+      </div>
     </div>
-  </div>
   </div>
 </template>
 

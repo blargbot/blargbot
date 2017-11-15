@@ -1,24 +1,24 @@
 module.exports = {
-    User: require('./User'),
-    UserName: require('./UserName'),
-    UserTodo: require('./UserTodo'),
+  User: require('./User'),
+  UserName: require('./UserName'),
+  UserTodo: require('./UserTodo'),
 
-    Guild: require('./Guild'),
-    GuildCensor: require('./GuildCensor'),
-    GuildCommand: require('./GuildCommand'),
-    GuildCustomCommand: require('./GuildCustomCommand'),
-    GuildModlog: require('./GuildModlog'),
-    GuildModlogChannel: require('./GuildModlogChannel'),
-    GuildPunishment: require('./GuildPunishment'),
+  Guild: require('./Guild'),
+  GuildCensor: require('./GuildCensor'),
+  GuildCommand: require('./GuildCommand'),
+  GuildCustomCommand: require('./GuildCustomCommand'),
+  GuildModlog: require('./GuildModlog'),
+  GuildModlogChannel: require('./GuildModlogChannel'),
+  GuildPunishment: require('./GuildPunishment'),
 
-    Event: require('./Event'),
+  Event: require('./Event'),
 
-    Tag: require('./Tag'),
+  Tag: require('./Tag'),
 
-    TagFavourite: require('./TagFavourite'),
+  TagFavourite: require('./TagFavourite'),
 
-    ChatLog: require('./ChatLog'),
+  ChatLog: require('./ChatLog'),
 
-    // temp
-    WhitelistedGuild: require('./WhitelistedGuild')
+  // temp
+  WhitelistedGuild: require('./WhitelistedGuild')
 };

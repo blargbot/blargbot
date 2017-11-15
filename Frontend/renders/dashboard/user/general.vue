@@ -1,7 +1,6 @@
 <template>
   <div>
-    General Settings
-    {{data}}
+    General Settings {{data}}
   </div>
 </template>
 

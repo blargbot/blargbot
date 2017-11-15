@@ -2,91 +2,91 @@ const fs = require('fs');
 const path = require('path');
 
 let func = function (dirname, require2) {
-    const reload = require('require-reload')(require2);
-    const e = {
+  const reload = require('require-reload')(require2);
+  const e = {
 
-    };
+  };
 
-    Object.defineProperty(e, 'get', {
-        value: (...names) => {
-            let temp = e;
-            for (const name of names) {
-                temp = temp[name];
-                if (!temp)
-                    return undefined;
+  Object.defineProperty(e, 'get', {
+    value: (...names) => {
+      let temp = e;
+      for (const name of names) {
+        temp = temp[name];
+        if (!temp)
+          return undefined;
+      }
+      return temp;
+    },
+    enumerable: false
+  });
+
+  Object.defineProperty(e, 'reload', {
+    value: () => {
+      return func(dirname, require2);
+    },
+    enumerable: false
+  });
+
+  let dirs = fs.readdirSync(dirname);
+  for (const dir of dirs) {
+    if (!dir.includes('.')) {
+      Object.defineProperty(e, dir, {
+        get: () => getFiles(dir),
+        enumerable: true
+      });
+    }
+  }
+
+  const subFiles = {};
+
+
+  function getFiles(directory) {
+    if (subFiles[directory]) return subFiles[directory];
+    const files = {};
+    let c = null;
+    Object.defineProperty(files, 'count', {
+      get() {
+        return function count(obj = this) {
+          let cc = [0, 0];
+          for (const key in obj) {
+            if (obj[key] instanceof Object) {
+              let c = this.count(obj[key]);
+              cc[0] += c[0];
+              cc[1] += c[1];
+            } else if (typeof obj[key] === 'string') {
+              cc[0]++;
+              if (obj[key] !== '')
+                cc[1]++;
             }
-            return temp;
-        },
-        enumerable: false
+          }
+          return cc;
+        };
+      },
+      enumerable: false
+    });
+    Object.defineProperty(files, 'percentComplete', {
+      get() {
+        let c = this.count();
+        return c[1] / c[0] * 100;
+      },
+      enumerable: false
     });
 
-    Object.defineProperty(e, 'reload', {
-        value: () => {
-            return func(dirname, require2);
-        },
-        enumerable: false
-    });
-
-    let dirs = fs.readdirSync(dirname);
-    for (const dir of dirs) {
-        if (!dir.includes('.')) {
-            Object.defineProperty(e, dir, {
-                get: () => getFiles(dir),
-                enumerable: true
-            });
-        }
-    }
-
-    const subFiles = {};
-
-
-    function getFiles(directory) {
-        if (subFiles[directory]) return subFiles[directory];
-        const files = {};
-        let c = null;
-        Object.defineProperty(files, 'count', {
-            get() {
-                return function count(obj = this) {
-                    let cc = [0, 0];
-                    for (const key in obj) {
-                        if (obj[key] instanceof Object) {
-                            let c = this.count(obj[key]);
-                            cc[0] += c[0];
-                            cc[1] += c[1];
-                        } else if (typeof obj[key] === 'string') {
-                            cc[0]++;
-                            if (obj[key] !== '')
-                                cc[1]++;
-                        }
-                    }
-                    return cc;
-                };
-            },
-            enumerable: false
+    let names = fs.readdirSync(path.join(dirname, directory));
+    for (const name of names) {
+      if (name.endsWith('.js') || name.endsWith('.json')) {
+        const thing = reload(`./${directory}/${name}`);
+        Object.defineProperty(files, name.split('.')[0], {
+          get: () => thing,
+          enumerable: true
         });
-        Object.defineProperty(files, 'percentComplete', {
-            get() {
-                let c = this.count();
-                return c[1] / c[0] * 100;
-            },
-            enumerable: false
-        });
-
-        let names = fs.readdirSync(path.join(dirname, directory));
-        for (const name of names) {
-            if (name.endsWith('.js') || name.endsWith('.json')) {
-                const thing = reload(`./${directory}/${name}`);
-                Object.defineProperty(files, name.split('.')[0], {
-                    get: () => thing,
-                    enumerable: true
-                });
-            }
-        }
-        subFiles[directory] = files;
-        return files;
+      }
     }
+    subFiles[directory] = files;
+    return files;
+  }
 
-    return e;
+  return e;
 };
 
 

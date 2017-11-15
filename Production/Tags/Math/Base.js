@@ -1,37 +1,37 @@
 const { Math } = require.main.require('./Tag/Classes');
 
 class MathBaseTag extends Math {
-    constructor(client) {
-        super(client, {
-            name: 'base',
-            args: [
-                {
-                    name: 'number'
-                }, {
-                    name: 'origin',
-                    optional: true
-                }, {
-                    name: 'radix'
-                }
-            ],
-            minArgs: 2, maxArgs: 3
-        });
-    }
-
-    async execute(ctx, args) {
-        const res = await super.execute(ctx, args);
-        let { number, origin = 10, radix } = args.parsedArgs;
-
-        if (radix < 2 || radix > 36) {
-            this.throw('error.tag.invalidradix', {
-                radix
-            });
+  constructor(client) {
+    super(client, {
+      name: 'base',
+      args: [
+        {
+          name: 'number'
+        }, {
+          name: 'origin',
+          optional: true
+        }, {
+          name: 'radix'
         }
+      ],
+      minArgs: 2, maxArgs: 3
+    });
+  }
 
-        number = this.parseInt(number, 'number', origin);
+  async execute(ctx, args) {
+    const res = await super.execute(ctx, args);
+    let { number, origin = 10, radix } = args.parsedArgs;
 
-        return res.setContent(number.toString(radix));
+    if (radix < 2 || radix > 36) {
+      this.throw('error.tag.invalidradix', {
+        radix
+      });
     }
+
+    number = this.parseInt(number, 'number', origin);
+
+    return res.setContent(number.toString(radix));
+  }
 }
 
 module.exports = MathBaseTag;

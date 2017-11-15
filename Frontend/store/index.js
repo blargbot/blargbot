@@ -8,41 +8,41 @@ require('whatwg-fetch');
 
 const store = () => new Vuex.Store({
 
-    state: {
-        user: null,
-        locale: 'en',
-        locales: ['en'],
-        fact: '',
-        subtags: {}
-    },
+  state: {
+    user: null,
+    locale: 'en',
+    locales: ['en'],
+    fact: '',
+    subtags: {}
+  },
 
-    mutations: {
-        SET_USER: function (state, user) {
-            state.user = user;
-        },
-        SET_LANG(state, locale) {
-            if (state.locales.indexOf(locale) !== -1) {
-                state.locale = locale;
-            }
-        },
-        SET_FACT(state, fact) {
-            state.fact = fact;
-        },
-        SET_PATH(state, path) {
-            state.path = path;
-        },
-        setTags(state, tags) {
-            state.subtags = tags;
-        }
+  mutations: {
+    SET_USER: function (state, user) {
+      state.user = user;
     },
-
-    actions: {
-        nuxtServerInit({ commit }, { req }) {
-            if (req.session && req.session.user) {
-                commit('SET_USER', req.session.user);
-            }
-        }
+    SET_LANG(state, locale) {
+      if (state.locales.indexOf(locale) !== -1) {
+        state.locale = locale;
+      }
+    },
+    SET_FACT(state, fact) {
+      state.fact = fact;
+    },
+    SET_PATH(state, path) {
+      state.path = path;
+    },
+    setTags(state, tags) {
+      state.subtags = tags;
     }
+  },
+
+  actions: {
+    nuxtServerInit({ commit }, { req }) {
+      if (req.session && req.session.user) {
+        commit('SET_USER', req.session.user);
+      }
+    }
+  }
 
 });
 

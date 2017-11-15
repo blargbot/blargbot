@@ -2,14 +2,14 @@ const { TagVariable } = require('../../Core/Tag');
 
 class SharedVariable extends TagVariable {
 
-    /**
-     * NO OP
-     * Still must decide how to implement
-     */
+  /**
+   * NO OP
+   * Still must decide how to implement
+   */
 
-    get prefix() {
-        return '&';
-    }
+  get prefix() {
+    return '&';
+  }
 
 }
 

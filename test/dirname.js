@@ -1,15 +1,15 @@
 class TestingBase {
-    constructor() {
+  constructor() {
 
-    }
+  }
 
-    get dirname() {
-        return __dirname;
-    }
+  get dirname() {
+    return __dirname;
+  }
 
-    get filename() {
-        return __filename;
-    }
+  get filename() {
+    return __filename;
+  }
 }
 
 module.exports = TestingBase;

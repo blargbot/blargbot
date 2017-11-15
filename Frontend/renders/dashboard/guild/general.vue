@@ -1,6 +1,6 @@
 <template>
   <div>
-      General Settings
+    General Settings
   </div>
 </template>
 

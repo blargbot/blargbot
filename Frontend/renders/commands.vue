@@ -1,10 +1,10 @@
 <template>
-    <div>
-        <collapse :collapse-data='commands' :keys='keys'>
-            <h1 slot='heading'>{{$t('website.commands.title')}}</h1>
-            <vue-markdown :source='$t("website.commands.desc")'></vue-markdown>
-        </collapse>
-    </div>
+  <div>
+    <collapse :collapse-data='commands' :keys='keys'>
+      <h1 slot='heading'>{{$t('website.commands.title')}}</h1>
+      <vue-markdown :source='$t("website.commands.desc")'></vue-markdown>
+    </collapse>
+  </div>
 </template>
 
 <script>

@@ -4,17 +4,17 @@ const TagArray = require('../Core/Tag/TagArray');
 const tagLexer = new TagLexer();
 
 function LexInput(input) {
-    try {
-        let tokens = tagLexer.parse(input);
+  try {
+    let tokens = tagLexer.parse(input);
 
-        console.dir(tokens, { depth: 15 });
-        console.log('Serialized: ', tokens.join(''));
+    console.dir(tokens, { depth: 15 });
+    console.log('Serialized: ', tokens.join(''));
 
-    } catch (err) {
-        if (err.key)
-            console.error(err.key);
-        else console.error(err);
-    }
+  } catch (err) {
+    if (err.key)
+      console.error(err.key);
+    else console.error(err);
+  }
 
 }
 
