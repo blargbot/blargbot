@@ -34,7 +34,8 @@ export default {
         return this.content
           .replace(/\{/g, "\uE001")
           .replace(/\}/g, "{rb}")
-          .replace(/\uE001/g, "{lb}");
+          .replace(/\uE001/g, "{lb}")
+          .replace(/;/g, "{semi}");
       } catch (err) {
         return err.stack;
       }
