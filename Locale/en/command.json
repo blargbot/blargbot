@@ -278,6 +278,19 @@
                 "Today just wasn't your lucky day.",
                 "Pssh, foresight is for losers."
             ]
+        },
+        "user": {
+            "usage": "[user]",
+            "info": "Returns information about the specified user.",
+            "description": "**Username**: {{username}}\n**Discriminator**: {{discriminator}}\n**ID**: {{id}}\n**Bot**: {{bot}}\n**Created**: {{created}}\n[Avatar]({{avatar}})",
+            "guildinfoheader": "Guild Information",
+            "guildinfo": "**Nickname**: {{nick}}\n**Permissions**: {{permissions}}\n**Status**: {{status}}\n**Joined**: {{joined}}\n{{game}}",
+            "status": [
+                "Playing",
+                "Streaming",
+                "Listening to",
+                "Watching"
+            ]
         }
     },
     "image": {
