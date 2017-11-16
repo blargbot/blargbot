@@ -278,6 +278,19 @@
                 "",
                 ""
             ]
+        },
+        "user": {
+            "usage": "",
+            "info": "",
+            "description": "",
+            "guildinfoheader": "",
+            "guildinfo": "",
+            "status": [
+                "",
+                "",
+                "",
+                ""
+            ]
         }
     },
     "image": {
