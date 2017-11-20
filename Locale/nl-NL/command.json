@@ -109,10 +109,10 @@
                     "info": ""
                 },
                 "setdesc": {
-                    "info": ""
+                    "info": "info"
                 },
                 "setusage": {
-                    "info": ""
+                    "info": "info"
                 }
             },
             "subcommandnotfound": "",
