@@ -34,7 +34,7 @@
             "desc": "Fjerner og retunerer det første element i arrayet."
         },
         "slice": {
-            "desc": ""
+            "desc": "Returnerer en del af matrixen, inklusive `start` indeks og eksklusive `end` indeks. Hvis `end` er uspecificeret, resterende standarder for alle elementer."
         },
         "sort": {
             "desc": ""
@@ -83,7 +83,7 @@
             "desc": "Indstiller variablen gemt med det angivne navn til den angivne værdi. Variabel præfikser kan ændre puljen til at indstille."
         },
         "trim": {
-            "desc": ""
+            "desc": "Fjerner mellemrum før og efter den angivne tekst. Overvej at bruge {clean} tagget for at fjerne mellemrum i teksten."
         },
         "void": {
             "desc": "Forhindrer output fra indenfor undertagget. Adskiller sig fra kommentar som ting er parset, bare ikke vises."
