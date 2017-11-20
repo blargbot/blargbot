@@ -62,7 +62,7 @@
         "components": {
             "argument": "Argumenter:",
             "named": "Understøtter navngivne argumenter",
-            "unnamed": "",
+            "unnamed": "Støtter **ikke** navngivne argumenter",
             "array": "Understøtter arrays",
             "staff": "Kræver forfatter er personale",
             "noimplicit": "Understøtter ikke implicit klassificering"
