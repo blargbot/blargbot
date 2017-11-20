@@ -246,14 +246,14 @@
         },
         "rr": {
             "info": "Gioca un round di roulette russa. Di default, il tuo revolver può contenere 6 proiettili.",
-            "usage": "",
+            "usage": "[proiettili]",
             "flags": {
-                "capacity": "",
-                "emote": ""
+                "capacity": "Imposta quanti proiettili tuo revolver può contenere.",
+                "emote": "Specifica quale emote (o testo) deve giocare alla roulette russa."
             },
-            "capacitylow": "",
-            "bulletslow": "",
-            "bulletshigh": "",
+            "capacitylow": "La pistola deve essere in grado di tenere almeno due proiettili, di meno sarebbe morte certa!",
+            "bulletslow": "Non puoi caricare meno di un proiettile, sciocco.",
+            "bulletshigh": "Ehi, il tuo revolver può contenere solo {{capacity}} proiettili! Questo significherebbe morte certa! Hai il desiderio di morire o qualcosa del genere?",
             "begin": "",
             "death": "",
             "life": "",
