@@ -6,7 +6,7 @@
         "commands": "Kommandoer",
         "bbtag": "BBTag",
         "subtags": "SubTags",
-        "dashboard": ""
+        "dashboard": "Instrumentbræt"
     },
     "generic": {
         "loading": "Indlæser",
@@ -80,8 +80,8 @@
         }
     },
     "dashboard": {
-        "userheader": "",
-        "guildheader": "",
+        "userheader": "Bruger Indstillinger",
+        "guildheader": "Server Indstillinger",
         "notauthed": "",
         "user": {
             "dmerrors": ""
