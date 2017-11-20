@@ -28,8 +28,8 @@
             "flags": {
                 "p": "Mostra una lista di puntatori dopo l'esecuzione.",
                 "i": "Specifica l'input per l'operatore `,`.",
-                "pointers": "",
-                "input": ""
+                "pointers": "Specifica che i puntatori risultanti dovrebbero essere scritti in output.",
+                "input": "Specifica i parametri di input."
             }
         },
         "ship": {
@@ -223,29 +223,29 @@
             "nothingchanged": "Non è cambiato nulla."
         },
         "warnings": {
-            "output": ""
+            "output": "**{{user}}** ha accumulato **{{amount}}** avviso(i) in **{{guild}}**."
         },
         "economy": {
-            "info": "",
-            "invalidamount": "",
-            "invalidcode": "",
-            "converted": "",
-            "usage": ""
+            "info": "Converte la valuta utilizzando i recenti tassi di conversione.",
+            "invalidamount": "Per favore specifica una quantità valida da convertire.",
+            "invalidcode": "Codice valuta sconosciuto: {{code}}",
+            "converted": "{{amount}} {{from}} è equivalente a {{converted}} {{to}}",
+            "usage": "<Da><A><Somma>"
         },
         "usettings": {
-            "info": "",
+            "info": "Modifica o visualizza le tue impostazioni utente.",
             "subcommand": {
                 "dmerrors": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[true | false]",
+                    "info": "Attiva o disattiva i DMs per le notifiche di errore."
                 }
             },
-            "dmerrorsenabled": "",
-            "dmerrorsdisabled": "",
-            "userinfo": ""
+            "dmerrorsenabled": "Notifiche di errore tramite DM attivate.",
+            "dmerrorsdisabled": "Notifiche di errore tramite DM disattivate.",
+            "userinfo": "Ecco le tue impostazioni utente:\n\n{{settings}}\n\nSottocomandi disponibili: {{sub}}"
         },
         "rr": {
-            "info": "",
+            "info": "Gioca un round di roulette russa. Di default, il tuo revolver può contenere 6 proiettili.",
             "usage": "",
             "flags": {
                 "capacity": "",
