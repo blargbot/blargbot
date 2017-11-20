@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-16 12:09:38
+ * @Last Modified time: 2017-11-19 18:01:38
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -328,45 +328,54 @@ bu.processTag = async function (params) {
 bu.processSpecial = (contents, final) => {
     logger.debug('Processing special tags');
     contents += '';
-    contents.replace(/\uE010|\uE011/g, '');
-    while (contents.indexOf(bu.specialCharBegin) > -1 && contents.indexOf(bu.specialCharEnd) > -1 &&
-        contents.indexOf(bu.specialCharBegin) < contents.indexOf(bu.specialCharEnd)) {
-        var tagEnds = contents.indexOf(bu.specialCharEnd),
-            tagBegins = tagEnds == -1 ? -1 : contents.lastIndexOf(bu.specialCharBegin, tagEnds),
-            tagBrackets = contents.substring(tagBegins, tagEnds + 1),
-            tag = contents.substring(tagBegins + 1, tagEnds),
-            args = tag.split(bu.specialCharDiv),
-            replaceString = '',
-            replace = true;
+    if (final)
+        contents = contents
+            .replace(new RegExp(bu.specialCharBegin + 'rb' + bu.specialCharEnd, 'gi'), '}')
+            .replace(new RegExp(bu.specialCharBegin + 'lb' + bu.specialCharEnd, 'gi'), '{')
+            .replace(new RegExp(bu.specialCharBegin + 'semi' + bu.specialCharEnd, 'gi'), ';')
 
-        switch (args[0].toLowerCase()) {
-            case 'rb':
-                if (final)
-                    replaceString = '}';
-                else
-                    replaceString = '\uE010rb\uE011';
-                break;
-            case 'lb':
-                if (final)
-                    replaceString = '{';
-                else
-                    replaceString = '\uE010lb\uE011';
-                break;
-            case 'semi':
-                if (final)
-                    replaceString = ';';
-                else
-                    replaceString = '\uE010semi\uE011';
-                break;
-            case 'break':
-                replaceString = '';
-                break;
-        }
-        logger.debug(tagBrackets, replaceString);
-        if (replace)
-            contents = contents.replace(tagBrackets, replaceString);
-    }
-    return contents.replace(/\uE010/g, bu.specialCharBegin).replace(/\uE011/g, bu.specialCharEnd);
+    contents = contents
+        .replace(new RegExp(bu.specialCharBegin + 'break' + bu.specialCharEnd, 'gi'), '')
+
+    // while (contents.indexOf(bu.specialCharBegin) > -1 && contents.indexOf(bu.specialCharEnd) > -1 &&
+    //     contents.indexOf(bu.specialCharBegin) < contents.indexOf(bu.specialCharEnd)) {
+    //     var tagEnds = contents.indexOf(bu.specialCharEnd),
+    //         tagBegins = tagEnds == -1 ? -1 : contents.lastIndexOf(bu.specialCharBegin, tagEnds),
+    //         tagBrackets = contents.substring(tagBegins, tagEnds + 1),
+    //         tag = contents.substring(tagBegins + 1, tagEnds),
+    //         args = tag.split(bu.specialCharDiv),
+    //         replaceString = '',
+    //         replace = true;
+
+    //     switch (args[0].toLowerCase()) {
+    //         case 'rb':
+    //             if (final)
+    //                 replaceString = '}';
+    //             else
+    //                 replaceString = '\uE010rb\uE011';
+    //             break;
+    //         case 'lb':
+    //             if (final)
+    //                 replaceString = '{';
+    //             else
+    //                 replaceString = '\uE010lb\uE011';
+    //             break;
+    //         case 'semi':
+    //             if (final)
+    //                 replaceString = ';';
+    //             else
+    //                 replaceString = '\uE010semi\uE011';
+    //             break;
+    //         case 'break':
+    //             replaceString = '';
+    //             break;
+    //     }
+    //     logger.debug(tagBrackets, replaceString);
+    //     if (replace)
+    //         contents = contents.replace(tagBrackets, replaceString);
+    // }
+    // return contents.replace(/\uE010/g, bu.specialCharBegin).replace(/\uE011/g, bu.specialCharEnd);
+    return contents;
 };
 
 bu.getTagRole = async function (msg, args, index) {
