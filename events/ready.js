@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:23:02
+ * @Last Modified time: 2017-11-08 12:45:30
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -211,5 +211,5 @@ function initEvents() {
             CommandManager.list[type].event(event);
             r.table('events').get(event.id).delete().run();
         }
-    }, 10000);
+    }, 5000);
 }
