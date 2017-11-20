@@ -197,7 +197,7 @@
             "desc": ""
         },
         "id": {
-            "desc": ""
+            "desc": "Returnerer ID'et for den specifikke bruger, standard til den udøvende bruger."
         },
         "joinedat": {
             "desc": ""
