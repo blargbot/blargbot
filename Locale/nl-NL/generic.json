@@ -1,7 +1,7 @@
 {
     "output": "",
     "nooutput": "",
-    "queryexpire": "",
+    "queryexpire": "Deze aanvraag vervalt in {{length}} minuten.",
     "resolveuser": {
         "nousers": "Niemand gevonden.",
         "pickuser": ""
@@ -21,13 +21,13 @@
         "choices": ""
     },
     "nochange": "Niks is veranderd.",
-    "commandhelp": "",
+    "commandhelp": "**Command Naam**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
     "example": {
-        "id1": "",
-        "id2": "",
-        "id3": ""
+        "id1": "111111111111111111",
+        "id2": "222222222222222222",
+        "id3": "333333333333333333"
     },
-    "test": "",
+    "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
     "querycancelled": "The query has been cancelled.",
     "user": "",
     "role": "",
