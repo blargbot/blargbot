@@ -223,14 +223,14 @@
             "nothingchanged": "Intet blev ændret."
         },
         "warnings": {
-            "output": ""
+            "output": "**{{user}}** har akkumuleret **{{amount}}** advarsel(er) i **{{guild}}**."
         },
         "economy": {
             "info": "",
             "invalidamount": "",
             "invalidcode": "",
             "converted": "{{amount}}{{from}} er det samme som {{converted}}{{to}}",
-            "usage": ""
+            "usage": "<from><to><amount>"
         },
         "usettings": {
             "info": "",
@@ -258,10 +258,10 @@
             "death": "",
             "life": "",
             "livemessages": [
+                "Pistolen klikker, den er tom. Du har nu endnu en dag at leve i.",
                 "",
                 "",
-                "",
-                "",
+                "Du takker RNGesus mens du sænker pistolen.",
                 ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
                 ""
             ],
@@ -272,7 +272,7 @@
                 "I det mindste fik du kylling!",
                 "Det der rydder jeg ***ikke*** op.",
                 "Skydevåben er ikke legetøj!",
-                "",
+                "Tja. Man kan jo ikke vinde hver gang!",
                 "",
                 "Skyd skylden på laggen!",
                 "",
@@ -344,7 +344,7 @@
                     "info": "Opsætter annonceringer."
                 },
                 "modlog": {
-                    "usage": "",
+                    "usage": "modlog [event]...",
                     "info": ""
                 }
             },
