@@ -82,7 +82,7 @@
     "dashboard": {
         "userheader": "Bruger Indstillinger",
         "guildheader": "Server Indstillinger",
-        "notauthed": "",
+        "notauthed": "### Beklager, du kan ikke tilgå denne side\n\nLog venligst på for at bruge instrumentbrættet.",
         "user": {
             "dmerrors": ""
         }
