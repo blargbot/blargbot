@@ -286,7 +286,7 @@
             "guildinfoheader": "",
             "guildinfo": "",
             "status": [
-                "",
+                "Spiller",
                 "",
                 "",
                 ""
@@ -315,10 +315,10 @@
             "usage": "",
             "info": "",
             "flags": {
-                "monika": "",
-                "sayori": "",
-                "yuri": "",
-                "natsuki": ""
+                "monika": "Kun Monika.",
+                "sayori": "Kun Monika.",
+                "yuri": "Kun Monika.",
+                "natsuki": "Kun Monika."
             }
         }
     },
