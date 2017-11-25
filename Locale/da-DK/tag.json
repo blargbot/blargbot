@@ -92,7 +92,7 @@
             "desc": "Returnerer det angivne antal newlines, misligholdende til 1."
         },
         "space": {
-            "desc": ""
+            "desc": "Returnerer det angivne antal mellemrum, standard er 1."
         }
     },
     "guild": {
@@ -131,7 +131,7 @@
     },
     "math": {
         "abs": {
-            "desc": ""
+            "desc": "Returnerer den absolutte værdi af de angivne tal (ingen negativer)."
         },
         "base": {
             "desc": ""
