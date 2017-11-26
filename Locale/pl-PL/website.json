@@ -4,26 +4,26 @@
         "login": "Zaloguj się",
         "logout": "Wyloguj się",
         "commands": "Komendy",
-        "bbtag": "",
-        "subtags": "",
-        "dashboard": ""
+        "bbtag": "BBTag",
+        "subtags": "PodTagi",
+        "dashboard": "Panel administracyjny"
     },
     "generic": {
-        "loading": "",
-        "collapse": "",
-        "expand": "",
-        "search": "",
-        "noresults": "",
-        "resultsfound": ""
+        "loading": "Ładowanie",
+        "collapse": "Zwiń wszystko",
+        "expand": "Rozwiń wszystko",
+        "search": "Filtr...",
+        "noresults": "Uh oh! Nie znaleziono wyników.",
+        "resultsfound": "Pasujące wyniki:"
     },
     "index": {
-        "desc": "",
+        "desc": "blargbot jest wielozadaniowym botem Discorda dedykowany do dostarczania jakości serwisów takich jak chatlogi oraz głębokiego systemu komend.",
         "commands": {
             "title": "Komendy",
-            "desc": ""
+            "desc": "blargbot ma wiele komend, wszystkie są udokumentowane i zorganizowany dla Twojej wygody."
         },
         "bbtag": {
-            "title": "",
+            "title": "BBTag",
             "desc": ""
         },
         "customization": {
