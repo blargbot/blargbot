@@ -24,7 +24,7 @@
         },
         "bbtag": {
             "title": "BBTag",
-            "desc": ""
+            "desc": "blargbot korzysta z wyrafinowanego systemu tagów nazywanych BBTag, który pozwali Ci tworzyć twoje niestandardowe zaawansowane komendy."
         },
         "customization": {
             "title": "Dostosowywanie",
@@ -35,18 +35,18 @@
             "desc": "Potrzebujesz czegoś do umiarkownia czata? blargbot jest wyposażony w wiele narzędzi, od podstawowych operacji, takich jak zakaz i wyciszanie, bardziej zaawansowane rzeczy, jak chatlogging lub automatyczna cenzurowanie."
         },
         "opensource": {
-            "title": "",
-            "desc": ""
+            "title": "Otwarty kod źródłowy",
+            "desc": "blargbot ma kompletnie otwarty kod źródłowy pod licencją GNU AGPLv3. Jeśli zechcesz, rzuć okiem na kod i naucz się jak wszystko działa. Jeśli użyjesz mojego kodu w twoim projekcie, musisz wpisać uznanie autorstwa. Zobacz licencje dla więcej szczegółów."
         },
         "suggestions": {
             "title": "Otwarte na propozycje",
-            "desc": ""
+            "desc": "Masz sugestie dla bota? Chętnie bym je usłyszał! Znalazłeś bug? To też bym chętnie usłyszał! Możesz proponować nowe funkcje przez wpisanie komendy `suggest`, lub przez dołączenie do mojego serwera, lub poprzez wysłanie zgłoszenia."
         }
     },
     "bbtag": {
         "main": "",
         "subtags": {
-            "title": "",
+            "title": "PodTagi",
             "desc": ""
         },
         "variables": {
