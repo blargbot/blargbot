@@ -1,15 +1,15 @@
 {
     "general": {
         "ping": {
-            "info": "",
+            "info": "Pong!\nZnajduję komende opóźnienia.",
             "randmsg": [
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
+                "Istnienie to kłamstwo.",
+                "Któregoś dnia umrzesz, być może wkrótce.",
+                "Nic nie ma znaczenia.",
+                "Gdzie wysiadasz?",
+                "Niczego tam nie ma.",
+                "Jestem sam w nieskończonej pustce.",
+                "Prawda jest kłamstwem.",
                 "",
                 "",
                 "",
