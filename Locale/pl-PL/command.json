@@ -10,21 +10,21 @@
                 "Niczego tam nie ma.",
                 "Jestem sam w nieskończonej pustce.",
                 "Prawda jest kłamstwem.",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
+                "Porzuć wszystko.",
+                "Twoje istnienie jest żałosne.",
+                "Wszyscy już nie żyjemy.",
+                "Miau.",
+                "Strach jest wolnością.",
+                "Podporządkowanie jest wyzwoleniem.",
+                "Sprzeczność jest prawdą.",
+                "Chciałbyś zawrzeć umowę?",
+                "Zostaw to i ruszajmy."
             ],
-            "final": ""
+            "final": "Pong! ({{time}}ms)"
         },
         "brainfuck": {
-            "info": "",
-            "usage": "",
+            "info": "Wykonuje kod brainfuck.",
+            "usage": "<code>",
             "flags": {
                 "p": "Pokazuje listę wskaźników po wykonaniu.",
                 "i": "",
@@ -54,54 +54,54 @@
                     "info": ""
                 },
                 "delete": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Usuwa tag którego jesteś właścicielem"
                 },
                 "rename": {
-                    "usage": "",
+                    "usage": "<name><new name>",
                     "info": "Zmienić nazwę tagu którego jesteś właścicielem"
                 },
                 "raw": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": ""
                 },
                 "info": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Wyświetla informacje o tagu"
                 },
                 "transfer": {
-                    "usage": "",
+                    "usage": "<name><user>",
                     "info": ""
                 },
                 "top": {
                     "info": "Displays the tags that have been the most favourited."
                 },
                 "author": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Wyświetla autora tagu."
                 },
                 "search": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<query>",
+                    "info": "Wyszukiwanie tagu o nazwie zawierającej twoje zapytanie."
                 },
                 "list": {
-                    "usage": "",
+                    "usage": "[@user]",
                     "info": "Wyświetla informacje o tagu."
                 },
                 "favorite": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Favourites the specified tag."
                 },
                 "report": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Raporty tag za naruszenie ToS. Proszę używać odpowiedzialnie."
                 },
                 "test": {
-                    "usage": "",
+                    "usage": "<code>",
                     "info": "Wykonuję kod w środowisku testowym."
                 },
                 "help": {
-                    "usage": "",
+                    "usage": "[subcommand]",
                     "info": "Wyświetla to!"
                 },
                 "docs": {
@@ -182,17 +182,17 @@
                     "info": ""
                 }
             },
-            "stats": "",
-            "alreadystarted": "",
-            "notstarted": "",
-            "nolocation": "",
-            "invalidlocation": "",
-            "expeditionbeings": "",
-            "expeditionends": "",
-            "notimeelapsed": "",
-            "itemfound": "",
-            "levelup": "",
-            "gamatotoxp": "",
+            "stats": "<:bc_cat:345081695990710272> Tu są twoje przedmioty!\n\n{{stats}}",
+            "alreadystarted": "Wyprawa jest już w toku!",
+            "notstarted": "Nie rozpocząłeś jeszcze wyprawy!",
+            "nolocation": "Przepraszam, to nie jest właściwa lokalizacja. Lokalizacje które możesz odwiedzić to:\n\n{{locations}}",
+            "invalidlocation": "Coś dziwnego się stało. Miejsce które już badałeś już nie istnieje! Spróbuj rozpocząć inną wyprawe.",
+            "expeditionbeings": "<:bc_cat:345081695990710272> ROZPOCZYNA SIĘ POSZUKIWANIE! <:bc_cat:345081695990710272>\n\nLokalizacja: {{location}}\n\nSprawdź później wpisując `gamatoto end`!",
+            "expeditionends": "<:bc_cat:345081695990710272> WYNIK WYPRAWY! <:bc_cat:345081695990710272>\n\nLokalizacja: {{location}}\nCzas trwania: {{minutes}} minut.\n\n{{results}}",
+            "notimeelapsed": "Od momentu rozpoczęcia wyprawy czas się nie ruszył. Gamatoto nie znalazł nic!",
+            "itemfound": "Gamatoto znalazł {{amount}} {{item}} w {{location}}.",
+            "levelup": ":fireworks: Gamatoto ma teraz poziom {{level}}!",
+            "gamatotoxp": "Gamatoto zdobył **{{amount}}** XP ({{old}} → **{{new}}**)",
             "itemincrease": "",
             "locations": "",
             "wronglevel": "",
