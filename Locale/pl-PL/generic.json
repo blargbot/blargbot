@@ -1,6 +1,6 @@
 {
-    "output": "Wyjście: {{output}}",
-    "nooutput": "Brak wyjścia...",
+    "output": "Zwrócono: \n{{output}}",
+    "nooutput": "Nic nie zostało zwrócone...",
     "queryexpire": "To zapytanie wygasnie za {{length}} minut.",
     "resolveuser": {
         "nousers": "Nie znaleziono żadnych użytkowników.",
@@ -21,13 +21,13 @@
         "choices": "Strona {{page}}/{{max}}"
     },
     "nochange": "Nic nie bylo zmienione.",
-    "commandhelp": "",
+    "commandhelp": "**Nazwa komendy**: **__{{name}}__**\n\n**__Użycie__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliasy__**\n{{aliases}}",
     "example": {
-        "id1": "",
-        "id2": "",
-        "id3": ""
+        "id1": "111111111111111111",
+        "id2": "222222222222222222",
+        "id3": "333333333333333333"
     },
-    "test": "",
+    "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
     "querycancelled": "The query has been cancelled.",
     "user": "Użytkownik",
     "role": "Rola",
