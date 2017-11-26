@@ -193,23 +193,23 @@
             "itemfound": "Gamatoto znalazł {{amount}} {{item}} w {{location}}.",
             "levelup": ":fireworks: Gamatoto ma teraz poziom {{level}}!",
             "gamatotoxp": "Gamatoto zdobył **{{amount}}** XP ({{old}} → **{{new}}**)",
-            "itemincrease": "",
-            "locations": "",
-            "wronglevel": "",
-            "gamatotoitems": "",
-            "gamatotostats": "",
-            "gamatotocurrent": "",
-            "gamatotoidle": ""
+            "itemincrease": "{{item}} Znalazłeś **{{amount}}** ({{old}} → **{{new}}**)",
+            "locations": "Tutaj są wszystkie lokalizacje wypraw!\n\n{{locations}}",
+            "wronglevel": "Przepraszam, musisz być na poziomie {{level}} aby odkrywać to miejsce!",
+            "gamatotoitems": "Tutaj są twoje przedmioty:\n{{items}}",
+            "gamatotostats": "Gamatoto jest teraz na poziomie {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
+            "gamatotocurrent": "Gamatoto odkywał **{{location}}** przez **{{minutes}}** minut.",
+            "gamatotoidle": "Gamatoto nie jest teraz na wyprawie. Wyślij go na wyprawę wpisując: `gamatoto start [location]`!"
         },
         "prefix": {
             "info": "",
             "subcommand": {
                 "add": {
-                    "usage": "",
+                    "usage": "<prefix>",
                     "info": ""
                 },
                 "remove": {
-                    "usage": "",
+                    "usage": "<prefix>",
                     "info": ""
                 }
             },
@@ -230,25 +230,25 @@
             "invalidamount": "",
             "invalidcode": "",
             "converted": "",
-            "usage": ""
+            "usage": "<from><to><amount>"
         },
         "usettings": {
             "info": "",
             "subcommand": {
                 "dmerrors": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[prawda|fałsz]",
+                    "info": "Włącza lub wyłącza wiadomości prywatne o powiadomieniach o błędach."
                 }
             },
-            "dmerrorsenabled": "",
-            "dmerrorsdisabled": "",
-            "userinfo": ""
+            "dmerrorsenabled": "Powiadomienia w postaci wiadomości prywatnych zostały włączone.",
+            "dmerrorsdisabled": "Powiadomienia w postaci wiadomości prywatnych zostały wyłączone.",
+            "userinfo": "Tutaj są twoje ustawienia:\n\n{{settings}}\n\nDostępne podkomendy: {{sub}}"
         },
         "rr": {
             "info": "",
-            "usage": "",
+            "usage": "[bullets]",
             "flags": {
-                "capacity": "",
+                "capacity": "Ustawia, ile kul twój rewolwer może pomieścić.",
                 "emote": ""
             },
             "capacitylow": "",
