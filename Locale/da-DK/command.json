@@ -228,7 +228,7 @@
         "economy": {
             "info": "",
             "invalidamount": "",
-            "invalidcode": "",
+            "invalidcode": "Ukendt valutakode: {{code}}",
             "converted": "{{amount}}{{from}} er det samme som {{converted}}{{to}}",
             "usage": "<from><to><amount>"
         },
@@ -251,12 +251,12 @@
                 "capacity": "Angiver hvor mange kugler din revolver kan holde.",
                 "emote": ""
             },
-            "capacitylow": "",
-            "bulletslow": "",
+            "capacitylow": "Din revolver skal være i stand til at holde mindst to kugler, lavere ville være garanteret død!",
+            "bulletslow": "Du kan ikke lade mindre end en kugle, din kegle.",
             "bulletshigh": "",
             "begin": "",
             "death": "",
-            "life": "",
+            "life": "{{content}}\n\n*Klik!* [[command.general.rr.livemessages]]",
             "livemessages": [
                 "Pistolen klikker, den er tom. Du har nu endnu en dag at leve i.",
                 "",
