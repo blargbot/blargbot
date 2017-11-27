@@ -194,7 +194,7 @@
             "desc": ""
         },
         "game": {
-            "desc": ""
+            "desc": "Returnerer spillet den angivne bruger spiller, standard er den udøvende bruger. Hvis brugeren ikke spiller et spil, returnerer ingenting."
         },
         "id": {
             "desc": "Returnerer ID'et for den specifikke bruger, standard til den udøvende bruger."
