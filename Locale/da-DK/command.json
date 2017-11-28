@@ -28,7 +28,7 @@
             "flags": {
                 "p": "Viser en liste af pointere efter udførelsen.",
                 "i": "Specificerer inputtet for `.` operatoren.",
-                "pointers": "",
+                "pointers": "Angiver, at de resulterende pontere skal udsendes.",
                 "input": "Angiver input-parametre."
             }
         },
@@ -192,7 +192,7 @@
             "notimeelapsed": "Ingen tid er forløbet, siden ekspeditionen startede. Gamatoto fandt ikke noget!",
             "itemfound": "Gamatoto fandt {{amount}} {{item}} på {{location}}.",
             "levelup": ":fireworks: Gamatoto er nu niveau {{level}}!",
-            "gamatotoxp": "",
+            "gamatotoxp": "Gamato fik **{{amount}}**XP ({{old}} → **{{new}}**)",
             "itemincrease": "{{item}} Du fandt **{{amount}}** ({{old}} → **{{new}}**)",
             "locations": "Her er alle ekspedition stederne! \n\n{{locations}}",
             "wronglevel": "Desværre, skal du være level {{level}} for at udforske dette sted!",
@@ -227,7 +227,7 @@
         },
         "economy": {
             "info": "",
-            "invalidamount": "",
+            "invalidamount": "Venligst angiv en gyldig mængde der skal konverteres.",
             "invalidcode": "Ukendt valutakode: {{code}}",
             "converted": "{{amount}}{{from}} er det samme som {{converted}}{{to}}",
             "usage": "<from><to><amount>"
@@ -275,7 +275,7 @@
                 "Tja. Man kan jo ikke vinde hver gang!",
                 "",
                 "Skyd skylden på laggen!",
-                "",
+                "Var i dag bare ikke din heldige dag.",
                 ""
             ]
         },
