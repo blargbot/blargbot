@@ -97,7 +97,7 @@
     },
     "guild": {
         "createdat": {
-            "desc": ""
+            "desc": "Vender tilbage når den nuværende server blev oprettet som et Unix timestamp (millisekunder)."
         },
         "channels": {
             "desc": ""
@@ -152,7 +152,7 @@
             "desc": ""
         },
         "randint": {
-            "desc": ""
+            "desc": "Returnerer et tilfældigt heltal i den angivne rækkevidde. `min` er som udgangspunkt sat til at være `0`"
         },
         "round": {
             "desc": ""
