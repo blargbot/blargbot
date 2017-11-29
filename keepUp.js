@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:32:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-06-12 15:02:53
+ * @Last Modified time: 2017-11-29 13:22:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -22,7 +22,7 @@ var missed = 0;
 var last;
 
 function spawn() {
-    child = childProcess.fork(path.join(__dirname, 'babel-hook.js'));
+    child = childProcess.fork(path.join(__dirname, 'blargbot.js'));
 
     child.on('message', msg => {
         if (msg.code == 'PONG' && msg.stamp == last) {
