@@ -255,7 +255,7 @@
             "bulletslow": "Du kan ikke lade mindre end en kugle, din kegle.",
             "bulletshigh": "",
             "begin": "",
-            "death": "",
+            "death": "{{content}}\n\n***BUM!*** [[command.general.rr.deathmessages]]",
             "life": "{{content}}\n\n*Klik!* [[command.general.rr.livemessages]]",
             "livemessages": [
                 "Pistolen klikker, den er tom. Du har nu endnu en dag at leve i.",
