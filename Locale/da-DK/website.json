@@ -71,7 +71,7 @@
     },
     "commands": {
         "title": "Kommandoer",
-        "desc": "blargbot er udstyret med talrige kommandoer. Som standard svarer blargbot til præfikset `b!`, `blargbot`, og når du nævner Blargbot. Du kan tilføje præfikser både for dig selv og for servere.",
+        "desc": "blargbot er udstyret med talrige kommandoer. Som standard svarer blargbot til præfikset `b!`, `blargbot`, og når du nævner Blargbot. Du kan tilføje præfikser både for dig selv og for servere. \n\nNogle kommandoer kan kun bruges af medlemmer som du definerer som værende personale. Du kan også tilpasse restriktioner af brugen for de enkelte kommandoer.\n\nNogle kommandoer har specielle krav i forhold til tilladelser for at kunne udføres, som for eksempel at lægge billeder op. Venligst sikre dig, at botten har de rigtige rettigheder når du prøver at udføre en kommando.\n\n## Argumenter\n- `<>` - betyder et påkrævet argument\n- `[]` - betyder et valgfrit argument\n- `...` - betyder et gentaget argument\n\n### Flags\nNogle kommandoer er i stand til at tage kommandoprompt-lignende flag parametre.",
         "components": {
             "usage": "Brug:",
             "flags": "Flag:",
