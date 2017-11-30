@@ -115,7 +115,7 @@
             "desc": "Returnerer ID'ET for serverens ejer."
         },
         "region": {
-            "desc": ""
+            "desc": "Returnerer den region som den nuværende server er placeret i."
         },
         "roles": {
             "desc": "Returnerer en matrix af roller i den aktuelle server."
@@ -206,7 +206,7 @@
             "desc": "Nævner den angivne bruger, misligholdende til den fuldbyrdende bruger."
         },
         "name": {
-            "desc": ""
+            "desc": "Returnerer navnet på den specifikke bruger, som standard sat til den udøvende bruger."
         },
         "nick": {
             "desc": "Returnerer kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
