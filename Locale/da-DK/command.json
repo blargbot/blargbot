@@ -283,8 +283,8 @@
             "usage": "[user]",
             "info": "",
             "description": "",
-            "guildinfoheader": "",
-            "guildinfo": "",
+            "guildinfoheader": "Oplysninger om server",
+            "guildinfo": "**Kaldenavn**: {{nick}}\n**Tilladelser**: {{permissions}}\n**Status**: {{status}}\n**Tilsluttet**: {{joined}}\n{{game}}",
             "status": [
                 "Spiller",
                 "Streamer",
