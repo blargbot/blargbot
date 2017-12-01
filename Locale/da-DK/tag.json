@@ -74,7 +74,7 @@
             "desc": "Renser det angivne tekst ved at skrumpe alle mellemrum."
         },
         "comment": {
-            "desc": ""
+            "desc": "Angiver et område der vil blive ignoreret fra parsing"
         },
         "get": {
             "desc": "Returnerer den gemte variabel med den medfølgende navn. Variabel fortegn kan ændre den pool hvor der skal søges."
@@ -100,7 +100,7 @@
             "desc": "Vender tilbage når den nuværende server blev oprettet som et Unix timestamp (millisekunder)."
         },
         "channels": {
-            "desc": ""
+            "desc": "Returnerer kanalerne i den nuværende server som en matrice."
         },
         "icon": {
             "desc": ""
