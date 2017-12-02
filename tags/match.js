@@ -24,7 +24,7 @@ e.execute = async function(params) {
     let args = params.args;
     if (args.length >= 2) {
         let regex = bu.createRegExp(args[2]);
-        let array = args[1].match(regex);
+        let array = args[1].match(regex) || [];
         replaceString = bu.serializeTagArray(array);
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
