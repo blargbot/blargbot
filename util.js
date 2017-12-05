@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:37:01
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:37:01
+ * @Last Modified time: 2017-12-05 16:24:22
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -20,7 +20,10 @@ bu.init = () => {
         db: config.db.database,
         password: config.db.password,
         user: config.db.user,
-        port: config.db.port
+        port: config.db.port,
+        max: 100,
+        buffer: 5,
+        timeoutError: 10000
     });
     bu.trello = new dep.Trello(config.general.trellokey, config.general.trellotoken);
     const Manager = require('./Manager.js');
