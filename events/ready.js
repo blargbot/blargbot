@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-11-19 18:03:27
+ * @Last Modified time: 2017-12-05 10:40:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -111,6 +111,7 @@ function switchGame(forced) {
                 break;
             case '10-31':
                 name = 'Happy Halloween!';
+                break;
             case '03-08':
                 name = 'Happy Women\'s Day!';
                 break;
