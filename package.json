@@ -25,7 +25,7 @@
     "eris": "^0.6.0",
     "erlpack": "^0.1.0",
     "eslint": "^3.14.1",
-    "eventemitter3": "^2.0.2",
+    "eventemitter3": "^2.0.3",
     "express": "^4.14.0",
     "express-session": "^1.14.2",
     "express-sse": "^0.4.1",
