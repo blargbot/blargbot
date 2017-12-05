@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-15 14:24:33
+ * @Last Modified time: 2017-12-05 12:46:59
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -164,7 +164,7 @@ var processUser = async function (msg) {
  * @param msg - the message to send (String)
  */
 function sendMessageToIrc(msg) {
-    bu.emitter.emit('ircMessage', msg);
+    bot.sender.send('ircMessage', msg);
 }
 
 var tables = {

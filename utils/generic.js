@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-30 10:23:56
+ * @Last Modified time: 2017-12-05 12:25:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1126,9 +1126,11 @@ bu.createRegExp = function (term) {
 };
 
 bu.postStats = function () {
-    updateStats();
+    // updateStats();
     var stats = {
-        'server_count': bot.guilds.size
+        server_count: bot.guilds.size,
+        shard_count: config.discord.shards,
+        shard_id: process.env.SHARD_ID
     };
     dep.request.post({
         'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
@@ -1155,6 +1157,8 @@ bu.postStats = function () {
             body: {
                 'key': config.general.carbontoken,
                 'servercount': bot.guilds.size,
+                shard_count: stats.shard_count,
+                shard_id: stats.shard_id,
                 'logoid': bot.user.avatar
             }
         }, (err) => {
@@ -1169,9 +1173,7 @@ bu.postStats = function () {
                 'Authorization': config.general.botlistorgtoken,
                 'User-Agent': 'blargbot/1.0 (ratismal)'
             },
-            body: {
-                'server_count': bot.guilds.size
-            }
+            body: stats
         });
     }
 };

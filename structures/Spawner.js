@@ -30,7 +30,6 @@ class Spawner extends EventEmitter {
                 this.shards.set(id, shard);
                 res();
             });
-            await shard.awaitMessage('connect');
         });
     }
 
@@ -95,6 +94,14 @@ class Spawner extends EventEmitter {
         });
     }
 
+    async getStaffGuilds(userId, guilds) {
+        let res = await this.awaitBroadcast({
+            message: 'getStaffGuilds',
+            user: userId, guilds
+        });
+        return [].concat(...res.map(g => JSON.parse(g.message)));
+    }
+
     async handleMessage(shard, code, data) {
         switch (code) {
             case 'await':
@@ -120,6 +127,9 @@ class Spawner extends EventEmitter {
                         await shard.send(eventKey, 'Unknown await key: ' + data.message);
                         break;
                 }
+                break;
+            case 'ircMessage':
+                this.client.irc.bot.say(config.irc.channel, data.message)
                 break;
             case 'eventGuild':
                 console.log(data);
@@ -170,7 +180,7 @@ class Spawner extends EventEmitter {
                 delete this.guildShardMap[data];
                 break;
             case 'KILLEVERYTHING':
-                console.fatal('We all deserve to die. Even you, mister cat. Even I.');
+                logger.killme('We all deserve to die. Even you, mister cat. Even I.');
                 this.shards.forEach(s => {
                     s.process.kill();
                 });

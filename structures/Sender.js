@@ -36,7 +36,7 @@ class Sender extends EventEmitter {
                 message: data
             };
         return new Promise((fulfill, reject) => {
-            data.key = Date.now();
+            data.key = Date.now().toString();
             let event = 'await:' + data.key;
             this.send('await', data);
             let timer = setTimeout(() => {

@@ -10,5 +10,5 @@ e.usage = '';
 e.info = '';
 
 e.execute = (msg, words, text) => {
-    bu.emitter.emit('eval', msg, text);
+    bot.eval(msg, text);
 };

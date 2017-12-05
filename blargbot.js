@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-05 12:04:13
+ * @Last Modified time: 2017-12-05 13:33:01
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -47,6 +47,7 @@ if (dep.fs.existsSync(dep.path.join(__dirname, 'config.json'))) {
     saveConfig();
 }
 global.bu = require('./util.js');
+bu.init();
 
 /** LOGGING STUFF **/
 
@@ -68,8 +69,12 @@ function reloadConfig() {
 function saveConfig() {
     dep.fs.writeFile(dep.path.join(__dirname, 'config.json'), JSON.stringify(config, null, 4));
 }
-
-var spawner = new Spawner();
+global.bot = new dep.Eris(config.discord.token, { restMode: true });
+var spawner = new Spawner({
+    discord: bot,
+    irc
+});
+global.spawner = spawner;
 
 /**
  * Time to init the bots
@@ -77,6 +82,10 @@ var spawner = new Spawner();
 async function init() {
     logger.init('Initializing discord.');
     await spawner.spawnAll();
+    irc.init(VERSION, botEmitter);
+    logger.verbose('IRC finished?');
+    const website = require('./backend/main');
+    await website.init();
 }
 
 botEmitter.on('ircInit', () => {

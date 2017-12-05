@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:54
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:31:54
+ * @Last Modified time: 2017-12-05 12:58:27
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -192,11 +192,11 @@ function handleIrcCommand(channel, user, text) {
             sendIrcCommandMessage(channel, 'Valid commands: servers, ping, mail, seen, uptime, ' +
                 'notify, version, cat, roll, xkcd, insult, econ, reload, time');
             break;
-        case 'list':
-            var userArray = bu.bot.guilds.get(bu.bot.channelGuildMap[config.discord.channel]).members.filter(m => m.status != 'offline').map(m => m.user.username);
-            userArray.sort();
-            sendIrcCommandMessage(channel, 'Users online on discord: ' + userArray.join(', '));
-            break;
+        // case 'list':
+        //     var userArray = bu.bot.guilds.get(bu.bot.channelGuildMap[config.discord.channel]).members.filter(m => m.status != 'offline').map(m => m.user.username);
+        //     userArray.sort();
+        //     sendIrcCommandMessage(channel, 'Users online on discord: ' + userArray.join(', '));
+        //     break;
         case 'reload':
             reloadConfig();
             sendIrcCommandMessage(channel, `Reloaded config`);
@@ -437,11 +437,13 @@ function getJsonFile(path) {
 
 function sendMessageToDiscord(msg) {
     // logger.irc(msg);
-    emitter.emit('discordMessage', '\u200B' + msg);
+    bot.createMessage(config.discord.channel, '\u200B' + msg)
 }
 
 function changeDiscordTopic(topic) {
-    emitter.emit('discordTopic', topic);
+    // bot.editChannel(config.discord.channel, {
+    //     topic: topic
+    // });
 }
 
 function reloadConfig() {

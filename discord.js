@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-05 12:11:17
+ * @Last Modified time: 2017-12-05 13:46:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,7 +14,6 @@ const Sender = require('./structures/Sender');
 
 const Promise = require('promise');
 //const webInterface = require('./interface.js');
-const website = require('./backend/main');
 process.on('unhandledRejection', (reason, p) => {
     logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
@@ -77,7 +76,7 @@ class DiscordClient extends dep.Eris.Client {
         this.connect();
     }
 
-    async eval() {
+    async eval(msg, text) {
         if (msg.author.id === bu.CAT_ID) {
             var commandToProcess = text.replace('eval ', '');
             if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
@@ -89,31 +88,31 @@ class DiscordClient extends dep.Eris.Client {
             //	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
             //		commandToProcess = splitCom.join('\n');
             let toEval = `async function letsEval() {
-    try {
-    ${commandToProcess}
-    } catch (err) {
-    return err;
-    }
-    }
-    letsEval().then(m => {
-    bu.send(msg, \`Input:
-    \\\`\\\`\\\`js
-    \${commandToProcess}
-    \\\`\\\`\\\`
-    Output:
-    \\\`\\\`\\\`js
-    \${commandToProcess == '1/0' ? 1 : m}
-    \\\`\\\`\\\`\`);
-    if (commandToProcess.indexOf('vars') > -1) {
-    saveVars();
-    }
-    return m;
-    }).catch(err => {
-    bu.send(msg, \`An error occured!
-    \\\`\\\`\\\`js
-    \${err.stack}
-    \\\`\\\`\\\`\`);
-    })`;
+try {
+${commandToProcess}
+} catch (err) {
+return err;
+}
+}
+letsEval().then(m => {
+bu.send(msg, \`Input:
+\\\`\\\`\\\`js
+\${commandToProcess}
+\\\`\\\`\\\`
+Output:
+\\\`\\\`\\\`js
+\${commandToProcess == '1/0' ? 1 : m}
+\\\`\\\`\\\`\`);
+if (commandToProcess.indexOf('vars') > -1) {
+saveVars();
+}
+return m;
+}).catch(err => {
+bu.send(msg, \`An error occured!
+\\\`\\\`\\\`js
+\${err.stack}
+\\\`\\\`\\\`\`);
+})`;
             //     logger.debug(toEval);
             try {
                 eval(toEval);
@@ -201,10 +200,66 @@ process.on('message', async msg => {
     const { data, code } = JSON.parse(msg);
 
     if (code.startsWith('await:')) {
-
+        bot.sender.emit(code, data);
     }
 
     switch (code) {
+        case 'await':
+            const eventKey = 'await:' + data.key;
+            switch (data.message) {
+                case 'getStaffGuilds': {
+                    let { user, guilds } = data;
+                    let res = [];
+                    for (const g of guilds) {
+                        if (bot.guilds.get(g.id)) {
+                            if (await bu.isUserStaff(user, g.id))
+                                res.push(g);
+                        }
+                    }
+                    bot.sender.send(eventKey, JSON.stringify(res));
+                    break;
+                }
+                case 'tagList': {
+                    let tags = {};
+                    let ls = TagManager.list;
+                    for (const key in ls) {
+                        if (ls[key].isTag) {
+                            let t = ls[key];
+                            tags[key] = {
+                                category: t.category,
+                                name: t.name,
+                                args: t.args,
+                                usage: t.usage,
+                                desc: t.desc,
+                                exampleIn: t.exampleIn,
+                                exampleOut: t.exampleOut
+                            }
+                        }
+                    }
+                    bot.sender.send(eventKey, JSON.stringify(tags))
+                    break;
+                }
+                case 'commandList': {
+                    let commands = {};
+                    let ls = CommandManager.list;
+                    for (const key in ls) {
+                        let c = ls[key];
+                        if (c.isCommand && !c.hidden) {
+                            commands[key] = {
+                                usage: c.usage,
+                                info: c.info,
+                                longinfo: c.longinfo,
+                                category: c.category,
+                                alias: c.alias,
+                                flags: c.flags
+                            }
+                        }
+                    }
+                    bot.sender.send(eventKey, JSON.stringify(commands));
+                    break;
+                }
+            }
+            break;
         case 'discordMessage':
             let { message, attachment } = data;
             if (attachment)

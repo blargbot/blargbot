@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:32:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-05 12:06:59
+ * @Last Modified time: 2017-12-05 13:18:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -24,7 +24,7 @@ const levels = {
     info: 12,
     output: 13,
     website: 14,
-    module: 15,
+    module: 20,
     verbose: 16,
     debug: 17,
     silly: 18
