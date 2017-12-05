@@ -2,12 +2,10 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-05 16:34:52
+ * @Last Modified time: 2017-12-05 16:37:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
-const EventEmitter = require('eventemitter3');
-bu.emitter = new EventEmitter();
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
