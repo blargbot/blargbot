@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:33:36
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:33:36
+ * @Last Modified time: 2017-12-05 11:54:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -23,9 +23,9 @@ class Manager {
             if (/.+\.js$/.test(file)) {
                 var name = file.match(/(.+)\.js$/)[1];
                 this.load(name);
-                logger.init(`${i < 10 ? ' ' : ''}${i}.`, 'Loading ' + this.type + ' module ', name);
+                logger.module(`${i < 10 ? ' ' : ''}${i}.`, 'Loading ' + this.type + ' module ', name);
             } else {
-                logger.init('     Skipping non-script ', file);
+                logger.module('     Skipping non-script ', file);
             }
         }
     }
@@ -41,7 +41,7 @@ class Manager {
             return true;
         } catch (err) {
             logger.error(err);
-            logger.init('Failed to load ' + this.type + ' ' + name);
+            logger.module('Failed to load ' + this.type + ' ' + name);
         }
         return false;
     }
@@ -51,7 +51,7 @@ class Manager {
             if (this.removeListeners)
                 bot.removeAllListeners(name);
             delete this.list[name];
-            logger.init('Unloaded ' + this.type + ' ' + name);
+            logger.module('Unloaded ' + this.type + ' ' + name);
             return true;
         }
         return false;

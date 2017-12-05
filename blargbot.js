@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:27:43
+ * @Last Modified time: 2017-12-05 12:04:13
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -13,9 +13,9 @@ const reload = dep.reload(require);
 const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
+const Spawner = require('./structures/Spawner');
 
 var irc = require('./irc.js');
-var discord = require('./discord.js');
 botEmitter.on('reloadConfig', () => {
     reloadConfig();
 });
@@ -36,11 +36,6 @@ botEmitter.on('reloadIrc', () => {
 });
 
 
-/** LOGGING STUFF **/
-
-console.log = function () {
-    logger.debug(arguments);
-};
 
 
 /** CONFIG STUFF **/
@@ -52,6 +47,13 @@ if (dep.fs.existsSync(dep.path.join(__dirname, 'config.json'))) {
     saveConfig();
 }
 global.bu = require('./util.js');
+
+/** LOGGING STUFF **/
+
+console.log = function (...args) {
+    logger.debug(...args);
+};
+
 
 var VERSION = config.version;
 
@@ -67,17 +69,14 @@ function saveConfig() {
     dep.fs.writeFile(dep.path.join(__dirname, 'config.json'), JSON.stringify(config, null, 4));
 }
 
-//db.serialize(function () {
-
-
-//});
+var spawner = new Spawner();
 
 /**
  * Time to init the bots
  */
-function init() {
+async function init() {
     logger.init('Initializing discord.');
-    discord.init(VERSION, botEmitter);
+    await spawner.spawnAll();
 }
 
 botEmitter.on('ircInit', () => {
