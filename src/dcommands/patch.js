@@ -71,24 +71,17 @@ e.execute = async function (msg, words) {
 
     let changelogs = await r.table('vars').get('changelog');
     if (changelogs) {
-        for (const channelId of Object.values(changelogs.guilds)) {
-            const channel = bot.getChannel(channelId);
-            if (channel != undefined && channel.permissionsOf(bot.user.id).has('sendMessages')
-                && channel.permissionsOf(bot.user.id).has('readMessages')) {
-                try {
-                    if (channel.permissionsOf(bot.user.id).has('embedLinks')) {
-                        await bu.send(channelId, {
-                            embed
-                        });
-                    } else {
-                        await bu.send(channelId, `There was a changelog update, but I need to be able to embed links to post it! Please give me the 'embed links' permission for next time.`);
-                    }
-                } catch (err) {
-                    console.error('Changelog Patch:', err.message);
-                }
-            } else {
-                console.warn('Skipping channel ' + channelId);
+        for (const guild in changelogs.guilds) {
+            const channel = changelogs.guilds[guild];
+            try {
+                await bu.send(channelId, {
+                    embed
+                });
+            } catch (err) {
+                delete changelogs.guilds[guild];
+                //console.error('Changelog Patch:', err.message);
             }
         }
     }
+    await r.table('vars').get('changelog').replace(changelogs);
 };
