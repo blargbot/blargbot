@@ -276,11 +276,11 @@
                 "B-beh... se ogni pezzo di carne fosse perfetto, non avremmo gli hotdog. Peccato che tu sia morto.",
                 "Dai la colpa al lag!",
                 "Oggi non è il tuo giorno fortunato.",
-                ""
+                "Pssh, la lungimiranza è per i perdenti."
             ]
         },
         "user": {
-            "usage": "",
+            "usage": "[utente]",
             "info": "",
             "description": "",
             "guildinfoheader": "",
