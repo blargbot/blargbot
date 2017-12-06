@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:38:19
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 10:46:24
+ * @Last Modified time: 2017-12-06 10:51:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -23,7 +23,7 @@ const fs = require('fs');
 
 const colorThief = require('color-thief-jimp');
 
-const logger = {
+const console = {
     cluster: function (msg) {
         process.send({
             cmd: 'log',
