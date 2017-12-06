@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:38:19
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 09:34:13
+ * @Last Modified time: 2017-12-06 10:46:24
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -203,7 +203,7 @@ const functions = {
         });
 
         let text = await Jimp.read(buf);
-        let img = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `retarded.png`));
+        let img = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `retarded.png`));
         if (msg.avatar) {
             let avatar = await Jimp.read(await getResource(msg.avatar));
             let smallAvatar = avatar.clone();
@@ -226,7 +226,7 @@ const functions = {
             gravity: 'North'
         });
         let text = await Jimp.read(buf);
-        let img = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `clippy.png`));
+        let img = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `clippy.png`));
         img.composite(text, 28, 36);
 
         img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
@@ -241,7 +241,7 @@ const functions = {
             gravity: 'North'
         });
         let text = await Jimp.read(buf);
-        let img = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `truth.png`));
+        let img = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `truth.png`));
         img.composite(text, 95, 289);
 
         img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
@@ -257,7 +257,7 @@ const functions = {
         });
 
         let text = await Jimp.read(buf);
-        let img = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `SHIT${msg.plural ? 'S' : ''}.png`));
+        let img = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `SHIT${msg.plural ? 'S' : ''}.png`));
         img.composite(text, 810, 31);
 
         img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
@@ -267,7 +267,7 @@ const functions = {
     art: async function (msg) {
         let avatar = await Jimp.read(await getResource(msg.avatar));
         avatar.resize(370, 370);
-        let foreground = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `art.png`));
+        let foreground = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `art.png`));
         let img = new Jimp(1364, 1534);
         img.composite(avatar, 903, 92);
         img.composite(avatar, 903, 860);
@@ -287,7 +287,7 @@ const functions = {
         bgImg.out('Perspective');
         bgImg.out("0,0,0,132  700,0,330,0  0,700,0,530  700,700,330,700");
         let jBgImg = await Jimp.read(await getBufferFromIM(bgImg));
-        let foreground = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `clint.png`));
+        let foreground = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `clint.png`));
         let img = new Jimp(1200, 675);
         img.composite(jBgImg, 782, 0);
 
@@ -325,10 +325,10 @@ const functions = {
         if (msg.blur) avatar.blur(10);
         if (msg.greyscale) avatar.greyscale();
 
-        let triggered = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `triggered.png`));
+        let triggered = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `triggered.png`));
         triggered.resize(280, 60);
         triggered.opacity(0.8);
-        let overlay = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `red.png`));
+        let overlay = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `red.png`));
 
         let buffers = [];
         let encoder = new GIFEncoder(256, 256);
@@ -381,7 +381,7 @@ const functions = {
         });
 
         let text = await Jimp.read(buf);
-        let img = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `thesearch.png`));
+        let img = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `thesearch.png`));
         img.composite(text, 60, 331);
 
         img.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
@@ -390,7 +390,7 @@ const functions = {
     },
     clyde: async function (msg) {
         let img = im(864 - 150, 1000).command('convert');
-        img.font(path.join(__dirnanme, '..', '..', 'res', 'img', 'fonts', 'whitney.ttf'), 20);
+        img.font(path.join(__dirname, '..', '..', 'res', 'img', 'fonts', 'whitney.ttf'), 20);
         img.out('-fill').out('#ffffff');
         img.out('-background').out('transparent');
         img.out('-gravity').out('west');
@@ -401,8 +401,8 @@ const functions = {
         text.composite(originalText, 5, 5).autocrop().opacity(0.7);
         let height = 165 + text.bitmap.height;
         let canvas = new Jimp(864, height, 0x33363bff);
-        let top = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `clydeTop.png`));
-        let bottom = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `clydeBottom.png`));
+        let top = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `clydeTop.png`));
+        let bottom = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `clydeBottom.png`));
         canvas.composite(top, 0, 0);
         canvas.composite(text, 118, 83);
         canvas.composite(bottom, 0, height - bottom.bitmap.height);
@@ -418,7 +418,7 @@ const functions = {
         let buffers = [];
         let encoder = new GIFEncoder(767, 572);
         let stream = encoder.createReadStream();
-        let objectStream = fs.createReadStream(path.join(__dirnanme, '..', '..', 'res', 'img', 'objection.gif'));
+        let objectStream = fs.createReadStream(path.join(__dirname, '..', '..', 'res', 'img', 'objection.gif'));
         let writeStream = encoder.createWriteStream();
         stream.on('data', function (buffer) {
             buffers.push(buffer);
@@ -436,7 +436,7 @@ const functions = {
                     output += char;
                     console.debug(i, output);
                     let img = im(767, 572, '#ffffff').command('convert');
-                    img.font(path.join(__dirnanme, '..', '..', 'res', 'img', 'fonts', 'Ace-Attorney.ttf'), 24);
+                    img.font(path.join(__dirname, '..', '..', 'res', 'img', 'fonts', 'Ace-Attorney.ttf'), 24);
                     img.out('-fill').out('#000000');
                     img.out('-gravity').out('northwest');
                     img.out('-geometry').out('+50+50');
@@ -470,10 +470,10 @@ const functions = {
         text.autocrop();
         let iterations = Math.ceil(text.bitmap.width / 64);
         console.debug(text.bitmap.width);
-        let delete1 = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', 'delete1.png'));
-        let delete2 = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', 'delete2.png'));
-        let delete3 = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', 'delete3.png'));
-        let cursor = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', 'cursor.png'));
+        let delete1 = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', 'delete1.png'));
+        let delete2 = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', 'delete2.png'));
+        let delete3 = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', 'delete3.png'));
+        let cursor = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', 'cursor.png'));
         let width = 128 + (iterations * 64);
         let workspace = new Jimp(width, 84);
         workspace.composite(delete1, 0, 0);
@@ -483,7 +483,7 @@ const functions = {
         }
         workspace.composite(text, 64 + ((iterations * 64 - text.bitmap.width + 32) / 2), 14 + ((48 - text.bitmap.height) / 2));
         workspace.composite(cursor, 64 + ((iterations * 64 - cursor.bitmap.width + 32) / 2), 48);
-        //let img = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `SHIT${msg.plural ? 'S' : ''}.png`));
+        //let img = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `SHIT${msg.plural ? 'S' : ''}.png`));
         //img.composite(text, 810, 31);
 
         workspace.getBuffer(Jimp.MIME_PNG, (err, buffer) => {
@@ -509,7 +509,7 @@ const functions = {
         let jBgImg = await Jimp.read(await getBufferFromIM(bgImg));
         jBgImg.resize(734, 828);
 
-        let foreground = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', `starvstheforcesof.png`));
+        let foreground = await Jimp.read(path.join(__dirname, '..', '..', 'res', 'img', `starvstheforcesof.png`));
         foreground.resize(960, 540);
         let actions = [];
         if (color[0] > 0) actions.push({ apply: 'red', params: [color[0]] });
@@ -618,7 +618,7 @@ function createCaption(options) {
 
         let image = im().command('convert');
 
-        image.font(path.join(__dirnanme, '..', '..', 'res', 'img', 'fonts', options.font));
+        image.font(path.join(__dirname, '..', '..', 'res', 'img', 'fonts', options.font));
         image.out('-size').out(options.size);
 
         image.out('-background').out('transparent');
