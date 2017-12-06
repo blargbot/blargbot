@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 09:31:09
+ * @Last Modified time: 2017-12-06 09:40:38
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,7 +15,7 @@ global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
 const Spawner = require('./structures/Spawner');
 
-var irc = require('./irc.js');
+var irc = require('./core/irc.js');
 
 /** CONFIG STUFF **/
 global.config = require('../config.json');

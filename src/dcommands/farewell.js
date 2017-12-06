@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var tags = require('./../tags');
+var tags = require('../core/tags');
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
@@ -26,7 +26,7 @@ e.flags = [{
     desc: 'The channel to put the farewell messages in.'
 }]
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words);
     if (input.undefined.length == 0) {
         bu.guildSettings.remove(msg.channel.guild.id, 'farewell').then(() => {

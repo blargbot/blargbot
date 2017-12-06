@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:33:36
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 09:31:47
+ * @Last Modified time: 2017-12-06 09:47:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -40,7 +40,7 @@ class Manager {
             this.list[name] = mod;
             return true;
         } catch (err) {
-            logger.error(err);
+            logger.error(err.stack);
             logger.module('Failed to load ' + this.type + ' ' + name);
         }
         return false;
@@ -74,7 +74,7 @@ class Manager {
     }
 
     constructPath(eventName) {
-        return './' + this.type + '/' + eventName;
+        return '../' + this.type + '/' + eventName;
     }
 }
 

@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-const jsonSpells = require('./../spells.json');
+const jsonSpells = require('../../res/spells.json');
 
 const spells = new dep.Eris.Collection(Object);
 
@@ -42,7 +42,7 @@ e.usage = 'spell [name]';
 e.info = 'Gives you a description for a D&D 5e spell.';
 e.longinfo = '<p>Gives you a description for a D&D 5e spell.</p>';
 
-e.execute = async function(msg, words, text) {
+e.execute = async function (msg, words, text) {
     let spell;
     if (words.length == 1) {
         spell = spells.random();

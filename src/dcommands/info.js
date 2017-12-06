@@ -15,7 +15,7 @@ e.usage = 'info';
 e.info = 'Returns some info about me.';
 e.longinfo = `<p>Gets information about the specified user.</p>`;
 
-const { patrons, donators } = dep.reload('./donators.json');
+const { patrons, donators } = dep.reload('../../res/donators.json');
 
 const startDate = 1444708800000;
 

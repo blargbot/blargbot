@@ -2,13 +2,13 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-06-14 10:21:34
+ * @Last Modified time: 2017-12-06 09:48:50
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 var e = module.exports = {};
-var tags = require('./../tags');
+var tags = require('../core/tags');
 
 const results = 100;
 e.init = () => {

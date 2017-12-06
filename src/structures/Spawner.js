@@ -8,7 +8,7 @@ class Spawner extends EventEmitter {
         super();
         this.client = client;
         this.max = config.discord.shards;
-        this.file = options.file || 'src/discord.js';
+        this.file = options.file || 'src/core/discord.js';
         this.respawn = options.respawn || true;
         this.shards = new Map();
         this.guildShardMap = {};

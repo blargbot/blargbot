@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:32:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-05 13:18:00
+ * @Last Modified time: 2017-12-06 09:42:11
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -97,51 +97,6 @@ e.init = () => {
                     return dep.wconfig.colorize('timestamp', options.timestamp()) + shard + dep.wconfig.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' ' +
                         (options.level == 'error' && options.meta && options.meta.stack ? options.meta.message + ': ' + (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== options.message ? options.message : '') +
                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
-                }
-            }),
-            new (dep.winston.transports.File)({
-                name: 'file-general',
-                filename: dep.path.join(__dirname, 'logs', 'generallogs.log'),
-                maxsize: 10000000,
-                prettyPrint: true,
-                colorize: true,
-                json: false,
-                silent: false,
-                handleExceptions: true,
-                timestamp: () => {
-                    return `[${dep.moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
-                },
-                formatter: options => {
-                    // Return string will be passed to logger.
-                    return options.timestamp() + '[' + options.level.toUpperCase() + '] ' +
-                        (options.level == 'error' && options.meta && options.meta.stack ?
-                            (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) :
-                            (undefined !== options.message ? options.message : '') +
-                            (options.meta && Object.keys(options.meta).length ?
-                                '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
-                }
-            }),
-            new (dep.winston.transports.File)({
-                name: 'file-error',
-                filename: dep.path.join(__dirname, 'logs', 'errorlogs.log'),
-                maxsize: 10000000,
-                prettyPrint: true,
-                colorize: true,
-                level: 'error',
-                silent: false,
-                json: false,
-                handleExceptions: true,
-                timestamp: () => {
-                    return `[${dep.moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
-                },
-                formatter: options => {
-                    // Return string will be passed to logger.
-                    return options.timestamp() +
-                        (options.level == 'error' && options.meta && options.meta.stack ?
-                            (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) :
-                            (undefined !== options.message ? options.message : '') +
-                            (options.meta && Object.keys(options.meta).length ?
-                                '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }
             })
         ]
