@@ -48,7 +48,7 @@ e.execute = (msg, words) => {
                         case 1: version.incrementMinor(); break;
                         case 2: version.incrementPatch(); break;
                     }
-                    await version.store();
+                    await version.save();
 
                     message += `\nNow running on version \`${version}\`!`;
                 }
