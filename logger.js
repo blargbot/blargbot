@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:32:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-09-30 11:01:54
+ * @Last Modified time: 2017-12-05 13:18:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -24,9 +24,10 @@ const levels = {
     info: 12,
     output: 13,
     website: 14,
-    verbose: 15,
-    debug: 16,
-    silly: 17
+    module: 20,
+    verbose: 16,
+    debug: 17,
+    silly: 18
 };
 
 const colors = {
@@ -48,7 +49,8 @@ const colors = {
     shard: 'yellow',
     ws: 'yellow',
     timestamp: 'grey',
-    bold: 'bold'
+    bold: 'bold',
+    module: 'green'
 };
 
 var debug;
@@ -83,16 +85,16 @@ e.init = () => {
                 },
                 formatter: options => {
                     // Return string will be passed to logger.
-
+                    let shard = dep.wconfig.colorize('shard', (process.env.SHARD_ID ? `[${pad(process.env.SHARD_ID, 2)}]` : '[MS]'));
                     if (options.level == 'shard') {
                         let message = options.message.split(' ');
                         let level = pad('[' + options.level.toUpperCase() + message[0] + ']', maxLength + 2);
                         message = message.slice(1).join(' ');
-                        return dep.wconfig.colorize('timestamp', options.timestamp()) + dep.wconfig.colorize(options.level, level) + ' ' +
+                        return dep.wconfig.colorize('timestamp', options.timestamp()) + shard + dep.wconfig.colorize(options.level, level) + ' ' +
                             (options.level == 'error' && options.meta && options.meta.stack ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== message ? message : '') +
                                 (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                     }
-                    return dep.wconfig.colorize('timestamp', options.timestamp()) + dep.wconfig.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' ' +
+                    return dep.wconfig.colorize('timestamp', options.timestamp()) + shard + dep.wconfig.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' ' +
                         (options.level == 'error' && options.meta && options.meta.stack ? options.meta.message + ': ' + (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== options.message ? options.message : '') +
                             (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
                 }

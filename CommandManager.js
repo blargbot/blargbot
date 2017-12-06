@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:28:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:29:58
+ * @Last Modified time: 2017-12-05 11:57:55
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -26,7 +26,7 @@ class CommandManager extends Manager {
                 this.build(name);
                 return true;
             } else {
-                logger.init('     Skipping non-command ', name + '.js');
+                logger.module('     Skipping non-command ', name + '.js');
                 delete this.list[name];
             }
         }
@@ -39,7 +39,7 @@ class CommandManager extends Manager {
                 this.build(name);
                 return true;
             } else {
-                logger.init('     Skipping non-command ', name + '.js');
+                logger.module('     Skipping non-command ', name + '.js');
                 delete this.list[name];
             }
         }
@@ -48,18 +48,18 @@ class CommandManager extends Manager {
 
     unload(name) {
         if (this.list[name]) {
-            logger.init(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module ', name);
+            logger.module(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module ', name);
 
             if (this.list[name].sub) {
                 for (var subCommand in this.list[name].sub) {
-                    logger.init(`    Unloading ${name}'s subcommand`, subCommand);
+                    logger.module(`    Unloading ${name}'s subcommand`, subCommand);
                     delete this.commandList[subCommand];
                 }
             }
             delete this.commandList[name];
             if (this.list[name].alias) {
                 for (var ii = 0; ii < this.list[name].alias.length; ii++) {
-                    logger.init(`    Unloading ${name}'s alias`, this.list[name].alias[ii]);
+                    logger.module(`    Unloading ${name}'s alias`, this.list[name].alias[ii]);
                     delete this.commandList[this.list[name].alias[ii]];
                 }
             }
@@ -79,7 +79,7 @@ class CommandManager extends Manager {
             };
             if (this.list[name].sub) {
                 for (var subCommand in this.list[name].sub) {
-                    logger.init(`    Loading ${name}'s subcommand`, subCommand);
+                    logger.module(`    Loading ${name}'s subcommand`, subCommand);
 
                     this.commandList[subCommand] = {
                         name: name,
@@ -93,7 +93,7 @@ class CommandManager extends Manager {
             this.commandList[name] = command;
             if (this.list[name].alias) {
                 for (var ii = 0; ii < this.list[name].alias.length; ii++) {
-                    logger.init(`    Loading ${name}'s alias`, this.list[name].alias[ii]);
+                    logger.module(`    Loading ${name}'s alias`, this.list[name].alias[ii]);
                     this.commandList[this.list[name].alias[ii]] = command;
                 }
             }

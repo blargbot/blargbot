@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:04
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-16 12:27:24
+ * @Last Modified time: 2017-12-05 13:55:56
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -57,23 +57,21 @@ async function renderEditor(req, res) {
     }
     let guilds = req.user.guilds;
 
-    guilds = guilds.filter(g => {
-        return bot.guilds.get(g.id) != undefined;
-    });
-    guilds = await Promise.filter(guilds, async function (g) {
-        return await bu.isUserStaff(req.user.id, g.id);
-    });
+    guilds = await spawner.getStaffGuilds(req.user.id, guilds);
+
     res.locals.guilds = guilds.map(g => {
         return { name: g.name, id: g.id };
     });
 
     if (req.body && req.body.action) {
         let destination = req.body.destination || false;
+        console.log(destination);
         res.locals.destination = req.body.destination;
         let title, storedTag, storedGuild;
         title = filterTitle((req.body.tagName || ''));
-
-        if (destination && await bu.isUserStaff(req.user.id, destination)) {
+        let gz = await spawner.getStaffGuilds(req.user.id, req.user.guilds);
+        gz.filter(g => g.id === destination).length > 0
+        if (destination && gz.filter(g => g.id === destination).length > 0) {
             storedGuild = await bu.getGuild(destination);
             title = title.toLowerCase();
         }
@@ -82,7 +80,7 @@ async function renderEditor(req, res) {
             storedGuild.ccommands[(name || title).toLowerCase()] = tag;
             await r.table('guild').get(destination).update({
                 ccommands: r.literal(storedGuild.ccommands)
-            });
+            })
         };
 
         switch (req.body.action) {
@@ -286,7 +284,7 @@ async function logChange(user, action, actionObj) {
             color = 0x02f2ee;
             break;
     }
-    bu.send('230810364164440065', {
+    bot.createMessage('230810364164440065', {
         embed: {
             title: action,
             color: color,

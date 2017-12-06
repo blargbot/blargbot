@@ -2,12 +2,27 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:35
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-30 12:45:48
+ * @Last Modified time: 2017-12-05 13:28:32
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 let e = module.exports = {};
+let TagManager = {
+    list: {}
+}, CommandManager = {
+    list: {}
+};
+
+async function updateManagers() {
+    let s = spawner.shards.get(0);
+    let t = await s.awaitMessage('tagList');
+    TagManager.list = JSON.parse(t.message);
+    let c = await s.awaitMessage('commandList');
+    CommandManager.list = JSON.parse(c.message);
+}
+updateManagers();
+setInterval(updateManagers, 10 * 60 * 1000);
 
 const commandType = {
     1: "General Commands",

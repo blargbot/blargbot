@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:30:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-06-03 18:09:08
+ * @Last Modified time: 2017-12-05 17:02:16
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,6 +14,7 @@ var e = module.exports = {
     request: require('request'),
     fs: require('fs'),
     hbs: require('hbs'),
+    sf: require('snekfetch'),
     'child_process': require('child_process'),
     exec: require('child_process').exec,
     Jimp: require('jimp'),

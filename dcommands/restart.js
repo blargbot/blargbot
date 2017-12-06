@@ -12,19 +12,21 @@ e.hidden = false;
 e.usage = '';
 e.info = '';
 
-e.execute = async function (msg) {
+e.execute = async function (msg, words) {
     if (msg.author.id === bu.CAT_ID) {
-        logger.verbose('We should be going for a restart now.');
-        await r.table('vars').get('restart').replace({
-            varname: 'restart',
-            varvalue: {
-                channel: msg.channel.id,
-                time: r.now()
-            }
-        }).run();
-        logger.verbose('The restart variable has been inserted into the database.');
-        await bu.send(msg, 'Ah! You\'ve killed me! D:');
-        logger.verbose('We have sent the message. Calling `process.exit()` now.');
-        process.exit(0);
+        if (words[1] === 'kill') {
+            await bu.send(msg, 'Ah! You\'ve killed me! D:');
+            await r.table('vars').get('restart').replace({
+                varname: 'restart',
+                varvalue: {
+                    channel: msg.channel.id,
+                    time: r.now()
+                }
+            }).run();
+            bot.sender.send('KILLEVERYTHING', msg.channel.id);
+        } else {
+            await bu.send(msg, 'Ah! You\'ve killed me but in a way that minimizes downtime! D:');
+            bot.sender.send('respawnAll', msg.channel.id);
+        }
     }
 };

@@ -2,238 +2,92 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-14 18:39:17
+ * @Last Modified time: 2017-12-05 13:46:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+global.dep = require('./dep.js');
 
 const https = dep.https;
 global.tags = require('./tags.js');
+const Sender = require('./structures/Sender');
 
 const Promise = require('promise');
 //const webInterface = require('./interface.js');
-var bot;
-const website = require('./backend/main');
+process.on('unhandledRejection', (reason, p) => {
+    logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
+});
+
+/** CONFIG STUFF **/
+if (dep.fs.existsSync(dep.path.join(__dirname, 'config.json'))) {
+    var configFile = dep.fs.readFileSync(dep.path.join(__dirname, 'config.json'), 'utf8');
+    global.config = JSON.parse(configFile);
+} else {
+    global.config = {};
+    saveConfig();
+}
+global.bu = require('./util.js');
 
 
-var e = module.exports = {},
-    vars, emitter, bot, VERSION;
+class DiscordClient extends dep.Eris.Client {
+    constructor() {
+        super(config.discord.token, {
+            autoReconnect: true,
+            disableEveryone: true,
+            getAllUsers: true,
+            disableEvents: {
+                TYPING_START: true,
+                VOICE_STATE_UPDATE: true
+            },
+            maxShards: config.discord.shards || 1,
+            firstShardID: parseInt(process.env.SHARD_ID),
+            lastShardID: parseInt(process.env.SHARD_ID),
+            restMode: true,
+            defaultImageFormat: 'png',
+            defaultImageSize: 512,
+            messageLimit: 0
+        });
+        global.bot = this;
+        bu.commandMessages = {};
+        bu.notCommandMessages = {};
 
-e.requireCtx = require;
+        logger.debug('HELLOOOOO?');
 
-/**
- * Initializes the bot
- * @param v - the version number (String)
- * @param topConfig - the config file (Object)
- * @param em - the event emitter (EventEmitter)
- */
-e.init = async function (v, em) {
-    bu.commandMessages = {};
-    bu.notCommandMessages = {};
 
-    VERSION = v;
-    emitter = em;
-    logger.debug('HELLOOOOO?');
+        bu.init();
+        bu.startTime = startTime;
 
-    process.on('unhandledRejection', (reason, p) => {
-        logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
-    });
-    if (dep.fs.existsSync(dep.path.join(__dirname, 'vars.json'))) {
-        var varsFile = dep.fs.readFileSync(dep.path.join(__dirname, 'vars.json'), 'utf8');
-        vars = JSON.parse(varsFile);
-    } else {
-        vars = {};
-        saveVars();
+        if (process.env.SHARD_ID == 0)
+            bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, `avatars${config.general.isbeta ? 'Beta' : ''}.json`), 'utf8'));
+
+        const Manager = require('./Manager.js');
+        global.EventManager = new Manager('events', true);
+        global.TagManager = new Manager('tags');
+
+        const CommandManagerClass = require('./CommandManager.js');
+        global.CommandManager = new CommandManagerClass();
+
+        //website.init();
+
+        this.sender = new Sender(this, process);
+
+        registerChangefeed();
+        logger.init('Connecting...');
+        this.connect();
     }
-    bot = new dep.Eris.Client(config.discord.token, {
-        autoReconnect: true,
-        disableEveryone: true,
-        getAllUsers: true,
-        disableEvents: {
-            TYPING_START: true,
-            VOICE_STATE_UPDATE: true
-        },
-        maxShards: config.discord.shards || 1,
-        restMode: true,
-        defaultImageFormat: 'png',
-        defaultImageSize: 512,
-        messageLimit: 0
-    });
-    global.bot = bot;
 
-    bu.init();
-    bu.emitter = em;
-    bu.VERSION = v;
-    bu.startTime = startTime;
-    bu.vars = vars;
+    async eval(msg, text) {
+        if (msg.author.id === bu.CAT_ID) {
+            var commandToProcess = text.replace('eval ', '');
+            if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
+                commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
+            else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
+                commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
 
-    emitter.on('discordMessage', (message, attachment) => {
-        if (attachment)
-            bu.send(config.discord.channel, message, attachment);
-        else
-            bu.send(config.discord.channel, message);
-    });
-
-    emitter.on('discordTopic', (topic) => {
-        bot.editChannel(config.discord.channel, {
-            topic: topic
-        });
-    });
-
-    emitter.on('eval', (msg, text) => {
-        eval1(msg, text);
-    });
-    emitter.on('eval2', (msg, text) => {
-        eval2(msg, text);
-    });
-
-    emitter.on('saveVars', () => {
-        saveVars();
-    });
-
-    bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, `avatars${config.general.isbeta ? 'Beta' : ''}.json`), 'utf8'));
-    const Manager = require('./Manager.js');
-    global.EventManager = new Manager('events', true);
-    global.TagManager = new Manager('tags');
-
-    const CommandManagerClass = require('./CommandManager.js');
-    global.CommandManager = new CommandManagerClass();
-
-    website.init();
-
-    registerChangefeed();
-    logger.init('Connecting...');
-    bot.connect();
-};
-
-
-/**
- * Reloads the misc variables object
- */
-function reloadVars() {
-    dep.fs.readFileSync(dep.path.join(__dirname, 'vars.json'), 'utf8', function (err, data) {
-        if (err) throw err;
-        vars = JSON.parse(data);
-    });
-}
-
-/**
- * Saves the misc variables to a file
- */
-function saveVars() {
-    dep.fs.writeFileSync(dep.path.join(__dirname, 'vars.json'), JSON.stringify(vars, null, 4));
-}
-
-var messageLogs = [];
-var messageI = 0;
-/**
- * Function to be called manually (through eval) to generate logs for any given channel
- * @param channelid - channel id (String)
- * @param msgid - id of starting message (String)
- * @param times - number of times to repeat the cycle (int)
- */
-function createLogs(channelid, msgid, times) {
-    if (messageI < times)
-        bot.getMessages(channelid, 100, msgid).then((kek) => {
-            logger.info(`finished ${messageI + 1}/${times}`);
-            for (var i = 0; i < kek.length; i++) {
-                messageLogs.push(`${kek[i].author.username}> ${kek[i].author.id}> ${kek[i].content}`);
-            }
-            messageI++;
-            setTimeout(() => {
-                createLogs(channelid, kek[kek.length - 1].id, times);
-            }, 5000);
-        });
-    else { }
-}
-/**
- * Function to be used with createLogs
- * @param name - file name (String)
- */
-function saveLogs(name) {
-    messageI = 0;
-    dep.fs.writeFile(dep.path.join(__dirname, name), JSON.stringify(messageLogs, null, 4));
-}
-
-var lastUserStatsKek;
-/**
- * Gets information about a bot - test function
- * @param id - id of bot
- */
-function fml(id) {
-    var options = {
-        hostname: 'bots.discord.pw',
-        method: 'GET',
-        port: 443,
-        path: `/api/users/${id}`,
-        headers: {
-            'User-Agent': 'blargbot/1.0 (ratismal)',
-            'Authorization': vars.botlisttoken
-        }
-    };
-
-    var req = https.request(options, function (res) {
-        var body = '';
-        res.on('data', function (chunk) {
-            logger.debug(chunk);
-            body += chunk;
-        });
-
-        res.on('end', function () {
-            logger.debug('body: ' + body);
-            lastUserStatsKek = JSON.parse(body);
-            logger.debug(lastUserStatsKek);
-        });
-
-        res.on('error', function (thing) {
-            logger.warn(`Result Error: ${thing}`);
-        });
-    });
-    req.on('error', function (err) {
-        logger.warn(`Request Error: ${err}`);
-    });
-    req.end();
-
-}
-
-/**
- * Displays the contents of a function
- * @param msg - message
- * @param text - command text
- */
-function eval2(msg, text) {
-    if (msg.author.id === bu.CAT_ID) {
-        var commandToProcess = text.replace('eval2 ', '');
-        logger.debug(commandToProcess);
-        try {
-            bu.send(msg, `\`\`\`js
-${eval(commandToProcess)})}
-\`\`\``);
-        } catch (err) {
-            bu.send(msg, err.message);
-        }
-    } else {
-        bu.send(msg, `You don't own me!`);
-    }
-}
-/**
- * Evaluates code
- * @param msg - message (Message)
- * @param text - command text (String)
- */
-async function eval1(msg, text) {
-    if (msg.author.id === bu.CAT_ID) {
-
-        var commandToProcess = text.replace('eval ', '');
-        if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
-            commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
-        else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
-            commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
-
-        //		let splitCom = commandToProcess.split('\n');
-        //	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
-        //		commandToProcess = splitCom.join('\n');
-        let toEval = `async function letsEval() {
+            //		let splitCom = commandToProcess.split('\n');
+            //	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
+            //		commandToProcess = splitCom.join('\n');
+            let toEval = `async function letsEval() {
 try {
 ${commandToProcess}
 } catch (err) {
@@ -259,17 +113,18 @@ bu.send(msg, \`An error occured!
 \${err.stack}
 \\\`\\\`\\\`\`);
 })`;
-        //     logger.debug(toEval);
-        try {
-            eval(toEval);
-        } catch (err) {
-            bu.send(msg, `An error occured!
-\`\`\`js
-${err.stack}
-\`\`\``);
+            //     logger.debug(toEval);
+            try {
+                eval(toEval);
+            } catch (err) {
+                bu.send(msg, `An error occured!
+    \`\`\`js
+    ${err.stack}
+    \`\`\``);
+            }
         }
     }
-};
+}
 
 var startTime = dep.moment();
 
@@ -277,6 +132,8 @@ function filterUrls(input) {
     return input.replace(/https?\:\/\/.+\.[a-z]{1,20}(\/[^\s]*)?/gi, '');
 }
 
+var discord = new DiscordClient();
+discord.sender.send('threadReady', process.env.SHARD_ID);
 
 var changefeed;
 
@@ -320,9 +177,14 @@ async function registerSubChangefeed(type, idName, cache) {
                 logger.error(err);
             });
             cursor.on('data', data => {
-                if (data.new_val)
+                if (data.new_val) {
+                    // Return if user or guild is not on thread
+                    if (idName === 'guildid' && !bot.guilds.get(data.new_val[idName]))
+                        return;
+                    if (idName === 'userid' && !bot.users.get(data.new_val[idName]))
+                        return;
                     cache[data.new_val[idName]] = data.new_val;
-                else delete cache[data.old_val[idName]];
+                } else delete cache[data.old_val[idName]];
             });
         });
         changefeed.on('end', registerChangefeed);
@@ -334,12 +196,93 @@ async function registerSubChangefeed(type, idName, cache) {
 
 
 
+process.on('message', async msg => {
+    const { data, code } = JSON.parse(msg);
+
+    if (code.startsWith('await:')) {
+        bot.sender.emit(code, data);
+    }
+
+    switch (code) {
+        case 'await':
+            const eventKey = 'await:' + data.key;
+            switch (data.message) {
+                case 'getStaffGuilds': {
+                    let { user, guilds } = data;
+                    let res = [];
+                    for (const g of guilds) {
+                        if (bot.guilds.get(g.id)) {
+                            if (await bu.isUserStaff(user, g.id))
+                                res.push(g);
+                        }
+                    }
+                    bot.sender.send(eventKey, JSON.stringify(res));
+                    break;
+                }
+                case 'tagList': {
+                    let tags = {};
+                    let ls = TagManager.list;
+                    for (const key in ls) {
+                        if (ls[key].isTag) {
+                            let t = ls[key];
+                            tags[key] = {
+                                category: t.category,
+                                name: t.name,
+                                args: t.args,
+                                usage: t.usage,
+                                desc: t.desc,
+                                exampleIn: t.exampleIn,
+                                exampleOut: t.exampleOut
+                            }
+                        }
+                    }
+                    bot.sender.send(eventKey, JSON.stringify(tags))
+                    break;
+                }
+                case 'commandList': {
+                    let commands = {};
+                    let ls = CommandManager.list;
+                    for (const key in ls) {
+                        let c = ls[key];
+                        if (c.isCommand && !c.hidden) {
+                            commands[key] = {
+                                usage: c.usage,
+                                info: c.info,
+                                longinfo: c.longinfo,
+                                category: c.category,
+                                alias: c.alias,
+                                flags: c.flags
+                            }
+                        }
+                    }
+                    bot.sender.send(eventKey, JSON.stringify(commands));
+                    break;
+                }
+            }
+            break;
+        case 'discordMessage':
+            let { message, attachment } = data;
+            if (attachment)
+                await bu.send(config.discord.channel, message, attachment);
+            else
+                await bu.send(config.discord.channel, message);
+            break;
+        case 'discordTopic':
+            let { topic } = data;
+            await bot.editChannel(config.discord.channel, {
+                topic: topic
+            });
+            break;
+    }
+});
+
+
 // Now look at this net,
 // that I just found!
 async function net() {
     // When I say go, be ready to throw!
 
     // GO!
-    throw net;
+    throw net();
 }
 // Urgh, let's try something else!

@@ -2,17 +2,21 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-11-19 18:03:27
+ * @Last Modified time: 2017-12-05 11:42:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 bot.on('ready', async function () {
+    bot.sender.send('ready', bot.guilds.map(g => g.id));
     logger.init('Ready! Logged in as ' + bot.user.username + '#' + bot.user.discriminator);
-    let restart = await r.table('vars').get('restart').run();
-    if (restart && restart.varvalue) {
-        bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(dep.moment(), dep.moment(restart.varvalue.time)) + '.');
-        r.table('vars').get('restart').delete().run();
+
+    if (process.env.SHARD_ID == 0) {
+        let restart = await r.table('vars').get('restart').run();
+        if (restart && restart.varvalue) {
+            bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(dep.moment(), dep.moment(restart.varvalue.time)) + '.');
+            r.table('vars').get('restart').delete().run();
+        }
     }
 
     let guilds = (await r.table('guild').withFields('guildid').run()).map(g => g.guildid);
@@ -49,15 +53,11 @@ bot.on('ready', async function () {
     else
         bu.avatarId = 0;
     switchGame();
-    switchAvatar();
+    if (process.env.SHARD_ID == 0)
+        switchAvatar();
     bu.postStats();
     if (eventTimer == undefined) {
         initEvents();
-    }
-
-    if (!bu.ircInitialized) {
-        bu.emitter.emit('ircInit');
-        bu.ircInitialized = true;
     }
 });
 
@@ -111,6 +111,7 @@ function switchGame(forced) {
                 break;
             case '10-31':
                 name = 'Happy Halloween!';
+                break;
             case '03-08':
                 name = 'Happy Women\'s Day!';
                 break;
@@ -207,6 +208,12 @@ function initEvents() {
             index: 'endtime'
         });
         for (let event of events) {
+            if (event.channel && !bot.getChannel(event.channel))
+                return;
+            else if (event.guild && !bot.guilds.get(event.guild))
+                return;
+            else if (event.user && process.env.SHARD_ID != 0)
+                return;
             let type = event.type;
             CommandManager.list[type].event(event);
             r.table('events').get(event.id).delete().run();
