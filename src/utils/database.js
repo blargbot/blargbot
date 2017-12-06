@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 10:24:20
+ * @Last Modified time: 2017-12-06 10:29:48
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -72,14 +72,14 @@ class Version {
         this.patch = 0;
     }
     async save() {
-        await race.table('vars').get('version').update({
+        await r.table('vars').get('version').update({
             major: this.major,
             minor: this.minor,
             patch: this.patch
         });
     }
     toString() {
-        return `${major}.${minor}.${patch}`;
+        return `${this.major}.${this.minor}.${this.patch}`;
     }
 }
 
