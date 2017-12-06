@@ -83,5 +83,6 @@ e.execute = async function (msg, words) {
             }
         }
     }
+    await bu.send(msg, 'Done! Sent to', Object.keys(changelogs.guilds).length, 'guilds.');
     await r.table('vars').get('changelog').replace(changelogs);
 };
