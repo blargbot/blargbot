@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 11:18:12
+ * @Last Modified time: 2017-12-06 11:19:50
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -208,6 +208,7 @@ function initEvents() {
         let events = await r.table('events').between(r.epochTime(0), r.now(), {
             index: 'endtime'
         });
+        console.info(events.length);
         for (let event of events) {
             if (event.channel === '197529405659021322')
                 console.info(event);
