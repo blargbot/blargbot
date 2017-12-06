@@ -17,7 +17,7 @@ e.execute = (msg, words) => {
     if (msg.author.id === bu.CAT_ID) {
 
         if (!config.general.isbeta) {
-            dep.exec('cd /home/cat/blargjs\ngit pull', async (err, stdout, stderr) => {
+            dep.exec('git pull', async (err, stdout, stderr) => {
                 var message = '```xl\n';
                 if (err) {
                     message += err + '\n';
