@@ -11,13 +11,13 @@
                 "Sei da solo in un vuoto infinito.",
                 "Il vero è falso.",
                 "La tua esistenza è pietosa.",
-                "Siamo tutti già morti.",
+                "La tua esistenza è pietosa.",
+                "Siamo già morti.",
                 "Meow.",
-                "Paura è libertà.",
-                "Soggiogazione è liberazione.",
-                "Contraddizione è verità.",
-                "Vuoi formare un contratto?",
-                "Lascialo andare e vai avanti.",
+                "Paura è liberazione.",
+                "Soggiogazione è verità.",
+                "La contraddizione è la verità.",
+                "Vuoi fare un contratto?",
                 "Lascialo andare e prosegui."
             ],
             "final": "Pong! ({{time}}ms)"
@@ -281,15 +281,15 @@
         },
         "user": {
             "usage": "[utente]",
-            "info": "",
-            "description": "",
-            "guildinfoheader": "",
-            "guildinfo": "",
+            "info": "Restituisce informazioni relative all'utente specificato.",
+            "description": "**Username**: {{username}}\n**Discriminatore**: {{discriminator}}\n**ID**: {{id}}\n**Bot**: {{bot}}\n**Creato**: {{created}}\n[Avatar]({{avatar}})",
+            "guildinfoheader": "Informazioni gilda",
+            "guildinfo": "**Nickname**: {{nick}}\n**Permessi**: {{permissions}}\n**Stato**: {{status}}\n**Entrato**: {{joined}}\n{{game}}",
             "status": [
-                "",
-                "",
-                "",
-                ""
+                "Sta giocando a",
+                "Streaming",
+                "Ascoltando",
+                "Guardando"
             ]
         }
     },
@@ -305,20 +305,20 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": "",
-            "usage": "",
+            "info": "Dì a tutti cosa pensi faccia schifo.",
+            "usage": "[testo]",
             "flags": {
-                "plural": ""
+                "plural": "Specifica se il testo dato debba essere plurale."
             }
         },
         "writepoem": {
-            "usage": "",
-            "info": "",
+            "usage": "[testo]",
+            "info": "Scrive una poesia molto romantica.",
             "flags": {
-                "monika": "",
-                "sayori": "",
-                "yuri": "",
-                "natsuki": ""
+                "monika": "Solamente Monika.",
+                "sayori": "Just Monika.",
+                "yuri": "Just Monika.",
+                "natsuki": "Just Monika."
             }
         }
     },
@@ -344,7 +344,7 @@
                     "info": "info"
                 },
                 "modlog": {
-                    "usage": "",
+                    "usage": "modlog [evento]...",
                     "info": "Imposta il modlog per specifici eventi. Se nessun canale è specificato, il default sarà il canale corrente. Se nessun evento è specificato, il default sarà tutti gli eventi."
                 }
             },
@@ -367,9 +367,9 @@
             "subcommands": {
                 "modlog": {
                     "flags": {
-                        "channel": "",
-                        "remove": "",
-                        "list": ""
+                        "channel": "Specifica in quale canale debba essere scritto il modlog.",
+                        "remove": "Specifica che il modlog dovrebbe essere tolto invece di aggiunto.",
+                        "list": "Restituisce una lista di modlogs configurati."
                     }
                 }
             }
