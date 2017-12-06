@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 11:01:15
+ * @Last Modified time: 2017-12-06 11:07:52
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -209,11 +209,13 @@ function initEvents() {
             index: 'endtime'
         });
         for (let event of events) {
+            if (event.type === 'tag')
+                console.info(event);
             if (event.channel && !bot.getChannel(event.channel))
                 return;
             else if (event.guild && !bot.guilds.get(event.guild))
                 return;
-            else if (!event.channel && !event.guild && event.user && process.env.SHARD_ID != 0)
+            else if (event.user && process.env.SHARD_ID != 0)
                 return;
             let type = event.type;
             CommandManager.list[type].event(event);
