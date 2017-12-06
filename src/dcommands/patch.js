@@ -74,7 +74,7 @@ e.execute = async function (msg, words) {
         for (const guild in changelogs.guilds) {
             const channel = changelogs.guilds[guild];
             try {
-                await bu.send(channelId, {
+                await bu.send(channel, {
                     embed
                 });
             } catch (err) {
