@@ -208,9 +208,7 @@ function initEvents() {
         let events = await r.table('events').between(r.epochTime(0), r.now(), {
             index: 'endtime'
         });
-        console.info('Found', events.length, 'events.');
         for (let event of events) {
-            console.info('Event:', event.type)
             if (event.channel && !bot.getChannel(event.channel)) continue;
             else if (event.guild && !bot.guilds.get(event.guild)) continue;
             else if (!event.channel && !event.guilds && event.user && process.env.SHARD_ID != 0) continue;
