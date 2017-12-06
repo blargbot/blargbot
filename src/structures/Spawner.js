@@ -12,6 +12,10 @@ class Spawner extends EventEmitter {
         this.respawn = options.respawn || true;
         this.shards = new Map();
         this.guildShardMap = {};
+
+        process.on('exit', code => {
+            this.killAll();
+        });
     }
 
     respawnAll() {
@@ -181,9 +185,7 @@ class Spawner extends EventEmitter {
                 break;
             case 'KILLEVERYTHING':
                 console.killme('We all deserve to die. Even you, mister cat. Even I.');
-                this.shards.forEach(s => {
-                    s.process.kill();
-                });
+                this.killAll();
                 process.exit(0);
                 break;
         }
@@ -202,5 +204,7 @@ class Spawner extends EventEmitter {
         console.log('All shards have been killed.');
     }
 }
+
+
 
 module.exports = Spawner;
