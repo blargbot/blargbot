@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-05 12:46:59
+ * @Last Modified time: 2017-12-06 10:56:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -207,7 +207,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
     let words = bu.splitInput(text);
     let outputLog = '';
     if (msg.channel.guild)
-        outputLog = `Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id}) on channel ${msg.channel.name} (${msg.channel.id}) Message ID: ${msg.id}`;
+        outputLog = `Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id})`;
     else
         outputLog = `Command '${text}' executed by ${user.username} (${user.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`;
 
