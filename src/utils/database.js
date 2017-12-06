@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:18:53
+ * @Last Modified time: 2017-12-06 10:24:20
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -52,6 +52,42 @@ bu.guildSettings = {
         return;
     }
 };
+
+class Version {
+    constructor(major, minor, patch) {
+        this.major = major;
+        this.minor = minor;
+        this.patch = patch;
+    }
+    incrementPatch() {
+        this.patch++;
+    }
+    incrementMinor() {
+        this.minor++;
+        this.patch = 0;
+    }
+    incrementMajor() {
+        this.major++;
+        this.minor = 0;
+        this.patch = 0;
+    }
+    async save() {
+        await race.table('vars').get('version').update({
+            major: this.major,
+            minor: this.minor,
+            patch: this.patch
+        });
+    }
+    toString() {
+        return `${major}.${minor}.${patch}`;
+    }
+}
+
+bu.getVersion = async function () {
+    let v = await r.table('vars').get('version');
+    return new Version(v.major, v.minor, v.patch);
+}
+
 bu.ccommand = {
     set: async function (guildid, key, value) {
         let storedGuild = await bu.getGuild(guildid);

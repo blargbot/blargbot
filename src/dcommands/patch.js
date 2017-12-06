@@ -35,7 +35,7 @@ e.execute = async function (msg, words) {
     let content = role.mention;
     let embed = {
         author: {
-            name: `Version ${bu.VERSION}`
+            name: `Version ${await bu.getVersion()}`
         },
         fields: [],
         color: bu.avatarColours[bu.avatarId]

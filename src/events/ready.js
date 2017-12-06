@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 10:13:51
+ * @Last Modified time: 2017-12-06 10:25:24
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -84,7 +84,7 @@ var gameId;
  * Switches the game the bot is playing
  * @param forced - if true, will not set a timeout (Boolean)
  */
-function switchGame(forced) {
+async function switchGame(forced) {
     for (const shard of bot.shards) {
         var name = '';
         var oldId = gameId;
@@ -164,7 +164,7 @@ function switchGame(forced) {
                         name = `with a laser pointer!`;
                         break;
                     case 5:
-                        name = `on version ${bu.VERSION}!`;
+                        name = `on version ${await bu.getVersion()}!`;
                         break;
                     case 6:
                         name = `type 'b!help'!`;

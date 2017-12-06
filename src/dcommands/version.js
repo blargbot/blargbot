@@ -11,7 +11,7 @@ e.usage = 'version';
 e.info = 'Tells you what version I am on';
 e.longinfo = `<p>Tells you what version the bot is currently running on.</p>`;
 
-e.execute = (msg) => {
-    bu.send(msg, `I am running blargbot version ${bu.VERSION}!`);
+e.execute = async (msg) => {
+    bu.send(msg, `I am running blargbot version ${bu.getVersion()}!`);
 
 };

@@ -17,7 +17,7 @@ e.execute = (msg, words) => {
     if (msg.author.id === bu.CAT_ID) {
 
         if (!config.general.isbeta) {
-            dep.exec('cd /home/cat/blargjs\ngit pull origin master', (err, stdout, stderr) => {
+            dep.exec('cd /home/cat/blargjs\ngit pull', async (err, stdout, stderr) => {
                 var message = '```xl\n';
                 if (err) {
                     message += err + '\n';
@@ -42,20 +42,17 @@ e.execute = (msg, words) => {
                                 break;
                         }
                     }
-                    var oldVersion = config.version;
-                    var bits = oldVersion.split('.');
-                    bits[type] = parseInt(bits[type]) + 1;
-                    while (type < 2) {
-                        type++;
-                        bits[type] = 0;
+                    var version = await bu.getVersion();
+                    switch (type) {
+                        case 0: version.incrementMajor(); break;
+                        case 1: version.incrementMinor(); break;
+                        case 2: version.incrementPatch(); break;
                     }
-                    config.version = bits.join('.');
-                    bu.VERSION = config.version;
-                    message += `\nNow running on version \`${config.version}\`!`;
-                    bu.saveConfig();
+                    await version.store();
+
+                    message += `\nNow running on version \`${version}\`!`;
                 }
                 bu.send(msg, message);
-
             });
         } else {
             bu.send(msg, `Whoa, you can't do that! This is the beta build!`);

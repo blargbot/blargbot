@@ -13,7 +13,7 @@ e.usage = 'stats [c]';
 e.info = 'Gives you some information about me';
 e.longinfo = `<p>Gives you information about the bot.</p>`;
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let full = words[1] && words[1].toLowerCase().startsWith('c');
     let sum = await r.table('stats').sum('uses').run();
     let stats = await r.table('stats').orderBy({
@@ -57,7 +57,7 @@ e.execute = async function(msg, words) {
             inline: true
         }, {
             name: 'Version',
-            value: bu.VERSION,
+            value: await bu.getVersion(),
             inline: true
         }, {
             name: 'Uptime',
