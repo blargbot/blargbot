@@ -66,7 +66,7 @@ function filterTitle(title) {
 }
 
 e.execute = async function (msg, words, text) {
-    logger.debug('Text:', text);
+    console.debug('Text:', text);
     if (words[1]) {
         let storedTag;
         let content;

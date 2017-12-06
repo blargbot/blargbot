@@ -94,7 +94,7 @@ e.execute = (msg, words) => {
             };
         }
         voiceSettings[msg.channel.guild.id].currentChannel = msg.channel.id;
-        logger.music(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} (${msg.channel.id}> ${msg.author.username} (${msg.author.id})> ${msg.content}`);
+        console.music(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} (${msg.channel.id}> ${msg.author.username} (${msg.author.id})> ${msg.content}`);
         //var command = msg.content.replace('=3', '').trim();
         //var words = command.split(' ');
         //  words.shift()
@@ -166,7 +166,7 @@ Commands:
                 }
                 break;
             case 'skip':
-                logger.music('skipping');
+                console.music('skipping');
                 if (voiceConnections.get(msg.channel.guild.id).ready) {
                     //     if (queue.hasOwnProperty(msg.channel.guild.id)) {
                     if (words[0] == 'force' && bu.hasPerm(msg, 'Bot Commander')) {
@@ -207,7 +207,7 @@ Commands:
                 if (words[0]) {
                     var message = '';
                     var newVolume = parseInt(words[0]);
-                    logger.music(newVolume);
+                    console.music(newVolume);
 
                     if (newVolume > 100) {
                         newVolume = 100;
@@ -254,27 +254,27 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
                                 });
                                 voice.on('connect', () => {
                                     try {
-                                        logger.music(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                        console.music(`Connected to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
                                     } catch (err) {
-                                        logger.error(err);
+                                        console.error(err);
                                     }
                                 });
                                 voice.on('ready', () => {
                                     try {
-                                        logger.music(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
+                                        console.music(`Ready to guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(bot.voiceConnections[msg.channel.guild.id].channelID).name} (${bot.voiceConnections[msg.channel.guild.id].channelID})`);
                                     } catch (err) {
-                                        logger.error(err);
+                                        console.error(err);
                                     }
                                 });
                                 voice.on('error', (err) => {
-                                    logger.error('Error: ', err);
+                                    console.error('Error: ', err);
                                 });
                                 voice.on('warn', (warn) => {
-                                    logger.warn('Warning: ', warn);
+                                    console.warn('Warning: ', warn);
                                 });
                                 voice.on('end', function() {
                                     try {
-                                        logger.music(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
+                                        console.music(`Finished stream in guild ${msg.channel.guild.name} (${msg.channel.guild.id})`);
                                         if (!bot.getChannel(voiceConnections.get(msg.channel.guild.id).channelID)) {
                                             //  sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, `An error has occured!`)
                                         } else if (queue[msg.channel.guild.id] && queue[msg.channel.guild.id].length > 0) {
@@ -294,16 +294,16 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
 
                                         }
                                     } catch (err) {
-                                        logger.error(err);
+                                        console.error(err);
                                     }
                                 });
                                 voice.on('disconnect', function() {
-                                    logger.music(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
+                                    console.music(`Disconnected from guild ${msg.channel.guild.name} (${msg.channel.guild.id}) in channel ${bot.getChannel(msg.member.voiceState.channelID).name} (${msg.member.voiceState.channelID})`);
                                     sendMessage(voiceSettings[msg.channel.guild.id].currentChannel, 'Bye!');
                                 });
                             });
                         }).catch((err) => {
-                            logger.error(err);
+                            console.error(err);
                         });
 
                     } else {
@@ -337,14 +337,14 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
                     switch (words[0]) {
                         case 'shuffle':
                             for (i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                                //     logger.(cache[queue[msg.channel.guild.id][i].id].name);
+                                //     console.(cache[queue[msg.channel.guild.id][i].id].name);
                             }
-                            //   logger.('------------------------------------------------------');
+                            //   console.('------------------------------------------------------');
                             shuffle(queue[msg.channel.guild.id]);
                             for (i = 0; i < queue[msg.channel.guild.id].length; i++) {
-                                //        logger.(cache[queue[msg.channel.guild.id][i].id].name);
+                                //        console.(cache[queue[msg.channel.guild.id][i].id].name);
                             }
-                            //    logger.(dep.util.inspect(queue[msg.channel.guild.id]))
+                            //    console.(dep.util.inspect(queue[msg.channel.guild.id]))
                             var suits = [':diamonds:', ':spades:', ':clubs:', ':hearts:'];
                             shuffle(suits);
                             sendMessage(msg.channel.id, `${suits[0]} Shuffling! ${suits[1]}`).then((msg2) => {
@@ -382,7 +382,7 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
                                         var removed = queue[msg.channel.guild.id].splice(index, 1);
 
                                         var removedSong = cache[removed[0].id].name;
-                                        //        logger.(dep.util.inspect(removed))
+                                        //        console.(dep.util.inspect(removed))
                                         bu.send(msg, `:umbrella: Removed the song **${removedSong}** :umbrella:`);
 
                                     }
@@ -392,7 +392,7 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
                             }
                             break;
                     }
-                    // logger.(dep.util.inspect(queue[msg.channel.guild.id]))
+                    // console.(dep.util.inspect(queue[msg.channel.guild.id]))
 
                 } else {
                     sendQueue(msg);
@@ -410,7 +410,7 @@ function sendQueue(msg) {
         var currentSong = current[msg.channel.guild.id];
         var timeDiff = dep.moment.duration(dep.moment().diff(dep.moment(currentSong.start)));
         var timeLength = dep.moment.duration(cache[currentSong.id].duration);
-        logger.music(currentSong.requester);
+        console.music(currentSong.requester);
         requesterMember = msg.channel.guild.members.get(currentSong.requester);
         requester = requesterMember.nick ? requesterMember.nick : requesterMember.user.username;
         line = `Right Now: ${cache[currentSong.id].name} [${
@@ -450,7 +450,7 @@ function createTimeString(d) {
 }
 
 function sendMessage(channel, message) {
-    //logger.(message);
+    //console.(message);
     return bu.send(channel, message);
 }
 
@@ -480,7 +480,7 @@ ${err.stack}
 function eval2(msg, text) {
     if (msg.author.id === CAT_ID) {
         var commandToProcess = text.replace('eval2 ', '');
-        logger.music(commandToProcess);
+        console.music(commandToProcess);
         try {
             sendMessage(msg.channel.id, `\`\`\`js
 ${eval(`${commandToProcess}.toString()`)}
@@ -553,7 +553,7 @@ function init() {
     } else {
         saveCache();
     }
-    //  logger.(dep.util.inspect(keys))
+    //  console.(dep.util.inspect(keys))
 }
 
 function saveCache() {
@@ -582,7 +582,7 @@ function handleMusicCommand(msg, words, text, connections) {
                         part: 'snippet,contentDetails'
                     }, (err, res) => {
                         if (err) {
-                            logger.music(err);
+                            console.music(err);
                             bu.send(msg, 'An internal API error occurred.');
                             return;
                         }
@@ -596,14 +596,14 @@ function handleMusicCommand(msg, words, text, connections) {
                     addToQueue(msg, id, cache[id].name, cache[id].duration);
             } else if (/list=(.+?)(&|$)/.test(query)) {
                 id = query.match(/list=(.+?)(&|$)/)[1];
-                logger.music(id);
+                console.music(id);
                 youtube.playlists.list({
                     key: getKey(),
                     id: id,
                     part: 'snippet,contentDetails'
                 }, (err, res) => {
                     if (err) {
-                        logger.error(err);
+                        console.error(err);
                         bu.send(msg, 'An internal API error occurred.');
                         return;
                     }
@@ -611,7 +611,7 @@ function handleMusicCommand(msg, words, text, connections) {
                         bu.send(msg, 'No results found!');
                         return;
                     }
-                    logger.music(dep.util.inspect(res));
+                    console.music(dep.util.inspect(res));
                     addPlaylistToQueue(msg, id, res);
                 });
             }
@@ -624,7 +624,7 @@ function handleMusicCommand(msg, words, text, connections) {
                     part: 'snippet,contentDetails'
                 }, (err, res) => {
                     if (err) {
-                        logger.error(err);
+                        console.error(err);
                         bu.send(msg, 'An internal API error occurred.');
                         return;
                     }
@@ -648,7 +648,7 @@ function handleMusicCommand(msg, words, text, connections) {
                         part: 'contentDetails'
                     }, (err, res2) => {
                         if (err) {
-                            logger.music(err);
+                            console.music(err);
                             bu.send(msg, 'An internal API error occurred.');
                             return;
                         }
@@ -684,8 +684,8 @@ function saveSoundcloud(msg, id, callback) {
                     body += chunk;
                 });
                 res.on('end', () => {
-                    logger.music('done');
-                    //     logger.(body)
+                    console.music('done');
+                    //     console.(body)
                     writeStream.end();
                     callback();
                 });
@@ -697,32 +697,32 @@ function saveSoundcloud(msg, id, callback) {
 }
 
 function handleSoundcloud(msg, query) {
-    //   logger.(uriquery)
+    //   console.(uriquery)
     SC.get(`/resolve?url=${encodeURIComponent(query)}`, (err, track) => {
         if (err) {
-            logger.music(err);
+            console.music(err);
             bu.send(msg, 'No results found!');
             return;
         }
         var type = track.location.match(/\.com\/(.+?)\//)[1];
         var id = track.location.match(/([0-9]+)\.json/)[1];
-        logger.music(type, id);
+        console.music(type, id);
 
         switch (type) {
             case 'playlists':
                 SC.get(`/playlists/${id}`, (err, track) => {
                     if (err) {
-                        logger.error(err);
+                        console.error(err);
                         bu.send(msg, `No results found.`);
                         return;
                     }
-                    //     logger.(track)
+                    //     console.(track)
                     var added = 0;
                     bu.send(msg, 'Processing playlist...').then((msg2) => {
 
                         for (var i = 0; i < track.tracks.length; i++) {
                             var curTrack = track.tracks[i];
-                            logger.music(curTrack.id);
+                            console.music(curTrack.id);
                             if (curTrack.streamable) {
                                 if (!cache[curTrack.id]) {
                                     cache[curTrack.id] = {
@@ -746,7 +746,7 @@ function handleSoundcloud(msg, query) {
                         setTimeout(() => {
                             bot.deleteMessage(msg2.channel.id, msg2.id);
                         }, 15000);
-                        logger.music('done');
+                        console.music('done');
                         saveCache();
                         if (!current[msg.channel.guild.id]) {
                             nextSong(msg);
@@ -765,11 +765,11 @@ function handleSoundcloud(msg, query) {
             case 'tracks': //msg, id, name, duration, sc
                 SC.get(`/tracks/${id}`, (err, track) => {
                     if (err) {
-                        logger.music('Nothing found');
+                        console.music('Nothing found');
                         bu.send(msg, `No results found.`);
                         return;
                     }
-                    logger.music(track);
+                    console.music(track);
                     if (!track.streamable) {
                         bu.send(msg, `I can't play that song!`);
                         return;
@@ -817,7 +817,7 @@ function nextSong(msg) {
                     saveVideo(msg, channel, id, cache[id].name, cache[id].duration);
                 }
             } catch (err) {
-                logger.music(err);
+                console.music(err);
             }
 
         });
@@ -826,7 +826,7 @@ function nextSong(msg) {
 
 function saveVideo(msg, channel, id, name, duration, callback) {
 
-    logger.music(id);
+    console.music(id);
     if (!id) {
         bot.createMessage(channel, `:cry: Error finding song! :cry:`);
         return;
@@ -835,16 +835,16 @@ function saveVideo(msg, channel, id, name, duration, callback) {
     if (!cache[id].sc) {
         let url = `https://www.youtube.com/watch?v=${id}`;
 
-        logger.music(url);
+        console.music(url);
         var filepath = dep.path.join(__dirname, '..', 'cache', 'yt', `${id}.mp3`);
         if (!dep.fs.existsSync(filepath)) {
             bot.createMessage(channel, `:cd: Downloading song \`${name}\`... :cd: `).then((newmessage) => {
                 var stream = getStreamFromURL(url);
-                //  logger.(dep.util.inspect(stream));
+                //  console.(dep.util.inspect(stream));
                 var writeStream = dep.fs.createWriteStream(filepath);
                 stream.pipe(writeStream);
                 stream.on('end', () => {
-                    logger.music('done');
+                    console.music('done');
                     bot.editMessage(channel, newmessage.id, `:dvd: Finished downloading \`${name}\`! :dvd:`);
                     setTimeout(() => {
                         bot.deleteMessage(channel, newmessage.id);
@@ -854,7 +854,7 @@ function saveVideo(msg, channel, id, name, duration, callback) {
                     }
                 });
                 writeStream.on('error', (err) => {
-                    logger.error(err);
+                    console.error(err);
                 });
             });
 
@@ -885,7 +885,7 @@ function saveVideo(msg, channel, id, name, duration, callback) {
 
 function addToQueue(msg, id, name, duration, sc) {
 
-    //   logger.(dep.util.inspect(connections))
+    //   console.(dep.util.inspect(connections))
     //  connections[msg.channel.guild.id].playResource(filepath, { inlineVolume: 0.3 })
     //   connections[msg.channel.guild.id].setVolume(0.3);
     if (!queue.hasOwnProperty(msg.channel.guild.id)) {
@@ -893,11 +893,11 @@ function addToQueue(msg, id, name, duration, sc) {
     }
     var subqueue = queue[msg.channel.guild.id];
     var init = dep.moment.duration(0);
-    //  logger.(init.hours(), init.minutes(), init.seconds())
+    //  console.(init.hours(), init.minutes(), init.seconds())
 
     for (var i = 0; i < subqueue.length; i++) {
         init.add(dep.moment.duration(cache[subqueue[i].id].duration));
-        logger.music(i, ':', init.hours(), init.minutes(), init.seconds());
+        console.music(i, ':', init.hours(), init.minutes(), init.seconds());
     }
     if (current[msg.channel.guild.id]) {
         init.add(dep.moment.duration(cache[current[msg.channel.guild.id].id].duration));
@@ -952,20 +952,20 @@ function findVideo(msg, text, callback) {
             type: 'video'
         }, (err, res) => {
             if (err) {
-                logger.error(err);
+                console.error(err);
                 bu.send(msg, 'An internal API error occurred.');
                 return;
             }
-            //     logger.(dep.util.inspect(res))
-            //      logger.(dep.util.inspect(res.items[0].id))
-            //    logger.(dep.util.inspect(res.items[0].snippet))
+            //     console.(dep.util.inspect(res))
+            //      console.(dep.util.inspect(res.items[0].id))
+            //    console.(dep.util.inspect(res.items[0].snippet))
             if (res.items.length == 0) {
                 bu.send(msg, 'No results found!');
             } else
                 callback(res);
         });
     } catch (err) {
-        logger.error(err);
+        console.error(err);
         bu.send(msg, 'Something went wrong!');
     }
 }
@@ -974,7 +974,7 @@ function getStreamFromURL(url) {
     try {
         return youtubeStream(url);
     } catch (err) {
-        logger.error(err);
+        console.error(err);
     }
 }
 
@@ -982,12 +982,12 @@ function addPlaylistToQueue(msg, id, res) {
     var playlist = res.items[0];
 
     bu.send(msg, `Processing playlist \`${playlist.snippet.title}\` with ${playlist.contentDetails.itemCount} items.`).then((msg2) => {
-        logger.music('starting processplaylist');
+        console.music('starting processplaylist');
 
         processPlaylist([], msg.author.id, id, playlist, null, (newQueue) => {
-            logger.music('processplaylist done');
+            console.music('processplaylist done');
             saveCache();
-            //  logger.(dep.util.inspect(newQueue))
+            //  console.(dep.util.inspect(newQueue))
             for (var i = 0; i < newQueue.length; i++) {
                 if (!queue[msg.channel.guild.id])
                     queue[msg.channel.guild.id] = [];
@@ -1018,7 +1018,7 @@ function addPlaylistToQueue(msg, id, res) {
 
 function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, callback) {
     var onComplete = function(newsubqueue, newpagetoken) {
-        logger.music('done a batch', newsubqueue.length, '/', playlist.contentDetails.itemCount);
+        console.music('done a batch', newsubqueue.length, '/', playlist.contentDetails.itemCount);
         if (newsubqueue.length >= playlist.contentDetails.itemCount) {
             callback(newsubqueue);
         } else {
@@ -1028,7 +1028,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
 
     function doThing(err, res2) {
         if (err) {
-            logger.music(err);
+            console.music(err);
             //bu.send(msg, 'An internal API error occurred.');
             return;
         }
@@ -1062,7 +1062,7 @@ function processPlaylist(subqueue, requesterid, id, playlist, nextPageToken, cal
             }
 
             if (err) {
-                logger.music(err);
+                console.music(err);
                 //    bu.send(msg, 'An internal API error occurred.');
                 return;
             }

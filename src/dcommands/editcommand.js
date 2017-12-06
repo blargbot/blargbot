@@ -86,7 +86,7 @@ e.execute = async function (msg, words) {
                         commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
                         if (CommandManager.list[commandName].category == bu.CommandType.CAT ||
                             CommandManager.list[commandName].category == bu.CommandType.MUSIC) {
-                            logger.debug('no ur not allowed');
+                            console.debug('no ur not allowed');
                         } else {
                             if (words.length == 3) {
                                 if (commandperms.hasOwnProperty(commandName)) {
@@ -124,9 +124,9 @@ e.execute = async function (msg, words) {
                         if (CommandManager.list[commandName].category == bu.CommandType.CAT ||
                             CommandManager.list[commandName].category == bu.CommandType.MUSIC ||
                             CommandManager.list[commandName].cannotDisable === true) {
-                            logger.debug('no ur not allowed');
+                            console.debug('no ur not allowed');
                         } else {
-                            logger.debug(commandperms[commandName]);
+                            console.debug(commandperms[commandName]);
                             if (!commandperms.hasOwnProperty(commandName)) commandperms[commandName] = {};
                             if (!commandperms[commandName].disabled) {
                                 commandperms[commandName].disabled = true;
@@ -165,7 +165,7 @@ e.execute = async function (msg, words) {
                         commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
                         if (CommandManager.list[commandName].category == bu.CommandType.CAT ||
                             CommandManager.list[commandName].category == bu.CommandType.MUSIC) {
-                            logger.debug('no ur not allowed');
+                            console.debug('no ur not allowed');
                         } else {
                             if (words.length == 3) {
                                 if (commandperms.hasOwnProperty(commandName)) {

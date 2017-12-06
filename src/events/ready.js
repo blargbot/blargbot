@@ -2,14 +2,14 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-05 11:42:18
+ * @Last Modified time: 2017-12-06 10:13:51
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 bot.on('ready', async function () {
     bot.sender.send('ready', bot.guilds.map(g => g.id));
-    logger.init('Ready! Logged in as ' + bot.user.username + '#' + bot.user.discriminator);
+    console.init('Ready! Logged in as ' + bot.user.username + '#' + bot.user.discriminator);
 
     if (process.env.SHARD_ID == 0) {
         let restart = await r.table('vars').get('restart').run();
@@ -66,6 +66,7 @@ bot.on('ready', async function () {
  * @param forced - if true, will not set a timeout (Boolean)
  */
 function switchAvatar(forced) {
+    if (config.general.isbeta) return;
     bot.editSelf({
         avatar: bu.avatars[bu.avatarId]
     });
@@ -202,7 +203,7 @@ function switchGame(forced) {
 var eventTimer;
 
 function initEvents() {
-    logger.init('Starting event interval!');
+    console.init('Starting event interval!');
     eventTimer = setInterval(async function () {
         let events = await r.table('events').between(r.epochTime(0), r.now(), {
             index: 'endtime'

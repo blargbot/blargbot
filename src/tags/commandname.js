@@ -31,7 +31,7 @@ e.execute = async function (params) {
         fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
-    logger.verbose(params.tagName);
+    console.verbose(params.tagName);
     if (params.tagName)
         replaceString = params.tagName;
     else replaceString = await bu.tagProcessError(params, '`Not a command`');

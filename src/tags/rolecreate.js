@@ -75,7 +75,7 @@ e.execute = async function (params) {
                     }, `Created with a custom command command, executed by user: ${msg.author.id}`);
                     replaceString = role.id;
                 } catch (err) {
-                    logger.error(err.stack);
+                    console.error(err.stack);
                     replaceString = await bu.tagProcessError(params, '`Failed to create role: no perms`');
                 }
         }

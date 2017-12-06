@@ -57,7 +57,7 @@ e.execute = async function (params) {
                             await member.removeRole(role.id);
                             replaceString = 'true';
                         } catch (err) {
-                            logger.error(err);
+                            console.error(err);
                             replaceString = 'false';
                         }
                     }

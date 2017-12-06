@@ -279,7 +279,7 @@ e.execute = async function (msg, words) {
                     if (guild == msg.guild.id) channelList.push(channel);
                 }
             }
-            logger.debug(userList, roleList, channelList);
+            console.debug(userList, roleList, channelList);
             if (input.undefined[1]) {
                 switch (input.undefined[1].toLowerCase()) {
                     case 'delete':

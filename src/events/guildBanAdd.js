@@ -11,11 +11,11 @@ bot.on('guildBanAdd', async function (guild, user) {
 
     let storedGuild = await bu.getGuild(guild.id);
     let votebans = storedGuild.votebans || {};
-    logger.debug(0, votebans);
+    console.debug(0, votebans);
     if (votebans.hasOwnProperty(user.id)) {
-        logger.debug(1, votebans);
+        console.debug(1, votebans);
         delete votebans[user.id];
-        logger.debug(2, votebans);
+        console.debug(2, votebans);
         r.table('guild').get(guild.id).update({
             votebans: r.literal(votebans)
         });

@@ -1,117 +1,114 @@
-/*
- * @Author: stupid cat
- * @Date: 2017-05-07 19:32:10
- * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 09:42:11
- *
- * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
- */
+const chalk = require('chalk');
+const moment = require('moment-timezone');
+const util = require('util');
 
-var e = module.exports = {};
+class Logger {
+    constructor(shardId, level) {
+        this.shard = shardId;
+        if (typeof this.shard === 'number' && this.shard < 10) this.shard = '0' + this.shard;
+        this._level = level;
+        this.levels = {};
+        let max = 0;
+        this._levels = [
+            { name: 'fatal', color: chalk.red.bgBlack, err: true },
+            { name: 'error', color: chalk.black.bgRed, err: true },
+            { name: 'warn', color: chalk.black.bgYellow, err: true },
+            { name: 'trace', color: chalk.green.bgBlack, trace: true },
+            { name: 'info', color: chalk.black.bgGreen },
+            { name: 'init', color: chalk.black.bgBlue },
+            { name: 'website', color: chalk.black.bgCyan },
+            { name: 'ws', color: chalk.yellow.bgBlack },
+            { name: 'cluster', color: chalk.black.bgMagenta },
+            { name: 'worker', color: chalk.black.bgMagenta },
+            { name: 'irc', color: chalk.yellow.bgBlack },
+            { name: 'command', color: chalk.black.bgBlue },
+            { name: 'output', color: chalk.black.bgMagenta },
+            { name: 'verbose', color: chalk.black.bgCyan },
+            { name: 'adebug', color: chalk.cyan.bgBlack },
+            { name: 'debug', color: chalk.magenta.bgBlack, alias: ['log', 'dir'] },
+            { name: 'database', color: chalk.black.bgBlue },
+            { name: 'module', color: chalk.black.bgBlue }
+        ];
+        this._levels = this._levels.map(l => {
+            l.position = this._levels.indexOf(l);
+            this.levels[l.name] = l;
+            let func = function (...args) {
+                return this.format(l, ...args);
+            }.bind(this);
+            this[l.name] = func;
+            if (l.alias && Array.isArray(l.alias))
+                for (const alias of l.alias) this[alias] = func;
+            max = l.name.length > max ? l.name.length : max;
+            return l;
+        });
 
-const levels = {
-    killme: 0,
-    error: 1,
-    warn: 2,
-    command: 3,
-    init: 4,
-    irc: 5,
-    cluster: 7,
-    worker: 8,
-    music: 9,
-    shard: 10,
-    ws: 11,
-    info: 12,
-    output: 13,
-    website: 14,
-    module: 20,
-    verbose: 16,
-    debug: 17,
-    silly: 18
-};
+        this.maxLength = max + 2;
 
-const colors = {
-    error: 'red',
-    killme: 'red',
-    warn: 'yellow',
-    info: 'green',
-    verbose: 'cyan',
-    debug: 'grey',
-    silly: 'magenta',
-    command: 'blue',
-    website: 'cyan',
-    music: 'cyan',
-    init: 'green',
-    output: 'magenta',
-    cluster: 'magenta',
-    worker: 'magenta',
-    irc: 'yellow',
-    shard: 'yellow',
-    ws: 'yellow',
-    timestamp: 'grey',
-    bold: 'bold',
-    module: 'green'
-};
-
-var debug;
-
-e.init = () => {
-    try {
-        debug = config.general.isbeta;
-    } catch (err) {
-        debug = false;
+        this._meta = {};
     }
-    var maxLength = 0;
-    for (let key in levels) {
-        if (key.length > maxLength) {
-            maxLength = key.length;
-        }
+
+    get level() {
+        return this.levels[this._level];
     }
-    var logger = e.logger = new (dep.winston.Logger)({
-        levels: levels,
-        colors: colors,
-        level: 'debug',
-        exitOnError: false,
-        transports: [
-            new (dep.winston.transports.Console)({
-                prettyPrint: true,
-                colorize: true,
-                name: 'general',
-                silent: false,
-                handleExceptions: true,
-                stderrLevels: ['error', 'warn'],
-                timestamp: () => {
-                    return `[${dep.moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
-                },
-                formatter: options => {
-                    // Return string will be passed to logger.
-                    let shard = dep.wconfig.colorize('shard', (process.env.SHARD_ID ? `[${pad(process.env.SHARD_ID, 2)}]` : '[MS]'));
-                    if (options.level == 'shard') {
-                        let message = options.message.split(' ');
-                        let level = pad('[' + options.level.toUpperCase() + message[0] + ']', maxLength + 2);
-                        message = message.slice(1).join(' ');
-                        return dep.wconfig.colorize('timestamp', options.timestamp()) + shard + dep.wconfig.colorize(options.level, level) + ' ' +
-                            (options.level == 'error' && options.meta && options.meta.stack ? (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== message ? message : '') +
-                                (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
-                    }
-                    return dep.wconfig.colorize('timestamp', options.timestamp()) + shard + dep.wconfig.colorize(options.level, pad('[' + options.level.toUpperCase() + ']', maxLength + 2)) + ' ' +
-                        (options.level == 'error' && options.meta && options.meta.stack ? options.meta.message + ': ' + (options.meta.stack.join ? options.meta.stack.join('\n') : options.meta.stack) : (undefined !== options.message ? options.message : '') +
-                            (options.meta && Object.keys(options.meta).length ? '\n\t' + JSON.stringify(options.meta, null, 2) : ''));
+
+    setGlobal() {
+        Object.defineProperty.bind(this)(global, 'console', {
+            get: () => {
+                return this;
+            }
+        });
+        return this;
+    }
+
+    get timestamp() {
+        return chalk.black.bgWhite(` ${moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')} `);
+    }
+
+    centrePad(text, length) {
+        return ' '.repeat(Math.floor((length - text.length) / 2))
+            + text + ' '.repeat(Math.ceil((length - text.length) / 2));
+    }
+
+    write(text, err = false) {
+        let stream = err ? process.stderr : process.stdout;
+        let shardText = chalk.black.bold.bgYellow(this.centrePad(this.shard.toString(), 4, false));
+        stream.write(`${shardText}${this.timestamp}${text}\n`);
+        return this;
+    }
+
+    meta(meta = {}) {
+        let temp = { depth: 1, color: true };
+        Object.assign(temp, meta);
+        this._meta = temp;
+        return this;
+    }
+
+    format(level, ...args) {
+        if (level.position > this.level.position) return;
+        let output = level.color(this.centrePad(level.name, this.maxLength)) + ' ';
+        let text = [];
+        for (const arg of args) {
+            if (typeof arg === 'string') {
+                text.push(chalk.magenta(this._meta.quote ? `'${arg}'` : arg));
+            } else if (typeof arg === 'number') {
+                text.push(chalk.cyan(arg));
+            } else if (typeof arg === 'object') {
+                text.push('\n');
+                if (arg instanceof Error) {
+                    text.push(chalk.red(arg.stack));
+                } else {
+                    text.push(util.inspect(arg, this._meta));
                 }
-            })
-        ]
-    });
-    logger.level = debug ? 'debug' : 'info';
+            } else text.push(arg);
+        }
 
-    logger.toggleDebug = function () {
-        logger.level = debug ? 'info' : 'debug';
-        debug = !debug;
-        return debug;
-    };
-    global.logger = logger;
-    return logger;
-};
+        output += text.join(' ');
+        if (level.trace || this._meta.trace) {
+            output += '\n' + new Error().stack.split('\n').slice(1).join('\n');
+        }
+        if (level.err) output = chalk.red(output);
+        return this.write(output, level.err).meta();
+    }
+}
 
-function pad(value, length) {
-    return (value.toString().length < length) ? pad(' ' + value, length) : value;
-};
+module.exports = Logger;

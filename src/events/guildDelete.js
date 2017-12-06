@@ -9,7 +9,7 @@
 
 bot.on('guildDelete', async function (guild) {
     bu.postStats();
-    logger.debug('removed from guild');
+    console.debug('removed from guild');
     let members = guild.memberCount;
     if (guild.members) {
         let users = guild.members.filter(m => !m.user.bot).length;

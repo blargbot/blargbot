@@ -16,7 +16,7 @@ router.get('/', async function (req, res) {
     // }
     res.locals.user = req.user;
     req.session.returnTo = req.path;
-    //    logger.website();
+    //    console.website();
     // if (req.user) {
     //     res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
     //     res.locals.sessionId = req.sessionID;
@@ -25,7 +25,7 @@ router.get('/', async function (req, res) {
     //         returnObj.key = k;
     //         return returnObj;
     //     });
-    //     //  logger.debug(settings);
+    //     //  console.debug(settings);
     //     res.locals.gsettings = new dep.hbs.handlebars.SafeString(JSON.stringify(settings).replace(/`/g, '\\`'));
     //     let guilds = req.user.guilds;
     //     let firstGuildCount = guilds.length;

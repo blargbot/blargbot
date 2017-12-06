@@ -9,7 +9,7 @@
 
 bot.on('guildCreate', async function (guild) {
     bu.postStats();
-    logger.debug('added to guild');
+    console.debug('added to guild');
     let storedGuild = await bu.getGuild(guild.id);
     if (!storedGuild || !storedGuild.active) {
         let members = guild.memberCount;

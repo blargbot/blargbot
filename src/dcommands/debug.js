@@ -13,7 +13,7 @@ e.info = '';
 
 e.execute = (msg, words, text) => {
     if (msg.author.id == bu.CAT_ID) {
-        let debug = logger.toggleDebug();
+        let debug = console.toggleDebug();
         if (debug) bu.send(msg, 'Debug logging is now enabled.');
         else bu.send(msg, 'Debug logging is now disabled.');
     }

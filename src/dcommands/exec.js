@@ -15,7 +15,7 @@ e.info = '';
 e.execute = (msg, words, text) => {
     if (msg.author.id === bu.CAT_ID) {
         var commandToProcess = words.slice(1).join(' ');
-        logger.debug(commandToProcess);
+        console.debug(commandToProcess);
         if (commandToProcess.trim().toLowerCase().includes('pm2 restart') ||
             commandToProcess.trim().toLowerCase().includes('pm2 reload') ||
             commandToProcess.trim().toLowerCase().includes('pm2 start')) {

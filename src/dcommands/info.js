@@ -48,7 +48,7 @@ Additional credits to Aurieh#0258! :thumbsup:
 
 For commands, do \`help\`. For information about supporting me, do \`donate\`. For any additional information, such as command documentation, please visit my website: <https://blargbot.xyz>`);
     } catch (err) {
-        logger.error(err);
+        console.error(err);
     }
 };
 

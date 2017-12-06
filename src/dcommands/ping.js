@@ -29,5 +29,5 @@ e.execute = (msg) => {
     bu.send(msg, message).then((msg2) => {
         msg2.edit(`Pong! (${msg2.timestamp - msg.timestamp}ms)\u202e`);
         return msg2;
-    }).catch(err => logger.error(err.stack));
+    }).catch(err => console.error(err.stack));
 };

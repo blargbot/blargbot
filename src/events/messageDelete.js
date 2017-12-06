@@ -23,7 +23,7 @@ async function handleDelete(msg, quiet) {
             .orderBy(r.desc('msgtime')).run();
         if (storedMsg.length > 0) {
 
-            logger.debug('Somebody deleted an uncached message, but we found it in the DB.');
+            console.debug('Somebody deleted an uncached message, but we found it in the DB.');
 
             storedMsg = storedMsg[0];
             msg.content = storedMsg.content;
@@ -43,7 +43,7 @@ async function handleDelete(msg, quiet) {
             //   msg.channel = bot.getChannel(msg.channelID);
 
         } else {
-            logger.debug('Somebody deleted an uncached message and unstored message.');
+            console.debug('Somebody deleted an uncached message and unstored message.');
             //       msg.channel = bot.getChannel(msg.channelID);
             msg.author = {};
             msg.mentions = [];
@@ -63,7 +63,7 @@ async function handleDelete(msg, quiet) {
             try {
                 bu.insertChatlog(msg, 2);
             } catch (err) {
-                logger.error(err);
+                console.error(err);
             }
         }
     let newMsg = msg.content || 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';

@@ -24,7 +24,7 @@ e.execute = (msg, words) => {
         dep.request.get(avatarUrl, function(error, response, body) {
             if (!error && response.statusCode == 200) {
                 let data = 'data:' + response.headers['content-type'] + ';base64,' + new Buffer(body).toString('base64');
-                logger.debug(data);
+                console.debug(data);
                 var p1 = bot.editSelf({
                     avatar: data
                 });

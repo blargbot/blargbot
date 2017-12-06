@@ -91,7 +91,7 @@ e.execute = async function (msg, words) {
             return;
         }
     }
-    logger.debug(limit);
+    console.debug(limit);
     try {
         let deleted = {
             total: 0
@@ -135,10 +135,10 @@ e.execute = async function (msg, words) {
             val = await bu.send(msg, `No messages were deleted.`);
 
         //   setTimeout(function() {
-        //       bot.deleteMessage(msg.channel.id, val.id).catch(err => logger.error(err));
+        //       bot.deleteMessage(msg.channel.id, val.id).catch(err => console.error(err));
         //    }, 5000);
     } catch (err) {
         bu.send(msg, 'I need to be able to Manage Messages to do that!');
-        logger.error(err);
+        console.error(err);
     }
 };

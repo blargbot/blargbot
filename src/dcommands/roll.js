@@ -30,7 +30,7 @@ e.execute = (msg, words) => {
             if (words[1].indexOf('cat') > -1) {
                 var catUrl;
                 var seed = bu.getRandomInt(0, 3);
-                logger.debug(`The cat chosen is ${seed} `);
+                console.debug(`The cat chosen is ${seed} `);
                 switch (seed) {
                     case 0:
                         catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';

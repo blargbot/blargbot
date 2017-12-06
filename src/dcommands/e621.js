@@ -23,15 +23,15 @@ e.execute = (msg, words) => {
 
         if (words.length > 1)
             for (let i = 0; i < tagList.length; i++) {
-                logger.debug(`${i}: ${tagList[i]}`);
+                console.debug(`${i}: ${tagList[i]}`);
 
                 tagList[i] = tagList[i].toLowerCase();
             }
         // listylist = tagList;
-        //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+        //    console.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
-                //        logger.(kek);
+                //        console.(kek);
                 bu.send(msg, config.general.nsfwMessage);
 
                 return;
@@ -58,7 +58,7 @@ e.execute = (msg, words) => {
         var url = '/post/index.xml?limit=' + 50 + '&tags=' + usedTags.join('%20');
 
         var message = '';
-        logger.debug('url: ' + url);
+        console.debug('url: ' + url);
         var options = {
             hostname: 'e621.net',
             method: 'GET',
@@ -71,29 +71,29 @@ e.execute = (msg, words) => {
         var req = https.request(options, function (res) {
             var body = '';
             res.on('data', function (chunk) {
-                //logger.(chunk);
+                //console.(chunk);
                 body += chunk;
             });
 
             res.on('end', function () {
-                //  logger.('body: ' + body);
+                //  console.('body: ' + body);
                 //   var xml = JSON.parse(body);
                 try {
                     xml2js.parseString(body, function (err, doc) {
                         if (err != null) {
-                            logger.error(err.stack);
+                            console.error(err.stack);
                         }
                         //    parsedXml = doc;
-                        //logger.('result: ' + result);
+                        //console.('result: ' + result);
                         var urlList = [];
                         if (doc.posts.post != null)
                             for (let i = 0; i < doc.posts.post.length; i++) {
                                 var imgUrl = doc.posts.post[i].file_url[0];
-                                //    logger.(imgUrl);
+                                //    console.(imgUrl);
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                                     urlList.push(doc.posts.post[i].file_url);
                             }
-                        //    logger.(dep.util.inspect(urlList));
+                        //    console.(dep.util.inspect(urlList));
                         if (urlList.length == 0) {
                             bu.send(msg, 'No results found!');
                             return;
@@ -106,7 +106,7 @@ e.execute = (msg, words) => {
                             if (urlList.length > 0) {
                                 var choice = bu.getRandomInt(0, urlList.length - 1);
                                 message += urlList[choice] + '\n';
-                                logger.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
+                                console.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
                                 urlList.splice(choice, 1);
                             }
                         }
@@ -114,7 +114,7 @@ e.execute = (msg, words) => {
                     });
                     // });
                 } catch (err) {
-                    logger.debug(err.stack);
+                    console.debug(err.stack);
                 }
             });
         });

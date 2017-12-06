@@ -42,7 +42,7 @@ e.execute = async function (params) {
                 if (params.args[4]) duration = bu.parseDuration(params.args[4]);
                 let response = await CommandManager.list['ban'].ban(params.msg, user, params.args[2], params.args[3],
                     duration, true, noPerms);
-                logger.debug('Response', response);
+                console.debug('Response', response);
                 if (typeof response[1] == 'string' && response[1].startsWith('`')) {
                     replaceString = await bu.tagProcessError(params, response[1]);
                 } else replaceString = response[1];

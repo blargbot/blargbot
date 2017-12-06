@@ -34,7 +34,7 @@ e.execute = async function (msg, words) {
         let output = dep.brainfuck.execute(input.undefined.join(' '), (input.i || []).join(' '));
         bu.send(msg, output.output.length == 0 ? 'No output...' : `Output:\n${await bu.filterMentions(output.output)}${input.p ? '\n\n[' + output.memory.list.join(', ') + ']\nPointer: ' + output.memory.pointer : ''}`);
     } catch (err) {
-        logger.error(err);
+        console.error(err);
         bu.send(msg, `Something went wrong!
 Error: \`${err.message}\``);
     }

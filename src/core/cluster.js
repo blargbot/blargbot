@@ -26,7 +26,7 @@ if (cluster.isMaster) {
         if (!(i >= 0 && i < Object.keys(cluster.workers).length)) {
             i = 0;
         }
-        logger.cluster(`Sending a message to worker ${Object.keys(cluster.workers)[i]}`);
+        console.cluster(`Sending a message to worker ${Object.keys(cluster.workers)[i]}`);
         let res = cluster.workers[Object.keys(cluster.workers)[i]].send(message);
         i++;
         return res;
@@ -47,14 +47,14 @@ if (cluster.isMaster) {
     cluster.on('message', (worker, msg, handle) => {
         switch (msg.cmd) {
             case 'log':
-                logger.log(msg.level, msg.msg);
+                console.log(msg.level, msg.msg);
                 break;
             case 'img':
-                logger.cluster('base64 received, sending to the EE');
+                console.cluster('base64 received, sending to the EE');
                 bu.emitter.emit(msg.code, Buffer.from(msg.buffer, 'base64'));
                 break;
             default:
-                logger.cluster(`Worker ${worker.process.pid} says:\n${dep.util.inspect(msg)}`);
+                console.cluster(`Worker ${worker.process.pid} says:\n${dep.util.inspect(msg)}`);
                 break;
         }
     });
@@ -65,12 +65,12 @@ if (cluster.isMaster) {
 
     cluster.on('online', function (worker) {
         workers.add(worker);
-        logger.cluster('Worker ' + worker.process.pid + ' is online');
+        console.cluster('Worker ' + worker.process.pid + ' is online');
     });
 
     cluster.on('exit', function (worker, code, signal) {
         workers.remove(worker);
-        logger.cluster('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
+        console.cluster('Worker ' + worker.process.pid + ' died with code: ' + code + ', and signal: ' + signal);
         cluster.fork();
     });
 

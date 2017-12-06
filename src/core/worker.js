@@ -434,7 +434,7 @@ const functions = {
             for (let char of msg.message) {
                 if (i <= 200) {
                     output += char;
-                    logger.debug(i, output);
+                    console.debug(i, output);
                     let img = im(767, 572, '#ffffff').command('convert');
                     img.font(path.join(__dirnanme, '..', '..', 'res', 'img', 'fonts', 'Ace-Attorney.ttf'), 24);
                     img.out('-fill').out('#000000');
@@ -469,7 +469,7 @@ const functions = {
         text.composite(originalText, 0, 4);
         text.autocrop();
         let iterations = Math.ceil(text.bitmap.width / 64);
-        logger.debug(text.bitmap.width);
+        console.debug(text.bitmap.width);
         let delete1 = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', 'delete1.png'));
         let delete2 = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', 'delete2.png'));
         let delete3 = await Jimp.read(path.join(__dirnanme, '..', '..', 'res', 'img', 'delete3.png'));
@@ -497,7 +497,7 @@ const functions = {
         //color = color.map(a => a / 2);
         let lowest = Math.min(color[0], color[1], color[2]);
         color = color.map(a => Math.min(a - lowest, 32));
-        logger.debug(color);
+        console.debug(color);
         let bgImg = im(await getBufferFromJimp(avatar));
         bgImg.command('convert');
         bgImg.out('-matte').out('-virtual-pixel').out('transparent');
@@ -556,16 +556,16 @@ process.on('message', async function (msg, handle) {
                 if (functions[command])
                     await functions[command](msg);
             } catch (err) {
-                logger.error(err.stack);
+                console.error(err.stack);
             }
             break;
         default:
-            logger.worker(`Worker ${cluster.worker.id} got a message!\n${util.inspect(msg)}`);
+            console.worker(`Worker ${cluster.worker.id} got a message!\n${util.inspect(msg)}`);
     }
 });
 
 async function submitBuffer(code, buffer) {
-    logger.worker('Finished, submitting as base64');
+    console.worker('Finished, submitting as base64');
     process.send({
         cmd: 'img',
         code: code,
@@ -614,7 +614,7 @@ function createCaption(options) {
         }
         if (!options.fill) options.fill = 'black';
         if (!options.gravity) options.gravity = 'Center';
-        logger.debug(`Generating caption for text '${options.text}'`);
+        console.debug(`Generating caption for text '${options.text}'`);
 
         let image = im().command('convert');
 
@@ -642,11 +642,11 @@ function createCaption(options) {
         image.setFormat('png');
         image.toBuffer(function (err, buf) {
             if (err) {
-                logger.error(`Failed to generate a caption: '${options.text}'`);
+                console.error(`Failed to generate a caption: '${options.text}'`);
                 reject(err);
                 return;
             }
-            logger.debug(`Caption generated: '${options.text}'`);
+            console.debug(`Caption generated: '${options.text}'`);
             fulfill(buf);
         });
     });
@@ -667,14 +667,14 @@ function getResource(url) {
         if (url.startsWith('<') && url.endsWith('>')) {
             url = url.substring(1, url.length - 1);
         }
-        logger.debug(url);
+        console.debug(url);
         let r = await aRequest({
             uri: url
         });
         if (r.res.headers['content-type'] == 'image/gif') {
             gm(r.body, 'temp.gif').selectFrame(0).setFormat('png').toBuffer(function (err, buffer) {
                 if (err) {
-                    logger.error('Error converting gif');
+                    console.error('Error converting gif');
                     reject(err);
                     return;
                 }

@@ -172,7 +172,7 @@ bu.send = async function (channel, message, file, embed) {
     // content.content = dep.emoji.emojify(content.content).trim();
 
     if (content.content.length <= 0 && !file && !embed && !content.embed) {
-        logger.info('Tried to send a message with no content.');
+        console.info('Tried to send a message with no content.');
         return Error('No content');
     }
 
@@ -232,7 +232,7 @@ bu.send = async function (channel, message, file, embed) {
                         'please contact the staff on your guild to give me the `Read Messages` permission.';
                     break;
                 default:
-                    logger.error(err.response, err.stack);
+                    console.error(err.response, err.stack);
                     throw err;
             }
             if (typeof channel == 'string') {
@@ -266,7 +266,7 @@ bu.sendDM = async function (user, message, file) {
         userid = user.author.id;
     }
     if (message.length == 0) {
-        logger.info('Tried to send a message with no content.');
+        console.info('Tried to send a message with no content.');
         return Error('No content');
     }
     bu.messageStats++;
@@ -280,7 +280,7 @@ bu.sendDM = async function (user, message, file) {
         if (!file) return await bu.send(privateChannel.id, message);
         else return await bu.send(privateChannel.id, message, file);
     } catch (err) {
-        logger.error(err.stack);
+        console.error(err.stack);
         return err;
     }
 };
@@ -366,7 +366,7 @@ bu.getUser = async function (msg, name, quiet) {
         }
         return -thingy;
     });
-    //  logger.debug(userList.map(m => m.user.username));
+    //  console.debug(userList.map(m => m.user.username));
 
     if (userList.length == 1) {
         return userList[0].user;
@@ -444,7 +444,7 @@ bu.getRole = async function (msg, name, quiet) {
         }
         return -thingy;
     });
-    //  logger.debug(userList.map(m => m.user.username));
+    //  console.debug(userList.map(m => m.user.username));
 
     if (roleList.length == 1) {
         return roleList[0];
@@ -742,7 +742,7 @@ bu.splitInput = (content, noTrim) => {
         words[i] = words[i].replace(/\\"/g, '"');
         if (!noTrim) words[i] = words[i].replace(/^ +/g, '');
     }
-    logger.debug(words);
+    console.debug(words);
     return words;
 };
 
@@ -771,7 +771,7 @@ bu.canExecuteCommand = async function (msg, commandName, quiet) {
         storedGuild = await bu.getGuild(msg.guild.id);
         let val = storedGuild.settings.permoverride,
             val1 = storedGuild.settings.staffperms;
-        logger.debug(storedGuild.settings.adminrole);
+        console.debug(storedGuild.settings.adminrole);
 
         let command = storedGuild.commandperms[commandName];
         let commandObj = CommandManager.list[commandName];
@@ -1142,11 +1142,11 @@ bu.postStats = function () {
         'json': true,
         body: stats
     }, (err) => {
-        if (err) logger.error(err);
+        if (err) console.error(err);
     });
 
     if (!config.general.isbeta) {
-        logger.info('Posting to matt');
+        console.info('Posting to matt');
 
         dep.request.post({
             'url': 'https://www.carbonitex.net/discord/data/botdata.php',
@@ -1162,7 +1162,7 @@ bu.postStats = function () {
                 'logoid': bot.user.avatar
             }
         }, (err) => {
-            if (err) logger.error(err);
+            if (err) console.error(err);
         });
 
         dep.request.post({

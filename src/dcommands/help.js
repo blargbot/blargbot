@@ -53,12 +53,12 @@ ${flags}`;
             staffPerms = await bu.guildSettings.get(msg.channel.guild.id, 'staffPerms');
             adminRole = storedGuild.settings.adminrole;
             let customizedCommands = storedGuild.commandperms;
-            //    logger.debug(customizedCommands);
+            //    console.debug(customizedCommands);
             for (let key in customizedCommands) {
                 if (customizedCommands[key].rolename != null)
                     for (let i = 0; i < customizedCommands[key].rolename.length; i++) {
                         if (!otherCommands[customizedCommands[key].rolename[i].toLowerCase()]) {
-                            logger.debug('creating an entry for', customizedCommands[key].rolename[i].toLowerCase());
+                            console.debug('creating an entry for', customizedCommands[key].rolename[i].toLowerCase());
                             otherCommands[customizedCommands[key].rolename[i].toLowerCase()] = [];
                         }
                         otherCommands[customizedCommands[key].rolename[i].toLowerCase()]
@@ -66,10 +66,10 @@ ${flags}`;
                         modifiedCommands.push(key);
                     }
             }
-            logger.debug(customizedCommands);
+            console.debug(customizedCommands);
         }
-        //    logger.debug(modifiedCommands);
-        //   logger.debug(otherCommands);
+        //    console.debug(modifiedCommands);
+        //   console.debug(otherCommands);
         for (var command in CommandManager.list) {
             if (modifiedCommands.indexOf(command) == -1)
                 if (!CommandManager.list[command].hidden) {
@@ -90,7 +90,7 @@ ${flags}`;
         var onComplete = async function() {
             if (msg.channel.guild) {
                 let ccommands = storedGuild.ccommands;
-                //      logger.debug(ccommands);
+                //      console.debug(ccommands);
                 if (ccommands && Object.keys(ccommands).length > 0) {
                     var ccommandsString = 'Custom Commands:\n  ';
                     var helpCommandList = [];

@@ -22,7 +22,7 @@ e.init = function (server) {
     };
 
     wss.on('connection', function (ws) {
-        logger.ws('A user has connected');
+        console.ws('A user has connected');
         ws.on('message', function (message) {
             try {
                 message = JSON.parse(message);
@@ -72,7 +72,7 @@ async function saveGuild(ws, message, userId) {
         sendData(ws, 404, 'User not found');
         return;
     }
-    logger.debug(message);
+    console.debug(message);
     let guild = bot.guilds.get(message.data.guildid);
     if (!guild) {
         sendData(ws, 404, 'Guild not found');
@@ -85,7 +85,7 @@ async function saveGuild(ws, message, userId) {
     }
     message.data.guild = undefined;
     let res = await r.table('guild').get(message.data.guildid).replace(message.data);
-    logger.website(res);
+    console.website(res);
     sendData(ws, 200, {
         data: 'Successfully updated settings.',
         type: 'guildSaved'

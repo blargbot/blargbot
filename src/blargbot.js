@@ -2,10 +2,14 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 09:40:38
+ * @Last Modified time: 2017-12-06 10:08:08
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+
+global.config = require('../config.json');
+const Logger = require('./core/logger');
+new Logger('MS', config.general.isbeta ? 'debug' : 'info').setGlobal();
 
 global.dep = require('./core/dep.js');
 
@@ -18,14 +22,14 @@ const Spawner = require('./structures/Spawner');
 var irc = require('./core/irc.js');
 
 /** CONFIG STUFF **/
-global.config = require('../config.json');
+
 global.bu = require('./core/util.js');
 bu.init();
 
 /** LOGGING STUFF **/
 
 console.log = function (...args) {
-    logger.debug(...args);
+    console.debug(...args);
 };
 
 
@@ -42,16 +46,16 @@ global.spawner = spawner;
  * Time to init the bots
  */
 async function init() {
-    logger.init('Initializing discord.');
+    console.init('Initializing discord.');
     await spawner.spawnAll();
     irc.init(VERSION, botEmitter);
-    logger.verbose('IRC finished?');
+    console.verbose('IRC finished?');
     const website = require('./backend/main');
     await website.init();
 }
 
 botEmitter.on('ircInit', () => {
-    logger.init('Discord ready. Time to initialize IRC.');
+    console.init('Discord ready. Time to initialize IRC.');
     irc.init(VERSION, botEmitter);
 });
 

@@ -18,7 +18,7 @@ e.init = () => {
     server = app.listen(8081, function () {
         var host = server.address().address;
         var port = server.address().port;
-        logger.init('Interface listening at http://%s:%s', host, port);
+        console.init('Interface listening at http://%s:%s', host, port);
     });
 
     app.get('/user/:id', (req, res) => {

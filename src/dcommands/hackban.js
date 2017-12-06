@@ -47,7 +47,7 @@ e.execute = async function (msg, words, text) {
 
     if (!bu.bans[msg.channel.guild.id])
         bu.bans[msg.channel.guild.id] = {};
-    logger.verbose(userList);
+    console.verbose(userList);
     if (userList.length == 1)
         bu.bans[msg.channel.guild.id][userList[0]] = {
             mod: msg.author,
@@ -66,7 +66,7 @@ e.execute = async function (msg, words, text) {
     userList.forEach(m => {
         bot.banGuildMember(msg.channel.guild.id, m, days, 'Banned by ' + bu.getFullName(msg.author) + (input.r ? ' with reason: ' + input.r.join(' ') : '')).then(() => {
             return;
-        }).catch(logger.error);
+        }).catch(console.error);
     });
 
     bu.send(msg, ':ok_hand:');

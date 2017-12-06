@@ -60,7 +60,7 @@ e.execute = async function (msg, words) {
     await role.edit({
         mentionable: true
     });
-    logger.info(embed);
+    console.info(embed);
     await bu.send(changeChannel, {
         content,
         embed
@@ -84,10 +84,10 @@ e.execute = async function (msg, words) {
                         await bu.send(channelId, `There was a changelog update, but I need to be able to embed links to post it! Please give me the 'embed links' permission for next time.`);
                     }
                 } catch (err) {
-                    logger.error('Changelog Patch:', err.message);
+                    console.error('Changelog Patch:', err.message);
                 }
             } else {
-                logger.warn('Skipping channel ' + channelId);
+                console.warn('Skipping channel ' + channelId);
             }
         }
     }

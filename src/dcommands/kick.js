@@ -34,7 +34,7 @@ e.execute = async function (msg, words) {
     if (words[1]) {
         var user = await bu.getUser(msg, words[1]);
         if (!user) {
-            logger.debug('There was no user.');
+            console.debug('There was no user.');
             return;
         }
         var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));

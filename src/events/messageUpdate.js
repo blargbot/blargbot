@@ -29,7 +29,7 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
                 .orderBy(r.desc('msgtime')).run();
             if (storedMsg.length > 0) {
 
-                // logger.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
+                // console.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
                 oldmsg = {};
                 storedMsg = storedMsg[0];
                 oldmsg.content = storedMsg.content;
@@ -48,7 +48,7 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
                 oldmsg.channel = bot.getChannel(msg.channel.id);
 
             } else {
-                logger.debug('Somebody deleted an uncached message and unstored message.');
+                console.debug('Somebody deleted an uncached message and unstored message.');
                 return;
             }
         }

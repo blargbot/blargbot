@@ -80,7 +80,7 @@ e.init = () => {
             failureRedirect: '/'
         }),
         function (req, res) {
-            logger.website('A user has authenticated');
+            console.website('A user has authenticated');
             sessionUserMap[req.sessionID] = req.user.id;
             res.redirect(req.session.returnTo || '/');
         } // auth success
@@ -91,7 +91,7 @@ e.init = () => {
         res.redirect(req.session.returnTo || '/');
     });
     app.get('/info', checkAuth, function (req, res) {
-        logger.debug(req.user);
+        console.debug(req.user);
         //res.json(req.user);
         res.end(`<p>The person below sucks</p>
         <img src="https://cdn.discordapp.com/avatars/${req.user.id}/${req.user.avatar}.jpg">
@@ -115,7 +115,7 @@ e.init = () => {
     app.use('/color', require('./routes/colour'));
 
     app.use(router);
-    logger.website('Website listening on :8085');
+    console.website('Website listening on :8085');
     server.listen(8085);
     return app;
 };

@@ -25,7 +25,7 @@ e.execute = async function(msg, words) {
             return;
         }
         let lastSeen = dep.moment(storedUser.lastspoke);
-        logger.debug(storedUser.lastspoke, lastSeen.format('llll'));
+        console.debug(storedUser.lastspoke, lastSeen.format('llll'));
         let diff = dep.moment.duration(dep.moment() - lastSeen);
         diff = diff.subtract(diff.asMilliseconds() * 2, 'ms');
         bu.send(msg, `I last saw **${bu.getFullName(user)}** ${diff.humanize(true)}`);

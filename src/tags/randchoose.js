@@ -35,12 +35,12 @@ e.execute = async function (params) {
             params.args[1] = await bu.processTagInner(params, 1);
         }
         let deserialized = await bu.getArray(params, args[1]);
-        logger.verbose(deserialized);
+        console.verbose(deserialized);
         if (deserialized && Array.isArray(deserialized.v)) {
-            logger.verbose(deserialized);
+            console.verbose(deserialized);
             let seed = bu.getRandomInt(0, deserialized.v.length - 1);
             replaceString = deserialized.v[seed];
-            logger.verbose(replaceString);
+            console.verbose(replaceString);
         } else {
             let seed = bu.getRandomInt(1, args.length - 1);
             replaceString = await bu.processTagInner(params, seed);

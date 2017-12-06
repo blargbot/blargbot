@@ -7,6 +7,6 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-bot.on('shardPreReady', async function(id) {
-    logger.shard(`${id} Pre-Ready!`);
+bot.on('shardPreReady', async function (id) {
+    console.info(`${id} Pre-Ready!`);
 });

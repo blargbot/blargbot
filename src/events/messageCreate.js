@@ -15,7 +15,7 @@ const cleverbotIo = new dep.cleverbotIo({
 });
 
 cleverbotIo.create().then(function (session) {
-    logger.init('Cleverbot.io initialized with session', session);
+    console.init('Cleverbot.io initialized with session', session);
 });
 
 /*
@@ -34,9 +34,9 @@ dep.cleverbotIoIo.prototype.askPromise = function (input) {
 const cleverbotIo = new dep.cleverbotIoIo(config.cleverbot.ioid, config.cleverbot.iokey);
 cleverbotIo.setNick('blargbot' + bu.makeSnowflake());
 cleverbotIo.create(function (err, session) {
-    if (err) logger.error('Cleverbot error', err);
+    if (err) console.error('Cleverbot error', err);
     else
-        logger.info('Created a cleverbot instance with session ' + session);
+        console.info('Created a cleverbot instance with session ' + session);
 });
 */
 
@@ -83,7 +83,7 @@ async function handleUserMessage(msg, storedGuild) {
     var doCleverbot = false;
     if (msg.content.startsWith(`<@${bot.user.id}>`) || msg.content.startsWith(`<@!${bot.user.id}>`)) {
         prefix = msg.content.match(/<@!?[0-9]{17,21}>/)[0];
-        logger.debug('Was a mention');
+        console.debug('Was a mention');
         doCleverbot = true;
     }
     if (prefix != undefined && msg.content.startsWith(prefix)) {
@@ -104,7 +104,7 @@ async function handleUserMessage(msg, storedGuild) {
                 }
             }
         } catch (err) {
-            logger.error(err.stack);
+            console.error(err.stack);
         }
     } else {
         handleAwaitMessage(msg);
@@ -119,7 +119,7 @@ var processUser = async function (msg) {
     if (msg.author.discriminator == '0000') return;
     let storedUser = await r.table('user').get(msg.author.id).run();
     if (!storedUser) {
-        logger.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
+        console.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
         r.table('user').insert({
             userid: msg.author.id,
             username: msg.author.username,
@@ -230,7 +230,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
         }
 
         if (await bu.canExecuteCcommand(msg, ccommandName, true)) {
-            logger.command(outputLog);
+            console.command(outputLog);
             var command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
             var response = await tags.processTag(msg, ccommandContent, command, ccommandName, author, true);
@@ -248,11 +248,11 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             let val2 = await bu.canExecuteCommand(msg, commandName);
             if (val2[0]) {
                 try {
-                    logger.command(outputLog);
+                    console.command(outputLog);
 
                     await executeCommand(commandName, msg, words, text);
                 } catch (err) {
-                    logger.error(err.stack);
+                    console.error(err.stack);
                 }
             }
             return val2[0];
@@ -262,7 +262,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
     }
 };
 var executeCommand = async function (commandName, msg, words, text) {
-    // logger.debug(commandName);
+    // console.debug(commandName);
     // r.table('stats').get(commandName).update({
     //     uses: r.row('uses').add(1),
     //     lastused: r.epochTime(dep.moment() / 1000)
@@ -279,7 +279,7 @@ var executeCommand = async function (commandName, msg, words, text) {
     } catch (err) {
         if (err.response) {
             let response = JSON.parse(err.response);
-            logger.debug(response);
+            console.debug(response);
             let dmMsg;
             switch (response.code) {
                 case 50001:
@@ -300,10 +300,10 @@ var executeCommand = async function (commandName, msg, words, text) {
 function handleOurMessage(msg) {
     if (msg.channel.id != '194950328393793536')
         if (msg.guild)
-            logger.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} ` +
+            console.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} ` +
                 `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
         else
-            logger.output(`PM> ${msg.channel.name} (${msg.channel.id})> ` +
+            console.output(`PM> ${msg.channel.name} (${msg.channel.id})> ` +
                 `${msg.author.username}> ${msg.content} (${msg.id})`);
 }
 
@@ -320,10 +320,10 @@ function handleIRCMessage(msg) {
                 message = `\<${msg.member && msg.member.nick ? msg.member.nick : msg.author.username}\> ${msg.cleanContent}`;
             }
         }
-        logger.output(message);
+        console.output(message);
         var attachUrl = '';
         if (msg.attachments.length > 0) {
-            logger.debug(dep.util.inspect(msg.attachments[0]));
+            console.debug(dep.util.inspect(msg.attachments[0]));
             attachUrl += ` ${msg.attachments[0].url}`;
         }
         sendMessageToIrc(message + attachUrl);
@@ -440,7 +440,7 @@ async function handleRoleme(msg, storedGuild) {
                         await msg.member.edit({
                             roles: roleList
                         });
-                        logger.verbose(roleme[i].output);
+                        console.verbose(roleme[i].output);
                         let output = roleme[i].output ?
                             await tags.processTag(msg, roleme[i].output, '', undefined, undefined, true) :
                             'Your roles have been edited!';
@@ -536,7 +536,7 @@ async function handleCleverbot(msg) {
             await bu.sleep(1500);
             await bu.send(msg, response);
         } catch (err) {
-            logger.error(err);
+            console.error(err);
             await bu.sleep(1500);
             await bu.send(msg, `Failed to contact the API. Blame cleverbot.io`);
         }

@@ -12,7 +12,7 @@ var e = module.exports = {};
 e.processTag = async function (msg, contents, command, tagName, author, isCcommand) {
     try {
         author = author || msg.channel.guild.id;
-        logger.debug(command);
+        console.debug(command);
         var words = bu.splitInput(command);
 
         if (contents.toLowerCase().indexOf('{nsfw') > -1) {
@@ -38,7 +38,7 @@ e.processTag = async function (msg, contents, command, tagName, author, isCcomma
         });
         contents = bu.processSpecial(contents.contents, true);
     } catch (err) {
-        logger.error(err);
+        console.error(err);
     }
     return contents;
 };
@@ -68,7 +68,7 @@ Reason: ${tag.reason}`);
         var message = await e.processTag(msg, tag.content, command, tagName, tag.author);
         while (/<@!?[0-9]{17,21}>/.test(message)) {
             let match = message.match(/<@!?([0-9]{17,21})>/)[1];
-            logger.debug(match);
+            console.debug(match);
             let obtainedUser = await bu.getUser(msg, match, true);
             let name = '';
             if (obtainedUser) {

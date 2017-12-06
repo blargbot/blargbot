@@ -82,7 +82,7 @@ e.setVar = async function (params, varName, value) {
             break;
         case '~': // temp
             params.vars[subVarName] = value;
-            logger.verbose('set', params.vars);
+            console.verbose('set', params.vars);
             break;
         default: // local to tag
             if (params.ccommand) { // custom command

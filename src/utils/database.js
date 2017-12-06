@@ -48,7 +48,7 @@ bu.guildSettings = {
 
 
         await r.table('guild').get(guildid).replace(storedGuild).run();
-        logger.debug(':thonkang:');
+        console.debug(':thonkang:');
         return;
     }
 };
@@ -91,7 +91,7 @@ bu.ccommand = {
 
         if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return false;
         storedGuild.ccommands[key.toLowerCase()].help = help;
-        logger.debug(storedGuild.ccommands[key.toLowerCase()]);
+        console.debug(storedGuild.ccommands[key.toLowerCase()]);
         r.table('guild').get(guildid).replace(storedGuild).run();
         return true;
     },
@@ -111,7 +111,7 @@ bu.isNsfwChannel = async function (channelid) {
 bu.isBlacklistedChannel = async function (channelid) {
     let guildid = bot.channelGuildMap[channelid];
     if (!guildid) {
-        //logger.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
+        //console.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
         return false;
     }
     let guild = await bu.getGuild(guildid);

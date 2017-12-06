@@ -26,7 +26,7 @@ class CommandManager extends Manager {
                 this.build(name);
                 return true;
             } else {
-                logger.module('     Skipping non-command ', name + '.js');
+                console.module('     Skipping non-command ', name + '.js');
                 delete this.list[name];
             }
         }
@@ -39,7 +39,7 @@ class CommandManager extends Manager {
                 this.build(name);
                 return true;
             } else {
-                logger.module('     Skipping non-command ', name + '.js');
+                console.module('     Skipping non-command ', name + '.js');
                 delete this.list[name];
             }
         }
@@ -48,18 +48,18 @@ class CommandManager extends Manager {
 
     unload(name) {
         if (this.list[name]) {
-            logger.module(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module ', name);
+            console.module(`${1 < 10 ? ' ' : ''}${1}.`, 'Unloading command module ', name);
 
             if (this.list[name].sub) {
                 for (var subCommand in this.list[name].sub) {
-                    logger.module(`    Unloading ${name}'s subcommand`, subCommand);
+                    console.module(`    Unloading ${name}'s subcommand`, subCommand);
                     delete this.commandList[subCommand];
                 }
             }
             delete this.commandList[name];
             if (this.list[name].alias) {
                 for (var ii = 0; ii < this.list[name].alias.length; ii++) {
-                    logger.module(`    Unloading ${name}'s alias`, this.list[name].alias[ii]);
+                    console.module(`    Unloading ${name}'s alias`, this.list[name].alias[ii]);
                     delete this.commandList[this.list[name].alias[ii]];
                 }
             }
@@ -79,7 +79,7 @@ class CommandManager extends Manager {
             };
             if (this.list[name].sub) {
                 for (var subCommand in this.list[name].sub) {
-                    logger.module(`    Loading ${name}'s subcommand`, subCommand);
+                    console.module(`    Loading ${name}'s subcommand`, subCommand);
 
                     this.commandList[subCommand] = {
                         name: name,
@@ -93,12 +93,12 @@ class CommandManager extends Manager {
             this.commandList[name] = command;
             if (this.list[name].alias) {
                 for (var ii = 0; ii < this.list[name].alias.length; ii++) {
-                    logger.module(`    Loading ${name}'s alias`, this.list[name].alias[ii]);
+                    console.module(`    Loading ${name}'s alias`, this.list[name].alias[ii]);
                     this.commandList[this.list[name].alias[ii]] = command;
                 }
             }
         } catch (err) {
-            logger.error(err);
+            console.error(err);
         }
     }
 }

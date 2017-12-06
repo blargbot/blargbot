@@ -42,7 +42,7 @@ e.execute = async function (params) {
                 try {
                     await obtainedRole.delete(`Deleted with the '${params.tagName}' command, executed by ${msg.author.username}#${msg.author.discrim} (${msg.author.id})`);
                 } catch (err) {
-                    logger.error(err.stack);
+                    console.error(err.stack);
                     replaceString = await bu.tagProcessError(params, '`Failed to create role: no perms`');
                 }
         }

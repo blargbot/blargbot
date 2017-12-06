@@ -45,7 +45,7 @@ e.execute = (msg, words) => {
     if (isNaN(bullets)) {
         bullets = 1;
     }
-    logger.debug(bullets);
+    console.debug(bullets);
     if (bullets == 6) {
         bu.send(msg, 'Do you have a deathwish or something? Your revolver can only hold 6 bullets, that\'s guaranteed death!');
         return;

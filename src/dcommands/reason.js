@@ -24,7 +24,7 @@ e.execute = async function (msg, words) {
             }
             words.shift();
             var caseid = parseInt(words.shift());
-            logger.debug(caseid);
+            console.debug(caseid);
 
 
             let storedGuild = await bu.getGuild(msg.guild.id);

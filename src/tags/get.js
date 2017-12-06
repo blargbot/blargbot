@@ -81,7 +81,7 @@ e.getVar = async function (params, varName = '') {
             else return await bu.tagProcessError(params, '`No author found`');
             break;
         case '*': // global
-            logger.verbose('get', params.vars);
+            console.verbose('get', params.vars);
             vars = await bu.getVariable(undefined, subVarName, bu.TagVariableType.GLOBAL);
             break;
         case '~': // temp

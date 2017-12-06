@@ -23,9 +23,9 @@ class Manager {
             if (/.+\.js$/.test(file)) {
                 var name = file.match(/(.+)\.js$/)[1];
                 this.load(name);
-                logger.module(`${i < 10 ? ' ' : ''}${i}.`, 'Loading ' + this.type + ' module ', name);
+                console.module(`${i < 10 ? ' ' : ''}${i}.`, 'Loading ' + this.type + ' module ', name);
             } else {
-                logger.module('     Skipping non-script ', file);
+                console.module('     Skipping non-script ', file);
             }
         }
     }
@@ -40,8 +40,8 @@ class Manager {
             this.list[name] = mod;
             return true;
         } catch (err) {
-            logger.error(err.stack);
-            logger.module('Failed to load ' + this.type + ' ' + name);
+            console.error(err.stack);
+            console.module('Failed to load ' + this.type + ' ' + name);
         }
         return false;
     }
@@ -51,7 +51,7 @@ class Manager {
             if (this.removeListeners)
                 bot.removeAllListeners(name);
             delete this.list[name];
-            logger.module('Unloaded ' + this.type + ' ' + name);
+            console.module('Unloaded ' + this.type + ' ' + name);
             return true;
         }
         return false;
@@ -68,7 +68,7 @@ class Manager {
                 return true;
             }
         } catch (err) {
-            logger.error(err);
+            console.error(err);
         }
         return false;
     }

@@ -184,7 +184,7 @@ var listTags = async function (msg, originalTagList, page, author, deleteMsg) {
     if (tagList.length != 0) {
         if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
         let message = `Found ${tagList.length}/${originalTagList.length} tags${author ? ' made by **' + bu.getFullName(author) + '**' : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, or type \`c\` to cancel.`;
-        logger.debug(message, message.length);
+        console.debug(message, message.length);
         let newPage = (await bu.awaitMessage(msg, message, m => {
             let page = parseInt(m.content);
             return m.content.toLowerCase() == 'c' || (!isNaN(page) && page <= maxPages);
@@ -350,9 +350,9 @@ e.execute = async function (msg, words, text) {
                     content = (await bu.awaitMessage(msg, tagContentsMsg)).content;
 
                 //    content = content.replace(/(?:^)(\s+)|(?:\n)(\s+)/g, '');
-                logger.debug('First:', content, words);
+                console.debug('First:', content, words);
                 //  content = bu.fixContent(content);
-                logger.debug('Second:', content);
+                console.debug('Second:', content);
                 await r.table('tag').get(title).replace({
                     name: title,
                     author: msg.author.id,

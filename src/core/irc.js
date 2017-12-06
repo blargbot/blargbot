@@ -36,7 +36,7 @@ e.init = (v, em) => {
     e.bot = botIrc = ircbot;
 
     notifInterval = setInterval(function () {
-        logger.irc('[NOT] Doing notifications');
+        console.irc('[NOT] Doing notifications');
         for (var user in ircUserList) {
             if (user !== botIrc.nick) {
                 var tempFile = getUserFile(user);
@@ -67,14 +67,14 @@ e.init = (v, em) => {
             ircUserList[key] = '';
         }
         ///  ircUserList = nicks;
-        logger.irc(message);
+        console.irc(message);
         changeDiscordTopic(message);
     });
 
     botIrc.addListener('message', function (from, to, text) {
         var userMessage = `\<${from}\> ${text}`;
-        logger.irc(`[IRC] ${from}> ${to}> ${text}`);
-        // logger.irc(userMessage);
+        console.irc(`[IRC] ${from}> ${to}> ${text}`);
+        // console.irc(userMessage);
         if (to === config.irc.channel) {
             let avatar;
             let userFile = getUserFile(from);
@@ -92,22 +92,22 @@ e.init = (v, em) => {
             try {
                 handleIrcCommand(to, from, text.replace('!', ''));
             } catch (err) {
-                logger.irc(err.stack);
+                console.irc(err.stack);
             }
         } else if (text.startsWith('blargbot, ')) { }
     });
 
     botIrc.addListener('join', function (channel, nick, message) {
         var joinMessage = `${nick} (${message.user}@${message.host}) has joined ${channel}`;
-        logger.irc(`[IRC] ${joinMessage}`);
+        console.irc(`[IRC] ${joinMessage}`);
         if (channel === config.irc.channel) {
             sendMessageToDiscord(joinMessage);
         }
         if (nick !== botIrc.nick) {
-            //logger.irc(getUserFilePath(nick));
-            //logger.irc(dep.fs.existsSync(getUserFilePath(nick)));
+            //console.irc(getUserFilePath(nick));
+            //console.irc(dep.fs.existsSync(getUserFilePath(nick)));
             if (!dep.fs.existsSync(getUserFilePath(nick))) {
-                logger.irc(`[IRC] Generating userfile for ${nick}`);
+                console.irc(`[IRC] Generating userfile for ${nick}`);
                 sendIrcCommandMessage(config.irc.channel, `Welcome ${nick}. I hope you enjoy your stay.`);
                 createDefaultUserFile(nick);
             } else {
@@ -126,7 +126,7 @@ e.init = (v, em) => {
 
     botIrc.addListener('quit', function (nick, reason, channels, message) {
         var quitMessage = `${nick} (${message.host}) has quit (Reason: ${reason})`;
-        logger.irc(`[IRC] ${quitMessage}`);
+        console.irc(`[IRC] ${quitMessage}`);
         sendMessageToDiscord(quitMessage);
         var userFile = getUserFile(nick);
         userFile.seen = dep.moment().format();
@@ -136,7 +136,7 @@ e.init = (v, em) => {
 
     botIrc.addListener('part', function (channel, nick, reason, message) {
         var quitMessage = `${nick} (${message.host}) has parted (Reason: ${reason})`;
-        logger.irc(`[IRC] ${quitMessage}`);
+        console.irc(`[IRC] ${quitMessage}`);
         sendMessageToDiscord(quitMessage);
         var userFile = getUserFile(nick);
         userFile.seen = dep.moment().format();
@@ -149,14 +149,14 @@ e.init = (v, em) => {
             return;
         }
         var nickMessage = `${oldnick} (${message.host}) is now known as ${newnick}`;
-        logger.irc(nickMessage);
+        console.irc(nickMessage);
 
-        //   logger.irc(`[IRC] ${nickMessage}`);
+        //   console.irc(`[IRC] ${nickMessage}`);
         var userFile = getUserFile(oldnick);
         userFile.seen = dep.moment().format();
         saveUserFile(oldnick, userFile);
         if (!dep.fs.existsSync(getUserFilePath(newnick))) {
-            logger.irc(`[IRC] Generating userfile for ${newnick}`);
+            console.irc(`[IRC] Generating userfile for ${newnick}`);
             sendIrcCommandMessage(config.irc.channel, `Welcome ${newnick}. I hope you enjoy your stay.`);
             createDefaultUserFile(newnick);
         } else {
@@ -171,7 +171,7 @@ e.init = (v, em) => {
     });
 
     //botIrc.addListener('motd', function (motd) {
-    //     logger.irc(motd);
+    //     console.irc(motd);
     //  });
 
     botIrc.addListener('action', (sender, channel, text) => {
@@ -179,13 +179,13 @@ e.init = (v, em) => {
     });
 
     botIrc.addListener('error', function (message) {
-        logger.irc('An IRC error occured: ', message);
+        console.irc('An IRC error occured: ', message);
     });
 };
 
 function handleIrcCommand(channel, user, text) {
     var words = text.split(' ');
-    logger.irc(`[IRC] User ${user} executed command ${words[0]}`);
+    console.irc(`[IRC] User ${user} executed command ${words[0]}`);
     var time, userFile;
     switch (words[0].toLowerCase()) {
         case 'help':
@@ -318,7 +318,7 @@ function handleIrcCommand(channel, user, text) {
                 } else {
                     userFile = getUserFile(words[1], true);
                     time = createTimeDiffString(dep.moment(), dep.moment(userFile.seen));
-                    logger.irc(time, dep.moment(), dep.moment(userFile.seen), userFile.seen);
+                    console.irc(time, dep.moment(), dep.moment(userFile.seen), userFile.seen);
                     sendIrcCommandMessage(channel, `I haven't seen ${words[1]} in ${time}`);
                 }
             } catch (err) {
@@ -342,7 +342,7 @@ function handleIrcCommand(channel, user, text) {
         case 'avatar':
             userFile = getUserFile(user);
             userFile.avatar = words[1];
-            logger.debug(userFile);
+            console.debug(userFile);
             saveUserFile(user, userFile);
             sendIrcCommandMessage(channel, `Set ${user}'s discord avatar!'`);
 
@@ -351,7 +351,7 @@ function handleIrcCommand(channel, user, text) {
             sendIrcCommandMessage(channel, `I am running blargbot version ${VERSION}`);
             break;
         case 'cat':
-            logger.irc('meow');
+            console.irc('meow');
             getCat(channel);
             break;
         case 'roll':
@@ -375,7 +375,7 @@ function reloadUserList() {
 
 
 function sendNoticeToIrc(channel, notice) {
-    logger.irc(`[IRC] blargbot -> ${channel} -> ${notice}`);
+    console.irc(`[IRC] blargbot -> ${channel} -> ${notice}`);
     botIrc.notice(channel, notice);
 }
 
@@ -387,7 +387,7 @@ function sendIrcCommandMessage(channel, message) {
 }
 
 function sendMessageToIrc(channel, message) {
-    logger.irc(`[IRC] blargbot> ${channel}> ${message}`);
+    console.irc(`[IRC] blargbot> ${channel}> ${message}`);
     botIrc.say(channel, message);
 }
 
@@ -408,7 +408,7 @@ function createDefaultUserFile(name) {
         mail: {}
     };
 
-    logger.irc(defaultContents);
+    console.irc(defaultContents);
     saveUserFile(name, defaultContents);
 }
 
@@ -423,10 +423,10 @@ function getUserFile(name, dontCreate) {
     try {
         return getJsonFile(getUserFilePath(name));
     } catch (err) {
-        logger.irc(err);
+        console.irc(err);
         sendIrcCommandMessage(config.irc.channel, `The userfile for ${name} is broken or corrupt! Generating a new one.`);
         createDefaultUserFile(name);
-        logger.irc('why');
+        console.irc('why');
         return getJsonFile(getUserFilePath(name));
     }
 }
@@ -436,7 +436,7 @@ function getJsonFile(path) {
 }
 
 function sendMessageToDiscord(msg) {
-    // logger.irc(msg);
+    // console.irc(msg);
     bot.createMessage(config.discord.channel, '\u200B' + msg)
 }
 
@@ -467,7 +467,7 @@ function getCat(channel) {
         });
 
         res.on('end', function () {
-            logger.irc(body);
+            console.irc(body);
             output = JSON.parse(body);
             sendMessageToIrc(channel, output.file);
         });
@@ -484,7 +484,7 @@ function getXkcd(channel, words) {
                 body += chunk;
             });
             res.on('end', function () {
-                logger.irc(body);
+                console.irc(body);
                 var output = JSON.parse(body);
                 xkcdMax = output.num;
                 getXkcd(channel, words);
@@ -515,7 +515,7 @@ function getXkcd(channel, words) {
             body += chunk;
         });
         res.on('end', function () {
-            logger.irc(body);
+            console.irc(body);
             var output = JSON.parse(body);
             var message = '';
             if (bot === botIrcEnum.DISCORD) {
@@ -541,7 +541,7 @@ Comic #${output.num}
 
 function getTime(channel, user, words) {
     var message = 'meow';
-    logger.irc(dep.util.inspect(words));
+    console.irc(dep.util.inspect(words));
     if (words.length > 1) {
         var location = words[1].split('/');
         if (location.length == 2)
@@ -559,7 +559,7 @@ function createTimeDiffString(moment1, moment2) {
     var ms = moment1.diff(moment2);
 
     var diff = dep.moment.duration(ms);
-    //  logger.irc(diff.humanize());
+    //  console.irc(diff.humanize());
     var days = diff.days();
     diff.subtract(days, 'd');
     var hours = diff.hours();
@@ -587,7 +587,7 @@ function getRoll(channel, user, words) {
         if (words[1].indexOf('cat') > -1) {
             var catUrl;
             var seed = getRandomInt(0, 3);
-            logger.irc(`The cat chosen is ${seed} `);
+            console.irc(`The cat chosen is ${seed} `);
             switch (seed) {
                 case 0:
                     catUrl = 'http://gifrific.com/wp-content/uploads/2013/06/Cat-Rolls-In-A-Ball.gif';
@@ -627,7 +627,7 @@ function getRoll(channel, user, words) {
                 }
                 var newtotal = total - rolls[0];
                 message = `${message.substring(0, message.length - 2)}] > ${total < 10 && total > -10 ? ` ${total}` : total} - ${rolls[0]} > ${newtotal < 10 && newtotal > -10 ? ` ${newtotal}` : newtotal}\n`;
-                logger.irc(message);
+                console.irc(message);
             }
             sendMessageToIrc(channel, `${message}\n\`\`\``);
 

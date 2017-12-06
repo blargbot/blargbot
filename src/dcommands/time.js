@@ -20,7 +20,7 @@ e.longinfo = `    <p>Tells you the current time in the specified timezone. If ti
 
 e.execute = (msg, words) => {
     var message = `It is currently ${dep.moment().format('LT')} where I am!`;
-    logger.debug(dep.util.inspect(words));
+    console.debug(dep.util.inspect(words));
     if (words.length == 2) {
         var location = words[1].split('/');
         if (location.length == 2)

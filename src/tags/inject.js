@@ -29,7 +29,7 @@ e.execute = async function (params) {
     var replaceContent = false;
     if (params.args[1]) {
         let newStuff = bu.processSpecial(params.args[1], true);
-        logger.debug('Thonkang', params.args, newStuff);
+        console.debug('Thonkang', params.args, newStuff);
         params.content = newStuff;
         replaceString = await bu.processTagInner(params);
     } else {

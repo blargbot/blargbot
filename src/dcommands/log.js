@@ -45,7 +45,7 @@ var events = [
 e.execute = async function(msg, words) {
     let storedGuild = await bu.getGuild(msg.guild.id);;
     if (!storedGuild.hasOwnProperty('log')) storedGuild.log = {};
-    logger.debug(words);
+    console.debug(words);
     if (words.length >= 2) {
         switch (words[1].toLowerCase()) {
             case 'list':
@@ -81,7 +81,7 @@ e.execute = async function(msg, words) {
             case 'disable':
                 if (words.length >= 2) {
                     let args = words.slice(2);
-                    logger.debug(storedGuild.log);
+                    console.debug(storedGuild.log);
                     if (args.map(m => m.toLowerCase()).includes('all'))
                         for (let event of args) {
                             storedGuild.log = {};
@@ -90,7 +90,7 @@ e.execute = async function(msg, words) {
                         for (let event of args) {
                             storedGuild.log[event.toLowerCase()] = undefined;
                         }
-                    logger.debug(storedGuild.log);
+                    console.debug(storedGuild.log);
                     await r.table('guild').get(msg.channel.guild.id).replace(storedGuild);
                     bu.send(msg, 'Done!');
                 } else {

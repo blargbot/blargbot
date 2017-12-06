@@ -14,10 +14,10 @@ e.info = `Gets a list of mods.`;
 e.longinfo = `<p>Gets a list of mods on the guild.</p>`;
 
 e.execute = (msg, words) => {
-    logger.debug('a');
+    console.debug('a');
     try {
         bu.guildSettings.get(msg.channel.guild.id, 'staffperms').then(val => {
-            logger.debug('aa');
+            console.debug('aa');
             var allow = val || bu.defaultStaff;
             let status = 0;
             if (words[1])
@@ -86,7 +86,7 @@ e.execute = (msg, words) => {
         });
 
     } catch (err) {
-        logger.error(err);
+        console.error(err);
     }
 };
 

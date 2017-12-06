@@ -23,7 +23,7 @@ e.execute = async function (msg, words) {
         var itemid;
         switch (words[1].toLowerCase()) {
             case 'add':
-                logger.debug('adding');
+                console.debug('adding');
                 if (words.length < 3) {
                     bu.send(msg, 'Not enough arguments given!');
                     return;
@@ -36,7 +36,7 @@ e.execute = async function (msg, words) {
                 bu.send(msg, 'Done! :ok_hand:');
                 break;
             case 'remove':
-                logger.debug('removing');
+                console.debug('removing');
                 if (words.length < 3) {
                     bu.send(msg, 'Not enough arguments given!');
                     return;

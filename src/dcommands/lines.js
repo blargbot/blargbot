@@ -21,7 +21,7 @@ e.execute = (msg) => {
     bot.sendChannelTyping(msg.channel.id);
     dep.exec(`cloc ${dep.path.join(__dirname, '..')} --exclude-dir=codemirror`, (err, stdout, stderr) => {
         if (err) {
-            logger.error(err);
+            console.error(err);
             bu.send(msg, 'An error has occurred!');
             return;
         }
@@ -60,14 +60,14 @@ e.execute = (msg) => {
         for (let i = 0; i < middle.length; i++) {
             if (middle[i] != '') {
                 let toPush = middle[i].split(/\s\s+/);
-                logger.debug(toPush);
+                console.debug(toPush);
                 table.push(toPush);
             }
         }
         sections[3] = sections[3].replace(/\n/g, '');
         let footer = sections[3].split(/\s\s+/);
         table.push(footer);
-        logger.debug(table);
+        console.debug(table);
         let output = table.toString().replace(/\[[0-9]{2}m/g, '');
         bu.send(msg, `\`\`\`prolog
 ${output}

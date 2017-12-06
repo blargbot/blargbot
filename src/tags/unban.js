@@ -39,7 +39,7 @@ e.execute = async function (params) {
             if (user) {
                 let noPerms = params.args[3] ? true : false;
                 let response = await CommandManager.list['unban'].unban(params.msg, user, params.args[2], true, noPerms);
-                logger.debug('Response', response);
+                console.debug('Response', response);
                 if (typeof response[1] == 'string' && response[1].startsWith('`')) {
                     replaceString = await bu.tagProcessError(params, response[1]);
                 } else replaceString = response[1];

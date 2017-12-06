@@ -22,15 +22,15 @@ e.execute = (msg, words) => {
 
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
-                logger.debug(`${i}: ${tagList[i]}`);
+                console.debug(`${i}: ${tagList[i]}`);
 
                 tagList[i] = tagList[i].toLowerCase();
             }
         //  listylist = tagList;
-        //    logger.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
+        //    console.(`${'rating:safe' in tagList} ${'rating:s' in tagList} ${'rating:safe' in tagList || 'rating:s' in tagList} ${!('rating:safe' in tagList || 'rating:s' in tagList)}`)
         if (!nsfwChannel)
             if (!(tagList.indexOf('rating:safe') > -1 || tagList.indexOf('rating:s') > -1)) {
-                //        logger.(kek);
+                //        console.(kek);
                 bu.send(msg, config.general.nsfwMessage);
 
                 return;
@@ -54,7 +54,7 @@ e.execute = (msg, words) => {
         var url = '/posts.json?limit=' + 50 + '&tags=' + usedTags.join('%20');
         var message = '';
 
-        logger.debug('url: ' + url);
+        console.debug('url: ' + url);
         var options = {
             hostname: 'danbooru.donmai.us',
             method: 'GET',
@@ -87,7 +87,7 @@ e.execute = (msg, words) => {
                                 }
                             }
                         }
-                    logger.debug(urlList.length);
+                    console.debug(urlList.length);
                     if (urlList.length == 0) {
                         bu.send(msg, 'No results found!');
                         return;
@@ -97,13 +97,13 @@ e.execute = (msg, words) => {
                         if (urlList.length > 0) {
                             var choice = bu.getRandomInt(0, urlList.length - 1);
                             message += urlList[choice] + '\n';
-                            logger.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
+                            console.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
                             urlList.splice(choice, 1);
                         }
                     }
                     bu.send(msg, message);
                 } catch (err) {
-                    logger.error(err.stack);
+                    console.error(err.stack);
                 }
             });
         });

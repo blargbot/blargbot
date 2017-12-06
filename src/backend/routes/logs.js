@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/logs' + req.path;
 
-    logger.debug(req.body);
+    console.debug(req.body);
     let hash = req.body.hash;
     let db = 'blargdb';
     if (hash.startsWith('beta')) {
@@ -41,7 +41,7 @@ router.post('/', async (req, res) => {
     }
     res.locals.hash = hash;
     let logsSpecs = await r.db(db).table('logs').get(parseInt(hash)).run();
-    logger.debug(logsSpecs);
+    console.debug(logsSpecs);
     if (!logsSpecs) {
         res.locals.continue = false;
     } else {

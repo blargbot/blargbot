@@ -71,7 +71,7 @@ e.execute = async function (msg, words) {
             index: r.desc('id')
         }).limit(1).run();
         if (lastSuggestion.length > 0) i = lastSuggestion[0].id + 1;
-        logger.debug(i, lastSuggestion);
+        console.debug(i, lastSuggestion);
         if (isNaN(i)) i = 0;
         let type, colour, channel, list;
         switch (words[0].toLowerCase()) {
@@ -156,7 +156,7 @@ e.execute = async function (msg, words) {
             }).run();
             await bu.send(msg, `${type} has been sent, and has been assigned an ID ${i}! :ok_hand:\n\nYou can view your ${type.toLowerCase()} here: <${data.shortUrl}>`);
         } catch (err) {
-            logger.error(err);
+            console.error(err);
             await bu.send(msg, 'An error occured posting to trello. Please try again.');
         }
     }

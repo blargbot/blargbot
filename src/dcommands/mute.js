@@ -46,7 +46,7 @@ e.execute = async function (msg, words, text) {
             await bu.guildSettings.set(msg.channel.guild.id, 'mutedrole', role.id);
             if (msg.channel.guild.members.get(bot.user.id).permission.json.manageChannels) {
                 var channels = msg.channel.guild.channels.map(m => m);
-                logger.debug(channels.length);
+                console.debug(channels.length);
                 for (var i = 0; i < channels.length; i++) {
                     bot.editChannelPermission(channels[i].id, role.id, 0, 2048, 'role', 'Automatic muted role configuration').catch(logError);
                 }
@@ -82,7 +82,7 @@ e.execute = async function (msg, words, text) {
                     return;
                 }
                 var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
-                logger.debug(role.position, botPos);
+                console.debug(role.position, botPos);
                 if (role.position >= botPos) {
                     await bu.send(msg, `I can't assign the muted role! (it's higher than or equal to my top role)`);
                     return;
@@ -145,5 +145,5 @@ e.execute = async function (msg, words, text) {
 };
 
 function logError(err) {
-    logger.error(err);
+    console.error(err);
 }

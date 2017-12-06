@@ -180,7 +180,7 @@ class Spawner extends EventEmitter {
                 delete this.guildShardMap[data];
                 break;
             case 'KILLEVERYTHING':
-                logger.killme('We all deserve to die. Even you, mister cat. Even I.');
+                console.killme('We all deserve to die. Even you, mister cat. Even I.');
                 this.shards.forEach(s => {
                     s.process.kill();
                 });

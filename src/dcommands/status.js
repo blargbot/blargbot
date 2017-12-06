@@ -44,7 +44,7 @@ e.execute = (msg, words, text) => {
             uri: url,
             encoding: null
         }, function(err, res, body) {
-            logger.debug(res.headers['content-type']);
+            console.debug(res.headers['content-type']);
             if (res.headers['content-type'] == 'text/html') {
                 bu.sendFile(msg.channel.id, '', urlStart + encodeURIComponent(404 + '.jpg'));
             } else

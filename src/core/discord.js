@@ -2,10 +2,14 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 09:41:37
+ * @Last Modified time: 2017-12-06 10:08:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+global.config = require('../../config.json');
+const Logger = require('./logger');
+new Logger(process.env.SHARD_ID, config.general.isbeta ? 'debug' : 'info').setGlobal();
+
 global.dep = require('./dep.js');
 
 const https = dep.https;
@@ -13,11 +17,10 @@ global.tags = require('./tags.js');
 const Sender = require('../structures/Sender');
 
 process.on('unhandledRejection', (reason, p) => {
-    logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
 
 /** CONFIG STUFF **/
-global.config = require('../../config.json');
 global.bu = require('./util.js');
 
 
@@ -43,7 +46,7 @@ class DiscordClient extends dep.Eris.Client {
         bu.commandMessages = {};
         bu.notCommandMessages = {};
 
-        logger.debug('HELLOOOOO?');
+        console.debug('HELLOOOOO?');
 
 
         bu.init();
@@ -64,7 +67,7 @@ class DiscordClient extends dep.Eris.Client {
         this.sender = new Sender(this, process);
 
         registerChangefeed();
-        logger.init('Connecting...');
+        console.init('Connecting...');
         this.connect();
     }
 
@@ -105,7 +108,7 @@ bu.send(msg, \`An error occured!
 \${err.stack}
 \\\`\\\`\\\`\`);
 })`;
-            //     logger.debug(toEval);
+            //     console.debug(toEval);
             try {
                 eval(toEval);
             } catch (err) {
@@ -138,13 +141,13 @@ async function registerChangefeed() {
 
 async function registerGlobalChangefeed() {
     try {
-        logger.info('Registering a global changefeed!');
+        console.info('Registering a global changefeed!');
         changefeed = await r.table('vars').changes({
             squash: true
         }).run((err, cursor) => {
-            if (err) logger.error(err);
+            if (err) console.error(err);
             cursor.on('error', err => {
-                logger.error(err);
+                console.error(err);
             });
             cursor.on('data', data => {
                 if (data.new_val && data.new_val.varname == 'tagVars')
@@ -153,20 +156,20 @@ async function registerGlobalChangefeed() {
         });
         changefeed.on('end', registerChangefeed);
     } catch (err) {
-        logger.warn(`Failed to register a global changefeed, will try again in 10 seconds.`);
+        console.warn(`Failed to register a global changefeed, will try again in 10 seconds.`);
         setTimeout(registerChangefeed, 10000);
     }
 }
 
 async function registerSubChangefeed(type, idName, cache) {
     try {
-        logger.info('Registering a ' + type + ' changefeed!');
+        console.info('Registering a ' + type + ' changefeed!');
         changefeed = await r.table(type).changes({
             squash: true
         }).run((err, cursor) => {
-            if (err) logger.error(err);
+            if (err) console.error(err);
             cursor.on('error', err => {
-                logger.error(err);
+                console.error(err);
             });
             cursor.on('data', data => {
                 if (data.new_val) {
@@ -181,7 +184,7 @@ async function registerSubChangefeed(type, idName, cache) {
         });
         changefeed.on('end', registerChangefeed);
     } catch (err) {
-        logger.warn(`Failed to register a ${type} changefeed, will try again in 10 seconds.`);
+        console.warn(`Failed to register a ${type} changefeed, will try again in 10 seconds.`);
         setTimeout(registerChangefeed, 10000);
     }
 }

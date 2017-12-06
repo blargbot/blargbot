@@ -9,5 +9,5 @@
 
 bot.on('shardReady', async function (id) {
     let shard = bot.shards.get(id);
-    logger.shard(`${id} Ready! G:${bot.guilds.filter(g => g.shard.id === shard.id).length} P:${shard.latency}ms`);
+    console.info(`${id} Ready! G:${bot.guilds.filter(g => g.shard.id === shard.id).length} P:${shard.latency}ms`);
 });

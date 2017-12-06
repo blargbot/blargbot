@@ -93,13 +93,13 @@ e.execute = async function (msg, words) {
 **${msg.author.username}#${msg.author.discriminator}** has made the following announcement:
 
 ${message}`;
-        logger.debug(message);
+        console.debug(message);
         try {
             await role.edit({
                 mentionable: true
             });
         } catch (err) {
-            logger.error(err);
+            console.error(err);
         }
         await bu.send(changeChannel, {
             content: roleMention,
@@ -111,7 +111,7 @@ ${message}`;
                 mentionable: false
             });
         } catch (err) {
-            logger.error(err);
+            console.error(err);
         }
     } else {
         bu.send(msg, 'You have to tell me what to announce!');

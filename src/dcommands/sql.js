@@ -20,14 +20,14 @@ e.execute = (msg, words) => {
         bu.send(msg, 'no');
         /*
         let query = words.slice(1).join(' ');
-        logger.debug(query);
+        console.debug(query);
         bu.db.quer//y(query, (err, rows, fields) => {
             if (err) {
                 bu.send(msg, `Error!\n\`\`\`js\n${err.stack}\n\`\`\``);
                 return;
             } else {
                 if (rows && rows[0]) {
-                    logger.debug(fields);
+                    console.debug(fields);
                     let columns = Object.keys(rows[0]);
              //       for (let i = 0; i < columns.length; i++) {
              //           columns[i] = columns[i].toUpperCase();
@@ -50,7 +50,7 @@ e.execute = (msg, words) => {
                             } else
                                 data.push(rows[i][columns[key]]);
                         }
-                        logger.debug(data);
+                        console.debug(data);
                         table.push(data);
                     }
                     let output = `\`\`\`prolog\n${table.toString()}\n\`\`\``.replace(/\[\d\dm/g, '');

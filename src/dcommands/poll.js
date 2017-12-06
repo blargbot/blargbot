@@ -106,7 +106,7 @@ e.execute = async function(msg, words) {
                     mentionable: true
                 });
             } catch (err) {
-                logger.error(err);
+                console.error(err);
             }
         }
         let msg2 = await bu.send(channel, message);
@@ -116,7 +116,7 @@ e.execute = async function(msg, words) {
                     mentionable: false
                 });
             } catch (err) {
-                logger.error(err);
+                console.error(err);
             }
         }
         for (let choice of choices) {
@@ -125,7 +125,7 @@ e.execute = async function(msg, words) {
                 await bot.addMessageReaction(msg2.channel.id, msg2.id, choice);
             } catch (err) {
                 //NO-OP
-                //   logger.error(err);
+                //   console.error(err);
             }
         }
         await r.table('events').insert({
@@ -148,7 +148,7 @@ e.execute = async function(msg, words) {
 };
 
 e.event = async function(args) {
-    logger.debug('poll has been triggered');
+    console.debug('poll has been triggered');
     let msg3 = await bot.getMessage(args.channel, args.msg);
     let reactions = [];
     for (let key in msg3.reactions) {
@@ -178,8 +178,8 @@ e.event = async function(args) {
     let max = reactions[0].count;
     let winners = reactions.filter(r => r.count == max);
     let winnerString = winners.map(r => r.emoji).join(' ');
-    logger.debug(args.color);
-    logger.debug(6);
+    console.debug(args.color);
+    console.debug(6);
     let middleBit = winners.length > 1 ?
         `It was a tie between these choices, at **${max}** vote${max == 1 ? '' : 's'} each:` :
         `At **${max}** vote${max == 1 ? '' : 's'}, the winner is:`;
@@ -210,7 +210,7 @@ ${winnerString}`
                 mentionable: true
             });
         } catch (err) {
-            logger.error(err);
+            console.error(err);
         }
     }
     await bu.send(args.channel, output);
@@ -220,7 +220,7 @@ ${winnerString}`
                 mentionable: false
             });
         } catch (err) {
-            logger.error(err);
+            console.error(err);
         }
     }
 };

@@ -61,14 +61,14 @@ ${userList.map(u => {
                 bu.send(msg, `**${bu.getFullName(msg.author)}** has signed to ban **${bu.getFullName(user)}**! Total signatures: **${votebans[user.id].length}**
 ${reason ? '**Reason:** ' + reason : ''}`);
             }
-            logger.debug(votebans);
+            console.debug(votebans);
             await r.table('guild').get(msg.guild.id).update({
                 votebans: votebans
             });
         }
 
     } else {
-        logger.debug(votebans);
+        console.debug(votebans);
         let votebanStats = [];
         for (let key in votebans) {
             votebanStats.push({

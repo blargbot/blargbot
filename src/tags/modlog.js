@@ -48,7 +48,7 @@ e.execute = async function (params) {
                         color = parseInt(toParse.replace('#', ''), 16);
                     }
                 }
-                logger.verbose('Color:', color, 'meow');
+                console.verbose('Color:', color, 'meow');
                 await bu.logAction(params.msg.guild, user, mod, action, reason, color);
             } else {
                 replaceString = await bu.tagProcessError(params, '`No user found`');
