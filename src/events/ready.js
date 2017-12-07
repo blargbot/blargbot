@@ -2,22 +2,14 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
-<<<<<<< HEAD:events/ready.js
- * @Last Modified time: 2017-12-05 11:42:18
-=======
  * @Last Modified time: 2017-12-06 11:25:59
->>>>>>> 955ab76943c20c761c7bf1bb6d97947f055262e4:src/events/ready.js
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 bot.on('ready', async function () {
     bot.sender.send('ready', bot.guilds.map(g => g.id));
-<<<<<<< HEAD:events/ready.js
-    logger.init('Ready! Logged in as ' + bot.user.username + '#' + bot.user.discriminator);
-=======
     console.init('Ready! Logged in as ' + bot.user.username + '#' + bot.user.discriminator);
->>>>>>> 955ab76943c20c761c7bf1bb6d97947f055262e4:src/events/ready.js
 
     if (process.env.SHARD_ID == 0) {
         let restart = await r.table('vars').get('restart').run();
@@ -217,18 +209,9 @@ function initEvents() {
             index: 'endtime'
         });
         for (let event of events) {
-<<<<<<< HEAD:events/ready.js
-            if (event.channel && !bot.getChannel(event.channel))
-                return;
-            else if (event.guild && !bot.guilds.get(event.guild))
-                return;
-            else if (event.user && process.env.SHARD_ID != 0)
-                return;
-=======
             if (event.channel && !bot.getChannel(event.channel)) continue;
             else if (event.guild && !bot.guilds.get(event.guild)) continue;
             else if (!event.channel && !event.guilds && event.user && process.env.SHARD_ID != 0) continue;
->>>>>>> 955ab76943c20c761c7bf1bb6d97947f055262e4:src/events/ready.js
             let type = event.type;
             CommandManager.list[type].event(event);
             r.table('events').get(event.id).delete().run();

@@ -2,11 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:32:10
  * @Last Modified by: stupid cat
-<<<<<<< HEAD:logger.js
- * @Last Modified time: 2017-12-05 13:18:00
-=======
  * @Last Modified time: 2017-12-06 09:42:11
->>>>>>> 955ab76943c20c761c7bf1bb6d97947f055262e4:src/core/logger.js.old
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */

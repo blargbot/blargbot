@@ -2,11 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
-<<<<<<< HEAD:events/messageCreate.js
- * @Last Modified time: 2017-12-05 12:46:59
-=======
  * @Last Modified time: 2017-12-06 10:56:00
->>>>>>> 955ab76943c20c761c7bf1bb6d97947f055262e4:src/events/messageCreate.js
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */

@@ -2,11 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
-<<<<<<< HEAD:utils/generic.js
- * @Last Modified time: 2017-12-05 12:25:35
-=======
  * @Last Modified time: 2017-12-05 16:37:04
->>>>>>> 955ab76943c20c761c7bf1bb6d97947f055262e4:src/utils/generic.js
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */

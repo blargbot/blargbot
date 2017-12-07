@@ -2,11 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:54
  * @Last Modified by: stupid cat
-<<<<<<< HEAD:irc.js
- * @Last Modified time: 2017-12-05 12:58:27
-=======
  * @Last Modified time: 2017-12-06 10:41:35
->>>>>>> 955ab76943c20c761c7bf1bb6d97947f055262e4:src/core/irc.js
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -440,11 +436,7 @@ function getJsonFile(path) {
 }
 
 function sendMessageToDiscord(msg) {
-<<<<<<< HEAD:irc.js
-    // logger.irc(msg);
-=======
     // console.irc(msg);
->>>>>>> 955ab76943c20c761c7bf1bb6d97947f055262e4:src/core/irc.js
     bot.createMessage(config.discord.channel, '\u200B' + msg)
 }
 
