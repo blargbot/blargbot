@@ -11,21 +11,21 @@
     "notenoughparams": "Niet genoeg parameters! Gebruik `{{prefix}}help {{name}}` voor meer details.\n\nVerwachtte '{{expected}}' parameters, maar kreeg in plaats daarvan '{{received}}'.",
     "tag": {
         "notfound": "Subtag '{{tag}}' bestaat niet.",
-        "toomanyargs": "",
-        "toofewargs": "",
+        "toomanyargs": "Te veel args (r:{{received}} e:{{expected}})",
+        "toofewargs": "Niet genoeg args (r:{{received}} e:{{expected}})",
         "isnan": "Verwachtte '{{arg}}' als een nummer, maar ontving '{{value}}'",
-        "maxlessthanmin": "",
+        "maxlessthanmin": "Max moet groter zijn dan Min",
         "ccommandonly": "'{{tag}}' may only be used in ccommands",
-        "authorstaff": "",
+        "authorstaff": "Auteur {{author}} moet personeel zijn om '{{tag}}' te gebruiken",
         "noperms": "Bot mist de permissie '{{perm}}' die nodig is voor het label '{{tag}}'",
         "toolow": "Bot kan '{{tag}}' niet uitvoeren omdat het een lagere rang heeft dan '{{target}}'",
-        "unclosed": "",
-        "unopened": "",
+        "unclosed": "Ongeëvenaard openingshaakje [{{column}}:{{row}}]",
+        "unopened": "Ongeëvenaard sluitingshaakje [{{column}}:{{row}}]",
         "invalidradix": "",
         "notanarray": "",
         "notbool": "",
         "missingarg": "",
         "namedunsupported": ""
     },
-    "inputtoolong": ""
+    "inputtoolong": "Je inbreng was te lang! Het maximale aantal tekens hiervoor was {{max}}, maar jij hebt er {{length}} ingevuld."
 }
