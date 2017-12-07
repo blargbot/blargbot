@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 10:08:19
+ * @Last Modified time: 2017-12-07 09:57:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -53,7 +53,7 @@ class DiscordClient extends dep.Eris.Client {
         bu.startTime = startTime;
 
         if (process.env.SHARD_ID == 0)
-            bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? 'Beta' : ''}.json`), 'utf8'));
+            bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
 
         const Manager = require('./Manager.js');
         global.EventManager = new Manager('events', true);
