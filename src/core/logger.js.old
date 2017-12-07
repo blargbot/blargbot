@@ -84,7 +84,11 @@ e.init = () => {
                     return `[${dep.moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')}]`;
                 },
                 formatter: options => {
+<<<<<<< HEAD:logger.js
+                    // Return string will be passed to logger.
+=======
                     // Return string will be passed to console.
+>>>>>>> 955ab76943c20c761c7bf1bb6d97947f055262e4:src/core/logger.js.old
                     let shard = dep.wconfig.colorize('shard', (process.env.SHARD_ID ? `[${pad(process.env.SHARD_ID, 2)}]` : '[MS]'));
                     if (options.level == 'shard') {
                         let message = options.message.split(' ');

@@ -2,25 +2,30 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-07 14:42:02
+ * @Last Modified time: 2017-12-05 13:46:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
-global.config = require('../../config.json');
-const Logger = require('./logger');
-new Logger(process.env.SHARD_ID, config.general.isbeta ? 'debug' : 'info').setGlobal();
-
 global.dep = require('./dep.js');
 
 const https = dep.https;
 global.tags = require('./tags.js');
-const Sender = require('../structures/Sender');
+const Sender = require('./structures/Sender');
 
+const Promise = require('promise');
+//const webInterface = require('./interface.js');
 process.on('unhandledRejection', (reason, p) => {
-    console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    logger.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
 
 /** CONFIG STUFF **/
+if (dep.fs.existsSync(dep.path.join(__dirname, 'config.json'))) {
+    var configFile = dep.fs.readFileSync(dep.path.join(__dirname, 'config.json'), 'utf8');
+    global.config = JSON.parse(configFile);
+} else {
+    global.config = {};
+    saveConfig();
+}
 global.bu = require('./util.js');
 
 
@@ -46,14 +51,14 @@ class DiscordClient extends dep.Eris.Client {
         bu.commandMessages = {};
         bu.notCommandMessages = {};
 
-        console.debug('HELLOOOOO?');
+        logger.debug('HELLOOOOO?');
 
 
         bu.init();
         bu.startTime = startTime;
 
         if (process.env.SHARD_ID == 0)
-            bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
+            bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, `avatars${config.general.isbeta ? 'Beta' : ''}.json`), 'utf8'));
 
         const Manager = require('./Manager.js');
         global.EventManager = new Manager('events', true);
@@ -67,7 +72,7 @@ class DiscordClient extends dep.Eris.Client {
         this.sender = new Sender(this, process);
 
         registerChangefeed();
-        console.init('Connecting...');
+        logger.init('Connecting...');
         this.connect();
     }
 
@@ -108,7 +113,7 @@ bu.send(msg, \`An error occured!
 \${err.stack}
 \\\`\\\`\\\`\`);
 })`;
-            //     console.debug(toEval);
+            //     logger.debug(toEval);
             try {
                 eval(toEval);
             } catch (err) {
@@ -141,35 +146,35 @@ async function registerChangefeed() {
 
 async function registerGlobalChangefeed() {
     try {
-        console.info('Registering a global changefeed!');
+        logger.info('Registering a global changefeed!');
         changefeed = await r.table('vars').changes({
             squash: true
         }).run((err, cursor) => {
-            if (err) return console.error(err);
+            if (err) logger.error(err);
             cursor.on('error', err => {
-                console.error(err);
+                logger.error(err);
             });
             cursor.on('data', data => {
                 if (data.new_val && data.new_val.varname == 'tagVars')
                     bu.globalVars = data.new_val.values;
             });
         });
-        changefeed.on('end', registerGlobalChangefeed);
+        changefeed.on('end', registerChangefeed);
     } catch (err) {
-        console.warn(`Failed to register a global changefeed, will try again in 10 seconds.`);
-        setTimeout(registerGlobalChangefeed, 10000);
+        logger.warn(`Failed to register a global changefeed, will try again in 10 seconds.`);
+        setTimeout(registerChangefeed, 10000);
     }
 }
 
 async function registerSubChangefeed(type, idName, cache) {
     try {
-        console.info('Registering a ' + type + ' changefeed!');
+        logger.info('Registering a ' + type + ' changefeed!');
         changefeed = await r.table(type).changes({
             squash: true
         }).run((err, cursor) => {
-            if (err) return console.error(err);
+            if (err) logger.error(err);
             cursor.on('error', err => {
-                console.error(err);
+                logger.error(err);
             });
             cursor.on('data', data => {
                 if (data.new_val) {
@@ -182,10 +187,10 @@ async function registerSubChangefeed(type, idName, cache) {
                 } else delete cache[data.old_val[idName]];
             });
         });
-        changefeed.on('end', () => registerSubChangefeed(type, idName, cache));
+        changefeed.on('end', registerChangefeed);
     } catch (err) {
-        console.warn(`Failed to register a ${type} changefeed, will try again in 10 seconds.`);
-        setTimeout(() => registerSubChangefeed(type, idName, cache), 10000);
+        logger.warn(`Failed to register a ${type} changefeed, will try again in 10 seconds.`);
+        setTimeout(registerChangefeed, 10000);
     }
 }
 
@@ -270,14 +275,6 @@ process.on('message', async msg => {
             break;
     }
 });
-
-// shard status posting
-let shardStatusInterval = setInterval(() => {
-    console.log('Sending shard status');
-    bot.sender.send('shardStats', {
-        id: process.env.SHARD_ID
-    });
-}, 15000);
 
 
 // Now look at this net,
