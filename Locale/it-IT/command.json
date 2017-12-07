@@ -341,7 +341,7 @@
                     "info": "info"
                 },
                 "announcement": {
-                    "info": "info"
+                    "info": "Imposta gli annunci."
                 },
                 "modlog": {
                     "usage": "modlog [evento]...",
@@ -353,7 +353,7 @@
                 "rolequery": "Seleziona il ruolo muto."
             },
             "announce": {
-                "set": "imposta",
+                "set": "Gli annunci sono stati impostati.",
                 "rolequery": "Seleziona il ruolo che dovrà essere menzionato per gli annunci.",
                 "channelquery": "Seleziona il canale in cui gli annunci dovrebbero apparire."
             },
