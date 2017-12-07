@@ -197,7 +197,7 @@ function updateShard(s) {
 
     c.guilds.innerText = shards[s.id].guilds;
     c.latency.innerText = shards[s.id].latency + 'ms';
-    c.uptime.innerText = moment.duration(moment() - shards[s.id].readyTime).toISOString();
+    c.uptime.innerText = shards[s.id].readyTime === 0 ? 'Starting...' : moment.duration(moment() - shards[s.id].readyTime).toISOString();
     c.memory.innerText = shards[s.id].rss ? formatBytes(shards[s.id].rss) : 'NaN';
     c.lastResponse.innerText = moment(shards[s.id].time).format('LTS')
 }
