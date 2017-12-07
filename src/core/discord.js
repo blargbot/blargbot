@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 10:08:19
+ * @Last Modified time: 2017-12-07 14:29:32
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -145,7 +145,7 @@ async function registerGlobalChangefeed() {
         changefeed = await r.table('vars').changes({
             squash: true
         }).run((err, cursor) => {
-            if (err) console.error(err);
+            if (err) return console.error(err);
             cursor.on('error', err => {
                 console.error(err);
             });
@@ -154,10 +154,10 @@ async function registerGlobalChangefeed() {
                     bu.globalVars = data.new_val.values;
             });
         });
-        changefeed.on('end', registerChangefeed);
+        changefeed.on('end', registerGlobalChangefeed);
     } catch (err) {
         console.warn(`Failed to register a global changefeed, will try again in 10 seconds.`);
-        setTimeout(registerChangefeed, 10000);
+        setTimeout(registerGlobalChangefeed, 10000);
     }
 }
 
@@ -167,7 +167,7 @@ async function registerSubChangefeed(type, idName, cache) {
         changefeed = await r.table(type).changes({
             squash: true
         }).run((err, cursor) => {
-            if (err) console.error(err);
+            if (err) return console.error(err);
             cursor.on('error', err => {
                 console.error(err);
             });
@@ -182,10 +182,10 @@ async function registerSubChangefeed(type, idName, cache) {
                 } else delete cache[data.old_val[idName]];
             });
         });
-        changefeed.on('end', registerChangefeed);
+        changefeed.on('end', () => registerSubChangefeed(type, idName, cache));
     } catch (err) {
         console.warn(`Failed to register a ${type} changefeed, will try again in 10 seconds.`);
-        setTimeout(registerChangefeed, 10000);
+        setTimeout(() => registerSubChangefeed(type, idName, cache), 10000);
     }
 }
 
@@ -270,6 +270,14 @@ process.on('message', async msg => {
             break;
     }
 });
+
+// shard status posting
+let shardStatusInterval = setInterval(() => {
+    console.log('Sending shard status');
+    bot.sender.send('shardStats', {
+        id: process.env.SHARD_ID
+    });
+}, 15000);
 
 
 // Now look at this net,

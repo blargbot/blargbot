@@ -132,6 +132,9 @@ class Spawner extends EventEmitter {
                         break;
                 }
                 break;
+            case 'shardStats':
+                wss.broadcast({ code: 'shard', data });
+                break;
             case 'ircMessage':
                 this.client.irc.bot.say(config.irc.channel, data.message)
                 break;
