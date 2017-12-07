@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 10:56:00
+ * @Last Modified time: 2017-12-07 16:51:22
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -510,8 +510,10 @@ function query(input) {
         }, (err, re, bod) => {
             if (err) rej(err);
             else {
-                let content = bod.match(/<font size="2" face="Verdana" color=darkred>(.+)<\/font>/)[1];
-                res(content.replace(/(\W)alice(\W)/gi, '$1blargbot$2'));
+                let content = bod.match(/<font size="2" face="Verdana" color=darkred>(.+)<\/font>/);
+                if (content)
+                    res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2'));
+                else console.warn('An error occured in scraping a cleverbot response:', bod)
             }
         })
     })
