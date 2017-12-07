@@ -16,6 +16,8 @@ class Spawner extends EventEmitter {
         process.on('exit', code => {
             this.killAll();
         });
+
+        this.shardCache = {};
     }
 
     respawnAll() {
@@ -134,6 +136,7 @@ class Spawner extends EventEmitter {
                 break;
             case 'shardStats':
                 wss.broadcast({ code: 'shard', data });
+                this.shardCache[data.id] = data;
                 break;
             case 'ircMessage':
                 this.client.irc.bot.say(config.irc.channel, data.message)

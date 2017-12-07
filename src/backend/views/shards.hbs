@@ -26,6 +26,7 @@
 
     <!-- Latest compiled JavaScript -->
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment.min.js"></script>
 
     <!-- Compiled and minified JavaScript -->
     <script src="js/materialize.min.js"></script>
@@ -62,7 +63,7 @@
 		<i class="large material-icons">menu</i></a>
 
     <header class="page-header">
-        <h1 class="centre">blargbot</h1>
+        <h1 class="centre">Shard Status</h1>
     </header>
     <main>
         <div id='shard-container'>
@@ -81,33 +82,147 @@
         </div>
     </footer>
 
+    <style>
+        .shard.connected,
+        .shard.ready {
+            border-color: #3ead42;
+        }
+
+        .shard.connecting {
+            border-color: #c4bf5a;
+        }
+
+        .shard.disconnecting {
+            border-color: #846709;
+        }
+
+        .shard.handshaking {
+            border-color: #291675;
+        }
+
+        .shard.unresponsive {
+            border-color: #590414;
+        }
+
+        .label {
+            text-align: right;
+        }
+
+        .col {
+            margin: 1px 0;
+        }
+
+        .shard {
+            flex: 0 0 400px;
+            background: #37474f;
+            margin: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            border-top: solid 7px;
+
+            transition: border-color 1s;
+        }
+
+        .shard h3 {
+            margin: 0 0 10px 0;
+            text-align: center;
+            display: block;
+            border-bottom: rgba(255, 255, 255, 0.3) 1px solid;
+
+        }
+
+        #shard-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+
     <!-- Menu Toggle Script -->
     <script>
 init();
 let ws = new WebSocket('{{url}}');
 let shardContainer = document.getElementById('shard-container');
 let shards = {};
+function clearElement(n) {
+    while (n.hasChildNodes())
+        n.removeChild(n.lastChild);
+}
+
 function refreshContainer() {
-    shardContainer.childElementCount = 0;
+    clearElement(shardContainer);
     for (let i of Object.keys(shards).sort((a,b) => parseInt(a) - parseInt(b))) {
         shardContainer.appendChild(shards[i].element);
     }
 }
 
+function setProperty(el, shard, label, key) {
+    let lab = document.createElement('div');
+    lab.classList.add('col', 's6', 'label');
+    lab.innerText = label;
+    el.appendChild(lab);
+    let dyn = document.createElement('code');
+    dyn.classList.add('col', 's6');
+    el.appendChild(dyn);
+    shard.components[key] = dyn;
+}
+
 function updateShard(s) {
+    console.log(s);
     if (!shards[s.id]) {
         let el = document.createElement('div');
+        el.classList.add('shard');
         el.id = `shard${s.id}`;
-        shards[s.id] = {element: el};
+        shards[s.id] = {element: el, components:{}};
+        let c = shards[s.id].components;
+
+        c.head = document.createElement('h3');
+        c.head.innerText = 'Shard ' + s.id;
+        el.appendChild(c.head);
+
+        let container = document.createElement('div');
+        container.className = 'row';
+        el.appendChild(container);
+
+        setProperty(container, shards[s.id], 'Guilds: ', 'guilds');
+        setProperty(container, shards[s.id], 'Latency: ', 'latency');
+        setProperty(container, shards[s.id], 'Memory: ', 'memory');
+        setProperty(container, shards[s.id], 'Uptime: ', 'uptime');
+        setProperty(container, shards[s.id], 'Last Update: ', 'lastResponse');
         refreshContainer();
     }
     Object.assign(shards[s.id], s);
+    let c = shards[s.id].components;
+    shards[s.id].element.className = 'shard ' + shards[s.id].status;
 
-    s = shards[s.id];
-    s.element.childElementCount = 0;
-    let head = document.createElement('p');
-    head.innerText = 'Shard ' + s.id;
-    s.element.appendChild(head);
+    c.guilds.innerText = shards[s.id].guilds;
+    c.latency.innerText = shards[s.id].latency + 'ms';
+    c.uptime.innerText = moment.duration(moment() - shards[s.id].readyTime).toISOString();
+    c.memory.innerText = shards[s.id].rss ? formatBytes(shards[s.id].rss) : 'NaN';
+    c.lastResponse.innerText = moment(shards[s.id].time).format('LTS')
+}
+
+function formatBytes(a,b){if(0==a)return"0 Bytes";var c=1024,d=b||2,e=["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"],f=Math.floor(Math.log(a)/Math.log(c));return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]}
+
+
+setInterval(() => {
+    for (const shard of Object.values(shards)) {
+        let diff = Date.now() - shard.time;
+        if (diff > 30000) {
+            updateShard({
+                id: shard.id,
+                status: 'unresponsive',
+                guilds: NaN,
+                rss: NaN,
+                readyTime: NaN,
+                latency: NaN
+            })
+        }
+    }
+}, 1000);
+
+ws.onopen = () => {
+    ws.send(JSON.stringify({type: 'requestShards'}));
 }
 
 ws.onmessage = event => {

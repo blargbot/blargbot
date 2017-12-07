@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-07 14:42:02
+ * @Last Modified time: 2017-12-07 16:19:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -274,8 +274,16 @@ process.on('message', async msg => {
 // shard status posting
 let shardStatusInterval = setInterval(() => {
     console.log('Sending shard status');
+    let shard = bot.shards.get(parseInt(process.env.SHARD_ID));
+    let mem = process.memoryUsage();
     bot.sender.send('shardStats', {
-        id: process.env.SHARD_ID
+        id: process.env.SHARD_ID,
+        time: Date.now(),
+        readyTime: bot.startTime,
+        guilds: bot.guilds.size,
+        rss: mem.rss,
+        status: shard.status,
+        latency: shard.latency
     });
 }, 15000);
 
