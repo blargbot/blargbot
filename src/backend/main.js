@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:20:47
+ * @Last Modified time: 2017-12-08 00:55:38
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,6 +17,7 @@ const Strategy = dep.Strategy;
 const helpers = require('./helpers');
 app.use(dep.bodyParser.json());
 app.use(dep.bodyParser.urlencoded({ // to support URL-encoded bodies
+    limit: '50mb',
     extended: true
 }));
 
