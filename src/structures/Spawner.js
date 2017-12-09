@@ -18,6 +18,14 @@ class Spawner extends EventEmitter {
         });
 
         this.shardCache = {};
+
+        this.uptimeInterval = setInterval(() => {
+            for (const shard of Object.keys(this.shardCache)) {
+                if (moment.duration(moment() - shard.time).asMilliseconds() > 30000) {
+                    this.respawnShard(shard.id);
+                }
+            }
+        }, 5000);
     }
 
     respawnAll() {
