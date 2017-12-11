@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 09:48:50
+ * @Last Modified time: 2017-12-10 17:06:22
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -573,6 +573,9 @@ ${Object.keys(user.favourites).join(', ')}
                     }
                     if (!tag.reports) tag.reports = 0;
                     let user = await r.table('user').get(msg.author.id).run();
+                    if (user.reportblock) {
+                        return await bu.send(msg, user.reportblock);
+                    }
                     if (!user.reports) user.reports = {};
                     let output;
                     if (words.length > 3) {
