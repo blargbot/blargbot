@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-15 14:49:48
+ * @Last Modified time: 2017-12-15 15:03:46
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -271,8 +271,7 @@ bu.processTag = async function (params) {
                                 ]
                             }
                         })
-                    } else return;
-
+                    } else replaceObj = { terminate: true, replaceString: '' };
                 }
         } else {
             replaceObj.replaceString = await bu.tagProcessError({
