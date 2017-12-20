@@ -116,23 +116,23 @@
                 }
             },
             "subcommandnotfound": "No se pudo encontrar un subcomando con el nombre '{{subcommand}}'.",
-            "transferprompt": "",
-            "nobots": "",
+            "transferprompt": "{{target}}, {{user}} desea transferir la propiedad de la etiqueta '{{tag}}' a ti. ¿Aceptas? Esto no transferirá las variables.",
+            "nobots": "[emote.x] ¡No puedes transferir la etiqueta a un bot!",
             "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
-            "transfercomplete": "",
+            "transfercomplete": "[emote.check]{{user}} ahora posee la etiqueta {{tag}}.",
             "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
-            "descupdate": "",
-            "descreset": "",
-            "subcommandconflict": "",
+            "descupdate": "Se actualizo la descripción para '{{tag}}'.",
+            "descreset": "La descripcion para {{tag}} ha sido reiniciada.",
+            "subcommandconflict": "No puedes usar mas el nombre {{name}} ¡por que hay un subcomando con ese nombre!",
             "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
-            "toptags": "",
-            "tagauthor": "",
+            "toptags": "¡Estas son las etiquetas del top 10!\n\n{{tags}}",
+            "tagauthor": "La etiqueta {{tag}} fue creada por **{{author}}**",
             "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
             "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
             "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
         },
         "locale": {
-            "info": "",
+            "info": "Establece que mensajes locales serán enviados.",
             "set": "Su configuración se ha establecido en {{ajuste}}!",
             "list": "Su configuración actual es"
         },
@@ -148,43 +148,43 @@
         },
         "donate": {
             "info": "",
-            "willdm": "",
-            "message": ""
+            "willdm": "Esta bien, te enviare mi información de donaciones por mensaje directo.",
+            "message": "marcador de posición"
         },
         "mods": {
             "info": "",
-            "mods": "",
-            "nomods": "",
-            "nomodsonline": ""
+            "mods": "Moderadores en **{{guild}} **",
+            "nomods": "Hay no hay moderadores en este Gremio.",
+            "nomodsonline": "Hay no hay moderadores en línea."
         },
         "help": {
             "info": "",
-            "allcommands": "",
-            "nocommand": "",
-            "commandinfo": "",
-            "aliases": "",
-            "subcommand": "",
-            "command": "",
-            "nosubcommand": "",
-            "subcommands": ""
+            "allcommands": "Estos son todos los comandos que puedes ejecutar en **{{guild}}**.\n```markdown\n{{commands}}\n```\nPara mas información sobre comandos, ejecuta `help <commandname>` o visita <https://blargbot.xyz/commands>.",
+            "nocommand": "¡Lo sentimos, no hay ningún comando con el nombre '{{name}}'!",
+            "commandinfo": "**{{type}}: {{name}}**\n\n**Alias**: {{aliases}}\n**Uso**: {{usage}}\n\n{{description}}",
+            "aliases": "Sin alias",
+            "subcommand": "Sub-comando",
+            "command": "Comando",
+            "nosubcommand": "Lo sentimos, no hay subcomandos para {{command}} con el nombre {{name}}!",
+            "subcommands": "**Subcommandos**: {{subcommands}}\n\nEjecuta `help <command> <subcommand>`¡para obtener mas informacion sobre sub-comandos!"
         },
         "gamatoto": {
-            "info": "",
+            "info": "¡Ir a una expedicion con Gamatoto! ¡Usa este comando para revisar tu estatus, o usa un subcomando para ir a una aventura!",
             "subcommand": {
                 "start": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<location>",
+                    "info": "¡Comienza una expedición!"
                 },
                 "end": {
-                    "info": ""
+                    "info": "¡Termina una expedición!"
                 },
                 "locations": {
-                    "info": ""
+                    "info": "Listar todos los lugares de expedición."
                 }
             },
-            "stats": "",
-            "alreadystarted": "",
-            "notstarted": "",
+            "stats": "<:bc_cat:345081695990710272> ¡Estos son tus items!\n\n{{stats}}",
+            "alreadystarted": "¡Ya hay una expedición en progreso!",
+            "notstarted": "¡No has comenzado una expedición!",
             "nolocation": "",
             "invalidlocation": "",
             "expeditionbeings": "",
