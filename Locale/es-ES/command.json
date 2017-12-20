@@ -223,37 +223,37 @@
             "nothingchanged": "Nada fue cambiado."
         },
         "warnings": {
-            "output": ""
+            "output": "**{{user}}** ha acumulado **{{amount}}** advertencia(s) en **{{guild}}**."
         },
         "economy": {
-            "info": "",
-            "invalidamount": "",
-            "invalidcode": "",
-            "converted": "",
-            "usage": ""
+            "info": "Convierte divisas usando las tasas de conversión recientes.",
+            "invalidamount": "Por favor especifique una cantidad válida para convertir.",
+            "invalidcode": "Codigo de moneda desconocido: {{code}}",
+            "converted": "{{amount}}{{from}} es equivalente a {{converted}}{{to}}",
+            "usage": "<from><to><amount>"
         },
         "usettings": {
-            "info": "",
+            "info": "Modifica o muestra su configuración de usuario.",
             "subcommand": {
                 "dmerrors": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[true|false]",
+                    "info": "Habilita o deshabilita Mensajes privados para las notificaciones de error."
                 }
             },
-            "dmerrorsenabled": "",
-            "dmerrorsdisabled": "",
-            "userinfo": ""
+            "dmerrorsenabled": "Se han habilitado las notificaciones de error por mensaje directo.",
+            "dmerrorsdisabled": "Que se haya desactivado las notificaciones de error por mensaje directo.",
+            "userinfo": "Aquí está la configuración de usuario: \n\n{{settings}}\n\nSubcomandos disponibles: {{sub}}"
         },
         "rr": {
-            "info": "",
-            "usage": "",
+            "info": "Juega al juego de ruleta rusa. Por defecto, su revólver puede almacenar 6 balas.",
+            "usage": "[bullets]",
             "flags": {
-                "capacity": "",
-                "emote": ""
+                "capacity": "Establece cuántas balas de su revólver podrá sostener.",
+                "emote": "Especifica que emoticon (o texto) debería jugar a la ruleta rusa."
             },
-            "capacitylow": "",
-            "bulletslow": "",
-            "bulletshigh": "",
+            "capacitylow": "Su revólver debe ser capaz de mantener al menos dos balas, ¡con cualquier cantidad menor estaría garantizada la muerte!",
+            "bulletslow": "No puedes cargar menos de una bala, cobarde.",
+            "bulletshigh": "¡Vaya, tu revolver solo puede tener {{capacity}} balas! ¡Eso seria muerte garantizada! ¿Tienes deseo de morir o algo?",
             "begin": "",
             "death": "",
             "life": "",
