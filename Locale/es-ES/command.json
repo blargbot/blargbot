@@ -254,35 +254,35 @@
             "capacitylow": "Su revólver debe ser capaz de mantener al menos dos balas, ¡con cualquier cantidad menor estaría garantizada la muerte!",
             "bulletslow": "No puedes cargar menos de una bala, cobarde.",
             "bulletshigh": "¡Vaya, tu revolver solo puede tener {{capacity}} balas! ¡Eso seria muerte garantizada! ¿Tienes deseo de morir o algo?",
-            "begin": "",
-            "death": "",
-            "life": "",
+            "begin": "Cargaste {{bullets}} bala(s) en tu revolver de {{capacity}} tiros, dale una vuelta, y colócalo contra la cabeza.",
+            "death": "{{content}}\n\n***BOOM!*** [[command.general.rr.deathmessages]]",
+            "life": "{{content}}\n\n*Click!* [[command.general.rr.livemessages]]",
             "livemessages": [
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
+                "La pistola percuta, vacía. Lograste vivir otro día.",
+                "Tu aliento es un signo de alivio al darte cuenta de que no morirás hoy.",
+                "¡Como si eso no fuer a cambiar! La suerte esta de tu lado.",
+                "Dale gracias a RNGesus al bajar el arma.",
+                ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
+                "Sonríes a medida que te das cuenta que has sobrevivido."
             ],
             "deathmessages": [
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
+                "La pistola se va, salpicando tus sesos a través de la pared. ¡Mala suerte!",
+                ":skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:",
+                "Sin darte cuenta, todo acabó.",
+                "¡Por lo menos tenias pollo!",
+                "Yo ***no*** limpiare eso.",
+                "¡Las armas de fuego no son juguetes!",
+                "¡Bueno, no las puedes ganar todas!",
+                "Bi-bien... ¿si cada chuleta de cerdo fuese perfecta, no habríamos tenido salchichas? Lastima que estas muerto de todas formas.",
+                "¡Culpa al lag!",
+                "Hoy simplemente no fue tu día de suerte.",
+                "Pfff, la previsión es para perdedores."
             ]
         },
         "user": {
-            "usage": "",
-            "info": "",
-            "description": "",
+            "usage": "[user]",
+            "info": "Devuelve información sobre el usuario especificado.",
+            "description": "**Nombre de usuario**: {{username}}\n**Discriminador**: {{discriminator}}\n**Identificador**: {{id}}\n**Bot**: {{bot}}\n**Creado**: {{created}}\n[Avatar]({{avatar}})",
             "guildinfoheader": "",
             "guildinfo": "",
             "status": [
@@ -402,32 +402,32 @@
                     "info": ""
                 },
                 "author": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Devuelve al autor del comando personalizado."
                 },
                 "transfer": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name><user>",
+                    "info": "Transfiere la propiedad de un comando personalizado a otra persona. Debe ser consensual."
                 },
                 "list": {
-                    "info": ""
+                    "info": "Enumera los comandos personalizados en el gremio."
                 },
                 "test": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<code>",
+                    "info": "Ejecuta el codigo en el contexto de tu cuenta."
                 },
                 "help": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[subcommand]",
+                    "info": "¡Muestra esto!"
                 }
             },
-            "dontown": "",
-            "notag": "",
-            "tagset": "",
-            "tagrename": "",
-            "raw": "",
-            "alreadyexists": "",
-            "testoutput": ""
+            "dontown": "[emote.x]¡No tienes ese comando personalizado!",
+            "notag": "[[emote.x]] No hay existe nigun comando personalizado con ese nombre.",
+            "tagset": "[emote.check]Comando personalizado {{name}}{{process}}!",
+            "tagrename": "[emote.check] El comando personalizado {{old}} ha sido renombrado a {{new}}",
+            "raw": "El codigo para {{name}} es:\\n```{{code}}```",
+            "alreadyexists": "Un comando personalizado con ese nombre ya existe.",
+            "testoutput": "Prueba de Salida:\\n\\n{{output}}"
         }
     }
 }
