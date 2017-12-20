@@ -27,85 +27,85 @@
             "usage": "<code>",
             "flags": {
                 "p": "Muestra una lista de punteros luego de la ejecución.",
-                "i": "",
-                "pointers": "",
-                "input": ""
+                "i": "Especifica la entrada para el operador `,`.",
+                "pointers": "Especifica que los indicadores resultantes deben ser mostrados.",
+                "input": "Especifica los parámetros de entrada."
             }
         },
         "ship": {
-            "info": "",
-            "usage": "",
+            "info": "Te da el nombre de la nave para dos usuarios.",
+            "usage": "<user1><user2>",
             "final": "Your shipname is **{{name}}**!",
-            "notenough": ""
+            "notenough": "¡Tienes que decirme a quien enviar!"
         },
         "tag": {
-            "info": "",
-            "usage": "",
-            "dontown": "",
-            "alreadyexists": "",
-            "notag": "",
-            "tagset": "",
-            "tagrename": "",
-            "raw": "",
-            "testoutput": "",
+            "info": "Las etiquetas son un sistema de comandos públicos que cualquiera puede crear o ejecutar, utilizando el lenguaje BBTag. \n\n** Subcomandos **:\n{{subcommands}}\n\nPara obtener más información acerca de un subcomando, has `b!t help <subcommand>`para obtener más información acerca de BBTag, visita < https://blargbot.xyz/tags >. Mediante la creación de una etiqueta, usted reconoce que acepta los términos de servicio (<https://blargbot.xyz/tags/tos>).",
+            "usage": "<name | subcommand>[args]",
+            "dontown": "[emote.x]¡No tienes esa etiqueta!",
+            "alreadyexists": "[emote.x]¡Ya existe una etiqueta con ese nombre!",
+            "notag": "[[emote.x]] No existe ninguna etiqueta con ese nombre.",
+            "tagset": "[emote.check] eTIQUETA {{name}}{{process}}!",
+            "tagrename": "[emote.check]lA etiqueta {{old}}ha sido renombrada a {{new}}.",
+            "raw": "El codigo para {{name}} es:\n{{code}}",
+            "testoutput": "Prueba de Salida:\n\n{{output}}",
             "subcommand": {
                 "set": {
-                    "usage": "",
+                    "usage": "<name><content>",
                     "info": "Crea o edita una tag con el nombre y contenido previsto. No reemplazará alguna tag hecha por alguien más."
                 },
                 "delete": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Elimina una tag que poseeas."
                 },
                 "rename": {
-                    "usage": "",
+                    "usage": "<name><new name>",
                     "info": "Cambia el nombre a una tag que poseeas."
                 },
                 "raw": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Muestra el código sin formato de una tag."
                 },
                 "info": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Muestra la información de una tag."
                 },
                 "transfer": {
-                    "usage": "",
+                    "usage": "<name><user>",
                     "info": "Transfiere la tag al usuario especificado. Las variables no serán transferidas."
                 },
                 "top": {
                     "info": "Muestra las tags que tienen más Favoritos."
                 },
                 "author": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Muestra el autor de una tag."
                 },
                 "search": {
-                    "usage": "",
+                    "usage": "<query>",
                     "info": "Busca por una tag con un nombre que contenga los términos."
                 },
                 "list": {
-                    "usage": "",
+                    "usage": "[@usuario]",
                     "info": "Muestra todas las tags creadas por un usuario"
                 },
                 "favorite": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Marca como favorito la tag especificada."
                 },
                 "report": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Reporta una tag por violar los Términos de Servicio. Úsalo con responsabilidad."
                 },
                 "test": {
-                    "usage": "",
+                    "usage": "<code>",
                     "info": "Ejecuta el código previsto en un ambiente de pruebas."
                 },
                 "help": {
-                    "usage": "",
+                    "usage": "[subcommand]",
                     "info": "Muestra esto!"
                 },
                 "docs": {
-                    "usage": "",
+                    "usage": "[subtag]",
                     "info": "Muestra un enlace a la documentación de BBTag, o enseña información acerca de una subtag específica."
                 },
                 "setdesc": {
@@ -115,7 +115,7 @@
                     "info": "Información"
                 }
             },
-            "subcommandnotfound": "",
+            "subcommandnotfound": "No se pudo encontrar un subcomando con el nombre '{{subcommand}}'.",
             "transferprompt": "",
             "nobots": "",
             "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
@@ -213,14 +213,14 @@
                     "info": ""
                 }
             },
-            "prefixlist": "",
-            "userprefixes": "",
-            "guildprefixes": "",
-            "noprefixes": "",
-            "defaultprefixes": "",
-            "prefixadded": "",
-            "prefixremoved": "",
-            "nothingchanged": ""
+            "prefixlist": "{{content}} \nPara configurar sus prefijos, uso los subcomandos 'Añadir' y 'eliminar'. Para configurar los prefijos de gremio, utilice el comando 'configuración'.",
+            "userprefixes": "Estos son tus prefijos:\n```md\n{{userprefixes}}\n```",
+            "guildprefixes": "Estos son los prefijos en este gremio:\n```md\n{{guildprefixes}}\n```",
+            "noprefixes": "No tienes prefijos personalizados.",
+            "defaultprefixes": "Siempre puedes utilizar estos prefijos:{{prefixes}}",
+            "prefixadded": "¡El prefijo ha sido añadido!",
+            "prefixremoved": "¡El prefijo ha sido removido!",
+            "nothingchanged": "Nada fue cambiado."
         },
         "warnings": {
             "output": ""
