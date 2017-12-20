@@ -3,30 +3,30 @@
         "ping": {
             "info": "Pong!\nMide la latencia del comando.",
             "randmsg": [
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
+                "La existencia es una mentira.",
+                "Moriras algún día, quizás pronto.",
+                "Nada importa.",
+                "¿A donde quieres llegar?",
+                "No hay de que ver aquí.",
+                "Estás solo en un vacío infinito.",
+                "La verdad es falsa.",
+                "Abandonar todo.",
+                "Tu existencia es lamentable.",
+                "Estamos todos muertos ya.",
+                "Miau.",
+                "El miedo es libertad.",
+                "Subyugacion es liberación.",
+                "La contradicción es verdad.",
+                "¿Te gustaría hacer un contrato?",
+                "Dejarlo ir, y seguir adelante."
             ],
-            "final": ""
+            "final": "¡Pon!{{time}}ms)"
         },
         "brainfuck": {
-            "info": "",
-            "usage": "",
+            "info": "Ejecuta código que te jode el cerebro.",
+            "usage": "<code>",
             "flags": {
-                "p": "",
+                "p": "Muestra una lista de punteros luego de la ejecución.",
                 "i": "",
                 "pointers": "",
                 "input": ""
