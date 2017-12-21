@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:37:01
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 10:05:36
+ * @Last Modified time: 2017-12-21 10:51:40
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -21,7 +21,7 @@ bu.init = () => {
         password: config.db.password,
         user: config.db.user,
         port: config.db.port,
-        max: 100,
+        max: 50,
         buffer: 5,
         timeoutError: 10000
     });
