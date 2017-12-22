@@ -282,7 +282,7 @@
         "user": {
             "usage": "[user]",
             "info": "",
-            "description": "",
+            "description": "**Brugernavn**: {{username}}\n**Diskriminator**: {{discriminator}}\n**ID**: {{id}}\n**Bot**: {{bot}}\n**Skabt**: {{created}}\n[Avatar]({{avatar}})",
             "guildinfoheader": "Oplysninger om server",
             "guildinfo": "**Kaldenavn**: {{nick}}\n**Tilladelser**: {{permissions}}\n**Status**: {{status}}\n**Tilsluttet**: {{joined}}\n{{game}}",
             "status": [
