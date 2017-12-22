@@ -194,31 +194,31 @@
             "desc": "Devuelve el nombre + discriminador del usuario especificado, estableciendo al usuario en ejecución."
         },
         "game": {
-            "desc": ""
+            "desc": "Devuelve el juego que el usuario especificado está jugando, estableciendo el usuario en ejecución. Si el usuario no esta jugando, devuelve nothing."
         },
         "id": {
-            "desc": ""
+            "desc": "Devuelve el identificador de usuario especificado, estableciendo al usuario en ejecución."
         },
         "joinedat": {
-            "desc": ""
+            "desc": "Devuelve la fecha en que el usuario especificado, estableciendo el usuario en ejecución, se unió al gremio actual como un timestamp de Unix (milisegundos)."
         },
         "mention": {
-            "desc": ""
+            "desc": "Menciona al usuario especificado, estableciendo al usuario en ejecución."
         },
         "name": {
-            "desc": ""
+            "desc": "Devuelve el nombre del usuario especificado, estableciendo al usuario en ejecución."
         },
         "nick": {
-            "desc": ""
+            "desc": "Devuelve el apodo del usuario especificado, estableciendo al usuario en ejecución."
         },
         "roles": {
-            "desc": ""
+            "desc": "Devuelve una matriz de los roles que tiene el usuario especificado, estableciendo al usuario en ejecución."
         },
         "setnick": {
-            "desc": ""
+            "desc": "Establece el apodo del usuario especificado, estableciendo al usuario en ejecución."
         },
         "status": {
-            "desc": ""
+            "desc": "Devuelve el estado del usuario especificado, estableciendo al usuario en ejecución. Puede devolver \"en línea\", \"away\", \"dnd\" o \"offline\"."
         }
     }
 }
