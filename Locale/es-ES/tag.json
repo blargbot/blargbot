@@ -1,37 +1,37 @@
 {
     "array": {
         "filter": {
-            "desc": ""
+            "desc": "Itera a través de una matriz, estableciendo el elemento actual a una variable local 'i'. Si 'varName' es especificada, establece esa variable en lugar de la otra. \n\nDevuelve una nueva matriz que sólo contiene los elementos donde el resultado de la iteración fue 'verdadero' o '1'."
         },
         "foreach": {
-            "desc": ""
+            "desc": "Itera a través de una matriz, estableciendo la variable local 'i' en el elemento actual. Si se provee 'varName', establece esa variable en lugar de la otra."
         },
         "get": {
-            "desc": ""
+            "desc": "Obtiene un elemento de una matriz en la posición `index`."
         },
         "isarray": {
-            "desc": ""
+            "desc": "Devuelve true si el elemento proporcionado es un array y false en caso contrario. No puedes utilizar nombres de variables."
         },
         "join": {
-            "desc": ""
+            "desc": "Se une a una matriz con el `delimiter` proveido."
         },
         "length": {
-            "desc": ""
+            "desc": "Devuelve la longitud de la matriz proporcionada."
         },
         "map": {
-            "desc": ""
+            "desc": "Itera a través de una matriz, estableciendo el elemento actual a una variable local 'i'. Si se especifica 'varName', establece esa variable en lugar de la otra. Devuelve una nueva matriz donde cada elemento es el resultado de cada iteración."
         },
         "pop": {
-            "desc": ""
+            "desc": "Elimina y luego devuelve el último elemento de la matriz."
         },
         "push": {
-            "desc": ""
+            "desc": "Lleva un elemento al final de una matriz. Devuelve la matriz modificada."
         },
         "set": {
-            "desc": ""
+            "desc": "Establece un elemento en el array en el `index` especificado."
         },
         "shift": {
-            "desc": ""
+            "desc": "Elimina y devuelve el primer elemento de la matriz."
         },
         "slice": {
             "desc": ""
