@@ -34,164 +34,164 @@
             "desc": "Elimina y devuelve el primer elemento de la matriz."
         },
         "slice": {
-            "desc": ""
+            "desc": "Devuelve una sección de la matriz, incluyendo el índice de 'Inicio' y excluyendo el índice de 'fin'. Si 'end' no está especificado, establece valor por defecto a todos los elementos restantes."
         },
         "sort": {
-            "desc": ""
+            "desc": "Ordena y devuelve un array, por defecto en orden ascendente. \n\nSiempre que 'function es proveida', la ordenación ocurrirá según el resultado de ejecutar dicha función. Esto establecerá dos variables locales: 'a' (o 'varNameOne') y 'b' (o 'varNameTwo').\n\nLa función debe devolver un número. Si el número es mayor que 0, 'a' se considerarán mayor que 'b'. Si el número es menor que 0, 'b' se considerará mayor que 'a'. Cualquier resultado no númerico se convertirá a 0, donde ambos elementos son iguales."
         },
         "splice": {
-            "desc": ""
+            "desc": "A partir de la posición 'Inicio', quita los elementos 'deleteCount' de la matriz y agrega el resto de los 'items' en esa posición. Devuelve los elementos quitados."
         },
         "split": {
-            "desc": ""
+            "desc": "Divide el 'texto' por el `delimiter`, volviendo a la nueva matriz."
         },
         "unshift": {
-            "desc": ""
+            "desc": "Inserta 'value' al principio del array y devuelve la matriz modificada."
         }
     },
     "channel": {
         "id": {
-            "desc": ""
+            "desc": "Devuelve el ID del canal actual o especificado."
         },
         "nsfw": {
-            "desc": ""
+            "desc": "Devuelve si el canal actual o especificado es NSFW."
         },
         "name": {
-            "desc": ""
+            "desc": "Retorna el nombre del canal actual o especificado."
         },
         "position": {
-            "desc": ""
+            "desc": "Devuelve la posición del canal actual o especificado."
         },
         "topic": {
-            "desc": ""
+            "desc": "Devuelve el tema del canal actual o especificado (sólo texto)."
         },
         "type": {
-            "desc": ""
+            "desc": "Devuelve el tipo de canal actual o especificado (devuelve \"texto\" o \"voz\")."
         }
     },
     "general": {
         "clean": {
-            "desc": ""
+            "desc": "Limpia el texto proporcionado reduciendo los espacios en blanco."
         },
         "comment": {
-            "desc": ""
+            "desc": "Especifica un área que se omitirá en el analisis"
         },
         "get": {
-            "desc": ""
+            "desc": "Devuelve la variable almacenada con el nombre proporcionado. Los prefijos de variable pueden modificar la piscina en la que buscan."
         },
         "set": {
-            "desc": ""
+            "desc": "Define la variable almacenada con el nombre proporcionado y con el valor proporcionado. Prefijos de variable pueden modificar la piscina en la que se establece."
         },
         "trim": {
-            "desc": ""
+            "desc": "Elimina espacios en blanco antes y después del texto proporcionado. Considere el uso de la etiqueta de {clean} para eliminar espacios en blanco en el texto."
         },
         "void": {
-            "desc": ""
+            "desc": "Evita la salida de dentro de la subetiqueta. Varia entre comentarios a medida que son analizadas las cosas, simplemente no aparece."
         },
         "newline": {
-            "desc": ""
+            "desc": "Devuelve el número especificado de nuevas lineas, estableciendo 1."
         },
         "space": {
-            "desc": ""
+            "desc": "Devuelve el número especificado de espacios, estableciendo por defecto 1."
         }
     },
     "guild": {
         "createdat": {
-            "desc": ""
+            "desc": "Devuelve cuando se creó el gremio actual como un timestamp de Unix (en milisegundos)."
         },
         "channels": {
-            "desc": ""
+            "desc": "Devuelve los canales del gremio actual como una matriz."
         },
         "icon": {
-            "desc": ""
+            "desc": "Devuelve la dirección de enlace del icono del gremio actual."
         },
         "id": {
-            "desc": ""
+            "desc": "Devuelve el identificador del gremio actual."
         },
         "name": {
-            "desc": ""
+            "desc": "Devuelve el nombre del gremio actual."
         },
         "owner": {
-            "desc": ""
+            "desc": "Devuelve el ID de propietario del gremio."
         },
         "region": {
-            "desc": ""
+            "desc": "Devuelve la región en la que el gremio actual está."
         },
         "roles": {
-            "desc": ""
+            "desc": "Devuelve una matriz de roles del gremio actual."
         }
     },
     "logic": {
         "if": {
-            "desc": ""
+            "desc": "Si el `value` es igual a `true` o `1`, ejecutar`then`.\nSi el `value`es igual a `false` o `0`, ejecutar `else`.\nDe otro modo, produce un error.\n\nUsa esto con la etiqueta {logic}."
         },
         "logic": {
-            "desc": ""
+            "desc": "Lo operadores logicos en el `augend` y `operands`, devuelven `true` o `false`.\n\nEquivalencia de Operadores:\n - `==` - equivalente\n - `!=` - no equivalente\n - `<` - menor que\n - `<=` - menor o igual que\n - `>` - mayor que\n - `>=` - mayor o igual que\n - `startswith` - el sumando empieza con el operador\n - `endswith` - el sumando termina con el operador\n - `includes` - el sumando incluye el operador\n\nOperadores logicos:\n - `&&` - devuelve verdadero si el sumando y el operador son ambos verdaderos\n - `||` - devuelve verdadero si el sumando o el operador son alguno verdadero\n - `XOR` - devuelve verdadero si solo uno de ambos es verdadero (no ambos)\n\nOtros Operadores:\n - `!` - Invierte el siguiente operador (verdadero se vuelve falso, etc.)"
         }
     },
     "math": {
         "abs": {
-            "desc": ""
+            "desc": "Devuelve el valor absoluto del número proporcionado (no negativo)."
         },
         "base": {
-            "desc": ""
+            "desc": "Analiza el `number` usando la base 'origin' proporcionada (estableciendo 10) y lo convierte en la base 'radix'."
         },
         "ceil": {
-            "desc": ""
+            "desc": "Redondea el decimal proveido hacia arriba."
         },
         "floor": {
-            "desc": ""
+            "desc": "Redondea los decimales proveidos hacia abajo."
         },
         "math": {
             "desc": ""
         },
         "parsefloat": {
-            "desc": ""
+            "desc": "Trata de analizar el texto como un decimal."
         },
         "parseint": {
-            "desc": ""
+            "desc": "Trata de analizar el texto como un entero."
         },
         "randint": {
-            "desc": ""
+            "desc": "Devuelve un entero aleatorio entre el rango proporcionado. 'min' va por defecto a '0'"
         },
         "round": {
-            "desc": ""
+            "desc": "Redondea `number' dado a los `places` decimales especificados', estableciendo a 0."
         }
     },
     "message": {
         "id": {
-            "desc": ""
+            "desc": "Devuelve el ID del mensaje de comando en ejecución."
         }
     },
     "role": {
         "color": {
-            "desc": ""
+            "desc": "Devuelve el color del rol especificado en hexadecimal."
         },
         "id": {
-            "desc": ""
+            "desc": "Devuelve el ID del rol especificado."
         },
         "mention": {
-            "desc": ""
+            "desc": "Devuelve la mención de la función especificada."
         },
         "name": {
-            "desc": ""
+            "desc": "Devuelve el nombre del rol especificado."
         },
         "position": {
-            "desc": ""
+            "desc": "Retorna la posición de la función especificada."
         }
     },
     "user": {
         "avatar": {
-            "desc": ""
+            "desc": "Devuelve la direccion de enlace del avatar del usuario especificado, estableciendo el usuario en ejecución."
         },
         "createdat": {
-            "desc": ""
+            "desc": "Devuelve la fecha en que el usuario especificado, estableciendo el usuario en ejecución, fue creado como un timestamp de Unix (en milisegundos)."
         },
         "discrim": {
-            "desc": ""
+            "desc": "Devuelve el discriminador del usuario especificado, estableciendo al usuario en ejecución."
         },
         "fullname": {
-            "desc": ""
+            "desc": "Devuelve el nombre + discriminador del usuario especificado, estableciendo al usuario en ejecución."
         },
         "game": {
             "desc": ""
