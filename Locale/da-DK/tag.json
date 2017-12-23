@@ -103,7 +103,7 @@
             "desc": "Returnerer kanalerne i den nuværende server som en matrice."
         },
         "icon": {
-            "desc": ""
+            "desc": "Returnerer linket til ikonet for den nuværende server."
         },
         "id": {
             "desc": "Returnerer ID'ET på den nuværende server."
@@ -155,7 +155,7 @@
             "desc": "Returnerer et tilfældigt heltal i den angivne rækkevidde. `min` er som udgangspunkt sat til at være `0`"
         },
         "round": {
-            "desc": ""
+            "desc": "Afrunder det givne `tal` til det angivne decimal `pladser`, som standard sat til 0."
         }
     },
     "message": {
