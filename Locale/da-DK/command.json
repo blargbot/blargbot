@@ -253,7 +253,7 @@
             },
             "capacitylow": "Din revolver skal være i stand til at holde mindst to kugler, lavere ville være garanteret død!",
             "bulletslow": "Du kan ikke lade mindre end en kugle, din kegle.",
-            "bulletshigh": "",
+            "bulletshigh": "Wow, din revolver kan kun holde {{capacity}} kugler! Det vil være garanteret dødsfald! Ønsker du at dø eller sådan noget?",
             "begin": "",
             "death": "{{content}}\n\n***BUM!*** [[command.general.rr.deathmessages]]",
             "life": "{{content}}\n\n*Klik!* [[command.general.rr.livemessages]]",
