@@ -218,7 +218,7 @@
             "desc": "Angiver kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
         },
         "status": {
-            "desc": ""
+            "desc": "Returnerer status for den angivne bruger, som standard sat til den udførende bruger. Kan returnere \"online\", \"away\", \"dnd\" eller \"offline\"."
         }
     }
 }
