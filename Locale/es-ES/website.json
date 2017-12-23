@@ -71,20 +71,20 @@
     },
     "commands": {
         "title": "Comandos",
-        "desc": "",
+        "desc": "blargbot está equipado con numerosos comandos. De forma predeterminada, blargbot responde a los prefijos 'b!', 'blargbot' y las menciones. Puede Agregar prefijos adicionales para usted y para los gremios. \n\nAlgunos comandos sólo pueden utilizarse por los miembros que se definen como parte del personal. También puede personalizar las restricciones de uso de cada comando individualmente.\n\nAlgunos comandos tienen requerimientos de permisos especiales para ser ejecutados, como subir las imágenes. Por favor, asegúrese de que el bot tenga los permisos adecuados cuando se intente utilizar un comando. \n\n## Argumentos \n- '<>' - denota un argumento requerido - \n'[]' - denota un argumento opcional - \n'...' - denota un argumento repetido \n\n### Banderas \n\nAlgunos comandos son capaces de tomar parámetros de línea de comandos tipo bandera. Todos los indicadores se dividen en códigos de bandera (con el prefijo '-') y palabras (con el prefijo--). Las banderas se pueden proporcionar en cualquier orden, pero deben ser después de las discusiones normales. \n\nPor ejemplo, si un comando tiene una entrada de usuario, puede usar '-u' o '--usuario '.\n\n''' b! comando--usuario @user #1234 \nb! comando -u @user #1234 ''' \n\n¡Usted también puede encadenar códigos de bandera juntos. Por ejemplo, '-prueba de bandera ' activar banderas '-f', '-l', '-una ' y dar el contenidos 'prueba' a '-g'.",
         "components": {
-            "usage": "",
-            "flags": "",
-            "aliases": "",
-            "subcommands": ""
+            "usage": "Uso:",
+            "flags": "Banderas:",
+            "aliases": "Alias:",
+            "subcommands": "Subcomandos:"
         }
     },
     "dashboard": {
-        "userheader": "",
-        "guildheader": "",
-        "notauthed": "",
+        "userheader": "Configuraciones de Usuario",
+        "guildheader": "Configuraciones de Gremio",
+        "notauthed": "### Lo sentimos, no puedes acceder a esta pagina.",
         "user": {
-            "dmerrors": ""
+            "dmerrors": "Errores de mensaje directo"
         }
     }
 }
