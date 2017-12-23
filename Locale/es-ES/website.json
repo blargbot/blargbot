@@ -44,33 +44,33 @@
         }
     },
     "bbtag": {
-        "main": "",
+        "main": "# EtiquetaBB\n> ¡No debe ser confundido con CodigoBB!\n\nEtiquetaBB es unlenguaje de programacion basado en plantillas, diseñado para proveer un marco de gran alcance paa crea comandos avanzados personalizados.\n\n### Terminologia\n\n- Una `etiqueta` se refiere a un bloque de codigo EtiquetaBB, bien sea una etiqueta publica o un comando personalizado.\n-Una `sub etiqueta` se refiere a un componente EtiquetaBB. Las `etiquetas` avanzadas son hechas de muchas `sub etiquetas`.\n- Una `clase` se refiere a un grupo de `sub etiquetas`.",
         "subtags": {
-            "title": "",
+            "title": "Sub Etiquetas",
             "desc": ""
         },
         "variables": {
-            "title": "",
+            "title": "Variables",
             "desc": ""
         },
         "arrays": {
-            "title": "",
+            "title": "Matrices",
             "desc": ""
         }
     },
     "subtags": {
         "components": {
-            "argument": "",
-            "named": "",
-            "unnamed": "",
-            "array": "",
-            "staff": "",
-            "noimplicit": ""
+            "argument": "Argumentos:",
+            "named": "Soporta argumentos nombrados",
+            "unnamed": "**No** soporta argumentos nombrados",
+            "array": "Soporta matrices",
+            "staff": "Requiere que el autor sea parte del personal",
+            "noimplicit": "No permite clases implicitas"
         },
-        "referdocs": ""
+        "referdocs": "Consulte la [documentation](/bbtag) para más instrucciones de uso."
     },
     "commands": {
-        "title": "",
+        "title": "Comandos",
         "desc": "",
         "components": {
             "usage": "",
