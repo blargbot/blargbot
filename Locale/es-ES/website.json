@@ -1,46 +1,46 @@
 {
-    "language": "",
+    "language": "Ingles",
     "header": {
-        "login": "",
-        "logout": "",
-        "commands": "",
-        "bbtag": "",
-        "subtags": "",
-        "dashboard": ""
+        "login": "Iniciar Sesion",
+        "logout": "Salir",
+        "commands": "Comandos",
+        "bbtag": "Etiqueta BB",
+        "subtags": "Seub Etiqeutas",
+        "dashboard": "Panel de Control"
     },
     "generic": {
-        "loading": "",
-        "collapse": "",
-        "expand": "",
-        "search": "",
-        "noresults": "",
-        "resultsfound": ""
+        "loading": "Cargando",
+        "collapse": "Contraer Todo",
+        "expand": "Expandir Todo",
+        "search": "Filtro...",
+        "noresults": "¡Oh no! No se encontraron resultados.",
+        "resultsfound": "Resultados Coincidientes:"
     },
     "index": {
-        "desc": "",
+        "desc": "blargbot is un bot de Discord mulproposito dedicado a proporcionar comandos y servicios de calidad, incluyendo registros de cha y un sistema de comandos profundo personalizado.",
         "commands": {
-            "title": "",
-            "desc": ""
+            "title": "Comandos",
+            "desc": "blargbot está equipado con numerosos comandos, todos los cuales son documentados y categorizados para su comodidad."
         },
         "bbtag": {
-            "title": "",
-            "desc": ""
+            "title": "Etiqueta BB",
+            "desc": "blargbot usa un sistema de etiquetas sofisticado llamado Etiquetas BB, que se puede utilizar para crear comandos avanzados personalizados."
         },
         "customization": {
-            "title": "",
-            "desc": ""
+            "title": "Personalización",
+            "desc": "Entendemos que cada gremio no es el mismo, por lo que blargbot tiene una basta personalización. Usted puede controlar exactamente qué funciones pueden utilizar los comandos, especificar prefijos personalizados e incluso cambiar el idioma de la pantalla!"
         },
         "moderation": {
-            "title": "",
+            "title": "Moderación",
             "desc": "Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
         },
         "opensource": {
-            "title": "",
-            "desc": ""
+            "title": "Codigo-Abierto",
+            "desc": "¡Compartir es cuidar! blargbot es completamente de codigo abierto bajo licencia GNU AGPLv3. No dudes en echar un vistazo y aprender cómo funciona. Si utilizas cualquiera de mi código en tu propio proyecto, requeriras de mi credito. Ver la licencia para más detalles."
         },
         "suggestions": {
-            "title": "",
-            "desc": ""
+            "title": "Abierto a Sugerencias",
+            "desc": "¿Tiene alguna sugerencia para el bot? ¡Estaría encantado de escucharla! ¿Encontraste un error? ¡Me gustaría también! Puedes sugerirme cualquier cosa usando el comando 'sugerir', uniéndose a mi gremio, o mediante la presentación de un ticket."
         }
     },
     "bbtag": {
