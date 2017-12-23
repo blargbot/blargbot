@@ -305,7 +305,7 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": "",
+            "info": "Fortæller alle hvad du synes er lort.",
             "usage": "[text]",
             "flags": {
                 "plural": ""
@@ -335,7 +335,7 @@
                     "info": "Tilføjer eller fjerner brugere til listen over personale."
                 },
                 "staffrole": {
-                    "info": ""
+                    "info": "Bringer op en dialog til at vælge eller fravælge personale roller."
                 },
                 "mute": {
                     "info": "Sætter op den dæmpede rolle."
@@ -403,7 +403,7 @@
                 },
                 "author": {
                     "usage": "<name>",
-                    "info": ""
+                    "info": "Returnerer forfatteren af den brugerdefinerede kommando."
                 },
                 "transfer": {
                     "usage": "<name><user>",
