@@ -55,7 +55,7 @@
         },
         "arrays": {
             "title": "Matrices",
-            "desc": ""
+            "desc": "## Matrices\n\nLas matrices son una estructura de datos muy útil. En esencia, una matriz es una lista de elementos. Son usados de forma similar a las subetiquetas, con corchetes `[]` en vez de llaves `{}`.\n\nHay muchas subetiquetas dedicadas a usar y manipular matrices. Mira la clase `Array` para mas detalles.\n\n### Sintaxis\n> `[item;item;item]`\n\n### Indices\n\nLas matrices con ordenadas. Cada elemento en una matriz es asignada a un **indice**, el cual básicamente es la posición del elemento en la matriz.\n\nLo mas importante a saber sobre las matrices es que son **0-indexadas**. Esto significa que los indices empiezan en 0 en vez de 1. Echemos un vistazo a esta muestra de matriz:\n```\n Indice:  0 1 2 3 4\n-------------------\nValores: [1;2;3;4;5]\n```\nEl primer elemento, `1`, tiene un indice de `0`. Del mismo modo, el cuarto elemento `4` tiene un indice de `3`. A primeras esto puede parecer engañoso, pero es simple una vez que te acostumbras."
         }
     },
     "subtags": {
