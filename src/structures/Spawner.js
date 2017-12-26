@@ -108,6 +108,11 @@ class Spawner extends EventEmitter {
         });
     }
 
+    async lookupChannel(id) {
+        let res = await this.awaitBroadcast({ message: 'lookupChannel', id });
+        return res.map(r => JSON.parse(r.message)).filter(r => r !== null)[0] || { channel: 'Unknown', guild: 'Unknown' };
+    }
+
     async getStaffGuilds(userId, guilds) {
         let res = await this.awaitBroadcast({
             message: 'getStaffGuilds',
