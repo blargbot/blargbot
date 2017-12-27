@@ -47,10 +47,10 @@
         "main": "# BBTag\n> Non deve essere confuso con il BBCode!\n\nBBTag è un linguaggio template-based, costruito per fornire un framework potente per creare comandi personalizzati avanzati.\n\n### Terminologia\n\n- Una `tag` si riferisce ad un blocco del codice BBTag, non importa se è una tag pubblica o un comando personalizzato.\n- Una `sottotag` (subtag) si riferisce ad un componente BBTag. `tags` avanzate sono composte da molte `sottotag`.\n- Una `classe` (class) si riferisce ad un gruppo di`sottotag`.",
         "subtags": {
             "title": "Sottotags",
-            "desc": ""
+            "desc": "## Subtag\n\nI subtag sono la base principale del sistema BBTag. Eseguono funzioni dinamiche, cose come prendere il nome di un utente or eseguire della matematica.\n\nEcco un subtag:\n```\n{math.randint;1;10}\n```\nQuando eseguito, questo subtag potrebbe ritornare un risultato simile a questo:\n```\n6\n```\nCome puoi vedere, il subtag `math.randint` ritorna un numero intero nei valori specificati.\n\n## Anatomia di un subtag\n\nUn subtag è composto di componenti diversi. Un diagramma di sintassi potrebbe essere qualcosa del genere:\n```\n{[class.]name[![var]]([;args]...|=<namedArgs>...}\n```\nTi potrebbe confondere all'inizio, ma c'è una spiegazione!\n\n#### Classi\n\n> `[class.]name`\n\nI subtag sono divisi in gruppi, che si chiamano **classi**. Ogni classe ha un motivo specifico. Per esempio, la classe `math` contiene subtag che operano sui numeri. La classe `user` contiene subtag che danno informazione sugli utenti.\nLe classi provvedono un sistema di organizzazione.\n\nQuando si usa un subtag, l'uso preferito sarebbe `{class.name}`. Questo lo rende più leggibile. Però, dare la classe al sistema BBTag è opzionale, di solito. BBTag sa che `{math.randint}`e `{randint}` sono lo stesso subtag. Queste si chiamano **classi implicite**. L'eccezione di questo sono i subtag nella classe `general`, che dovrebbero essere usati *senza* una classe esplicita.\n\nPerò, dovresti fare attenzione con le classi implicite! A volte, le classi potrebbero avere subtag collo stesso nome. Per esempio, `{user.id}` and `{channel.id}` hanno entrambi subtag con nome `id`. Se provi ad usare le classi implicite con un subtag che esiste in più classi, ritornerà un errore!\n\n#### Piping\n> `[![var]]`\n\nIl piping è una funzione che ti fa ridirezionare l'output di un subtag in una variabile o nel nulla (nullificandola). Questo può aiutare nella pulizia del codice.\n\nPer esempio, se non vuoi che un subtag produca output per nessun motivo, puoi aggiungere un `!` dopo il nome subtag per silenziarla.\nLe linee seguenti sono equivalenti:\n```\n{void;{math.randint;1;10}}\n{math.randint!;1;10}\n```\nSe vuoi inserire l'output di un subtag in una variabile, puoi aggiungere `!nomeVariabile` dopo il nome subtag.\nLe linee seguenti sono equivalenti:\n```\n{set;randomInteger;{math.randint;1;10}}\n{math.randint!randomInteger;1;10}\n```\nIl piping è leggermente più veloce da eseguire rispetto alla sintassi completa.\n\n#### Argomenti\n\n> `[;args]...`\n\nPuoi passare dei parametri ai subtag. Questi sono separati dai punti e virgola `;`. Gli argomenti sono differenti per ogni subtag, e documentazione per ogni argomento può essere trovato sulla pagina del subtag.\n\n##### Argomenti con nome\n\n> `=<namedArgs>...`\n\nNormalmente, l'ordine degli argomenti è molto importante. Però, puoi usare le controparti con nome come alternativa. Questo si può fare usando un uguale `=` invece di un punto e virgola, poi specificando dei tag chiave-valore, nel formato `{*chiave;valore}`\n\nPer esempio, l'uso di `{math.randint}` è `{math.randint;min;max}`. I nomi degli argomenti sono `min` e `max` rispettivamente.\nQuesti usi sono equivalenti:\n```\n{math.randint;1;10}\n{math.randint=\n    {*min;1}\n    {*max;10}\n}\n```\nNon puoi utilizzare gli argomenti con nome e gli argomenti con ordine nello stesso subtag."
         },
         "variables": {
-            "title": "",
+            "title": "Variabili",
             "desc": ""
         },
         "arrays": {
@@ -64,27 +64,27 @@
             "named": "",
             "unnamed": "",
             "array": "",
-            "staff": "",
-            "noimplicit": ""
+            "staff": "Richiede che l'autore è staff",
+            "noimplicit": "Non supporta le classi implicite"
         },
-        "referdocs": ""
+        "referdocs": "Consultare la [documentazione](/bbtag) per ulteriori istruzioni sull'uso."
     },
     "commands": {
-        "title": "",
-        "desc": "",
+        "title": "Comandi",
+        "desc": "blargbot ha commandi numerosi. Per default, blargbot risponde ai prefissi `b!`, `blargbot` e le menzioni (`@blargbot`). Puoi aggiungere altri prefissi per sia te stesso che il server.\n\nAlcuni comandi possono essere usati soltanto dai membri definiti come staff. Puoi also impostare le restrizioni di uso di ogni comando singolarmente.\n\nAlcuni comandi hanno requisiti di permessi speciali per poter essere eseguiti, per esempio il caricamento delle immagini. Assicuratevi che il bot abbia i permessi giusti prima di eseguire un comando.\n\n## Argomenti\n- `<>` denota un argomento requisito\n- `[]` denota un argomento opzionale\n- `...` denota un argomento ripetuto\n\n### Contrassegni\nAlcuni comandi possono utilizzare dei contrassegni in maniera riga di comando. Tutti i contrassegni sono divisi in codici (prefissi da `-`) e parole (prefisse da `--`). I contrassegni possono essere provveduti in ogni ordine, ma devono essere dopo gli argomenti normali.\n\nPer esempio, se un comando accetta un input utente, potresti usare `-u` o `--user`.\n```\nb!command -u @user#1234\nb!command --user @user#1234\n```\nPuoi anche inserire più contrassegni in un codice. Per esempio, `-flag test` attiva i contrassegni `-f`, `-l`, `-a` e da il contenuto 'test' a `-g`.",
         "components": {
-            "usage": "",
-            "flags": "",
-            "aliases": "",
-            "subcommands": ""
+            "usage": "Utilizzo:",
+            "flags": "Contrassegni:",
+            "aliases": "Alias:",
+            "subcommands": "Sub-comandi:"
         }
     },
     "dashboard": {
-        "userheader": "",
-        "guildheader": "",
-        "notauthed": "",
+        "userheader": "Impostazioni degli utenti",
+        "guildheader": "Impostazioni del server",
+        "notauthed": "### Siamo spiacenti, non puoi accedere a questa pagina\n\nEsegui il login per utilizzare il pannello di amministrazione.",
         "user": {
-            "dmerrors": ""
+            "dmerrors": "Errori in messaggi diretti"
         }
     }
 }
