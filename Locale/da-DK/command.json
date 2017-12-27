@@ -237,7 +237,7 @@
             "subcommand": {
                 "dmerrors": {
                     "usage": "[sandt | falsk]",
-                    "info": ""
+                    "info": "Aktiverer eller deaktiverer private beskeder for fejl meddelelser."
                 }
             },
             "dmerrorsenabled": "DM fejl meddelelser er blevet aktiveret.",
@@ -391,7 +391,7 @@
             "subcommand": {
                 "set": {
                     "usage": "<name><content>",
-                    "info": ""
+                    "info": "Skaber eller redigerer en brugerdefineret kommando med det angivne navn og indhold. Vil ikke erstatte noget tag der er lavet af en anden."
                 },
                 "delete": {
                     "usage": "<name>",
