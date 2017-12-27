@@ -212,7 +212,7 @@
             "desc": "Returnerer kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
         },
         "roles": {
-            "desc": ""
+            "desc": "Returner et array der indeholder de roller den angivne bruger har, som standard sat til den udøvende bruger."
         },
         "setnick": {
             "desc": "Angiver kaldenavnet på den angivne bruger, misligholdende til den fuldbyrdende bruger."
