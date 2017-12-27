@@ -13,18 +13,18 @@
                 "Lass loß und zieh weiter.",
                 "Du bist alleine in einem unendlichen Universum.",
                 "Würdest du gerne einen vertrag mit mir machen?",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
+                "Miau.",
+                "Angst ist die Freiheit.",
+                "Unterwerfung ist die Befreiung.",
+                "Widerspruch ist die Wahrheit.",
+                "Willst du einen Vertrag abschließen?",
+                "Lass es gehen und ziehe weiter."
             ],
-            "final": ""
+            "final": "Ping ({{time}}ms)"
         },
         "brainfuck": {
             "info": "Führt brainfuck code aus",
-            "usage": "",
+            "usage": "<code>",
             "flags": {
                 "p": "",
                 "i": "",
