@@ -39,49 +39,49 @@
             "notenough": "Du musst mir sagen wen ich shipen soll!"
         },
         "tag": {
-            "info": "",
-            "usage": "",
+            "info": "Tags ist ein System von öffentlichen Befehlen, die jeder erstellen oder ausführen kann, mithilfe der BBTag-Sprache. \n\n ** Unterbefehle **:\n{{subcommands}} \n\nFür weitere Informationen über einen Unterbefehl: \"b! t Hilfe <subcommand>\" \nBesuche < https://blargbot.xyz/tags> für mehr Informationen über den BBTag.\nDurch das erzeugen eines Tags, bestätigst du, dass du die Nutzungsbedingungen (< https://blargbot.xyz/tags/tos >) zustimmst.",
+            "usage": "<name| subcommand> [args]",
             "dontown": "[[emote.x]] dieser tag gehört nicht dir",
             "alreadyexists": "[[emote.x]] ein tag mit diesem namen existiert bereits",
             "notag": "[[emote.x]] da ist kein tag mit diesem namen",
-            "tagset": "",
-            "tagrename": "",
+            "tagset": "[[emote.check]] Tag '{{name}}' {{process}}!",
+            "tagrename": "[[emote.check]] Der Tag wurde von \"{{old}}\" in \"{{new}}\" umbenannt.",
             "raw": "Der code für {{name}} ist:\n```{{code}}```",
-            "testoutput": "",
+            "testoutput": "Test Output:\n\n{{output}}",
             "subcommand": {
                 "set": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name><content>",
+                    "info": "Erstellt oder bearbeitet einen Tag mit dem angegebenen Namen und Inhalt. Alle Tags die von jemand anderem gemacht wurden, werden nicht ersetzt."
                 },
                 "delete": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Löscht ein tag der dir gehört"
                 },
                 "rename": {
-                    "usage": "",
+                    "usage": "<name>< new name>",
                     "info": "Bennent einen tag der dir gehört um"
                 },
                 "raw": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Bekomst den rohen code eines tag."
                 },
                 "info": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Zeight informationen über einen tag"
                 },
                 "transfer": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name><user>",
+                    "info": "Überträgt einen Tag zu den angegebenen Benutzer. Variablen werden nicht übertragen."
                 },
                 "top": {
                     "info": "Displays the tags that have been the most favourited."
                 },
                 "author": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Zeigt den Autor eines Tags."
                 },
                 "search": {
-                    "usage": "",
+                    "usage": "<query>",
                     "info": ""
                 },
                 "list": {
