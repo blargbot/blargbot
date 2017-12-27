@@ -273,15 +273,15 @@
                 "Ich werde das *** nicht *** aufräumen.",
                 "Waffen sind kein Spielzeug!",
                 "Nun, du kannst nicht alle gewinnen!",
-                "",
-                "",
-                "",
-                ""
+                "G-gut... Wenn jeder Porkchop perfekt wären, würden wir keine Hotdogs haben? Schade, dass du auf jeden Fall tot bist.",
+                "Schuld an der Verzögerung!",
+                "Heute war einfach nicht dein Glückstag.",
+                "Pssh, ein Weitblick ist für Verlierer."
             ]
         },
         "user": {
-            "usage": "",
-            "info": "",
+            "usage": "[user]",
+            "info": "Gibt Informationen zu den angegebenen Benutzer zurück.",
             "description": "",
             "guildinfoheader": "",
             "guildinfo": "",
