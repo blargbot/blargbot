@@ -82,48 +82,48 @@
                 },
                 "search": {
                     "usage": "<query>",
-                    "info": ""
+                    "info": "Sucht nach einem Tag mit einem Namen, der deine Suche entspricht."
                 },
                 "list": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[@user]",
+                    "info": "Listet alle Tags oder optional alle Tags, die von einem bestimmten Benutzer erstellt wurden."
                 },
                 "favorite": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Favorisier dein markierten tag"
                 },
                 "report": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Meldet einen Tag für die Verletzung des ToS. Bitte verwende ihn verantwortungsbewusst."
                 },
                 "test": {
-                    "usage": "",
+                    "usage": "<code>",
                     "info": "Führt den gegebenen code aus in einer test Umgebung"
                 },
                 "help": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[subcommand]",
+                    "info": "Zeigt das!"
                 },
                 "docs": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[subtag]",
+                    "info": "Gibt einen Link zu der BBTag Dokumentation, oder enthält Informationen zu einem bestimmten Kürzel."
                 },
                 "setdesc": {
                     "info": "Info"
                 },
                 "setusage": {
-                    "info": ""
+                    "info": "info"
                 }
             },
-            "subcommandnotfound": "",
-            "transferprompt": "",
+            "subcommandnotfound": "Ein Unterbefehl mit dem Namen '{{subcommand}}' wurde nicht gefunden.",
+            "transferprompt": "{{target}}, {{user}} will den Besitz des Tag \"{{tag}}\" auf dich übertragen. Akzeptierst du das? Dadurch werden Variablen nicht übertragen.",
             "nobots": "[[emote.x]] du kannst nicht einen tag zu einem bot übertragen",
             "transfercancelled": "[[emote.x]] die übertragung wurde abgebrochen",
-            "transfercomplete": "",
+            "transfercomplete": "[[emote.check]] {{user}} besitzt nun den Tag \"{{tag}}\".",
             "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
-            "descupdate": "",
-            "descreset": "",
-            "subcommandconflict": "",
+            "descupdate": "Die Beschreibung für \"{{tag}}\" wurde aktualisiert.",
+            "descreset": "Die Beschreibung für '{{tag}}' wurde zurückgesetzt.",
+            "subcommandconflict": "Sie können den Namen \"{{name}}\" nicht verwenden, da es bereits einen Unterbefehl mit diesen Namen gibt!",
             "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
             "toptags": "Hier sind die top 10 tags\n\n{{tags}}",
             "tagauthor": "Der tag '{{tag}}' wurde erstellt von **{{author}}**.",
