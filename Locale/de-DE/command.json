@@ -26,15 +26,15 @@
             "info": "Führt brainfuck code aus",
             "usage": "<code>",
             "flags": {
-                "p": "",
-                "i": "",
-                "pointers": "",
-                "input": ""
+                "p": "Zeigt nach der Ausführung eine Zeiger liste an.",
+                "i": "Gibt den Input für den Operator `,` an.",
+                "pointers": "Gibt an, dass der daraus resultierenden Zeiger ausgegeben werden sollte.",
+                "input": "Gibt den Input-Parameter an."
             }
         },
         "ship": {
             "info": "Gibt dir den ship namen für zwei nutzer",
-            "usage": "",
+            "usage": "<user1><user2>",
             "final": "Dein shipname ist **{{name}**!",
             "notenough": "Du musst mir sagen wen ich shipen soll!"
         },
