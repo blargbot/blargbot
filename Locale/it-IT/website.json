@@ -54,16 +54,16 @@
             "desc": ""
         },
         "arrays": {
-            "title": "",
-            "desc": ""
+            "title": "Arrays",
+            "desc": "## Gli array\n\nGli array sono una struttura dei dati estremamente utile. Nell'essenza, un'array è una lista di oggetti. Sono usati similarmente ai subtag, però con le parentesi quadre `[]` anzichè le parentesi graffe `{}`.\n\nCi sono vari subtag dedicate all'uso e manipolazione degli array. Consulta la classe `Array` per ulteriori dettagli.\n\n### Sintassi\n> `[oggetto;oggetto;oggetto]`\n\n### Indici\n\nGli array sono messi in ordine. Ogni elemento nell'array è assegnato un **indice**, che è la posizione dell'elemento nell'array.\n\nLa cosa più importante da sapere sugli array è che sono **indicizzate da 0**. Questo vuol dire che gli indici partono da 0 anzichè da 1. Ecco un'array di esempio:\n```\nIndice: 0 1 2 3 4\n-----------------------\nValori: [1;2;3;4;5]\n```\nIl primo elemento, `1`, ha un indice di `0`. Similarmente, l'elemento `4` ha un indice di `3`. Potrebbe confondere all'inizio, ma è semplice quando ci si abitua."
         }
     },
     "subtags": {
         "components": {
-            "argument": "",
-            "named": "",
-            "unnamed": "",
-            "array": "",
+            "argument": "Argomenti:",
+            "named": "Supporta gli argomenti con nome",
+            "unnamed": "**Non** supporta gli argomenti con nome",
+            "array": "Supporta le array",
             "staff": "Richiede che l'autore è staff",
             "noimplicit": "Non supporta le classi implicite"
         },
