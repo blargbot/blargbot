@@ -159,7 +159,7 @@
         },
         "help": {
             "info": "",
-            "allcommands": "",
+            "allcommands": "Her er alle de kommandoer du kan udføre i **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor mere info om kommandoerne, skriv `help <commandname>` eller besøg <https://blargbot.xyz/commands>.",
             "nocommand": "Beklager, der er ingen kommando med navnet '{{name}}'!",
             "commandinfo": "**{{type}}: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}",
             "aliases": "Ingen aliaser",
@@ -169,7 +169,7 @@
             "subcommands": ""
         },
         "gamatoto": {
-            "info": "",
+            "info": "Tag på en magisk rejse med Gamototo! Brug denne kommando for at tjekke dine statistikker, eller bug en underkommando for at tage på eventyr!",
             "subcommand": {
                 "start": {
                     "usage": "<location>",
@@ -240,8 +240,8 @@
                     "info": ""
                 }
             },
-            "dmerrorsenabled": "",
-            "dmerrorsdisabled": "",
+            "dmerrorsenabled": "DM fejl meddelelser er blevet aktiveret.",
+            "dmerrorsdisabled": "DM fejl meddelelser er blevet deaktiveret.",
             "userinfo": ""
         },
         "rr": {
