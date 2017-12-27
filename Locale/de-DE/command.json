@@ -148,7 +148,7 @@
         },
         "donate": {
             "info": "",
-            "willdm": "",
+            "willdm": "OK, ich schicke dir meine Spende-Informationen in einer DM.",
             "message": ""
         },
         "mods": {
@@ -223,25 +223,25 @@
             "nothingchanged": ""
         },
         "warnings": {
-            "output": ""
+            "output": "**{{user}} ** hat **{{amount}} ** Warnung(en) in **{{guild}} **."
         },
         "economy": {
-            "info": "",
-            "invalidamount": "",
-            "invalidcode": "",
-            "converted": "",
-            "usage": ""
+            "info": "Konvertiert die Währung anhand der aktuellen Umrechnungskurse.",
+            "invalidamount": "Bitte geben Sie eine gültige Menge zum konvertieren an.",
+            "invalidcode": "Unbekannter Währung-Code: {{code}}",
+            "converted": "{{amount}} {{from}} entspricht {{converted}} {{to}}",
+            "usage": "<from><to><amount>"
         },
         "usettings": {
-            "info": "",
+            "info": "Ändert oder zeigt deine Benutzereinstellungen.",
             "subcommand": {
                 "dmerrors": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[richtig | falsch]",
+                    "info": "Aktiviert oder deaktiviert DMs für Fehlermeldungen."
                 }
             },
-            "dmerrorsenabled": "",
-            "dmerrorsdisabled": "",
+            "dmerrorsenabled": "DM-Fehlermeldungen wurden aktiviert.",
+            "dmerrorsdisabled": "DM-Fehlermeldungen wurden deaktiviert.",
             "userinfo": ""
         },
         "rr": {
