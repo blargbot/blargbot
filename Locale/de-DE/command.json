@@ -242,23 +242,23 @@
             },
             "dmerrorsenabled": "DM-Fehlermeldungen wurden aktiviert.",
             "dmerrorsdisabled": "DM-Fehlermeldungen wurden deaktiviert.",
-            "userinfo": ""
+            "userinfo": "Hier sind deine Benutzereinstellungen:\n\n{{settings}}\n\n zur Verfügung stehende Unterbefehle: {{sub}}"
         },
         "rr": {
-            "info": "",
-            "usage": "",
+            "info": "Spielt eine Partie russisches Roulette. Standardmäßig kann dein Revolver 6 Kugeln halten.",
+            "usage": "[bullets]",
             "flags": {
-                "capacity": "",
-                "emote": ""
+                "capacity": "Legt fest, wie viele Kugeln dein Revolver halten kann.",
+                "emote": "Gibt an, welcher Emote (oder Text) das Russische Roulette spielen soll."
             },
-            "capacitylow": "",
-            "bulletslow": "",
-            "bulletshigh": "",
-            "begin": "",
-            "death": "",
-            "life": "",
+            "capacitylow": "Dein Revolver muss mindestens zwei Kugeln halten, tiefer würde den Tod garantieren!",
+            "bulletslow": "Weniger als eine Kugel kann nicht geladen werden, du Weichei.",
+            "bulletshigh": "Whoa, dein Revolver kann nur {{capacity}} Kugeln halten! Das würde den Tod garantieren! Hast du einen Todeswunsch oder so etwas?",
+            "begin": "Du lädst {{bullets}} Kugel(n) in dein {{capacity}}-Schuss-Revolver, gib es einen Dreher und leg es gegen dein Kopf.",
+            "death": "{{content}} \n\n*** BOOM! *** [[command.general.rr.deathmessages]]",
+            "life": "{{content}} \n\n*Klick!* [[command.general.rr.livemessages]]",
             "livemessages": [
-                "",
+                "Die Pistole Klicks sind leer. \n\nDu bekommst einen weiteren Tag zum leben.",
                 "",
                 "",
                 "",
