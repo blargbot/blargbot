@@ -51,7 +51,7 @@
             "subcommand": {
                 "set": {
                     "usage": "",
-                    "info": ""
+                    "info": "Tworzy lub edytuje tag z podaną nazwą i zawartością. Nie będzie zastępował tagów zrobionych przez kogoś innego."
                 },
                 "delete": {
                     "usage": "<name>",
@@ -63,7 +63,7 @@
                 },
                 "raw": {
                     "usage": "<name>",
-                    "info": ""
+                    "info": "Daje surowy kod tagu."
                 },
                 "info": {
                     "usage": "<name>",
@@ -71,7 +71,7 @@
                 },
                 "transfer": {
                     "usage": "<name><user>",
-                    "info": ""
+                    "info": "Przenosi tag do określonego użytkownika. Zmienne nie zostaną przeniesione."
                 },
                 "top": {
                     "info": "Displays the tags that have been the most favourited."
@@ -106,7 +106,7 @@
                 },
                 "docs": {
                     "usage": "",
-                    "info": ""
+                    "info": "Daje link do dokumentacji BBTag, lub podaje informacje o określonym pod-tagu."
                 },
                 "setdesc": {
                     "info": ""
@@ -115,11 +115,11 @@
                     "info": ""
                 }
             },
-            "subcommandnotfound": "",
-            "transferprompt": "",
-            "nobots": "",
+            "subcommandnotfound": "Nie mogłem znaleźć pod-komendy z nazwą '{{subcommand}}'.",
+            "transferprompt": "{{target}}, {{user}} chce przenieść własność tagu '{{tag}}' do Ciebie. Czy akceptujesz? To nie przeniesie zmiennych.",
+            "nobots": "[[emote.x]] Nie można oddać tagu do bota!",
             "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
-            "transfercomplete": "",
+            "transfercomplete": "[[emote.check]] {{user}} teraz posiada tag `{{tag}}`.",
             "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
             "descupdate": "",
             "descreset": "",
