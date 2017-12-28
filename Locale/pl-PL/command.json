@@ -261,32 +261,32 @@
                 "",
                 "",
                 "",
+                "Dziękujesz RNGesusowi, gdy opuszczasz broń.",
                 "",
-                "",
-                ""
+                "Uśmiechasz się kiedy zdajesz sobie sprawę, że przeżyłeś."
             ],
             "deathmessages": [
                 "",
                 "",
+                "Zanim się zorientowałeś, był już koniec.",
+                "Przynajmniej maszs kurczaka!",
                 "",
+                "Bronie to nie zabawki!",
+                "Cóż nie można wygrać z wszystkimi!",
                 "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
+                "Wiń lagi!",
+                "Dziś po prostu nie był twój szczęśliwy dzień.",
                 ""
             ]
         },
         "user": {
             "usage": "",
-            "info": "",
+            "info": "Zwraca informacje dotyczące danego użytkownika.",
             "description": "",
             "guildinfoheader": "",
             "guildinfo": "",
             "status": [
-                "",
+                "Gra w",
                 "",
                 "",
                 ""
