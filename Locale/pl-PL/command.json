@@ -109,7 +109,7 @@
                     "info": "Daje link do dokumentacji BBTag, lub podaje informacje o określonym pod-tagu."
                 },
                 "setdesc": {
-                    "info": ""
+                    "info": "informacje"
                 },
                 "setusage": {
                     "info": "informacje"
@@ -149,27 +149,27 @@
         "donate": {
             "info": "",
             "willdm": "",
-            "message": ""
+            "message": "wypełniacz"
         },
         "mods": {
             "info": "",
-            "mods": "",
+            "mods": "Moderatorzy na **{{guild}}**",
             "nomods": "Brak modów w tej gildii.",
-            "nomodsonline": ""
+            "nomodsonline": "Brak moderatorów online."
         },
         "help": {
             "info": "",
             "allcommands": "",
             "nocommand": "Przepraszam. tutaj nie ma komendy z nazwą '{{name}}'!",
             "commandinfo": "",
-            "aliases": "",
+            "aliases": "Brak aliasów",
             "subcommand": "Pod-komendy",
             "command": "Komenda",
             "nosubcommand": "Przepraszam, ale tu nie ma pod-komendy dla '{{command}}' z nazwą '{{name}}'!",
-            "subcommands": ""
+            "subcommands": "**Pod-Komendy**: {{subcommands}}\n\nWpisz `help <command> <subcommand>` aby uzyskać więcej informacji na temat pod-komend!"
         },
         "gamatoto": {
-            "info": "",
+            "info": "Idź na magiczną wyprawę z Gamatoto! Użyj tej komendy żeby sprawdzać swoje statystki, lub użyj pod-komendy żeby pójść na przygodę!",
             "subcommand": {
                 "start": {
                     "usage": "",
@@ -202,15 +202,15 @@
             "gamatotoidle": "Gamatoto nie jest teraz na wyprawie. Wyślij go na wyprawę wpisując: `gamatoto start [location]`!"
         },
         "prefix": {
-            "info": "",
+            "info": "Zdobywa lub ustawia prefiks komendy. Ta komenda konfiguruję prefiksy użytkownika. Dla prefiksu gildii, użyj komendę `setup`.",
             "subcommand": {
                 "add": {
                     "usage": "<prefix>",
-                    "info": ""
+                    "info": "Dodaje prefiks do twojej listy."
                 },
                 "remove": {
                     "usage": "<prefix>",
-                    "info": ""
+                    "info": "Usuwa prefiks z twojej listy."
                 }
             },
             "prefixlist": "",
