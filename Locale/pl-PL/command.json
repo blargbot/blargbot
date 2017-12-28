@@ -254,9 +254,9 @@
             "capacitylow": "Rewolwer musi być w stanie utrzymać co najmniej dwie kule, mniej kuli to gwarantowana śmierć!",
             "bulletslow": "Nie możesz załadować mniej niż jeden pocisk, MIĘCZAKU.",
             "bulletshigh": "",
-            "begin": "",
-            "death": "",
-            "life": "",
+            "begin": "Załadowałeś {{bullets}} pocisk(ów) do twojego {{capacity}}-strzelnego rewolwera, zakręć i przyłóż go do twojej głowy.",
+            "death": "{{content}}\n\n***BOOM!*** [[command.general.rr.deathmessages]]",
+            "life": "{{content}}\n\n*Trzask!* [[command.general.rr.livemessages]]",
             "livemessages": [
                 "",
                 "",
@@ -295,7 +295,7 @@
     },
     "image": {
         "cat": {
-            "info": ""
+            "info": "Daje ci cudownego, słodkiego, cennego kotka.\nMiaałłł!"
         },
         "delete": {
             "info": ""
