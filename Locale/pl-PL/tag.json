@@ -10,19 +10,19 @@
             "desc": ""
         },
         "isarray": {
-            "desc": ""
+            "desc": "Zwraca wartość true, jeśli podany element jest tablicą a inaczej wartość false. Nie można użyć nazwy zmiennej."
         },
         "join": {
             "desc": ""
         },
         "length": {
-            "desc": ""
+            "desc": "Zwraca długość danej tablicy."
         },
         "map": {
             "desc": ""
         },
         "pop": {
-            "desc": ""
+            "desc": "Usuwa i zwraca element na końcu tablicy."
         },
         "push": {
             "desc": ""
