@@ -213,9 +213,9 @@
                     "info": "Usuwa prefiks z twojej listy."
                 }
             },
-            "prefixlist": "",
-            "userprefixes": "",
-            "guildprefixes": "",
+            "prefixlist": "{{content}}\nŻeby skonfigurować twoje prefiksy, użyj pod-komend `add` i `remove`. Do konfiguracji prefiksu gildii, użyj komendy `setup`.",
+            "userprefixes": "Tutaj są twoje prefiksy:\n```md\n{{userprefixes}}\n```",
+            "guildprefixes": "Tutaj są prefiksy tej gildii:\n```md\n{{guildprefixes}}\n```",
             "noprefixes": "",
             "defaultprefixes": "",
             "prefixadded": "",
