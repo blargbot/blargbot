@@ -73,15 +73,15 @@
         "title": "",
         "desc": "",
         "components": {
-            "usage": "",
+            "usage": "Użycie:",
             "flags": "",
-            "aliases": "",
-            "subcommands": ""
+            "aliases": "Aliasy:",
+            "subcommands": "Pod-komendy:"
         }
     },
     "dashboard": {
-        "userheader": "",
-        "guildheader": "",
+        "userheader": "Ustawienia użytkownika",
+        "guildheader": "Ustawienia gildii",
         "notauthed": "",
         "user": {
             "dmerrors": ""
