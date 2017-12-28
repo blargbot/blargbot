@@ -216,24 +216,24 @@
             "prefixlist": "{{content}}\nŻeby skonfigurować twoje prefiksy, użyj pod-komend `add` i `remove`. Do konfiguracji prefiksu gildii, użyj komendy `setup`.",
             "userprefixes": "Tutaj są twoje prefiksy:\n```md\n{{userprefixes}}\n```",
             "guildprefixes": "Tutaj są prefiksy tej gildii:\n```md\n{{guildprefixes}}\n```",
-            "noprefixes": "",
-            "defaultprefixes": "",
-            "prefixadded": "",
-            "prefixremoved": "",
-            "nothingchanged": ""
+            "noprefixes": "Nie posiadasz niestandardowych prefiksów.",
+            "defaultprefixes": "Zawsze możesz użyć tych prefiksów:\n{{prefixes}}",
+            "prefixadded": "Ten prefiks został dodany!",
+            "prefixremoved": "Ten prefiks został usunięty!",
+            "nothingchanged": "Nic nie było zmienione."
         },
         "warnings": {
-            "output": ""
+            "output": "**{{user}} ** zgromadził **{{amount}} **ostrzeżeń w **{{guild}} **."
         },
         "economy": {
-            "info": "",
-            "invalidamount": "",
-            "invalidcode": "",
-            "converted": "",
+            "info": "Konwertuje walutę przy użyciu najnowszych współczynników konwersji.",
+            "invalidamount": "Podaj prawidłową ilość do przeliczenia.",
+            "invalidcode": "Kod nieznanej waluty: {{code}}",
+            "converted": "{{amount}} {{from}} jest równy do {{converted}} {{to}}",
             "usage": "<from><to><amount>"
         },
         "usettings": {
-            "info": "",
+            "info": "Modyfikuje lub wyświetla ustawienia użytkownika.",
             "subcommand": {
                 "dmerrors": {
                     "usage": "[prawda|fałsz]",
