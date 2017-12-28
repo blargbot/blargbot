@@ -245,14 +245,14 @@
             "userinfo": "Tutaj są twoje ustawienia:\n\n{{settings}}\n\nDostępne podkomendy: {{sub}}"
         },
         "rr": {
-            "info": "",
+            "info": "Zagraj w rosyjską ruletkę, W domyśle, twój rewolwer może pomieścić 6 pocisków.",
             "usage": "[bullets]",
             "flags": {
                 "capacity": "Ustawia, ile kul twój rewolwer może pomieścić.",
-                "emote": ""
+                "emote": "Określa, która emotka (lub tekst) powinna być tą, która gra w rosyjską ruletkę."
             },
-            "capacitylow": "",
-            "bulletslow": "",
+            "capacitylow": "Rewolwer musi być w stanie utrzymać co najmniej dwie kule, mniej kuli to gwarantowana śmierć!",
+            "bulletslow": "Nie możesz załadować mniej niż jeden pocisk, MIĘCZAKU.",
             "bulletshigh": "",
             "begin": "",
             "death": "",
