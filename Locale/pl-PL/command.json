@@ -121,20 +121,20 @@
             "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
             "transfercomplete": "[[emote.check]] {{user}} teraz posiada tag `{{tag}}`.",
             "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
-            "descupdate": "",
-            "descreset": "",
-            "subcommandconflict": "",
+            "descupdate": "Zaktualizowano opis dla '{{tag}}'.",
+            "descreset": "Opis dla `{{tag}}` został zresetowany.",
+            "subcommandconflict": "Nie możesz używać nazwy `{{name}}` ponieważ jest już pod-komenda z taką nazwą!",
             "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
-            "toptags": "",
-            "tagauthor": "",
+            "toptags": "Oto top 10 Tagi!\n\n{{tags}}",
+            "tagauthor": "Tag `{{tag}}` został stworzony przez **{{author}}**",
             "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
             "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
             "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
         },
         "locale": {
-            "info": "",
-            "set": "",
-            "list": ""
+            "info": "Ustawia jakie lokalne wiadomości będą wysyłane.",
+            "set": "Twój region został ustawiony jako {{locale}}!",
+            "list": "Twoim obecnym regionem jest: {{current}}\n\nProszę wybierz którego regionu chcesz używać."
         },
         "tokenify": {
             "info": ""
@@ -154,18 +154,18 @@
         "mods": {
             "info": "",
             "mods": "",
-            "nomods": "",
+            "nomods": "Brak modów w tej gildii.",
             "nomodsonline": ""
         },
         "help": {
             "info": "",
             "allcommands": "",
-            "nocommand": "",
+            "nocommand": "Przepraszam. tutaj nie ma komendy z nazwą '{{name}}'!",
             "commandinfo": "",
             "aliases": "",
-            "subcommand": "",
-            "command": "",
-            "nosubcommand": "",
+            "subcommand": "Pod-komendy",
+            "command": "Komenda",
+            "nosubcommand": "Przepraszam, ale tu nie ma pod-komendy dla '{{command}}' z nazwą '{{name}}'!",
             "subcommands": ""
         },
         "gamatoto": {
@@ -173,13 +173,13 @@
             "subcommand": {
                 "start": {
                     "usage": "",
-                    "info": ""
+                    "info": "Rozpoczyna się wyprawa!"
                 },
                 "end": {
-                    "info": ""
+                    "info": "Kończy się wyprawy!"
                 },
                 "locations": {
-                    "info": ""
+                    "info": "Lista wszystkich lokalizacji wypraw."
                 }
             },
             "stats": "<:bc_cat:345081695990710272> Tu są twoje przedmioty!\n\n{{stats}}",
