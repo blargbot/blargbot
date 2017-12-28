@@ -27,9 +27,9 @@
             "usage": "<code>",
             "flags": {
                 "p": "Pokazuje listę wskaźników po wykonaniu.",
-                "i": "",
+                "i": "Określa dane wejściowe dla operatora ','.",
                 "pointers": "",
-                "input": ""
+                "input": "Określa parametry wejściowe."
             }
         },
         "ship": {
@@ -46,8 +46,8 @@
             "notag": "[[emote.x]] Nie ma tagu z tym imieniem.",
             "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
             "tagrename": "[[emote.check]] Tag `{{old}}` zmienił nazwę na `{{new}}`.",
-            "raw": "",
-            "testoutput": "",
+            "raw": "Kod dla {{name}} to:\n```{{code}}```",
+            "testoutput": "Testowe wyjście:\n\n{{output}}",
             "subcommand": {
                 "set": {
                     "usage": "",
@@ -112,7 +112,7 @@
                     "info": ""
                 },
                 "setusage": {
-                    "info": ""
+                    "info": "informacje"
                 }
             },
             "subcommandnotfound": "Nie mogłem znaleźć pod-komendy z nazwą '{{subcommand}}'.",
@@ -288,8 +288,8 @@
             "status": [
                 "Gra w",
                 "",
-                "",
-                ""
+                "Słucha",
+                "Ogląda"
             ]
         }
     },
