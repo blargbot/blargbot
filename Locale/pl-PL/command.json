@@ -39,13 +39,13 @@
             "notenough": ""
         },
         "tag": {
-            "info": "",
+            "info": "Tagi są systemem publicznych poleceń, który każdy może stworzyć i wykonać, używając języka BBTag.\n\n**Pod-Komendy**\n{{subcommands}}\n\nPo więcej informacji na temat pod-komend, napisz `b!t help <subcommand>`\nPo więcej informacji na temat BBTag, odwiedź <https://blargbot.xyz/tags>.\nTworząc tagi, potwierdzasz, że zgadzasz się z Warunkami świadczenia usług (<https://blargbot.xyz/tags/tos>).",
             "usage": "",
             "dontown": "[[emote.x]] Nie jestes wlascicielem tego tagu!",
             "alreadyexists": "[[emote.x]] Tag z tym imieniem już istnieje!",
             "notag": "[[emote.x]] Nie ma tagu z tym imieniem.",
-            "tagset": "",
-            "tagrename": "",
+            "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
+            "tagrename": "[[emote.check]] Tag `{{old}}` zmienił nazwę na `{{new}}`.",
             "raw": "",
             "testoutput": "",
             "subcommand": {
