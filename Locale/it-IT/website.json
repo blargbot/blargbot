@@ -51,7 +51,7 @@
         },
         "variables": {
             "title": "Variabili",
-            "desc": ""
+            "desc": "## Variabili\n\nBBTag dispone di diversi tipi di variabili, ognuna con un'accessibilità diversa. Possono essere usate per numerose operazioni e funzioni.\n\n### Nomi\n\nIl nome di una variabile è formato da due parti: un `prefisso` e un `nome`. Ecco un diagramma di sintassi:\n\n> `[prefisso]nome`\n\nFacile, vero?\n\n### Accessibilità // ???\n\nPer ***accessibilità*** si intende da dove puoi richiamare una variabile, e la sua durata di vita. Conoscere la sua accessibilità può aiutare di molto nella creazione della tua tag!\n\nUn altro modo per guardare l'accessibilità è il luogo dove le variabili sono *memorizzate*. Ad esempio, le variabili locali sono memorizzate nella tag stessa, mentre le variabili d'autore sono memorizzate nell'utente che ha creato la tag.\n\nEcco l'elenco delle varie accessibilità, dalle più piccole alle più grandi.\n\n\n#### Accessibilità **temporanea**\n> Senza prefisso\n\nLe variabili temporanee sono le variabili più basilari e più utilizzate, dato che hanno l'accessibilità più bassa. Queste variabili non sono *mai memorizzate del database*, e cessano di esistere dopo che la tag è stata eseguita. Dato ciò, sono le più veloci da usare.\n\nUsa le variabili temporanee per cose che non hanno bisogno di essere persistenti nei vari usi.\n\n-- NOT YET FINISHED --"
         },
         "arrays": {
             "title": "Arrays",
