@@ -368,8 +368,8 @@
                 "modlog": {
                     "flags": {
                         "channel": "Especifica el canal en que el modlog se debe poner.",
-                        "remove": "",
-                        "list": ""
+                        "remove": "Especifica que se debe eliminar el modlog en vez de ser añadido.",
+                        "list": "Devuelve una lista de modlogs configurados."
                     }
                 }
             }
@@ -381,25 +381,25 @@
         },
         "help": {
             "info": "",
-            "allcommands": "",
-            "nocommand": "",
-            "commandinfo": ""
+            "allcommands": "Estos son todos los comandos que puedes ejecutar en **{{guild}}**.\n```markdown\n{{commands}}\n```\nPara mas informacion sobre los comandos, ejecuta `help <commandname>` o visita <https://blargbot.xyz/commands>.",
+            "nocommand": "Lo sentimos, ¡no hay ningún comando con el nombre {{name}}!",
+            "commandinfo": "**Comando: {{name}}**\n\n**Alias**: {{aliases}}\n**Uso**: {{usage}}\n\n{{descripción}}"
         },
         "ccommand": {
-            "info": "",
-            "usage": "",
+            "info": "Los CCommandos son un sistema de comandos personalizados que los moderadores pueden crear para sus usuarios, usando el lenguaje BBTag.\n\n**Subcomandos**:\n{{subcommands}}\n\nPara mas información sobre un subcomando, ejecuta `b!t help <subcommand>`\nPara mas información sobre BBTag, visita <https://blargbot.xyz/tags>.",
+            "usage": "<subcommand> [args]",
             "subcommand": {
                 "set": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name><content>",
+                    "info": "Crea o edita un comando personalizado con el nombre y el contenido proporcionados. No reemplazará las etiquetas hechas por nadie."
                 },
                 "delete": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Elimina un comando personalizado."
                 },
                 "rename": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name><newName>",
+                    "info": "Renombra un comando personalizado."
                 },
                 "author": {
                     "usage": "<name>",
