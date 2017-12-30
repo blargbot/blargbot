@@ -233,7 +233,7 @@
             "usage": "<from><to><amount>"
         },
         "usettings": {
-            "info": "",
+            "info": "Ændrer eller viser dine brugerindstillinger.",
             "subcommand": {
                 "dmerrors": {
                     "usage": "[sandt | falsk]",
@@ -242,7 +242,7 @@
             },
             "dmerrorsenabled": "DM fejl meddelelser er blevet aktiveret.",
             "dmerrorsdisabled": "DM fejl meddelelser er blevet deaktiveret.",
-            "userinfo": ""
+            "userinfo": "Her er dine bruger indstillinger:\n\n{{settings}}\nTilgængelige subkommandoer: {{sub}}"
         },
         "rr": {
             "info": "",
