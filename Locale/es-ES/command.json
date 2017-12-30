@@ -197,8 +197,8 @@
             "locations": "¡Estas son todas las locaciones de las expediciones!\n\n{{locations}}",
             "wronglevel": "Lo sentimos, ¡necesitas ser nivel {{level}} para poder explorar ese lugar!",
             "gamatotoitems": "Estos son tus items:\n{{items}}",
-            "gamatotostats": "",
-            "gamatotocurrent": "",
+            "gamatotostats": "Gamatoto actualmente es nivel {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
+            "gamatotocurrent": "Gamatoto ha estado explorando el **{{location}}** por **{{minutes}}** minutos.",
             "gamatotoidle": ""
         },
         "prefix": {
