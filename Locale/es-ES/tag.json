@@ -143,7 +143,7 @@
             "desc": "Redondea los decimales proveidos hacia abajo."
         },
         "math": {
-            "desc": ""
+            "desc": "Calcula el valor de la expresión proporcionada usando los siguientes operadores:\n\n - `**` - exponentes\n - `/` - división\n - `*` - multiplicacion\n - `+` - adicion\n - `-` - sustracion\n - `&` - operador lógico Y\n - `|` - operador lógico O\n - `^` - operador lógico NOR\n\n\nLos operadores son ejecutados usando la Orden de Operaciones (Brackets, Exponentes, División, Multiplicación, Adición, Sustración, Operador Logico).\n\nSi un operador no es especificado, se usa el ultimo operador usado (por defecto adición).\n\nLos brackets se lograrian usando otra etiqueta {math} añadida.\n\nSi un `operand` o `augend` no puede ser pasado como un numero, una variable con el mismo nombre será regresada. Si la variable regresada tampoco es un numero, arroja un error."
         },
         "parsefloat": {
             "desc": "Trata de analizar el texto como un decimal."
