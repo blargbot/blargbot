@@ -313,7 +313,7 @@
         },
         "writepoem": {
             "usage": "[text]",
-            "info": "",
+            "info": "Escribe un poema encantador.",
             "flags": {
                 "monika": "",
                 "sayori": "",
