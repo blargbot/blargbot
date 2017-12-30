@@ -315,59 +315,59 @@
             "usage": "[text]",
             "info": "Escribe un poema encantador.",
             "flags": {
-                "monika": "",
-                "sayori": "",
-                "yuri": "",
-                "natsuki": ""
+                "monika": "Solo Monika.",
+                "sayori": "Solo Monika.",
+                "yuri": "Solo Monika.",
+                "natsuki": "Solo Monika."
             }
         }
     },
     "admin": {
         "setup": {
             "staff": {
-                "setrole": "",
-                "rolequery": ""
+                "setrole": "Los roles de personal han sido actualizados.",
+                "rolequery": "Seleccione las funciones que se considerarán funciones de moderador. Los usuarios con estos roles serán capaces de utilizar los comandos de administrador."
             },
-            "info": "",
+            "info": "Configura varias configuraciones.",
             "subcommand": {
                 "staffuser": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "usuario del personal <add | remove> <user>...",
+                    "info": "Añade o remueve usuarios de la lista de personal."
                 },
                 "staffrole": {
-                    "info": ""
+                    "info": "Aparece un cuadro de diálogo para seleccionar o anular la selección de funciones del personal."
                 },
                 "mute": {
-                    "info": ""
+                    "info": "Configura la función de silenciar."
                 },
                 "announcement": {
-                    "info": ""
+                    "info": "Configura los avisos."
                 },
                 "modlog": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "modlog [event]...",
+                    "info": "Establece el modlog de los eventos especificados. Si no se especifica ningún canal, por defecto se usará el canal actual. Si no se especifican eventos, por defecto se elijen todos los eventos."
                 }
             },
             "mute": {
-                "setrole": "",
-                "rolequery": ""
+                "setrole": "El rol de silenciar se ha actualizado.",
+                "rolequery": "Seleccionar el rol silenciado."
             },
             "announce": {
-                "set": "",
-                "rolequery": "",
-                "channelquery": ""
+                "set": "Los anuncios se han configurado.",
+                "rolequery": "Seleccione el rol que debe ser fijado para anuncios.",
+                "channelquery": "Seleccione el canal en que deberían ir los anuncios."
             },
             "modlog": {
-                "set": "",
-                "remove": "",
-                "invalid": "",
-                "hadinvalid": "",
-                "list": ""
+                "set": "El modlog ha sido configurado en el canal {{channel}} con los siguientes eventos:\n```\n{{events}}\n```\n{{hadInvalid}}",
+                "remove": "El modlog ha sido removido para los siguientes eventos:\n```\n{{events}}\n```\n{{hadInvalid}}",
+                "invalid": "No se proporcionaron eventos validos. La lista de eventos validos es:\n```\n{{eventList}}\n```",
+                "hadinvalid": "Tenias algunos eventos inválidos en tu comando. La lista de eventos validos es:\n```\n{{eventList}}\n```",
+                "list": "Estos son los modlogs que están activos en tu gremio:\n\n{{events}}"
             },
             "subcommands": {
                 "modlog": {
                     "flags": {
-                        "channel": "",
+                        "channel": "Especifica el canal en que el modlog se debe poner.",
                         "remove": "",
                         "list": ""
                     }
