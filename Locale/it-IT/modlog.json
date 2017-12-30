@@ -1,13 +1,13 @@
 {
     "events": {
-        "kick": "Espulso",
-        "ban": "Bandito",
+        "kick": "Rimuovi",
+        "ban": "Bandisci",
         "unban": "Rimosso ban",
-        "mute": "Mutato",
-        "unmute": "Smutato",
+        "mute": "Silenzia",
+        "unmute": "Smuta",
         "warn": "Avvertimento",
         "pardon": "Perdonato",
-        "rename": "Rinominato",
+        "rename": "Rinomina",
         "specialroleadd": "Ruolo speciale aggiunto",
         "specialroleremove": "Ruolo speciale rimosso"
     },
