@@ -55,7 +55,7 @@
         },
         "arrays": {
             "title": "Arrays",
-            "desc": "## Arrays\n\nArrays er en super nyttig data struktur. Helt basalt er et array en liste af genstande. De bruges på samme måde som subtags, med firkantede parenteser `[]` istedet for `{}`.\n\nDer er adskillige subtags dedikerede til at bruge og manipulere med arrays. Se `Arrays` classen for mere info. \n\n### Syntax\n> `[item;item;item]`\n\n### Indexer\n\nArrays er velordnede."
+            "desc": "## Arrays\n\nArrays er en super nyttig data struktur. Helt basalt er et array en liste af genstande. De bruges på samme måde som subtags, med firkantede parenteser `[]` istedet for `{}`.\n\nDer er adskillige subtags dedikerede til at bruge og manipulere med arrays. Se `Arrays` classen for mere info. \n\n### Syntax\n> `[item;item;item]`\n\n### Indexer\n\nArrays er velordnede. Hvert element i et array er tildelt et **index**, hvilket helt grundlæggende er elementets placering i arrayet. \n\nDen vigtigste ting der er at vide om arrays er, at de er **0-indekseret**. Dette betyder, at indekser starter ved 0 istedet for 1. Lad os tage et hurtigt kig på dette simpel array:\n```\n Index:  0 1 2 3 4\n-------------------\nVærdier: [1;2;3;4;5]\n```\nDet første element `1` har et indeks på `0`. Lige så vel som det fjerde element `4`har et indeks på `3`. Dette kan virke indviklet til at starte med men det er simpelt når først man har vænnet sig til det."
         }
     },
     "subtags": {
