@@ -160,7 +160,7 @@
     },
     "message": {
         "id": {
-            "desc": ""
+            "desc": "Returnerer ID af beskeden med den udførte kommando."
         }
     },
     "role": {
@@ -182,7 +182,7 @@
     },
     "user": {
         "avatar": {
-            "desc": ""
+            "desc": "Returnerer navnet på den specifikke bruger, som standard sat til den udøvende bruger."
         },
         "createdat": {
             "desc": ""
@@ -191,7 +191,7 @@
             "desc": "Returnerer diskrimanotoren af en specificeret bruger,"
         },
         "fullname": {
-            "desc": ""
+            "desc": "Returnerer navnet + diskrimanotoren af en specificeret bruger, som standard sat til at være den udøvende bruger."
         },
         "game": {
             "desc": "Returnerer spillet den angivne bruger spiller, standard er den udøvende bruger. Hvis brugeren ikke spiller et spil, returnerer ingenting."
