@@ -199,18 +199,18 @@
             "gamatotoitems": "Estos son tus items:\n{{items}}",
             "gamatotostats": "Gamatoto actualmente es nivel {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
             "gamatotocurrent": "Gamatoto ha estado explorando el **{{location}}** por **{{minutes}}** minutos.",
-            "gamatotoidle": ""
+            "gamatotoidle": "Gamatoto no está en una expedición ahora mismo. ¡Envíalo a una aventura haciendo 'gamatoto start [location]'!"
         },
         "prefix": {
-            "info": "",
+            "info": "Obtiene o establece sus prefijos de comando. Este comando configura prefijos de usuario. Para prefijos de gremio, use el comando 'configuración'.",
             "subcommand": {
                 "add": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<prefix>",
+                    "info": "Añade un prefijo a tu lista."
                 },
                 "remove": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<prefix>",
+                    "info": "Quita un prefijo de tu lista."
                 }
             },
             "prefixlist": "{{content}} \nPara configurar sus prefijos, uso los subcomandos 'Añadir' y 'eliminar'. Para configurar los prefijos de gremio, utilice el comando 'configuración'.",
@@ -283,19 +283,19 @@
             "usage": "[user]",
             "info": "Devuelve información sobre el usuario especificado.",
             "description": "**Nombre de usuario**: {{username}}\n**Discriminador**: {{discriminator}}\n**Identificador**: {{id}}\n**Bot**: {{bot}}\n**Creado**: {{created}}\n[Avatar]({{avatar}})",
-            "guildinfoheader": "",
-            "guildinfo": "",
+            "guildinfoheader": "Información de Gremio",
+            "guildinfo": "**Apodo**: {{nick}}\n**Permisos**: {{permissions}}\n**Estatus**: {{status}}\n**Se unió**: {{joined}}\n{{game}}",
             "status": [
-                "",
-                "",
-                "",
-                ""
+                "Jugando",
+                "Emitiendo directo",
+                "Escuchando a",
+                "Viendo"
             ]
         }
     },
     "image": {
         "cat": {
-            "info": ""
+            "info": "Te da un precioso dulce querido y hermoso gatito.\n¡Awwww!"
         },
         "delete": {
             "info": ""
@@ -305,14 +305,14 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": "",
-            "usage": "",
+            "info": "Le dice a todo el mundo que lo que piensas es una mierda.",
+            "usage": "[text]",
             "flags": {
-                "plural": ""
+                "plural": "Especifica si el texto debe ser plural."
             }
         },
         "writepoem": {
-            "usage": "",
+            "usage": "[text]",
             "info": "",
             "flags": {
                 "monika": "",
