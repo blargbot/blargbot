@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-01 16:49:37
+ * @Last Modified time: 2018-01-01 16:50:45
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -643,29 +643,6 @@ ${Object.keys(user.favourites).join(', ')}
     }
 };
 const Message = require('eris/lib/structures/message')
-
-let a = {
-    "id": "397535997463625738",
-    "attachments": [],
-    "author": {
-        "id": "103347843934212096",
-        "avatar": "a_2a3a83888dce664530caf1e6f187bb19",
-        "bot": false,
-        "discriminator": "8160",
-        "username": "stupid cat"
-    },
-    "content": "k!eval return JSON.stringify(msg, null, 4)",
-    "embeds": [],
-    "hit": false,
-    "mentionEveryone": false,
-    "mentions": [],
-    "pinned": false,
-    "reactions": {},
-    "roleMentions": [],
-    "timestamp": 1514850367657,
-    "tts": false,
-    "type": 0
-}
 
 e.event = async function (args) {
     let msg;
