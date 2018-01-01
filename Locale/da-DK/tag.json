@@ -134,7 +134,7 @@
             "desc": "Returnerer den absolutte værdi af de angivne tal (ingen negativer)."
         },
         "base": {
-            "desc": ""
+            "desc": "Parserer `tallet` ved at bruge den angivne grundlæggende `oprindelse` (standard er 10), og konverterer det til `grundtal`."
         },
         "ceil": {
             "desc": "Runder den angivne decimale op."
