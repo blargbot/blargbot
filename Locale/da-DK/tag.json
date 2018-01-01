@@ -200,7 +200,7 @@
             "desc": "Returnerer ID'et for den specifikke bruger, standard til den udøvende bruger."
         },
         "joinedat": {
-            "desc": ""
+            "desc": "Returnerer datoen som den angivne bruger, som standard sat til at være den udøvende bruger, tilsluttede sig serveren som et Unix tidsstempel (millisekunder)."
         },
         "mention": {
             "desc": "Nævner den angivne bruger, misligholdende til den fuldbyrdende bruger."
