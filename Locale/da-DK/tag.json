@@ -143,7 +143,7 @@
             "desc": "Runder den angivne decimal ned."
         },
         "math": {
-            "desc": ""
+            "desc": "Udregner værdien af det angivne udtryk ved at bruge følgende operatorer:\n\n - `**`- eksponenter\n - `/` - division\n - `*` - multiplikation\n - `+` - addition\n - `-` - subtraktion\n - `&` - bitwise AND\n - `|` - bitwise OR\n _ `^` - bitwise XOR\n\nOperatorer udføres ud fra operatorenes rækkefølge (Parenteser, Eksponenter, Division, Multiplikation, Addition, Subtraktion, Bitwise).\n\nHvis en operator ikke er angivet, bruges den sidst-brugte operator (standard er addition).\n\nParenteser kan opnås ved at bruge endnu et indlejret {math} tag.\n\nHvis en `operand` eller `augend` ikke kan blive parset som et tal, vil en vaiable med det samme navn blive hentet. Hvis den hentede variabel heller ikke er et tal, vil der opstå en fejl."
         },
         "parsefloat": {
             "desc": "Forsøger at parse det angivne tekst som et decimal."
