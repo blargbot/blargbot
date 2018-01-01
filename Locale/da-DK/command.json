@@ -39,7 +39,7 @@
             "notenough": "Du er nødt til at fortælle mig hvem jeg skal parre!"
         },
         "tag": {
-            "info": "",
+            "info": "Tags er et system af offentlige kommandoer som alle kan skabe eller udføre, ved brug af BBTag sproget.\n\n**Subkommandoer**\n{{subcommands}}\n\nFor mere info om en subkommando, skriv `b!t help <subcommand>`\nFor mere info om BBTag, besøg <https://blargbot.xyz/tags>.\nVed at skabe et tag anderkender du, at du er enig med servicevilkårene (<https://blargbot.xyz/tags/tos>).",
             "usage": "<name | subcommand>[args]",
             "dontown": "[[emote.x]] Du ejer ikke dette tag!",
             "alreadyexists": "[[emote.x]] Et tag med dette navn findes allerede!",
@@ -213,7 +213,7 @@
                     "info": "Fjerner et præfiks fra din liste."
                 }
             },
-            "prefixlist": "",
+            "prefixlist": "{{content}}\nFor at konfigurere dine præfikser, brug `add` og `remove` subkommandoerne. For at konfigurere præfikserne for serveren, brug `setup` kommandoen.",
             "userprefixes": "Her er dine præfikser:\n```md\n{{userprefixes}}\n```",
             "guildprefixes": "Her er præfikserne i denne server: ' ' 'md\n{{guildprefixes}} \n' ' '",
             "noprefixes": "Du har ingen brugerdefinerede præfikser.",
@@ -353,13 +353,13 @@
                 "rolequery": "Vælg den dæmpede rolle."
             },
             "announce": {
-                "set": "",
+                "set": "Annonceringer er blevet sat op.",
                 "rolequery": "",
                 "channelquery": "Vælg den kanal som annonceringer skal sendes til."
             },
             "modlog": {
                 "set": "Modloggen er sat til at være i kanalen {{channel}} med de følgende begivenheder:\n```\n{{events}}\n```\n{{hadInvalid}}",
-                "remove": "",
+                "remove": "Modloggen med de følgende begivenheder er blevet fjernet:\n```\n{{events}}\n```\n{{hadInvalid}}",
                 "invalid": "",
                 "hadinvalid": "",
                 "list": ""
