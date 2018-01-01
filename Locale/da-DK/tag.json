@@ -37,7 +37,7 @@
             "desc": "Returnerer en del af matrixen, inklusive `start` indeks og eksklusive `end` indeks. Hvis `end` er uspecificeret, resterende standarder for alle elementer."
         },
         "sort": {
-            "desc": ""
+            "desc": "Sorterer og returnerer et array, som standard i stigende rækkefølge.\n\nHvis `function` er angivet, vil sortering opstå baseret på resultatet af udførelsen af selvsamme funktion. Dette vil sætte to lokale variabler: `a` (eller `varNameOne`) og `b` (eller `varNameTwo`). \n\nFunktionen skal returnere et tal. Hvis tallet er større end 0, vil `a` anses for at være større end `b`. Hvis tallet er mindre end 0, vil `b` anses for at være større end `a`. Ethvert ikke-tal resultat vil blive konverteret til 0, hvor begge elementer er lige store."
         },
         "splice": {
             "desc": "Startende fra position 'start', fjerner 'deleteCount' elementer fra matrixen og tilføjer de resterende elementer i denne stilling. Returnerer de fjernede elementer."
