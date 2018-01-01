@@ -245,25 +245,25 @@
             "userinfo": "Her er dine bruger indstillinger:\n\n{{settings}}\nTilgængelige subkommandoer: {{sub}}"
         },
         "rr": {
-            "info": "",
+            "info": "Tager en runde russisk roulette. Som standard, kan din revolver holde 6 kugler.",
             "usage": "[bullets]",
             "flags": {
                 "capacity": "Angiver hvor mange kugler din revolver kan holde.",
-                "emote": ""
+                "emote": "Angiver hvilken smiley (eller tekst) skal være den der spiller russisk roulette."
             },
             "capacitylow": "Din revolver skal være i stand til at holde mindst to kugler, lavere ville være garanteret død!",
             "bulletslow": "Du kan ikke lade mindre end en kugle, din kegle.",
             "bulletshigh": "Wow, din revolver kan kun holde {{capacity}} kugler! Det vil være garanteret dødsfald! Ønsker du at dø eller sådan noget?",
-            "begin": "",
+            "begin": "Du lader {{bullets}} kugle(r) i din {{capacity}}-skuds revolver, drejer den og placerer den mod dit hoved.",
             "death": "{{content}}\n\n***BUM!*** [[command.general.rr.deathmessages]]",
             "life": "{{content}}\n\n*Klik!* [[command.general.rr.livemessages]]",
             "livemessages": [
                 "Pistolen klikker, den er tom. Du har nu endnu en dag at leve i.",
-                "",
-                "",
+                "Du ånder lettet op da du indser, at du ikke skal dø idag.",
+                "Som om den overhovedet ville gå af! Heldet er med dig.",
                 "Du takker RNGesus mens du sænker pistolen.",
                 ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
-                ""
+                "Du smiler da du indser, at du overlevede."
             ],
             "deathmessages": [
                 "Pistolen går af, sprøjter din hjerne på udover hele væggen. Uheldig!",
@@ -355,10 +355,10 @@
             "announce": {
                 "set": "",
                 "rolequery": "",
-                "channelquery": ""
+                "channelquery": "Vælg den kanal som annonceringer skal sendes til."
             },
             "modlog": {
-                "set": "",
+                "set": "Modloggen er sat til at være i kanalen {{channel}} med de følgende begivenheder:\n```\n{{events}}\n```\n{{hadInvalid}}",
                 "remove": "",
                 "invalid": "",
                 "hadinvalid": "",
@@ -367,9 +367,9 @@
             "subcommands": {
                 "modlog": {
                     "flags": {
-                        "channel": "",
-                        "remove": "",
-                        "list": ""
+                        "channel": "Angiver, hvilken kanal modloggen skal sættes i.",
+                        "remove": "Angiver, at modloggen skal fjernes i stedet for at blive tilføjet.",
+                        "list": "Returner en liste af konfigurerede modlogs."
                     }
                 }
             }
@@ -381,7 +381,7 @@
         },
         "help": {
             "info": "",
-            "allcommands": "",
+            "allcommands": "Her er alle de kommandoer du kan udføre i **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor mere info om kommandoerne, skriv `help <commandname>` eller besøg <https://blargbot.xyz/commands>.",
             "nocommand": "Beklager, der er ingen kommando med navnet '{{name}}'!",
             "commandinfo": "**Kommando: {{name}}**\n\n**Aliaser**: {{aliases}}\n**Brug**: {{usage}}\n\n{{description}}"
         },
