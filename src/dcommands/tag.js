@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-10 17:06:22
+ * @Last Modified time: 2018-01-01 16:49:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -642,9 +642,43 @@ ${Object.keys(user.favourites).join(', ')}
         bu.send(msg, e.info);
     }
 };
+const Message = require('eris/lib/structures/message')
+
+let a = {
+    "id": "397535997463625738",
+    "attachments": [],
+    "author": {
+        "id": "103347843934212096",
+        "avatar": "a_2a3a83888dce664530caf1e6f187bb19",
+        "bot": false,
+        "discriminator": "8160",
+        "username": "stupid cat"
+    },
+    "content": "k!eval return JSON.stringify(msg, null, 4)",
+    "embeds": [],
+    "hit": false,
+    "mentionEveryone": false,
+    "mentions": [],
+    "pinned": false,
+    "reactions": {},
+    "roleMentions": [],
+    "timestamp": 1514850367657,
+    "tts": false,
+    "type": 0
+}
 
 e.event = async function (args) {
-    let msg = await bot.getMessage(args.channel, args.params.msg);
+    let msg;
+    try {
+        msg = await bot.getMessage(args.channel, args.params.msg);
+    } catch (err) {
+        msg = JSON.parse(args.msg);
+        msg.channel_id = args.channel;
+        msg.mentions_everyone = msg.mentionEveryone;
+        msg.role_mentions = msg.roleMentions;
+        msg.reactions = [];
+        msg = new Message(msg, bot);
+    }
     let params = args.params;
     params.msg = msg;
     params.msg.didTimer = true;
