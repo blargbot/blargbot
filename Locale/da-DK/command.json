@@ -360,9 +360,9 @@
             "modlog": {
                 "set": "Modloggen er sat til at være i kanalen {{channel}} med de følgende begivenheder:\n```\n{{events}}\n```\n{{hadInvalid}}",
                 "remove": "Modloggen med de følgende begivenheder er blevet fjernet:\n```\n{{events}}\n```\n{{hadInvalid}}",
-                "invalid": "",
+                "invalid": "Der blev ikke angivet nogen gyldige begivenheder. Listen over gyldige begivenheder er:\n```\n{{eventList}}\n```",
                 "hadinvalid": "",
-                "list": ""
+                "list": "Her er de modlogs der er aktive i din server:\n\n{{events}}"
             },
             "subcommands": {
                 "modlog": {
