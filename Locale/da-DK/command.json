@@ -166,7 +166,7 @@
             "subcommand": "Underkommando",
             "command": "Kommando",
             "nosubcommand": "Desværre, er der ingen underkommando for '{{command}}' med navnet '{{name}}'!",
-            "subcommands": ""
+            "subcommands": "**Subkommandoer**: {{subcommands}}\n\nSkriv `help <command> <subcommand>` for at få mere info om en subkommando!"
         },
         "gamatoto": {
             "info": "Tag på en magisk rejse med Gamototo! Brug denne kommando for at tjekke dine statistikker, eller bug en underkommando for at tage på eventyr!",
@@ -226,7 +226,7 @@
             "output": "**{{user}}** har akkumuleret **{{amount}}** advarsel(er) i **{{guild}}**."
         },
         "economy": {
-            "info": "",
+            "info": "Konverterer valuta ved hjælp af de seneste omregningskurser.",
             "invalidamount": "Venligst angiv en gyldig mængde der skal konverteres.",
             "invalidcode": "Ukendt valutakode: {{code}}",
             "converted": "{{amount}}{{from}} er det samme som {{converted}}{{to}}",
@@ -281,7 +281,7 @@
         },
         "user": {
             "usage": "[user]",
-            "info": "",
+            "info": "Returner info om den angivne bruger.",
             "description": "**Brugernavn**: {{username}}\n**Diskriminator**: {{discriminator}}\n**ID**: {{id}}\n**Bot**: {{bot}}\n**Skabt**: {{created}}\n[Avatar]({{avatar}})",
             "guildinfoheader": "Oplysninger om server",
             "guildinfo": "**Kaldenavn**: {{nick}}\n**Tilladelser**: {{permissions}}\n**Status**: {{status}}\n**Tilsluttet**: {{joined}}\n{{game}}",
