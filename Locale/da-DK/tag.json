@@ -146,10 +146,10 @@
             "desc": ""
         },
         "parsefloat": {
-            "desc": ""
+            "desc": "Forsøger at parse det angivne tekst som et decimal."
         },
         "parseint": {
-            "desc": ""
+            "desc": "Forsøger at parse det angivne tekst som et heltal."
         },
         "randint": {
             "desc": "Returnerer et tilfældigt heltal i den angivne rækkevidde. `min` er som udgangspunkt sat til at være `0`"
@@ -185,7 +185,7 @@
             "desc": "Returnerer navnet på den specifikke bruger, som standard sat til den udøvende bruger."
         },
         "createdat": {
-            "desc": ""
+            "desc": "Returnerer datoen som den angivne bruger, som standard sat til at være den udøvende bruger, oprettede sig som et Unix tidsstempel (millisekunder)."
         },
         "discrim": {
             "desc": "Returnerer diskrimanotoren af en specificeret bruger,"
