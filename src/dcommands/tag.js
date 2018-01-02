@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-01 16:50:45
+ * @Last Modified time: 2018-01-01 17:18:25
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -642,7 +642,7 @@ ${Object.keys(user.favourites).join(', ')}
         bu.send(msg, e.info);
     }
 };
-const Message = require('eris/lib/structures/message')
+const Message = require('eris/lib/structures/Message')
 
 e.event = async function (args) {
     let msg;
