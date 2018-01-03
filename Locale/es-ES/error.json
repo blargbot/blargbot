@@ -25,7 +25,7 @@
         "notanarray": "La variable '{{name}}' no es una agrupación (Recibido: '{{value}}')",
         "notbool": "La variable '{{name}}' no es un booleano (Recibido: '{{value}}')",
         "missingarg": "Subetiqueta '{{tag}}' le falta el argumento: '{{arg}}'",
-        "namedunsupported": ""
+        "namedunsupported": "Subetiqueta '{{tag}}' no soporta argumentos nombrados"
     },
-    "inputtoolong": ""
+    "inputtoolong": "¡Su entrada era demasiado larga! El máximo de caracteres era {{max}}, pero dió {{length}} caracteres."
 }
