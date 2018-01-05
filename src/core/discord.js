@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-26 16:20:14
+ * @Last Modified time: 2018-01-05 14:20:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -280,7 +280,6 @@ process.on('message', async msg => {
 
 // shard status posting
 let shardStatusInterval = setInterval(() => {
-    console.log('Sending shard status');
     let shard = bot.shards.get(parseInt(process.env.SHARD_ID));
     let mem = process.memoryUsage();
     bot.sender.send('shardStats', {
@@ -292,7 +291,7 @@ let shardStatusInterval = setInterval(() => {
         status: shard.status,
         latency: shard.latency
     });
-}, 15000);
+}, 5000);
 
 
 // Now look at this net,

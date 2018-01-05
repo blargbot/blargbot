@@ -19,9 +19,13 @@ class Spawner extends EventEmitter {
 
         this.shardCache = {};
 
-        this.uptimeInterval = setInterval(() => {
-            for (const shard of Object.keys(this.shardCache)) {
-                if (moment.duration(moment() - shard.time).asMilliseconds() > 30000) {
+        this.uptimeInterval = setInterval(async () => {
+            for (const key of Object.keys(this.shardCache)) {
+                const shard = this.shardCache[key];
+                let diff = moment.duration(moment() - shard.time);
+                if (!shard.respawning && diff.asMilliseconds() > 15000) {
+                    shard.respawning = true;
+                    await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive shard ${shard.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
                     this.respawnShard(shard.id);
                 }
             }
@@ -43,6 +47,7 @@ class Spawner extends EventEmitter {
                 }
                 this.shards.set(id, shard);
                 res();
+                await this.client.discord.createMessage('398946258854871052', `Shard ${shard.id} has been respawned.`);
             });
         });
     }
