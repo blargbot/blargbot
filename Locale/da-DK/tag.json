@@ -19,7 +19,7 @@
             "desc": "Returnerer længden af det givne array."
         },
         "map": {
-            "desc": ""
+            "desc": "Gennemløber et array og sætter det aktuelle element til en lokal variabel \"i\". Hvis 'varName' er angivet, sættes denne variabel i stedet.\n\nReturnerer et nyt array der kun indeholder elementer hvor hvert element resultat af hver gennemløbning."
         },
         "pop": {
             "desc": "Fjerner og retunerer det sidste element i arrayet."
