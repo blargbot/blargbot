@@ -273,10 +273,10 @@
                 "Det der rydder jeg ***ikke*** op.",
                 "Skydevåben er ikke legetøj!",
                 "Tja. Man kan jo ikke vinde hver gang!",
-                "",
+                "G-godt... Hvis hver kotelet var perfekt, ville vi overhovedethave hotdogs? Ærgerligt at du er død uanset hvad.",
                 "Skyd skylden på laggen!",
                 "Var i dag bare ikke din heldige dag.",
-                ""
+                "Pssh, fremsyn er for tabere."
             ]
         },
         "user": {
@@ -308,7 +308,7 @@
             "info": "Fortæller alle hvad du synes er lort.",
             "usage": "[text]",
             "flags": {
-                "plural": ""
+                "plural": "Angiver, om den givne text skal være flertal."
             }
         },
         "writepoem": {
@@ -345,7 +345,7 @@
                 },
                 "modlog": {
                     "usage": "modlog [event]...",
-                    "info": ""
+                    "info": "Opsætter modlog for de angivne begivenheder. Hvis ingen kanal er angivet, vil den aktuelle kanal som standard bruges. Hvis ingen hændelser er angivet, som standard bruges alle begivenheder."
                 }
             },
             "mute": {
@@ -354,14 +354,14 @@
             },
             "announce": {
                 "set": "Annonceringer er blevet sat op.",
-                "rolequery": "",
+                "rolequery": "Vælg den rolle, som bør være nævnt for meddelelser.",
                 "channelquery": "Vælg den kanal som annonceringer skal sendes til."
             },
             "modlog": {
                 "set": "Modloggen er sat til at være i kanalen {{channel}} med de følgende begivenheder:\n```\n{{events}}\n```\n{{hadInvalid}}",
                 "remove": "Modloggen med de følgende begivenheder er blevet fjernet:\n```\n{{events}}\n```\n{{hadInvalid}}",
                 "invalid": "Der blev ikke angivet nogen gyldige begivenheder. Listen over gyldige begivenheder er:\n```\n{{eventList}}\n```",
-                "hadinvalid": "",
+                "hadinvalid": "Der blev ikke angivet nogen gyldige begivenheder. Listen over gyldige begivenheder er:\n```\n{{eventList}}\n```",
                 "list": "Her er de modlogs der er aktive i din server:\n\n{{events}}"
             },
             "subcommands": {
@@ -386,7 +386,7 @@
             "commandinfo": "**Kommando: {{name}}**\n\n**Aliaser**: {{aliases}}\n**Brug**: {{usage}}\n\n{{description}}"
         },
         "ccommand": {
-            "info": "",
+            "info": "CCommands er et system af brugerdefinerede kommandoer som moderatore kan skabe for brugere ved at bruge BBTag sproget.\n\n**Subkommandoer**:\n{{subcommands}}\n\nFor mere info om en subkommando, skriv `b!t help <subcommand>`\nFor mere info om BBTag, besøg <https://blargbot.xyz/tags>.",
             "usage": "<subcommand>[args]",
             "subcommand": {
                 "set": {
