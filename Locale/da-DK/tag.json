@@ -126,7 +126,7 @@
             "desc": "If the `value` is equal to `true` or `1`, executes `then`.\nIf the `value` is equal to `false` or `0`, executes `else`.\nOtherwise, throws an error.\n\nBrug dette med {logic} tagget."
         },
         "logic": {
-            "desc": ""
+            "desc": "Udfører logiske opratorer på `augenden` og `operanderne` hvilket returnerer `true` eller `false`.\n\nÆkvivalens opertarorer:\n - `==` - lig med\n - `!=` - ikke lig med\n - `<` - mindre end\n - `<=` - mindre end eller lig med\n - `>` - større end\n - `>=` - større end eller lig med\n - `startswith` - augenden starter med operanden\n - `endswith` - augenden slutter med operanden\n - `includes` - augenden inkluderer operanden\n\nLogiske operatorer:\n - `&&` - returnerer true hvis både augenden og operanden er sande\n - `||` - returnerer true hvis enten augenden eller operanden er sand\n - `XOR` - returner true hvis kun enten augenden eller operanten er sand (ikke begge)\n\nAndre operatorer:\n - `!` - inverterer den næste operand (sandt bliver falsk, osv.)"
         }
     },
     "math": {
