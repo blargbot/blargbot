@@ -34,7 +34,7 @@
             "desc": "Tanggalin at ibalik ang unang elemento sa talaan."
         },
         "slice": {
-            "desc": ""
+            "desc": "Ibalik ang isang seksyon ng talaan, kasama ang `simula` ng index at hindi kasama ang `huli` huli ng index. Kung ang `end` ay hindi matukoy, ang lahat ng natitirang elemento ay i-default."
         },
         "sort": {
             "desc": ""
