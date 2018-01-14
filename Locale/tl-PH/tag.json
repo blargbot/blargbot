@@ -28,10 +28,10 @@
             "desc": "Itulak ang elemento sa huli ng talaan. Ibalik ang binagong talaan."
         },
         "set": {
-            "desc": ""
+            "desc": "Magtakda ng elemento sa talaan sa natukoy na `index`."
         },
         "shift": {
-            "desc": ""
+            "desc": "Tanggalin at ibalik ang unang elemento sa talaan."
         },
         "slice": {
             "desc": ""
