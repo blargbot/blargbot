@@ -16,16 +16,16 @@
             "desc": "Sumali sa talaan kasama sa naibigay na `delimiter`."
         },
         "length": {
-            "desc": ""
+            "desc": "Ibalik ang haba ng nasabing talaan."
         },
         "map": {
-            "desc": ""
+            "desc": "Ulitin sa pamamagitan ng talaan, ayusin ang kasalukuyang elemento para sa lokal na pagkakaiba `i`. Kung `varName` ay sigurado, sa halip itakda ang pagkakaiba.\n\nIbalik ang bagong talaan na kung saan ang bawat elemento ay ang resulta ng bawat pagulit."
         },
         "pop": {
-            "desc": ""
+            "desc": "Tangalin at ibalik ang huling elemento ng talaan."
         },
         "push": {
-            "desc": ""
+            "desc": "Itulak ang elemento sa huli ng talaan. Ibalik ang binagong talaan."
         },
         "set": {
             "desc": ""
