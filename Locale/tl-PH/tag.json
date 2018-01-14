@@ -1,19 +1,19 @@
 {
     "array": {
         "filter": {
-            "desc": ""
+            "desc": "Ulitin sa pamamagitan ng talaan, ayusin ang kasalukuyang elemento para sa lokal na pagkakaiba `i`. Kung `varName` ay sigurado, sa halip itakda ang pagkakaiba.\n\nIbalik ang panibagong talaan na naglalaman lamang ng elemento na kung saan ang resulta ng pagulit ay `true` o `1`."
         },
         "foreach": {
-            "desc": ""
+            "desc": "Ulitin sa pamamagitan ng talaan, ayusin ang kasalukuyang elemento para sa lokal na pagkakaiba `i`. Kung `varName` ay sigurado, sa halip itakda ang pagkakaiba."
         },
         "get": {
-            "desc": ""
+            "desc": "Kumuwa ng elemento na galing sa pagutli ng posisyon ng `talaturuan`."
         },
         "isarray": {
-            "desc": ""
+            "desc": "Bumalik sa totoo kung ang naibigay na elemento ay nasa talaan, at kung hindi totoo. Ikaw ay hindi pwedeng gumamit ng magkaibang pangalan."
         },
         "join": {
-            "desc": ""
+            "desc": "Sumali sa talaan kasama sa naibigay na `delimiter`."
         },
         "length": {
             "desc": ""
