@@ -40,27 +40,27 @@
             "desc": "Ang mga uri at pagbabalik ng talaan, sa pamamagitan ng default sa pataas na utos.\n\nKung `tungkulin` ay naibigay, ang paguuri ay batay sa resulta ng pagsasagawa ng nasabing tungkulin. Ito ay itinakda sa dalawang lokal na pagkakaiba ng: `a` (o `varNameOne`) at `b` (o `varNameTwo`).\n\nDapat ibalik ang tungkulin ng numero. Kung ang numero ay mas mataas kaysa 0, `a` ay ikokosendera na mas mataas sa `b`. Kung ang numero ay mas mababa kaysa 0. `b` ay ikokonsederang mas mataas kaysa sa `a`. Anumang hindi numero na resulta ay magiging 0, kung saan ang parehong numero ay pantay."
         },
         "splice": {
-            "desc": ""
+            "desc": "Nagsisimula ito sa posisyon ng `simula`, tanggalin ang `bilang ng nabura` Ang elemento na galing sa talaan at ang dagdag na natitirang `gamit` sa position na ito. Ibalik ang tinanggal na mga elemento."
         },
         "split": {
-            "desc": ""
+            "desc": "Hatiin ang `teksto` sa pamamagitan ng `delimitro`. muling ibalik ang bagong talaan."
         },
         "unshift": {
-            "desc": ""
+            "desc": "Ipasok ang `halaga` sa simula ng talaan, at ibalik ang binagong talaan."
         }
     },
     "channel": {
         "id": {
-            "desc": ""
+            "desc": "Ibalik ang ID ng kasalukuyan o tinutukoy na channel."
         },
         "nsfw": {
-            "desc": ""
+            "desc": "Ibalik kahit ang kasalukuyan o ang tinutukoy na channel ay NSFW."
         },
         "name": {
-            "desc": ""
+            "desc": "Ibalik ang pangalan ng kasalukuyan o tinutukoy na channel."
         },
         "position": {
-            "desc": ""
+            "desc": "Ibalik ang posisyon ng kasalukuyan o tinutukoy na channel."
         },
         "topic": {
             "desc": ""
