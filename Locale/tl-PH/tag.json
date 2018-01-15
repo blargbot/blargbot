@@ -109,13 +109,13 @@
             "desc": "Ibalik ang ID ng kasalukuyang kapisanan."
         },
         "name": {
-            "desc": ""
+            "desc": "Ibalik ang pangalan ng kasalukuyang kapisanan."
         },
         "owner": {
-            "desc": ""
+            "desc": "Ibalik ang ID ng may ari ng kapisanan."
         },
         "region": {
-            "desc": ""
+            "desc": "Ibalik ang rehiyon ng kasalukuyang kapisanan kung nasaan sila galing."
         },
         "roles": {
             "desc": ""
