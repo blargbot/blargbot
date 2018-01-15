@@ -118,7 +118,7 @@
             "desc": "Ibalik ang rehiyon ng kasalukuyang kapisanan kung nasaan sila galing."
         },
         "roles": {
-            "desc": ""
+            "desc": "Ibalik ang talaan ng mga tungkulin sa kasalukuyang kapisanan."
         }
     },
     "logic": {
