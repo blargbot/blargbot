@@ -63,21 +63,21 @@
             "desc": "Ibalik ang posisyon ng kasalukuyan o tinutukoy na channel."
         },
         "topic": {
-            "desc": ""
+            "desc": "Ibalik ang kasalukuyang paksa o tinutukoy na channel (teksto lamang)."
         },
         "type": {
-            "desc": ""
+            "desc": "Ibalik ang uri ng kasalukuyan o tinutukoy na channel (ibalik ang \"teksto\" o \"boses\")."
         }
     },
     "general": {
         "clean": {
-            "desc": ""
+            "desc": "Linisin ang ibinigay na teksto sa pamamagitan ng pagurong sa lahat ng puting espasyo."
         },
         "comment": {
-            "desc": ""
+            "desc": "Tukuyin ang isang lugar na hindi pinapansin mula sa ginagawa"
         },
         "get": {
-            "desc": ""
+            "desc": "Ibalik ang mga nakaimbak na pagkakaiba kasama ang naibigay na pangalan. Ang pagkakaiba ng prefixes ay kayang bagohin ang tangke na kung saan ay naghahanap."
         },
         "set": {
             "desc": ""
