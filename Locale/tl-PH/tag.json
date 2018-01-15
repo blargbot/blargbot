@@ -80,33 +80,33 @@
             "desc": "Ibalik ang mga nakaimbak na pagkakaiba kasama ang naibigay na pangalan. Ang pagkakaiba ng prefixes ay kayang bagohin ang tangke na kung saan ay naghahanap."
         },
         "set": {
-            "desc": ""
+            "desc": "Ibalik ang mga nakaimbak na pagkakaiba kasama ang naibigay na pangalan para sa ibinigay na halaga. Ang pagkakaiba ng prefixes ay kayang bagohin ang tangke na kung saan ay naghahanap."
         },
         "trim": {
-            "desc": ""
+            "desc": "Tanggalin ang puting espasyo bago at pagkatapos ng ibinigay na teksto. Isipin ang paggamit ng {clean} na tag para tanggalin ang puting espasyo sa loob ng teksto."
         },
         "void": {
-            "desc": ""
+            "desc": "Iwasan ang output mula sa loob ng subtag. I-differ mula sa pagpuna habang ang mga bagay ay ginagawa, ay hindi makita."
         },
         "newline": {
-            "desc": ""
+            "desc": "Ibalik ang tinutukoy na numero ng bagong mga linya, i-default sa 1."
         },
         "space": {
-            "desc": ""
+            "desc": "Ibalik ang tinutukoy na numero ng bagong mga linya, i-default sa 1."
         }
     },
     "guild": {
         "createdat": {
-            "desc": ""
+            "desc": "Bumalik kung saan ang kasalukuyang kapisanan ay ginawa bilang isang Unix timestamp (milliseconds)."
         },
         "channels": {
-            "desc": ""
+            "desc": "Ibalik ang mga channel sa kasalukuyang kapisanan bilang isang talaan."
         },
         "icon": {
-            "desc": ""
+            "desc": "Ibalik ang URL ng kasalukuyang icon ng kapisanan."
         },
         "id": {
-            "desc": ""
+            "desc": "Ibalik ang ID ng kasalukuyang kapisanan."
         },
         "name": {
             "desc": ""
