@@ -126,7 +126,7 @@
             "desc": "Kung ang`halaga` ay katumbas ng `totoo` o `1`, paganahin ang `pagkatapos`. \nKung ang`halaga` ay katumbas ng `totoo` o `0`, paganahin ang `liban`. \nO kaya, magtapon ng error. \n\nGamitin ito kasama ng {logic} tag."
         },
         "logic": {
-            "desc": ""
+            "desc": "Ang mga lohikal na operator na`augend` at `operands`, ay magiging `true` o` false`.\n\nKatumbas na operator:\n - `==`- katumbas\n - `! =`- hindi magkatumbas\n - ` <`- mas mababa\n - `<=`- mas mababa o magkatumbas\n - `> `- mas mataas\n - `> =`- mas mataas o magkatumbas\n - `startswith` - ang augend ay nagsisimula kasama ang operand\n - `endwith` - ang augend ay nagtatapos kasama ang operand\n - `includes` - ang augend ay Kabilang dito ang operand\n\nLohikal na operator:\n - `&&`- ibalik ang totoo kung ang augend at operand ay parehong totoo\n - `||`- ibakik ang totoo kung alinman sa augend at operand ay totoo\n - `XOR`- ibalik ang totoo kung isa man sa augend at operand ay totoo (hindi parehong totoo)\n\nAng iba pang operatos:\n - `! `- baliktarin ang susunod na operand (ang totoo ay gawing hindi totoo, etc.)"
         }
     },
     "math": {
