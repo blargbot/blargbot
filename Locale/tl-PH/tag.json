@@ -123,7 +123,7 @@
     },
     "logic": {
         "if": {
-            "desc": ""
+            "desc": "Kung ang`halaga` ay katumbas ng `totoo` o `1`, paganahin ang `pagkatapos`. \nKung ang`halaga` ay katumbas ng `totoo` o `0`, paganahin ang `liban`. \nO kaya, magtapon ng error. \n\nGamitin ito kasama ng {logic} tag."
         },
         "logic": {
             "desc": ""
