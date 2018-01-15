@@ -137,10 +137,10 @@
             "desc": "Gawin ang `numero` gamit ang binigay base sa `orihinal` (i-default ito sa 10), at ibahin ito sa base ng `radix`."
         },
         "ceil": {
-            "desc": ""
+            "desc": "Buoin ang ibinigay na decimal up."
         },
         "floor": {
-            "desc": ""
+            "desc": "Buoin ang ibinigay na decimal down."
         },
         "math": {
             "desc": ""
