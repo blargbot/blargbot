@@ -131,10 +131,10 @@
     },
     "math": {
         "abs": {
-            "desc": ""
+            "desc": "Ibalik ang ganap na halaga ng binigay na numero (walang mga negatibo)."
         },
         "base": {
-            "desc": ""
+            "desc": "Gawin ang `numero` gamit ang binigay base sa `orihinal` (i-default ito sa 10), at ibahin ito sa base ng `radix`."
         },
         "ceil": {
             "desc": ""
