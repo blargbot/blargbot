@@ -143,7 +143,7 @@
             "desc": "Buoin ang ibinigay na decimal down."
         },
         "math": {
-            "desc": ""
+            "desc": "Ikalkula ang halaga ng ibinigay na pangungusap gamit ang mga sumusunod na operator:\n\n - `**` - exponent\n - `/` - dibisyon\n - `*` - multiplikasyon\n - `+` - pagdagdag\n - `-` - pagbabawas\n - `&` - bitwise AND\n - `|` - bitwise OR\n - `^` - bitwise XOR\n\nAng operator ay pinapagana gamit ang utos ng operasyong (Brackets, Exponent, Dibisyon, Mulitiplikasyon, pagdagdag, pagbabawas, Bitwise).\n\nKung ang isang operator ay hindi natukoy, ginamit nito ang huling ginamit ng operator (ang pagdagdag sa default).\n\nAng mga bracket ay makukuwa sa pamamagitan ng paggamit ng isa pang nested {math} tag.\n\nKung ang `operand` o `augend` hindi maaaring gawain ang isang numero, ang pagbabago kasama ang parehong pangalan ay makuha, Kung ang makukuhang pagbabago ay hindi rin numero, tanggalin ang error."
         },
         "parsefloat": {
             "desc": ""
