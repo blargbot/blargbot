@@ -188,34 +188,34 @@
             "desc": "Ibalik ang petsa ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit, ito ay ginawa bilang timestamp ng unix (milliseconds)."
         },
         "discrim": {
-            "desc": ""
+            "desc": "Ibalik ang pagpipili ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "fullname": {
-            "desc": ""
+            "desc": "Ibalik ang pangalan ng + sa pagpipili ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "game": {
-            "desc": ""
+            "desc": "Ibalik ang nilalarong laro ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit. Kung ang gumagamit ay hindi naglalaro ng isang laro, ibalik ito sa wala."
         },
         "id": {
-            "desc": ""
+            "desc": "Ibalik ang ID ng tinutukoy na gumagamit, i-default ang ginagawa ng gumagamit."
         },
         "joinedat": {
-            "desc": ""
+            "desc": "Ibalik ang petsa ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit, sumali sa kasalukuyang kapisanan bilang isang timestamp ng unix (milliseconds)."
         },
         "mention": {
-            "desc": ""
+            "desc": "Banggitin ang tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "name": {
-            "desc": ""
+            "desc": "Ibalik ang pangalan ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "nick": {
-            "desc": ""
+            "desc": "Ibalik ang palayaw ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "roles": {
-            "desc": ""
+            "desc": "Ibalik ang talaan ng mga ginagampanan ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "setnick": {
-            "desc": ""
+            "desc": "Itakda ang palayaw ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "status": {
             "desc": ""
