@@ -146,26 +146,26 @@
             "desc": "Ikalkula ang halaga ng ibinigay na pangungusap gamit ang mga sumusunod na operator:\n\n - `**` - exponent\n - `/` - dibisyon\n - `*` - multiplikasyon\n - `+` - pagdagdag\n - `-` - pagbabawas\n - `&` - bitwise AND\n - `|` - bitwise OR\n - `^` - bitwise XOR\n\nAng operator ay pinapagana gamit ang utos ng operasyong (Brackets, Exponent, Dibisyon, Mulitiplikasyon, pagdagdag, pagbabawas, Bitwise).\n\nKung ang isang operator ay hindi natukoy, ginamit nito ang huling ginamit ng operator (ang pagdagdag sa default).\n\nAng mga bracket ay makukuwa sa pamamagitan ng paggamit ng isa pang nested {math} tag.\n\nKung ang `operand` o `augend` hindi maaaring gawain ang isang numero, ang pagbabago kasama ang parehong pangalan ay makuha, Kung ang makukuhang pagbabago ay hindi rin numero, tanggalin ang error."
         },
         "parsefloat": {
-            "desc": ""
+            "desc": "Ang pagsubok para sa gagawin sa binigay na teksto bilang isang decimal."
         },
         "parseint": {
-            "desc": ""
+            "desc": "Ang pagsubok para sa gagawin sa binigay na teksto bilang isang integer."
         },
         "randint": {
-            "desc": ""
+            "desc": "Ibalik ang malayang integer sa pagitan ng binigay na layo. `min` i-default sa `0`"
         },
         "round": {
-            "desc": ""
+            "desc": "Buoin ang binigay na `numero` sa tinutukoy na decimal ng `place`, i-default ito sa 0."
         }
     },
     "message": {
         "id": {
-            "desc": ""
+            "desc": "Ibalik ang ID ng isinasagawang mensahe ng utos."
         }
     },
     "role": {
         "color": {
-            "desc": ""
+            "desc": "Ibalik ang kulay ng tinutukoy na role sa hexadecimal."
         },
         "id": {
             "desc": ""
