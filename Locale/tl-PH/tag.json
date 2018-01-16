@@ -218,7 +218,7 @@
             "desc": "Itakda ang palayaw ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "status": {
-            "desc": ""
+            "desc": "Ibalik ang kalagayan ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit. Pwede itong gawing \"online\", \"away\". \"dnd\", o \"offline\"."
         }
     }
 }
