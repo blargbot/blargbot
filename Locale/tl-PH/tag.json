@@ -165,27 +165,27 @@
     },
     "role": {
         "color": {
-            "desc": "Ibalik ang kulay ng tinutukoy na role sa hexadecimal."
+            "desc": "Ibalik ang kulay ng tinutukoy na pagganap sa hexadecimal."
         },
         "id": {
-            "desc": ""
+            "desc": "Ibalik ang ID ng tinutukoy na pagganap."
         },
         "mention": {
-            "desc": ""
+            "desc": "Ibalik ang pagbanggit sa tinutukoy na pagganap."
         },
         "name": {
-            "desc": ""
+            "desc": "Ibalik ang pangalan ng tinutukoy na pagganap."
         },
         "position": {
-            "desc": ""
+            "desc": "Ibalik ang posisyon ng tinutukoy na pagganap."
         }
     },
     "user": {
         "avatar": {
-            "desc": ""
+            "desc": "Ibalik ang URL ng avatar sa tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "createdat": {
-            "desc": ""
+            "desc": "Ibalik ang petsa ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit, ito ay ginawa bilang timestamp ng unix (milliseconds)."
         },
         "discrim": {
             "desc": ""
