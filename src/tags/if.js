@@ -47,17 +47,22 @@ e.execute = async function (params) {
         fallback = params.fallback;
     var replaceString = '';
     var replaceContent = false;
-
-    if (args.length == 4) {
+    
+    
+    if (args.length == 3 || args.length == 4) { 
+        //{if;bool;then} or {if;bool;then;else}
         args[1] = await bu.processTagInner(params, 1);
         if (args[1].toLowerCase() == "true" || args[1] == true) {
             params.content = args[2];
             replaceString = await bu.processTagInner(params);
-        } else {
+        } else if (args[1].toLowerCase() == "false" || args[1] == false){
             params.content = args[3];
             replaceString = await bu.processTagInner(params);
+        } else {
+            replaceString = await bu.tagProcessError(params, '`Invalid boolean`');
         }
-    } else if (args.length > 4) {
+    } else if (args.length == 5 && args.length == 6) { 
+        //{if;val;condition;val;then} or {if;val;condition;val;then;else}
         args[1] = await bu.processTagInner(params, 1);
         if (/^-?\d+(\.\d*)?$/.test(args[1])) args[1] = parseFloat(args[1]);
         args[2] = await bu.processTagInner(params, 2);
@@ -78,6 +83,8 @@ e.execute = async function (params) {
             params.content = args[5];
             replaceString = await bu.processTagInner(params);
         }
+    } else if (args.length > 6){
+        replaceString = await bu.tagProcessError(params, '`Too many arguments`');
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     }
