@@ -22,7 +22,6 @@ var patronStr, donatorStr;
 async function reload() {
     patronStr = (await Promise.map(patrons, async p => {
         if (/^[0-9]{17,23}$/.test(p)) {
-            console.log(p, await bu.getCachedUser(p));
             return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
         } else return p;
     })).join('\n - ');
