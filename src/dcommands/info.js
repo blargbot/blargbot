@@ -1,7 +1,5 @@
 var e = module.exports = {};
 
-
-
 e.init = () => {
     e.category = bu.CommandType.GENERAL;
 };
@@ -19,18 +17,28 @@ const { patrons, donators } = dep.reload('../../res/donators.json');
 
 const startDate = 1444708800000;
 
-e.execute = (msg) => {
-    console.log('aaa');
-    let patronStr = patrons.map(p => {
+var patronStr, donatorStr;
+
+async function reload() {
+    patronStr = (await Promise.map(patrons, async p => {
         if (/^[0-9]{17,23}$/.test(p)) {
-            return bu.getFullName(bot.users.get(p));
+            console.log(p, await bu.getCachedUser(p));
+            return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
         } else return p;
-    }).join('\n - ');
-    let donatorStr = donators.map(p => {
+    })).join('\n - ');
+    donatorStr = (await Promise.map(donators, async p => {
         if (/^[0-9]{17,23}$/.test(p)) {
-            return bu.getFullName(bot.users.get(p));
+            return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
         } else return p;
-    }).join('\n - ');
+    })).join('\n - ');
+    console.log('reloaded');
+}
+
+setInterval(reload, 60 * 60 * 1000);
+
+reload();
+
+e.execute = async (msg) => {
     let age = dep.moment.duration(dep.moment() - dep.moment(startDate));
     let dateStr = `${age.years()} year${age.years() != 1 ? 's' : ''}, ${age.months()} month${age.months() != 1 ? 's' : ''}, ${age.days()} day${age.days() != 1 ? 's' : ''}, ${age.hours()} hour${age.hours() != 1 ? 's' : ''}, ${age.minutes()} minute${age.minutes() != 1 ? 's' : ''}, and ${age.seconds()} second${age.seconds() != 1 ? 's' : ''}`;
     try {
