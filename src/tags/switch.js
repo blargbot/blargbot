@@ -44,7 +44,7 @@ e.execute = async function(params) {
             let deserialized = bu.deserializeTagArray(args[i]);
             if (deserialized && Array.isArray(deserialized.v)) {
                 for (let j = 0, j < deserialized.v.length, j++) {
-                    cases[deserialized[j]] = args[i + 1];
+                    cases[deserialized.v[j]] = args[i + 1];
                 }
             } else {
                 cases[args[i]] = args[i + 1];
