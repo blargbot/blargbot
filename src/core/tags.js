@@ -23,9 +23,6 @@ e.processTag = async function (msg, contents, command, tagName, author, isCcomma
             }
         }
 
-        if (contents.split(' ')[0].indexOf('help') > -1) {
-            contents = '\u200B' + contents;
-        }
         contents = contents.replace(new RegExp(bu.specialCharBegin, 'g'), '').replace(new RegExp(bu.specialCharDiv, 'g'), '').replace(new RegExp(bu.specialCharEnd, 'g'), '');
 
         contents = await bu.processTag({
