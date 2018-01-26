@@ -30,7 +30,7 @@
     "express-sse": "^0.4.1",
     "gifencoder": "^1.0.6",
     "github-webhook-handler": "^0.6.0",
-    "gm": "^1.23.0",
+    "gm": "^1.23.1",
     "googleapis": "^12.4.0",
     "hbs": "^4.0.1",
     "heapdump": "^0.3.7",

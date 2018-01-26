@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:28:09
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 09:32:51
+ * @Last Modified time: 2018-01-25 18:57:40
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -47,7 +47,7 @@ if (cluster.isMaster) {
     cluster.on('message', (worker, msg, handle) => {
         switch (msg.cmd) {
             case 'log':
-                console.log(msg.level, msg.msg);
+                console[msg.level]('[IMAGE]', msg.msg);
                 break;
             case 'img':
                 console.cluster('base64 received, sending to the EE');
