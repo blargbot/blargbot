@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:25:58
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-05 16:51:35
+ * @Last Modified time: 2018-01-16 11:52:11
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,9 +17,9 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.name = `apply`;
-e.args = `&lt;tag&gt; &lt;args&gt;`;
-e.usage = `{apply;tag;args...}`;
-e.desc = `Executes the provided tag, using the array args as parameters.`;
+e.args = `&lt;subtag&gt; &lt;args&gt;...`;
+e.usage = `{apply;subtag;args...}`;
+e.desc = `Executes the provided subtag, using the <code>args</code> as parameters. If <code>args</code> is an array, it will get deconstructed to it's individual elements.`;
 e.exampleIn = `{apply;randint;[1,4]}`;
 e.exampleOut = `3`;
 

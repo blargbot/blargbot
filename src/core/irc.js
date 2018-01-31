@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:54
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 10:41:35
+ * @Last Modified time: 2017-12-08 11:18:05
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -395,7 +395,7 @@ var userdataDir = 'userdata';
 dep.mkdirp(userdataDir);
 
 function getUserFilePath(name) {
-    return dep.path.join(__dirname, '..', `${userdataDir}/${name}.json`.toLowerCase());
+    return dep.path.join(__dirname, '..', '..', `${userdataDir}/${name}.json`.toLowerCase());
 }
 
 function createDefaultUserFile(name) {

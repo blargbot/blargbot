@@ -41,15 +41,15 @@ e.execute = async function (msg, words) {
     if (!full) {
         embeds.fields = [{
             name: 'Guilds',
-            value: bot.guilds.size,
+            value: '' + bot.guilds.size,
             inline: true
         }, {
             name: 'Channels',
-            value: Object.keys(bot.channelGuildMap).length,
+            value: '' + Object.keys(bot.channelGuildMap).length,
             inline: true
         }, {
             name: 'Users',
-            value: bot.users.size,
+            value: '' + bot.users.size,
             inline: true
         }, {
             name: 'RAM',
@@ -57,15 +57,15 @@ e.execute = async function (msg, words) {
             inline: true
         }, {
             name: 'Version',
-            value: await bu.getVersion(),
+            value: '' + (await bu.getVersion()),
             inline: true
         }, {
             name: 'Uptime',
-            value: bu.createTimeDiffString(dep.moment(), bu.startTime),
+            value: '' + bu.createTimeDiffString(dep.moment(), bu.startTime),
             inline: true
         }, {
             name: 'Messages',
-            value: bu.messageStats,
+            value: '' + bu.messageStats,
             inline: true
         }, {
             name: 'Per Minute',
@@ -73,7 +73,7 @@ e.execute = async function (msg, words) {
             inline: true
         }, {
             name: 'Command Used This Session',
-            value: bu.commandUses,
+            value: '' + bu.commandUses,
             inline: true
         }, {
             name: 'Commands Per Minute',
@@ -81,11 +81,11 @@ e.execute = async function (msg, words) {
             inline: true
         }, {
             name: 'Cleverbots Used This Session',
-            value: bu.cleverbotStats,
+            value: '' + bu.cleverbotStats,
             inline: true
         }, {
             name: 'Total Commands Used',
-            value: sum,
+            value: '' + sum,
             inline: true
         }];
     } else {
@@ -98,7 +98,7 @@ e.execute = async function (msg, words) {
         for (let item of sortable) {
             embeds.fields.push({
                 name: item[0],
-                value: item[1],
+                value: '' + item[1],
                 inline: true
             });
             i++;
@@ -113,12 +113,12 @@ e.execute = async function (msg, words) {
         for (let i = 0; i < stats.length; i++) {
             embeds.fields.push({
                 name: stats[i].name,
-                value: stats[i].uses,
+                value: '' + stats[i].uses,
                 inline: true
             });
         }
     }
-    console.debug(embeds);
+    console.debug(embeds.fields);
     console.debug(embeds.fields.length);
     bu.send(msg, {
         embed: embeds

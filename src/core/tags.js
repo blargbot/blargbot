@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-16 12:06:02
+ * @Last Modified time: 2018-01-26 01:09:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -12,8 +12,7 @@ var e = module.exports = {};
 e.processTag = async function (msg, contents, command, tagName, author, isCcommand) {
     try {
         author = author || msg.channel.guild.id;
-        console.debug(command);
-        var words = bu.splitInput(command);
+        var words = typeof command === 'string' ? bu.splitInput(command) : command;
 
         if (contents.toLowerCase().indexOf('{nsfw') > -1) {
             let nsfwChan = await bu.isNsfwChannel(msg.channel.id);

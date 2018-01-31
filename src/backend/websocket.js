@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:52
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-09-30 11:02:19
+ * @Last Modified time: 2017-12-07 15:45:58
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -26,22 +26,27 @@ e.init = function (server) {
         ws.on('message', function (message) {
             try {
                 message = JSON.parse(message);
-                let userId = bu.getUserFromSession(message.sid);
-                if (!userId) {
-                    sendData(ws, 403, 'Not authenticated');
-                    return;
-                }
+                // let userId = bu.getUserFromSession(message.sid);
+                // if (!userId) {
+                //     sendData(ws, 403, 'Not authenticated');
+                //     return;
+                // }
                 if (!message.type) {
                     sendData(ws, 400, 'No type specified');
                     return;
                 }
                 switch (message.type) {
-                    case 'displayGuild':
-                        displayGuild(ws, message, userId);
+                    case 'requestShards':
+                        console.ws('Shards have been requested.');
+                        for (const shard of Object.values(spawner.shardCache))
+                            sendData(ws, 'shard', shard);
                         break;
-                    case 'saveGuild':
-                        saveGuild(ws, message, userId);
-                        break;
+                    // case 'displayGuild':
+                    //     displayGuild(ws, message, userId);
+                    //     break;
+                    // case 'saveGuild':
+                    //     saveGuild(ws, message, userId);
+                    //     break;
                 }
             } catch (err) {
                 sendData(ws, 400, 'Malformed request');

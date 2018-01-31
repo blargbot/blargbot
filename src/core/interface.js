@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:30
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:31:51
+ * @Last Modified time: 2017-12-08 00:52:11
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,6 +15,7 @@ var server;
 e.init = () => {
     app = dep.express();
     app.use(dep.bodyParser.json());
+    app.use(dep.bodyParser.urlencoded({ limit: '50mb', extended: true }))
     server = app.listen(8081, function () {
         var host = server.address().address;
         var port = server.address().port;

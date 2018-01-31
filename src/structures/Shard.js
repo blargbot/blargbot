@@ -29,8 +29,15 @@ class Shard extends Sender {
             } else
                 this.manager.handleMessage(this, message.code, message.data);
         });
+        this.process.once('disconnect', () => {
+            if (this.respawn) {
+                console.warn('The shard disconnected, respawning');
+                this.manager.respawnShard(this.id);
+            }
+        });
 
         this.process.once('kill', code => {
+            console.warn('The shard was killed');
             this.manager.handleDeath(this, code);
         });
     }

@@ -77,7 +77,7 @@ e.execute = async function (msg, words) {
         numberOfMessages = parseInt(input.undefined[0]);
     }
     if (isNaN(numberOfMessages) || (!input.j && numberOfMessages > 1000))
-        numberOfMessages = 1000;
+        numberOfMessages = 100;
     if (numberOfMessages <= 0) {
         numberOfMessages = 1;
     }

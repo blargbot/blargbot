@@ -16,6 +16,20 @@ class Spawner extends EventEmitter {
         process.on('exit', code => {
             this.killAll();
         });
+
+        this.shardCache = {};
+
+        this.uptimeInterval = setInterval(async () => {
+            for (const key of Object.keys(this.shardCache)) {
+                const shard = this.shardCache[key];
+                let diff = moment.duration(moment() - shard.time);
+                if (!shard.respawning && diff.asMilliseconds() > 60000) {
+                    shard.respawning = true;
+                    await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive shard ${shard.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
+                    this.respawnShard(shard.id);
+                }
+            }
+        }, 10000);
     }
 
     respawnAll() {
@@ -33,6 +47,7 @@ class Spawner extends EventEmitter {
                 }
                 this.shards.set(id, shard);
                 res();
+                await this.client.discord.createMessage('398946258854871052', `Shard ${shard.id} has been respawned.`);
             });
         });
     }
@@ -98,6 +113,11 @@ class Spawner extends EventEmitter {
         });
     }
 
+    async lookupChannel(id) {
+        let res = await this.awaitBroadcast({ message: 'lookupChannel', id });
+        return res.map(r => JSON.parse(r.message)).filter(r => r !== null)[0] || { channel: 'Unknown', guild: 'Unknown' };
+    }
+
     async getStaffGuilds(userId, guilds) {
         let res = await this.awaitBroadcast({
             message: 'getStaffGuilds',
@@ -133,7 +153,10 @@ class Spawner extends EventEmitter {
                 }
                 break;
             case 'shardStats':
-                wss.broadcast({ code: 'shard', data });
+                if (wss) {
+                    wss.broadcast({ code: 'shard', data });
+                    this.shardCache[data.id] = data;
+                }
                 break;
             case 'ircMessage':
                 this.client.irc.bot.say(config.irc.channel, data.message)

@@ -2,13 +2,13 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:14
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:19:14
+ * @Last Modified time: 2017-12-09 00:50:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const router = dep.express.Router();
-
+const settings = require('../../dcommands/settings');
 
 router.get('/', (req, res) => {
     res.locals.user = req.user;

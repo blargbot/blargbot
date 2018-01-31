@@ -6,8 +6,8 @@ var cad = {};
 
 
 e.init = () => {
-    if (dep.fs.existsSync(dep.path.join(__dirname, '..', 'cah.json'))) {
-        cah = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, '..', 'cah.json'), 'utf8'));
+    if (dep.fs.existsSync(dep.path.join(__dirname, '..', '..', 'res', 'cah.json'))) {
+        cah = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, '..', '..', 'res', 'cah.json'), 'utf8'));
     }
 
     dep.request('https://api.cardcastgame.com/v1/decks/JJDFG/cards', (err, res, body) => {
@@ -34,7 +34,7 @@ e.usage = 'cah';
 e.info = 'Generates a set of CAH cards.';
 e.longinfo = '<p>Generates a random set of Cards Against Humanity cards.</p>';
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let val = await bu.guildSettings.get(msg.channel.guild.id, 'cahnsfw');
     let cont = true;
     if (val && val != 0) {

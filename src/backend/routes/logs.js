@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:19:49
+ * @Last Modified time: 2017-12-26 16:20:42
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -116,8 +116,9 @@ router.post('/', async (req, res) => {
             }
             res.locals.messages = messages;
             res.locals.channel = logsSpecs.channel;
-            res.locals.channelname = bot.getChannel(logsSpecs.channel).name;
-            res.locals.guildname = bot.getChannel(logsSpecs.channel).guild.name;
+            let lookedUp = await spawner.lookupChannel(logsSpecs.channel);
+            res.locals.channelname = lookedUp.channel;
+            res.locals.guildname = lookedUp.guild;
             res.locals.users = logsSpecs.users.join(', ');
             res.locals.types = logsSpecs.types.join(', ');
             res.locals.first = logsSpecs.first;

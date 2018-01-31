@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:38:19
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 10:51:53
+ * @Last Modified time: 2018-01-25 19:20:55
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -560,7 +560,8 @@ process.on('message', async function (msg, handle) {
             }
             break;
         default:
-            console.worker(`Worker ${cluster.worker.id} got a message!\n${util.inspect(msg)}`);
+            break;
+        // console.worker(`Worker ${cluster.worker.id} got a message!\n${util.inspect(msg)}`);
     }
 });
 
@@ -573,14 +574,25 @@ async function submitBuffer(code, buffer) {
     });
 }
 
-function getBufferFromIM(img) {
-    return new Promise((fulfill, reject) => {
-        img.setFormat('png').toBuffer(function (err, buffer) {
+function getBufferFromIM(data) {
+    return new Promise((resolve, reject) => {
+        // data.stream((err, stdout, stderr) => {
+        //     if (err) { console.error(err.stack); return reject(err.stack) }
+        //     const chunks = []
+        //     stdout.on('data', (chunk) => { chunks.push(chunk) })
+        //     // these are 'once' because they can and do fire multiple times for multiple errors,
+        //     // but this is a promise so you'll have to deal with them one at a time
+        //     stdout.once('end', () => { console.debug('done! ' + chunks.length); resolve(Buffer.concat(chunks)) })
+        //     const errChunks = [];
+        //     stderr.on('data', (data) => { errChunks.push(data) });
+        //     stderr.once('end', () => { reject(Buffer.concat(errChunks).toString()) });
+        // })
+        data.setFormat('png').toBuffer(function (err, buffer) {
             if (err) {
                 reject(err);
                 return;
             }
-            fulfill(buffer);
+            resolve(buffer);
         });
     });
 }
@@ -672,14 +684,8 @@ function getResource(url) {
             uri: url
         });
         if (r.res.headers['content-type'] == 'image/gif') {
-            gm(r.body, 'temp.gif').selectFrame(0).setFormat('png').toBuffer(function (err, buffer) {
-                if (err) {
-                    console.error('Error converting gif');
-                    reject(err);
-                    return;
-                }
-                fulfill(buffer);
-            });
+            getBufferFromIM(gm(r.body, 'temp.gif').selectFrame(1).setFormat('png'))
+                .then(fulfill).catch(reject);
         } else if (r.res.headers['content-type'] == 'image/png' ||
             r.res.headers['content-type'] == 'image/jpeg' ||
             r.res.headers['content-type'] == 'image/bmp') {

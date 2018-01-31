@@ -2,10 +2,11 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-31 12:54:06
+ * @Last Modified time: 2018-01-31 12:57:01
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+global.Promise = require('bluebird');
 global.config = require('../../config.json');
 const Logger = require('./logger');
 new Logger(process.env.SHARD_ID, config.general.isbeta ? 'debug' : 'info').setGlobal();
@@ -140,6 +141,13 @@ process.on('message', async msg => {
         case 'await':
             const eventKey = 'await:' + data.key;
             switch (data.message) {
+                case 'lookupChannel': {
+                    let chan = bot.getChannel(data.id);
+                    if (chan) {
+                        bot.sender.send(eventKey, JSON.stringify({ channel: chan.name, guild: chan.guild.name }));
+                    } else bot.sender.send(eventKey, "null");
+                    break;
+                }
                 case 'getStaffGuilds': {
                     let { user, guilds } = data;
                     let res = [];
@@ -211,11 +219,18 @@ process.on('message', async msg => {
 
 // shard status posting
 let shardStatusInterval = setInterval(() => {
-    console.log('Sending shard status');
+    let shard = bot.shards.get(parseInt(process.env.SHARD_ID));
+    let mem = process.memoryUsage();
     bot.sender.send('shardStats', {
-        id: process.env.SHARD_ID
+        id: process.env.SHARD_ID,
+        time: Date.now(),
+        readyTime: bot.startTime,
+        guilds: bot.guilds.size,
+        rss: mem.rss,
+        status: shard.status,
+        latency: shard.latency
     });
-}, 15000);
+}, 10000);
 
 
 // Now look at this net,

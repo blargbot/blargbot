@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-05 16:37:04
+ * @Last Modified time: 2018-01-07 19:25:25
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -664,7 +664,7 @@ bu.issueWarning = async function (user, guild, count, params) {
             storedGuild.warnings.users[user.id] = undefined;
             type = 1;
         } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
-            await bu.logAction(guild, bot.user, user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`, bu.ModLogColour.KICK);
+            await bu.logAction(guild, user, bot.user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`, bu.ModLogColour.KICK);
             await guild.kickMember(user.id);
             type = 2;
         }

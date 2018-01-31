@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:06:33
+ * @Last Modified time: 2018-01-01 16:39:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -23,7 +23,7 @@ e.desc = `Executes the provided code after a certain amount of time. Three timer
 e.exampleIn = `{timer;Hello!;20s}`;
 e.exampleOut = `(after 20 seconds:) Hello!`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     var replaceString = '';
     var replaceContent = false;
     if (params.msg.didTimer == true) {
@@ -42,6 +42,7 @@ e.execute = async function(params) {
                 await r.table('events').insert({
                     type: 'tag',
                     params,
+                    msg: JSON.stringify(msg),
                     channel: msg.channel.id,
                     endtime: r.epochTime(dep.moment().add(duration).unix())
                 });

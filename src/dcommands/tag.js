@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 09:48:50
+ * @Last Modified time: 2018-01-26 01:09:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -573,6 +573,9 @@ ${Object.keys(user.favourites).join(', ')}
                     }
                     if (!tag.reports) tag.reports = 0;
                     let user = await r.table('user').get(msg.author.id).run();
+                    if (user.reportblock) {
+                        return await bu.send(msg, user.reportblock);
+                    }
                     if (!user.reports) user.reports = {};
                     let output;
                     if (words.length > 3) {
@@ -629,8 +632,7 @@ ${Object.keys(user.favourites).join(', ')}
                     }
                 break;
             default:
-                var command = words.slice(2).join(' ');
-                command = bu.fixContent(command);
+                var command = words.slice(2);
 
                 tags.executeTag(msg, filterTitle(words[1]), command);
                 break;
@@ -639,9 +641,20 @@ ${Object.keys(user.favourites).join(', ')}
         bu.send(msg, e.info);
     }
 };
+const Message = require('eris/lib/structures/Message')
 
 e.event = async function (args) {
-    let msg = await bot.getMessage(args.channel, args.params.msg);
+    let msg;
+    try {
+        msg = await bot.getMessage(args.channel, args.params.msg);
+    } catch (err) {
+        msg = JSON.parse(args.msg);
+        msg.channel_id = args.channel;
+        msg.mentions_everyone = msg.mentionEveryone;
+        msg.role_mentions = msg.roleMentions;
+        msg.reactions = [];
+        msg = new Message(msg, bot);
+    }
     let params = args.params;
     params.msg = msg;
     params.msg.didTimer = true;
