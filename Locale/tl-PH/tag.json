@@ -1,10 +1,10 @@
 {
     "array": {
         "filter": {
-            "desc": "Ulitin sa pamamagitan ng talaan, ayusin ang kasalukuyang elemento para sa lokal na pagkakaiba `i`. Kung `varName` ay sigurado, sa halip itakda ang pagkakaiba.\n\nIbalik ang panibagong talaan na naglalaman lamang ng elemento na kung saan ang resulta ng pagulit ay `true` o `1`."
+            "desc": ""
         },
         "foreach": {
-            "desc": "Ulitin sa pamamagitan ng talaan, ayusin ang kasalukuyang elemento para sa lokal na pagkakaiba `i`. Kung `varName` ay sigurado, sa halip itakda ang pagkakaiba."
+            "desc": ""
         },
         "get": {
             "desc": "Kumuwa ng elemento na galing sa pagutli ng posisyon ng `talaturuan`."
@@ -19,7 +19,7 @@
             "desc": "Ibalik ang haba ng nasabing talaan."
         },
         "map": {
-            "desc": "Ulitin sa pamamagitan ng talaan, ayusin ang kasalukuyang elemento para sa lokal na pagkakaiba `i`. Kung `varName` ay sigurado, sa halip itakda ang pagkakaiba.\n\nIbalik ang bagong talaan na kung saan ang bawat elemento ay ang resulta ng bawat pagulit."
+            "desc": ""
         },
         "pop": {
             "desc": "Tangalin at ibalik ang huling elemento ng talaan."
@@ -37,7 +37,7 @@
             "desc": "Ibalik ang isang seksyon ng talaan, kasama ang `simula` ng index at hindi kasama ang `huli` huli ng index. Kung ang `end` ay hindi matukoy, ang lahat ng natitirang elemento ay i-default."
         },
         "sort": {
-            "desc": "Ang mga uri at pagbabalik ng talaan, sa pamamagitan ng default sa pataas na utos.\n\nKung `tungkulin` ay naibigay, ang paguuri ay batay sa resulta ng pagsasagawa ng nasabing tungkulin. Ito ay itinakda sa dalawang lokal na pagkakaiba ng: `a` (o `varNameOne`) at `b` (o `varNameTwo`).\n\nDapat ibalik ang tungkulin ng numero. Kung ang numero ay mas mataas kaysa 0, `a` ay ikokosendera na mas mataas sa `b`. Kung ang numero ay mas mababa kaysa 0. `b` ay ikokonsederang mas mataas kaysa sa `a`. Anumang hindi numero na resulta ay magiging 0, kung saan ang parehong numero ay pantay."
+            "desc": ""
         },
         "splice": {
             "desc": "Nagsisimula ito sa posisyon ng `simula`, tanggalin ang `bilang ng nabura` Ang elemento na galing sa talaan at ang dagdag na natitirang `gamit` sa position na ito. Ibalik ang tinanggal na mga elemento."
