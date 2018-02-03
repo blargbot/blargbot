@@ -1,10 +1,10 @@
 {
     "array": {
         "filter": {
-            "desc": "Itera a través de una matriz, estableciendo el elemento actual a una variable local 'i'. Si 'varName' es especificada, establece esa variable en lugar de la otra. \n\nDevuelve una nueva matriz que sólo contiene los elementos donde el resultado de la iteración fue 'verdadero' o '1'."
+            "desc": ""
         },
         "foreach": {
-            "desc": "Itera a través de una matriz, estableciendo la variable local 'i' en el elemento actual. Si se provee 'varName', establece esa variable en lugar de la otra."
+            "desc": ""
         },
         "get": {
             "desc": "Obtiene un elemento de una matriz en la posición `index`."
@@ -19,7 +19,7 @@
             "desc": "Devuelve la longitud de la matriz proporcionada."
         },
         "map": {
-            "desc": "Itera a través de una matriz, estableciendo el elemento actual a una variable local 'i'. Si se especifica 'varName', establece esa variable en lugar de la otra. Devuelve una nueva matriz donde cada elemento es el resultado de cada iteración."
+            "desc": ""
         },
         "pop": {
             "desc": "Elimina y luego devuelve el último elemento de la matriz."
@@ -37,7 +37,7 @@
             "desc": "Devuelve una sección de la matriz, incluyendo el índice de 'Inicio' y excluyendo el índice de 'fin'. Si 'end' no está especificado, establece valor por defecto a todos los elementos restantes."
         },
         "sort": {
-            "desc": "Ordena y devuelve un array, por defecto en orden ascendente. \n\nSiempre que 'function es proveida', la ordenación ocurrirá según el resultado de ejecutar dicha función. Esto establecerá dos variables locales: 'a' (o 'varNameOne') y 'b' (o 'varNameTwo').\n\nLa función debe devolver un número. Si el número es mayor que 0, 'a' se considerarán mayor que 'b'. Si el número es menor que 0, 'b' se considerará mayor que 'a'. Cualquier resultado no númerico se convertirá a 0, donde ambos elementos son iguales."
+            "desc": ""
         },
         "splice": {
             "desc": "A partir de la posición 'Inicio', quita los elementos 'deleteCount' de la matriz y agrega el resto de los 'items' en esa posición. Devuelve los elementos quitados."
