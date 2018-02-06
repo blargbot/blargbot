@@ -10,7 +10,7 @@
 var e = module.exports = {};
 
 e.init = () => {
-    e.category = bu.TagType.ARRAY;
+    e.category = bu.TagType.COMPLEX;
 };
 
 e.requireCtx = require;
@@ -28,7 +28,7 @@ e.execute = async function (params) {
     var replaceString = '';
     var replaceContent = false;
     var parsedFallback = parseInt(fallback);
-    if (params.args[1] && params.args[2] && params.args[3]) {
+    if (params.args.length == 4) {
         let args2 = await bu.processTagInner(params, 2);
         let args1 = await bu.processTagInner(params, 1);
 
@@ -41,7 +41,7 @@ e.execute = async function (params) {
             if (value != undefined && Array.isArray(value))
                 let arr = value;
             else
-                replaceString = await bu.tagProcessError(params, 'Argument 2 is not an array');
+                replaceString = await bu.tagProcessError(params, '`Argument 2 is not an array`');
         }
 
         if (arr != undefined)   {
@@ -58,8 +58,10 @@ e.execute = async function (params) {
                 if (params.terminate) break;
             }
         }
-    } else {
+    } else if (params.args.length < 4) {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Too many arguments`');
     }
 
     return {
