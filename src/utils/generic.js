@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-07 19:25:25
+ * @Last Modified time: 2018-02-06 13:37:42
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -627,7 +627,7 @@ bu.logAction = async function (guild, user, mod, type, reason, color = 0x17c484,
         cases.push({
             caseid: caseid,
             modid: mod ? mod.id : null,
-            msgid: msg.id,
+            msgid: msg ? msg.id : '',
             reason: reason || null,
             type: type || 'Generic',
             userid: isArray ? user.map(u => u.id).join(',') : user.id
