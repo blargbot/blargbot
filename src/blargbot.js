@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 10:08:08
+ * @Last Modified time: 2018-01-31 13:05:32
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -27,10 +27,6 @@ global.bu = require('./core/util.js');
 bu.init();
 
 /** LOGGING STUFF **/
-
-console.log = function (...args) {
-    console.debug(...args);
-};
 
 
 var VERSION = config.version;

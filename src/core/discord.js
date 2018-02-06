@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-18 21:54:08
+ * @Last Modified time: 2018-01-31 12:57:01
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -67,7 +67,6 @@ class DiscordClient extends dep.Eris.Client {
 
         this.sender = new Sender(this, process);
 
-        registerChangefeed();
         console.init('Connecting...');
         this.connect();
     }
@@ -130,67 +129,6 @@ function filterUrls(input) {
 
 var discord = new DiscordClient();
 discord.sender.send('threadReady', process.env.SHARD_ID);
-
-var changefeed;
-
-async function registerChangefeed() {
-    registerSubChangefeed('guild', 'guildid', bu.guildCache);
-    registerSubChangefeed('user', 'userid', bu.userCache);
-    registerSubChangefeed('tag', 'name', bu.tagCache);
-    registerGlobalChangefeed();
-}
-
-async function registerGlobalChangefeed() {
-    try {
-        console.info('Registering a global changefeed!');
-        changefeed = await r.table('vars').changes({
-            squash: true
-        }).run((err, cursor) => {
-            if (err) return console.error(err);
-            cursor.on('error', err => {
-                console.error(err);
-            });
-            cursor.on('data', data => {
-                if (data.new_val && data.new_val.varname == 'tagVars')
-                    bu.globalVars = data.new_val.values;
-            });
-        });
-        changefeed.on('end', registerGlobalChangefeed);
-    } catch (err) {
-        console.warn(`Failed to register a global changefeed, will try again in 10 seconds.`);
-        setTimeout(registerGlobalChangefeed, 10000);
-    }
-}
-
-async function registerSubChangefeed(type, idName, cache) {
-    try {
-        console.info('Registering a ' + type + ' changefeed!');
-        changefeed = await r.table(type).changes({
-            squash: true
-        }).run((err, cursor) => {
-            if (err) return console.error(err);
-            cursor.on('error', err => {
-                console.error(err);
-            });
-            cursor.on('data', data => {
-                if (data.new_val) {
-                    // Return if user or guild is not on thread
-                    if (idName === 'guildid' && !bot.guilds.get(data.new_val[idName]))
-                        return;
-                    if (idName === 'userid' && !bot.users.get(data.new_val[idName]))
-                        return;
-                    cache[data.new_val[idName]] = data.new_val;
-                } else delete cache[data.old_val[idName]];
-            });
-        });
-        changefeed.on('end', () => registerSubChangefeed(type, idName, cache));
-    } catch (err) {
-        console.warn(`Failed to register a ${type} changefeed, will try again in 10 seconds.`);
-        setTimeout(() => registerSubChangefeed(type, idName, cache), 10000);
-    }
-}
-
-
 
 process.on('message', async msg => {
     const { data, code } = JSON.parse(msg);
