@@ -50,7 +50,7 @@ e.execute = async function (params) {
                 username: params.args[5],
                 avatarURL: params.args[6],
                 content: params.args[3] || '',
-                embeds: embed ? [embed] : []
+                embeds: embed ? (util.isArray(embed) ? embed : [embed]) : []
             });
         } catch (err) {
             replaceString = bu.tagProcessError(params, `\`Error executing webhook: ${err.message}\``)
