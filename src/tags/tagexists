@@ -27,7 +27,7 @@ e.execute = async function (params) {
     let replaceString = '';
     if (params.args.length == 2){
         let tagName = await bu.processTagInner(params, 1);
-        replaceString = (TagManager.list[tagName] != undefined).toString();
+        replaceString = (TagManager.list[tagName.toLowerCase()] != undefined).toString();
     } else if (params.args.length > 2){
         replaceString = await bu.tagProcessError(params, '`Too many arguments`');
     } else {
