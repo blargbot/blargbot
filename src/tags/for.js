@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:54:06
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-15 15:03:11
+ * @Last Modified time: 2018-02-06 17:09:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -42,20 +42,20 @@ e.execute = async function (params) {
 
     let errors = [];
 
-    if (params.args.length == 6 || params.args.length == 7){
-        
+    if (params.args.length == 6 || params.args.length == 7) {
+
         let varName = await bu.processTagInner(params, 1);
         let initial = parseFloat(await bu.processTagInner(params, 2));
         let operator = operators[await bu.processTagInner(params, 3)];
         let limit = parseFloat(await bu.processTagInner(params, 4));
-
+        let increment;
         if (params.args.length == 6)
-            let increment = 1;
+            increment = 1;
         else
-            let increment = parseFloat(await bu.processTagInner(params, 5));
+            increment = parseFloat(await bu.processTagInner(params, 5));
 
-        let code = params.args.length -1;
-        
+        let code = params.args.length - 1;
+
         if (isNaN(initial))
             errors.push("Initial must be a number");
         if (!operator)
@@ -65,9 +65,9 @@ e.execute = async function (params) {
         if (isNaN(increment))
             errors.push("Increment must be a number");
 
-        if (errors.length == 0){
+        if (errors.length == 0) {
             replaceString = '';
-            for(let i = initial; operator(i, limit); i += increment){
+            for (let i = initial; operator(i, limit); i += increment) {
                 params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
                 if (params.msg.repeats > 1500) {
                     replaceString += await bu.tagProcessError(params, '`Too Many Loops`');
@@ -77,9 +77,9 @@ e.execute = async function (params) {
                 replaceString += await bu.processTagInner(params, code);
             }
         } else {
-            replaceString = await bu.tagProcessError(params, '`'+errors.join(', ')+'`');
+            replaceString = await bu.tagProcessError(params, '`' + errors.join(', ') + '`');
         }
-    } else if (params.args.length < 6){
+    } else if (params.args.length < 6) {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
     } else {
         replaceString = await bu.tagProcessError(params, '`Too many arguments`');

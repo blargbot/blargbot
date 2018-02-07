@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:05:28
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:05:28
+ * @Last Modified time: 2018-02-06 17:09:54
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,7 +25,7 @@ e.desc = 'Finds the <code>case</code> that matches <code>arg</code> and returns 
 e.exampleIn = '{switch;{args;0};yes;Correct!;no;Incorrect!;That is not yes or no}';
 e.exampleOut = 'Correct!';
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     params.args[1] = await bu.processTagInner(params, 1);
     for (let i = 2; i < params.args.length; i += 2) {
         if (i != params.args.length - 1)
@@ -43,7 +43,7 @@ e.execute = async function(params) {
         if (i != args.length - 1) {
             let deserialized = bu.deserializeTagArray(args[i]);
             if (deserialized && Array.isArray(deserialized.v)) {
-                for (let j = 0, j < deserialized.v.length, j++) {
+                for (let j = 0; j < deserialized.v.length; j++) {
                     cases[deserialized.v[j]] = args[i + 1];
                 }
             } else {

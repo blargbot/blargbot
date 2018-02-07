@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:49:14
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:49:14
+ * @Last Modified time: 2018-02-06 17:13:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -23,7 +23,7 @@ e.desc = `Joins the elements of an array together with the provided text.`;
 e.exampleIn = `{join;["this", "is", "an", "array"];!}`;
 e.exampleOut = `this!is!an!array`;
 
-e.execute = async function(params) {
+e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);
     }
@@ -33,7 +33,7 @@ e.execute = async function(params) {
         params.args[1] = await bu.processTagInner(params, 1);
         let args1 = params.args[1];
         let deserialized = await bu.getArray(params, args1);
-        
+
         if (deserialized && Array.isArray(deserialized.v)) {
             replaceString = deserialized.v.join(params.args[2]);
         } else {

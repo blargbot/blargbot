@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:54:06
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-15 15:03:11
+ * @Last Modified time: 2018-02-06 17:20:15
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -20,7 +20,7 @@ e.name = 'foreach';
 e.args = '&lt;variable&gt; &lt;array&gt; &lt;code&gt;';
 e.usage = '{foreach;variable;array;code}';
 e.desc = 'For every element in <code>array</code> <code>variable</code> will be set and then <code>code</code> will be run';
-e.exampleIn = '{set;~array;[apples,oranges,c#]}<br />{foreach;~element;~array;I like {get;~element}{newline}}';
+e.exampleIn = '{set;~array;apples;oranges;c#}<br />{foreach;~element;~array;I like {get;~element}{newline}}';
 e.exampleOut = 'I like apples<br />I like oranges<br />I like c#';
 
 e.execute = async function (params) {
@@ -31,29 +31,25 @@ e.execute = async function (params) {
     if (params.args.length == 4) {
         let args2 = await bu.processTagInner(params, 2);
         let args1 = await bu.processTagInner(params, 1);
-
-        let deserialized = bu.deserializeTagArray(args2);
-
+        let deserialized = await bu.getArray(params, args2);
+        let arr;
         if (deserialized && Array.isArray(deserialized.v))
-            let arr = deserialized.v;
+            arr = deserialized.v;
         else {
-            let value = await TagManager.list['get'].getVar(params, args2);
-            if (value != undefined && Array.isArray(value))
-                let arr = value;
-            else
-                replaceString = await bu.tagProcessError(params, '`Argument 2 is not an array`');
+            replaceString = await bu.tagProcessError(params, '`Argument 2 is not an array`');
         }
 
-        if (arr != undefined)   {
+        if (arr != undefined) {
             replaceString = '';
             let set = TagManager.list['set'];
-            for (let i = 0; i < args2.length; i++) {
+            console.verbose(arr);
+            for (const item of arr) {
                 params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
                 if (params.msg.repeats > 1500) {
                     replaceString += await bu.tagProcessError(params, '`Too Many Loops`');
                     break;
                 }
-                await set.setVar(params, args1, arr[i]);
+                await set.setVar(params, args1, item);
                 replaceString += await bu.processTagInner(params, 3);
                 if (params.terminate) break;
             }
