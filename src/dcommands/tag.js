@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-26 01:09:19
+ * @Last Modified time: 2018-02-07 14:37:15
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -671,6 +671,7 @@ function escapeRegex(str) {
 
 function logChange(action, msg, actionObj) {
     let actionArray = [];
+    let file = actionObj.content ? { name: actionObj.tag + '.bbtag', file: actionObj.content } : undefined;
     for (let key in actionObj) {
         if (actionObj[key].length > 1000) actionObj[key] = actionObj[key].substring(0, 1000) + '... (too long)';
         actionArray.push({
@@ -709,5 +710,5 @@ function logChange(action, msg, actionObj) {
                 text: `MsgID: ${msg.id}`
             }
         }
-    });
+    }, file);
 }

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:04
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-08 00:54:39
+ * @Last Modified time: 2018-02-07 14:37:52
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -262,6 +262,7 @@ async function renderEditor(req, res) {
 async function logChange(user, action, actionObj) {
     user = await bot.getRESTUser(user.id);
     let actionArray = [];
+    let file = actionObj.content ? { name: actionObj.tag + '.bbtag', file: actionObj.content } : undefined;
     for (let key in actionObj) {
         if (actionObj[key].length > 1000) actionObj[key] = actionObj[key].substring(0, 1000) + '... (too long)';
         actionArray.push({
@@ -300,7 +301,7 @@ async function logChange(user, action, actionObj) {
                 text: 'Web Interface'
             }
         }
-    });
+    }, file);
 }
 
 function filterTitle(title) {
