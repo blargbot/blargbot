@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:04
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-30 11:34:56
+ * @Last Modified time: 2018-02-07 00:12:58
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -50,7 +50,7 @@ e.execute = async function (params) {
                 username: params.args[5],
                 avatarURL: params.args[6],
                 content: params.args[3] || '',
-                embeds: embed ? (util.isArray(embed) ? embed : [embed]) : []
+                embeds: embed ? (Array.isArray(embed) ? embed : [embed]) : []
             });
         } catch (err) {
             replaceString = bu.tagProcessError(params, `\`Error executing webhook: ${err.message}\``)
