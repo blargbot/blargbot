@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-31 13:05:32
+ * @Last Modified time: 2018-02-07 17:40:52
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,7 +10,9 @@
 global.config = require('../config.json');
 const Logger = require('./core/logger');
 new Logger('MS', config.general.isbeta ? 'debug' : 'info').setGlobal();
-
+process.on('unhandledRejection', (reason, p) => {
+    console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
+});
 global.dep = require('./core/dep.js');
 
 const reload = dep.reload(require);
