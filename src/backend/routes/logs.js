@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-26 16:20:42
+ * @Last Modified time: 2018-02-07 17:42:56
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -72,7 +72,7 @@ router.post('/', async (req, res) => {
                 m.username = user.username;
                 m.userdiscrim = user.discriminator;
                 m.bot = user.bot;
-                m.avatar = user.avatarURL.split('?size=')[0] || '/img/default.png';
+                m.avatar = (user.avatarURL || '').split('?size=')[0] || '/img/default.png';
                 if (m.embeds)
                     for (const embed of m.embeds) {
                         if (embed.color) {
