@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:21:55
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-15 14:39:21
+ * @Last Modified time: 2018-02-08 13:16:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -37,7 +37,7 @@ bot.on('guildMemberAdd', async function (guild, member) {
     }, {
         name: 'Created',
         value: dep.moment(member.user.createdAt).tz('Etc/GMT').format('llll') +
-        ` GMT\n(${dep.moment.duration(-1 * (dep.moment() - dep.moment(member.user.createdAt))).humanize(true)})`,
+            ` GMT\n(${dep.moment.duration(-1 * (dep.moment() - dep.moment(member.user.createdAt))).humanize(true)})`,
         inline: false
     }]);
 });

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-07 14:37:15
+ * @Last Modified time: 2018-02-08 13:22:33
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -645,15 +645,27 @@ const Message = require('eris/lib/structures/Message')
 
 e.event = async function (args) {
     let msg;
-    try {
-        msg = await bot.getMessage(args.channel, args.params.msg);
-    } catch (err) {
-        msg = JSON.parse(args.msg);
-        msg.channel_id = args.channel;
-        msg.mentions_everyone = msg.mentionEveryone;
-        msg.role_mentions = msg.roleMentions;
-        msg.reactions = [];
-        msg = new Message(msg, bot);
+    if (args.params.msg) {
+        try {
+            msg = await bot.getMessage(args.channel, args.params.msg);
+        } catch (err) {
+            msg = JSON.parse(args.msg);
+            msg.channel_id = args.channel;
+            msg.mentions_everyone = msg.mentionEveryone;
+            msg.role_mentions = msg.roleMentions;
+            msg.reactions = [];
+            msg = new Message(msg, bot);
+        }
+    } else {
+        let channel = bot.getChannel(args.channel);
+        if (!channel) return;
+        let tmsg = JSON.parse(args.msg);
+        msg = {
+            channel,
+            author: bot.users.get(tmsg.author.id),
+            member: channel.guild.members.get(tmsg.author.id),
+            guild: channel.guild
+        };
     }
     let params = args.params;
     params.msg = msg;
