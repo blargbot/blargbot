@@ -165,8 +165,8 @@
             "aliases": "Нет алиасов",
             "subcommand": "Субкомманда",
             "command": "Команда",
-            "nosubcommand": "",
-            "subcommands": ""
+            "nosubcommand": "К сожалению, субкоманды '{{name}}' для команды '{{command}}' не существует.",
+            "subcommands": "**Субкоманды**: {{subcommands}}\n\nНаберите `help <command> <subcommand>`, чтобы узнать подробнее о субкомманде."
         },
         "gamatoto": {
             "info": "",
