@@ -153,18 +153,18 @@
         },
         "mods": {
             "info": "",
-            "mods": "",
-            "nomods": "",
-            "nomodsonline": ""
+            "mods": "Модераторы **{{guild}}**",
+            "nomods": "На этом сервере нет модераторов.",
+            "nomodsonline": "Никого из модераторов нет в сети."
         },
         "help": {
             "info": "",
-            "allcommands": "",
-            "nocommand": "",
-            "commandinfo": "",
-            "aliases": "",
-            "subcommand": "",
-            "command": "",
+            "allcommands": "Список команд которые Вы можете исполнять на сервере **{{guild}}**.\n```markdown\n{{commands}}\n```\nДля подробной информации о командах наберите `help <commandname>` или посетите <https://blargbot.xyz/commands>.",
+            "nocommand": "К сожалению, команды '{{name}}' не существует.",
+            "commandinfo": "**{{type}}: {{name}}**\n\n**Псевдонимы**: {{aliases}}\n**Использование**: {{usage}}\n\n{{description}}",
+            "aliases": "Нет алиасов",
+            "subcommand": "Субкомманда",
+            "command": "Команда",
             "nosubcommand": "",
             "subcommands": ""
         },
