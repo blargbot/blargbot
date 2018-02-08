@@ -23,10 +23,10 @@ class Spawner extends EventEmitter {
             for (const key of Object.keys(this.shardCache)) {
                 const shard = this.shardCache[key];
                 let diff = moment.duration(moment() - shard.time);
-                if (!shard.respawning && diff.asMilliseconds() > 60000) {
+                if (!shard.respawning && diff.asMilliseconds() > 10000) {
                     shard.respawning = true;
                     await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive shard ${shard.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
-                    this.respawnShard(shard.id);
+                    this.respawnShard(parseInt(shard.id));
                 }
             }
         }, 10000);
