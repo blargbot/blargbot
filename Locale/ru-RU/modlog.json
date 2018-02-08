@@ -7,20 +7,20 @@
         "unmute": "Размьют",
         "warn": "Предупреждение",
         "pardon": "Прощение",
-        "rename": "",
-        "specialroleadd": "",
-        "specialroleremove": ""
+        "rename": "Переименование",
+        "specialroleadd": "Особая роль добавлена",
+        "specialroleremove": "Особая роль убрана"
     },
-    "case": "",
-    "setreason": "",
+    "case": "{{icon}} Дело {{number}}: {{event}}",
+    "setreason": "Ответственный модератор, пожалуйста установите причину командой `reason {{number}}`.",
     "warnings": {
-        "given": "",
+        "given": "Вынесено предупреждений",
         "removed": "",
-        "total": ""
+        "total": "Текущее количество"
     },
     "rename": {
-        "old": "",
-        "new": ""
+        "old": "Прошлое имя",
+        "new": "Новое имя"
     },
-    "duration": ""
+    "duration": "Продолжительность"
 }
