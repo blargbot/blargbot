@@ -1,12 +1,12 @@
 {
     "events": {
-        "kick": "",
-        "ban": "",
-        "unban": "",
-        "mute": "",
-        "unmute": "",
-        "warn": "",
-        "pardon": "",
+        "kick": "Кик",
+        "ban": "Бан",
+        "unban": "Разбан",
+        "mute": "Мут",
+        "unmute": "Размьют",
+        "warn": "Предупреждение",
+        "pardon": "Прощение",
         "rename": "",
         "specialroleadd": "",
         "specialroleremove": ""
