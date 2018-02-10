@@ -1,15 +1,15 @@
 {
     "events": {
-        "kick": "",
-        "ban": "",
-        "unban": "",
-        "mute": "",
-        "unmute": "",
-        "warn": "",
+        "kick": "Kick",
+        "ban": "Banot",
+        "unban": "Atbanot",
+        "mute": "Apklusināt",
+        "unmute": "Noņemt apklusinājumu",
+        "warn": "Brīdinājums",
         "pardon": "",
-        "rename": "",
-        "specialroleadd": "",
-        "specialroleremove": ""
+        "rename": "Pārsaukt",
+        "specialroleadd": "Īpaša loma ir pievienota",
+        "specialroleremove": "Īpaša loma ir noņemta"
     },
     "case": "",
     "setreason": "",
@@ -19,7 +19,7 @@
         "total": ""
     },
     "rename": {
-        "old": "",
+        "old": "Vecais nosaukums",
         "new": ""
     },
     "duration": ""
