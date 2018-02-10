@@ -1,10 +1,10 @@
 {
     "cancel": {
-        "name": "",
-        "description": ""
+        "name": "Atcelt",
+        "description": "Aizveriet šo izvēlni."
     },
     "confirm": {
-        "name": "",
-        "description": ""
+        "name": "Apstiprināt",
+        "description": "Apstiprināt šo izvēlni."
     }
 }
