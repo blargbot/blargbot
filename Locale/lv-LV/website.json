@@ -1,15 +1,15 @@
 {
-    "language": "",
+    "language": "Angļu valoda",
     "header": {
-        "login": "",
-        "logout": "",
-        "commands": "",
-        "bbtag": "",
-        "subtags": "",
-        "dashboard": ""
+        "login": "Pieteikties",
+        "logout": "Iziet",
+        "commands": "Komandas",
+        "bbtag": "BBTag",
+        "subtags": "SubTags",
+        "dashboard": "Infopanelis"
     },
     "generic": {
-        "loading": "",
+        "loading": "Ielādējas",
         "collapse": "",
         "expand": "",
         "search": "",
