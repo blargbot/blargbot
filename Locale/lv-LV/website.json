@@ -12,9 +12,9 @@
         "loading": "Ielādējas",
         "collapse": "",
         "expand": "",
-        "search": "",
-        "noresults": "",
-        "resultsfound": ""
+        "search": "Filtrēt...",
+        "noresults": "Ak, vai! Nav atrasts neviens rezultāts.",
+        "resultsfound": "Derīgie rezultāti:"
     },
     "index": {
         "desc": "",
@@ -23,11 +23,11 @@
             "desc": ""
         },
         "bbtag": {
-            "title": "",
+            "title": "BBTag",
             "desc": ""
         },
         "customization": {
-            "title": "",
+            "title": "Kastomizācija",
             "desc": ""
         },
         "moderation": {
@@ -73,18 +73,18 @@
         "title": "",
         "desc": "",
         "components": {
-            "usage": "",
-            "flags": "",
+            "usage": "Lietojums:",
+            "flags": "Karogi:",
             "aliases": "",
-            "subcommands": ""
+            "subcommands": "Subkomandi:"
         }
     },
     "dashboard": {
-        "userheader": "",
+        "userheader": "Lietotāja iestatījumi",
         "guildheader": "",
         "notauthed": "",
         "user": {
-            "dmerrors": ""
+            "dmerrors": "DM Kļūdas"
         }
     }
 }
