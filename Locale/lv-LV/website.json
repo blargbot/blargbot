@@ -28,14 +28,14 @@
         },
         "customization": {
             "title": "Kastomizācija",
-            "desc": ""
+            "desc": "Mēs saprotam, ka ne katra ģilde ir vienāda, tāpēc blargbotam ir plašas kastomizācijas. Var noteikt, tieši kura loma var izmantot kādas komandas, norādīt pielāgotus kodus un pat mainīt valodu!"
         },
         "moderation": {
-            "title": "",
+            "title": "Moderācija",
             "desc": ""
         },
         "opensource": {
-            "title": "",
+            "title": "Open-Source",
             "desc": ""
         },
         "suggestions": {
