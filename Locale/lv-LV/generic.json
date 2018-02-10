@@ -1,18 +1,18 @@
 {
-    "output": "",
-    "nooutput": "",
-    "queryexpire": "",
+    "output": "Izvade:\n{{output}}",
+    "nooutput": "Nav izvades...",
+    "queryexpire": "Šo jautājumu derīgums beidzas pēc {{length}} minūtes.",
     "resolveuser": {
         "nousers": "Lietotājs nav atrasts.",
-        "pickuser": ""
+        "pickuser": "{{length}} lietotāji bija atrasti! Lūdzu izvēlieties vienu no saraksta."
     },
     "resolverole": {
-        "noroles": "",
-        "pickrole": ""
+        "noroles": "Lomas nav atrastas.",
+        "pickrole": "{{length}} lomas bija atrasti! Lūdzu izvēlieties vienu no saraksta."
     },
     "resolvechannel": {
-        "nochannels": "",
-        "pickchannel": ""
+        "nochannels": "Nav atrasts neviens kanāls.",
+        "pickchannel": "{{length}} kanāli bija atrasti! Lūdzu izvēlieties vienu no saraksta."
     },
     "edited": "rediģēts",
     "created": "izveidots",
@@ -28,8 +28,8 @@
         "id3": "333333333333333333"
     },
     "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-    "querycancelled": "",
+    "querycancelled": "Jautājums tika atcelts.",
     "user": "Lietotājs",
-    "role": "",
+    "role": "Loma",
     "channel": "Kanāls"
 }
