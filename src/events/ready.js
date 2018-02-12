@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-18 17:42:23
+ * @Last Modified time: 2018-02-12 13:47:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -173,18 +173,15 @@ async function switchGame(forced) {
                         name = `with a laser pointer!`;
                         break;
                     case 8:
-                        name = `with ${bot.shards.size} shards!`;
-                        break;
-                    case 9:
                         name = `with a mouse!`;
                         break;
-                    case 10:
+                    case 9:
                         name = `with a ball of yarn!`;
                         break;
-                    case 11:
+                    case 10:
                         name = `in a box!`;
                         break;
-                    case 12:
+                    case 11:
                         name = `on shard ${shard[1].id}!`;
                         break;
                 }
