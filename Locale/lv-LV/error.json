@@ -5,9 +5,9 @@
     "channelundef": "",
     "roleundef": "",
     "pleasereport": "",
-    "generic": "",
+    "generic": "Kaut kas nogāja greizi!\n```\n{{message}}\n```\n[[error.pleasereport]]",
     "couldnotsend": "",
-    "messagetoolong": "",
+    "messagetoolong": "Ups! Es mēģināju nosūtīt ziņu, kas bija pārāk gara. [[error.pleasereport]]",
     "notenoughparams": "",
     "tag": {
         "notfound": "",
