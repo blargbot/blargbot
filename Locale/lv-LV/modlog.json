@@ -6,16 +6,16 @@
         "mute": "Apklusināt",
         "unmute": "Noņemt apklusinājumu",
         "warn": "Brīdinājums",
-        "pardon": "",
+        "pardon": "Apžēlot",
         "rename": "Pārsaukt",
         "specialroleadd": "Īpaša loma ir pievienota",
         "specialroleremove": "Īpaša loma ir noņemta"
     },
-    "case": "",
-    "setreason": "",
+    "case": "{{icon}} Gadījums {{number}}: {{event}}",
+    "setreason": "Atbildīgais moderators, lūdzu ievādiet `reason {{number}}`, lai norādītu iemeslu.",
     "warnings": {
-        "given": "",
-        "removed": "",
+        "given": "Brīdinājumi ir doti",
+        "removed": "Brīdinājumi ir apžēloti",
         "total": ""
     },
     "rename": {
