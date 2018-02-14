@@ -1,4 +1,5 @@
 const BaseHelper = require('./BaseHelper');
+const { Op } = require('sequelize');
 
 class WarningHelper extends BaseHelper {
   constructor(client) {
@@ -29,6 +30,15 @@ class WarningHelper extends BaseHelper {
         { name: await this.Message.decode(ctx, 'modlog.warnings.total'), value: total, inline: true }
       ]
     });
+
+    let punishments = await this.client.models.GuildPunishment.findAll({
+      where: {
+        guildId: ctx.guild.id, weight: {
+          [Op.between]: [oldTotal, total]
+        }
+      }
+    });
+    console.log(punishments);
   }
 
   async givePardons(ctx, user, count, reason) {

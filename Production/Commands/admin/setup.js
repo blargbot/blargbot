@@ -30,6 +30,18 @@ class SetupCommand extends AdminCommand {
             { flag: 'r', name: 'remove', info: 'Specifies that the modlog should be removed instead of added.' },
             { flag: 'l', name: 'list', info: 'Return a list of configured modlogs.' }
           ]
+        },
+        punishment: {
+          aliases: ['punishments'],
+          minArgs: 1,
+          usage: 'punishment <add | remove | list> weight',
+          info: 'Adds or remove a warning punishment. `weight` refers to the number of warnings required to activate the punishment.',
+          flags: [
+            { flag: 'k', name: 'kick', info: 'Specifies that the punishment is to kick. Cannot be used with mute or ban.' },
+            { flag: 'b', name: 'ban', info: 'Specifies that the punishment is to ban. Cannot be used with mute or kick.' },
+            { flag: 'm', name: 'mute', info: 'Specifies that the punishment is to mute. Cannot be used with kick or ban.' },
+            { flag: 't', name: 'time', info: 'Specifies how long a ban or mute should last for.' }
+          ]
         }
       },
       permissions: [
@@ -50,7 +62,16 @@ class SetupCommand extends AdminCommand {
         modloginvalid: { key: '.modlog.invalid', value: 'No valid events were provided. The list of valid events is:\n```\n{{eventList}}\n```' },
         modloghadinvalid: { key: '.modlog.hadinvalid', value: 'You had some invalid events in your command. The list of valid events is:\n```\n{{eventList}}\n```' },
         modloglist: { key: '.modlog.list', value: 'Here are the modlogs that are active on your guild:\n\n{{events}}' },
-        nochange: 'generic.nochange'
+        nochange: 'generic.nochange',
+        punishmentTooLow: { key: '.punishment.toolow', value: 'The provided weight must be greater than 0.' },
+        punishmentInvalidWeight: { key: '.punishment.invalidweight', value: 'You must provide a number for the weight.' },
+        punishmentInvalidChoice: { key: '.punishment.invalidchoice', value: 'You must specify whether you are adding or removing a punishment.' },
+        punishmentInvalidTypes: { key: '.punishment.invalidtypes', value: 'Invalid types were specified. Only one of `--mute`, `--kick`, or `--ban` may be provided.' },
+        punishmentAdded: { key: '.punishment.added', value: 'A punishment has been added with a weight of **{{weight}}**.' },
+        punishmentRemoved: { key: '.punishment.removed', value: 'The punishment with a weight of **{{weight}}** has been removed.' },
+        punishmentOverwritten: { key: '.punishment.overwritten', value: 'The punishment with a weight of **{{weight}}** has been removed.' },
+        punishmentDoesntExist: { key: '.punishment.doesntexist', value: 'A punishment with a weight of **{{weight}}** doesn\'t exist.' },
+        punishmentList: { key: '.punishment.list', value: 'These are the punishments active on your guild:\n{{list}}' }
       }
     });
   }
@@ -61,6 +82,59 @@ class SetupCommand extends AdminCommand {
 
   get eventList() {
     return Object.keys(this.client.Helpers.Modlog.eventMap);
+  }
+
+  async sub_punishment(ctx) {
+    let GuildPunishment = this.client.models.GuildPunishment;
+    let weight = parseInt(ctx.input._[1]);
+
+    switch (ctx.input._[0].toLowerCase()) {
+      case 'add':
+      case 'set':
+        if (isNaN(weight))
+          return await ctx.decodeAndSend(this.keys.punishmentInvalidWeight);
+        if (weight <= 0)
+          return await ctx.decodeAndSend(this.keys.punishmentTooLow);
+
+        let type;
+        if (ctx.input.m && !ctx.input.b && !ctx.input.k) {
+          type = 'mute';
+        } else if (!ctx.input.m && ctx.input.b && !ctx.input.k) {
+          type = 'ban';
+        } else if (!ctx.input.m && !ctx.input.b && ctx.input.k) {
+          type = 'kick';
+        } else {
+          return await ctx.decodeAndSend(this.keys.punishmentInvalidTypes);
+        }
+
+        let punishment = await GuildPunishment.find({ where: { guildId: ctx.guild.id, weight } });
+        if (punishment) {
+
+        } else {
+
+        }
+        break;
+      case 'remove':
+      case 'delete':
+        if (isNaN(weight))
+          return await ctx.decodeAndSend(this.keys.punishmentInvalidWeight);
+        if (weight <= 0)
+          return await ctx.decodeAndSend(this.keys.punishmentTooLow);
+        break;
+      case 'list': {
+        let punishments = GuildPunishment.findAll({ where: { guildId: ctx.guild.id }, orderBy: 'weight' });
+        let list = '';
+        for (const punishment of punishments) {
+          let dur = await punishment.get('duration');
+          list += `${await punishment.get('weight')}. ${await punishment.get('type')}${dur ? ` (${dur / 1000}s)` : ''}\n`;
+        }
+        return await ctx.decodeAndSend(this.keys.punishmentList, { list });
+        break;
+      }
+      default:
+        return await ctx.decodeAndSend(this.keys.punishmentInvalidChoice);
+        break;
+    }
   }
 
   async sub_modlog(ctx) {
