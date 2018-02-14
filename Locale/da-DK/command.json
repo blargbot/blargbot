@@ -428,6 +428,28 @@
             "raw": "Koden for {{name}} er:\\n```{{code}}```",
             "alreadyexists": "Der findes allerede en brugerdefineret kommando med det navn.",
             "testoutput": "Test Output:\\n\\n{{output}}"
+        },
+        "warn": {
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "warningassigned": "",
+            "negativecount": "",
+            "usage": ""
+        },
+        "pardon": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "negativecount": "",
+            "warningassigned": ""
         }
     }
 }
