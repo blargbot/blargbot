@@ -6,5 +6,6 @@ module.exports = {
   Embed: require('./EmbedBuilder'),
   Menu: require('./MenuBuilder'),
   Modlog: require('./Modlog'),
-  Image: require('./Image')
+  Image: require('./Image'),
+  Warning: require('./Warning')
 };

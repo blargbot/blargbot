@@ -1,6 +1,6 @@
 const { AdminCommand } = require('../../../Core/Structures/Command');
 
-class ModCommand extends AdminCommand {
+class SetupCommand extends AdminCommand {
   constructor(client) {
     super(client, {
       name: 'setup',
@@ -208,4 +208,4 @@ class ModCommand extends AdminCommand {
   }
 }
 
-module.exports = ModCommand;
+module.exports = SetupCommand;

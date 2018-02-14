@@ -428,6 +428,28 @@
             "raw": "The code for {{name}} is:\\n```{{code}}```",
             "alreadyexists": "A custom command with that name already exists.",
             "testoutput": "Test Output:\\n\\n{{output}}"
+        },
+        "warn": {
+            "info": "Assigns a user a variable number of warnings.",
+            "flags": {
+                "count": "The number of warnings to assign.",
+                "reason": "The reason for the warning."
+            },
+            "invalidcount": "The count specified was not a number!",
+            "warningassigned": "**{{user}}** has been assigned **{{count}}** warning(s).",
+            "negativecount": "At least one warning must be assigned!",
+            "usage": "<user>"
+        },
+        "pardon": {
+            "usage": "<user>",
+            "info": "Assigns a user a variable number of pardons.",
+            "flags": {
+                "count": "The number of pardons to assign.",
+                "reason": "The reason for the pardon."
+            },
+            "invalidcount": "The count specified was not a number!",
+            "negativecount": "At least one pardon must be assigned!",
+            "warningassigned": "**{{user}}** has been assigned **{{count}}** pardon(s)."
         }
     }
 }

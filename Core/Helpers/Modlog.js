@@ -25,6 +25,12 @@ class ModlogHelper extends BaseHelper {
     };
   }
 
+  /**
+   * 
+   * @param {*} guild 
+   * @param {*} type 
+   * @param {*} params 
+   */
   async performModlog(guild, type, params) {
     let channel = await guild.data.getModlogChannel(this.eventMap.hasOwnProperty(type) ? type : 'custom');
     if (channel === null) return;

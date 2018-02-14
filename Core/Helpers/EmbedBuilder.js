@@ -25,8 +25,8 @@ class Embed {
   addField(name, value, inline = true) {
     if (!this.embed.fields) this.embed.fields = [];
     this.embed.fields.push({
-      name: this.limit(name, 256),
-      value: this.limit(value, 1024),
+      name: this.limit(name.toString(), 256),
+      value: this.limit(value.toString(), 1024),
       inline
     });
     return this;

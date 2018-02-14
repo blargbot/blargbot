@@ -10,6 +10,7 @@ module.exports = {
   GuildModlog: require('./GuildModlog'),
   GuildModlogChannel: require('./GuildModlogChannel'),
   GuildPunishment: require('./GuildPunishment'),
+  GuildWarning: require('./GuildWarning'),
 
   Event: require('./Event'),
 

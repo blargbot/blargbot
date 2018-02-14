@@ -75,6 +75,7 @@ class DiscordClient extends Eris.Client {
 
     this.database = new Database(this);
     this.database.authenticate().then(() => {
+      console.info('Database authenticated');
       this.cache = {
         User: new Cache(this, this.models.User, 'userId'),
         Guild: new Cache(this, this.models.Guild, 'guildId'),
