@@ -428,6 +428,28 @@
             "raw": "{{name}} için kod: \\n'' '{{code}}'' '",
             "alreadyexists": "Bu adda özel bir komut zaten var.",
             "testoutput": "Test çıktı: \\n\\n{{output}}"
+        },
+        "warn": {
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "warningassigned": "",
+            "negativecount": "",
+            "usage": ""
+        },
+        "pardon": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "negativecount": "",
+            "warningassigned": ""
         }
     }
 }
