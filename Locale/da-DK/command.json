@@ -461,18 +461,18 @@
             "invalidcount": "",
             "warningassigned": "",
             "negativecount": "Mindst én advarsel skal tildeles!",
-            "usage": ""
+            "usage": "<user>"
         },
         "pardon": {
-            "usage": "",
+            "usage": "<user>",
             "info": "",
             "flags": {
-                "count": "",
-                "reason": ""
+                "count": "Antallet af benådninger der skal tildeles.",
+                "reason": "Årsagen til benådningen."
             },
             "invalidcount": "",
-            "negativecount": "",
-            "warningassigned": ""
+            "negativecount": "Mindst én benådning skal tildeles!",
+            "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** benådning(er)."
         }
     }
 }
