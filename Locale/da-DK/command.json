@@ -348,7 +348,7 @@
                     "info": "Opsætter modlog for de angivne begivenheder. Hvis ingen kanal er angivet, vil den aktuelle kanal som standard bruges. Hvis ingen hændelser er angivet, som standard bruges alle begivenheder."
                 },
                 "punishment": {
-                    "usage": "",
+                    "usage": "straf <add | remove | list> vægt",
                     "info": "Tilføjer eller fjerner en advarsel straf. 'vægt' refererer til antallet af advarsler der skal til for aktivere straffen."
                 }
             },
@@ -378,17 +378,17 @@
                 },
                 "punishment": {
                     "flags": {
-                        "kick": "",
+                        "kick": "Angiver, at straffen er at sparke. Kan ikke bruges med mute eller forbud.",
                         "ban": "Angiver, at straffen er at udelukke. Kan ikke bruges med dæmp eller spark.",
-                        "mute": "",
-                        "time": ""
+                        "mute": "Angiver, at straffen skal være mute. Kan ikke bruges med kick eller forbud.",
+                        "time": "Angiver, hvor længe en udelukkelse eller et mute skal vare i."
                     }
                 }
             },
             "punishment": {
                 "toolow": "Den angivne vægt skal være større end 0.",
-                "invalidweight": "",
-                "invalidchoice": "",
+                "invalidweight": "Du skal angive et nummer for vægten.",
+                "invalidchoice": "Du skal angive, om du tilføjer eller fjerner en straf.",
                 "invalidtypes": "Ugyldige typer blev angivet. Kun én af '--mute', '--kick ', eller '--ban' kan gives.",
                 "added": "",
                 "removed": "",
@@ -459,7 +459,7 @@
                 "reason": "Årsagen til advarslen."
             },
             "invalidcount": "",
-            "warningassigned": "",
+            "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** advarsel(er).",
             "negativecount": "Mindst én advarsel skal tildeles!",
             "usage": "<user>"
         },
