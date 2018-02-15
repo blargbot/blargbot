@@ -348,7 +348,7 @@
                     "info": "Opsætter modlog for de angivne begivenheder. Hvis ingen kanal er angivet, vil den aktuelle kanal som standard bruges. Hvis ingen hændelser er angivet, som standard bruges alle begivenheder."
                 },
                 "punishment": {
-                    "usage": "straf <add | remove | list> vægt",
+                    "usage": "",
                     "info": "Tilføjer eller fjerner en advarsel straf. 'vægt' refererer til antallet af advarsler der skal til for aktivere straffen."
                 }
             },
@@ -381,7 +381,8 @@
                         "kick": "Angiver, at straffen er at sparke. Kan ikke bruges med mute eller forbud.",
                         "ban": "Angiver, at straffen er at udelukke. Kan ikke bruges med dæmp eller spark.",
                         "mute": "Angiver, at straffen skal være mute. Kan ikke bruges med kick eller forbud.",
-                        "time": "Angiver, hvor længe en udelukkelse eller et mute skal vare i."
+                        "time": "Angiver, hvor længe en udelukkelse eller et mute skal vare i.",
+                        "list": ""
                     }
                 }
             },
