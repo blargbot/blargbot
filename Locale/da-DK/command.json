@@ -346,6 +346,10 @@
                 "modlog": {
                     "usage": "modlog [event]...",
                     "info": "Opsætter modlog for de angivne begivenheder. Hvis ingen kanal er angivet, vil den aktuelle kanal som standard bruges. Hvis ingen hændelser er angivet, som standard bruges alle begivenheder."
+                },
+                "punishment": {
+                    "usage": "",
+                    "info": ""
                 }
             },
             "mute": {
@@ -371,7 +375,26 @@
                         "remove": "Angiver, at modloggen skal fjernes i stedet for at blive tilføjet.",
                         "list": "Returner en liste af konfigurerede modlogs."
                     }
+                },
+                "punishment": {
+                    "flags": {
+                        "kick": "",
+                        "ban": "",
+                        "mute": "",
+                        "time": ""
+                    }
                 }
+            },
+            "punishment": {
+                "toolow": "",
+                "invalidweight": "",
+                "invalidchoice": "",
+                "invalidtypes": "",
+                "added": "",
+                "removed": "",
+                "overwritten": "",
+                "doesntexist": "",
+                "list": ""
             }
         },
         "reason": {
