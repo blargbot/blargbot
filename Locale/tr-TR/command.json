@@ -346,6 +346,10 @@
                 "modlog": {
                     "usage": "",
                     "info": "Modlog belirtilen olaylar için ayarlar. Kanal yok belirtilirse, geçerli kanal için varsayılan olarak ayarlanır. Hiçbir olay belirttiyseniz, tüm olaylara varsayılan olarak ayarlanır."
+                },
+                "punishment": {
+                    "usage": "",
+                    "info": ""
                 }
             },
             "mute": {
@@ -371,7 +375,26 @@
                         "remove": "",
                         "list": ""
                     }
+                },
+                "punishment": {
+                    "flags": {
+                        "kick": "",
+                        "ban": "",
+                        "mute": "",
+                        "time": ""
+                    }
                 }
+            },
+            "punishment": {
+                "toolow": "",
+                "invalidweight": "",
+                "invalidchoice": "",
+                "invalidtypes": "",
+                "added": "",
+                "removed": "",
+                "overwritten": "",
+                "doesntexist": "",
+                "list": ""
             }
         },
         "reason": {
