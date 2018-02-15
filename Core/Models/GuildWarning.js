@@ -16,10 +16,6 @@ class GuildWarningModel extends Base {
       },
       userId: {
         type: this.Sequelize.BIGINT,
-        references: {
-          model: this.client.models.User,
-          key: 'userId'
-        },
         allowNull: false,
         primaryKey: true
       },

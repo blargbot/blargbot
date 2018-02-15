@@ -4,6 +4,7 @@ class SetupCommand extends AdminCommand {
   constructor(client) {
     super(client, {
       name: 'setup',
+      aliases: ['s', 'settings'],
       subcommands: {
         mute: {
           aliases: ['mutes', 'muted'],
@@ -33,14 +34,14 @@ class SetupCommand extends AdminCommand {
         },
         punishment: {
           aliases: ['punishments'],
-          minArgs: 1,
-          usage: 'punishment <add | remove | list> weight',
+          usage: 'punishment <add | remove> <weight> [ban | mute | kick]',
           info: 'Adds or remove a warning punishment. `weight` refers to the number of warnings required to activate the punishment.',
           flags: [
             { flag: 'k', name: 'kick', info: 'Specifies that the punishment is to kick. Cannot be used with mute or ban.' },
             { flag: 'b', name: 'ban', info: 'Specifies that the punishment is to ban. Cannot be used with mute or kick.' },
             { flag: 'm', name: 'mute', info: 'Specifies that the punishment is to mute. Cannot be used with kick or ban.' },
-            { flag: 't', name: 'time', info: 'Specifies how long a ban or mute should last for.' }
+            { flag: 't', name: 'time', info: 'Specifies how long a ban or mute should last for.' },
+            { flag: 'l', name: 'list', info: 'Lists the active punishments.' }
           ]
         }
       },
@@ -69,9 +70,9 @@ class SetupCommand extends AdminCommand {
         punishmentInvalidTypes: { key: '.punishment.invalidtypes', value: 'Invalid types were specified. Only one of `--mute`, `--kick`, or `--ban` may be provided.' },
         punishmentAdded: { key: '.punishment.added', value: 'A punishment has been added with a weight of **{{weight}}**.' },
         punishmentRemoved: { key: '.punishment.removed', value: 'The punishment with a weight of **{{weight}}** has been removed.' },
-        punishmentOverwritten: { key: '.punishment.overwritten', value: 'The punishment with a weight of **{{weight}}** has been removed.' },
+        punishmentOverwritten: { key: '.punishment.overwritten', value: 'The punishment with a weight of **{{weight}}** has been overwritten.' },
         punishmentDoesntExist: { key: '.punishment.doesntexist', value: 'A punishment with a weight of **{{weight}}** doesn\'t exist.' },
-        punishmentList: { key: '.punishment.list', value: 'These are the punishments active on your guild:\n{{list}}' }
+        punishmentList: { key: '.punishment.list', value: 'These are the punishments active on your guild:\n\n{{list}}' }
       }
     });
   }
@@ -86,49 +87,72 @@ class SetupCommand extends AdminCommand {
 
   async sub_punishment(ctx) {
     let GuildPunishment = this.client.models.GuildPunishment;
+
+    if (ctx.input.l) {
+      let punishments = await GuildPunishment.findAll({ where: { guildId: ctx.guild.id }, order: ['weight'] });
+      let list = '';
+      for (const punishment of punishments) {
+        let dur = await punishment.get('duration');
+        list += `**${await punishment.get('weight')}**. ${await punishment.get('type')}${dur ? ` (${dur / 1000}s)` : ''}\n`;
+      }
+      return await ctx.decodeAndSend(this.keys.punishmentList, { list });
+    }
     let weight = parseInt(ctx.input._[1]);
 
     switch (ctx.input._[0].toLowerCase()) {
       case 'add':
-      case 'set':
+      case 'set': {
         if (isNaN(weight))
           return await ctx.decodeAndSend(this.keys.punishmentInvalidWeight);
         if (weight <= 0)
           return await ctx.decodeAndSend(this.keys.punishmentTooLow);
 
         let type;
-        if (ctx.input.m && !ctx.input.b && !ctx.input.k) {
+        if ((ctx.input.m && !ctx.input.b && !ctx.input.k) || ctx.input._[2].toLowerCase() === 'mute') {
           type = 'mute';
-        } else if (!ctx.input.m && ctx.input.b && !ctx.input.k) {
+        } else if ((!ctx.input.m && ctx.input.b && !ctx.input.k) || ctx.input._[2].toLowerCase() === 'ban') {
           type = 'ban';
-        } else if (!ctx.input.m && !ctx.input.b && ctx.input.k) {
+        } else if ((!ctx.input.m && !ctx.input.b && ctx.input.k) || ctx.input._[2].toLowerCase() === 'kick') {
           type = 'kick';
         } else {
           return await ctx.decodeAndSend(this.keys.punishmentInvalidTypes);
         }
+        let time = null;
+        if (ctx.input.t)
+          time = this.client.Helpers.Time.parseDuration(ctx.input.t.raw.join('')).asMilliseconds();
 
         let punishment = await GuildPunishment.find({ where: { guildId: ctx.guild.id, weight } });
         if (punishment) {
-
+          await punishment.update({
+            duration: time,
+            type
+          });
+          return await ctx.decodeAndSend(this.keys.punishmentOverwritten, { weight });
         } else {
-
+          await GuildPunishment.create({
+            guildId: ctx.guild.id,
+            weight,
+            duration: time,
+            type
+          });
+          return await ctx.decodeAndSend(this.keys.punishmentAdded, { weight });
         }
         break;
+      }
       case 'remove':
-      case 'delete':
+      case 'delete': {
         if (isNaN(weight))
           return await ctx.decodeAndSend(this.keys.punishmentInvalidWeight);
         if (weight <= 0)
           return await ctx.decodeAndSend(this.keys.punishmentTooLow);
-        break;
-      case 'list': {
-        let punishments = GuildPunishment.findAll({ where: { guildId: ctx.guild.id }, orderBy: 'weight' });
-        let list = '';
-        for (const punishment of punishments) {
-          let dur = await punishment.get('duration');
-          list += `${await punishment.get('weight')}. ${await punishment.get('type')}${dur ? ` (${dur / 1000}s)` : ''}\n`;
+
+        let punishment = await GuildPunishment.find({ where: { guildId: ctx.guild.id, weight } });
+        if (punishment) {
+          await punishment.destroy();
+          return await ctx.decodeAndSend(this.keys.punishmentRemoved, { weight });
+        } else {
+          return await ctx.decodeAndSend(this.keys.punishmentDoesntExist, { weight });
         }
-        return await ctx.decodeAndSend(this.keys.punishmentList, { list });
         break;
       }
       default:

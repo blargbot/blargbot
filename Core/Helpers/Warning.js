@@ -34,11 +34,27 @@ class WarningHelper extends BaseHelper {
     let punishments = await this.client.models.GuildPunishment.findAll({
       where: {
         guildId: ctx.guild.id, weight: {
-          [Op.between]: [oldTotal, total]
+          [Op.and]: [{ [Op.gt]: oldTotal }, { [Op.lte]: total }]
         }
       }
     });
-    console.log(punishments);
+    if (punishments.length > 0) {
+      let types = ['mute', 'kick', 'ban'];
+      let type = 0;
+      let time = 0;
+      for (const punishment of punishments) {
+        let t = await punishment.get('type');
+        let d = await punishment.get('duration');
+        let i = types.indexOf(t);
+        if (i > type) {
+          type = i;
+          if (d)
+            time = d;
+        } else if (i === type && (d || 0) > time)
+          time = d;
+      }
+      console.log(types[type], time);
+    }
   }
 
   async givePardons(ctx, user, count, reason) {

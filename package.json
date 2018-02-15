@@ -50,7 +50,7 @@
     "node-soundcloud": "^0.0.6",
     "node-trello": "^1.1.2",
     "nuxt": "^1.0.0-rc11",
-    "parse-duration": "^0.1.1",
+    "parse-duration": "github:ratismal/parse-duration",
     "passport": "^0.3.2",
     "passport-discord": "^0.1.1",
     "pg": "^6.1.5",

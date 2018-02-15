@@ -7,5 +7,6 @@ module.exports = {
   Menu: require('./MenuBuilder'),
   Modlog: require('./Modlog'),
   Image: require('./Image'),
-  Warning: require('./Warning')
+  Warning: require('./Warning'),
+  Time: require('./Time')
 };

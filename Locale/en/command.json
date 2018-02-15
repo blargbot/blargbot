@@ -348,7 +348,7 @@
                     "info": "Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events."
                 },
                 "punishment": {
-                    "usage": "punishment <add | remove | list> weight",
+                    "usage": "punishment <add | remove> <weight> [ban | mute | kick]",
                     "info": "Adds or remove a warning punishment. `weight` refers to the number of warnings required to activate the punishment."
                 }
             },
@@ -381,7 +381,8 @@
                         "kick": "Specifies that the punishment is to kick. Cannot be used with mute or ban.",
                         "ban": "Specifies that the punishment is to ban. Cannot be used with mute or kick.",
                         "mute": "Specifies that the punishment is to mute. Cannot be used with kick or ban.",
-                        "time": "Specifies how long a ban or mute should last for."
+                        "time": "Specifies how long a ban or mute should last for.",
+                        "list": "Lists the active punishments."
                     }
                 }
             },
@@ -392,9 +393,9 @@
                 "invalidtypes": "Invalid types were specified. Only one of `--mute`, `--kick`, or `--ban` may be provided.",
                 "added": "A punishment has been added with a weight of **{{weight}}**.",
                 "removed": "The punishment with a weight of **{{weight}}** has been removed.",
-                "overwritten": "The punishment with a weight of **{{weight}}** has been removed.",
+                "overwritten": "The punishment with a weight of **{{weight}}** has been overwritten.",
                 "doesntexist": "A punishment with a weight of **{{weight}}** doesn't exist.",
-                "list": "These are the punishments active on your guild:\n{{list}}"
+                "list": "These are the punishments active on your guild:\n\n{{list}}"
             }
         },
         "reason": {
