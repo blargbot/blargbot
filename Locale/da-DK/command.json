@@ -379,7 +379,7 @@
                 "punishment": {
                     "flags": {
                         "kick": "",
-                        "ban": "",
+                        "ban": "Angiver, at straffen er at udelukke. Kan ikke bruges med dæmp eller spark.",
                         "mute": "",
                         "time": ""
                     }
@@ -389,7 +389,7 @@
                 "toolow": "Den angivne vægt skal være større end 0.",
                 "invalidweight": "",
                 "invalidchoice": "",
-                "invalidtypes": "",
+                "invalidtypes": "Ugyldige typer blev angivet. Kun én af '--mute', '--kick ', eller '--ban' kan gives.",
                 "added": "",
                 "removed": "",
                 "overwritten": "",
