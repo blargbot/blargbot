@@ -465,12 +465,12 @@
         },
         "pardon": {
             "usage": "<user>",
-            "info": "",
+            "info": "Tildeler en bruger en variabel række benådninger.",
             "flags": {
                 "count": "Antallet af benådninger der skal tildeles.",
                 "reason": "Årsagen til benådningen."
             },
-            "invalidcount": "",
+            "invalidcount": "Nummeret der blev angivet var ikke et tal!",
             "negativecount": "Mindst én benådning skal tildeles!",
             "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** benådning(er)."
         }
