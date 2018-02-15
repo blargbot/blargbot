@@ -349,7 +349,7 @@
                 },
                 "punishment": {
                     "usage": "",
-                    "info": ""
+                    "info": "Tilføjer eller fjerner en advarsel straf. 'vægt' refererer til antallet af advarsler der skal til for aktivere straffen."
                 }
             },
             "mute": {
@@ -455,7 +455,7 @@
         "warn": {
             "info": "",
             "flags": {
-                "count": "",
+                "count": "Antallet af advarsler der skal tildeles.",
                 "reason": "Årsagen til advarslen."
             },
             "invalidcount": "",
