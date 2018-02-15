@@ -346,6 +346,10 @@
                 "modlog": {
                     "usage": "modlog [evento]...",
                     "info": "Imposta il modlog per specifici eventi. Se nessun canale è specificato, il default sarà il canale corrente. Se nessun evento è specificato, il default sarà tutti gli eventi."
+                },
+                "punishment": {
+                    "usage": "",
+                    "info": ""
                 }
             },
             "mute": {
@@ -371,7 +375,26 @@
                         "remove": "Specifica che il modlog dovrebbe essere tolto invece di aggiunto.",
                         "list": "Restituisce una lista di modlogs configurati."
                     }
+                },
+                "punishment": {
+                    "flags": {
+                        "kick": "",
+                        "ban": "",
+                        "mute": "",
+                        "time": ""
+                    }
                 }
+            },
+            "punishment": {
+                "toolow": "",
+                "invalidweight": "",
+                "invalidchoice": "",
+                "invalidtypes": "",
+                "added": "",
+                "removed": "",
+                "overwritten": "",
+                "doesntexist": "",
+                "list": ""
             }
         },
         "reason": {
