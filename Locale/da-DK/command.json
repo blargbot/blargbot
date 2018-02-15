@@ -386,7 +386,7 @@
                 }
             },
             "punishment": {
-                "toolow": "",
+                "toolow": "Den angivne vægt skal være større end 0.",
                 "invalidweight": "",
                 "invalidchoice": "",
                 "invalidtypes": "",
@@ -456,11 +456,11 @@
             "info": "",
             "flags": {
                 "count": "",
-                "reason": ""
+                "reason": "Årsagen til advarslen."
             },
             "invalidcount": "",
             "warningassigned": "",
-            "negativecount": "",
+            "negativecount": "Mindst én advarsel skal tildeles!",
             "usage": ""
         },
         "pardon": {
