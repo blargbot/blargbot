@@ -154,13 +154,13 @@
         "mods": {
             "info": "",
             "mods": "Mods auf **{{guild}}**",
-            "nomods": "",
-            "nomodsonline": ""
+            "nomods": "Es gibt keine Mods auf dieser Gilde.",
+            "nomodsonline": "Es gibt keine Online-Mods."
         },
         "help": {
             "info": "",
-            "allcommands": "",
-            "nocommand": "",
+            "allcommands": "Hier sind alle Befehle, die Sie ausführen können auf **{{guild}}**.\n```Markdown\n{{commands}}\n```\n\nFür weitere Informationen zu Befehlen, schreiben Sie `hilfe <commandname>` oder besuchen Sie <https://blargbot.xyz/commands>.",
+            "nocommand": "Leider gibt es kein Befehl mit dem Namen '{{name}}'!",
             "commandinfo": "",
             "aliases": "",
             "subcommand": "",
