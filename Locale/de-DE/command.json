@@ -195,28 +195,28 @@
             "gamatotoxp": "Gamatoto hat gewonnen **{{amount}}** XP ({{old}} → **{{new}}**)",
             "itemincrease": "{{item}} Sie haben gefunden **{{amount}}** ({{old}} → **{{new}}**)",
             "locations": "Hier sind alle Standorte der Expedition!\n\n{{locations}}",
-            "wronglevel": "",
-            "gamatotoitems": "",
-            "gamatotostats": "",
-            "gamatotocurrent": "",
-            "gamatotoidle": ""
+            "wronglevel": "Es tut uns leid, Sie müssen Level {{level}} sein um diesen Ort zu erforschen!",
+            "gamatotoitems": "Hier sind Ihre Artikel:\n{{items}}",
+            "gamatotostats": "Gamatoto ist momentan Level {{level}}! [{{currentxp}}XP /{{neededxp}}XP]",
+            "gamatotocurrent": "Gamatoto hat die **{{location}}** erforscht für **{{minutes}}** Minuten. \n\nVerwenden Sie \"Gamatoto Ende\" um die Expedition zu enden.",
+            "gamatotoidle": "Gamatoto ist nicht auf einer Expedition zurzeit. Schicken Sie ihn auf ein Abenteuer durch Handeln \"Gamatoto Start [location]'!"
         },
         "prefix": {
             "info": "",
             "subcommand": {
                 "add": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<prefix>",
+                    "info": "Fügt einen Präfix zu Ihrer Liste."
                 },
                 "remove": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<prefix>",
+                    "info": "Entfernt einen Präfix aus Ihrer Liste."
                 }
             },
-            "prefixlist": "",
-            "userprefixes": "",
-            "guildprefixes": "",
-            "noprefixes": "",
+            "prefixlist": "{{content}}\nUm Ihre Präfixe zu konfigurieren, verwenden Sie die 'hinzufügen' und 'entfernen' Unterbefehle. Um die Gilde-Präfixe zu konfigurieren, benutzen Sie den Befehl \"Setup\".",
+            "userprefixes": "Hier sind Ihre Präfixe:\n```md\n{{userprefixes}}\n```",
+            "guildprefixes": "Hier sind die Präfixe auf dieser Gilde:\n```md\n{{guildprefixes}}\n```",
+            "noprefixes": "Sie haben keine benutzerdefinierte Präfixe.",
             "defaultprefixes": "",
             "prefixadded": "",
             "prefixremoved": "",
