@@ -27,6 +27,11 @@ module.exports = function (client) {
         return `${this.username}#${this.discriminator} (${this.id})`;
       }
     },
+    fullNameEscaped: {
+      get: function fullName() {
+        return `${this.username}#${this.discriminator}`.replace(/(_|\*|`|~|\\)/g, '\\$1');
+      }
+    },
     data: {
       get: function getDatabaseEntry() {
         if (this.storedData == undefined) this.storedData = new DataUser(client, this.id, this);
@@ -79,4 +84,3 @@ module.exports = function (client) {
     }
   });
 };
-
