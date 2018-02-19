@@ -165,26 +165,26 @@
             "aliases": "Keine Aliase",
             "subcommand": "Unterbefehl",
             "command": "Befehl",
-            "nosubcommand": "",
-            "subcommands": ""
+            "nosubcommand": "Leider gibt es keine Unterbefehl für '{{command}}' mit dem Namen '{{name}}'!",
+            "subcommands": "** Unterbefehle**: {{subcommands}}\n\nSchreiben Sie 'Hilfe, <command><subcommand>\" um weitere Informationen über einen Unterbefehl zu bekommen!"
         },
         "gamatoto": {
-            "info": "",
+            "info": "Gehen Sie auf eine magische Entdeckungsreise mit Gamatoto! Verwenden Sie diesen Befehl, um deine Statistiken zu überprüfen, oder verwenden Sie einen Unterbefehl um auf ein \nAbenteuer zu gehen!",
             "subcommand": {
                 "start": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<location>",
+                    "info": "Startet eine Expedition!"
                 },
                 "end": {
-                    "info": ""
+                    "info": "Endet eine Expedition!"
                 },
                 "locations": {
-                    "info": ""
+                    "info": "Listet alle Standorte der Expedition."
                 }
             },
-            "stats": "",
-            "alreadystarted": "",
-            "notstarted": "",
+            "stats": "<:bc_cat:345081695990710272> Hier sind Ihre Artikel!\n\n{{stats}}",
+            "alreadystarted": "Eine Expedition ist bereits im Gange!",
+            "notstarted": "Sie haben keine Expedition gestartet!",
             "nolocation": "",
             "invalidlocation": "",
             "expeditionbeings": "",
