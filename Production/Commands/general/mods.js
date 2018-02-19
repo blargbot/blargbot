@@ -18,7 +18,7 @@ class ModsCommand extends GeneralCommand {
   get dnd() { return '<:statusDnd:372798973359947777>'; }
   get offline() { return '<:statusOffline:372798973930635274>'; }
 
-  sortUsers(a, b) { return a.user.fullName.toLowerCase() > b.user.fullName.toLowerCase(); }
+  sortUsers(a, b) { return a.user.fullNameEscaped.toLowerCase() > b.user.fullNameEscaped.toLowerCase(); }
 
   async execute(ctx) {
     let guild = await ctx.guild.data.getOrCreateObject();
@@ -48,14 +48,14 @@ class ModsCommand extends GeneralCommand {
     let msg = await ctx.decode(this.keys.mods, { guild: ctx.guild.name }) + '\n';
     let arrs = [];
     if (online.length > 0)
-      arrs.push(this.online + ' ' + online.map(m => `**${m.user.fullName}**`).join(', '));
+      arrs.push(this.online + ' ' + online.map(m => `**${m.user.fullNameEscaped}**`).join(', '));
     if (!onlineOnly) {
       if (away.length > 0)
-        arrs.push(this.away + ' ' + away.map(m => `**${m.user.fullName}**`).join(', '));
+        arrs.push(this.away + ' ' + away.map(m => `**${m.user.fullNameEscaped}**`).join(', '));
       if (dnd.length > 0)
-        arrs.push(this.dnd + ' ' + dnd.map(m => `**${m.user.fullName}**`).join(', '));
+        arrs.push(this.dnd + ' ' + dnd.map(m => `**${m.user.fullNameEscaped}**`).join(', '));
       if (offline.length > 0)
-        arrs.push(this.offline + ' ' + offline.map(m => `**${m.user.fullName}**`).join(', '));
+        arrs.push(this.offline + ' ' + offline.map(m => `**${m.user.fullNameEscaped}**`).join(', '));
     }
     msg += arrs.filter(m => m.length > 0).join('\n');
     return await ctx.send(msg);
