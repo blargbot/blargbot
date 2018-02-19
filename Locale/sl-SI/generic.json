@@ -1,0 +1,35 @@
+{
+    "output": "",
+    "nooutput": "",
+    "queryexpire": "",
+    "resolveuser": {
+        "nousers": "",
+        "pickuser": ""
+    },
+    "resolverole": {
+        "noroles": "",
+        "pickrole": ""
+    },
+    "resolvechannel": {
+        "nochannels": "",
+        "pickchannel": ""
+    },
+    "edited": "",
+    "created": "",
+    "deleted": "",
+    "menu": {
+        "choices": ""
+    },
+    "nochange": "",
+    "commandhelp": "",
+    "example": {
+        "id1": "",
+        "id2": "",
+        "id3": ""
+    },
+    "test": "",
+    "querycancelled": "",
+    "user": "",
+    "role": "",
+    "channel": ""
+}
