@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-18 17:42:23
+ * @Last Modified time: 2018-02-12 13:53:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -86,7 +86,7 @@ var gameId;
  */
 async function switchGame(forced) {
     for (const shard of bot.shards) {
-        var name = '';
+        var name = '', type = 0;
         var oldId = gameId;
         while (oldId == gameId) {
             gameId = bu.getRandomInt(0, 11);
@@ -152,46 +152,47 @@ async function switchGame(forced) {
                         name = `with ${bot.users.size} users!`;
                         break;
                     case 1:
+                        type = 2;
                         name = `in ${bot.guilds.size} guilds!`;
                         break;
                     case 2:
+                        type = 2;
                         name = `in ${Object.keys(bot.channelGuildMap).length} channels!`;
                         break;
                     case 3:
                         name = `with tiny bits of string!`;
                         break;
                     case 4:
-                        name = `with a laser pointer!`;
-                        break;
-                    case 5:
                         name = `on version ${await bu.getVersion()}!`;
                         break;
-                    case 6:
+                    case 5:
                         name = `type 'b!help'!`;
                         break;
+                    case 6:
+                        type = 3;
+                        name = `a laser pointer!`;
+                        break;
                     case 7:
-                        name = `with a laser pointer!`;
-                        break;
-                    case 8:
-                        name = `with ${bot.shards.size} shards!`;
-                        break;
-                    case 9:
                         name = `with a mouse!`;
                         break;
-                    case 10:
+                    case 8:
                         name = `with a ball of yarn!`;
                         break;
-                    case 11:
+                    case 9:
                         name = `in a box!`;
                         break;
-                    case 12:
+                    case 10:
+                        type = 2;
                         name = `on shard ${shard[1].id}!`;
                         break;
+                    case 11:
+                        type = 2;
+                        name = 'to the pitter-patter of tiny feet.'
                 }
         }
 
         shard[1].editStatus(null, {
-            name: name
+            name, type
         });
     }
     if (!forced)

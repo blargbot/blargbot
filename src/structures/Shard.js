@@ -29,6 +29,9 @@ class Shard extends Sender {
             } else
                 this.manager.handleMessage(this, message.code, message.data);
         });
+        this.process.on('error', err => {
+            console.error(this.id, err);
+        });
         this.process.once('disconnect', () => {
             if (this.respawn) {
                 console.warn('The shard disconnected, respawning');
@@ -42,7 +45,7 @@ class Shard extends Sender {
         });
     }
 
-    kill(code) {
+    kill(code = 'SIGTERM') {
         this.respawn = false;
         this.process.kill(code);
     }
