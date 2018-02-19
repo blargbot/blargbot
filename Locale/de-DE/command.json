@@ -132,9 +132,9 @@
             "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
         },
         "locale": {
-            "info": "",
+            "info": "Legt fest, welche Gebietsschema Nachrichten eingesendet werden.",
             "set": "Dein locale wurde festgelegt zu {{locale}}!",
-            "list": ""
+            "list": "Ihre aktuellen Gebietsschema ist: {{current}}\n\nBitte wählen Sie welche Gebietsschema Sie verwenden möchten."
         },
         "tokenify": {
             "info": ""
@@ -149,11 +149,11 @@
         "donate": {
             "info": "",
             "willdm": "OK, ich schicke dir meine Spende-Informationen in einer DM.",
-            "message": ""
+            "message": "platzhalter"
         },
         "mods": {
             "info": "",
-            "mods": "",
+            "mods": "Mods auf **{{guild}}**",
             "nomods": "",
             "nomodsonline": ""
         },
