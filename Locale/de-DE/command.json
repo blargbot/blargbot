@@ -331,11 +331,11 @@
             "info": "Konfiguriert verschiedene Einstellungen.",
             "subcommand": {
                 "staffuser": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "staffuser <hinzufügen | entfernen> <user>...",
+                    "info": "Fügt zu oder entfernt Benutzer in der Liste der Mitarbeiter."
                 },
                 "staffrole": {
-                    "info": ""
+                    "info": "Öffnet ein Dialogfeld um die Rollen der Mitarbeiter zu aktivieren bzw. deaktivieren."
                 },
                 "mute": {
                     "info": ""
