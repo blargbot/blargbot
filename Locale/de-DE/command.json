@@ -190,7 +190,7 @@
             "expeditionbeings": "<:bc_cat:345081695990710272> DIE SUCHE BEGINNT! <:bc_cat:345081695990710272>\n\nLage: {{location}}\n\nBitte schauen Sie später wieder zurück auf diese Weise \"Gamatoto Ende\"!",
             "expeditionends": "<:bc_cat:345081695990710272> EXPEDITIONS ERGEBNISSE! <:bc_cat:345081695990710272>\n\nLage: {{location}}\nDauer: {{minutes}} Minuten\n\n{{results}}",
             "notimeelapsed": "Keine Zeit ist abgelaufen, seitdem die Expedition begonnen hat. Gamatoto hat nichts gefunden!",
-            "itemfound": "",
+            "itemfound": "Gamatoto hat gefunden {{amount}} {{item}} bei der {{location}}.",
             "levelup": "",
             "gamatotoxp": "",
             "itemincrease": "",
