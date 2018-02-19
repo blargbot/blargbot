@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-31 12:57:01
+ * @Last Modified time: 2018-02-19 09:56:01
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -79,43 +79,28 @@ class DiscordClient extends dep.Eris.Client {
             else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
                 commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
 
-            //		let splitCom = commandToProcess.split('\n');
-            //	splitCom[splitCom.length - 1] = 'return ' + splitCom[splitCom.length - 1];
-            //		commandToProcess = splitCom.join('\n');
-            let toEval = `async function letsEval() {
-try {
-${commandToProcess}
-} catch (err) {
-return err;
-}
-}
-letsEval().then(m => {
-bu.send(msg, \`Input:
-\\\`\\\`\\\`js
-\${commandToProcess}
-\\\`\\\`\\\`
-Output:
-\\\`\\\`\\\`js
-\${commandToProcess == '1/0' ? 1 : m}
-\\\`\\\`\\\`\`);
-if (commandToProcess.indexOf('vars') > -1) {
-saveVars();
-}
-return m;
-}).catch(err => {
-bu.send(msg, \`An error occured!
-\\\`\\\`\\\`js
-\${err.stack}
-\\\`\\\`\\\`\`);
-})`;
-            //     console.debug(toEval);
+            let func;
+            if (commandToProcess.split('\n').length === 1) {
+                func = eval(`async () => ${commandToProcess}`);
+            } else {
+                func = eval(`async () => { ${commandToProcess} }`);
+            }
+            func.bind(this);
             try {
-                eval(toEval);
+                let res = await func();
+                await bu.send(msg, `Input:
+\`\`\`js
+${commandToProcess}
+\`\`\`
+Output:
+\`\`\`js
+${res}
+\`\`\``)
             } catch (err) {
-                bu.send(msg, `An error occured!
-    \`\`\`js
-    ${err.stack}
-    \`\`\``);
+                await bu.send(msg, `An error occured!
+\`\`\`js
+\${err.stack}
+\`\`\``);
             }
         }
     }
@@ -173,7 +158,8 @@ process.on('message', async msg => {
                                 usage: t.usage,
                                 desc: t.desc,
                                 exampleIn: t.exampleIn,
-                                exampleOut: t.exampleOut
+                                exampleOut: t.exampleOut,
+                                deprecated: t.deprecated
                             }
                         }
                     }
