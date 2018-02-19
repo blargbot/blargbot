@@ -326,9 +326,9 @@
         "setup": {
             "staff": {
                 "setrole": "Die Personal-Rollen wurden aktualisiert.",
-                "rolequery": ""
+                "rolequery": "Wählen Sie die Rollen, die als Moderator Rollen überlegt werden. Benutzer mit diesen Rollen werden die Admin Befehle verwenden können."
             },
-            "info": "",
+            "info": "Konfiguriert verschiedene Einstellungen.",
             "subcommand": {
                 "staffuser": {
                     "usage": "",
