@@ -22,14 +22,19 @@ module.exports = function (client) {
         return `${this.username}#${this.discriminator}`;
       }
     },
+    fullNameEscaped: {
+      get: function fullName() {
+        return `${this.username}#${this.discriminator}`.replace(/(_|\*|`|~|\\)/g, '\\$1');
+      }
+    },
     fullNameId: {
       get: function fullNameId() {
         return `${this.username}#${this.discriminator} (${this.id})`;
       }
     },
-    fullNameEscaped: {
-      get: function fullName() {
-        return `${this.username}#${this.discriminator}`.replace(/(_|\*|`|~|\\)/g, '\\$1');
+    fullNameIdEscaped: {
+      get: function fullNameId() {
+        return `${this.username}#${this.discriminator} (${this.id})`.replace(/(_|\*|`|~|\\)/g, '\\$1');
       }
     },
     data: {
