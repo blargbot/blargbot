@@ -217,10 +217,10 @@
             "userprefixes": "Hier sind Ihre Präfixe:\n```md\n{{userprefixes}}\n```",
             "guildprefixes": "Hier sind die Präfixe auf dieser Gilde:\n```md\n{{guildprefixes}}\n```",
             "noprefixes": "Sie haben keine benutzerdefinierte Präfixe.",
-            "defaultprefixes": "",
-            "prefixadded": "",
-            "prefixremoved": "",
-            "nothingchanged": ""
+            "defaultprefixes": "Sie können jederzeit diese Präfixe benutzen:\n{{prefixes}}",
+            "prefixadded": "Das Präfix wurde hinzugefügt!",
+            "prefixremoved": "Das Präfix wurde entfernt!",
+            "nothingchanged": "Nichts wurde geändert."
         },
         "warnings": {
             "output": "**{{user}} ** hat **{{amount}} ** Warnung(en) in **{{guild}} **."
@@ -282,14 +282,14 @@
         "user": {
             "usage": "[user]",
             "info": "Gibt Informationen zu den angegebenen Benutzer zurück.",
-            "description": "",
-            "guildinfoheader": "",
-            "guildinfo": "",
+            "description": "** Benutzername**: {{username}}\n** Diskriminator**: {{discriminator}}\n**ID**: {{id}}\n** Bot**: {{bot}}\n**Erstellt**: {{created}}\n[Avatar]({{avatar}})",
+            "guildinfoheader": "Gilde-Informationen",
+            "guildinfo": "**Spitzname**: {{nick}}\n**Berechtigungen**: {{permissions}}\n**Status**: {{status}}\n**Beigetreten**: {{joined}}\n{{game}}",
             "status": [
+                "Spielen",
+                "Streamen",
                 "",
-                "",
-                "",
-                ""
+                "Beobachten"
             ]
         }
     },
@@ -305,27 +305,27 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": "",
-            "usage": "",
+            "info": "Erzählt jeden, was Sie denken ist Scheiße.",
+            "usage": "[text]",
             "flags": {
-                "plural": ""
+                "plural": "Gibt an, ob der angegebene Text plural sein sollte."
             }
         },
         "writepoem": {
-            "usage": "",
-            "info": "",
+            "usage": "[text]",
+            "info": "Schreibt ein sehr schönes Gedicht.",
             "flags": {
-                "monika": "",
-                "sayori": "",
-                "yuri": "",
-                "natsuki": ""
+                "monika": "Nur Monika.",
+                "sayori": "Nur Monika.",
+                "yuri": "Nur Monika.",
+                "natsuki": "Nur Monika."
             }
         }
     },
     "admin": {
         "setup": {
             "staff": {
-                "setrole": "",
+                "setrole": "Die Personal-Rollen wurden aktualisiert.",
                 "rolequery": ""
             },
             "info": "",
