@@ -1,17 +1,17 @@
 {
     "general": {
         "ping": {
-            "info": "",
+            "info": "Pong! Najde ukaz latence.",
             "randmsg": [
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
+                "Obstoj je laž.",
+                "Nekega dne boš umrl, mogoče kmalu.",
+                "Nič več ni pomembno.",
+                "Kje greš dol?",
+                "Zunaj ni ničesar.",
+                "Sami ste v neskončni praznini.",
+                "Resnica je napačna.",
+                "Zapustite vse.",
+                "Vaš obstoj je beden.",
                 "",
                 "",
                 "",
