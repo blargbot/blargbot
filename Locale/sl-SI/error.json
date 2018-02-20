@@ -21,7 +21,7 @@
         "toolow": "Bot ne more izvesti '{{tag}}\", ker je nižje uvrščen od '{{target}}\"",
         "unclosed": "Neenak uklepaj [{{column}}:{{row}}]",
         "unopened": "Neenak zaklepaj [{{column}}:{{row}}]",
-        "invalidradix": "",
+        "invalidradix": "Koren mora biti med 2 in 36, vendar je prejel \"{{radix}}\"",
         "notanarray": "",
         "notbool": "",
         "missingarg": "",
