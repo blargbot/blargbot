@@ -1,9 +1,9 @@
 {
-    "output": "",
-    "nooutput": "",
-    "queryexpire": "",
+    "output": "Izhod:\n{{output}}",
+    "nooutput": "Ni izhoda...",
+    "queryexpire": "Poizvedba bo potekla čez {{length}} minut.",
     "resolveuser": {
-        "nousers": "",
+        "nousers": "Noben uporabnik ni bil najden.",
         "pickuser": ""
     },
     "resolverole": {
