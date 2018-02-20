@@ -32,15 +32,15 @@
         },
         "moderation": {
             "title": "Moderiranje",
-            "desc": ""
+            "desc": "Potrebujete nekaj, s čimer lahko nadzorujete klepet? blargbot je opremljen z veliko opcijami za nadzorovanje, od osnovnih operacij, kot so prepovedi in utišanje, do bolj naprednih stvari, kot so beleženje klepeta ali samodejno cenzuriranje."
         },
         "opensource": {
             "title": "Open-Source",
-            "desc": ""
+            "desc": "Širjenje je skrbljenje! blargbot je popolnoma open-source pod licenco GNU AGPLv3. Vzemite si priložnost in preberite, kako vse deluje. Če uporabite del kode v vašem lastnem projektu, ste zadolženi meni nameniti zasluge. Poglejte licenco za več podrobnosti."
         },
         "suggestions": {
-            "title": "",
-            "desc": ""
+            "title": "Odprti za predloge",
+            "desc": "Imate predlog za bot-a? Vesel bom, če izvem! Našel napako? Tudi to bi rad izvedel! Lahko mi predlagate karkoli z uporabo ukaza \"predlagaj\", z pridružitvijo moji združbi ali z pošiljanjem obvestila."
         }
     },
     "bbtag": {
