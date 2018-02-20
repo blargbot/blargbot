@@ -98,27 +98,27 @@
                 },
                 "test": {
                     "usage": "<koda>",
-                    "info": ""
+                    "info": "Izvede dano kodo v testnem okolju."
                 },
                 "help": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[subcommand]",
+                    "info": "Prikaže to!"
                 },
                 "docs": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[subtag]",
+                    "info": "Da povezavo k BBTag dokumentaciji, ali pa priskrbi informacije o specifičnem subtag-u."
                 },
                 "setdesc": {
-                    "info": ""
+                    "info": "informacije"
                 },
                 "setusage": {
-                    "info": ""
+                    "info": "informacije"
                 }
             },
-            "subcommandnotfound": "",
-            "transferprompt": "",
-            "nobots": "",
-            "transfercancelled": "",
+            "subcommandnotfound": "Ni bilo možno najti podukaz z imenom `{{subcommand}}`.",
+            "transferprompt": "{{target}}, {{user}} želi prenesti lastništvo oznake '{{tag}}\" vam. Ali se strinjate?\nTo ne prenese spremenljivk.",
+            "nobots": "[[emote.x]] Oznako ne morete prenesti na bot-a!",
+            "transfercancelled": "[[emote.x]] Prenos je bil preklican.",
             "transfercomplete": "",
             "taginfo": "",
             "descupdate": "",
