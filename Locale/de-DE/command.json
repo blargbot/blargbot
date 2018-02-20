@@ -288,7 +288,7 @@
             "status": [
                 "Spielen",
                 "Streamen",
-                "",
+                "Hört zu",
                 "Beobachten"
             ]
         }
@@ -338,17 +338,17 @@
                     "info": "Öffnet ein Dialogfeld um die Rollen der Mitarbeiter zu aktivieren bzw. deaktivieren."
                 },
                 "mute": {
-                    "info": ""
+                    "info": "Richtet die stumme Rolle."
                 },
                 "announcement": {
-                    "info": ""
+                    "info": "Richtet die Ankündigungen."
                 },
                 "modlog": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "modlog [event]...",
+                    "info": "Stellt ein die Modlog für die angegebene Ereignisse. Wenn kein Kanal angegeben wird, wird standardmäßig auf den aktuellen Kanal. Wenn keine Ereignisse angegeben sind, standardmäßig zu allen Veranstaltungen."
                 },
                 "punishment": {
-                    "usage": "",
+                    "usage": "Strafe <hinzufügen | entfernen> <weight> [Verbot | stumm | kick]",
                     "info": ""
                 }
             },
