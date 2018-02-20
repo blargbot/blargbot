@@ -8,10 +8,10 @@
     },
     "resolverole": {
         "noroles": "Ni bilo najdenih nobenih vlog.",
-        "pickrole": ""
+        "pickrole": "{{length}} vlog je bilo najdeno! Izberite enega s seznama."
     },
     "resolvechannel": {
-        "nochannels": "",
+        "nochannels": "Ni bilo najdenega nobenega channel-a.",
         "pickchannel": ""
     },
     "edited": "",
