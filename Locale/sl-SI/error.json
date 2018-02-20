@@ -22,7 +22,7 @@
         "unclosed": "Neenak uklepaj [{{column}}:{{row}}]",
         "unopened": "Neenak zaklepaj [{{column}}:{{row}}]",
         "invalidradix": "Koren mora biti med 2 in 36, vendar je prejel \"{{radix}}\"",
-        "notanarray": "",
+        "notanarray": "Spremenljivka '{{name}}\" ni vrsta (Prejeto: '{{value}}\")",
         "notbool": "",
         "missingarg": "",
         "namedunsupported": ""
