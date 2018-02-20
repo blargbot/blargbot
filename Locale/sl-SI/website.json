@@ -44,7 +44,7 @@
         }
     },
     "bbtag": {
-        "main": "",
+        "main": "# BBTag\n> Ne sme biti zamenjan z BBCode!\n\nBBTag, baziran po šabloni programskega jezika, je zasnovan tako, da zagotavlja močno konstrukcijo za proizvedbo ukazov, narejenih po meri.\n\n### Terminologija\n\n-`Oznaka` se nanaša na blok kode BBTag, pa naj bo javna oznaka ali ukaz po meri.\n-`Podoznaka` se nanaša na BBTag komponento. Napredna `oznaka` je narejena iz veliko `podoznak`.\n-`Razred` se nanaša na skupino `podoznak`.",
         "subtags": {
             "title": "Podoznake",
             "desc": ""
