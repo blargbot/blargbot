@@ -132,9 +132,9 @@
             "favourites": "Imate {{count}} oznak na vašem seznamu priljubljenih.\n```popravi\n{{tags}}\n```"
         },
         "locale": {
-            "info": "",
-            "set": "",
-            "list": ""
+            "info": "Nastavi katera lokalna sporočila bodo bila poslana.",
+            "set": "Vaš kraj je bil nastavljen na {{locale}}!",
+            "list": "Vaš trenutni kraj je: {{current}}\n\nProsimo izberite kater kraj želite izbrati."
         },
         "tokenify": {
             "info": ""
@@ -148,19 +148,19 @@
         },
         "donate": {
             "info": "",
-            "willdm": "",
-            "message": ""
+            "willdm": "Ok, poslal Vam bom informacije za prispevek v direktno sporočilo.",
+            "message": "nosilno mesto"
         },
         "mods": {
             "info": "",
-            "mods": "",
-            "nomods": "",
-            "nomodsonline": ""
+            "mods": "Modifikacija v **{{guild}}**",
+            "nomods": "Ni nobenih modifikacij v tej združbi.",
+            "nomodsonline": "Ni spletnih modifikacij."
         },
         "help": {
             "info": "",
-            "allcommands": "",
-            "nocommand": "",
+            "allcommands": "Tukaj so vsi ukazi, ki jih lahko izvršite v **{{guild}}**.\n```markdown\n{{commands}}\n```\n\nZa več informacij o ukazih, napišite `pomoč <ime ukaza>` ali obiščite <https://blargbot.xyz/commands>.",
+            "nocommand": "Žal ni nobenega ukaza z imenom '{{name}}'!",
             "commandinfo": "",
             "aliases": "",
             "subcommand": "",
