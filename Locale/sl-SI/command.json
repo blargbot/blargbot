@@ -77,11 +77,11 @@
                     "info": "Prikaže oznake, ki so bile najbolj priljubljene."
                 },
                 "author": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<ime>",
+                    "info": "Prikaže avtorja oznake."
                 },
                 "search": {
-                    "usage": "",
+                    "usage": "<vprašanje>",
                     "info": ""
                 },
                 "list": {
@@ -227,28 +227,28 @@
         },
         "economy": {
             "info": "Pretvori valuto z uporabo zadnjih pretvornih statistik.",
-            "invalidamount": "",
-            "invalidcode": "",
-            "converted": "",
-            "usage": ""
+            "invalidamount": "Prosimo navedite veljavno količino za pretvorbo.",
+            "invalidcode": "Neznana koda valute: {{code}}",
+            "converted": "{{amount}} {{from}} je enako {{converted}} {{to}}",
+            "usage": "<od> <do> <količina>"
         },
         "usettings": {
-            "info": "",
+            "info": "Preuredi ali prikaže vaše uporabniške nastavitve.",
             "subcommand": {
                 "dmerrors": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[drži|ne drži]",
+                    "info": "Omogoči ali onemogoči direktna sporočila za opozorila pri napakah."
                 }
             },
-            "dmerrorsenabled": "",
-            "dmerrorsdisabled": "",
-            "userinfo": ""
+            "dmerrorsenabled": "Opozorila za napake preko direktenega sporočila so bile omogočene.",
+            "dmerrorsdisabled": "Opozorila za napake preko direktenega sporočila so bile onemogočene.",
+            "userinfo": "Tukaj so vaše uporabniške nastavitve:\n\n{{settings}}\n\nPodukazi, ki so na voljo: {{sub}}"
         },
         "rr": {
-            "info": "",
-            "usage": "",
+            "info": "Odigra igro ruske rulete. Po standardu lahko vaš revolver drži 6 metkov.",
+            "usage": "[bullets]",
             "flags": {
-                "capacity": "",
+                "capacity": "Nastavi, koliko metkov lahko vaš revolver drži.",
                 "emote": ""
             },
             "capacitylow": "",
