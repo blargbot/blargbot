@@ -1,41 +1,41 @@
 {
-    "language": "",
+    "language": "Angleščina",
     "header": {
-        "login": "",
-        "logout": "",
-        "commands": "",
-        "bbtag": "",
-        "subtags": "",
-        "dashboard": ""
+        "login": "Prijava",
+        "logout": "Odjava",
+        "commands": "Ukazi",
+        "bbtag": "BBTag",
+        "subtags": "Podoznake",
+        "dashboard": "Nadzorna plošča"
     },
     "generic": {
-        "loading": "",
-        "collapse": "",
-        "expand": "",
-        "search": "",
-        "noresults": "",
-        "resultsfound": ""
+        "loading": "Nalaganje",
+        "collapse": "Skrij vse",
+        "expand": "Pokaži vse",
+        "search": "Filtriraj...",
+        "noresults": "O ne! Ni zadetkov.",
+        "resultsfound": "Ujemanje rezultatov:"
     },
     "index": {
         "desc": "",
         "commands": {
-            "title": "",
+            "title": "Ukazi",
             "desc": ""
         },
         "bbtag": {
-            "title": "",
+            "title": "BBTag",
             "desc": ""
         },
         "customization": {
-            "title": "",
+            "title": "Prilagoditev",
             "desc": ""
         },
         "moderation": {
-            "title": "",
+            "title": "Moderiranje",
             "desc": ""
         },
         "opensource": {
-            "title": "",
+            "title": "Open-Source",
             "desc": ""
         },
         "suggestions": {
@@ -46,41 +46,41 @@
     "bbtag": {
         "main": "",
         "subtags": {
-            "title": "",
+            "title": "Podoznake",
             "desc": ""
         },
         "variables": {
-            "title": "",
+            "title": "Spremenljivke",
             "desc": ""
         },
         "arrays": {
-            "title": "",
+            "title": "Vrste",
             "desc": ""
         }
     },
     "subtags": {
         "components": {
-            "argument": "",
-            "named": "",
-            "unnamed": "",
-            "array": "",
-            "staff": "",
-            "noimplicit": ""
+            "argument": "Argumenti:",
+            "named": "Podpira navedene argumente",
+            "unnamed": "**Ne** podpira navedenih argumentov",
+            "array": "Pomožne vrste",
+            "staff": "Avtor mora biti del osebja",
+            "noimplicit": "Ne podpira posrednega kategoriziranja"
         },
-        "referdocs": ""
+        "referdocs": "Prosimo obrnite se na [documentation](/bbtag) za več navodil o uporabi."
     },
     "commands": {
-        "title": "",
+        "title": "Ukazi",
         "desc": "",
         "components": {
-            "usage": "",
-            "flags": "",
-            "aliases": "",
-            "subcommands": ""
+            "usage": "Uporaba:",
+            "flags": "Zastave:",
+            "aliases": "Psevdonimi:",
+            "subcommands": "Podukazi:"
         }
     },
     "dashboard": {
-        "userheader": "",
+        "userheader": "Uporabniške nastavitve",
         "guildheader": "",
         "notauthed": "",
         "user": {
