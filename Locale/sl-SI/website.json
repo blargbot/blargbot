@@ -55,7 +55,7 @@
         },
         "arrays": {
             "title": "Vrste",
-            "desc": ""
+            "desc": "## Vrste\n\nVrste so zelo uporabna struktura podatkov. V osnovi je vrsta seznam predmetov. Uporabljeni so podobno podoznakam, z uporabo oglatih oklepajev `[]` namesto ukrivljenih `{}`.\n\nZelo veliko podoznak je namenjenih uporabljanju in manipuliranju teh vrst. Glejte `Vrste` razred za več informacij.\n\n## Sintaksa\n> `[predmet;predmet;predmet]`\n\n### Kazala\n\nVrste so urejene. Vsak element v vrsti ima dodeljen **indeks**, ki je v bistvu pozicija elementa znotraj vrste.\n\nNajbolj pomembno o vrstah je vedeti, da so **0-indeksirane**. To pomeni, da se indeksi začnejo z 0 namesto z 1. Poglejmo primer na tej vrsti:\n```\nIndeks: 0 1 2 3 4\n-------------------\nVrednosti:  [1;2;3;4;5]\n```\n\nPrvi element, `1`, ima indeks `0`. Prav tako ima četrti element, `4`, dodeljen indeks `3`. Na začetku lahko zgleda zapleteno, vendar postane zelo enostavno, ko se na to navadite."
         }
     },
     "subtags": {
