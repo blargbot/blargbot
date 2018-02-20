@@ -21,15 +21,15 @@
         "choices": "Stran {{page}}/{{max}}"
     },
     "nochange": "Nič ni bilo spremenjeno.",
-    "commandhelp": "",
+    "commandhelp": "**Ukazno ime**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
     "example": {
-        "id1": "",
-        "id2": "",
-        "id3": ""
+        "id1": "111111111111111111",
+        "id2": "222222222222222222",
+        "id3": "333333333333333333"
     },
-    "test": "",
-    "querycancelled": "",
-    "user": "",
-    "role": "",
-    "channel": ""
+    "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
+    "querycancelled": "Poizvedba je bila preklicana.",
+    "user": "Uporabnik",
+    "role": "Vloga",
+    "channel": "Kanal"
 }
