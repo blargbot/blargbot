@@ -1,26 +1,26 @@
 {
     "events": {
-        "kick": "",
-        "ban": "",
-        "unban": "",
-        "mute": "",
-        "unmute": "",
-        "warn": "",
-        "pardon": "",
-        "rename": "",
-        "specialroleadd": "",
-        "specialroleremove": ""
+        "kick": "Vrži ven",
+        "ban": "Prepovej",
+        "unban": "Dovoli dostop",
+        "mute": "Utišaj",
+        "unmute": "Povrni glasnost",
+        "warn": "Opozorilo",
+        "pardon": "Pardon",
+        "rename": "Preimenuj",
+        "specialroleadd": "Posebna vloga dodano",
+        "specialroleremove": "Posebna vloga odstranjena"
     },
-    "case": "",
-    "setreason": "",
+    "case": "{{icon}} Primer {{number}}: {{event}}",
+    "setreason": "Odgovorni moderator, prosimo napišite `razlog {{number}}` za nastavitev razloga.",
     "warnings": {
-        "given": "",
-        "removed": "",
-        "total": ""
+        "given": "Dana opozorila",
+        "removed": "Pomiloščena opozorila",
+        "total": "Novo skupno število"
     },
     "rename": {
-        "old": "",
-        "new": ""
+        "old": "Staro ime",
+        "new": "Novo ime"
     },
-    "duration": ""
+    "duration": "Trajanje"
 }
