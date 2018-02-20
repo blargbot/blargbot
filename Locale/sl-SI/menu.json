@@ -1,10 +1,10 @@
 {
     "cancel": {
-        "name": "",
-        "description": ""
+        "name": "Prekliči",
+        "description": "Zaprite ta meni."
     },
     "confirm": {
-        "name": "",
-        "description": ""
+        "name": "Potrdi",
+        "description": "Potrdi ta meni."
     }
 }
