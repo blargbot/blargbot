@@ -4,10 +4,10 @@
     "queryexpire": "Poizvedba bo potekla čez {{length}} minut.",
     "resolveuser": {
         "nousers": "Noben uporabnik ni bil najden.",
-        "pickuser": ""
+        "pickuser": "{{length}} uporabnikov je bilo najdenih! Izberite enega s seznama."
     },
     "resolverole": {
-        "noroles": "",
+        "noroles": "Ni bilo najdenih nobenih vlog.",
         "pickrole": ""
     },
     "resolvechannel": {
