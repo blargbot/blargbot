@@ -39,31 +39,31 @@
             "notenough": "Morate mi povedati koga poslati!"
         },
         "tag": {
-            "info": "",
-            "usage": "",
-            "dontown": "",
-            "alreadyexists": "",
-            "notag": "",
-            "tagset": "",
-            "tagrename": "",
-            "raw": "",
-            "testoutput": "",
+            "info": "Oznake so sistem javnih ukazov, ki jih lahko ustvari ali izvrši kdorkoli z BBTag jezikom. \n\n**Podukazi**:\n{{subcommands}}\n\nČe želite več informacij o podukazu, napišite \"b!t pomoč <podukaz>\"\nZa več informacij o BBTag, obiščite <https://blargbot.xyz/tags>.\nZ ustvaritvijo oznake se seznanite, da se strinjate s pogoji storitve (<https://blargbot.xyz/tags/tos>).",
+            "usage": "<ime | podukaz> [args]",
+            "dontown": "[[emote.x]] Te oznake ne posedujete!",
+            "alreadyexists": "[[emote.x]] Oznaka s tem imenom že obstaja!",
+            "notag": "[[emote.x]] Ni oznake s tem imenom.",
+            "tagset": "[[emote.check]] Označi '{{name}}` {{process}}!",
+            "tagrename": "[[emote.check]] Oznaka '{{old}}\" je bila preimenovana v \"{{new}}\".",
+            "raw": "Šifra za {{name}} je: \n```{{code}}```",
+            "testoutput": "Test izpisa:\n\n{{output}}",
             "subcommand": {
                 "set": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<ime><vsebina>",
+                    "info": "Ustvari ali uredi oznako z določenim imenom in vsebino. Ne bo nadomestilo nobene oznake narejene od drugih."
                 },
                 "delete": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<ime>",
+                    "info": "Izbriše oznako, ki jo posedujete."
                 },
                 "rename": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<ime> < novo ime>",
+                    "info": "Preimenuje oznako, ki jo posedujete."
                 },
                 "raw": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<ime>",
+                    "info": "Dobi neobdelano kodo oznake."
                 },
                 "info": {
                     "usage": "",
