@@ -66,15 +66,15 @@
                     "info": "Dobi neobdelano kodo oznake."
                 },
                 "info": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<ime>",
+                    "info": "Prikaže informacije o oznaki."
                 },
                 "transfer": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<ime> <uporabnik>",
+                    "info": "Prenese oznako navedenemu uporabniku. Spremenljivke ne bodo prenešene."
                 },
                 "top": {
-                    "info": ""
+                    "info": "Prikaže oznake, ki so bile najbolj priljubljene."
                 },
                 "author": {
                     "usage": "",
@@ -172,22 +172,22 @@
             "info": "",
             "subcommand": {
                 "start": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<lokacija>",
+                    "info": "Začne ekspedicijo!"
                 },
                 "end": {
-                    "info": ""
+                    "info": "Konča ekspedicijo!"
                 },
                 "locations": {
-                    "info": ""
+                    "info": "Prikaže seznam vseh lokacij ekspedicije."
                 }
             },
-            "stats": "",
-            "alreadystarted": "",
-            "notstarted": "",
-            "nolocation": "",
-            "invalidlocation": "",
-            "expeditionbeings": "",
+            "stats": "<:bc_cat:345081695990710272> Tukaj so vaši predmeti!\n\n{{stats}}",
+            "alreadystarted": "Ekspedicija je že v teku!",
+            "notstarted": "Niste začeli nobene ekspedicije!",
+            "nolocation": "Žal to ni bilo veljavno mesto. Mesta, ki jih trenutno lahko obiščete so:\n\n{{locations}}",
+            "invalidlocation": "Nekaj čudnega se je zgodilo. Mesto, ki ste ga raziskovali ne obstaja! Zaženite še eno ekspedicijo.",
+            "expeditionbeings": "<:bc_cat:345081695990710272> ISKANJE SE JE ZAČELO! <:bc_cat:345081695990710272>\n\nLokacija: {{location}}\n\nPreverite ponovno kasneje z ukazom \"gamatoto konec\"!",
             "expeditionends": "",
             "notimeelapsed": "",
             "itemfound": "",
