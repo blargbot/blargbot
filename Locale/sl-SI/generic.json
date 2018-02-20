@@ -11,16 +11,16 @@
         "pickrole": "{{length}} vlog je bilo najdeno! Izberite enega s seznama."
     },
     "resolvechannel": {
-        "nochannels": "Ni bilo najdenega nobenega channel-a.",
-        "pickchannel": ""
+        "nochannels": "Ni bilo najdenenih nobenih kanalov.",
+        "pickchannel": "{{length}} kanalov je bilo najdenih! Izberite enega s seznama."
     },
-    "edited": "",
-    "created": "",
-    "deleted": "",
+    "edited": "urejeno",
+    "created": "ustvarjeno",
+    "deleted": "izbrisano",
     "menu": {
-        "choices": ""
+        "choices": "Stran {{page}}/{{max}}"
     },
-    "nochange": "",
+    "nochange": "Nič ni bilo spremenjeno.",
     "commandhelp": "",
     "example": {
         "id1": "",
