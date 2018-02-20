@@ -17,18 +17,18 @@
         "resultsfound": "Ujemanje rezultatov:"
     },
     "index": {
-        "desc": "",
+        "desc": "blargbot je večnamenski robot za Discord, namenjen zagotavljanju kvalitetnih ukazov in storitev, vključno z beleženjem pogovorov in poglobljenemu sistemu ukazov, narejenih po meri.",
         "commands": {
             "title": "Ukazi",
-            "desc": ""
+            "desc": "blargbot je opremljen z številnimi ukazi, ki so dokumentirani in kategorizirani za vaše udobje."
         },
         "bbtag": {
             "title": "BBTag",
-            "desc": ""
+            "desc": "blargbot uporablja sofisticiran sistem oznak, imenovan BBTag, ki ga lahko uporabite, da ustvarite napredne, po meri ukaze."
         },
         "customization": {
             "title": "Prilagoditev",
-            "desc": ""
+            "desc": "Razumemo, da ni čisto vsaka združba enaka, zato ima blargbot možnost obsežne prilagoditeve. Nadzirate lahko, točno katere vloge lahko uporabljajo katere ukaze, določite predpone narejene po meri in celo spremenite prikazni jezik!"
         },
         "moderation": {
             "title": "Moderiranje",
@@ -81,10 +81,10 @@
     },
     "dashboard": {
         "userheader": "Uporabniške nastavitve",
-        "guildheader": "",
-        "notauthed": "",
+        "guildheader": "Nastavitve združbe",
+        "notauthed": "### Žal nimate dostopa do te strani\n\nProsimo, da se prijavite, če želite uporabljati nadzorno ploščo.",
         "user": {
-            "dmerrors": ""
+            "dmerrors": "Napake direktnih sporočil"
         }
     }
 }
