@@ -82,7 +82,7 @@
                 },
                 "search": {
                     "usage": "<vprašanje>",
-                    "info": ""
+                    "info": "Poišče oznako z imenom, ki vsebuje vaše vprašanje."
                 },
                 "list": {
                     "usage": "",
