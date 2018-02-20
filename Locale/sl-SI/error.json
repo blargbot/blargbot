@@ -23,9 +23,9 @@
         "unopened": "Neenak zaklepaj [{{column}}:{{row}}]",
         "invalidradix": "Koren mora biti med 2 in 36, vendar je prejel \"{{radix}}\"",
         "notanarray": "Spremenljivka '{{name}}\" ni vrsta (Prejeto: '{{value}}\")",
-        "notbool": "",
-        "missingarg": "",
-        "namedunsupported": ""
+        "notbool": "Spremenljivka '{{name}}\" ni logična vrednost (Prejeto: '{{value}}\")",
+        "missingarg": "Podoznaki '{{tag}}' manjka argument: '{{arg}}'",
+        "namedunsupported": "Podoznaka '{{tag}}' ne podpira omenjenih argumentov"
     },
-    "inputtoolong": ""
+    "inputtoolong": "Vaš vnos je bil predolg! Največje število znakov za to je bilo {{max}}, vendar ste napisali {{length}} znakov."
 }
