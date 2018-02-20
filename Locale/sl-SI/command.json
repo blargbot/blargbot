@@ -12,31 +12,31 @@
                 "Resnica je napačna.",
                 "Zapustite vse.",
                 "Vaš obstoj je beden.",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
+                "Vsi smo že mrtvi.",
+                "Mijav.",
+                "Strah je svoboda.",
+                "Podreditev je osvoboditev.",
+                "Nasprotovanje je resnica.",
+                "Želite ustvariti pogodbo?",
+                "Pustite to in pojdite dalje."
             ],
-            "final": ""
+            "final": "Pong! ({{time}}ms)"
         },
         "brainfuck": {
-            "info": "",
-            "usage": "",
+            "info": "Izvede \"brainfuck\" kodo.",
+            "usage": "<koda>",
             "flags": {
-                "p": "",
-                "i": "",
-                "pointers": "",
-                "input": ""
+                "p": "Prikaže seznam kazalcev po izvedbi.",
+                "i": "Določa vnos za matematični znak \",\".",
+                "pointers": "Navaja, da bi nastali kazalci morali biti izpisani.",
+                "input": "Določa vhodne parametre."
             }
         },
         "ship": {
-            "info": "",
-            "usage": "",
-            "final": "",
-            "notenough": ""
+            "info": "Vam da ime ladje za dva uporabnika.",
+            "usage": "<uporabnik1> <uporabnik2>",
+            "final": "Ime vaše ladje je **{{name}}**!",
+            "notenough": "Morate mi povedati koga poslati!"
         },
         "tag": {
             "info": "",
