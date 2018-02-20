@@ -202,31 +202,31 @@
             "gamatotoidle": "Gamatoto trenutno ni na ekspediciji. Pošljite ga na avanturo z ukazom \"gamatoto začni [location]\"!"
         },
         "prefix": {
-            "info": "",
+            "info": "Dobi ali nastavi ukazne predpone. Ta ukaz konfigurira uporabniško predpono. Za predpone združb, uporabite ukaz \"setup\".",
             "subcommand": {
                 "add": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<predpona>",
+                    "info": "Doda predpono na seznam."
                 },
                 "remove": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<predpona>",
+                    "info": "Odstrani predpono s seznama."
                 }
             },
-            "prefixlist": "",
-            "userprefixes": "",
-            "guildprefixes": "",
-            "noprefixes": "",
-            "defaultprefixes": "",
-            "prefixadded": "",
-            "prefixremoved": "",
-            "nothingchanged": ""
+            "prefixlist": "{{content}}\nZa konfiguracijo vaše predpone uporabite podukaz »dodaj« in »odstrani«. Za nastavitev predpon določene združbe, uporabite ukaz \"setup\".",
+            "userprefixes": "Tukaj so vaše predpone:\n```md\n{{userprefixes}}\n```",
+            "guildprefixes": "Tukaj so predpone za to združbo:\n```md\n{{guildprefixes}}\n```",
+            "noprefixes": "Nimate poljubnih predpon.",
+            "defaultprefixes": "Vedno lahko uporabite te predpone:\n{{prefixes}}",
+            "prefixadded": "Ta predpona je bil dodana!",
+            "prefixremoved": "Ta predpona je bila odstranjena!",
+            "nothingchanged": "Nič ni bilo spremenjeno."
         },
         "warnings": {
-            "output": ""
+            "output": "**{{user}}** je nakopičil **{{amount}}** opozoril(o) v **{{guild}}**."
         },
         "economy": {
-            "info": "",
+            "info": "Pretvori valuto z uporabo zadnjih pretvornih statistik.",
             "invalidamount": "",
             "invalidcode": "",
             "converted": "",
