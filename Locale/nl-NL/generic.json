@@ -4,21 +4,21 @@
     "queryexpire": "Deze aanvraag vervalt in {{length}} minuten.",
     "resolveuser": {
         "nousers": "Niemand gevonden.",
-        "pickuser": ""
+        "pickuser": "{{length}} gebruikers gevonden! Selecteer er alsjeblieft één uit de lijst."
     },
     "resolverole": {
         "noroles": "Geen rollen gevonden.",
-        "pickrole": ""
+        "pickrole": "{{length}} rollen gevonden! Selecteer er alsjeblieft één uit de lijst."
     },
     "resolvechannel": {
         "nochannels": "Geen kanalen gevonden.",
-        "pickchannel": ""
+        "pickchannel": "{{length}} kanalen gevonden! Selecteer er alsjeblieft één uit de lijst."
     },
     "edited": "bewerkt",
     "created": "gemaakt",
     "deleted": "verwijdert",
     "menu": {
-        "choices": ""
+        "choices": "Pagina {{page}}/{{max}}"
     },
     "nochange": "Niks is veranderd.",
     "commandhelp": "**Command Naam**: **__{{name}}__**\n\n**__Usage__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliases__**\n{{aliases}}",
@@ -29,7 +29,7 @@
     },
     "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
     "querycancelled": "The query has been cancelled.",
-    "user": "",
-    "role": "",
-    "channel": ""
+    "user": "Gebruiker",
+    "role": "Rol",
+    "channel": "Kanaal"
 }
