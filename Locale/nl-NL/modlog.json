@@ -1,26 +1,26 @@
 {
     "events": {
-        "kick": "",
-        "ban": "",
-        "unban": "",
-        "mute": "",
-        "unmute": "",
-        "warn": "",
-        "pardon": "",
-        "rename": "",
-        "specialroleadd": "",
-        "specialroleremove": ""
+        "kick": "Kick",
+        "ban": "Ban",
+        "unban": "Unban",
+        "mute": "Dempen",
+        "unmute": "Dempen opheffen",
+        "warn": "Waarschuwing",
+        "pardon": "Waarschuwing intrekken",
+        "rename": "Hernoem",
+        "specialroleadd": "Speciale Rol Toegevoegd",
+        "specialroleremove": "Speciale Rol Verwijderd"
     },
-    "case": "",
-    "setreason": "",
+    "case": "{{icon}} Geval {{number}}: {{event}}",
+    "setreason": "Verantwoordelijke moderator, gebruik alsjeblieft ` reden {{number}}` om de reden in te stellen.",
     "warnings": {
-        "given": "",
-        "removed": "",
-        "total": ""
+        "given": "Waarschuwingen",
+        "removed": "Waarschuwingen Ingetrokken",
+        "total": "Nieuwe Totaal"
     },
     "rename": {
-        "old": "",
-        "new": ""
+        "old": "Oude Naam",
+        "new": "Nieuwe Naam"
     },
-    "duration": ""
+    "duration": "Duur"
 }
