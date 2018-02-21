@@ -202,7 +202,7 @@
             "gamatotoidle": ""
         },
         "prefix": {
-            "info": "",
+            "info": "Возвращает или задаёт префикс команды. Данная команда отвечает за пользовательские префиксы. Используйте команду `setup` для префиксов сервера.",
             "subcommand": {
                 "add": {
                     "usage": "",
@@ -215,25 +215,25 @@
             },
             "prefixlist": "",
             "userprefixes": "",
-            "guildprefixes": "",
+            "guildprefixes": "Вот префиксы для данного сервера:\n```md\n{{guildprefixes}}\n```",
             "noprefixes": "",
             "defaultprefixes": "",
-            "prefixadded": "",
-            "prefixremoved": "",
+            "prefixadded": "Данный префикс добавлен!",
+            "prefixremoved": "Данный префикс удалён!",
             "nothingchanged": ""
         },
         "warnings": {
-            "output": ""
+            "output": "**{{user}}** накопил **{{amount}}** предупреждений в **{{guild}}**."
         },
         "economy": {
             "info": "",
             "invalidamount": "",
             "invalidcode": "",
             "converted": "",
-            "usage": ""
+            "usage": "<от кого> <кому> <количество>"
         },
         "usettings": {
-            "info": "",
+            "info": "Изменяет или отображает пользовательские настройки.",
             "subcommand": {
                 "dmerrors": {
                     "usage": "",
@@ -245,7 +245,7 @@
             "userinfo": ""
         },
         "rr": {
-            "info": "",
+            "info": "Запускает игру в русскую рулетку. По умолчанию, револьвер вмещает 6 пуль.",
             "usage": "",
             "flags": {
                 "capacity": "Устанавливает как много пуль может быть в револьвере.",
@@ -255,8 +255,8 @@
             "bulletslow": "Ты не можешь вставить меньше одной пули, слабак.",
             "bulletshigh": "",
             "begin": "",
-            "death": "",
-            "life": "",
+            "death": "{{content}}\n\n***БАХ!*** [[command.general.rr.deathmessages]]",
+            "life": "{{content}}\n\n*Щёлк!* [[command.general.rr.livemessages]]",
             "livemessages": [
                 "",
                 "",
