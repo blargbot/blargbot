@@ -1,6 +1,6 @@
 {
-    "output": "",
-    "nooutput": "",
+    "output": "Uitvoer:\n{{output}}",
+    "nooutput": "Geen uitvoer...",
     "queryexpire": "Deze aanvraag vervalt in {{length}} minuten.",
     "resolveuser": {
         "nousers": "Niemand gevonden.",
