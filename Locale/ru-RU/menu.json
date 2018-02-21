@@ -1,7 +1,7 @@
 {
     "cancel": {
         "name": "Отменить",
-        "description": "Закрыть меню."
+        "description": "Закрывает меню."
     },
     "confirm": {
         "name": "Потвердить",
