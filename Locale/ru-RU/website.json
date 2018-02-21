@@ -10,10 +10,10 @@
     },
     "generic": {
         "loading": "",
-        "collapse": "",
-        "expand": "",
+        "collapse": "Скрыть всё",
+        "expand": "Раскрыть всё",
         "search": "",
-        "noresults": "",
+        "noresults": "Упс! Ничего не найдено.",
         "resultsfound": ""
     },
     "index": {
@@ -62,8 +62,8 @@
         "components": {
             "argument": "",
             "named": "",
-            "unnamed": "",
-            "array": "",
+            "unnamed": "**Не** поддерживает именованные аргументы",
+            "array": "Поддерживает массивы",
             "staff": "",
             "noimplicit": ""
         },
