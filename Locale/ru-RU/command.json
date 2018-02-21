@@ -258,7 +258,7 @@
             "death": "{{content}}\n\n***БАХ!*** [[command.general.rr.deathmessages]]",
             "life": "{{content}}\n\n*Щёлк!* [[command.general.rr.livemessages]]",
             "livemessages": [
-                "",
+                "Пистолет щелкает - пусто. Проживёшь ещё один день.",
                 "",
                 "",
                 "",
