@@ -169,7 +169,7 @@
             "subcommands": ""
         },
         "gamatoto": {
-            "info": "",
+            "info": "Allez sur une expédition magique avec Gamatoto ! Utilisez cette commande pour vérifier vos statistiques, ou utilisez une sous-commande pour partir à l’aventure !",
             "subcommand": {
                 "start": {
                     "usage": "",
