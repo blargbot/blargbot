@@ -51,23 +51,23 @@
             "subcommand": {
                 "set": {
                     "usage": "",
-                    "info": ""
+                    "info": "Maakt of bewerkt een tag met de gegeven name en inhoud. Tags gemaakt bij anderen zouden niet worden vervangen."
                 },
                 "delete": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Verwijderd een tag dat u bezit."
                 },
                 "rename": {
                     "usage": "",
-                    "info": ""
+                    "info": "Wijzigt de naam van een tag die u bezit."
                 },
                 "raw": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Haalt de code van een tag."
                 },
                 "info": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Gegevens van een tag weergeven."
                 },
                 "transfer": {
                     "usage": "",
@@ -77,15 +77,15 @@
                     "info": "Displays the tags that have been the most favourited."
                 },
                 "author": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Weergeeft de auteur van een tag."
                 },
                 "search": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<query>",
+                    "info": "Zoekt voor en tag met een naam met uw zoekopdracht."
                 },
                 "list": {
-                    "usage": "",
+                    "usage": "[@user]",
                     "info": ""
                 },
                 "favorite": {
@@ -94,19 +94,19 @@
                 },
                 "report": {
                     "usage": "",
-                    "info": ""
+                    "info": "Meldt een tag voor het overtreden van de \"ToS\". Maak hier niet misbruik van."
                 },
                 "test": {
-                    "usage": "",
+                    "usage": "<code>",
                     "info": ""
                 },
                 "help": {
                     "usage": "",
-                    "info": ""
+                    "info": "Toont dit!"
                 },
                 "docs": {
                     "usage": "",
-                    "info": ""
+                    "info": "Geeft een link naar the BBTag documentatie, of informatie over een subcode."
                 },
                 "setdesc": {
                     "info": "info"
@@ -115,7 +115,7 @@
                     "info": "info"
                 }
             },
-            "subcommandnotfound": "",
+            "subcommandnotfound": "Kon geen subcommand vinden met the naam\n`{{subcommand}}`.",
             "transferprompt": "",
             "nobots": "",
             "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
