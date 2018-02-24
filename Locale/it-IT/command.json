@@ -390,12 +390,12 @@
                 "toolow": "Il peso fornito deve essere maggiore di 0.",
                 "invalidweight": "Devi fornire un numero per il peso.",
                 "invalidchoice": "Devi specificare se si vuole aggiungere o togliere una punizione.",
-                "invalidtypes": "",
-                "added": "",
-                "removed": "",
-                "overwritten": "",
-                "doesntexist": "",
-                "list": ""
+                "invalidtypes": "Sono stati specificati tipi non validi. Solo uno di `--mutare`, `--cacciare`, o `--bandire` possono essere fornite.",
+                "added": "Una punizione è stata aggiunta con un peso di **{{weight}}**.",
+                "removed": "La punizione con un peso di **{{weight}}** è stata rimossa.",
+                "overwritten": "Una punizione con un peso di **{{weight}}** è stata sovrascritta.",
+                "doesntexist": "Una punizione con un peso di **{{weight}}** non esiste.",
+                "list": "Queste sono le punizioni attive nella tua gilda:\n\n{{list}}"
             }
         },
         "reason": {
@@ -454,26 +454,26 @@
             "testoutput": "Test Output:\\n\\n{{output}}"
         },
         "warn": {
-            "info": "",
+            "info": "Assegna ad un utente un numero variabile di avvertimenti.",
             "flags": {
-                "count": "",
-                "reason": ""
+                "count": "Il numero di avvertimenti da assegnare.",
+                "reason": "Il motivo dell'avvertimento."
             },
-            "invalidcount": "",
-            "warningassigned": "",
-            "negativecount": "",
-            "usage": ""
+            "invalidcount": "Il conteggio specificato non è un numero!",
+            "warningassigned": "**{{user}}** ha ricevuto **{{count}}** avvertimenti.",
+            "negativecount": "Deve essere assegnato almeno un avvertimento!",
+            "usage": "<utente>"
         },
         "pardon": {
-            "usage": "",
-            "info": "",
+            "usage": "<utente>",
+            "info": "Rimuove da un utente un numero variabile di avvertimenti.",
             "flags": {
-                "count": "",
-                "reason": ""
+                "count": "Il numero di perdoni da assegnare.",
+                "reason": "Il motivo del perdono."
             },
-            "invalidcount": "",
-            "negativecount": "",
-            "warningassigned": ""
+            "invalidcount": "Il conteggio specificato non è un numero!",
+            "negativecount": "Deve essere assegnato almeno un perdono!",
+            "warningassigned": "**{{user}}** ha ricevuto **{{count}}** perdoni."
         }
     }
 }
