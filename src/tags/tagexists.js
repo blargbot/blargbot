@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2018-02-07 18:30:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-24 15:13:09
+ * @Last Modified time: 2018-02-24 15:16:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = `tagexists`;
 e.args = `&lt;tagName&gt;`;
 e.usage = `{tagexists;tagName}`;
-e.desc = `Checks to see if the given tag exists (system tags, not usertags)`;
+e.desc = `Checks to see if the given subtag exists (system subtags, not usertags)`;
 e.exampleIn = `{tagexists;ban} {tagexists;AllenKey}`;
 e.exampleOut = `true false`;
 
