@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-24 14:51:22
+ * @Last Modified time: 2018-02-24 15:07:08
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -157,8 +157,8 @@ bu.processTagInner = async function (params, i) {
         params.content = params.args[i];
     let result = await bu.processTag(params);
 
-    if (result.trim)
-        result.contents = result.contents.replace(/^[\s\n]+|[\s\n]+$/g, '');
+    // if (result.trim)
+    //     result.contents = result.contents.replace(/^[\s\n]+|[\s\n]+$/g, '');
 
     if (result.terminate)
         params.terminate = true;
