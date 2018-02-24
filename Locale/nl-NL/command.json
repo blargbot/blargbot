@@ -33,17 +33,17 @@
             }
         },
         "ship": {
-            "info": "",
+            "info": "Geeft de \"ship\" naam voor twee gebruikers.",
             "usage": "",
             "final": "Your shipname is **{{name}}**!",
-            "notenough": ""
+            "notenough": "Je moet me vertellen wie ik moet shippen!"
         },
         "tag": {
             "info": "",
             "usage": "",
-            "dontown": "",
-            "alreadyexists": "",
-            "notag": "",
+            "dontown": "[[emote.x]] U bent niet de eigenaar van dat label!",
+            "alreadyexists": "[[emote.x]] Een tag met die naam bestaat al!",
+            "notag": "[[emote.x]] Er is geen tag met die naam.",
             "tagset": "",
             "tagrename": "",
             "raw": "",
