@@ -238,6 +238,7 @@
                                         if (!isNaN(parsedVal)) {
                                             document.getElementsByClassName("CodeMirror")[0].style.fontSize = parsedVal + 'px';
                                         }
+					localstorage.fontSize = parsedVal;
                                     }
                                     function exportFile() {
                                         console.log('exporting', editor.getValue())
@@ -252,7 +253,7 @@
                                     }
 
 
-                                    setFontSize(20);
+                                    setFontSize(localstorage.fontSize || 20);
                                 </script><br>
                                 <!--	<input type="submit" value="Load" class="cyan accent-3 white-text btn waves-effect waves-light">-->
 
