@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2018-02-07 18:30:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:30:33
+ * @Last Modified time: 2018-02-24 15:13:09
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -24,11 +24,11 @@ e.exampleIn = `{tagexists;ban} {tagexists;AllenKey}`;
 e.exampleOut = `true false`;
 
 e.execute = async function (params) {
-    let replaceString = '';
-    if (params.args.length == 2){
+    let replaceString = '', replaceContent = false;
+    if (params.args.length == 2) {
         let tagName = await bu.processTagInner(params, 1);
         replaceString = (TagManager.list[tagName.toLowerCase()] != undefined).toString();
-    } else if (params.args.length > 2){
+    } else if (params.args.length > 2) {
         replaceString = await bu.tagProcessError(params, '`Too many arguments`');
     } else {
         replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
