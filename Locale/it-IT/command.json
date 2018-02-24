@@ -348,8 +348,8 @@
                     "info": "Imposta il modlog per specifici eventi. Se nessun canale è specificato, il default sarà il canale corrente. Se nessun evento è specificato, il default sarà tutti gli eventi."
                 },
                 "punishment": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "punizione <aggiungi | togli> <peso> [ban | mutare | cacciare]",
+                    "info": "Aggiunge o toglie un avviso di punizione. `peso`si riferisce al numero di avvertimenti richiesti per attivare la punizione."
                 }
             },
             "mute": {
@@ -378,18 +378,18 @@
                 },
                 "punishment": {
                     "flags": {
-                        "kick": "",
-                        "ban": "",
-                        "mute": "",
-                        "time": "",
-                        "list": ""
+                        "kick": "Specifica che la punizione è l'espulsione. Non può essere usato con il mutare o il bandire.",
+                        "ban": "Specifica che la punizione è il bandire. Non può essere usato con il mutare o il cacciare.",
+                        "mute": "Specifica che la punizione è il mutare. Non può essere usato con il cacciare o il bandire.",
+                        "time": "Specifica quanto tempo dovrebbe durare un ban o la disattivazione del microfono.",
+                        "list": "Elenca le punizioni attive."
                     }
                 }
             },
             "punishment": {
-                "toolow": "",
-                "invalidweight": "",
-                "invalidchoice": "",
+                "toolow": "Il peso fornito deve essere maggiore di 0.",
+                "invalidweight": "Devi fornire un numero per il peso.",
+                "invalidchoice": "Devi specificare se si vuole aggiungere o togliere una punizione.",
                 "invalidtypes": "",
                 "added": "",
                 "removed": "",
