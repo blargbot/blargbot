@@ -179,7 +179,7 @@
                     "info": "Заканчивает экспедицию!"
                 },
                 "locations": {
-                    "info": ""
+                    "info": "Перечисляет все точки экспедиции."
                 }
             },
             "stats": "<:bc_cat:345081695990710272> Вот ваши предметы!\n\n{{stats}}",
@@ -192,13 +192,13 @@
             "notimeelapsed": "",
             "itemfound": "",
             "levelup": "",
-            "gamatotoxp": "",
-            "itemincrease": "",
-            "locations": "",
+            "gamatotoxp": "Gamatoto получил **{{amount}}**XP ({{old}} → **{{new}}**)",
+            "itemincrease": "{{item}} Вы нашли **{{amount}}** ({{old}} → **{{new}}**)",
+            "locations": "Вот все точки экспедиции!\n\n{{locations}}",
             "wronglevel": "",
-            "gamatotoitems": "",
-            "gamatotostats": "",
-            "gamatotocurrent": "",
+            "gamatotoitems": "Вот ваши предметы:\n{{items}}",
+            "gamatotostats": "Gamatoto сейчас {{level}}-го уровня! [{{currentxp}}XP/{{neededxp}}XP]",
+            "gamatotocurrent": "Gamatoto исследовал **{{location}}** на протяжении **{{minutes}}** минут.\n\nИспользуйте `gamatoto end`, чтобы завершить экспедицию.",
             "gamatotoidle": ""
         },
         "prefix": {
