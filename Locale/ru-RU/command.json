@@ -253,20 +253,20 @@
             },
             "capacitylow": "Твой револьвер должен вмещать как минимум две пули, меньше - гарантирует верную смерть!",
             "bulletslow": "Ты не можешь вставить меньше одной пули, слабак.",
-            "bulletshigh": "",
+            "bulletshigh": "Воу, ваш револьвер может содержать только {{capacity}} пуль! Это будет гарантированная смерть! Вы что, хотите умереть?",
             "begin": "",
             "death": "{{content}}\n\n***БАХ!*** [[command.general.rr.deathmessages]]",
             "life": "{{content}}\n\n*Щёлк!* [[command.general.rr.livemessages]]",
             "livemessages": [
                 "Пистолет щелкает - пусто. Проживёшь ещё один день.",
+                "Вы тяжело выдыхаете, понимая, что вы не умрете сегодня.",
                 "",
-                "",
-                "",
+                "Вы благодарите RNGesus, пока опускаете оружие.",
                 ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
-                ""
+                "Вы ухмыляетесь, понимая, что вы выжили."
             ],
             "deathmessages": [
-                "",
+                "Раздаётся выстрел и ваши мозги разбрызгивает по стене. Не повезло!",
                 ":skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:",
                 "",
                 "",
