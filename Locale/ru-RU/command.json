@@ -461,7 +461,7 @@
             },
             "invalidcount": "",
             "warningassigned": "",
-            "negativecount": "",
+            "negativecount": "Хотя бы одно предупреждение должно быть присвоено!",
             "usage": ""
         },
         "pardon": {
