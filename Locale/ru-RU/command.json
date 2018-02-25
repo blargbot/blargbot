@@ -423,7 +423,7 @@
                 },
                 "rename": {
                     "usage": "",
-                    "info": ""
+                    "info": "Переименовывает пользовательскую команду."
                 },
                 "author": {
                     "usage": "",
@@ -438,26 +438,26 @@
                 },
                 "test": {
                     "usage": "",
-                    "info": ""
+                    "info": "Выполняет код в контексте вашей учётной записи."
                 },
                 "help": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[subcommand]",
+                    "info": "Отображает это!"
                 }
             },
-            "dontown": "",
-            "notag": "",
-            "tagset": "",
-            "tagrename": "",
+            "dontown": "[[emote.x]] Вы не владеете данной пользовательской командой!",
+            "notag": "[[emote.x]] Пользовательской команды с этим именем не существует.",
+            "tagset": "[[emote.check]] Пользовательская команда `{{name}}` {{process}}!",
+            "tagrename": "[[emote.check]] Пользовательская команда `{{old}}` была переименована в `{{new}}`",
             "raw": "",
-            "alreadyexists": "",
-            "testoutput": ""
+            "alreadyexists": "Пользовательская команда с таким именем уже существует.",
+            "testoutput": "Тестовый вывод:\\n\\n{{output}}"
         },
         "warn": {
             "info": "",
             "flags": {
                 "count": "",
-                "reason": ""
+                "reason": "Причина предупреждения."
             },
             "invalidcount": "",
             "warningassigned": "",
