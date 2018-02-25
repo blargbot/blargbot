@@ -305,17 +305,17 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": "",
+            "info": "Говорит всем о том, что ваши мысли - дерьмо.",
             "usage": "[text]",
             "flags": {
                 "plural": ""
             }
         },
         "writepoem": {
-            "usage": "",
+            "usage": "[text]",
             "info": "",
             "flags": {
-                "monika": "",
+                "monika": "Только Моника.",
                 "sayori": "",
                 "yuri": "",
                 "natsuki": ""
