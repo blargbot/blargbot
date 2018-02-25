@@ -214,10 +214,10 @@
                 }
             },
             "prefixlist": "",
-            "userprefixes": "",
+            "userprefixes": "Вот ваши префиксы:\n```md\n{{userprefixes}}\n```",
             "guildprefixes": "Вот префиксы для данного сервера:\n```md\n{{guildprefixes}}\n```",
-            "noprefixes": "",
-            "defaultprefixes": "",
+            "noprefixes": "У вас нет пользовательских префиксов.",
+            "defaultprefixes": "Вы всегда можете использовать эти префиксы:\n{{prefixes}}",
             "prefixadded": "Данный префикс добавлен!",
             "prefixremoved": "Данный префикс удалён!",
             "nothingchanged": ""
@@ -226,7 +226,7 @@
             "output": "**{{user}}** накопил **{{amount}}** предупреждений в **{{guild}}**."
         },
         "economy": {
-            "info": "",
+            "info": "Конвертирует валюту, используя недавние конверсионные курсы.",
             "invalidamount": "",
             "invalidcode": "",
             "converted": "",
