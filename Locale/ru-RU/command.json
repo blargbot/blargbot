@@ -229,24 +229,24 @@
             "info": "Конвертирует валюту, используя недавние конверсионные курсы.",
             "invalidamount": "",
             "invalidcode": "Неизвестный код валюты: {{code}}",
-            "converted": "",
+            "converted": "{{amount}} {{from}} эквивалентно {{converted}} {{to}}",
             "usage": "<от кого> <кому> <количество>"
         },
         "usettings": {
             "info": "Изменяет или отображает пользовательские настройки.",
             "subcommand": {
                 "dmerrors": {
-                    "usage": "",
+                    "usage": "[истина|ложь]",
                     "info": "Включает или выключает отправку ЛС для уведомлений об ошибках."
                 }
             },
-            "dmerrorsenabled": "",
-            "dmerrorsdisabled": "",
-            "userinfo": ""
+            "dmerrorsenabled": "Сообщения с уведомлениями об ошибках были включены.",
+            "dmerrorsdisabled": "Сообщения с уведомлениями об ошибках были выключены.",
+            "userinfo": "Вот ваши пользовательские настройки:\n\n{{settings}}\n\nДоступные подкоманды: {{sub}}"
         },
         "rr": {
             "info": "Запускает игру в русскую рулетку. По умолчанию, револьвер вмещает 6 пуль.",
-            "usage": "",
+            "usage": "[bullets]",
             "flags": {
                 "capacity": "Устанавливает как много пуль может быть в револьвере.",
                 "emote": ""
@@ -262,12 +262,12 @@
                 "",
                 "",
                 "",
-                "",
+                ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
                 ""
             ],
             "deathmessages": [
                 "",
-                "",
+                ":skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:",
                 "",
                 "",
                 "Я ***не*** буду это убирать.",
