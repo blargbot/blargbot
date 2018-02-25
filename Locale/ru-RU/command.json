@@ -169,7 +169,7 @@
             "subcommands": "**Субкоманды**: {{subcommands}}\n\nНаберите `help <command> <subcommand>`, чтобы узнать подробнее о субкомманде."
         },
         "gamatoto": {
-            "info": "",
+            "info": "Отправьтесь в магическую экспедицию с Gamamoto! Используйте эту команду, чтобы просмотреть вашу статистику или используйте субкоманду, чтобы отправиться в приключение!",
             "subcommand": {
                 "start": {
                     "usage": "",
@@ -183,11 +183,11 @@
                 }
             },
             "stats": "<:bc_cat:345081695990710272> Вот ваши предметы!\n\n{{stats}}",
-            "alreadystarted": "",
-            "notstarted": "",
+            "alreadystarted": "Экспедиция уже началась!",
+            "notstarted": "Вы не начали экспедицию!",
             "nolocation": "",
-            "invalidlocation": "",
-            "expeditionbeings": "",
+            "invalidlocation": "Произошло что-то странное. Место, которое вы исследовали, больше не существует. Пожалуйста, начните новую экспедицию.",
+            "expeditionbeings": "<:bc_cat:345081695990710272> ПОИСК НАЧАТ! <:bc_cat:345081695990710272>\n\nРасположение: {{location}}\n\nПожалуйста, проверьте позже при помощи `gamamoto end`!",
             "expeditionends": "",
             "notimeelapsed": "",
             "itemfound": "",
