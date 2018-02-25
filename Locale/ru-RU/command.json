@@ -282,14 +282,14 @@
         "user": {
             "usage": "[user]",
             "info": "",
-            "description": "",
+            "description": "**Имя пользователя**: {{username}}\n**Дискриминатор**: {{discriminator}}\n**ID**: {{id}}\n**Бот**: {{bot}}\n**Создан**: {{created}}\n[Avatar]({{avatar}})",
             "guildinfoheader": "",
-            "guildinfo": "",
+            "guildinfo": "**Никнейм**: {{nick}}\n**Права**: {{permissions}}\n**Статус**: {{status}}\n**Присоединился**: {{joined}}\n{{game}}",
             "status": [
-                "",
-                "",
-                "",
-                ""
+                "Играет в",
+                "Стримит",
+                "Слушает",
+                "Смотрит"
             ]
         }
     },
@@ -306,7 +306,7 @@
         },
         "shit": {
             "info": "",
-            "usage": "",
+            "usage": "[text]",
             "flags": {
                 "plural": ""
             }
