@@ -195,7 +195,7 @@
             "gamatotoxp": "Gamatoto получил **{{amount}}**XP ({{old}} → **{{new}}**)",
             "itemincrease": "{{item}} Вы нашли **{{amount}}** ({{old}} → **{{new}}**)",
             "locations": "Вот все точки экспедиции!\n\n{{locations}}",
-            "wronglevel": "",
+            "wronglevel": "Извините, но вам нужно достичь {{level}} уровня для исследования этого места!",
             "gamatotoitems": "Вот ваши предметы:\n{{items}}",
             "gamatotostats": "Gamatoto сейчас {{level}}-го уровня! [{{currentxp}}XP/{{neededxp}}XP]",
             "gamatotocurrent": "Gamatoto исследовал **{{location}}** на протяжении **{{minutes}}** минут.\n\nИспользуйте `gamatoto end`, чтобы завершить экспедицию.",
