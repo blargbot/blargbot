@@ -54,7 +54,7 @@
                     "info": "Skaber eller redigerer et tag med det givne navn og indhold. Vil ikke erstatte tags andre har lavet."
                 },
                 "delete": {
-                    "usage": "<name>",
+                    "usage": "<navn>",
                     "info": "Sletter et tag du ejer."
                 },
                 "rename": {
@@ -62,11 +62,11 @@
                     "info": "Omdøber et tag du ejer."
                 },
                 "raw": {
-                    "usage": "<name>",
+                    "usage": "<navn>",
                     "info": "Anskaffer rå kode for et tag."
                 },
                 "info": {
-                    "usage": "<name>",
+                    "usage": "<navn>",
                     "info": "Viser info om et tag."
                 },
                 "transfer": {
