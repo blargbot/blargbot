@@ -280,7 +280,7 @@
             ]
         },
         "user": {
-            "usage": "",
+            "usage": "[user]",
             "info": "",
             "description": "",
             "guildinfoheader": "",
