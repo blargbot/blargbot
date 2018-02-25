@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:37:01
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-31 13:10:56
+ * @Last Modified time: 2018-02-25 11:54:08
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -77,7 +77,7 @@ async function registerSubChangefeed(type, idName, cache) {
                     // Return if user or guild is not on thread OR cache
                     if (idName === 'guildid' && (!cache[data.new_val[idName]] || !bot.guilds.get(data.new_val[idName])))
                         return;
-                    if (idName === 'userid' && (!!cache[data.new_val[idName]] || !bot.users.get(data.new_val[idName])))
+                    if (idName === 'userid' && (!cache[data.new_val[idName]] || !bot.users.get(data.new_val[idName])))
                         return;
                     cache[data.new_val[idName]] = data.new_val;
                 } else delete cache[data.old_val[idName]];
