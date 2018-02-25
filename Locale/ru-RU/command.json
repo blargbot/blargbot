@@ -199,7 +199,7 @@
             "gamatotoitems": "Вот ваши предметы:\n{{items}}",
             "gamatotostats": "Gamatoto сейчас {{level}}-го уровня! [{{currentxp}}XP/{{neededxp}}XP]",
             "gamatotocurrent": "Gamatoto исследовал **{{location}}** на протяжении **{{minutes}}** минут.\n\nИспользуйте `gamatoto end`, чтобы завершить экспедицию.",
-            "gamatotoidle": ""
+            "gamatotoidle": "Gamatoto в данный момент не находится в экспедиции. Отправьте его в путешествие, введя `gamatoto start [location]`!"
         },
         "prefix": {
             "info": "Возвращает или задаёт префикс команды. Данная команда отвечает за пользовательские префиксы. Используйте команду `setup` для префиксов сервера.",
