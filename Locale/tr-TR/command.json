@@ -354,7 +354,7 @@
             },
             "mute": {
                 "setrole": "Muted rolü güncelleştirildi.",
-                "rolequery": "Muted rolünü seçin."
+                "rolequery": ""
             },
             "announce": {
                 "set": "Duyurular kuruldu.",
