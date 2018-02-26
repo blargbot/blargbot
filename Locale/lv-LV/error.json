@@ -6,6 +6,11 @@
     "roleundef": "",
     "pleasereport": "",
     "generic": "Kaut kas nogāja greizi!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "invalidduration": "",
+    "moderation": {
+        "position": "",
+        "owner": ""
+    },
     "couldnotsend": "",
     "messagetoolong": "Ups! Es mēģināju nosūtīt ziņu, kas bija pārāk gara. [[error.pleasereport]]",
     "notenoughparams": "",
