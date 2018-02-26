@@ -19,6 +19,7 @@ module.exports =
             '535'
         )
         .beforeExecute(Builder.defaults.processAllSubtags)
+        .whenArgs('<2', Builder.defaults.notEnoughArguments)        
         .whenArgs('2', async params => {
             let asNumber = parseFloat(params.args[1]);
             if (!isNaN(asNumber)) {
@@ -27,6 +28,5 @@ module.exports =
                 return await bu.tagProcessError(params, '`Not a number`');
             }
         })
-        .whenArgs('<2', Builder.defaults.notEnoughArguments)
         .whenArgs('>2', Builder.defaults.tooManyArguments)
         .build();

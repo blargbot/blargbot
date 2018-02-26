@@ -16,7 +16,6 @@ Builder.ComplexTag('argsarray')
     'Hello world!',
     'Your input was ["Hello","world!"]'
 ).beforeExecute(Builder.defaults.processAllSubtags)
-.whenArgs('1', async params => {
-    return this.magicClean(JSON.stringify(params.words));
-}).whenDefault(Builder.defaults.tooManyArguments)
+.whenArgs('1', async params => this.magicClean(JSON.stringify(params.words)))
+.whenArgs('>1', Builder.defaults.tooManyArguments)
 .build();

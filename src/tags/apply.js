@@ -21,7 +21,8 @@ module.exports =
             '{apply;randint;[1,4]}',
             '3'
         ).beforeExecute(Builder.defaults.processAllSubtags)
-        .whenArgs('>=2', async params => {
+        .whenArgs('1', Builder.defaults.notEnoughArguments)
+        .whenArgs('>1', async params => {
             if (!TagManager.list.hasOwnProperty(params.args[1]))
                 return await bu.tagProcessError(params, '`No tag found`');
             let tag = TagManager.list[params.args[1]];
@@ -38,5 +39,5 @@ module.exports =
             params.args = [params.args[0], ...tagArgs];
 
             return await tag.execute(params);
-        }).whenArgs('<2', Builder.defaults.notEnoughArguments)
+        })
         .build();

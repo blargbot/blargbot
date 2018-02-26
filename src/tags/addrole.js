@@ -48,6 +48,7 @@ module.exports =
             'Have a role! {addrole;11111111111111111}',
             'Have a role! true'
         ).beforeExecute(Builder.defaults.processAllSubtags)
+        .whenArgs('<2', Builder.defaults.notEnoughArguments)        
         .whenArgs('2', async params => await grantRole(params, params.msg.member))
         .whenArgs('3', async params => {
             let user = await bu.getUser(params.msg, params.args[2], true);
@@ -55,6 +56,5 @@ module.exports =
                 return await grantRole(params, params.msg.guild.members.get(user.id));
             return await grantRole(params, params.msg.member);
         })
-        .whenArgs('<2', Builder.defaults.notEnoughArguments)
         .whenArgs('>3', Builder.defaults.tooManyArguments)
         .build();

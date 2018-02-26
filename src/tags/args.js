@@ -22,7 +22,7 @@ module.exports =
             'Your second word was world!'
         ).beforeExecute(Builder.defaults.processAllSubtags)
         .whenArgs('1', async params => params.words.join(' '))
-        .whenArgs('>1', async params => {
+        .whenArgs('2,3', async params => {
             let from = parseInt(params.args[1]),
                 to = params.args[2];
 
@@ -41,4 +41,5 @@ module.exports =
 
             return this.magicClean(params.words.slice(from, to).join(' '));
         })
+        .whenArgs('>3', Builder.defaults.tooManyArguments)
         .build();
