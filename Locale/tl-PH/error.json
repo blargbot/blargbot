@@ -6,6 +6,11 @@
     "roleundef": "Walang ganitong role ang nakita: '{{role}}'.",
     "pleasereport": "Kung sa palagay mo error ito, paki-report!",
     "generic": "May maling nangyari!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "invalidduration": "",
+    "moderation": {
+        "position": "",
+        "owner": ""
+    },
     "couldnotsend": "",
     "messagetoolong": "Oops! Masyadong mahaba yung mensaheng sinusubukan kong ipadala. \n[[error.pleasereport]]",
     "notenoughparams": "Kulang sa parameters! Para sa mga detalye, gawin ang `{{prefix}}help {{name}}`.\n\nInaasahan ang `{{expected}}` parameters, pero sa halip `{{received}}` ang nakuha.",
