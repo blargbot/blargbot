@@ -10,13 +10,14 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    new Builder()
-        .withCategory(bu.TagType.COMPLEX)
-        .withName('abs')
+    Builder.ComplexTag('abs')
         .withArgs(b =>
             b.require('number')
         ).withDesc('Gets the absolute value of a number')
-        .withExample('{abs;-535}', '535')
+        .withExample(
+            '{abs;-535}',
+            '535'
+        )
         .beforeExecute(Builder.defaults.processAllSubtags)
         .whenArgs('2', async params => {
             let asNumber = parseFloat(params.args[1]);

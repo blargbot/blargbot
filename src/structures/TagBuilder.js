@@ -1,6 +1,18 @@
 const ArgumentBuilder = require('./ArgumentBuilder');
 
 class TagBuilder {
+    static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
+    static ComplexTag(name) { return new TagBuilder().withCategory(bu.TagType.COMPLEX).withName(name); }
+    static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name); }
+    static CCommandTag(name) { return new TagBuilder().withCategory(bu.TagType.CCOMMAND).withName(name); }
+
+    static magicClean(text) {
+        return bu.fixContent(text)
+            .replace(new RegExp(bu.specialCharBegin, 'g'), '')
+            .replace(new RegExp(bu.specialCharDiv, 'g'), '')
+            .replace(new RegExp(bu.specialCharEnd, 'g'), '');
+    }
+
     constructor(init) {
         this.tag = {}
         this.execute = {
@@ -12,6 +24,7 @@ class TagBuilder {
         this.withProp('init', init);
         this.withProp('isTag', true);
         this.withProp('requireCtx', false);
+        this.withProp('magicClean', TagBuilder.magicClean);
     }
 
     build() {
@@ -103,7 +116,13 @@ class TagBuilder {
         return this.withProp('desc', desc);
     }
 
-    withExample(input, output) {
+    //Either code and output or code, input and output
+    withExample(code, input, output) {
+        if (output == null) {
+            output = input;
+            input = null;
+        }
+        this.withProp('exampleCode', code);
         this.withProp('exampleIn', input);
         this.withProp('exampleOut'.output);
         return this;
@@ -116,31 +135,29 @@ class TagBuilder {
 
     whenArgs(condition, action) {
         if (typeof condition === 'number')
-            return this.whenArgs((args) => args.length === condition, action);
-        if (typeof condition === 'string') {
+            this.whenArgs((args) => args.length === condition, action);
+        else if (typeof condition === 'string') {
             if (/^[><=!]\d+$/.test(condition)) {
                 let value = parseInt(condition.substr(1));
                 switch (condition[0]) {
                     case '<':
-                        return this.whenArgs(args => args.length < value, action);
+                        this.whenArgs(args => args.length < value, action);
                     case '>':
-                        return this.whenArgs(args => args.length > value, action);
+                        this.whenArgs(args => args.length > value, action);
                     case '!':
-                        return this.whenArgs(args => args.length !== value, action);
+                        this.whenArgs(args => args.length !== value, action);
                     case '=':
-                        return this.whenArgs(value, action);
+                        this.whenArgs(value, action);
                 }
-            }
-            if (/^(>=|<=)\d+$/.test(condition)) {
+            } else if (/^(>=|<=)\d+$/.test(condition)) {
                 let value = parseInt(condition.substr(2));
                 switch (condition.substr(0, 2)) {
                     case '>=':
-                        return this.whenArgs(args => args.length >= value, action);
+                        this.whenArgs(args => args.length >= value, action);
                     case '<=':
-                        return this.whenArgs(args => args.length <= value, action);
+                        this.whenArgs(args => args.length <= value, action);
                 }
-            }
-            if (/^\d+-\d+$/.test(condition)) {
+            } else if (/^\d+-\d+$/.test(condition)) {
                 let split = condition.split('-'),
                     from = parseInt(split[0]),
                     to = parseInt(split[1]);
@@ -148,15 +165,12 @@ class TagBuilder {
                 if (from > to)
                     from = (to, to = from)[0];
 
-                return this.whenArgs(args => args.length > from && args.length < to, action);
-            }
-            if (/^\d+$/.test(condition)) {
-                return this.whenArgs(parseInt(condition), action);
-            }
-
-            throw new Error('Failed to determine conditions for ' + condition + ' for tag ' + this.name);
-        }
-        if (typeof condition === 'function') {
+                this.whenArgs(args => args.length > from && args.length < to, action);
+            } else if (/^\d+$/.test(condition))
+                this.whenArgs(parseInt(condition), action);
+            else
+                throw new Error('Failed to determine conditions for ' + condition + ' for tag ' + this.name);
+        } else if (typeof condition === 'function') {
             this.execute.conditional.push({
                 condition: condition,
                 action: action
@@ -182,7 +196,7 @@ TagBuilder.defaults = {
     async noUserFound(params) { return await bu.tagProcessError(params, '`No user found`'); },
     async noRoleFound(params) { return await bu.tagProcessError(params, '`No role found`'); },
     async noChannelFound(params) { return await bu.tagProcessError(params, '`No channel found`'); },
-    async notANumber(params) { return await bu.tagProcessError(params, '`Not a number`'); }    
+    async notANumber(params) { return await bu.tagProcessError(params, '`Not a number`'); }
 }
 
 module.exports = TagBuilder;

@@ -10,10 +10,8 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    new Builder()
-        .withCategory(bu.TagType.COMPLEX)
+    Builder.ComplexTag('aget')
         .withDepreciated(true)
-        .withName('aget')
         .withArgs(b =>
             b.require('name').optional('index')
         ).withDesc('Returns a stored variable, or an index in a stored array. ' +

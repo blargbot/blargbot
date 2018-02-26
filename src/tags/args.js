@@ -10,37 +10,35 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    new Builder()
-    .withCategory(bu.TagType.COMPLEX)
-    .withName('args')
-    .withArgs(b => 
-        b.optional('index').optional('range')
-    ).withDesc('Gets user input. Specifying an index will only get the word at that location, specifying' +
-    'a range will get all the words between index and range. Specify range as `n` to get all' +
-    'the words from index to the end'
-    ).withExample(
-        'Your second word was {args;1}',
-        'Input: `Hello world!`\nOutput: `Your second word was world!`'
-    ).beforeExecute(Builder.defaults.processAllSubtags)
-    .whenArgs('1', async params => params.words.join(' '))
-    .whenArgs('>1', async params => {
-        let from = parseInt(params.args[1]),
-            to = params.args[2];
+    Builder.ComplexTag('args')
+        .withArgs(b =>
+            b.optional('index').optional('range')
+        ).withDesc('Gets user input. Specifying an index will only get the word at that location, specifying' +
+            'a range will get all the words between index and range. Specify range as `n` to get all' +
+            'the words from index to the end'
+        ).withExample(
+            'Your second word was {args;1}',
+            'Hello world!',
+            'Your second word was world!'
+        ).beforeExecute(Builder.defaults.processAllSubtags)
+        .whenArgs('1', async params => params.words.join(' '))
+        .whenArgs('>1', async params => {
+            let from = parseInt(params.args[1]),
+                to = params.args[2];
 
-        if (to == null)
-            to = from + 1;
-        else if (to === 'n')
-            to = params.words.length;
-        else 
-            to = parseInt(to);
+            if (to == null)
+                to = from + 1;
+            else if (to === 'n')
+                to = params.words.length;
+            else
+                to = parseInt(to);
 
-        if (isNaN(from) || isNaN(to))
-            return await Builder.defaults.notANumber(params);
+            if (isNaN(from) || isNaN(to))
+                return await Builder.defaults.notANumber(params);
 
-        if (from > to)
-            from = [to, to = from][0];
+            if (from > to)
+                from = [to, to = from][0];
 
-        //Need to check with cat if `{args;x;y}` is meant to include `{args;y}`
-        return params.words.slice(from, to).join(' ');
-    })
-    .build();
+            return this.magicClean(params.words.slice(from, to).join(' '));
+        })
+        .build();

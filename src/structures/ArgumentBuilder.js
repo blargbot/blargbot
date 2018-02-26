@@ -28,7 +28,7 @@ class ArgumentBuilder {
                 break;
         }
 
-        if (builder.multiple){
+        if (builder.multiple) {
             format = format.replace('*', '*...');
         }
 
@@ -59,7 +59,7 @@ class ArgumentBuilder {
     require(...builder) { return this.makeChild(ArgumentBuilder.Types.REQUIRED, builder); }
     optional(...builder) { return this.makeChild(ArgumentBuilder.Types.OPTIONAL, builder); }
     literal(...builder) { return this.makeChild(ArgumentBuilder.Types.LITERAL, builder); }
-    text(text){ return this.addChild(text); }
+    text(text) { return this.addChild(text); }
 
     makeChild(type, builder) {
         if (Array.isArray(builder)) {
@@ -80,7 +80,6 @@ class ArgumentBuilder {
                 return this;
         }
         return this.addChild(child);
-
     }
 
     addChild(child) {

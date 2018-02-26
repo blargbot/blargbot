@@ -37,10 +37,8 @@ async function grantRole(params, target) {
 }
 
 module.exports =
-    new Builder()
-        .withCategory(bu.TagType.CCOMMAND)
+    Builder.CCommandTag('addrole')
         .requireStaff(true)
-        .withName('addrole')
         .withArgs(b =>
             b.require('role').optional('user')
         ).withDesc('Gives a user a role, where role is a role ID or mention. ' +
