@@ -396,7 +396,8 @@
                 "overwritten": "Straffen med en vægt på **{{weight}}** er blevet overskrevet.",
                 "doesntexist": "En straf med en vægt på **{{weight}}** findes ikke.",
                 "list": "Dette er de straffe der er aktive i din server:\n\n{{list}}"
-            }
+            },
+            "default": ""
         },
         "reason": {
             "info": "",
@@ -473,7 +474,65 @@
             },
             "invalidcount": "Nummeret der blev angivet var ikke et tal!",
             "negativecount": "Mindst én benådning skal tildeles!",
-            "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** benådning(er)."
+            "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** benådning(er).",
+            "invaliduser": ""
+        },
+        "kick": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "kicked": "",
+            "invaliduser": ""
+        },
+        "mute": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": "",
+                "duration": "",
+                "time": ""
+            },
+            "muted": "",
+            "invaliduser": "",
+            "norole": "",
+            "unmutein": ""
+        },
+        "unmute": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "unmuted": "",
+            "invaliduser": "",
+            "unmutedafter": ""
+        },
+        "ban": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": "",
+                "days": "",
+                "time": ""
+            },
+            "banned": "",
+            "invaliduser": "",
+            "unbunin": ""
+        },
+        "unban": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "banned": "",
+            "invaliduser": "",
+            "unbannedafter": ""
         }
+    },
+    "mute": {
+
     }
 }
