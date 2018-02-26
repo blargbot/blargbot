@@ -28,7 +28,7 @@ module.exports =
             to = params.args[2];
 
         if (to == null)
-            to = from;
+            to = from + 1;
         else if (to === 'n')
             to = params.words.length;
         else 
@@ -41,6 +41,6 @@ module.exports =
             from = [to, to = from][0];
 
         //Need to check with cat if `{args;x;y}` is meant to include `{args;y}`
-        return params.words.slice(from, to + 1).join(' ');
+        return params.words.slice(from, to).join(' ');
     })
     .build();
