@@ -37,4 +37,4 @@ module.exports =
 
       return value;
     }).whenDefault(Builder.errors.tooManyArguments)
-    .build()
+    .build();
