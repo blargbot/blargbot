@@ -354,7 +354,7 @@
             },
             "mute": {
                 "setrole": "The muted role has been updated.",
-                "rolequery": "Select the muted role."
+                "rolequery": ""
             },
             "announce": {
                 "set": "Announcements have been set up.",
