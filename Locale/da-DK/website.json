@@ -51,7 +51,7 @@
         },
         "variables": {
             "title": "Variabler",
-            "desc": ""
+            "desc": "## Variabler\n\nBBTag indeholder adskillige forskellige typer variabler, der hver især har sit eget scope. Disse variabler kan bruges til mange forskellige handlinger og funktioner\n\n### Navne\n\nEt variabel navn udgøres af to dele: et `præfiks` og et `navn`. Her er et syntaks diagram: \n\n> `[prefix]name`\n\nSimpelt, ikke sandt?"
         },
         "arrays": {
             "title": "Arrays",
