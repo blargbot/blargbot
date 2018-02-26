@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ArrayTag('decrement')
+  Builder.ComplexTag('decrement')
     .withArgs(b => b.require('variable').optional('amount'))
     .withDesc('Decreases the value of the specified variable by the specified amount. Defaults to 1')
     .withExample(
