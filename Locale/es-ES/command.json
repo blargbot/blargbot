@@ -354,7 +354,7 @@
             },
             "mute": {
                 "setrole": "El rol de silenciar se ha actualizado.",
-                "rolequery": "Seleccionar el rol silenciado."
+                "rolequery": ""
             },
             "announce": {
                 "set": "Los anuncios se han configurado.",
