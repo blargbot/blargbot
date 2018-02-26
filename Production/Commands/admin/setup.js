@@ -51,10 +51,10 @@ class SetupCommand extends AdminCommand {
         client.Constants.Permissions.EMBED_LINKS
       ],
       keys: {
-        staffsetrole: `.staff.setrole`,
-        staffrolequery: `.staff.rolequery`,
-        mutesetrole: `.mute.setrole`,
-        muterolequery: `.mute.rolequery`,
+        staffsetrole: { key: `.staff.setrole`, value: 'The staff roles have been updated.' },
+        staffrolequery: { key: `.staff.rolequery`, value: 'Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.' },
+        mutesetrole: { key: `.mute.setrole`, value: 'The muted role has been updated.' },
+        muterolequery: { key: `.mute.rolequery`, value: 'Select the muted role. The current role is: {{current}}' },
         announceset: { key: `.announce.set`, value: 'Announcements have been set up.' },
         announcerolequery: { key: `.announce.rolequery`, value: 'Select the role that should be pinged for announcements.' },
         announcechannelquery: { key: `.announce.channelquery`, value: 'Select the channel that announcements should go into.' },
@@ -229,7 +229,10 @@ class SetupCommand extends AdminCommand {
       };
     });
     try {
-      menu.embed.setDescription(await ctx.decode(this.keys.muterolequery));
+      let currentRole = await data.getKey('mutedRole');
+      if (currentRole) currentRole = `<@&${currentRole}>`;
+      else currentRole = 'N/A';
+      menu.embed.setDescription(await ctx.decode(this.keys.muterolequery, { current: currentRole }));
       let selected = await menu.paginate(roles, false);
       await data.setKey('mutedRole', selected.value);
       await ctx.decodeAndSend(this.keys.mutesetrole);

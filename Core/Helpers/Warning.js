@@ -53,6 +53,8 @@ class WarningHelper extends BaseHelper {
         } else if (i === type && (d || 0) > time)
           time = d;
       }
+
+
       console.log(types[type], time);
     }
   }
