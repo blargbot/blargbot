@@ -6,6 +6,11 @@
     "roleundef": "No se ha encontrado el rol especificado : '{{role}}'.",
     "pleasereport": "Si piensas que esto es un error, por favor, repórtalo!",
     "generic": "Algo ha salido mal!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "invalidduration": "",
+    "moderation": {
+        "position": "",
+        "owner": ""
+    },
     "couldnotsend": "¡Hola! Esto es un poco embarazoso, pero no fui capaz de responder a tus comandos en {{channel}}! \n\nAquí está lo que salió mal: '{{error}}'\n\nComando usado: {{command}}\n\nSi eres del personal, por favor asegúrate de tener los permisos necesarios para enviar y leer mensajes en ese canal. Si no, por favor infórmale al personal en el gremio que esto sucedió.\n\nPuedes dejar de recibir notificaciones de errores por mensaje privado ejecutando ' b! usettings dmerrors false'.",
     "messagetoolong": "Ooops! Intenté enviar un mensaje que era demasiado largo. [[error.pleasereport]]",
     "notenoughparams": "No hay parámetros suficientes! Ejecuta `{{prefix}}help {{name}}` para más detalles.\n\nSe esperaban `{{parameters}}`, pero se obtuvieron `{{received}}`.",
