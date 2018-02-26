@@ -20,8 +20,8 @@ e.name = `splice`;
 e.args = `&lt;array&gt; &lt;start&gt; [deleteCount] [items]...`;
 e.usage = `{splice;array;start[;deleteCount[;items]...]}`;
 e.desc = `Removes deleteCount elements (defaults to all) starting at index start from the specified array. Then, adds each subsequent item at that position in the array. Returns the removed items.`;
-e.exampleIn = `{set;array;["this", "is", "an", "array"]} {splice;{get;array};1;1;was} {get;array}`;
-e.exampleOut = `["is"] ["this","was","an","array"]`;
+e.exampleIn = `{set;array;['this', 'is', 'an', 'array']} {splice;{get;array};1;1;was} {get;array}`;
+e.exampleOut = `['is'] ['this','was','an','array']`;
 
 e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {

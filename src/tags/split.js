@@ -21,7 +21,7 @@ e.args = `&lt;text&gt; &lt;splitter&gt;`;
 e.usage = `{split;text;splitter}`;
 e.desc = `Splits text using the provided splitter, and the returns an array.`;
 e.exampleIn = `{split;Hello! This is a sentence.;{space}}`;
-e.exampleOut = `["Hello!","This","is","a","sentence."]`;
+e.exampleOut = `['Hello!','This','is','a','sentence.']`;
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {

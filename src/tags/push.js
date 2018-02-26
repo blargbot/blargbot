@@ -20,8 +20,8 @@ e.name = `push`;
 e.args = `&lt;array&gt; &lt;values&gt;...`;
 e.usage = `{push;array;values...}`;
 e.desc = `Pushes values into an array. If used with {get} or {aget}, this will update the original variable. Otherwise, it will simply output the new array.`;
-e.exampleIn = `{push;["this", "is", "an"];array}`;
-e.exampleOut = `["this","is","an","array"]`;
+e.exampleIn = `{push;['this', 'is', 'an'];array}`;
+e.exampleOut = `['this','is','an','array']`;
 
 e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {

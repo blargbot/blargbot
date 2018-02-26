@@ -20,7 +20,7 @@ e.name = `join`;
 e.args = `&lt;array&gt; &lt;text&gt;`;
 e.usage = `{join;array;text}`;
 e.desc = `Joins the elements of an array together with the provided text.`;
-e.exampleIn = `{join;["this", "is", "an", "array"];!}`;
+e.exampleIn = `{join;['this', 'is', 'an', 'array'];!}`;
 e.exampleOut = `this!is!an!array`;
 
 e.execute = async function (params) {

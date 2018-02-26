@@ -52,7 +52,7 @@ e.execute = async function (params) {
             } else
                 replaceString = await bu.tagProcessError(params, '`Author must be staff`');
         }
-        if (replaceString == "") {
+        if (replaceString == '') {
             if (!bu.notCommandMessages[msg.guild.id])
                 bu.notCommandMessages[msg.guild.id] = {};
             bu.notCommandMessages[msg.guild.id][msg.id] = true;

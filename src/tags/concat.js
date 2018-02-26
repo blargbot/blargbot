@@ -20,8 +20,8 @@ e.name = `concat`;
 e.args = `&lt;arrays&gt;...`;
 e.usage = `{concat;arrays...}`;
 e.desc = `Combines multiple arrays and outputs the new array.`;
-e.exampleIn = `{concat;["this", "is"];["an", "array"]}`;
-e.exampleOut = `["this","is","an","array"]`;
+e.exampleIn = `{concat;['this', 'is'];['an', 'array']}`;
+e.exampleOut = `['this','is','an','array']`;
 
 e.execute = async function (params) {
   for (let i = 1; i < params.args.length; i++) {

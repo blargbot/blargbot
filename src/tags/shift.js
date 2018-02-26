@@ -20,7 +20,7 @@ e.name = `shift`;
 e.args = `&lt;array&gt;`;
 e.usage = `{push;array}`;
 e.desc = `Returns the first element in an array. If used with {get} or {aget}, this will remove the first element from the array as well.`;
-e.exampleIn = `{shift;["this", "is", "an", "array"]}`;
+e.exampleIn = `{shift;['this', 'is', 'an', 'array']}`;
 e.exampleOut = `this`;
 
 e.execute = async function(params) {

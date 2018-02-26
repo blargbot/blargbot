@@ -53,7 +53,7 @@ e.execute = async function (params) {
             } else
                 replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
 
-            if (replaceString == "") {
+            if (replaceString == '') {
                 if (!msg)
                     replaceString = await bu.tagProcessError(params, '`No message provided`');
                 else if (msg.author.id != bot.user.id)
@@ -61,7 +61,7 @@ e.execute = async function (params) {
                 else if (content == '')
                     replaceString = await bu.tagProcessError(params, '`New message cannot be empty`');
                 try {
-                    if (replaceString == "" && msg.edit) msg.edit(content);
+                    if (replaceString == '' && msg.edit) msg.edit(content);
                 } catch (err) { }
             }
 

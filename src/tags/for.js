@@ -57,13 +57,13 @@ e.execute = async function (params) {
         let code = params.args.length - 1;
 
         if (isNaN(initial))
-            errors.push("Initial must be a number");
+            errors.push('Initial must be a number');
         if (!operator)
-            errors.push("Invalid operator");
+            errors.push('Invalid operator');
         if (isNaN(limit))
-            errors.push("Limit must be a number");
+            errors.push('Limit must be a number');
         if (isNaN(increment))
-            errors.push("Increment must be a number");
+            errors.push('Increment must be a number');
 
         if (errors.length == 0) {
             replaceString = '';

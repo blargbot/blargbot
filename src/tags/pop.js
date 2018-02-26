@@ -20,7 +20,7 @@ e.name = `pop`;
 e.args = `&lt;pop&gt;`;
 e.usage = `{pop;array}`;
 e.desc = `Returns the last element in an array. If used with {get} or {aget}, this will remove the last element from the array as well.`;
-e.exampleIn = `{pop;["this", "is", "an", "array"]}`;
+e.exampleIn = `{pop;['this', 'is', 'an', 'array']}`;
 e.exampleOut = `array`;
 
 e.execute = async function (params) {

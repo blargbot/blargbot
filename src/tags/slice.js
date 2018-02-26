@@ -20,8 +20,8 @@ e.name = `slice`;
 e.args = `&lt;array&gt; &lt;start&gt; [end]`;
 e.usage = `{slice;array;start;end}`;
 e.desc = `Grabs elements between the zero-indexed start and end points (inclusive).`;
-e.exampleIn = `{slice;["this", "is", "an", "array"];1}`;
-e.exampleOut = `["is", "an", "array"]`;
+e.exampleIn = `{slice;['this', 'is', 'an', 'array'];1}`;
+e.exampleOut = `['is', 'an', 'array']`;
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {

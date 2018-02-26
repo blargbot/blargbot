@@ -20,7 +20,7 @@ e.name = `isarray`;
 e.args = `&lt;text&gt;`;
 e.usage = `{isarray;text}`;
 e.desc = `Determines whether the provided text is a valid array.`;
-e.exampleIn = `{isarray;["array?"]} {isarray;array?}`;
+e.exampleIn = `{isarray;['array?']} {isarray;array?}`;
 e.exampleOut = `true false`;
 
 e.execute = async function (params) {

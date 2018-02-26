@@ -24,7 +24,7 @@ module.exports =
             ''
         ).whenArgs('1', Builder.defaults.notEnoughArguments)
         .whenDefault(async params => {
-            params.args[1] = "@" + params.args[1];
+            params.args[1] = '@' + params.args[1];
             return await TagManager.list['set'].execute(params)
         })
         .build();
