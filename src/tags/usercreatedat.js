@@ -16,16 +16,17 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `usercreatedat`;
-e.args = `[format] [user] [quiet]`;
-e.usage = `{usercreatedat[;format[;user[;quiet]]]}`;
-e.desc = `Returns the date the user was created, in UTC+0. If a `format` code is specified, the
-date is formatted accordingly. Leave blank for default formatting. See the 
-<a href="http://momentjs.com/docs/#/displaying/format/">moment documentation</a> for more information. 
-If `name` is specified, gets that user instead. If `quiet` is
-specified, if a user can't be found it will simply return the `name``;
-e.exampleIn = `Your account was created on {usercreatedat;YYYY/MM/DD HH:mm:ss}`;
-e.exampleOut = `Your account was created on 2016/01/01 01:00:00.`;
+e.name = 'usercreatedat';
+e.args = '[format] [user] [quiet]';
+e.usage = '{usercreatedat[;format[;user[;quiet]]]}';
+e.desc = 'Returns the date the user was created, in UTC+0. '+
+'If a `format` code is specified, the date is formatted accordingly.'+
+'Leave blank for default formatting. '+
+'See the <a href=\'http://momentjs.com/docs/#/displaying/format/\'>moment documentation</a> for more information. '+
+'If `name` is specified, gets that user instead. If `quiet` isspecified,'+
+'if a user can\'t be found it will simply return the `name`';
+e.exampleIn = 'Your account was created on {usercreatedat;YYYY/MM/DD HH:mm:ss}';
+e.exampleOut = 'Your account was created on 2016/01/01 01:00:00.';
 
 
 e.execute = async function(params) {

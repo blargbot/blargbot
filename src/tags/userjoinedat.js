@@ -16,17 +16,17 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `userjoinedat`;
-e.args = `[format] [user] [quiet]`;
-e.usage = `{userjoinedat[;format[;user[;quiet]]]}`;
-e.desc = `Returns the date the user joined the current guild, in UTC+0. If a `format` code is
-specified, the date is formatted accordingly. Leave blank for default formatting. See the <a
-href="http://momentjs.com/docs/#/displaying/format/">moment
-documentation</a> for more information. If `name` is specified, gets that
-user instead. If `quiet` is specified, if a user can't be found it will simply 
-return the `name``;
-e.exampleIn = `Your account joined this guild on {userjoinedat;YYYY/MM/DD HH:mm:ss}`;
-e.exampleOut = `Your account joined this guild on 2016/01/01 01:00:00`;
+e.name = 'userjoinedat';
+e.args = '[format] [user] [quiet]';
+e.usage = '{userjoinedat[;format[;user[;quiet]]]}';
+e.desc = 'Returns the date the user joined the current guild, in UTC+0. '+
+'If a `format` code is specified, the date is formatted accordingly. '+
+'Leave blank for default formatting. '+
+'See the <a href=\'http://momentjs.com/docs/#/displaying/format/\'>moment documentation</a> for more information. '+
+'If `name` is specified, gets that user instead. '+
+'If `quiet` is specified, if a user can\'t be found it will simply return the `name`';
+e.exampleIn = 'Your account joined this guild on {userjoinedat;YYYY/MM/DD HH:mm:ss}';
+e.exampleOut = 'Your account joined this guild on 2016/01/01 01:00:00';
 
 
 e.execute = async function (params) {

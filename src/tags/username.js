@@ -16,13 +16,13 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `username`;
-e.args = `[user] [quiet]`;
-e.usage = `{username[;user[;quiet]]}`;
-e.desc = `Returns the user's name. If `name` is specified, gets that user instead. If
-`quiet` is specified, if a user can't be found it will simply return the `name``;
-e.exampleIn = `Your username is {username;stupid;this can be anything}`;
-e.exampleOut = `Your username is stupid cat`;
+e.name = 'username';
+e.args = '[user] [quiet]';
+e.usage = '{username[;user[;quiet]]}';
+e.desc = 'Returns the user\'s name. If `name` is specified, gets that user instead. '+
+'If `quiet` is specified, if a user can\'t be found it will simply return the `name`';
+e.exampleIn = 'Your username is {username;stupid;this can be anything}';
+e.exampleOut = 'Your username is stupid cat';
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {

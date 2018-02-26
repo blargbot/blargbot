@@ -45,7 +45,7 @@ module.exports =
             if (!bu.between(radix, 2, 36, true) && radixFallback) radix = fallback;
 
             if (!bu.between(origin, 2, 36, true) || !bu.between(radix, 2, 36, true))
-                return await bu.tagProcessError(params, "`Base must be between 2 and 36`");
+                return await bu.tagProcessError(params, '`Base must be between 2 and 36`');
 
             let value = parseInt(args[0], origin);
             if (isNaN(value)) {

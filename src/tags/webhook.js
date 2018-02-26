@@ -16,12 +16,12 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `webhook`;
-e.args = `&lt;id&gt; &lt;token&gt; [content] [embed] [username] [avatarURL]`;
-e.usage = `{webhook;id;token[;content[;embed[;username[;avatarURL]]]]}`;
-e.desc = `Executes a webhook. The `embed` must be provided in a raw JSON format, properly escaped for BBTag. A simple escaping utility can be accessed <a href='https://rewrite.blargbot.xyz/v1escaper'>here</a>. Please assign your webhook credentials to private variables! Do not leave them in your code.`;
-e.exampleIn = `{webhook;1111111111111111;t.OK-en;Hello!}`;
-e.exampleOut = `In the webhook channel: Hello!`;
+e.name = 'webhook';
+e.args = '&lt;id&gt; &lt;token&gt; [content] [embed] [username] [avatarURL]';
+e.usage = '{webhook;id;token[;content[;embed[;username[;avatarURL]]]]}';
+e.desc = 'Executes a webhook. The `embed` must be provided in a raw JSON format, properly escaped for BBTag. A simple escaping utility can be accessed <a href=\'https://rewrite.blargbot.xyz/v1escaper\'>here</a>. Please assign your webhook credentials to private variables! Do not leave them in your code.';
+e.exampleIn = '{webhook;1111111111111111;t.OK-en;Hello!}';
+e.exampleOut = 'In the webhook channel: Hello!';
 
 e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
@@ -31,7 +31,7 @@ e.execute = async function (params) {
     var replaceContent = false;
 
     if (params.args.length < 2) {
-        replaceString = bu.tagProcessError(params, `\`Not enough args\``)
+        replaceString = bu.tagProcessError(params, '`Not enough args`')
     } else
         try {
             let embed;
@@ -53,7 +53,7 @@ e.execute = async function (params) {
                 embeds: embed ? (Array.isArray(embed) ? embed : [embed]) : []
             });
         } catch (err) {
-            replaceString = bu.tagProcessError(params, `\`Error executing webhook: ${err.message}\``)
+            replaceString = bu.tagProcessError(params, '`Error executing webhook: ${err.message}`')
         }
 
     return {

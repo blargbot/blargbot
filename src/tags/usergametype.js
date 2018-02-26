@@ -16,14 +16,14 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `usergametype`;
-e.args = `[user] [quiet]`;
-e.usage = `{usergametype[;user[;quiet]]}`;
-e.desc = `Returns how the user is playing the game (playing, streaming). If `name` is
-specified, gets that user instead. If `quiet` is
-specified, if a user can't be found it will simply return the `name``;
-e.exampleIn = `You're {usergametype} right now!`;
-e.exampleOut = `You're playing right now!`;
+e.name = 'usergametype';
+e.args = '[user] [quiet]';
+e.usage = '{usergametype[;user[;quiet]]}';
+e.desc = 'Returns how the user is playing the game (playing, streaming). '+
+'If `name` is specified, gets that user instead. '+
+'If `quiet` is specified, if a user can\'t be found it will simply return the `name`';
+e.exampleIn = 'You\'re {usergametype} right now!';
+e.exampleOut = 'You\'re playing right now!';
 
 
 e.execute = async function (params) {

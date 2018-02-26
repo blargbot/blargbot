@@ -17,12 +17,12 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.array = true;
-e.name = `length`;
-e.args = `&lt;text&gt;`;
-e.usage = `{length;text}`;
-e.desc = `Gives the amount of characters in `text`, or the number of elements if it is an array.`;
-e.exampleIn = `What you said is {length;{args}} chars long.`;
-e.exampleOut = `What you said is 5 chars long.`;
+e.name = 'length';
+e.args = '&lt;text&gt;';
+e.usage = '{length;text}';
+e.desc = 'Gives the amount of characters in `text`, or the number of elements if it is an array.';
+e.exampleIn = 'What you said is {length;{args}} chars long.';
+e.exampleOut = 'What you said is 5 chars long.';
 
 
 e.execute = async function (params) {

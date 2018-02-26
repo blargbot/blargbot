@@ -15,13 +15,13 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `regextest`;
-e.args = `&lt;query&gt; &lt;regex&gt;`;
-e.usage = `{regexreplace;query;regex}`;
-e.desc = `Tests if the `regex` phrase matches the `query`, and returns a boolean.`;
+e.name = 'regextest';
+e.args = '&lt;query&gt; &lt;regex&gt;';
+e.usage = '{regexreplace;query;regex}';
+e.desc = 'Tests if the `regex` phrase matches the `query`, and returns a boolean.';
 
-e.exampleIn = `{regextest;apple;/p+/i} {regextest;banana;/p+/i}`;
-e.exampleOut = `true false`;
+e.exampleIn = '{regextest;apple;/p+/i} {regextest;banana;/p+/i}';
+e.exampleOut = 'true false';
 
 
 e.execute = async function (params) {
@@ -40,7 +40,7 @@ e.execute = async function (params) {
             params.args[1] = await bu.processTagInner(params, 1);
             returnObj.replaceString = regex.test(params.args[1]);
         } catch (err) {
-            returnObj.replaceString = await bu.tagProcessError(params, `\`${err}\``)
+            returnObj.replaceString = await bu.tagProcessError(params, '\'${err}\'')
         }
     } else {
         returnObj.replaceString = await bu.tagProcessError(params, '`Not enough arguments`');

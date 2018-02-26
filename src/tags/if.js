@@ -16,16 +16,15 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `if`;
-e.args = `&lt;arg1&gt; &lt;evaluator&gt; &lt;arg2&gt; &lt;then&gt; &lt;else&gt;`;
-e.usage = `{if;evaluator;arg1;arg2;then;else}`;
-e.desc = `Evaluates `arg1` and `arg2` using the `evaluator`. If it
-returns true, the tag returns `then`. Otherwise, it returns `else`. Valid
-evaluators are `==``!=` `&lt;` `&lt;=` `&gt;` `
-&gt;=` `startswith` `endswith` `includes``;
+e.name = 'if';
+e.args = '&lt;arg1&gt; &lt;evaluator&gt; &lt;arg2&gt; &lt;then&gt; &lt;else&gt;';
+e.usage = '{if;evaluator;arg1;arg2;then;else}';
+e.desc = 'Evaluates `arg1` and `arg2` using the `evaluator`. If it ' +
+    'returns true, the tag returns `then`. Otherwise, it returns `else`. ' +
+    'Valid evaluators are `==`, `!=`, `&lt;`, `&lt;=`, `&gt;`, `&gt;=`, `startswith`, `endswith`, `includes`';
 
-e.exampleIn = `{if;5;&lt;=;10;5 is less than or equal to 10;5 is greater than 10}`;
-e.exampleOut = `5 is less than or equal to 10`;
+e.exampleIn = '{if;5;&lt;=;10;5 is less than or equal to 10;5 is greater than 10}';
+e.exampleOut = '5 is less than or equal to 10';
 
 const operators = {
     '==': (a, b) => a === b,
@@ -52,10 +51,10 @@ e.execute = async function (params) {
     if (args.length == 3 || args.length == 4) {
         //{if;bool;then} or {if;bool;then;else}
         args[1] = await bu.processTagInner(params, 1);
-        if (args[1].toLowerCase() == "true" || args[1] == true) {
+        if (args[1].toLowerCase() == 'true' || args[1] == true) {
             params.content = args[2];
             replaceString = await bu.processTagInner(params);
-        } else if (args[1].toLowerCase() == "false" || args[1] == false) {
+        } else if (args[1].toLowerCase() == 'false' || args[1] == false) {
             params.content = args[3];
             replaceString = await bu.processTagInner(params);
         } else {

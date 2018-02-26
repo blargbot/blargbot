@@ -16,13 +16,13 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `logic`;
-e.args = `&lt;evaluator&gt; &lt;arg1&gt; &lt;arg2&gt;`;
-e.usage = `{logic;operator;arg1;arg2}`;
-e.desc = `Accepts 2 boolean values (`true` or `false`) and returns the result of a logic operation on them.
-Valid logic operators are `||` `&&` `XOR` `!``;
-e.exampleIn = `{logic;&&;true;false}`;
-e.exampleOut = `false`;
+e.name = 'logic';
+e.args = '&lt;evaluator&gt; &lt;arg1&gt; &lt;arg2&gt;';
+e.usage = '{logic;operator;arg1;arg2}';
+e.desc = 'Accepts 2 boolean values (`true` or `false`) and returns the result of a logic operation on them. '+
+'Valid logic operators are `||`, `&&`, `XOR`, `!`';
+e.exampleIn = '{logic;&&;true;false}';
+e.exampleOut = 'false';
 
 const operators = {
     '&&': (vals) => {

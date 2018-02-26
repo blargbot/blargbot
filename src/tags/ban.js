@@ -20,7 +20,7 @@ module.exports =
                 .optional('noperms')
         ).withDesc('Bans a user. ' +
             'This functions the same as the ban command. ' +
-            'If the ban is successful, \'Success\' will be returned, unless a duration was provided in which case the duration in ms will be returned' +
+            'If the ban is successful, `Success` will be returned, unless a duration was provided in which case the duration in ms will be returned' +
             'If noperms is provided, do not check if the command executor is actually able to ban people. ' +
             'Only provide this if you know what you\'re doing.'
         ).withExample(

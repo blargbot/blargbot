@@ -16,12 +16,12 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `upper`;
-e.args = `&lt;text&gt;`;
-e.usage = `{upper;text}`;
-e.desc = `Returns `string` as uppercase`;
-e.exampleIn = `{upper;this will become uppercase}`;
-e.exampleOut = `THIS WILL BECOME UPPERCASE`;
+e.name = 'upper';
+e.args = '&lt;text&gt;';
+e.usage = '{upper;text}';
+e.desc = 'Returns `string` as uppercase';
+e.exampleIn = '{upper;this will become uppercase}';
+e.exampleOut = 'THIS WILL BECOME UPPERCASE';
 
 
 e.execute = async function (params) {

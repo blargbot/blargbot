@@ -16,13 +16,13 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `rolemention`;
-e.args = `<name> [quiet]`;
-e.usage = `{rolemention;name[;quiet]}`;
-e.desc = `Returns a role's mention. If
-`quiet` is specified, if a role can't be found it will simply return the `name``;
-e.exampleIn = `The admin role mention is: {rolemention;admin}`;
-e.exampleOut = `The admin role mention is: @admin`;
+e.name = 'rolemention';
+e.args = '<name> [quiet]';
+e.usage = '{rolemention;name[;quiet]}';
+e.desc = 'Returns a role\'s mention. ' + 
+'If `quiet` is specified, if a role can\'t be found it will simply return the `name`';
+e.exampleIn = 'The admin role mention is: {rolemention;admin}';
+e.exampleOut = 'The admin role mention is: @admin';
 
 e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {

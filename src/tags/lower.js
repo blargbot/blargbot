@@ -16,12 +16,12 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `lower`;
-e.args = `&lt;string&gt;`;
-e.usage = `{lower}`;
-e.desc = `Returns `string` as lowercase`;
-e.exampleIn = `{lower;THIS WILL BECOME LOWERCASE}`;
-e.exampleOut = `this will become lowercase`;
+e.name = 'lower';
+e.args = '&lt;string&gt;';
+e.usage = '{lower}';
+e.desc = 'Returns `string` as lowercase';
+e.exampleIn = '{lower;THIS WILL BECOME LOWERCASE}';
+e.exampleOut = 'this will become lowercase';
 
 e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {

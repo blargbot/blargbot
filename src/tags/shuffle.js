@@ -17,12 +17,12 @@ e.requireCtx = require;
 
 e.isTag = true;
 e.array = true;
-e.name = `shuffle`;
-e.args = `[array]`;
-e.usage = `{shuffle[;array]}`;
-e.desc = `Shuffles the args the user provided, or the provided array.`;
-e.exampleIn = `{shuffle} {args;0} {args;1} {args;2}`;
-e.exampleOut = `Input: `one two three`\nOutput: `three one two``;
+e.name = 'shuffle';
+e.args = '[array]';
+e.usage = '{shuffle[;array]}';
+e.desc = 'Shuffles the args the user provided, or the provided array.';
+e.exampleIn = '{shuffle} {args;0} {args;1} {args;2}';
+e.exampleOut = 'Input: `one two three`\nOutput: `three one two`';
 
 
 e.execute = async function (params) {

@@ -16,13 +16,13 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `roleid`;
-e.args = `<name> [quiet]`;
-e.usage = `{roleid;name[;quiet]}`;
-e.desc = `Returns a role's ID. If
-`quiet` is specified, if a role can't be found it will simply return the `name``;
-e.exampleIn = `The admin role ID is: {roleid;admin}`;
-e.exampleOut = `The admin role ID is: 123456789123456`;
+e.name = 'roleid';
+e.args = '<name> [quiet]';
+e.usage = '{roleid;name[;quiet]}';
+e.desc = 'Returns a role\'s ID. '+
+'If `quiet` is specified, if a role can\'t be found it will simply return the `name`';
+e.exampleIn = 'The admin role ID is: {roleid;admin}';
+e.exampleOut = 'The admin role ID is: 123456789123456';
 
 
 e.execute = async function (params) {

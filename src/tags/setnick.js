@@ -16,12 +16,12 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `setnick`;
-e.args = `&gt;nick&lt; [user]`;
-e.usage = `{addrole;nick[;user]}`;
-e.desc = `Sets a user's nickname. Leave `nick` blank to reset their nickname.`;
-e.exampleIn = `{setnick;super cool nickname}`;
-e.exampleOut = ``;
+e.name = 'setnick';
+e.args = '&gt;nick&lt; [user]';
+e.usage = '{addrole;nick[;user]}';
+e.desc = 'Sets a user\'s nickname. Leave `nick` blank to reset their nickname.';
+e.exampleIn = '{setnick;super cool nickname}';
+e.exampleOut = '';
 
 e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {

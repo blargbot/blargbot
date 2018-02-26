@@ -42,7 +42,7 @@ module.exports =
         .withArgs(b =>
             b.require('role').optional('user')
         ).withDesc('Gives a user a role, where role is a role ID or mention. ' +
-            'You can find a list of roles and their ids by doing \`b!roles\`. ' +
+            'You can find a list of roles and their ids by doing `b!roles`. ' +
             'Returns true if a role was given, and false otherwise.'
         ).withExample(
             'Have a role! {addrole;11111111111111111}',

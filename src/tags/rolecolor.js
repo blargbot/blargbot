@@ -16,13 +16,13 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `rolecolor`;
-e.args = `<name> [quiet]`;
-e.usage = `{rolecolor;name[;quiet]}`;
-e.desc = `Returns a role's hex color code. If
-`quiet` is specified, if a role can't be found it will simply return the `name``;
-e.exampleIn = `The admin role color is: #{rolecolor;admin}`;
-e.exampleOut = `The admin role ID is: #1b1b1b`;
+e.name = 'rolecolor';
+e.args = '<name> [quiet]';
+e.usage = '{rolecolor;name[;quiet]}';
+e.desc = 'Returns a role\'s hex color code. '+
+'If `quiet` is specified, if a role can\'t be found it will simply return the `name`';
+e.exampleIn = 'The admin role color is: #{rolecolor;admin}';
+e.exampleOut = 'The admin role ID is: #1b1b1b';
 
 
 e.execute = async function (params) {

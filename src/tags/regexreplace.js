@@ -15,15 +15,15 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `regexreplace`;
-e.args = `[toreplace] &lt;regex&gt; &lt;replacewith&gt;`;
-e.usage = `{regexreplace[;textToReplace];regex;replaceWith}`;
-e.desc = `Replaces the `regex` phrase with `replacewith`. If
-`toreplace` is specified, the tag is replaced with the new `toreplace`. 
-If not, it replaces the message.`;
+e.name = 'regexreplace';
+e.args = '[toreplace] &lt;regex&gt; &lt;replacewith&gt;';
+e.usage = '{regexreplace[;textToReplace];regex;replaceWith}';
+e.desc = 'Replaces the `regex` phrase with `replacewith`. ' +
+'If `toreplace` is specified, the tag is replaced with the new `toreplace`. ' + 
+'If not, it replaces the message.';
 
-e.exampleIn = `I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e/gi;n}`;
-e.exampleOut = `I likn ta cansumn chnnsn.`;
+e.exampleIn = 'I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e/gi;n}';
+e.exampleOut = 'I likn ta cansumn chnnsn.';
 
 
 e.execute = async function (params) {

@@ -16,14 +16,14 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `userstatus`;
-e.args = `[user] [quiet]`;
-e.usage = `{userstatus[;user[;quiet]]}`;
-e.desc = `Returns the status of the specified user ('online', 'idle', 'dnd', or 'offline'). If
-`name` is specified, gets that user instead. If `quiet` is
-specified, if a user can't be found it will simply return the `name``;
-e.exampleIn = `Your are currently {userstatus}`;
-e.exampleOut = `Your are currently online`;
+e.name = 'userstatus';
+e.args = '[user] [quiet]';
+e.usage = '{userstatus[;user[;quiet]]}';
+e.desc = 'Returns the status of the specified user (`online`, `idle`, `dnd`, or `offline`). '+
+'If `name` is specified, gets that user instead. '+
+'If `quiet` is specified, if a user can\'t be found it will simply return the `name`';
+e.exampleIn = 'Your are currently {userstatus}';
+e.exampleOut = 'Your are currently online';
 
 e.execute = async function(params) {
     for (let i = 1; i < params.args.length; i++) {
