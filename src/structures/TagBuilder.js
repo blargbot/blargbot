@@ -137,7 +137,8 @@ class TagBuilder {
         if (typeof condition === 'number')
             this.whenArgs((args) => args.length === condition, action);
         else if (typeof condition === 'string') {
-            if (/^[><=!]\d+$/.test(condition)) {
+        condition = condition.replace(/\s*/g, '');
+            if (/^[><=!]\d+$/.test(condition)) { //<, >, = or ! a single count
                 let value = parseInt(condition.substr(1));
                 switch (condition[0]) {
                     case '<':
@@ -149,7 +150,7 @@ class TagBuilder {
                     case '=':
                         this.whenArgs(value, action);
                 }
-            } else if (/^(>=|<=)\d+$/.test(condition)) {
+            } else if (/^(>=|<=)\d+$/.test(condition)) { //<= or >= a single count
                 let value = parseInt(condition.substr(2));
                 switch (condition.substr(0, 2)) {
                     case '>=':
@@ -157,7 +158,7 @@ class TagBuilder {
                     case '<=':
                         this.whenArgs(args => args.length <= value, action);
                 }
-            } else if (/^\d+-\d+$/.test(condition)) {
+            } else if (/^\d+-\d+$/.test(condition)) { //inclusive range of values ex 2-5
                 let split = condition.split('-'),
                     from = parseInt(split[0]),
                     to = parseInt(split[1]);
@@ -165,8 +166,11 @@ class TagBuilder {
                 if (from > to)
                     from = (to, to = from)[0];
 
-                this.whenArgs(args => args.length > from && args.length < to, action);
-            } else if (/^\d+$/.test(condition))
+                this.whenArgs(args => args.length >= from && args.length <= to, action);
+            } else if (/^\d+(,\d+)+$/.test(condition)) { //list of values ex 1, 2, 6
+                let values = condition.split(',').map(v => parseInt(v));
+                this.whenArgs(args => values.indexOf(args.length) != -1, action)
+            } else if (/^\d+$/.test(condition)) //single value, no operator
                 this.whenArgs(parseInt(condition), action);
             else
                 throw new Error('Failed to determine conditions for ' + condition + ' for tag ' + this.name);
