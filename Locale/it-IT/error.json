@@ -6,6 +6,11 @@
     "roleundef": "Nessun ruolo trovato con '{{role}}'.",
     "pleasereport": "Se pensi che sia un errore, segnalalo!",
     "generic": "Qualcosa è andato storto!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "invalidduration": "",
+    "moderation": {
+        "position": "",
+        "owner": ""
+    },
     "couldnotsend": "Ciao! Questo è un pò imbarazzante, ma non sono riuscito a rispondere al tuo comando in {{channel}}!\n\nEcco cosa è andato storto: `{{error}}`\n\nIl comando usato è: {{command}}\n\nSe sei staff del server, per favore assicurati che blargbot abbia i permessi necessari per leggere e mandare messaggi in quel canale. Se non sei staff, per favore avvisa gli staff che questo è successo.\n\nPuoi smettere di ricevere notifiche nei messaggi privati degli errori eseguendo il comando `b!usettings dmerrors false`.",
     "messagetoolong": "Whoops! Ho provato ad inviare un messaggio troppo lungo. [[error.pleasereport]]",
     "notenoughparams": "Troppi pochi argomenti! Scrivi `{{prefix}}help {{name}}` per maggiori dettagli \n\nMi aspettavo `{{expected}}` parametri, ma ne ho ricevuti `{{received}}`",
