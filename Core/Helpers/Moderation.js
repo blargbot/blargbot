@@ -29,7 +29,6 @@ class ModerationHelper extends BaseHelper {
   }
 
   async kick(args) {
-    console.log(typeof this.resolveBasic, this.resolveBasic);
     let { guild, user, mod, reason } = this.resolveBasic(args);
 
     if (mod.position <= user.position)
