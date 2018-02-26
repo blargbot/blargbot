@@ -7,47 +7,27 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+  Builder.ComplexTag('choose')
+    .withArgs(b => b.require('choice').require(b => b.text('option').allowMultiple(true)))
+    .withDesc('Chooses from the given options, where `choice` is the index of the option selected.')
+    .withExample(
+      'I feel like eating {choose;1;cake;pie;pudding} today.',
+      'I feel like eating pie today.'
+    ).whenArgs('<3', Builder.defaults.notEnoughArguments)
+    .whenDefault(async params => {
+      params.args[1] = await bu.processTagInner(params, 1)
+      let index = parseInt(params.args[1]);
+      
+      if (isNaN(index))
+        return await Builder.defaults.notANumber(params);
 
-e.requireCtx = require;
+      if (index < 0)
+        return await bu.tagProcessError(params, '`Choice cannot be negative`');
 
-e.isTag = true;
-e.name = 'choose';
-e.args = '&lt;choice&gt; &lt;choices...&gt;';
-e.usage = '{choose;choice;choices...}';
-e.desc = 'Chooses from the given options, where `choice` is the index of the option selected';
-e.exampleIn = 'I feel like eating {choose;1;cake;pie;pudding} today.';
-e.exampleOut = 'I feel like eating pie today.';
-
-e.execute = async function (params) {
-    // for (let i = 1; i < params.args.length; i++) {
-    //     params.args[i] =await bu.processTagInner(params, i);
-    // }
-    if (params.args[1]) {
-        params.args[1] = await bu.processTagInner(params, 1);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-
-    if (args.length > 2) {
-        replaceString = args[parseInt(args[1]) + 2];
-        if (!replaceString) {
-            replaceString = args[2];
-        }
-        params.content = replaceString;
-        replaceString = await bu.processTagInner(params);
-    } else
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+      params.content = params.args[index + 2];
+      return await bu.processTagInner(params);
+    })
+    .build();
