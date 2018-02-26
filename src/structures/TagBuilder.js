@@ -187,26 +187,43 @@ class TagBuilder {
   }
 }
 
-TagBuilder.defaults = {
+TagBuilder.util = {
   async processAllSubtags(params) {
     for (let i = 1; i < params.args.length; i++) {
       params.args[i] = await bu.processTagInner(params, i);
     }
   },
-  magicClean(text) {
+  escapeInjection(text) {
     return bu.fixContent(text)
       .replace(new RegExp(bu.specialCharBegin, 'g'), '')
       .replace(new RegExp(bu.specialCharDiv, 'g'), '')
       .replace(new RegExp(bu.specialCharEnd, 'g'), '');
   },
-  async notEnoughArguments(params) { return await bu.tagProcessError(params, '`Not enough arguments`'); },
-  async tooManyArguments(params) { return await bu.tagProcessError(params, '`Too many arguments`'); },
-  async noUserFound(params) { return await bu.tagProcessError(params, '`No user found`'); },
-  async noRoleFound(params) { return await bu.tagProcessError(params, '`No role found`'); },
-  async noChannelFound(params) { return await bu.tagProcessError(params, '`No channel found`'); },
-  async notANumber(params) { return await bu.tagProcessError(params, '`Not a number`'); },
-  async notAnArray(params) { return await bu.tagProcessError(params, '`Not an array`'); }
-}
+  async flattenArgArrays(args) {
+    let result = [];
+    for (const arg of args) {
+      let arr = await bu.deserializeTagArray(arg);
+      if (typeof arr === 'object' && Array.isArray(arr.v))
+        result.push(...arr.v);
+      else
+        result.push(arg);
+    }
+    return result;
+  },
+
+  async error(params, message) { return await bu.tagProcessError(params, '`' + message + '`'); }
+};
+
+TagBuilder.errors = {
+  notEnoughArguments(params) { return TagBuilder.util.error(params, 'Not enough arguments'); },
+  tooManyArguments(params) { return TagBuilder.util.error(params, 'Too many arguments'); },
+  noUserFound(params) { return TagBuilder.util.error(params, 'No user found'); },
+  noRoleFound(params) { return TagBuilder.util.error(params, 'No role found'); },
+  noChannelFound(params) { return TagBuilder.util.error(params, 'No channel found'); },
+  notANumber(params) { return TagBuilder.util.error(params, 'Not a number'); },
+  notAnArray(params) { return TagBuilder.util.error(params, 'Not an array'); },
+  invalidOperator(params) { return TagBuilder.util.error(params, 'Invalid operator'); }
+};
 
 module.exports = TagBuilder;
 
