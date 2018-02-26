@@ -50,9 +50,9 @@ e.unban = async function (msg, user, reason, tag = false, noPerms = false) {
 
             try {
                 await bot.unbanGuildMember(msg.channel.guild.id, user, 'Unbanned by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason : ''));
-                return [':ok_hand:', 'Success'];
+                return [':ok_hand:', true];
             } catch (err) {
-                return [`Failed to unban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, '`Couldn\'t unban user`'];
+                return [`Failed to unban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, false];
             }
         } else {
             return [`You don't have permission to unban users!`, '`User has no permissions`'];
