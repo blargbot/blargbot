@@ -6,6 +6,11 @@
     "roleundef": "No such role was found: '{{role}}'.",
     "pleasereport": "If you think this is an error, please report it!",
     "generic": "Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "invalidduration": "You provided an invalid duration! Try to format your time as '5m30s' or 'in 5 minutes and 30 seconds'.",
+    "moderation": {
+        "position": "{{target}} is higher ranked than you!",
+        "owner": "You cannot do anything to the guild's owner!"
+    },
     "couldnotsend": "Hi there! This is kinda embarrassing, but I wasn't able to respond to your command in {{channel}}!\n\nHere's what went wrong: `{{error}}`\n\nCommand used: {{command}}\n\nIf you are staff, please make sure I have the neccesary permissions to send and read messages in that channel. If not, please let the staff on the guild know that this happened.\n\nYou can stop receiving DM notifications for errors by doing `b!usettings dmerrors false`.",
     "messagetoolong": "Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
     "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",

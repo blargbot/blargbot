@@ -150,6 +150,15 @@ process.on('message', async msg => {
     return;
   }
   switch (code) {
+    case 'event': {
+      let command = discord.CommandManager.commandList[data.type];
+      if (command && typeof command.event === 'function') {
+        data.guild = discord.guilds.get(data.guild);
+        if (data.guild)
+          await command.event(data);
+      }
+      break;
+    }
     case 'await':
       const eventKey = 'await:' + data.key;
       switch (data.message) {

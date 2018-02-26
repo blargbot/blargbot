@@ -42,7 +42,8 @@ class EventTimer extends Sender {
             guild: await event.get('guild'),
             start: await event.get('start'),
             expiry: await event.get('expiry'),
-            data: await event.get('data')
+            data: await event.get('data'),
+            type: await event.get('type')
           };
           // Emit different events depending if it's guild-specific
           if (expanded.guild) {

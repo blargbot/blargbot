@@ -8,5 +8,7 @@ module.exports = {
   Modlog: require('./Modlog'),
   Image: require('./Image'),
   Warning: require('./Warning'),
-  Time: require('./Time')
+  Time: require('./Time'),
+  Moderation: require('./Moderation'),
+  Event: require('./Event')
 };

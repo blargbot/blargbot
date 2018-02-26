@@ -12,6 +12,7 @@ class PardonCommand extends AdminCommand {
       ],
       keys: {
         invalidCount: { key: '.invalidcount', value: 'The count specified was not a number!' },
+        invalidUser: { key: '.invaliduser', value: 'The specified user could not be found.' },
         negativeCount: { key: '.negativecount', value: 'At least one pardon must be assigned!' },
         pardonAssigned: { key: '.warningassigned', value: '**{{user}}** has been assigned **{{count}}** pardon(s).' }
       },
@@ -21,6 +22,8 @@ class PardonCommand extends AdminCommand {
 
   async execute(ctx) {
     let user = await this.client.Helpers.Resolve.user(ctx, ctx.input._.raw.join(''));
+    if (!user)
+      return await ctx.decodeAndSend(this.keys.invalidUser);
     let count;
     if (ctx.input.c) {
       count = parseInt(ctx.input.c.raw.join(''));

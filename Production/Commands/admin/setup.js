@@ -51,6 +51,7 @@ class SetupCommand extends AdminCommand {
         client.Constants.Permissions.EMBED_LINKS
       ],
       keys: {
+        default: { key: '.default', value: 'These are the available subcommands:\n\n{{subcommands}}' },
         staffsetrole: { key: `.staff.setrole`, value: 'The staff roles have been updated.' },
         staffrolequery: { key: `.staff.rolequery`, value: 'Select the roles that will be considered moderator roles. Users with these roles will be able to use admin commands.' },
         mutesetrole: { key: `.mute.setrole`, value: 'The muted role has been updated.' },
@@ -78,7 +79,7 @@ class SetupCommand extends AdminCommand {
   }
 
   async execute(ctx) {
-    return 'rip';
+    return await ctx.decodeAndSend(this.keys.default, { subcommands: Object.keys(this.subcommands).map(sc => ' - ' + sc).join('\n') });
   }
 
   get eventList() {

@@ -10,6 +10,9 @@ class EventModel extends Base {
         primaryKey: true,
         autoIncrement: true
       },
+      type: {
+        type: this.Sequelize.TEXT
+      },
       guild: {
         type: this.Sequelize.BIGINT,
         allowNull: true

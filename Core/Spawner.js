@@ -122,7 +122,9 @@ class Spawner extends EventEmitter {
         }
         break;
       case 'eventGuild':
-        console.log(data);
+        let id = (parseInt(data.guild) >> 22) % this.max;
+        let rshard = this.shards.get(id);
+        rshard.send('event', data);
         break;
       case 'eventGeneric':
         console.log(data);

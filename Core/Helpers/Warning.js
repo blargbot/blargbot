@@ -21,7 +21,7 @@ class WarningHelper extends BaseHelper {
 
     await warnings.update({ count: total });
 
-    this.Modlog.performModlog(ctx.guild, type, {
+    await this.Modlog.performModlog(ctx.guild, type, {
       targetID: user.id,
       user: ctx.author,
       reason, count,
@@ -72,7 +72,7 @@ class WarningHelper extends BaseHelper {
 
     await warnings.update({ count: total });
 
-    this.Modlog.performModlog(ctx.guild, type, {
+    await this.Modlog.performModlog(ctx.guild, type, {
       targetID: user.id,
       user: ctx.author,
       reason, count,

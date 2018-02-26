@@ -6,6 +6,8 @@ class ModlogHelper extends BaseHelper {
   constructor(client) {
     super(client);
     this.emitter = new EventEmitter();
+
+    this.processedAudits = {};
   }
 
   get eventMap() {
@@ -45,9 +47,11 @@ class ModlogHelper extends BaseHelper {
     if (typeof mod === 'string') mod = this.client.users.get(mod);
     let reason = audit && audit.reason ? audit.reason : params.reason;
     if (mod && mod.id === this.client.user.id) {
-      if (reason.includes(':'))
-        reason = reason.split(':').slice(1).join(':');
-      else reason = undefined;
+      if (/^\[(.+?#\d{4})\]/.test(reason)) {
+        let modName = reason.match(/^\[(.+?#\d{4})\]/)[1];
+        mod = this.client.users.filter(u => u.username + '#' + u.discriminator === modName)[0]; 0;
+        reason = reason.replace(/^\[(.+?#\d{4})\]\s*/, '');
+      }
     }
 
     let GuildModlog = this.client.models.GuildModlog;
@@ -117,14 +121,23 @@ class ModlogHelper extends BaseHelper {
   async construct(params) {
     return;
   }
+  sleep(time = 500) {
+    return new Promise(res => {
+      setTimeout(res, time);
+    });
+  }
 
   async getAuditEntry(guild, type, target) {
+    await this.sleep();
     try {
       let code = this.eventMap[type].code;
       let entries = await guild.getAuditLogs(10, undefined, code);
       for (const entry of entries.entries) {
-        if (entry.targetID === target)
+        let time = this.client.Helpers.Snowflake.unmake(entry.id), now = Date.now();
+        if (entry.targetID === target && now - 20000 <= time && !this.processedAudits[entry.id + '-' + guild.id]) {
+          this.processedAudits[entry.id + '-' + guild.id] = true;
           return entry;
+        }
       }
     } catch (err) {
       console.error(err);

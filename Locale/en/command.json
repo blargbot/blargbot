@@ -396,7 +396,8 @@
                 "overwritten": "The punishment with a weight of **{{weight}}** has been overwritten.",
                 "doesntexist": "A punishment with a weight of **{{weight}}** doesn't exist.",
                 "list": "These are the punishments active on your guild:\n\n{{list}}"
-            }
+            },
+            "default": "These are the available subcommands:\n\n{{subcommands}}"
         },
         "reason": {
             "info": "",
@@ -473,7 +474,63 @@
             },
             "invalidcount": "The count specified was not a number!",
             "negativecount": "At least one pardon must be assigned!",
-            "warningassigned": "**{{user}}** has been assigned **{{count}}** pardon(s)."
+            "warningassigned": "**{{user}}** has been assigned **{{count}}** pardon(s).",
+            "invaliduser": "The specified user could not be found."
+        },
+        "kick": {
+            "usage": "<user>",
+            "info": "Kicks a user.",
+            "flags": {
+                "reason": "The reason for the kick."
+            },
+            "kicked": ":ok_hand: **{{user}}** has been kicked.",
+            "invaliduser": "The specified user could not be found."
+        },
+        "mute": {
+            "usage": "<user>",
+            "info": "Mutes a user.",
+            "flags": {
+                "reason": "The reason for the mute.",
+                "duration": "How long the mute should be for.",
+                "time": "How long the mute should be for."
+            },
+            "muted": ":ok_hand: **{{user}}** has been muted.",
+            "invaliduser": "The specified user could not be found.",
+            "norole": "A muted role has not been set! Use the `setup mute` command to configure it.",
+            "unmutein": "They will be unmuted in **{{seconds}}** seconds."
+        },
+        "unmute": {
+            "usage": "<user>",
+            "info": "Unmutes a user.",
+            "flags": {
+                "reason": "The reason for the unmute."
+            },
+            "unmuted": ":ok_hand: **{{user}}** has been unmuted.",
+            "invaliduser": "The specified user could not be found.",
+            "unmutedafter": "Automatic unmute after {{seconds}} seconds."
+        },
+        "ban": {
+            "usage": "<user>",
+            "info": "Bans a user.",
+            "flags": {
+                "reason": "The reason for the ban.",
+                "days": "The number of days for which messages should be deleted (defaults to 1).",
+                "time": "How long the ban should be for."
+            },
+            "banned": ":ok_hand: **{{user}}** has been banned.",
+            "invaliduser": "The specified user could not be found.",
+            "unbunin": "They will be unbanned in **{{seconds}}** seconds."
+        },
+        "unban": {
+            "usage": "<user>",
+            "info": "Unbans a user.",
+            "flags": {
+                "reason": "The reason for the ban."
+            },
+            "banned": ":ok_hand: **{{user}}** has been unbanned.",
+            "invaliduser": "The specified user could not be found.",
+            "unbannedafter": "Automatic unban after {{seconds}} seconds."
         }
-    }
+    },
+    "mute": {}
 }
