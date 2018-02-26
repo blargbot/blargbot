@@ -354,7 +354,7 @@
             },
             "mute": {
                 "setrole": "Die mute rolle wurde geupdatet",
-                "rolequery": "Wählt die mute rolle"
+                "rolequery": ""
             },
             "announce": {
                 "set": "",
