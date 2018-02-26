@@ -7,70 +7,56 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.CCOMMAND;
-};
+async function grantRole(params, target) {
+    if (!target)
+        return await Builder.defaults.noUserFound(params);
 
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `addrole`;
-e.args = `&lt;role&gt; [user]`;
-e.usage = `{addrole;role[;user]}`;
-e.desc = `Gives a user a role, where role is a role ID or mention. You can find a list of roles and their ids by doing \`b!roles\`. Returns true if a role was given, and false otherwise.`;
-e.exampleIn = `Have a role! {addrole;11111111111111111}`;
-e.exampleOut = `Have a role! true`;
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
+    let regexp = /(\d{17,23})/, role;
+    if (regexp.test(params.args[1])) {
+        let roleId = params.args[1].match(regexp)[1];
+        role = params.msg.guild.roles.get(roleId);
     }
-    var replaceString = '';
-    var replaceContent = false;
-    if (!params.ccommand) {
-        replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
-    } else {
-        if (!params.isStaff) {
-            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
-        } else if (params.args.length > 1) {
-            let member = params.msg.member;
-            if (params.args[2]) {
-                let user = await bu.getUser(params.msg, params.args[2], true);
-                if (user) member = params.msg.guild.members.get(user.id);
-            }
-            if (member) {
-                let regexp = /(\d{17,23})/;
-                let role;
-                if (regexp.test(params.args[1])) {
-                    let roleId = params.args[1].match(regexp)[1];
-                    role = params.msg.guild.roles.get(roleId);
-                }
-                if (!role)
-                    replaceString = await bu.tagProcessError(params, '`No role found`');
-                else {
-                    let hasRole = bu.hasRole(member, role.id, false);
-                    if (hasRole) replaceString = 'false';
-                    else {
-                        try {
-                            await member.addRole(role.id);
-                            replaceString = 'true';
-                        } catch (err) {
-                            console.error(err);
-                            replaceString = 'false';
-                        }
-                    }
-                }
-            } else {
-                replaceString = await bu.tagProcessError(params, '`No user found`');
-            }
-        }
+    if (!role)
+        return await Builder.defaults.noRoleFound(params);
+
+    let hasRole = bu.hasRole(target, role.id, false);
+    if (hasRole)
+        return 'false';
+
+    try {
+        await target.addRole(role.id);
+        return 'true';
+    } catch (err) {
+        console.error(err);
+        return 'false';
     }
 
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+
+}
+
+module.exports =
+    new Builder()
+        .withCategory(bu.TagType.CCOMMAND)
+        .requireStaff(true)
+        .withName('addrole')
+        .withArgs(b =>
+            b.require('role').optional('user')
+        ).withDesc('Gives a user a role, where role is a role ID or mention. ' +
+            'You can find a list of roles and their ids by doing \`b!roles\`. ' +
+            'Returns true if a role was given, and false otherwise.'
+        ).withExample(
+            'Have a role! {addrole;11111111111111111}',
+            'Have a role! true'
+        ).beforeExecute(Builder.defaults.processAllSubtags)
+        .whenArgs('2', async params => await grantRole(params, params.msg.member))
+        .whenArgs('3', async params => {
+            let user = await bu.getUser(params.msg, params.args[2], true);
+            if (user)
+                return await grantRole(params, params.msg.guild.members.get(user.id));
+            return await grantRole(params, params.msg.member);
+        })
+        .whenArgs('<2', Builder.defaults.notEnoughArguments)
+        .whenArgs('>3', Builder.defaults.tooManyArguments)
+        .build();
