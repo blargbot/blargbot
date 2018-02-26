@@ -6,6 +6,11 @@
     "roleundef": "No such role was found: '{{role}}'.",
     "pleasereport": "If you think this is an error, please report it!",
     "generic": "Something went wrong!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "invalidduration": "",
+    "moderation": {
+        "position": "",
+        "owner": ""
+    },
     "couldnotsend": "",
     "messagetoolong": "Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
     "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
