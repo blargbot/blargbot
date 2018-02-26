@@ -354,7 +354,7 @@
             },
             "mute": {
                 "setrole": "Den dæmpede rolle er blevet opdateret.",
-                "rolequery": ""
+                "rolequery": "Vælg den dæmpede rolle. Den nuværende rolle er: {{current}}"
             },
             "announce": {
                 "set": "Annonceringer er blevet sat op.",
