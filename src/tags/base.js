@@ -1,5 +1,3 @@
-import { builtinModules } from 'module';
-
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:27:02
