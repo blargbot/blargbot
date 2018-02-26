@@ -6,6 +6,11 @@
     "roleundef": "Ingen lignende rolle blev fundet: '{{role}}'.",
     "pleasereport": "Hvis du mener dette er en fejl, venligst rapporter det!",
     "generic": "Der er noget der gik galt!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "invalidduration": "",
+    "moderation": {
+        "position": "",
+        "owner": ""
+    },
     "couldnotsend": "Hej med dig! Det her er lidt pinligt, men jeg kunne ikke svare på din kommando i kanalen {{channel}}!\n\nHer er problemet: `{{error}}`\n\nFølgende kommando blev brugt: {{command}}\n\nHvis du er en del af personalet så sørg venligst for, at jeg har de nødvendige tilladelser til at sende og læse beskeder i den kanal. Hvis ikke så kontakt personalet i serveren og fortæl dem hvad der skete.\n\nDu kan stoppe DM notifikationerne ved at indtaste `b!usettings dmerrors false`.",
     "messagetoolong": "Ups! Jeg prøvede på at sende en besked der var for lang.\n[[error.pleasereport]]",
     "notenoughparams": "Ikke nok parametre! Udfør `{{prefix}}help {{name}}` for flere detaljer.\n\nForventede `{{expected}}` parametre, men fik `{{recieved}}` istedet.",
