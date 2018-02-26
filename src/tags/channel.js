@@ -7,61 +7,45 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.CCOMMAND;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `channel`;
-e.args = `&lt;channel&gt; [message]`;
-e.usage = `{channel;#channel[;message]}`;
-e.desc = `Please use the {send} tag instead of this. Sends the output to a specific channel. Only works in custom commands. If a message is specified, it will create a new message in the specified channel instead of rerouting output.`;
-e.exampleIn = `{channel;#channel}Hello!`;
-e.exampleOut = `In #channel: Hello!`;
-e.deprecated = true;
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    var replaceString = '';
-    var replaceContent = false;
-    if (!params.ccommand) {
-        replaceString = await bu.tagProcessError(params, '`Can only set channel in CCommands`');
-    } else {
-        if (!params.isStaff) {
-            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
-        } else
-            if (/([0-9]{17,23})/.test(params.args[1])) {
-                let channelid = params.args[1].match(/([0-9]{17,23})/)[1];
-                let channel = bot.getChannel(channelid);
-                if (channel) {
-                    if (channel.guild.id == params.msg.guild.id) {
-                        if (params.args[2]) {
-                            bu.send(channel.id, {
-                                content: params.args[2],
-                                disableEveryone: false
-                            });
-                        } else params.msg.channel = channel;
-                    } else {
-                        replaceString = await bu.tagProcessError(params, '`Channel must be in guild`');
-                    }
-                } else {
-                    replaceString = await bu.tagProcessError(params, '`Channel not found`');
-                }
-            } else {
-                replaceString = await bu.tagProcessError(params, '`Invalid channel`');
+module.exports =
+  Builder.CCommandTag('channel')
+    .withDepreciated(true)
+    .requireStaff(true)
+    .withArgs(b => b.require('channel').optional('message'))
+    .withDesc('Please use the {send} subtag instead of this.\n' +
+      'Sends the output to a specific channel. ' +
+      'Only works in custom commands. ' +
+      'If a message is specified, it will create a new message in the specified channel instead of rerouting output.')
+    .withExample(
+      '{channel;#channel}Hello!',
+      'In #channel: Hello!'
+    ).beforeExecute(Builder.defaults.processAllSubtags)
+    .whenArgs('1', Builder.defaults.notEnoughArguments)
+    .whenArgs('2-3', async params => {
+      if (/([0-9]{17,23})/.test(params.args[1])) {
+        let channelid = params.args[1].match(/([0-9]{17,23})/)[1];
+        let channel = bot.getChannel(channelid);
+        if (channel) {
+          if (channel.guild.id == params.msg.guild.id) {
+            if (params.args[2]) {
+              bu.send(channel.id, {
+                content: params.args[2],
+                disableEveryone: false
+              });
             }
-    }
-    params.fallback = params.args[1];
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            else
+              params.msg.channel = channel;
+            return '';
+          } else {
+            return await bu.tagProcessError(params, '`Channel must be in guild`');
+          }
+        } else {
+          return await Builder.defaults.noChannelFound(params);
+        }
+      } else {
+        return await Builder.defaults.noChannelFound(params);
+      }
+    }).whenDefault(Builder.defaults.tooManyArguments)
+    .build();

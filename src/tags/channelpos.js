@@ -7,32 +7,14 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.SIMPLE;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `channelpos`;
-e.args = ``;
-e.usage = `{channelpos}`;
-e.desc = `Returns the position of the current channel`;
-e.exampleIn = `This channel is in position {channelpos}`;
-e.exampleOut = `This channel is in position 1`;
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    var replaceString = params.msg.channel.position;
-    var replaceContent = false;
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+  Builder.SimpleTag('channelpos')
+  .withDesc('Returns the position of the current channel.')
+  .withExample(
+    'This channel is in position {channelpos}',
+    'This channel is in position 1'
+  ).whenArgs('1', async params => params.msg.channel.position)
+  .whenDefault(Builder.defaults.tooManyArguments)
+  .build();
