@@ -1,5 +1,6 @@
 const BaseHelper = require('./BaseHelper');
 const { Op } = require('sequelize');
+const moment = require('moment');
 
 class WarningHelper extends BaseHelper {
   constructor(client) {
@@ -42,19 +43,30 @@ class WarningHelper extends BaseHelper {
       let types = ['mute', 'kick', 'ban'];
       let type = 0;
       let time = 0;
+      let weight = 0;
       for (const punishment of punishments) {
         let t = await punishment.get('type');
         let d = await punishment.get('duration');
+        let w = await punishment.get('weight');
         let i = types.indexOf(t);
         if (i > type) {
           type = i;
+          time = 0;
+          weight = w;
           if (d)
             time = d;
-        } else if (i === type && (d || 0) > time)
+        } else if (i === type && (d || 0) > time) {
           time = d;
+          weight = w;
+        }
       }
 
-
+      this.client.Helpers.Moderation[types[type]]({
+        guild: ctx.guild, user, time: time ? moment().add(time) : undefined,
+        reason: await this.client.Helpers.Message.decode(ctx.guild, 'command.admin.warn.limitexceeded', {
+          type: types[type], weight, warnings: total
+        })
+      });
       console.log(types[type], time);
     }
   }

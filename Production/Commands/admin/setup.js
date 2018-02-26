@@ -41,6 +41,7 @@ class SetupCommand extends AdminCommand {
             { flag: 'b', name: 'ban', info: 'Specifies that the punishment is to ban. Cannot be used with mute or kick.' },
             { flag: 'm', name: 'mute', info: 'Specifies that the punishment is to mute. Cannot be used with kick or ban.' },
             { flag: 't', name: 'time', info: 'Specifies how long a ban or mute should last for.' },
+            { flag: 'd', name: 'days', info: 'The number of days for which messages will be deleted when banned. Defaults to 1.' },
             { flag: 'l', name: 'list', info: 'Lists the active punishments.' }
           ]
         }
@@ -94,7 +95,8 @@ class SetupCommand extends AdminCommand {
       let list = '';
       for (const punishment of punishments) {
         let dur = await punishment.get('duration');
-        list += `**${await punishment.get('weight')}**. ${await punishment.get('type')}${dur ? ` (${dur / 1000}s)` : ''}\n`;
+        let days = await punishment.get('days');
+        list += `**${await punishment.get('weight')}**. ${await punishment.get('type')}${dur ? ` (${dur / 1000}s)` : ''}${days ? ` (🗑${days}d)` : ''}\n`;
       }
       return await ctx.decodeAndSend(this.keys.punishmentList, { list });
     }
@@ -108,11 +110,15 @@ class SetupCommand extends AdminCommand {
         if (weight <= 0)
           return await ctx.decodeAndSend(this.keys.punishmentTooLow);
 
+        if (!ctx.input._[2]) ctx.input._[2] = '';
         let type;
+        let days;
         if ((ctx.input.m && !ctx.input.b && !ctx.input.k) || ctx.input._[2].toLowerCase() === 'mute') {
           type = 'mute';
         } else if ((!ctx.input.m && ctx.input.b && !ctx.input.k) || ctx.input._[2].toLowerCase() === 'ban') {
           type = 'ban';
+          days = ctx.input.d ? parseInt(ctx.input.d.raw.join('')) : 1;
+          if (isNaN(days)) days = 1;
         } else if ((!ctx.input.m && !ctx.input.b && ctx.input.k) || ctx.input._[2].toLowerCase() === 'kick') {
           type = 'kick';
         } else {
@@ -125,14 +131,14 @@ class SetupCommand extends AdminCommand {
         let punishment = await GuildPunishment.find({ where: { guildId: ctx.guild.id, weight } });
         if (punishment) {
           await punishment.update({
-            duration: time,
+            duration: time, days,
             type
           });
           return await ctx.decodeAndSend(this.keys.punishmentOverwritten, { weight });
         } else {
           await GuildPunishment.create({
             guildId: ctx.guild.id,
-            weight,
+            weight, days,
             duration: time,
             type
           });

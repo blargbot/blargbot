@@ -382,7 +382,8 @@
                         "ban": "Specifies that the punishment is to ban. Cannot be used with mute or kick.",
                         "mute": "Specifies that the punishment is to mute. Cannot be used with kick or ban.",
                         "time": "Specifies how long a ban or mute should last for.",
-                        "list": "Lists the active punishments."
+                        "list": "Lists the active punishments.",
+                        "days": "The number of days for which messages will be deleted when banned. Defaults to 1."
                     }
                 }
             },
@@ -463,7 +464,8 @@
             "invalidcount": "The count specified was not a number!",
             "warningassigned": "**{{user}}** has been assigned **{{count}}** warning(s).",
             "negativecount": "At least one warning must be assigned!",
-            "usage": "<user>"
+            "usage": "<user>",
+            "limitexceeded": "Exceeded warning limit ({{warnings}}/{{weight}})"
         },
         "pardon": {
             "usage": "<user>",

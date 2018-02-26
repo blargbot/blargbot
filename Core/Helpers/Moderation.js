@@ -17,7 +17,7 @@ class ModerationHelper extends BaseHelper {
     };
   }
 
-  resolveBasic({ guild, user = this.client.user, mod, reason = '', time, days }) {
+  resolveBasic({ guild, user, mod = this.client.user, reason = '', time, days }) {
     if (typeof guild === 'string')
       guild = this.client.guilds.get(guild);
     let userId = user.id || user;

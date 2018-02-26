@@ -19,6 +19,10 @@ class GuildPunishmentModel extends Base {
         primaryKey: true,
         allowNull: false
       },
+      days: {
+        type: this.Sequelize.INTEGER,
+        comment: 'How many days to delete'
+      },
       duration: {
         type: this.Sequelize.INTEGER,
         comment: 'An optional duration (auto unmute, auto unban), in milliseconds'

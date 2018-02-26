@@ -13,7 +13,8 @@ class WarnCommand extends AdminCommand {
       keys: {
         invalidCount: { key: '.invalidcount', value: 'The count specified was not a number!' },
         negativeCount: { key: '.negativecount', value: 'At least one warning must be assigned!' },
-        warningAssigned: { key: '.warningassigned', value: '**{{user}}** has been assigned **{{count}}** warning(s).' }
+        warningAssigned: { key: '.warningassigned', value: '**{{user}}** has been assigned **{{count}}** warning(s).' },
+        limitExceeded: { key: '.limitexceeded', value: 'Exceeded warning limit ({{warnings}}/{{weight}})' }
       },
       minArgs: 1
     });
