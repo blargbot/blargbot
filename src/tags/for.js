@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = 'for';
 e.args = '&lt;variable&gt; &lt;initial&gt; &lt;comparison&gt; &lt;limit&gt; [increment] &lt;code&gt;';
 e.usage = '{for;variable;initial;comparison;limit[;increment];code}';
-e.desc = 'This will increase the value of <code>variable</code> by <code>increment</code> (defaults to +1), starting at <code>initial</code>';
+e.desc = 'This will increase the value of `variable` by `increment` (defaults to +1), starting at `initial`';
 e.exampleIn = '{for;~index;0;<;10;{get;~index},}';
 e.exampleOut = '0,1,2,3,4,5,6,7,8,9,';
 

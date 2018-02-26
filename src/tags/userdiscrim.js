@@ -19,8 +19,8 @@ e.isTag = true;
 e.name = `userdiscrim`;
 e.args = `[user] [quiet]`;
 e.usage = `{userdiscrim[;user[;quiet]]}`;
-e.desc = `Returns the user's discriminator. If <code>name</code> is specified, gets that user
-instead. If <code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
+e.desc = `Returns the user's discriminator. If `name` is specified, gets that user
+instead. If `quiet` is specified, if a user can't be found it will simply return the `name``;
 e.exampleIn = `Your discrim is {userdiscrim}`;
 e.exampleOut = `Your discrim is 1234`;
 

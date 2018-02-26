@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = `guildcreatedat`;
 e.args = `[format]`;
 e.usage = `{guildcreatedat}`;
-e.desc = `Returns the date the current guild was created, in UTC+0. If a <code>format</code> code is specified, the date is
+e.desc = `Returns the date the current guild was created, in UTC+0. If a `format` code is specified, the date is
 formatted accordingly. Leave blank for default formatting. See the <a href="http://momentjs.com/docs/#/displaying/format/">moment
 documentation</a> for more information.`;
 e.exampleIn = `This guild was created on {guildcreatedat;YYYY/MM/DD HH:mm:ss}`;

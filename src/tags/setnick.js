@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = `setnick`;
 e.args = `&gt;nick&lt; [user]`;
 e.usage = `{addrole;nick[;user]}`;
-e.desc = `Sets a user's nickname. Leave <code>nick</code> blank to reset their nickname.`;
+e.desc = `Sets a user's nickname. Leave `nick` blank to reset their nickname.`;
 e.exampleIn = `{setnick;super cool nickname}`;
 e.exampleOut = ``;
 

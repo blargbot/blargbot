@@ -19,8 +19,8 @@ e.isTag = true;
 e.name = `useravatar`;
 e.args = `[user] [quiet]`;
 e.usage = `{useravatar[;user[;quiet]]}`;
-e.desc = `Returns the user's avatar. If <code>name</code> is specified, gets that user instead. If
-<code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
+e.desc = `Returns the user's avatar. If `name` is specified, gets that user instead. If
+`quiet` is specified, if a user can't be found it will simply return the `name``;
 e.exampleIn = `Your avatar is {useravatar}`;
 e.exampleOut = `Your avatar is (avatar url)`;
 

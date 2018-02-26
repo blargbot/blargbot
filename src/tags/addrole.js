@@ -56,5 +56,5 @@ module.exports =
                 return await grantRole(params, params.msg.guild.members.get(user.id));
             return await grantRole(params, params.msg.member);
         })
-        .whenArgs('>3', Builder.defaults.tooManyArguments)
+        .whenDefault(Builder.defaults.tooManyArguments)
         .build();

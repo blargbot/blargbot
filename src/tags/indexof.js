@@ -21,7 +21,7 @@ e.array = true;
 e.name = 'indexof';
 e.args = '&lt;text&gt; &lt;searchfor&gt; [start]';
 e.usage = '{indexof;text;search[;start]}';
-e.desc = 'Finds the index of <code>searchfor</code> in <code>text</code>, after <code>start</code>. <code>text</code> can either be plain text or an array. If it\'s not found, returns -1.';
+e.desc = 'Finds the index of `searchfor` in `text`, after `start`. `text` can either be plain text or an array. If it\'s not found, returns -1.';
 e.exampleIn = 'The index of \'o\' in \'hello world\' is {indexof;hello world;o}';
 e.exampleOut = 'The index of \'o\' in \'hello world\' is 4';
 

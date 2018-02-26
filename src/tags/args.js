@@ -41,5 +41,5 @@ module.exports =
 
             return this.magicClean(params.words.slice(from, to).join(' '));
         })
-        .whenArgs('>3', Builder.defaults.tooManyArguments)
+        .whenDefault(Builder.defaults.tooManyArguments)
         .build();

@@ -20,7 +20,7 @@ e.name = `roles`;
 e.args = `[user] [quiet]`;
 e.usage = `{userid[;user[;quiet]]}`;
 e.desc = `Returns an array of roles on the current guild. If user is specified, get the roles that user has. If
-<code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
+`quiet` is specified, if a user can't be found it will simply return the `name``;
 e.exampleIn = `The roles on this guild are: {roles}`;
 e.exampleOut = `The roles on this guild are: ["11111111111111111","22222222222222222"]`;
 

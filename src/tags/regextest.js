@@ -18,7 +18,7 @@ e.isTag = true;
 e.name = `regextest`;
 e.args = `&lt;query&gt; &lt;regex&gt;`;
 e.usage = `{regexreplace;query;regex}`;
-e.desc = `Tests if the <code>regex</code> phrase matches the <code>query</code>, and returns a boolean.`;
+e.desc = `Tests if the `regex` phrase matches the `query`, and returns a boolean.`;
 
 e.exampleIn = `{regextest;apple;/p+/i} {regextest;banana;/p+/i}`;
 e.exampleOut = `true false`;

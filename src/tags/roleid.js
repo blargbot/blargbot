@@ -20,7 +20,7 @@ e.name = `roleid`;
 e.args = `<name> [quiet]`;
 e.usage = `{roleid;name[;quiet]}`;
 e.desc = `Returns a role's ID. If
-<code>quiet</code> is specified, if a role can't be found it will simply return the <code>name</code>`;
+`quiet` is specified, if a role can't be found it will simply return the `name``;
 e.exampleIn = `The admin role ID is: {roleid;admin}`;
 e.exampleOut = `The admin role ID is: 123456789123456`;
 

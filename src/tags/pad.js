@@ -20,7 +20,7 @@ e.deprecated = '{pad} will be replaced by {realpad} in v2';
 e.name = 'pad';
 e.args = '&lt;direction&gt; &lt;back&gt; &lt;text&gt;';
 e.usage = '{pad;direction;text;back}';
-e.desc = 'Pads <code>back</code> to the <code>direction</code> of <code>text</code>';
+e.desc = 'Pads `back` to the `direction` of `text`';
 e.exampleIn = '{pad;left;000000;ABC}';
 e.exampleOut = '000ABC';
 

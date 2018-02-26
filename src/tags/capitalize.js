@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = 'capitalize';
 e.args = '&lt;text&gt; [lower]';
 e.usage = '{capitalize;text;lower}';
-e.desc = 'Capitalizes the first letter of <code>text</code>. If <code>lower</code> is specified the rest of the text will be lowercase';
+e.desc = 'Capitalizes the first letter of `text`. If `lower` is specified the rest of the text will be lowercase';
 e.exampleIn = '{capitalize;hello world!}';
 e.exampleOut = 'Hello world!';
 

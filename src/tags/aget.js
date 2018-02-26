@@ -24,5 +24,5 @@ module.exports =
         .whenArgs('2-3', async params => {
             params.args[1] = '@' + params.args[1];
             return await TagManager.list['get'].execute(params);
-        }).whenArgs('>3', Builder.defaults.tooManyArguments)
+        }).whenDefault(Builder.defaults.tooManyArguments)
         .build();

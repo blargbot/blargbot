@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = `lower`;
 e.args = `&lt;string&gt;`;
 e.usage = `{lower}`;
-e.desc = `Returns <code>string</code> as lowercase`;
+e.desc = `Returns `string` as lowercase`;
 e.exampleIn = `{lower;THIS WILL BECOME LOWERCASE}`;
 e.exampleOut = `this will become lowercase`;
 

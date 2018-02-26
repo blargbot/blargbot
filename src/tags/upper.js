@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = `upper`;
 e.args = `&lt;text&gt;`;
 e.usage = `{upper;text}`;
-e.desc = `Returns <code>string</code> as uppercase`;
+e.desc = `Returns `string` as uppercase`;
 e.exampleIn = `{upper;this will become uppercase}`;
 e.exampleOut = `THIS WILL BECOME UPPERCASE`;
 

@@ -19,8 +19,8 @@ e.isTag = true;
 e.name = `rolesetmentionable`;
 e.args = `<name> [value] [quiet]`;
 e.usage = `{rolesetmentionable;name[;value]}`;
-e.desc = `Sets whether a role can be mentioned. <code>value</code> can be either <code>true</code> to set the role as mentionable,
- or anything else to set it to unmentionable. If <code>value</code> isn't provided, defaults to true. Throws
+e.desc = `Sets whether a role can be mentioned. `value` can be either `true` to set the role as mentionable,
+ or anything else to set it to unmentionable. If `value` isn't provided, defaults to true. Throws
 an error if a role can't be found.`;
 e.exampleIn = `The admin role is now mentionable. {rolesetmentionable;admin;true}`;
 e.exampleOut = `The admin role is now mentionable.`;

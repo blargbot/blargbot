@@ -1226,3 +1226,12 @@ bu.sleep = function (time) {
 bu.escapeHTML = function (text) {
     return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 };
+
+bu.between = function(value, lower, upper, inclusive){
+    if (lower > upper)
+        lower = [upper, upper = lower][0];
+    
+    if (inclusive)
+        return value >= lower && value <= upper;
+    return value > lower && value < upper;
+}

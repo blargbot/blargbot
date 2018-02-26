@@ -20,7 +20,7 @@ e.name = `rolemembers`;
 e.args = `&lt;role&gt; [quiet]`;
 e.usage = `{rolemembers;role[;quiet]}`;
 e.desc = `Returns an array of members in the specified role. If
-<code>quiet</code> is specified, if a role can't be found it will simply return the <code>role</code>`;
+`quiet` is specified, if a role can't be found it will simply return the `role``;
 e.exampleIn = `The admins are: {rolemembers;Admin}`;
 e.exampleOut = `The admins are: ["11111111111111111","22222222222222222"]`;
 

@@ -19,8 +19,8 @@ e.isTag = true;
 e.name = `username`;
 e.args = `[user] [quiet]`;
 e.usage = `{username[;user[;quiet]]}`;
-e.desc = `Returns the user's name. If <code>name</code> is specified, gets that user instead. If
-<code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
+e.desc = `Returns the user's name. If `name` is specified, gets that user instead. If
+`quiet` is specified, if a user can't be found it will simply return the `name``;
 e.exampleIn = `Your username is {username;stupid;this can be anything}`;
 e.exampleOut = `Your username is stupid cat`;
 

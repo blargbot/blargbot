@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = 'repeat';
 e.args = '&lt;text&gt; &lt;amount&gt;';
 e.usage = '{repeat;text;amount}';
-e.desc = 'Repeats <code>text</code> <code>amount</code> times.';
+e.desc = 'Repeats `text` `amount` times.';
 e.exampleIn = '{repeat;e;10}';
 e.exampleOut = 'eeeeeeeeee';
 

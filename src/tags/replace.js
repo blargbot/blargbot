@@ -19,8 +19,8 @@ e.isTag = true;
 e.name = `replace`;
 e.args = `[toreplace] &lt;phrase&gt; &lt;replacewith&gt;`;
 e.usage = `{replace[;textToReplace];phrase;replaceWith}`;
-e.desc = `Replaces the <code>phrase</code> with <code>replacewith</code>. If
-<code>toreplace</code> is specified, the tag is replaced with the new <code>toreplace</code>. If not, it replaces the
+e.desc = `Replaces the `phrase` with `replacewith`. If
+`toreplace` is specified, the tag is replaced with the new `toreplace`. If not, it replaces the
 message.`;
 e.exampleIn = `I like {replace;to eat;eat;nom} cheese. {replace;cheese;ham}`;
 e.exampleOut = `I like to nom ham`;

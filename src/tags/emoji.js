@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = 'emoji';
 e.args = '&lt;text&gt; [amount]';
 e.usage = '{emoji;text[;amount]}';
-e.desc = 'Gets <code>amount</code> (or 5 if <code>amount</code> isn&apos;t specified) emojis related to the given text. There\'s a limit of 10 emojis.';
+e.desc = 'Gets `amount` (or 5 if `amount` isn&apos;t specified) emojis related to the given text. There\'s a limit of 10 emojis.';
 e.exampleIn = '{emoji;I am hungry;5}';
 e.exampleOut = '🍔 🍕 😩 🍴 😐';
 

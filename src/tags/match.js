@@ -10,7 +10,7 @@ e.isTag = true;
 e.name = `match`;
 e.args = `&lt;text&gt; &lt;regex&gt;`;
 e.usage = `{match;text;regex}`;
-e.desc = `Returns an array of everything in <code>text</code> that matches <code>regex</code>.`;
+e.desc = `Returns an array of everything in `text` that matches `regex`.`;
 e.exampleIn = `{match;I have $1 and 25 cents;/\\d+/g}`;
 e.exampleOut = `["1", "25"]`;
 

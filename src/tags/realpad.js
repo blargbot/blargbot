@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = 'realpad';
 e.args = '&lt;text&gt; &lt;length&gt; [character] [direction]';
 e.usage = '{pad;text;length[;character[;direction]]}';
-e.desc = 'Pads the provided text to the provided length, using the provided character and direction. Character defaults to space, direction defaults to right.<br><br>This is how padding <em>should</em> be implemented, and the {pad} subtag is a sucks. The past me who thought it would be a good idea is also a sucks.';
+e.desc = 'Pads the provided text to the provided length, using the provided character and direction. Character defaults to space, direction defaults to right.\n\nThis is how padding <em>should</em> be implemented, and the {pad} subtag is a sucks. The past me who thought it would be a good idea is also a sucks.';
 e.exampleIn = '{realpad;ABC;6;0;left}';
 e.exampleOut = '000ABC';
 

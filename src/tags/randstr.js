@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = 'randstr';
 e.args = '&lt;chars&gt; &lt;length&gt;';
 e.usage = '{randstr;chars;length}';
-e.desc = 'Creates a random string with characters from <code>chars</code> that is <code>length</code> characters long.';
+e.desc = 'Creates a random string with characters from `chars` that is `length` characters long.';
 e.exampleIn = '{randstr;1234567890;10}';
 e.exampleOut = '3789327305';
 

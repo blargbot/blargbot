@@ -50,7 +50,7 @@ module.exports =
                     return await bu.tagProcessError(params, response[1]);
                 return response[1];
             }
-            return Builder.defaults.noUserFound(params);
+            return await Builder.defaults.noUserFound(params);
         })
         .whenDefault(Builder.defaults.tooManyArguments)
         .build();

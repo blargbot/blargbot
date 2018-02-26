@@ -28,5 +28,5 @@ module.exports =
                 return await bu.tagProcessError(params, '`Not a number`');
             }
         })
-        .whenArgs('>2', Builder.defaults.tooManyArguments)
+        .whenDefault(Builder.defaults.tooManyArguments)
         .build();

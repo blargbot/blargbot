@@ -19,7 +19,7 @@ e.isTag = true;
 e.name = 'foreach';
 e.args = '&lt;variable&gt; &lt;array&gt; &lt;code&gt;';
 e.usage = '{foreach;variable;array;code}';
-e.desc = 'For every element in <code>array</code> <code>variable</code> will be set and then <code>code</code> will be run';
+e.desc = 'For every element in `array` `variable` will be set and then `code` will be run';
 e.exampleIn = '{set;~array;apples;oranges;c#}<br />{foreach;~element;~array;I like {get;~element}{newline}}';
 e.exampleOut = 'I like apples<br />I like oranges<br />I like c#';
 

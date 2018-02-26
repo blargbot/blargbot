@@ -20,7 +20,7 @@ e.name = `rolemention`;
 e.args = `<name> [quiet]`;
 e.usage = `{rolemention;name[;quiet]}`;
 e.desc = `Returns a role's mention. If
-<code>quiet</code> is specified, if a role can't be found it will simply return the <code>name</code>`;
+`quiet` is specified, if a role can't be found it will simply return the `name``;
 e.exampleIn = `The admin role mention is: {rolemention;admin}`;
 e.exampleOut = `The admin role mention is: @admin`;
 
