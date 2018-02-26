@@ -16,8 +16,8 @@ module.exports =
     .withExample(
       '{concat;["this", "is"];["an", "array"]}',
       '["this","is","an","array"]'
-    ).beforeExecute(Builder.defaults.processAllSubtags)
-    .whenArgs('1', Builder.defaults.notEnoughArguments)
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenDefault(async params => {
       let result = [];
       for (const value of params.args.slice(1)) {
@@ -25,7 +25,7 @@ module.exports =
         if (typeof arr === "object" && Array.isArray(arr.v))
           result.push(...arr.v);
         else
-          return await Builder.defaults.notAnArray(params);
+          return await Builder.errors.notAnArray(params);
       }
       return bu.serializeTagArray(result);
     })

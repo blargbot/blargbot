@@ -26,8 +26,8 @@ module.exports =
         ).withExample(
             '{ban;@stupid cat#8160;0;This is a test ban} @stupid cat#8160 was banned!',
             'Success @stupid cat#8160 was banned!'
-        ).beforeExecute(Builder.defaults.processAllSubtags)
-        .whenArgs('1', Builder.defaults.notEnoughArguments)
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-6', )
         .whenArgs('>6', async params => {
             let user = await bu.getUser(params.msg, params.args[1], true);
@@ -50,7 +50,7 @@ module.exports =
                     return await bu.tagProcessError(params, response[1]);
                 return response[1];
             }
-            return await Builder.defaults.noUserFound(params);
+            return await Builder.errors.noUserFound(params);
         })
-        .whenDefault(Builder.defaults.tooManyArguments)
+        .whenDefault(Builder.errors.tooManyArguments)
         .build();

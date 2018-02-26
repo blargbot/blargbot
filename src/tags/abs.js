@@ -18,15 +18,15 @@ module.exports =
             '{abs;-535}',
             '535'
         )
-        .beforeExecute(Builder.defaults.processAllSubtags)
-        .whenArgs('<2', Builder.defaults.notEnoughArguments)        
+        .beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('<2', Builder.errors.notEnoughArguments)        
         .whenArgs('2', async params => {
             let asNumber = parseFloat(params.args[1]);
             if (!isNaN(asNumber)) {
                 return Math.abs(asNumber);
             } else {
-                return await bu.tagProcessError(params, '`Not a number`');
+                return await Builder.errors.notANumber(params);
             }
         })
-        .whenDefault(Builder.defaults.tooManyArguments)
+        .whenDefault(Builder.errors.tooManyArguments)
         .build();

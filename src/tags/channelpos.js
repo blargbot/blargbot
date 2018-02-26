@@ -16,5 +16,5 @@ module.exports =
     'This channel is in position {channelpos}',
     'This channel is in position 1'
   ).whenArgs('1', async params => params.msg.channel.position)
-  .whenDefault(Builder.defaults.tooManyArguments)
+  .whenDefault(Builder.errors.tooManyArguments)
   .build();

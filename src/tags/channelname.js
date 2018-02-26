@@ -16,5 +16,5 @@ module.exports =
     'This channel\'s name is {channelname}',
     'This channel\'s name is test-channel'
   ).whenArgs('1', async params => params.msg.channel.name)
-  .whenDefault(Builder.defaults.tooManyArguments)
+  .whenDefault(Builder.errors.tooManyArguments)
   .build();

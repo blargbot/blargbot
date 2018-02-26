@@ -19,8 +19,8 @@ module.exports =
         .withExample(
             '{base;255;16}',
             'FF'
-        ).beforeExecute(Builder.defaults.processAllSubtags)
-        .whenArgs('<2', Builder.defaults.notEnoughArguments)
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('<2', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async params => {
             let args = params.args.slice(1);
             if (args.length === 2)
@@ -36,23 +36,23 @@ module.exports =
             if (isNaN(radix) && radixFallback) radix = fallback;
 
             if (isNaN(origin) || isNaN(radix))
-                return await Builder.defaults.notANumber(params);
+                return await Builder.errors.notANumber(params);
 
             //This check is needed because js cant natively handle radixes over 36 (0-9, a-z)
             if (!bu.between(origin, 2, 36, true) && radixFallback) origin = fallback;
             if (!bu.between(radix, 2, 36, true) && radixFallback) radix = fallback;
 
             if (!bu.between(origin, 2, 36, true) || !bu.between(radix, 2, 36, true))
-                return await bu.tagProcessError(params, '`Base must be between 2 and 36`');
+                return await Builder.util.error(params, 'Base must be between 2 and 36');
 
             let value = parseInt(args[0], origin);
             if (isNaN(value)) {
                 if (!isNaN(fallback))
                     value = fallback;
                 else
-                    return await Builder.defaults.notANumber(params);
+                    return await Builder.errors.notANumber(params);
             }
             return value.toString(radix);
 
-        }).whenDefault(Builder.defaults.tooManyArguments)
+        }).whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -17,13 +17,13 @@ module.exports =
     .withExample(
         '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
         'Hello World!'
-    ).beforeExecute(Builder.defaults.processAllSubtags)
-    .whenArgs('1', Builder.defaults.notEnoughArguments)
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenArgs('2-3', async params => {
         try {
             return await bu.filterMentions((dep.brainfuck.execute(params.args[1], params.args[2])).output);
         } catch (e) {
-            return await bu.tagProcessError(params, '`' + e.message + '`');
+            return await Builder.util.error(params, e.message);
         }
-    }).whenDefault(Builder.defaults.tooManyArguments)
+    }).whenDefault(Builder.errors.tooManyArguments)
     .build();

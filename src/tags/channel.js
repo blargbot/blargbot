@@ -21,8 +21,8 @@ module.exports =
     .withExample(
       '{channel;#channel}Hello!',
       'In #channel: Hello!'
-    ).beforeExecute(Builder.defaults.processAllSubtags)
-    .whenArgs('1', Builder.defaults.notEnoughArguments)
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenArgs('2-3', async params => {
       if (/([0-9]{17,23})/.test(params.args[1])) {
         let channelid = params.args[1].match(/([0-9]{17,23})/)[1];
@@ -39,13 +39,13 @@ module.exports =
               params.msg.channel = channel;
             return '';
           } else {
-            return await bu.tagProcessError(params, '`Channel must be in guild`');
+            return await Builder.util.error(params, 'Channel must be in guild');
           }
         } else {
-          return await Builder.defaults.noChannelFound(params);
+          return await Builder.errors.noChannelFound(params);
         }
       } else {
-        return await Builder.defaults.noChannelFound(params);
+        return await Builder.errors.noChannelFound(params);
       }
-    }).whenDefault(Builder.defaults.tooManyArguments)
+    }).whenDefault(Builder.errors.tooManyArguments)
     .build();

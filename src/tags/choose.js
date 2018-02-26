@@ -16,16 +16,16 @@ module.exports =
     .withExample(
       'I feel like eating {choose;1;cake;pie;pudding} today.',
       'I feel like eating pie today.'
-    ).whenArgs('<3', Builder.defaults.notEnoughArguments)
+    ).whenArgs('<3', Builder.errors.notEnoughArguments)
     .whenDefault(async params => {
       params.args[1] = await bu.processTagInner(params, 1)
       let index = parseInt(params.args[1]);
-      
+
       if (isNaN(index))
-        return await Builder.defaults.notANumber(params);
+        return await Builder.errors.notANumber(params);
 
       if (index < 0)
-        return await bu.tagProcessError(params, '`Choice cannot be negative`');
+        return await Builder.util.error(params, 'Choice cannot be negative');
 
       params.content = params.args[index + 2];
       return await bu.processTagInner(params);

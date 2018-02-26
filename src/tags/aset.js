@@ -22,7 +22,7 @@ module.exports =
         ).withExample(
             '{aset;testvar;This is a test var}',
             ''
-        ).whenArgs('1', Builder.defaults.notEnoughArguments)
+        ).whenArgs('1', Builder.errors.notEnoughArguments)
         .whenDefault(async params => {
             params.args[1] = '@' + params.args[1];
             return await TagManager.list['set'].execute(params)

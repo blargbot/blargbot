@@ -33,8 +33,8 @@ module.exports =
         ).withExample(
             '{bool;<=;5;10}',
             'true'
-        ).beforeExecute(Builder.defaults.processAllSubtags)
-        .whenArgs('<4', Builder.defaults.notEnoughArguments)
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('<4', Builder.errors.notEnoughArguments)
         .whenArgs('4', async params => {
             const args = params.args;
             for (var i = 1; i < args.length; i++) {
@@ -48,6 +48,6 @@ module.exports =
             else if (operators.hasOwnProperty(args[2]))
                 return operators[args[2]](args[1], args[3]);
             else
-                return await bu.tagProcessError(params, '`Invalid Operator`');
-        }).whenDefault(Builder.defaults.tooManyArguments)
+                return await Builder.errors.invalidOperator(params);
+        }).whenDefault(Builder.errors.tooManyArguments)
         .build();

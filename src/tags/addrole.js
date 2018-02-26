@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 async function grantRole(params, target) {
     if (!target)
-        return await Builder.defaults.noUserFound(params);
+        return await Builder.util.noUserFound(params);
 
     let regexp = /(\d{17,23})/, role;
     if (regexp.test(params.args[1])) {
@@ -19,7 +19,7 @@ async function grantRole(params, target) {
         role = params.msg.guild.roles.get(roleId);
     }
     if (!role)
-        return await Builder.defaults.noRoleFound(params);
+        return await Builder.util.noRoleFound(params);
 
     let hasRole = bu.hasRole(target, role.id, false);
     if (hasRole)
@@ -47,8 +47,8 @@ module.exports =
         ).withExample(
             'Have a role! {addrole;11111111111111111}',
             'Have a role! true'
-        ).beforeExecute(Builder.defaults.processAllSubtags)
-        .whenArgs('<2', Builder.defaults.notEnoughArguments)        
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('<2', Builder.errors.notEnoughArguments)        
         .whenArgs('2', async params => await grantRole(params, params.msg.member))
         .whenArgs('3', async params => {
             let user = await bu.getUser(params.msg, params.args[2], true);
@@ -56,5 +56,5 @@ module.exports =
                 return await grantRole(params, params.msg.guild.members.get(user.id));
             return await grantRole(params, params.msg.member);
         })
-        .whenDefault(Builder.defaults.tooManyArguments)
+        .whenDefault(Builder.errors.tooManyArguments)
         .build();

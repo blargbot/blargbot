@@ -17,11 +17,11 @@ module.exports =
     .withExample(
       '{capitalize;hello world!}',
       'Hello world!'
-    ).beforeExecute(Builder.defaults.processAllSubtags)
-    .whenArgs('1', Builder.defaults.notEnoughArguments)
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenArgs('2-3', async params => {
       if (params.args[2])
         return params.args[1][0].toUpperCase() + params.args[1].substr(1).toLowerCase();
       return params.args[1][0].toUpperCase() + params.args[1].substr(1);
-    }).whenDefault(Builder.defaults.tooManyArguments)
+    }).whenDefault(Builder.errors.tooManyArguments)
     .build()

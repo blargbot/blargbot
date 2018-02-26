@@ -20,7 +20,7 @@ module.exports =
             'Your second word was {args;1}',
             'Hello world!',
             'Your second word was world!'
-        ).beforeExecute(Builder.defaults.processAllSubtags)
+        ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', async params => params.words.join(' '))
         .whenArgs('2,3', async params => {
             let from = parseInt(params.args[1]),
@@ -34,12 +34,12 @@ module.exports =
                 to = parseInt(to);
 
             if (isNaN(from) || isNaN(to))
-                return await Builder.defaults.notANumber(params);
+                return await Builder.errors.notANumber(params);
 
             if (from > to)
                 from = [to, to = from][0];
 
-            return Builder.defaults.magicClean(params.words.slice(from, to).join(' '));
+            return Builder.util.escapeInjection(params.words.slice(from, to).join(' '));
         })
-        .whenDefault(Builder.defaults.tooManyArguments)
+        .whenDefault(Builder.errors.tooManyArguments)
         .build();

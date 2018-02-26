@@ -20,21 +20,13 @@ module.exports =
         ).withExample(
             '{apply;randint;[1,4]}',
             '3'
-        ).beforeExecute(Builder.defaults.processAllSubtags)
-        .whenArgs('1', Builder.defaults.notEnoughArguments)
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenDefault(async params => {
             if (!TagManager.list.hasOwnProperty(params.args[1]))
-                return await bu.tagProcessError(params, '`No tag found`');
+                return await Builder.util.error(params, 'No tag found');
             let tag = TagManager.list[params.args[1]];
-            let tagArgs = [];
-
-            for (const arg of params.args.slice(2)) {
-                let deserialized = await bu.getArray(params, arg);
-                if (deserialized && Array.isArray(deserialized.v))
-                    tagArgs.push(...deserialized.v);
-                else
-                    tagArgs.push(arg);
-            }
+            let tagArgs = Builder.util.flattenArgArrays(params.args.slice(2))
 
             params.args = [params.args[0], ...tagArgs];
 
