@@ -6,13 +6,6 @@ class TagBuilder {
   static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name); }
   static CCommandTag(name) { return new TagBuilder().withCategory(bu.TagType.CCOMMAND).withName(name); }
 
-  static magicClean(text) {
-    return bu.fixContent(text)
-      .replace(new RegExp(bu.specialCharBegin, 'g'), '')
-      .replace(new RegExp(bu.specialCharDiv, 'g'), '')
-      .replace(new RegExp(bu.specialCharEnd, 'g'), '');
-  }
-
   constructor(init) {
     this.tag = {}
     this.execute = {
@@ -24,7 +17,6 @@ class TagBuilder {
     this.withProp('init', init);
     this.withProp('isTag', true);
     this.withProp('requireCtx', false);
-    this.withProp('magicClean', TagBuilder.magicClean);
   }
 
   build() {
@@ -201,12 +193,19 @@ TagBuilder.defaults = {
       params.args[i] = await bu.processTagInner(params, i);
     }
   },
+  magicClean(text) {
+    return bu.fixContent(text)
+      .replace(new RegExp(bu.specialCharBegin, 'g'), '')
+      .replace(new RegExp(bu.specialCharDiv, 'g'), '')
+      .replace(new RegExp(bu.specialCharEnd, 'g'), '');
+  },
   async notEnoughArguments(params) { return await bu.tagProcessError(params, '`Not enough arguments`'); },
   async tooManyArguments(params) { return await bu.tagProcessError(params, '`Too many arguments`'); },
   async noUserFound(params) { return await bu.tagProcessError(params, '`No user found`'); },
   async noRoleFound(params) { return await bu.tagProcessError(params, '`No role found`'); },
   async noChannelFound(params) { return await bu.tagProcessError(params, '`No channel found`'); },
-  async notANumber(params) { return await bu.tagProcessError(params, '`Not a number`'); }
+  async notANumber(params) { return await bu.tagProcessError(params, '`Not a number`'); },
+  async notAnArray(params) { return await bu.tagProcessError(params, '`Not an array`'); }
 }
 
 module.exports = TagBuilder;

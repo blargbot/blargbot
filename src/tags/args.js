@@ -39,7 +39,7 @@ module.exports =
             if (from > to)
                 from = [to, to = from][0];
 
-            return this.magicClean(params.words.slice(from, to).join(' '));
+            return Builder.defaults.magicClean(params.words.slice(from, to).join(' '));
         })
         .whenDefault(Builder.defaults.tooManyArguments)
         .build();
