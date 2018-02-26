@@ -16,6 +16,6 @@ module.exports =
             'You said {argslength} words.',
             'I am saying things.',
             'You said 4 words.'
-        ).whenArgs(1, async params => !params.words[0] ? '0' : params.words.length.toString())
+        ).whenArgs('1', async params => !params.words[0] ? '0' : params.words.length.toString())
         .whenDefault(Builder.defaults.tooManyArguments)
         .build();
