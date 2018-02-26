@@ -7,23 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
-
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `bool`;
-e.args = `&lt;evaluator&gt; &lt;arg1&gt; &lt;arg2&gt;`;
-e.usage = `{bool;evaluator;arg1;arg2}`;
-e.desc = `Evaluates <code>arg1</code> and <code>arg2</code> using the <code>evaluator</code> and returns <code>true</code> or <code>false</code>. Valid
-evaluators are <code>==</code> <code>!=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>
-&gt;=</code> <code>startswith</code> <code>endswith</code><code>includes</code>`;
-e.exampleIn = `{bool;&lt;=;5;10}`;
-e.exampleOut = `true`;
+const Builder = require('../structures/TagBuilder');
 
 const operators = {
     '==': (a, b) => a === b,
@@ -37,32 +21,33 @@ const operators = {
     'includes': (a, b) => a.toString().includes(b)
 };
 
-e.execute = async function (params) {
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
+module.exports =
+    Builder.ComplexTag('base')
+        .withArgs(b =>
+            b.require('evaluator')
+                .require('arg1')
+                .require('arg2')
+        ).withDesc('Evaluates `arg1` and `arg2` using the `evaluator` and returns `true` or `false`. ' +
+            'Valid evaluators are `' + Object.keys(operators).join('`, `') + '`\n' +
+            'The positions of `evaluator` and `arg1` can be swapped.'
+        ).withExample(
+            '{bool;<=;5;10}',
+            'true'
+        ).beforeExecute(Builder.defaults.processAllSubtags)
+        .whenArgs('<4', Builder.defaults.notEnoughArguments)
+        .whenArgs('4', async params => {
+            const args = params.args;
+            for (var i = 1; i < args.length; i++) {
+                let val = parseFloat(args[i]);
+                if (!isNaN(val))
+                    args[i] = val;
+            }
 
-    if (args.length > 2) {
-        args[1] = await bu.processTagInner(params, 1);
-        if (/^-?\d+(\.\d*)?$/.test(args[1])) args[1] = parseFloat(args[1]);
-        args[2] = await bu.processTagInner(params, 2);
-        if (/^-?\d+(\.\d*)?$/.test(args[2])) args[2] = parseFloat(args[2]);
-        args[3] = await bu.processTagInner(params, 3);
-        if (/^-?\d+(\.\d*)?$/.test(args[3])) args[3] = parseFloat(args[3]);
-
-        if (operators.hasOwnProperty(args[1])) {
-            replaceString = operators[args[1]](args[2], args[3]).toString();
-        } else if (operators.hasOwnProperty(args[2])) {
-            replaceString = operators[args[2]](args[1], args[3]).toString();
-        } else replaceString = await bu.tagProcessError(params, '`Invalid Operator`');
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            if (operators.hasOwnProperty(args[1]))
+                return operators[args[1]](args[2], args[3]);
+            else if (operators.hasOwnProperty(args[2]))
+                return operators[args[2]](args[1], args[3]);
+            else
+                return await bu.tagProcessError(params, '`Invalid Operator`');
+        }).whenDefault(Builder.defaults.tooManyArguments)
+        .build();
