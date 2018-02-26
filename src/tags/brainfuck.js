@@ -7,42 +7,23 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `brainfuck`;
-e.args = `&lt;code&gt; [input]`;
-e.usage = `{brainfuck;code[;input]}`;
-e.desc = `Interprets brainfuck input.`;
-e.exampleIn = `{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}`;
-e.exampleOut = `Hello World!`;
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    if (args[1]) {
+module.exports =
+    Builder.ComplexTag('brainfuck')
+    .withArgs(b => 
+        b.require('code').optional('input')
+    ).withDesc('Interprets brainfuck input.')
+    .withExample(
+        '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
+        'Hello World!'
+    ).beforeExecute(Builder.defaults.processAllSubtags)
+    .whenArgs('1', Builder.defaults.notEnoughArguments)
+    .whenArgs('2-3', async params => {
         try {
-            replaceString = await bu.filterMentions((dep.brainfuck.execute(args[1], args[2])).output);
-        } catch (err) {
-            replaceString = await bu.tagProcessError(params, '`' + err.message + '`');
+            return await bu.filterMentions((dep.brainfuck.execute(params.args[1], params.args[2])).output);
+        } catch (e) {
+            return await bu.tagProcessError(params, '`' + e.message + '`');
         }
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+    }).whenDefault(Builder.defaults.tooManyArguments)
+    .build();
