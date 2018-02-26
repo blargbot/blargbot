@@ -6,7 +6,7 @@
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
-bu.CAT_ID = '103347843934212096';
+bu.CAT_ID = '135556895086870528';
 
 // A special character for tag injections
 bu.specialCharBegin = '\uE001';

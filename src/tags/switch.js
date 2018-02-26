@@ -7,60 +7,55 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = 'switch';
-e.args = '&lt;arg&gt; &lt;case1&gt; &lt;then1&gt; [case2] [then2].. [default]';
-e.usage = '{switch;arg;case1;then1[;case2;then2..][;default]}';
-e.desc = 'Finds the <code>case</code> that matches <code>arg</code> and returns the following <code>then</code>.' +
-    'If there is no matching <code>case</code> and <code>default</code> is specified,' +
-    '<code>default</code> is returned. If not, it returns blank.';
-e.exampleIn = '{switch;{args;0};yes;Correct!;no;Incorrect!;That is not yes or no}';
-e.exampleOut = 'Correct!';
-
-e.execute = async function (params) {
-    params.args[1] = await bu.processTagInner(params, 1);
-    for (let i = 2; i < params.args.length; i += 2) {
-        if (i != params.args.length - 1)
-            params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args;
-    var replaceString = '';
-    var replaceContent = false;
-    var elseDo = '';
-    var cases = {};
-    args.shift();
-    var arg = args[0];
-    args.shift();
-    for (let i = 0; i < args.length; i++) {
-        if (i != args.length - 1) {
-            let deserialized = bu.deserializeTagArray(args[i]);
-            if (deserialized && Array.isArray(deserialized.v)) {
-                for (let j = 0; j < deserialized.v.length; j++) {
-                    cases[deserialized.v[j]] = args[i + 1];
-                }
-            } else {
-                cases[args[i]] = args[i + 1];
+module.exports =
+    new Builder()
+        .withCategory(bu.TagType.COMPLEX)
+        .withName('switch')
+        .withArgs(b =>
+            b.require('value').optional(b =>
+                b.require('case', 'then').allowMultiple(true)
+            ).optional('default')
+        ).withDesc('Finds the `case` that matches `value` and returns the following `then`.' +
+            'If there is no matching `case` and `default` is specified,' +
+            '`default` is returned. If not, it returns blank.'
+        ).withExample(
+            '{switch;{args;0};yes;Correct!;no;Incorrect!;That is not yes or no}',
+            'Correct!'
+        ).beforeExecute(async params => {
+            params.args[1] = await bu.processTagInner(params, 1);
+            for (let i = 2; i < params.args.length; i += 2) {
+                if (i != params.args.length - 1)
+                    params.args[i] = await bu.processTagInner(params, i);
             }
-            i++;
-        } else {
-            elseDo = args[i];
-        }
-    }
-    if (args.length % 2 != 0) replaceString = cases[arg] || elseDo;
-    else replaceString = cases[arg] || '';
-    params.content = replaceString;
-    replaceString = await bu.processTagInner(params);
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+        }).whenDefault(async params => {
+            let args = params.args;
+            var replaceString = '';
+            var elseDo = '';
+            var cases = {};
+            args.shift();
+            var arg = args[0];
+            args.shift();
+            for (let i = 0; i < args.length; i++) {
+                if (i != args.length - 1) {
+                    let deserialized = bu.deserializeTagArray(args[i]);
+                    if (deserialized && Array.isArray(deserialized.v)) {
+                        for (let j = 0; j < deserialized.v.length; j++) {
+                            cases[deserialized.v[j]] = args[i + 1];
+                        }
+                    } else {
+                        cases[args[i]] = args[i + 1];
+                    }
+                    i++;
+                } else {
+                    elseDo = args[i];
+                }
+            }
+            if (args.length % 2 != 0)
+                replaceString = cases[arg] || elseDo;
+            else
+                replaceString = cases[arg] || '';
+            params.content = replaceString;
+            return await bu.processTagInner(params);
+        }).build();
