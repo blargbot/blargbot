@@ -6,6 +6,11 @@
     "roleundef": "",
     "pleasereport": "",
     "generic": "",
+    "invalidduration": "",
+    "moderation": {
+        "position": "",
+        "owner": ""
+    },
     "couldnotsend": "",
     "messagetoolong": "",
     "notenoughparams": "",
