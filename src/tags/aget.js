@@ -7,66 +7,22 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.deprecated = true;
-e.name = `aget`;
-e.args = `&lt;name&gt; [index]`;
-e.usage = `{aget;name[;index]}`;
-e.desc = `Returns a stored variable, or an index in a stored array. Variables are unique per-author.`;
-e.exampleIn = `{aget;testvar}`;
-e.exampleOut = `This is a test var`;
-
-
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    var replaceString = '';
-    var replaceContent = false;
-    let storedAuthor = await r.table('user').get(params.author);
-    if (!storedAuthor) {
-        return {
-            replaceString: await bu.tagProcessError(params, '`Author not found`'),
-            replaceContent
-        }
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    let authorVars = storedAuthor.vars || {};
-    if (args.length == 2) {
-        let result = authorVars[args[1]];
-        if (Array.isArray(result)) {
-            replaceString = bu.serializeTagArray(result, args[1], true);
-        } else
-            replaceString = result;
-    } else if (args.length > 2) {
-        let result = authorVars[args[1]];
-        if (Array.isArray(result)) {
-            let index = parseInt(args[2]);
-            if (isNaN(index)) {
-                replaceString = await bu.tagProcessError(params, '`Invalid index`');
-            } else {
-                if (!result[index]) {
-                    replaceString = await bu.tagProcessError(params, '`Undefined index`');
-                } else
-                    replaceString = result[index];
-            }
-        } else
-            replaceString = result;
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    new Builder()
+        .withCategory(bu.TagType.COMPLEX)
+        .withDepreciated(true)
+        .withName('aget')
+        .withArgs(b =>
+            b.require('name').optional('index')
+        ).withDesc('Returns a stored variable, or an index in a stored array. ' +
+            'Variables are unique per-author. ' +
+            'This tag is functionally equivalent to {get;@name;index}'
+        ).withExample(
+            '{aget;testvar}',
+            'This is a test var'
+        ).whenDefault(async params => {
+            params.args[1] = '@' + params.args[1];
+            return await TagManager.list['get'].execute(params);
+        }).build();
