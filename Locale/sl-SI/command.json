@@ -85,15 +85,15 @@
                     "info": "Poišče oznako z imenom, ki vsebuje vaše vprašanje."
                 },
                 "list": {
-                    "usage": "[@uporabnik]",
+                    "usage": "",
                     "info": "Seznam vseh oznak ali po izbiri vseh oznak ustvarjenih od določenega uporabnika."
                 },
                 "favorite": {
-                    "usage": "<ime>",
-                    "info": "Doda specificirano oznako med pribljubljene."
+                    "usage": "",
+                    "info": ""
                 },
                 "report": {
-                    "usage": "<ime>",
+                    "usage": "",
                     "info": "Prijavi oznak, ki krši ToS (Terms of Service). Prosimo uporabljajte odgovorno."
                 },
                 "test": {
@@ -109,10 +109,12 @@
                     "info": "Da povezavo k BBTag dokumentaciji, ali pa priskrbi informacije o specifičnem subtag-u."
                 },
                 "setdesc": {
-                    "info": "informacije"
+                    "info": "",
+                    "usage": ""
                 },
                 "setusage": {
-                    "info": "informacije"
+                    "info": "",
+                    "usage": ""
                 }
             },
             "subcommandnotfound": "Ni bilo možno najti podukaz z imenom `{{subcommand}}`.",
@@ -120,7 +122,7 @@
             "nobots": "[[emote.x]] Oznako ne morete prenesti na bot-a!",
             "transfercancelled": "[[emote.x]] Prenos je bil preklican.",
             "transfercomplete": "[[emote.check]] {{user}} je sedaj lastnik oznake '{{tag}}\".",
-            "taginfo": "__**Oznaka | {{name}}** __\nAvtor: **{{author}}**\nZadnja sprememba: **{{lastModified}}**\nJe bilo uporabljeno že **{{uses}} krat **!\nBilo je favorizirano **{{favourites}} krat **!",
+            "taginfo": "",
             "descupdate": "Opis za '{{tag}}« je bila posodobljena.",
             "descreset": "Opis za '{{tag}}« je bila ponastavljena.",
             "subcommandconflict": "Ne morete uporabljati ime \"{{name}}\" ker ni podukaza s tem imenom!",
