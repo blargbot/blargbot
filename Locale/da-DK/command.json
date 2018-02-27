@@ -398,7 +398,7 @@
                 "doesntexist": "En straf med en vægt på **{{weight}}** findes ikke.",
                 "list": "Dette er de straffe der er aktive i din server:\n\n{{list}}"
             },
-            "default": ""
+            "default": "Disse er de tilgængelige underkommandoer:\n\n{{subcommands}}"
         },
         "reason": {
             "info": "",
@@ -481,15 +481,15 @@
         },
         "kick": {
             "usage": "",
-            "info": "",
+            "info": "Sparker en bruger.",
             "flags": {
-                "reason": ""
+                "reason": "Årsagen til sparket."
             },
-            "kicked": "",
-            "invaliduser": ""
+            "kicked": ":ok_hand: **{{user}}** er blevet sparket.",
+            "invaliduser": "Den angivne bruger kunne ikke blive fundet."
         },
         "mute": {
-            "usage": "",
+            "usage": "<user>",
             "info": "Dæmper en bruger.",
             "flags": {
                 "reason": "Årsagen til dæmpningen.",
@@ -525,7 +525,7 @@
         },
         "unban": {
             "usage": "",
-            "info": "",
+            "info": "Fjerner udelukkelsen fra en bruger.",
             "flags": {
                 "reason": ""
             },
