@@ -382,7 +382,8 @@
                         "ban": "Angiver, at straffen er at udelukke. Kan ikke bruges med dæmp eller spark.",
                         "mute": "Angiver, at straffen skal være mute. Kan ikke bruges med kick eller forbud.",
                         "time": "Angiver, hvor længe en udelukkelse eller et mute skal vare i.",
-                        "list": "Lister de aktive straffe."
+                        "list": "Lister de aktive straffe.",
+                        "days": ""
                     }
                 }
             },
@@ -463,7 +464,8 @@
             "invalidcount": "Nummeret der blev angivet var ikke et tal!",
             "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** advarsel(er).",
             "negativecount": "Mindst én advarsel skal tildeles!",
-            "usage": "<user>"
+            "usage": "<user>",
+            "limitexceeded": ""
         },
         "pardon": {
             "usage": "<user>",
