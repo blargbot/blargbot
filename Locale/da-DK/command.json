@@ -507,9 +507,9 @@
             "flags": {
                 "reason": "Årsagen til fjernelsen af dæmpningen."
             },
-            "unmuted": "",
+            "unmuted": ":ok_hand: Dæmpningen fra **{{user}}** er blevet fjernet.",
             "invaliduser": "",
-            "unmutedafter": ""
+            "unmutedafter": "Fjerner automatisk dæmpningen efter {{seconds}} sekunder."
         },
         "ban": {
             "usage": "",
