@@ -382,7 +382,8 @@
                         "ban": "Specifica che la punizione è il bandire. Non può essere usato con il mutare o il cacciare.",
                         "mute": "Specifica che la punizione è il mutare. Non può essere usato con il cacciare o il bandire.",
                         "time": "Specifica quanto tempo dovrebbe durare un ban o la disattivazione del microfono.",
-                        "list": "Elenca le punizioni attive."
+                        "list": "Elenca le punizioni attive.",
+                        "days": ""
                     }
                 }
             },
@@ -463,7 +464,8 @@
             "invalidcount": "Il conteggio specificato non è un numero!",
             "warningassigned": "**{{user}}** ha ricevuto **{{count}}** avvertimenti.",
             "negativecount": "Deve essere assegnato almeno un avvertimento!",
-            "usage": "<utente>"
+            "usage": "<utente>",
+            "limitexceeded": ""
         },
         "pardon": {
             "usage": "<utente>",
