@@ -26,6 +26,10 @@ class TagModel extends Base {
         type: this.Sequelize.STRING(1000),
         allowNull: true
       },
+      usage: {
+        type: this.Sequelize.STRING(200),
+        allowNull: true
+      },
       lastUsed: {
         type: this.Sequelize.DATE
       },

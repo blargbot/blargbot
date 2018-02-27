@@ -85,15 +85,15 @@
                     "info": "Searches for a tag with a name containing your query."
                 },
                 "list": {
-                    "usage": "[@user]",
+                    "usage": "[user]",
                     "info": "Lists all the tags, or optionally all the tags created by a specific user."
                 },
                 "favorite": {
-                    "usage": "<name>",
-                    "info": "Favorites the specified tag."
+                    "usage": "[name]",
+                    "info": "Favorites the specified tag, or gets a list of your favorited tags."
                 },
                 "report": {
-                    "usage": "<name>",
+                    "usage": "<name> <reason>",
                     "info": "Reports a tag for violating the ToS. Please use responsibly."
                 },
                 "test": {
@@ -109,10 +109,12 @@
                     "info": "Gives a link to the BBTag documentation, or provides information about a specific subtag."
                 },
                 "setdesc": {
-                    "info": "info"
+                    "info": "Sets the info docs for the specified tag.",
+                    "usage": "<name> <description>"
                 },
                 "setusage": {
-                    "info": "info"
+                    "info": "Sets the usage docs for the specified tag.",
+                    "usage": "<name> <usage>"
                 }
             },
             "subcommandnotfound": "Couldn't find a subcommand with the name `{{subcommand}}`.",
@@ -120,7 +122,7 @@
             "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
             "transfercancelled": "[[emote.x]] The transfer has been canceled.",
             "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
+            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nUses: **{{uses}}**\nFavorites: **{{favourites}}**\n\nUsage: ` {{usage}}`\n\n{{desc}}",
             "descupdate": "The description for `{{tag}}` has been updated.",
             "descreset": "The description for `{{tag}}` has been reset.",
             "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",

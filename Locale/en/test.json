@@ -1,4 +1,4 @@
 {
-  "icu": "you {ItemCount, plural,=0 {have no projects}one {have # projects}other {have # projects}}",
-  "placeholder": "you have %s projects"
+    "icu": "you {ItemCount, plural,=0 {have no projects}one {have # projects}other {have # projects}}",
+    "placeholder": "you have %s projects"
 }

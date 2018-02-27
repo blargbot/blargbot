@@ -7,23 +7,34 @@ class TagCommand extends GeneralCommand {
     super(client, {
       name: 'tag',
       aliases: ['t'],
+      info: 'Tags are a system of public commands that anyone can create or execute, using the BBTag language.' +
+        '\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do ' +
+        '`b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.' +
+        '\nBy creating a tag, you acknowledge that you agree to the ' +
+        'Terms of Service (<https://blargbot.xyz/tags/tos>).',
+      usage: '<name | subcommand> [args]',
       subcommands: {
-        set: { minArgs: 2 },
-        delete: { minArgs: 1 },
-        rename: { minArgs: 2 },
-        raw: { minArgs: 1 },
-        info: { minArgs: 1 },
-        transfer: { minArgs: 2 },
-        top: {},
-        author: { minArgs: 1 },
-        search: { minArgs: 1 },
-        list: {},
-        favorite: {},
-        report: { minArgs: 1 },
-        test: { minArgs: 1 },
-        help: {},
-        docs: {},
-        setdesc: { minArgs: 1 }
+        set: {
+          minArgs: 2, info: 'Creates or edits a tag with the provided name and content. ' +
+            'Will not replace any tags made by anyone else.',
+          usage: '<name> <content>'
+        },
+        delete: { minArgs: 1, info: 'Deletes a tag that you own.', usage: '<name>' },
+        rename: { minArgs: 2, info: 'Renames a tag that you own.', usage: '<name> <new name>' },
+        raw: { minArgs: 1, info: 'Gets the raw code of a tag.', usage: '<name>' },
+        info: { minArgs: 1, info: 'Displays information about a tag.', usage: '<name>' },
+        transfer: { minArgs: 2, info: 'Transfers a tag to the specified user. Variables will not be transferred.', usage: '<name> <user>' },
+        top: { info: 'Displays the tags that have been the most favorited.' },
+        author: { minArgs: 1, info: 'Displays the author of a tag.', usage: '<name>' },
+        search: { minArgs: 1, info: 'Searches for a tag with a name containing your query.', usage: '<query>' },
+        list: { info: 'Lists all the tags, or optionally all the tags created by a specific user.', usage: '[user]' },
+        favorite: { minArgs: 1, info: 'Favorites the specified tag, or gets a list of your favorited tags.', usage: '[name]' },
+        report: { minArgs: 2, info: 'Reports a tag for violating the ToS. Please use responsibly.', usage: '<name> <reason>' },
+        test: { minArgs: 1, info: 'Executes the given code in a test environment.', usage: '<code>' },
+        help: { usage: '[subcommand]', info: 'Displays this!' },
+        docs: { info: 'Gives a link to the BBTag documentation, or provides information about a specific subtag.', usage: '[subtag]' },
+        setdesc: { minArgs: 2, info: 'Sets the info docs for the specified tag.', usage: '<name> <description>' },
+        setusage: { minArgs: 2, info: 'Sets the usage docs for the specified tag.', usage: '<name> <usage>' }
       },
       subcommandAliases: {
         remove: 'delete',
@@ -34,29 +45,29 @@ class TagCommand extends GeneralCommand {
         setinfo: 'setdesc'
       },
       keys: {
-        dontown: '.dontown',
-        notag: '.notag',
-        tagset: '.tagset',
-        tagrename: '.tagrename',
-        raw: '.raw',
-        alreadyexists: '.alreadyexists',
-        testoutput: '.testoutput',
-        help: '.info',
-        subcommandNotFound: '.subcommandnotfound',
-        transferprompt: '.transferprompt',
-        nobots: '.nobots',
-        transfercancelled: '.transfercancelled',
-        transfercomplete: '.transfercomplete',
-        taginfo: '.taginfo',
-        descupdate: '.descupdate',
-        descreset: '.descreset',
-        subcommandconflict: '.subcommandconflict',
-        toptagformat: '.toptagformat',
-        toptags: '.toptags',
-        tagauthor: '.tagauthor',
-        favouriteadd: '.favouriteadd',
-        favouriteremove: '.favouriteremove',
-        favourites: '.favourites'
+        dontown: { key: '.dontown', value: "[[emote.x]] You don't own that tag!" },
+        notag: { key: '.notag', value: "[[emote.x]] There is no tag with that name." },
+        tagset: { key: '.tagset', value: "[[emote.check]] Tag `{{name}}` {{process}}!" },
+        tagrename: { key: '.tagrename', value: "[[emote.check]] The tag `{{old}}` has been renamed to `{{new}}`." },
+        raw: { key: '.raw', value: "The code for {{name}} is:\n```{{code}}```" },
+        alreadyexists: { key: '.alreadyexists', value: "[[emote.x]] A tag with that name already exists!" },
+        testoutput: { key: '.testoutput', value: "Test Output:\n\n{{output}}" },
+        help: { key: '.info', value: "Tags are a system of public commands that anyone can create or execute, using the BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nFor more information about a subcommand, do `b!t help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)." },
+        subcommandNotFound: { key: '.subcommandnotfound', value: "Couldn't find a subcommand with the name `{{subcommand}}`." },
+        transferprompt: { key: '.transferprompt', value: "{{target}}, {{user}} wants to transfer ownership of the tag `{{tag}}` to you. Do you accept?\nThis will not transfer variables." },
+        nobots: { key: '.nobots', value: "[[emote.x]] You cannot transfer a tag to a bot!" },
+        transfercancelled: { key: '.transfercancelled', value: "[[emote.x]] The transfer has been canceled." },
+        transfercomplete: { key: '.transfercomplete', value: "[[emote.check]] {{user}} now owns the tag `{{tag}}`." },
+        taginfo: { key: '.taginfo', value: "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nUses: **{{uses}}**\nFavorites: **{{favourites}}**\n\nUsage: ` {{usage}}`\n\n{{desc}}" },
+        descupdate: { key: '.descupdate', value: "The description for `{{tag}}` has been updated." },
+        descreset: { key: '.descreset', value: "The description for `{{tag}}` has been reset." },
+        subcommandconflict: { key: '.subcommandconflict', value: "You can't use the name `{{name}}` because there is a subcommand with that name!" },
+        toptagformat: { key: '.toptagformat', value: "{{index}}. **{{name}}** ({{author}})\n    - Favorites: {{favourites}} Uses: {{uses}}" },
+        toptags: { key: '.toptags', value: "Here are the top 10 tags!\n\n{{tags}}" },
+        tagauthor: { key: '.tagauthor', value: "The tag `{{tag}}` was created by **{{author}}**" },
+        favouriteadd: { key: '.favouriteadd', value: "The tag `{{tag}}` has been added to your favorites list." },
+        favouriteremove: { key: '.favouriteremove', value: "The tag `{{tag}}` has been removed from your favorites list." },
+        favourites: { key: '.favourites', value: "You have {{count}} tags on your favorites list.\n```fix\n{{tags}}\n```" }
       }
     });
 
@@ -341,6 +352,26 @@ class TagCommand extends GeneralCommand {
       });
     }
   }
+  async sub_setusage(ctx) {
+    const { data, tag, owner } = await this.ownershipTest(ctx);
+    if (owner) {
+      let toSet = null;
+      if (ctx.input._.length > 1) toSet = ctx.input._.raw.slice(1).join('');
+      if (toSet && toSet.length > 200) {
+        return ctx.decodeAndSend('error.inputtoolong', {
+          length: toSet.length,
+          max: 100
+        });
+      }
+      await data.setUsage(toSet);
+      if (toSet) await ctx.decodeAndSend(this.keys.descupdate, {
+        tag: await tag.get('tagName')
+      });
+      else await ctx.decodeAndSend(this.keys.descreset, {
+        tag: await tag.get('tagName')
+      });
+    }
+  }
 
   async sub_help(ctx) {
     if (ctx.input._.length === 0) {
@@ -364,6 +395,10 @@ class TagCommand extends GeneralCommand {
         });
       }
     }
+  }
+
+  async sub_docs(ctx) {
+    return 'docs';
   }
 }
 

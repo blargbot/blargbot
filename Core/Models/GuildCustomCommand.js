@@ -49,6 +49,13 @@ class GuildCustomCommandModel extends Base {
         type: this.Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: false
+      },
+      restricted: {
+        type: this.Sequelize.VIRTUAL,
+        get() {
+          return ['_greeting', '_farewell'].includes(this.getDataValue('commandName'));
+        },
+        comment: 'Whether users can execute this custom command. Only for greetings and farewells.'
       }
     });
   }

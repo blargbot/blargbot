@@ -9,6 +9,10 @@ class GuildMemberRemove extends Event {
     let audit = await this.client.Helpers.Modlog.performModlog(guild, 'kick', {
       targetID: user.id
     });
+
+    let farewell = await this.client.models.GuildCustomCommand.find({ where: { guildId: guild.id, commandName: '_farewell' } });
+    console.log(farewell);
+
   }
 }
 
