@@ -12,11 +12,8 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ComplexTag('aset')
         .withDepreciated(true)
-        .withArgs(b =>
-            b.require('name').optional(b =>
-                b.addChild('value').allowMultiple(true)
-            )
-        ).withDesc('Stores a variable. ' +
+        .withArgs(a => [a.require('name'), a.optional('value', true)])
+        .withDesc('Stores a variable. ' +
             'Variables are unique per-author. ' +
             'This tag is functionally equivalent to {set;@name;value}'
         ).withExample(
@@ -25,6 +22,6 @@ module.exports =
         ).whenArgs('1', Builder.errors.notEnoughArguments)
         .whenDefault(async params => {
             params.args[1] = '@' + params.args[1];
-            return await TagManager.list['set'].execute(params)
+            return await TagManager.list['set'].execute(params);
         })
         .build();

@@ -11,9 +11,8 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.ComplexTag('capitalize')
-    .withArgs(b =>
-      b.require('text').optional('lower')
-    ).withDesc('Capitalizes the first letter of `text`. If `lower` is specified the rest of the text will be lowercase')
+    .withArgs(a => [a.require('text'), a.optional('lower')])
+    .withDesc('Capitalizes the first letter of `text`. If `lower` is specified the rest of the text will be lowercase')
     .withExample(
       '{capitalize;hello world!}',
       'Hello world!'
@@ -24,4 +23,4 @@ module.exports =
         return params.args[1][0].toUpperCase() + params.args[1].substr(1).toLowerCase();
       return params.args[1][0].toUpperCase() + params.args[1].substr(1);
     }).whenDefault(Builder.errors.tooManyArguments)
-    .build()
+    .build();

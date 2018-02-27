@@ -1,4 +1,4 @@
-const ArgumentBuilder = require('./ArgumentBuilder');
+const ArgFactory = require('./ArgumentFactory');
 
 class TagBuilder {
   static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
@@ -67,7 +67,7 @@ class TagBuilder {
       }
     }(this.execute);
 
-    console.debug('Tag built:', this.tag);
+    console.debug('Tag built:', this.tag.name, ArgFactory.toString(this.tag.args));
     return this.tag;
   }
 
@@ -93,11 +93,8 @@ class TagBuilder {
   }
 
   withArgs(args) {
-    if (typeof args === 'function') {
-      let builder = ArgumentBuilder.Literal;
-      args(builder);
-      args = builder.build();
-    }
+    if (typeof args === 'function')
+      args = args(ArgFactory);
     return this.withProp('args', args);
   }
 

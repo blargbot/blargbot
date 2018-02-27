@@ -11,14 +11,14 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.ComplexTag('choose')
-    .withArgs(b => b.require('choice').require(b => b.text('option').allowMultiple(true)))
+    .withArgs(a => [a.require('choice'), a.require('option', true)])
     .withDesc('Chooses from the given options, where `choice` is the index of the option selected.')
     .withExample(
       'I feel like eating {choose;1;cake;pie;pudding} today.',
       'I feel like eating pie today.'
     ).whenArgs('<3', Builder.errors.notEnoughArguments)
     .whenDefault(async params => {
-      params.args[1] = await bu.processTagInner(params, 1)
+      params.args[1] = await bu.processTagInner(params, 1);
       let index = parseInt(params.args[1]);
 
       if (isNaN(index))

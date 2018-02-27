@@ -13,7 +13,7 @@ module.exports =
   Builder.CCommandTag('channel')
     .withDepreciated(true)
     .requireStaff(true)
-    .withArgs(b => b.require('channel').optional('message'))
+    .withArgs(a => [a.require('channel'), a.optional('message')])
     .withDesc('Please use the {send} subtag instead of this.\n' +
       'Sends the output to a specific channel. ' +
       'Only works in custom commands. ' +

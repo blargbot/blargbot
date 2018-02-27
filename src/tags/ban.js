@@ -12,13 +12,13 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.CCommandTag('ban')
         .requireStaff(true)
-        .withArgs(b =>
-            b.require('user')
-                .optional('daysToDelete')
-                .optional('reason')
-                .optional('timeToUnban')
-                .optional('noperms')
-        ).withDesc('Bans a user. ' +
+        .withArgs(a => [
+            a.require('user'),
+            a.optional('daysToDelete'),
+            a.optional('reason'),
+            a.optional('timeToUnban'),
+            a.optional('noperms')
+        ]).withDesc('Bans a user. ' +
             'This functions the same as the ban command. ' +
             'If the ban is successful, `Success` will be returned, unless a duration was provided in which case the duration in ms will be returned' +
             'If noperms is provided, do not check if the command executor is actually able to ban people. ' +

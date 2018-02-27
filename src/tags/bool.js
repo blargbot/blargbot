@@ -23,11 +23,11 @@ const operators = {
 
 module.exports =
     Builder.ComplexTag('bool')
-        .withArgs(b =>
-            b.require('evaluator')
-                .require('arg1')
-                .require('arg2')
-        ).withDesc('Evaluates `arg1` and `arg2` using the `evaluator` and returns `true` or `false`. ' +
+        .withArgs(a => [
+            a.require('evaluator'),
+            a.require('arg1'),
+            a.require('arg2')
+        ]).withDesc('Evaluates `arg1` and `arg2` using the `evaluator` and returns `true` or `false`. ' +
             'Valid evaluators are `' + Object.keys(operators).join('`, `') + '`\n' +
             'The positions of `evaluator` and `arg1` can be swapped.'
         ).withExample(

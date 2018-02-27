@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.ComplexTag('floor')
-    .withArgs(b => b.require('number'))
+    .withArgs(a => a.require('number'))
     .withDesc('Rounds a number down.')
     .withExample(
       '{floor;1.23}',

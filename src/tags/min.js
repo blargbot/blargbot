@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.ComplexTag('min')
-    .withArgs(b => b.require(b => b.addChild('number').allowMany(true)))
+    .withArgs(a => a.require('number', true))
     .withDesc('Returns the smallest number out of those provided.')
     .withExample(
       '{min;50;2;65}',

@@ -11,15 +11,14 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.ComplexTag('abs')
-        .withArgs(b =>
-            b.require('number')
-        ).withDesc('Gets the absolute value of a number')
+        .withArgs(a => a.require('number'))
+        .withDesc('Gets the absolute value of a number')
         .withExample(
             '{abs;-535}',
             '535'
         )
         .beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('<2', Builder.errors.notEnoughArguments)        
+        .whenArgs('<2', Builder.errors.notEnoughArguments)
         .whenArgs('2', async params => {
             let asNumber = parseFloat(params.args[1]);
             if (!isNaN(asNumber)) {

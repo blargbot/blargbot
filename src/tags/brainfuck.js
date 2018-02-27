@@ -11,9 +11,8 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.ComplexTag('brainfuck')
-    .withArgs(b => 
-        b.require('code').optional('input')
-    ).withDesc('Interprets brainfuck input.')
+    .withArgs(a => [a.require('code'), a.optional('input')])
+    .withDesc('Interprets brainfuck input.')
     .withExample(
         '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
         'Hello World!'

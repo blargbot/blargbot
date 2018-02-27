@@ -13,11 +13,15 @@ module.exports =
     new Builder()
         .withCategory(bu.TagType.COMPLEX)
         .withName('switch')
-        .withArgs(b =>
-            b.require('value').optional(b =>
-                b.require('case', 'then').allowMultiple(true)
-            ).optional('default')
-        ).withDesc('Finds the `case` that matches `value` and returns the following `then`.' +
+        .withArgs(a => [
+            a.require('value'),
+            a.optional([
+                a.require('case'),
+                a.require('then')
+            ], true),
+            a.optional('default')
+        ])
+        .withDesc('Finds the `case` that matches `value` and returns the following `then`.' +
             'If there is no matching `case` and `default` is specified,' +
             '`default` is returned. If not, it returns blank.'
         ).withExample(

@@ -11,11 +11,11 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.ComplexTag('base')
-        .withArgs(b =>
-            b.require('integer')
-                .optional('origin')
-                .require('radix')
-        ).withDesc('Converts a Base `origin` number into `radix`. Default `origin` is 10. `radix` must be between 2 and 36.')
+        .withArgs(a => [
+            a.require('integer'),
+            a.optional('origin'),
+            a.require('radix')
+        ]).withDesc('Converts a Base `origin` number into `radix`. Default `origin` is 10. `radix` must be between 2 and 36.')
         .withExample(
             '{base;255;16}',
             'FF'

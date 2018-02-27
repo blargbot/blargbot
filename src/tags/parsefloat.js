@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.ComplexTag('parsefloat')
-    .withArgs(b => b.require('text'))
+    .withArgs(a => a.require('text'))
     .withDesc('Returns an floating point number from text. If it wasn\'t a number, returns NaN.')
     .withExample(
       '{parsefloat;abcd} {parsefloat;12.34} {parsefloat;1.2cd}',

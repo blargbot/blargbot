@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.ComplexTag('parseint')
-    .withArgs(b => b.require('text'))
+    .withArgs(a => a.require('text'))
     .withDesc('Returns an integer from text. If it wasn\'t a number, returns NaN.')
     .withExample(
       '{parseint;abcd} {parseint;1234} {parseint;12cd}',
