@@ -382,7 +382,8 @@
                         "ban": "",
                         "mute": "",
                         "time": "",
-                        "list": ""
+                        "list": "",
+                        "days": ""
                     }
                 }
             },
@@ -463,7 +464,8 @@
             "invalidcount": "",
             "warningassigned": "",
             "negativecount": "Хотя бы одно предупреждение должно быть присвоено!",
-            "usage": ""
+            "usage": "",
+            "limitexceeded": ""
         },
         "pardon": {
             "usage": "",
