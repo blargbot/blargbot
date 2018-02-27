@@ -485,8 +485,8 @@
             "flags": {
                 "reason": ""
             },
-            "kicked": "",
-            "invaliduser": ""
+            "kicked": ":ok_hand: **{{user}}** был кикнут.",
+            "invaliduser": "Указанный пользователь не найден."
         },
         "mute": {
             "usage": "",
@@ -508,19 +508,19 @@
                 "reason": ""
             },
             "unmuted": "",
-            "invaliduser": "",
+            "invaliduser": "Указанный пользователь не найден.",
             "unmutedafter": ""
         },
         "ban": {
             "usage": "",
-            "info": "",
+            "info": "Банит пользователя.",
             "flags": {
-                "reason": "",
+                "reason": "Причина бана.",
                 "days": "",
                 "time": ""
             },
-            "banned": "",
-            "invaliduser": "",
+            "banned": ":ok_hand: **{{user}}** был забанен.",
+            "invaliduser": "Указанный пользователь не найден.",
             "unbunin": ""
         },
         "unban": {
