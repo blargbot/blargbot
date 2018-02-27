@@ -85,15 +85,15 @@
                     "info": "Sorgu içeren bir adla bir etiket arar."
                 },
                 "list": {
-                    "usage": "[@user]",
+                    "usage": "",
                     "info": "Tüm etiketleri veya belirli bir kullanıcı tarafından oluşturulan isteğe bağlı olarak tüm etiketleri listeler."
                 },
                 "favorite": {
-                    "usage": "<name>",
-                    "info": "Sık Kullanılanlar belirtilen etiket."
+                    "usage": "",
+                    "info": ""
                 },
                 "report": {
-                    "usage": "<name>",
+                    "usage": "",
                     "info": "ToS ihlal için bir etiket bildirir. Lütfen sorumlu bir şekilde kullanın."
                 },
                 "test": {
@@ -109,10 +109,12 @@
                     "info": "BBTag belgeler için bir bağlantı sunar veya belirli bir alt etiket hakkında bilgi sağlar."
                 },
                 "setdesc": {
-                    "info": "info"
+                    "info": "",
+                    "usage": ""
                 },
                 "setusage": {
-                    "info": "info"
+                    "info": "",
+                    "usage": ""
                 }
             },
             "subcommandnotfound": "'{{subcommand}}' adı ile bir alt bulamadım.",
@@ -120,7 +122,7 @@
             "nobots": "[[emote.x]] Bir bot için bir etiket aktaramazsınız!",
             "transfercancelled": "[[emote.x]] Aktarımı iptal edildi.",
             "transfercomplete": "[[emote.check]] {{user}} şimdi etiket '{{tag}}' sahibi.",
-            "taginfo": "__ ** Etiketi | {{name}} ** \n__ Yazar: **{{author}} ** \nson değişiklik: **{{lastModified}} ** \nbu kez kullanılan toplam **{{uses}} kez **! \nÇok beğenilen oldu **{{favourites}} kez **!",
+            "taginfo": "",
             "descupdate": "'{{tag}}' için açıklama güncelleştirildi.",
             "descreset": "'{{tag}}' için açıklama sıfırlandı.",
             "subcommandconflict": "Bu ada sahip bir alt olduğu '{{name}}' adı kullanılamaz!",
