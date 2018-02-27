@@ -398,7 +398,7 @@
                 "doesntexist": "",
                 "list": ""
             },
-            "default": ""
+            "default": "Это доступные подкоманды:\n\n{{subcommands}}"
         },
         "reason": {
             "info": "",
@@ -407,8 +407,8 @@
         },
         "help": {
             "info": "",
-            "allcommands": "",
-            "nocommand": "",
+            "allcommands": "Вот список команд, которые вы можете исполнять в **{{guild}}**.\n```markdown\n{{commands}}\n```\nДля более подробной информации о командах наберите `help <commandname>` или посетите <https://blargbot.xyz/commands>.",
+            "nocommand": "Извините, команды с именем '{{name}}' не существует!",
             "commandinfo": ""
         },
         "ccommand": {
