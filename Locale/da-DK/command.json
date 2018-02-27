@@ -503,9 +503,9 @@
         },
         "unmute": {
             "usage": "",
-            "info": "",
+            "info": "Fjerner dæmpningen fra en bruger.",
             "flags": {
-                "reason": ""
+                "reason": "Årsagen til fjernelsen af dæmpningen."
             },
             "unmuted": "",
             "invaliduser": "",
@@ -513,11 +513,11 @@
         },
         "ban": {
             "usage": "",
-            "info": "",
+            "info": "Udelukker en bruger.",
             "flags": {
-                "reason": "",
+                "reason": "Årsagen til udelukkelsen.",
                 "days": "",
-                "time": ""
+                "time": "Hvor længe udelukkelsen skal vare."
             },
             "banned": "",
             "invaliduser": "",
@@ -527,7 +527,7 @@
             "usage": "",
             "info": "Fjerner udelukkelsen fra en bruger.",
             "flags": {
-                "reason": ""
+                "reason": "Årsagen til udelukkelsen."
             },
             "banned": "",
             "invaliduser": "",
