@@ -1,542 +1,560 @@
 {
-    "general": {
-        "ping": {
-            "info": "Pong! Najde ukaz latence.",
-            "randmsg": [
-                "Obstoj je laž.",
-                "Nekega dne boš umrl, mogoče kmalu.",
-                "Nič več ni pomembno.",
-                "Kje greš dol?",
-                "Zunaj ni ničesar.",
-                "Sami ste v neskončni praznini.",
-                "Resnica je napačna.",
-                "Zapustite vse.",
-                "Vaš obstoj je beden.",
-                "Vsi smo že mrtvi.",
-                "Mijav.",
-                "Strah je svoboda.",
-                "Podreditev je osvoboditev.",
-                "Nasprotovanje je resnica.",
-                "Želite ustvariti pogodbo?",
-                "Pustite to in pojdite dalje."
-            ],
-            "final": "Pong! ({{time}}ms)"
-        },
-        "brainfuck": {
-            "info": "Izvede \"brainfuck\" kodo.",
-            "usage": "<koda>",
-            "flags": {
-                "p": "Prikaže seznam kazalcev po izvedbi.",
-                "i": "Določa vnos za matematični znak \",\".",
-                "pointers": "Navaja, da bi nastali kazalci morali biti izpisani.",
-                "input": "Določa vhodne parametre."
-            }
-        },
-        "ship": {
-            "info": "Vam da ime ladje za dva uporabnika.",
-            "usage": "<uporabnik1> <uporabnik2>",
-            "final": "Ime vaše ladje je **{{name}}**!",
-            "notenough": "Morate mi povedati koga poslati!"
-        },
-        "tag": {
-            "info": "Oznake so sistem javnih ukazov, ki jih lahko ustvari ali izvrši kdorkoli z BBTag jezikom. \n\n**Podukazi**:\n{{subcommands}}\n\nČe želite več informacij o podukazu, napišite \"b!t pomoč <podukaz>\"\nZa več informacij o BBTag, obiščite <https://blargbot.xyz/tags>.\nZ ustvaritvijo oznake se seznanite, da se strinjate s pogoji storitve (<https://blargbot.xyz/tags/tos>).",
-            "usage": "<ime | podukaz> [args]",
-            "dontown": "[[emote.x]] Te oznake ne posedujete!",
-            "alreadyexists": "[[emote.x]] Oznaka s tem imenom že obstaja!",
-            "notag": "[[emote.x]] Ni oznake s tem imenom.",
-            "tagset": "[[emote.check]] Označi '{{name}}` {{process}}!",
-            "tagrename": "[[emote.check]] Oznaka '{{old}}\" je bila preimenovana v \"{{new}}\".",
-            "raw": "Šifra za {{name}} je: \n```{{code}}```",
-            "testoutput": "Test izpisa:\n\n{{output}}",
-            "subcommand": {
-                "set": {
-                    "usage": "<ime><vsebina>",
-                    "info": "Ustvari ali uredi oznako z določenim imenom in vsebino. Ne bo nadomestilo nobene oznake narejene od drugih."
-                },
-                "delete": {
-                    "usage": "<ime>",
-                    "info": "Izbriše oznako, ki jo posedujete."
-                },
-                "rename": {
-                    "usage": "<ime> < novo ime>",
-                    "info": "Preimenuje oznako, ki jo posedujete."
-                },
-                "raw": {
-                    "usage": "<ime>",
-                    "info": "Dobi neobdelano kodo oznake."
-                },
-                "info": {
-                    "usage": "<ime>",
-                    "info": "Prikaže informacije o oznaki."
-                },
-                "transfer": {
-                    "usage": "<ime> <uporabnik>",
-                    "info": "Prenese oznako navedenemu uporabniku. Spremenljivke ne bodo prenešene."
-                },
-                "top": {
-                    "info": "Prikaže oznake, ki so bile najbolj priljubljene."
-                },
-                "author": {
-                    "usage": "<ime>",
-                    "info": "Prikaže avtorja oznake."
-                },
-                "search": {
-                    "usage": "<vprašanje>",
-                    "info": "Poišče oznako z imenom, ki vsebuje vaše vprašanje."
-                },
-                "list": {
-                    "usage": "",
-                    "info": "Seznam vseh oznak ali po izbiri vseh oznak ustvarjenih od določenega uporabnika."
-                },
-                "favorite": {
-                    "usage": "",
-                    "info": ""
-                },
-                "report": {
-                    "usage": "",
-                    "info": "Prijavi oznak, ki krši ToS (Terms of Service). Prosimo uporabljajte odgovorno."
-                },
-                "test": {
-                    "usage": "<koda>",
-                    "info": "Izvede dano kodo v testnem okolju."
-                },
-                "help": {
-                    "usage": "[subcommand]",
-                    "info": "Prikaže to!"
-                },
-                "docs": {
-                    "usage": "[subtag]",
-                    "info": "Da povezavo k BBTag dokumentaciji, ali pa priskrbi informacije o specifičnem subtag-u."
-                },
-                "setdesc": {
-                    "info": "",
-                    "usage": ""
-                },
-                "setusage": {
-                    "info": "",
-                    "usage": ""
-                }
-            },
-            "subcommandnotfound": "Ni bilo možno najti podukaz z imenom `{{subcommand}}`.",
-            "transferprompt": "{{target}}, {{user}} želi prenesti lastništvo oznake '{{tag}}\" vam. Ali se strinjate?\nTo ne prenese spremenljivk.",
-            "nobots": "[[emote.x]] Oznako ne morete prenesti na bot-a!",
-            "transfercancelled": "[[emote.x]] Prenos je bil preklican.",
-            "transfercomplete": "[[emote.check]] {{user}} je sedaj lastnik oznake '{{tag}}\".",
-            "taginfo": "",
-            "descupdate": "Opis za '{{tag}}« je bila posodobljena.",
-            "descreset": "Opis za '{{tag}}« je bila ponastavljena.",
-            "subcommandconflict": "Ne morete uporabljati ime \"{{name}}\" ker ni podukaza s tem imenom!",
-            "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Priljubljene: {{favourites}} Uporabljeno: {{uses}} krat",
-            "toptags": "Tukaj je 10 najbolj priljubljenih oznak!\n\n{{tags}}",
-            "tagauthor": "Oznaka `{{tag}}` je bila ustvarjena od **{{author}}**",
-            "favouriteadd": "Oznaka `{{tag}}` je bila dodana k vašim seznamu priljubljenih oznak.",
-            "favouriteremove": "Oznaka `{{tag}}` je bila odstranjena iz seznama vaših priljubljenih oznak.",
-            "favourites": "Imate {{count}} oznak na vašem seznamu priljubljenih.\n```popravi\n{{tags}}\n```"
-        },
-        "locale": {
-            "info": "Nastavi katera lokalna sporočila bodo bila poslana.",
-            "set": "Vaš kraj je bil nastavljen na {{locale}}!",
-            "list": "Vaš trenutni kraj je: {{current}}\n\nProsimo izberite kater kraj želite izbrati."
-        },
-        "tokenify": {
-            "info": ""
-        },
-        "nato": {
-            "info": ""
-        },
-        "invite": {
-            "info": "",
-            "message": ""
-        },
-        "donate": {
-            "info": "",
-            "willdm": "Ok, poslal Vam bom informacije za prispevek v direktno sporočilo.",
-            "message": "nosilno mesto"
-        },
-        "mods": {
-            "info": "",
-            "mods": "Modifikacija v **{{guild}}**",
-            "nomods": "Ni nobenih modifikacij v tej združbi.",
-            "nomodsonline": "Ni spletnih modifikacij."
-        },
-        "help": {
-            "info": "",
-            "allcommands": "Tukaj so vsi ukazi, ki jih lahko izvršite v **{{guild}}**.\n```markdown\n{{commands}}\n```\n\nZa več informacij o ukazih, napišite `pomoč <ime ukaza>` ali obiščite <https://blargbot.xyz/commands>.",
-            "nocommand": "Žal ni nobenega ukaza z imenom '{{name}}'!",
-            "commandinfo": "",
-            "aliases": "",
-            "subcommand": "",
-            "command": "",
-            "nosubcommand": "",
-            "subcommands": ""
-        },
-        "gamatoto": {
-            "info": "",
-            "subcommand": {
-                "start": {
-                    "usage": "<lokacija>",
-                    "info": "Začne ekspedicijo!"
-                },
-                "end": {
-                    "info": "Konča ekspedicijo!"
-                },
-                "locations": {
-                    "info": "Prikaže seznam vseh lokacij ekspedicije."
-                }
-            },
-            "stats": "<:bc_cat:345081695990710272> Tukaj so vaši predmeti!\n\n{{stats}}",
-            "alreadystarted": "Ekspedicija je že v teku!",
-            "notstarted": "Niste začeli nobene ekspedicije!",
-            "nolocation": "Žal to ni bilo veljavno mesto. Mesta, ki jih trenutno lahko obiščete so:\n\n{{locations}}",
-            "invalidlocation": "Nekaj čudnega se je zgodilo. Mesto, ki ste ga raziskovali ne obstaja! Zaženite še eno ekspedicijo.",
-            "expeditionbeings": "<:bc_cat:345081695990710272> ISKANJE SE JE ZAČELO! <:bc_cat:345081695990710272>\n\nLokacija: {{location}}\n\nPreverite ponovno kasneje z ukazom \"gamatoto konec\"!",
-            "expeditionends": "<:bc_cat:345081695990710272> REZULTATI ODPRAVE! <:bc_cat:345081695990710272>\n\nLokacija: {{location}}\nTrajanje: {{minutes}} minut\n\n{{results}}",
-            "notimeelapsed": "Ni minilo nič časa, odkar se je ekspedicija začela. Gamatoto ni našel ničesar!",
-            "itemfound": "Gamatoto je našel {{amount}} {{item}} pri {{location}}.",
-            "levelup": ":fireworks: Gamatoto je sedaj na nivoju {{level}}!",
-            "gamatotoxp": "Gamatoto je pridobil **{{amount}}** XP ({{old}} → **{{new}}**)",
-            "itemincrease": "{{item}} Našli ste **{{amount}}** ({{old}} → **{{new}}**)",
-            "locations": "Tukaj so vse lokacije odprav!\n\n{{locations}}",
-            "wronglevel": "Žal morate biti raven {{level}}, da bi raziskali ta kraj!",
-            "gamatotoitems": "Tukaj so vaši predmeti:\n{{items}}",
-            "gamatotostats": "Gamatoto je trenutno na nivoju {{level}}! [{{currentxp}}XP /{{neededxp}}XP]",
-            "gamatotocurrent": "Gamatoto je raziskoval **{{location}}* **{{minutes}}** minut. \n\nUporabite \"gamatoto konec\" da končate ekspedicijo.",
-            "gamatotoidle": "Gamatoto trenutno ni na ekspediciji. Pošljite ga na avanturo z ukazom \"gamatoto začni [location]\"!"
-        },
-        "prefix": {
-            "info": "Dobi ali nastavi ukazne predpone. Ta ukaz konfigurira uporabniško predpono. Za predpone združb, uporabite ukaz \"setup\".",
-            "subcommand": {
-                "add": {
-                    "usage": "<predpona>",
-                    "info": "Doda predpono na seznam."
-                },
-                "remove": {
-                    "usage": "<predpona>",
-                    "info": "Odstrani predpono s seznama."
-                }
-            },
-            "prefixlist": "{{content}}\nZa konfiguracijo vaše predpone uporabite podukaz »dodaj« in »odstrani«. Za nastavitev predpon določene združbe, uporabite ukaz \"setup\".",
-            "userprefixes": "Tukaj so vaše predpone:\n```md\n{{userprefixes}}\n```",
-            "guildprefixes": "Tukaj so predpone za to združbo:\n```md\n{{guildprefixes}}\n```",
-            "noprefixes": "Nimate poljubnih predpon.",
-            "defaultprefixes": "Vedno lahko uporabite te predpone:\n{{prefixes}}",
-            "prefixadded": "Ta predpona je bil dodana!",
-            "prefixremoved": "Ta predpona je bila odstranjena!",
-            "nothingchanged": "Nič ni bilo spremenjeno."
-        },
-        "warnings": {
-            "output": "**{{user}}** je nakopičil **{{amount}}** opozoril(o) v **{{guild}}**."
-        },
-        "economy": {
-            "info": "Pretvori valuto z uporabo zadnjih pretvornih statistik.",
-            "invalidamount": "Prosimo navedite veljavno količino za pretvorbo.",
-            "invalidcode": "Neznana koda valute: {{code}}",
-            "converted": "{{amount}} {{from}} je enako {{converted}} {{to}}",
-            "usage": "<od> <do> <količina>"
-        },
-        "usettings": {
-            "info": "Preuredi ali prikaže vaše uporabniške nastavitve.",
-            "subcommand": {
-                "dmerrors": {
-                    "usage": "[drži|ne drži]",
-                    "info": "Omogoči ali onemogoči direktna sporočila za opozorila pri napakah."
-                }
-            },
-            "dmerrorsenabled": "Opozorila za napake preko direktenega sporočila so bile omogočene.",
-            "dmerrorsdisabled": "Opozorila za napake preko direktenega sporočila so bile onemogočene.",
-            "userinfo": "Tukaj so vaše uporabniške nastavitve:\n\n{{settings}}\n\nPodukazi, ki so na voljo: {{sub}}"
-        },
-        "rr": {
-            "info": "Odigra igro ruske rulete. Po standardu lahko vaš revolver drži 6 metkov.",
-            "usage": "[bullets]",
-            "flags": {
-                "capacity": "Nastavi, koliko metkov lahko vaš revolver drži.",
-                "emote": ""
-            },
-            "capacitylow": "",
-            "bulletslow": "",
-            "bulletshigh": "",
-            "begin": "",
-            "death": "",
-            "life": "",
-            "livemessages": [
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            ],
-            "deathmessages": [
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
-            ]
-        },
-        "user": {
-            "usage": "",
-            "info": "",
-            "description": "",
-            "guildinfoheader": "",
-            "guildinfo": "",
-            "status": [
-                "",
-                "",
-                "",
-                ""
-            ]
-        }
+  "general": {
+    "ping": {
+      "info": "Pong! Najde ukaz latence.",
+      "randmsg": [
+        "Obstoj je laž.",
+        "Nekega dne boš umrl, mogoče kmalu.",
+        "Nič več ni pomembno.",
+        "Kje greš dol?",
+        "Zunaj ni ničesar.",
+        "Sami ste v neskončni praznini.",
+        "Resnica je napačna.",
+        "Zapustite vse.",
+        "Vaš obstoj je beden.",
+        "Vsi smo že mrtvi.",
+        "Mijav.",
+        "Strah je svoboda.",
+        "Podreditev je osvoboditev.",
+        "Nasprotovanje je resnica.",
+        "Želite ustvariti pogodbo?",
+        "Pustite to in pojdite dalje."
+      ],
+      "final": "Pong! ({{time}}ms)"
     },
-    "image": {
-        "cat": {
-            "info": ""
+    "brainfuck": {
+      "info": "Izvede \"brainfuck\" kodo.",
+      "usage": "<koda>",
+      "flags": {
+        "p": "Prikaže seznam kazalcev po izvedbi.",
+        "i": "Določa vnos za matematični znak \",\".",
+        "pointers": "Navaja, da bi nastali kazalci morali biti izpisani.",
+        "input": "Določa vhodne parametre."
+      }
+    },
+    "ship": {
+      "info": "Vam da ime ladje za dva uporabnika.",
+      "usage": "<uporabnik1> <uporabnik2>",
+      "final": "Ime vaše ladje je **{{name}}**!",
+      "notenough": "Morate mi povedati koga poslati!"
+    },
+    "tag": {
+      "info": "Oznake so sistem javnih ukazov, ki jih lahko ustvari ali izvrši kdorkoli z BBTag jezikom. \n\n**Podukazi**:\n{{subcommands}}\n\nČe želite več informacij o podukazu, napišite \"b!t pomoč <podukaz>\"\nZa več informacij o BBTag, obiščite <https://blargbot.xyz/tags>.\nZ ustvaritvijo oznake se seznanite, da se strinjate s pogoji storitve (<https://blargbot.xyz/tags/tos>).",
+      "usage": "<ime | podukaz> [args]",
+      "dontown": "[[emote.x]] Te oznake ne posedujete!",
+      "alreadyexists": "[[emote.x]] Oznaka s tem imenom že obstaja!",
+      "notag": "[[emote.x]] Ni oznake s tem imenom.",
+      "tagset": "[[emote.check]] Označi '{{name}}` {{process}}!",
+      "tagrename": "[[emote.check]] Oznaka '{{old}}\" je bila preimenovana v \"{{new}}\".",
+      "raw": "Šifra za {{name}} je: \n```{{code}}```",
+      "testoutput": "Test izpisa:\n\n{{output}}",
+      "subcommand": {
+        "set": {
+          "usage": "<ime><vsebina>",
+          "info": "Ustvari ali uredi oznako z določenim imenom in vsebino. Ne bo nadomestilo nobene oznake narejene od drugih."
         },
         "delete": {
-            "info": ""
+          "usage": "<ime>",
+          "info": "Izbriše oznako, ki jo posedujete."
         },
-        "thesearch": {
-            "info": "",
-            "defaulttext": ""
+        "rename": {
+          "usage": "<ime> < novo ime>",
+          "info": "Preimenuje oznako, ki jo posedujete."
         },
-        "shit": {
-            "info": "",
-            "usage": "",
-            "flags": {
-                "plural": ""
-            }
+        "raw": {
+          "usage": "<ime>",
+          "info": "Dobi neobdelano kodo oznake."
         },
-        "writepoem": {
-            "usage": "",
-            "info": "",
-            "flags": {
-                "monika": "",
-                "sayori": "",
-                "yuri": "",
-                "natsuki": ""
-            }
-        }
-    },
-    "admin": {
-        "setup": {
-            "staff": {
-                "setrole": "",
-                "rolequery": ""
-            },
-            "info": "",
-            "subcommand": {
-                "staffuser": {
-                    "usage": "",
-                    "info": ""
-                },
-                "staffrole": {
-                    "info": ""
-                },
-                "mute": {
-                    "info": ""
-                },
-                "announcement": {
-                    "info": ""
-                },
-                "modlog": {
-                    "usage": "",
-                    "info": ""
-                },
-                "punishment": {
-                    "usage": "",
-                    "info": ""
-                }
-            },
-            "mute": {
-                "setrole": "",
-                "rolequery": ""
-            },
-            "announce": {
-                "set": "",
-                "rolequery": "",
-                "channelquery": ""
-            },
-            "modlog": {
-                "set": "",
-                "remove": "",
-                "invalid": "",
-                "hadinvalid": "",
-                "list": ""
-            },
-            "subcommands": {
-                "modlog": {
-                    "flags": {
-                        "channel": "",
-                        "remove": "",
-                        "list": ""
-                    }
-                },
-                "punishment": {
-                    "flags": {
-                        "kick": "",
-                        "ban": "",
-                        "mute": "",
-                        "time": "",
-                        "list": "",
-                        "days": ""
-                    }
-                }
-            },
-            "punishment": {
-                "toolow": "",
-                "invalidweight": "",
-                "invalidchoice": "",
-                "invalidtypes": "",
-                "added": "",
-                "removed": "",
-                "overwritten": "",
-                "doesntexist": "",
-                "list": ""
-            },
-            "default": ""
+        "info": {
+          "usage": "<ime>",
+          "info": "Prikaže informacije o oznaki."
         },
-        "reason": {
-            "info": "",
-            "nocase": "",
-            "reasonset": ""
+        "transfer": {
+          "usage": "<ime> <uporabnik>",
+          "info": "Prenese oznako navedenemu uporabniku. Spremenljivke ne bodo prenešene."
+        },
+        "top": {
+          "info": "Prikaže oznake, ki so bile najbolj priljubljene."
+        },
+        "author": {
+          "usage": "<ime>",
+          "info": "Prikaže avtorja oznake."
+        },
+        "search": {
+          "usage": "<vprašanje>",
+          "info": "Poišče oznako z imenom, ki vsebuje vaše vprašanje."
+        },
+        "list": {
+          "usage": "",
+          "info": "Seznam vseh oznak ali po izbiri vseh oznak ustvarjenih od določenega uporabnika."
+        },
+        "favorite": {
+          "usage": "",
+          "info": ""
+        },
+        "report": {
+          "usage": "",
+          "info": "Prijavi oznak, ki krši ToS (Terms of Service). Prosimo uporabljajte odgovorno."
+        },
+        "test": {
+          "usage": "<koda>",
+          "info": "Izvede dano kodo v testnem okolju."
         },
         "help": {
-            "info": "",
-            "allcommands": "",
-            "nocommand": "",
-            "commandinfo": ""
+          "usage": "[subcommand]",
+          "info": "Prikaže to!"
         },
-        "ccommand": {
-            "info": "",
-            "usage": "",
-            "subcommand": {
-                "set": {
-                    "usage": "",
-                    "info": ""
-                },
-                "delete": {
-                    "usage": "",
-                    "info": ""
-                },
-                "rename": {
-                    "usage": "",
-                    "info": ""
-                },
-                "author": {
-                    "usage": "",
-                    "info": ""
-                },
-                "transfer": {
-                    "usage": "",
-                    "info": ""
-                },
-                "list": {
-                    "info": ""
-                },
-                "test": {
-                    "usage": "",
-                    "info": ""
-                },
-                "help": {
-                    "usage": "",
-                    "info": ""
-                }
-            },
-            "dontown": "",
-            "notag": "",
-            "tagset": "",
-            "tagrename": "",
-            "raw": "",
-            "alreadyexists": "",
-            "testoutput": ""
+        "docs": {
+          "usage": "[subtag]",
+          "info": "Da povezavo k BBTag dokumentaciji, ali pa priskrbi informacije o specifičnem subtag-u."
         },
-        "warn": {
-            "info": "",
-            "flags": {
-                "count": "",
-                "reason": ""
-            },
-            "invalidcount": "",
-            "warningassigned": "",
-            "negativecount": "",
-            "usage": "",
-            "limitexceeded": ""
+        "setdesc": {
+          "info": "",
+          "usage": ""
         },
-        "pardon": {
-            "usage": "",
-            "info": "",
-            "flags": {
-                "count": "",
-                "reason": ""
-            },
-            "invalidcount": "",
-            "negativecount": "",
-            "warningassigned": "",
-            "invaliduser": ""
+        "setusage": {
+          "info": "",
+          "usage": ""
+        }
+      },
+      "subcommandnotfound": "Ni bilo možno najti podukaz z imenom `{{subcommand}}`.",
+      "transferprompt": "{{target}}, {{user}} želi prenesti lastništvo oznake '{{tag}}\" vam. Ali se strinjate?\nTo ne prenese spremenljivk.",
+      "nobots": "[[emote.x]] Oznako ne morete prenesti na bot-a!",
+      "transfercancelled": "[[emote.x]] Prenos je bil preklican.",
+      "transfercomplete": "[[emote.check]] {{user}} je sedaj lastnik oznake '{{tag}}\".",
+      "taginfo": "",
+      "descupdate": "Opis za '{{tag}}« je bila posodobljena.",
+      "descreset": "Opis za '{{tag}}« je bila ponastavljena.",
+      "subcommandconflict": "Ne morete uporabljati ime \"{{name}}\" ker ni podukaza s tem imenom!",
+      "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Priljubljene: {{favourites}} Uporabljeno: {{uses}} krat",
+      "toptags": "Tukaj je 10 najbolj priljubljenih oznak!\n\n{{tags}}",
+      "tagauthor": "Oznaka `{{tag}}` je bila ustvarjena od **{{author}}**",
+      "favouriteadd": "Oznaka `{{tag}}` je bila dodana k vašim seznamu priljubljenih oznak.",
+      "favouriteremove": "Oznaka `{{tag}}` je bila odstranjena iz seznama vaših priljubljenih oznak.",
+      "favourites": "Imate {{count}} oznak na vašem seznamu priljubljenih.\n```popravi\n{{tags}}\n```"
+    },
+    "locale": {
+      "info": "Nastavi katera lokalna sporočila bodo bila poslana.",
+      "set": "Vaš kraj je bil nastavljen na {{locale}}!",
+      "list": "Vaš trenutni kraj je: {{current}}\n\nProsimo izberite kater kraj želite izbrati."
+    },
+    "tokenify": {
+      "info": ""
+    },
+    "nato": {
+      "info": ""
+    },
+    "invite": {
+      "info": "",
+      "message": ""
+    },
+    "donate": {
+      "info": "",
+      "willdm": "Ok, poslal Vam bom informacije za prispevek v direktno sporočilo.",
+      "message": "nosilno mesto"
+    },
+    "mods": {
+      "info": "",
+      "mods": "Modifikacija v **{{guild}}**",
+      "nomods": "Ni nobenih modifikacij v tej združbi.",
+      "nomodsonline": "Ni spletnih modifikacij."
+    },
+    "help": {
+      "info": "",
+      "allcommands": "Tukaj so vsi ukazi, ki jih lahko izvršite v **{{guild}}**.\n```markdown\n{{commands}}\n```\n\nZa več informacij o ukazih, napišite `pomoč <ime ukaza>` ali obiščite <https://blargbot.xyz/commands>.",
+      "nocommand": "Žal ni nobenega ukaza z imenom '{{name}}'!",
+      "commandinfo": "",
+      "aliases": "",
+      "subcommand": "",
+      "command": "",
+      "nosubcommand": "",
+      "subcommands": ""
+    },
+    "gamatoto": {
+      "info": "",
+      "subcommand": {
+        "start": {
+          "usage": "<lokacija>",
+          "info": "Začne ekspedicijo!"
         },
-        "kick": {
-            "usage": "",
-            "info": "",
-            "flags": {
-                "reason": ""
-            },
-            "kicked": "",
-            "invaliduser": ""
+        "end": {
+          "info": "Konča ekspedicijo!"
+        },
+        "locations": {
+          "info": "Prikaže seznam vseh lokacij ekspedicije."
+        }
+      },
+      "stats": "<:bc_cat:345081695990710272> Tukaj so vaši predmeti!\n\n{{stats}}",
+      "alreadystarted": "Ekspedicija je že v teku!",
+      "notstarted": "Niste začeli nobene ekspedicije!",
+      "nolocation": "Žal to ni bilo veljavno mesto. Mesta, ki jih trenutno lahko obiščete so:\n\n{{locations}}",
+      "invalidlocation": "Nekaj čudnega se je zgodilo. Mesto, ki ste ga raziskovali ne obstaja! Zaženite še eno ekspedicijo.",
+      "expeditionbeings": "<:bc_cat:345081695990710272> ISKANJE SE JE ZAČELO! <:bc_cat:345081695990710272>\n\nLokacija: {{location}}\n\nPreverite ponovno kasneje z ukazom \"gamatoto konec\"!",
+      "expeditionends": "<:bc_cat:345081695990710272> REZULTATI ODPRAVE! <:bc_cat:345081695990710272>\n\nLokacija: {{location}}\nTrajanje: {{minutes}} minut\n\n{{results}}",
+      "notimeelapsed": "Ni minilo nič časa, odkar se je ekspedicija začela. Gamatoto ni našel ničesar!",
+      "itemfound": "Gamatoto je našel {{amount}} {{item}} pri {{location}}.",
+      "levelup": ":fireworks: Gamatoto je sedaj na nivoju {{level}}!",
+      "gamatotoxp": "Gamatoto je pridobil **{{amount}}** XP ({{old}} → **{{new}}**)",
+      "itemincrease": "{{item}} Našli ste **{{amount}}** ({{old}} → **{{new}}**)",
+      "locations": "Tukaj so vse lokacije odprav!\n\n{{locations}}",
+      "wronglevel": "Žal morate biti raven {{level}}, da bi raziskali ta kraj!",
+      "gamatotoitems": "Tukaj so vaši predmeti:\n{{items}}",
+      "gamatotostats": "Gamatoto je trenutno na nivoju {{level}}! [{{currentxp}}XP /{{neededxp}}XP]",
+      "gamatotocurrent": "Gamatoto je raziskoval **{{location}}* **{{minutes}}** minut. \n\nUporabite \"gamatoto konec\" da končate ekspedicijo.",
+      "gamatotoidle": "Gamatoto trenutno ni na ekspediciji. Pošljite ga na avanturo z ukazom \"gamatoto začni [location]\"!"
+    },
+    "prefix": {
+      "info": "Dobi ali nastavi ukazne predpone. Ta ukaz konfigurira uporabniško predpono. Za predpone združb, uporabite ukaz \"setup\".",
+      "subcommand": {
+        "add": {
+          "usage": "<predpona>",
+          "info": "Doda predpono na seznam."
+        },
+        "remove": {
+          "usage": "<predpona>",
+          "info": "Odstrani predpono s seznama."
+        }
+      },
+      "prefixlist": "{{content}}\nZa konfiguracijo vaše predpone uporabite podukaz »dodaj« in »odstrani«. Za nastavitev predpon določene združbe, uporabite ukaz \"setup\".",
+      "userprefixes": "Tukaj so vaše predpone:\n```md\n{{userprefixes}}\n```",
+      "guildprefixes": "Tukaj so predpone za to združbo:\n```md\n{{guildprefixes}}\n```",
+      "noprefixes": "Nimate poljubnih predpon.",
+      "defaultprefixes": "Vedno lahko uporabite te predpone:\n{{prefixes}}",
+      "prefixadded": "Ta predpona je bil dodana!",
+      "prefixremoved": "Ta predpona je bila odstranjena!",
+      "nothingchanged": "Nič ni bilo spremenjeno."
+    },
+    "warnings": {
+      "output": "**{{user}}** je nakopičil **{{amount}}** opozoril(o) v **{{guild}}**."
+    },
+    "economy": {
+      "info": "Pretvori valuto z uporabo zadnjih pretvornih statistik.",
+      "invalidamount": "Prosimo navedite veljavno količino za pretvorbo.",
+      "invalidcode": "Neznana koda valute: {{code}}",
+      "converted": "{{amount}} {{from}} je enako {{converted}} {{to}}",
+      "usage": "<od> <do> <količina>"
+    },
+    "usettings": {
+      "info": "Preuredi ali prikaže vaše uporabniške nastavitve.",
+      "subcommand": {
+        "dmerrors": {
+          "usage": "[drži|ne drži]",
+          "info": "Omogoči ali onemogoči direktna sporočila za opozorila pri napakah."
+        }
+      },
+      "dmerrorsenabled": "Opozorila za napake preko direktenega sporočila so bile omogočene.",
+      "dmerrorsdisabled": "Opozorila za napake preko direktenega sporočila so bile onemogočene.",
+      "userinfo": "Tukaj so vaše uporabniške nastavitve:\n\n{{settings}}\n\nPodukazi, ki so na voljo: {{sub}}"
+    },
+    "rr": {
+      "info": "Odigra igro ruske rulete. Po standardu lahko vaš revolver drži 6 metkov.",
+      "usage": "[bullets]",
+      "flags": {
+        "capacity": "Nastavi, koliko metkov lahko vaš revolver drži.",
+        "emote": ""
+      },
+      "capacitylow": "",
+      "bulletslow": "",
+      "bulletshigh": "",
+      "begin": "",
+      "death": "",
+      "life": "",
+      "livemessages": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      "deathmessages": [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    "user": {
+      "usage": "",
+      "info": "",
+      "description": "",
+      "guildinfoheader": "",
+      "guildinfo": "",
+      "status": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    }
+  },
+  "image": {
+    "cat": {
+      "info": ""
+    },
+    "delete": {
+      "info": ""
+    },
+    "thesearch": {
+      "info": "",
+      "defaulttext": ""
+    },
+    "shit": {
+      "info": "",
+      "usage": "",
+      "flags": {
+        "plural": ""
+      }
+    },
+    "writepoem": {
+      "usage": "",
+      "info": "",
+      "flags": {
+        "monika": "",
+        "sayori": "",
+        "yuri": "",
+        "natsuki": ""
+      }
+    }
+  },
+  "admin": {
+    "setup": {
+      "staff": {
+        "setrole": "",
+        "rolequery": ""
+      },
+      "info": "",
+      "subcommand": {
+        "staffuser": {
+          "usage": "",
+          "info": ""
+        },
+        "staffrole": {
+          "info": ""
         },
         "mute": {
-            "usage": "",
-            "info": "",
-            "flags": {
-                "reason": "",
-                "duration": "",
-                "time": ""
-            },
-            "muted": "",
-            "invaliduser": "",
-            "norole": "",
-            "unmutein": ""
+          "info": ""
         },
-        "unmute": {
-            "usage": "",
-            "info": "",
-            "flags": {
-                "reason": ""
-            },
-            "unmuted": "",
-            "invaliduser": "",
-            "unmutedafter": ""
+        "announcement": {
+          "info": ""
         },
-        "ban": {
-            "usage": "",
-            "info": "",
-            "flags": {
-                "reason": "",
-                "days": "",
-                "time": ""
-            },
-            "banned": "",
-            "invaliduser": "",
-            "unbunin": ""
+        "modlog": {
+          "usage": "",
+          "info": ""
         },
-        "unban": {
-            "usage": "",
-            "info": "",
-            "flags": {
-                "reason": ""
-            },
-            "banned": "",
-            "invaliduser": "",
-            "unbannedafter": ""
+        "punishment": {
+          "usage": "",
+          "info": ""
         }
+      },
+      "mute": {
+        "setrole": "",
+        "rolequery": ""
+      },
+      "announce": {
+        "set": "",
+        "rolequery": "",
+        "channelquery": ""
+      },
+      "modlog": {
+        "set": "",
+        "remove": "",
+        "invalid": "",
+        "hadinvalid": "",
+        "list": ""
+      },
+      "subcommands": {
+        "modlog": {
+          "flags": {
+            "channel": "",
+            "remove": "",
+            "list": ""
+          }
+        },
+        "punishment": {
+          "flags": {
+            "kick": "",
+            "ban": "",
+            "mute": "",
+            "time": "",
+            "list": "",
+            "days": ""
+          }
+        }
+      },
+      "punishment": {
+        "toolow": "",
+        "invalidweight": "",
+        "invalidchoice": "",
+        "invalidtypes": "",
+        "added": "",
+        "removed": "",
+        "overwritten": "",
+        "doesntexist": "",
+        "list": ""
+      },
+      "default": ""
+    },
+    "reason": {
+      "info": "",
+      "nocase": "",
+      "reasonset": ""
+    },
+    "help": {
+      "info": "",
+      "allcommands": "",
+      "nocommand": "",
+      "commandinfo": ""
+    },
+    "warn": {
+      "info": "",
+      "flags": {
+        "count": "",
+        "reason": ""
+      },
+      "invalidcount": "",
+      "warningassigned": "",
+      "negativecount": "",
+      "usage": "",
+      "limitexceeded": ""
+    },
+    "pardon": {
+      "usage": "",
+      "info": "",
+      "flags": {
+        "count": "",
+        "reason": ""
+      },
+      "invalidcount": "",
+      "negativecount": "",
+      "warningassigned": "",
+      "invaliduser": ""
+    },
+    "kick": {
+      "usage": "",
+      "info": "",
+      "flags": {
+        "reason": ""
+      },
+      "kicked": "",
+      "invaliduser": ""
     },
     "mute": {
-
+      "usage": "",
+      "info": "",
+      "flags": {
+        "reason": "",
+        "duration": "",
+        "time": ""
+      },
+      "muted": "",
+      "invaliduser": "",
+      "norole": "",
+      "unmutein": ""
+    },
+    "unmute": {
+      "usage": "",
+      "info": "",
+      "flags": {
+        "reason": ""
+      },
+      "unmuted": "",
+      "invaliduser": "",
+      "unmutedafter": ""
+    },
+    "ban": {
+      "usage": "",
+      "info": "",
+      "flags": {
+        "reason": "",
+        "days": "",
+        "time": ""
+      },
+      "banned": "",
+      "invaliduser": "",
+      "unbunin": ""
+    },
+    "unban": {
+      "usage": "",
+      "info": "",
+      "flags": {
+        "reason": ""
+      },
+      "banned": "",
+      "invaliduser": "",
+      "unbannedafter": ""
+    },
+    "cc": {
+      "usage": "",
+      "info": "",
+      "subcommand": {
+        "set": {
+          "usage": "",
+          "info": ""
+        },
+        "delete": {
+          "usage": "",
+          "info": ""
+        },
+        "rename": {
+          "usage": "",
+          "info": ""
+        },
+        "raw": {
+          "usage": "",
+          "info": ""
+        },
+        "transfer": {
+          "usage": "",
+          "info": ""
+        },
+        "author": {
+          "usage": "",
+          "info": ""
+        },
+        "list": {
+          "info": ""
+        },
+        "test": {
+          "usage": "",
+          "info": ""
+        },
+        "help": {
+          "usage": "",
+          "info": ""
+        },
+        "setdesc": {
+          "usage": "",
+          "info": ""
+        },
+        "setusage": {
+          "usage": "",
+          "info": ""
+        }
+      },
+      "dontown": "",
+      "notag": "",
+      "tagset": "",
+      "tagrename": "",
+      "raw": "",
+      "alreadyexists": "",
+      "testoutput": "",
+      "subcommandnotfound": "",
+      "transferprompt": "",
+      "nobots": "",
+      "transfercancelled": "",
+      "transfercomplete": "",
+      "descupdate": "",
+      "descreset": "",
+      "subcommandconflict": "",
+      "tagauthor": ""
     }
+  }
 }
