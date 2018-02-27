@@ -1,0 +1,4 @@
+{
+  "icu": "you {ItemCount, plural,\n=0 {have no projects}\none {have # projects}\nother {have # projects}\n}",
+  "placeholder": "you have %s projects"
+}
