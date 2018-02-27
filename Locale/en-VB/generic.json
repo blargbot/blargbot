@@ -1,26 +1,26 @@
 {
-    "output": "",
-    "nooutput": "",
-    "queryexpire": "",
+    "output": "The result of the requested operation can be referenced by reading the following characters:\n{{output}}",
+    "nooutput": "Unfortunately the requested operation did not yield any result, textual or otherwise.",
+    "queryexpire": "The query that you have submitted is due to expire in approximately {{length}} of the units of time referred to as \"minutes\" in the English language , consisting of 60 \"seconds\" per minute, while each \"second\" consists of 1000 \"milliseconds\", and a \"millisecond\" is a very short span of chronological duration.",
     "resolveuser": {
-        "nousers": "",
-        "pickuser": ""
+        "nousers": "I was unable to locate a user from the textual input query that you, the user, have provided through the binary medium of the internet.",
+        "pickuser": "By using the textual input query that you provided, I have eliminated the extraneous results and have compiled a list of {{length}} users for you to peruse. I would appreciate it if you would be willing to select which user you would like by clicking or tapping one of the buttons below."
     },
     "resolverole": {
-        "noroles": "",
-        "pickrole": ""
+        "noroles": "I was unable to locate a role from the textual input query that you, the user, have provided through the binary medium of the internet.",
+        "pickrole": "By using the textual input query that you provided, I have eliminated the extraneous results and have compiled a list of {{length}} roles for you to peruse. I would appreciate it if you would be willing to select which user you would like by clicking or tapping one of the buttons below."
     },
     "resolvechannel": {
-        "nochannels": "",
-        "pickchannel": ""
+        "nochannels": "I was unable to locate a channel from the textual input query that you, the user, have provided through the binary medium of the internet.",
+        "pickchannel": "By using the textual input query that you provided, I have eliminated the extraneous results and have compiled a list of {{length}} channels for you to peruse. I would appreciate it if you would be willing to select which user you would like by clicking or tapping one of the buttons below."
     },
-    "edited": "",
-    "created": "",
-    "deleted": "",
+    "edited": "was modified in a way in that the content now differs in some way from the original",
+    "created": "was constructed using the provided input and then inserted into a storage medium",
+    "deleted": "was unreferenced in all available storage mediums and now, for all intents and purposes, does not exist",
     "menu": {
         "choices": ""
     },
-    "nochange": "",
+    "nochange": "After much deliberation and processing, all the changes you have proposed have been considered and implemented using our fabled and thorough 0-step process. That is to say, no procedural event has actually occurred.",
     "commandhelp": "",
     "example": {
         "id1": "",
