@@ -383,7 +383,7 @@
                         "mute": "Angiver, at straffen skal være mute. Kan ikke bruges med kick eller forbud.",
                         "time": "Angiver, hvor længe en udelukkelse eller et mute skal vare i.",
                         "list": "Lister de aktive straffe.",
-                        "days": ""
+                        "days": "Antallet dage som beskeder slettes, når en person udelukkes. Som standard sat til 1."
                     }
                 }
             },
@@ -490,14 +490,14 @@
         },
         "mute": {
             "usage": "",
-            "info": "",
+            "info": "Dæmper en bruger.",
             "flags": {
-                "reason": "",
-                "duration": "",
-                "time": ""
+                "reason": "Årsagen til dæmpningen.",
+                "duration": "Hvor længe dæmpningen skal vare.",
+                "time": "Hvor længe dæmpningen skal vare."
             },
-            "muted": "",
-            "invaliduser": "",
+            "muted": ":ok_hand: **{{user}}** er blevet dæmpet.",
+            "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
             "norole": "",
             "unmutein": ""
         },
