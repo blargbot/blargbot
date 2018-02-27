@@ -6,7 +6,7 @@
     "roleundef": "Ingen lignende rolle blev fundet: '{{role}}'.",
     "pleasereport": "Hvis du mener dette er en fejl, venligst rapporter det!",
     "generic": "Der er noget der gik galt!\n```\n{{message}}\n```\n[[error.pleasereport]]",
-    "invalidduration": "",
+    "invalidduration": "Du angav en ugyldig tidsramme! Prøv at formatere din tid som '5m30s' eller 'in 5 minutes and 30 seconds'.",
     "moderation": {
         "position": "",
         "owner": ""
