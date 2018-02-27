@@ -85,15 +85,15 @@
                     "info": "Cerca una tag con un nome che contiene la tua query."
                 },
                 "list": {
-                    "usage": "[@utente]",
+                    "usage": "",
                     "info": "Mostra la lista di tutte le tag, o solo quelle di un utente specifico."
                 },
                 "favorite": {
-                    "usage": "<nome>",
-                    "info": "Preferisci una specifica tag."
+                    "usage": "",
+                    "info": ""
                 },
                 "report": {
-                    "usage": "<nome>",
+                    "usage": "",
                     "info": "Segnala una tag che viola i ToS. Usa con responsabilità."
                 },
                 "test": {
@@ -109,10 +109,12 @@
                     "info": "Restituisce il link alla documentazione BBTag, o restituisce informazioni su una tag specifica."
                 },
                 "setdesc": {
-                    "info": "Info"
+                    "info": "",
+                    "usage": ""
                 },
                 "setusage": {
-                    "info": "Info"
+                    "info": "",
+                    "usage": ""
                 }
             },
             "subcommandnotfound": "Non ho trovato alcun sottocomando con il nome `{{subcommand}}`.",
@@ -120,7 +122,7 @@
             "nobots": "[[emote.x]] Non puoi trasferire la proprietà ad un bot!",
             "transfercancelled": "[[emote.x]] Il trasferimento è stato annullato.",
             "transfercomplete": "[[emote.check]] {{user}} ora possiede la tag `{{tag}}`.",
-            "taginfo": "__**Tag | {{name}}**__\nAutore: **{{author}}**\nUltima modifica: **{{lastModified}}**\nE' stata usata un totale di **{{uses}} volte**!\nE' stata preferita per un totale di **{{favourites}} volte**!\n\n{{desc}}",
+            "taginfo": "",
             "descupdate": "La descrizione per `{{tag}}` è stata aggiornata.",
             "descreset": "La descrizione per `{{tag}}` è stata resettata.",
             "subcommandconflict": "Non puoi usare il nome `{{name}}` perchè esiste già un sottocomando con quel nome!",
