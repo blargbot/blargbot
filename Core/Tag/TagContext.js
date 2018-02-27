@@ -22,8 +22,9 @@ class TagContext extends Context {
 
     this._author = params.author;
     this.name = params.name;
-
+    console.log(params);
     this.isCustomCommand = params.isCustomCommand || data instanceof DataCustomCommand || false;
+    console.log(this.isCustomCommand);
     this.terminate = false;
     this.isStaff = false;
     this.isAuthorStaff = false;

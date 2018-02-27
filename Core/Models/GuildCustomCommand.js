@@ -24,8 +24,11 @@ class GuildCustomCommandModel extends Base {
         allowNull: false,
         defaultValue: []
       },
-      help: {
+      desc: {
         type: this.Sequelize.STRING(1000)
+      },
+      usage: {
+        type: this.Sequelize.STRING(200)
       },
       content: {
         type: this.Sequelize.STRING(10000),

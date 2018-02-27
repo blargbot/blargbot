@@ -6,11 +6,26 @@ class DataCustomCommand extends DataBase {
     this.guildId = guildId;
     this.guild = this.client.getDataGuild(guildId);
 
-    this.template = {
-      [this.cache.pk]: this.id,
+  }
+
+  get template() {
+    return {
+      commandName: this.id,
+      guildId: this.guildId,
       content: '',
-      author: ''
+      lastUsed: Date.now(),
+      variables: {},
+      roles: [],
+      desc: null,
+      usage: null,
+      authorId: 0,
+      locked: false
     };
+  }
+
+  async reloadObject() {
+    if (this.object === null) this.object = await this.model.findOne({ where: { commandName: this.id, guildId: this.guildId } });
+    else this.object = await this.object.reload();
   }
 
   async getAuthor() {
@@ -51,18 +66,6 @@ class DataCustomCommand extends DataBase {
       uses: (await this.getUses()) + 1,
       lastuse: Date.now()
     });
-  }
-
-  async getFavourites() {
-    return await this.getKey('favourites');
-  }
-
-  async setFavourites(count) {
-    return await this.setKey('favourites', count);
-  }
-
-  async incrementFavourites() {
-    return await this.setKey('favourites', (await this.getFavourites()) + 1);
   }
 
   async getVariable(name) {
