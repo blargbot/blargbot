@@ -1,542 +1,560 @@
 {
-    "general": {
-        "ping": {
-            "info": "Pong!\nFinder svartiden for kommandoen.",
-            "randmsg": [
-                "Eksistens er en løgn.",
-                "Du dør alligevel en eller anden dag, måske endda snart.",
-                "Alting er ligegyldigt.",
-                "Hvor er du på vej hen?",
-                "Der er intet derude.",
-                "Du er alene i en uendelig tomhed.",
-                "Sandhed er løgn.",
-                "Opgiv alt.",
-                "Din eksistens er en skam.",
-                "Vi er allesammen allerede døde.",
-                "Miav.",
-                "Frygt er frihed.",
-                "Undertrykkelse er frigørende.",
-                "Selvmodsigelse er sandhed.",
-                "Kunne du tænke dig at lave en kontrakt?",
-                "Giv slip, og kom videre med dit liv."
-            ],
-            "final": "Pong! ({{time}}ms)"
-        },
-        "brainfuck": {
-            "info": "Udfører brainfuck kode",
-            "usage": "<code>",
-            "flags": {
-                "p": "Viser en liste af pointere efter udførelsen.",
-                "i": "Specificerer inputtet for `.` operatoren.",
-                "pointers": "Angiver, at de resulterende pontere skal udsendes.",
-                "input": "Angiver input-parametre."
-            }
-        },
-        "ship": {
-            "info": "Giver dig parringnavnet på to brugere.",
-            "usage": "<user1><user2>",
-            "final": "Jeres parringsnavn er **{{name}}**!",
-            "notenough": "Du er nødt til at fortælle mig hvem jeg skal parre!"
-        },
-        "tag": {
-            "info": "Tags er et system af offentlige kommandoer som alle kan skabe eller udføre, ved brug af BBTag sproget.\n\n**Subkommandoer**\n{{subcommands}}\n\nFor mere info om en subkommando, skriv `b!t help <subcommand>`\nFor mere info om BBTag, besøg <https://blargbot.xyz/tags>.\nVed at skabe et tag anderkender du, at du er enig med servicevilkårene (<https://blargbot.xyz/tags/tos>).",
-            "usage": "<name | subcommand>[args]",
-            "dontown": "[[emote.x]] Du ejer ikke dette tag!",
-            "alreadyexists": "[[emote.x]] Et tag med dette navn findes allerede!",
-            "notag": "[[emote.x]] Der er intet tag med dette navn.",
-            "tagset": "[[emote.check]] Tag '{{name}}' {{process}}!",
-            "tagrename": "[[emote.check]] Tagget `{{old}}` er blevet omdøbt til `{{new}}`.",
-            "raw": "Koden for {{name}} er:\n```{{code}}```",
-            "testoutput": "Teste Output:\n\n{{output}}",
-            "subcommand": {
-                "set": {
-                    "usage": "<name><content>",
-                    "info": "Skaber eller redigerer et tag med det givne navn og indhold. Vil ikke erstatte tags andre har lavet."
-                },
-                "delete": {
-                    "usage": "<navn>",
-                    "info": "Sletter et tag du ejer."
-                },
-                "rename": {
-                    "usage": "<name><new name>",
-                    "info": "Omdøber et tag du ejer."
-                },
-                "raw": {
-                    "usage": "<navn>",
-                    "info": "Anskaffer rå kode for et tag."
-                },
-                "info": {
-                    "usage": "<navn>",
-                    "info": "Viser info om et tag."
-                },
-                "transfer": {
-                    "usage": "<name><user>",
-                    "info": "Overfører et tag til den specifikke bruger. Variabler vil ikke blive overført."
-                },
-                "top": {
-                    "info": "Viser en liste over de tags der er blevet favoriseret flest gange."
-                },
-                "author": {
-                    "usage": "<name>",
-                    "info": "Viser forfatteren til et tag."
-                },
-                "search": {
-                    "usage": "<query>",
-                    "info": "Søger efter et tag med et navn der indeholder din forespørgsel."
-                },
-                "list": {
-                    "usage": "",
-                    "info": "Viser en liste over alle tags, eller valgfrit alle tags skabt af en bestemt bruger."
-                },
-                "favorite": {
-                    "usage": "",
-                    "info": ""
-                },
-                "report": {
-                    "usage": "",
-                    "info": "Raporterer et tag for at bryde brugervilkåerne. Venligst brug omhyggeligt."
-                },
-                "test": {
-                    "usage": "<code>",
-                    "info": "Udfører det givne stykke kode i et test miljø."
-                },
-                "help": {
-                    "usage": "[subcommand]",
-                    "info": "Viser dette!"
-                },
-                "docs": {
-                    "usage": "[subtag]",
-                    "info": "Giver et link til BBTag dokumentationen, eller giver oplysninger om et bestemt undertag."
-                },
-                "setdesc": {
-                    "info": "",
-                    "usage": ""
-                },
-                "setusage": {
-                    "info": "",
-                    "usage": ""
-                }
-            },
-            "subcommandnotfound": "Kunne ikke finde en underkommando med navnet '{{subcommand}}'.",
-            "transferprompt": "{{target}}, {{user}} ønsker at overdrage ejerskabet af tagget '{{tag}}' til dig. Vil du acceptere? Dette vil ikke overføre variabler.",
-            "nobots": "[[emote.x]] Du kan ikke overføre et tag til en bot!",
-            "transfercancelled": "[[emote.x]] Overførslen er blevet annulleret.",
-            "transfercomplete": "[[emote.check]] {{user}} ejer nu tagget '{{tag}}'.",
-            "taginfo": "",
-            "descupdate": "Beskrivelsen af '{{tag}}' er blevet opdateret.",
-            "descreset": "Beskrivelsen for `{{tag}}` er blevet nulstillet.",
-            "subcommandconflict": "Du kan ikke bruge navnet '{{name}}', fordi der er en underkommando med navnet!",
-            "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favoritter: {{favourites}} Brug: {{uses}}",
-            "toptags": "Her er en liste over de 10 mest brugte tags!\n\n{{tags}}",
-            "tagauthor": "Tagget `{{tag}}` er skabt af **{{author}}**",
-            "favouriteadd": "Tagget '{{tag}}' er blevet føjet til din liste over favoritter.",
-            "favouriteremove": "Tagget '{{tag}}' er blevet fjernet fra din liste over favoritter.",
-            "favourites": "Du har {{count}} tags på din liste over favoritter. \n' ' '\nfix{{tags}}\n ' ' '"
-        },
-        "locale": {
-            "info": "Angiver, hvad landestandard beskeder vil blive sendt i.",
-            "set": "Din landestandard er indstillet til {{locale}}!",
-            "list": "Din nuværende landestandard er: {{current}} \n\nVælg venligst hvilken landestandard du vil bruge."
-        },
-        "tokenify": {
-            "info": ""
-        },
-        "nato": {
-            "info": ""
-        },
-        "invite": {
-            "info": "",
-            "message": ""
-        },
-        "donate": {
-            "info": "",
-            "willdm": "OK, vil jeg sende dig mine donations oplysninger i en privat besked.",
-            "message": "placeholder"
-        },
-        "mods": {
-            "info": "",
-            "mods": "Mods i **{{guild}} **",
-            "nomods": "Der er ingen mods i denne server.",
-            "nomodsonline": "Der er ingen online mods."
-        },
-        "help": {
-            "info": "",
-            "allcommands": "Her er alle de kommandoer du kan udføre i **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor mere info om kommandoerne, skriv `help <commandname>` eller besøg <https://blargbot.xyz/commands>.",
-            "nocommand": "Beklager, der er ingen kommando med navnet '{{name}}'!",
-            "commandinfo": "**{{type}}: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}",
-            "aliases": "Ingen aliaser",
-            "subcommand": "Underkommando",
-            "command": "Kommando",
-            "nosubcommand": "Desværre, er der ingen underkommando for '{{command}}' med navnet '{{name}}'!",
-            "subcommands": "**Subkommandoer**: {{subcommands}}\n\nSkriv `help <command> <subcommand>` for at få mere info om en subkommando!"
-        },
-        "gamatoto": {
-            "info": "Tag på en magisk rejse med Gamototo! Brug denne kommando for at tjekke dine statistikker, eller bug en underkommando for at tage på eventyr!",
-            "subcommand": {
-                "start": {
-                    "usage": "<location>",
-                    "info": "Starter en ekspedition!"
-                },
-                "end": {
-                    "info": "Slutter en ekspedition!"
-                },
-                "locations": {
-                    "info": "Viser en liste over alle ekspeditions steder."
-                }
-            },
-            "stats": "<:bc_cat:345081695990710272> her er dine genstande! \n\n{{stats}}",
-            "alreadystarted": "En ekspedition er allerede i gang!",
-            "notstarted": "Du har ikke startet en ekspedition!",
-            "nolocation": "Desværre, det var ikke en gyldig placering. De steder, du kan i øjeblikket besøge er:\n\n{{locations}}",
-            "invalidlocation": "Noget underligt skete. Det sted du udforskede findes ikke længere! Start venligst en ny ekspedition.",
-            "expeditionbeings": "<:bc_cat:345081695990710272> SØGNINGEN STARTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\n\nTjek igen senere ved at skrive `gamatoto end`!",
-            "expeditionends": ":bc_cat:345081695990710272> EXPEDITIONS RESULTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\nVarighed: {{minutes}} minutter\n\n{{results}}",
-            "notimeelapsed": "Ingen tid er forløbet, siden ekspeditionen startede. Gamatoto fandt ikke noget!",
-            "itemfound": "Gamatoto fandt {{amount}} {{item}} på {{location}}.",
-            "levelup": ":fireworks: Gamatoto er nu niveau {{level}}!",
-            "gamatotoxp": "Gamato fik **{{amount}}**XP ({{old}} → **{{new}}**)",
-            "itemincrease": "{{item}} Du fandt **{{amount}}** ({{old}} → **{{new}}**)",
-            "locations": "Her er alle ekspedition stederne! \n\n{{locations}}",
-            "wronglevel": "Desværre, skal du være level {{level}} for at udforske dette sted!",
-            "gamatotoitems": "Her er dine genstande:\n{{items}}",
-            "gamatotostats": "Gamatoto er i øjeblikket niveau {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
-            "gamatotocurrent": "Gamatoto har været ved at udforske **{{location}} ** på **{{minutes}} ** minutter. Brug 'gamatoto end' for at afslutte ekspeditionen.",
-            "gamatotoidle": "Gamatoto er ikke på en ekspedition lige nu. Send ham på et eventyr ved at bruge 'gamatoto start [location]'!"
-        },
-        "prefix": {
-            "info": "Henter eller angiver dine kommando præfikser. Denne kommando konfigurerer bruger præfikser. For Guild præfikser, brug kommandoen 'setup'.",
-            "subcommand": {
-                "add": {
-                    "usage": "<prefix>",
-                    "info": "Tilføjer et præfiks til din liste."
-                },
-                "remove": {
-                    "usage": "<prefix>",
-                    "info": "Fjerner et præfiks fra din liste."
-                }
-            },
-            "prefixlist": "{{content}}\nFor at konfigurere dine præfikser, brug `add` og `remove` subkommandoerne. For at konfigurere præfikserne for serveren, brug `setup` kommandoen.",
-            "userprefixes": "Her er dine præfikser:\n```md\n{{userprefixes}}\n```",
-            "guildprefixes": "Her er præfikserne i denne server: ' ' 'md\n{{guildprefixes}} \n' ' '",
-            "noprefixes": "Du har ingen brugerdefinerede præfikser.",
-            "defaultprefixes": "Du kan altid bruge disse præfikser:\n{{prefixes}}",
-            "prefixadded": "Dette præfiks er blevet tilføjet!",
-            "prefixremoved": "Dette præfiks er blevet fjernet!",
-            "nothingchanged": "Intet blev ændret."
-        },
-        "warnings": {
-            "output": "**{{user}}** har akkumuleret **{{amount}}** advarsel(er) i **{{guild}}**."
-        },
-        "economy": {
-            "info": "Konverterer valuta ved hjælp af de seneste omregningskurser.",
-            "invalidamount": "Venligst angiv en gyldig mængde der skal konverteres.",
-            "invalidcode": "Ukendt valutakode: {{code}}",
-            "converted": "{{amount}}{{from}} er det samme som {{converted}}{{to}}",
-            "usage": "<from><to><amount>"
-        },
-        "usettings": {
-            "info": "Ændrer eller viser dine brugerindstillinger.",
-            "subcommand": {
-                "dmerrors": {
-                    "usage": "[sandt | falsk]",
-                    "info": "Aktiverer eller deaktiverer private beskeder for fejl meddelelser."
-                }
-            },
-            "dmerrorsenabled": "DM fejl meddelelser er blevet aktiveret.",
-            "dmerrorsdisabled": "DM fejl meddelelser er blevet deaktiveret.",
-            "userinfo": "Her er dine bruger indstillinger:\n\n{{settings}}\nTilgængelige subkommandoer: {{sub}}"
-        },
-        "rr": {
-            "info": "Tager en runde russisk roulette. Som standard, kan din revolver holde 6 kugler.",
-            "usage": "[bullets]",
-            "flags": {
-                "capacity": "Angiver hvor mange kugler din revolver kan holde.",
-                "emote": "Angiver hvilken smiley (eller tekst) skal være den der spiller russisk roulette."
-            },
-            "capacitylow": "Din revolver skal være i stand til at holde mindst to kugler, lavere ville være garanteret død!",
-            "bulletslow": "Du kan ikke lade mindre end en kugle, din kegle.",
-            "bulletshigh": "Wow, din revolver kan kun holde {{capacity}} kugler! Det vil være garanteret dødsfald! Ønsker du at dø eller sådan noget?",
-            "begin": "Du lader {{bullets}} kugle(r) i din {{capacity}}-skuds revolver, drejer den og placerer den mod dit hoved.",
-            "death": "{{content}}\n\n***BUM!*** [[command.general.rr.deathmessages]]",
-            "life": "{{content}}\n\n*Klik!* [[command.general.rr.livemessages]]",
-            "livemessages": [
-                "Pistolen klikker, den er tom. Du har nu endnu en dag at leve i.",
-                "Du ånder lettet op da du indser, at du ikke skal dø idag.",
-                "Som om den overhovedet ville gå af! Heldet er med dig.",
-                "Du takker RNGesus mens du sænker pistolen.",
-                ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
-                "Du smiler da du indser, at du overlevede."
-            ],
-            "deathmessages": [
-                "Pistolen går af, sprøjter din hjerne på udover hele væggen. Uheldig!",
-                ":skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:",
-                "Før du ved af det, er det hele slut.",
-                "I det mindste fik du kylling!",
-                "Det der rydder jeg ***ikke*** op.",
-                "Skydevåben er ikke legetøj!",
-                "Tja. Man kan jo ikke vinde hver gang!",
-                "G-godt... Hvis hver kotelet var perfekt, ville vi overhovedethave hotdogs? Ærgerligt at du er død uanset hvad.",
-                "Skyd skylden på laggen!",
-                "Var i dag bare ikke din heldige dag.",
-                "Pssh, fremsyn er for tabere."
-            ]
-        },
-        "user": {
-            "usage": "[user]",
-            "info": "Returner info om den angivne bruger.",
-            "description": "**Brugernavn**: {{username}}\n**Diskriminator**: {{discriminator}}\n**ID**: {{id}}\n**Bot**: {{bot}}\n**Skabt**: {{created}}\n[Avatar]({{avatar}})",
-            "guildinfoheader": "Oplysninger om server",
-            "guildinfo": "**Kaldenavn**: {{nick}}\n**Tilladelser**: {{permissions}}\n**Status**: {{status}}\n**Tilsluttet**: {{joined}}\n{{game}}",
-            "status": [
-                "Spiller",
-                "Streamer",
-                "Lytter til",
-                "Ser"
-            ]
-        }
+  "general": {
+    "ping": {
+      "info": "Pong!\nFinder svartiden for kommandoen.",
+      "randmsg": [
+        "Eksistens er en løgn.",
+        "Du dør alligevel en eller anden dag, måske endda snart.",
+        "Alting er ligegyldigt.",
+        "Hvor er du på vej hen?",
+        "Der er intet derude.",
+        "Du er alene i en uendelig tomhed.",
+        "Sandhed er løgn.",
+        "Opgiv alt.",
+        "Din eksistens er en skam.",
+        "Vi er allesammen allerede døde.",
+        "Miav.",
+        "Frygt er frihed.",
+        "Undertrykkelse er frigørende.",
+        "Selvmodsigelse er sandhed.",
+        "Kunne du tænke dig at lave en kontrakt?",
+        "Giv slip, og kom videre med dit liv."
+      ],
+      "final": "Pong! ({{time}}ms)"
     },
-    "image": {
-        "cat": {
-            "info": "Giver dig en meget sød og kærlig kat. Nuuuurr!"
+    "brainfuck": {
+      "info": "Udfører brainfuck kode",
+      "usage": "<code>",
+      "flags": {
+        "p": "Viser en liste af pointere efter udførelsen.",
+        "i": "Specificerer inputtet for `.` operatoren.",
+        "pointers": "Angiver, at de resulterende pontere skal udsendes.",
+        "input": "Angiver input-parametre."
+      }
+    },
+    "ship": {
+      "info": "Giver dig parringnavnet på to brugere.",
+      "usage": "<user1><user2>",
+      "final": "Jeres parringsnavn er **{{name}}**!",
+      "notenough": "Du er nødt til at fortælle mig hvem jeg skal parre!"
+    },
+    "tag": {
+      "info": "Tags er et system af offentlige kommandoer som alle kan skabe eller udføre, ved brug af BBTag sproget.\n\n**Subkommandoer**\n{{subcommands}}\n\nFor mere info om en subkommando, skriv `b!t help <subcommand>`\nFor mere info om BBTag, besøg <https://blargbot.xyz/tags>.\nVed at skabe et tag anderkender du, at du er enig med servicevilkårene (<https://blargbot.xyz/tags/tos>).",
+      "usage": "<name | subcommand>[args]",
+      "dontown": "[[emote.x]] Du ejer ikke dette tag!",
+      "alreadyexists": "[[emote.x]] Et tag med dette navn findes allerede!",
+      "notag": "[[emote.x]] Der er intet tag med dette navn.",
+      "tagset": "[[emote.check]] Tag '{{name}}' {{process}}!",
+      "tagrename": "[[emote.check]] Tagget `{{old}}` er blevet omdøbt til `{{new}}`.",
+      "raw": "Koden for {{name}} er:\n```{{code}}```",
+      "testoutput": "Teste Output:\n\n{{output}}",
+      "subcommand": {
+        "set": {
+          "usage": "<name><content>",
+          "info": "Skaber eller redigerer et tag med det givne navn og indhold. Vil ikke erstatte tags andre har lavet."
         },
         "delete": {
-            "info": ""
+          "usage": "<navn>",
+          "info": "Sletter et tag du ejer."
         },
-        "thesearch": {
-            "info": "",
-            "defaulttext": ""
+        "rename": {
+          "usage": "<name><new name>",
+          "info": "Omdøber et tag du ejer."
         },
-        "shit": {
-            "info": "Fortæller alle hvad du synes er lort.",
-            "usage": "[text]",
-            "flags": {
-                "plural": "Angiver, om den givne text skal være flertal."
-            }
+        "raw": {
+          "usage": "<navn>",
+          "info": "Anskaffer rå kode for et tag."
         },
-        "writepoem": {
-            "usage": "[text]",
-            "info": "Skriver et meget dejligt digt.",
-            "flags": {
-                "monika": "Kun Monika.",
-                "sayori": "Kun Monika.",
-                "yuri": "Kun Monika.",
-                "natsuki": "Kun Monika."
-            }
-        }
-    },
-    "admin": {
-        "setup": {
-            "staff": {
-                "setrole": "Personale-roller er blevet opdateret.",
-                "rolequery": "Vælg de roller, der vil blive betragtet som moderator roller. Brugere med disse roller vil være i stand til at bruge admin-kommandoer."
-            },
-            "info": "Konfigurerer forskellige indstillinger.",
-            "subcommand": {
-                "staffuser": {
-                    "usage": "staffuser <add | remove><user>...",
-                    "info": "Tilføjer eller fjerner brugere til listen over personale."
-                },
-                "staffrole": {
-                    "info": "Bringer op en dialog til at vælge eller fravælge personale roller."
-                },
-                "mute": {
-                    "info": "Sætter op den dæmpede rolle."
-                },
-                "announcement": {
-                    "info": "Opsætter annonceringer."
-                },
-                "modlog": {
-                    "usage": "modlog [event]...",
-                    "info": "Opsætter modlog for de angivne begivenheder. Hvis ingen kanal er angivet, vil den aktuelle kanal som standard bruges. Hvis ingen hændelser er angivet, som standard bruges alle begivenheder."
-                },
-                "punishment": {
-                    "usage": "punishment <add | remove> <weight> [ban | mute | kick]",
-                    "info": "Tilføjer eller fjerner en advarsel straf. 'vægt' refererer til antallet af advarsler der skal til for aktivere straffen."
-                }
-            },
-            "mute": {
-                "setrole": "Den dæmpede rolle er blevet opdateret.",
-                "rolequery": "Vælg den dæmpede rolle. Den nuværende rolle er: {{current}}"
-            },
-            "announce": {
-                "set": "Annonceringer er blevet sat op.",
-                "rolequery": "Vælg den rolle, som bør være nævnt for meddelelser.",
-                "channelquery": "Vælg den kanal som annonceringer skal sendes til."
-            },
-            "modlog": {
-                "set": "Modloggen er sat til at være i kanalen {{channel}} med de følgende begivenheder:\n```\n{{events}}\n```\n{{hadInvalid}}",
-                "remove": "Modloggen med de følgende begivenheder er blevet fjernet:\n```\n{{events}}\n```\n{{hadInvalid}}",
-                "invalid": "Der blev ikke angivet nogen gyldige begivenheder. Listen over gyldige begivenheder er:\n```\n{{eventList}}\n```",
-                "hadinvalid": "Der blev ikke angivet nogen gyldige begivenheder. Listen over gyldige begivenheder er:\n```\n{{eventList}}\n```",
-                "list": "Her er de modlogs der er aktive i din server:\n\n{{events}}"
-            },
-            "subcommands": {
-                "modlog": {
-                    "flags": {
-                        "channel": "Angiver, hvilken kanal modloggen skal sættes i.",
-                        "remove": "Angiver, at modloggen skal fjernes i stedet for at blive tilføjet.",
-                        "list": "Returner en liste af konfigurerede modlogs."
-                    }
-                },
-                "punishment": {
-                    "flags": {
-                        "kick": "Angiver, at straffen er at sparke. Kan ikke bruges med mute eller forbud.",
-                        "ban": "Angiver, at straffen er at udelukke. Kan ikke bruges med dæmp eller spark.",
-                        "mute": "Angiver, at straffen skal være mute. Kan ikke bruges med kick eller forbud.",
-                        "time": "Angiver, hvor længe en udelukkelse eller et mute skal vare i.",
-                        "list": "Lister de aktive straffe.",
-                        "days": "Antallet dage som beskeder slettes, når en person udelukkes. Som standard sat til 1."
-                    }
-                }
-            },
-            "punishment": {
-                "toolow": "Den angivne vægt skal være større end 0.",
-                "invalidweight": "Du skal angive et nummer for vægten.",
-                "invalidchoice": "Du skal angive, om du tilføjer eller fjerner en straf.",
-                "invalidtypes": "Ugyldige typer blev angivet. Kun én af '--mute', '--kick ', eller '--ban' kan gives.",
-                "added": "En straf er blevet tilføjet med en vægt på **{{weight}}**.",
-                "removed": "Straffen med en vægt på **{{weight}}** er blevet fjernet.",
-                "overwritten": "Straffen med en vægt på **{{weight}}** er blevet overskrevet.",
-                "doesntexist": "En straf med en vægt på **{{weight}}** findes ikke.",
-                "list": "Dette er de straffe der er aktive i din server:\n\n{{list}}"
-            },
-            "default": "Disse er de tilgængelige underkommandoer:\n\n{{subcommands}}"
+        "info": {
+          "usage": "<navn>",
+          "info": "Viser info om et tag."
         },
-        "reason": {
-            "info": "",
-            "nocase": "",
-            "reasonset": ""
+        "transfer": {
+          "usage": "<name><user>",
+          "info": "Overfører et tag til den specifikke bruger. Variabler vil ikke blive overført."
+        },
+        "top": {
+          "info": "Viser en liste over de tags der er blevet favoriseret flest gange."
+        },
+        "author": {
+          "usage": "<name>",
+          "info": "Viser forfatteren til et tag."
+        },
+        "search": {
+          "usage": "<query>",
+          "info": "Søger efter et tag med et navn der indeholder din forespørgsel."
+        },
+        "list": {
+          "usage": "",
+          "info": "Viser en liste over alle tags, eller valgfrit alle tags skabt af en bestemt bruger."
+        },
+        "favorite": {
+          "usage": "",
+          "info": ""
+        },
+        "report": {
+          "usage": "",
+          "info": "Raporterer et tag for at bryde brugervilkåerne. Venligst brug omhyggeligt."
+        },
+        "test": {
+          "usage": "<code>",
+          "info": "Udfører det givne stykke kode i et test miljø."
         },
         "help": {
-            "info": "",
-            "allcommands": "Her er alle de kommandoer du kan udføre i **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor mere info om kommandoerne, skriv `help <commandname>` eller besøg <https://blargbot.xyz/commands>.",
-            "nocommand": "Beklager, der er ingen kommando med navnet '{{name}}'!",
-            "commandinfo": "**Kommando: {{name}}**\n\n**Aliaser**: {{aliases}}\n**Brug**: {{usage}}\n\n{{description}}"
+          "usage": "[subcommand]",
+          "info": "Viser dette!"
         },
-        "ccommand": {
-            "info": "CCommands er et system af brugerdefinerede kommandoer som moderatore kan skabe for brugere ved at bruge BBTag sproget.\n\n**Subkommandoer**:\n{{subcommands}}\n\nFor mere info om en subkommando, skriv `b!t help <subcommand>`\nFor mere info om BBTag, besøg <https://blargbot.xyz/tags>.",
-            "usage": "<subcommand>[args]",
-            "subcommand": {
-                "set": {
-                    "usage": "<name><content>",
-                    "info": "Skaber eller redigerer en brugerdefineret kommando med det angivne navn og indhold. Vil ikke erstatte noget tag der er lavet af en anden."
-                },
-                "delete": {
-                    "usage": "<name>",
-                    "info": "Sletter en brugerdefineret kommando."
-                },
-                "rename": {
-                    "usage": "<name><newName>",
-                    "info": "Omdøber en brugerdefineret kommando."
-                },
-                "author": {
-                    "usage": "<name>",
-                    "info": "Returnerer forfatteren af den brugerdefinerede kommando."
-                },
-                "transfer": {
-                    "usage": "<name><user>",
-                    "info": "Overfører ejerskab over en brugerdefineret kommando til en anden person. Der skal være givet samtykke først."
-                },
-                "list": {
-                    "info": "Viser de brugerdefinerede kommandoer i serveren."
-                },
-                "test": {
-                    "usage": "<code>",
-                    "info": "Udfører koden i kontekst af din konto."
-                },
-                "help": {
-                    "usage": "[subcommand]",
-                    "info": "Viser dette!"
-                }
-            },
-            "dontown": "[[emote.x]] Du ejer ikke denne brugerdefinerede kommando!",
-            "notag": "[[emote.x]] Der findes ingen brugerdefinerede kommando med det navn.",
-            "tagset": "[[emote.check]] Brugerdefinerede kommando `{{name}}` {{process}}!",
-            "tagrename": "[[emote.check]] Brugerdefinerede kommandoen `{{old}}` er blevet imdøbt til `{{new}}`",
-            "raw": "Koden for {{name}} er:\\n```{{code}}```",
-            "alreadyexists": "Der findes allerede en brugerdefineret kommando med det navn.",
-            "testoutput": "Test Output:\\n\\n{{output}}"
+        "docs": {
+          "usage": "[subtag]",
+          "info": "Giver et link til BBTag dokumentationen, eller giver oplysninger om et bestemt undertag."
         },
-        "warn": {
-            "info": "Tildeler en bruger en variabel række advarsler.",
-            "flags": {
-                "count": "Antallet af advarsler der skal tildeles.",
-                "reason": "Årsagen til advarslen."
-            },
-            "invalidcount": "Nummeret der blev angivet var ikke et tal!",
-            "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** advarsel(er).",
-            "negativecount": "Mindst én advarsel skal tildeles!",
-            "usage": "<user>",
-            "limitexceeded": ""
+        "setdesc": {
+          "info": "",
+          "usage": ""
         },
-        "pardon": {
-            "usage": "<user>",
-            "info": "Tildeler en bruger en variabel række benådninger.",
-            "flags": {
-                "count": "Antallet af benådninger der skal tildeles.",
-                "reason": "Årsagen til benådningen."
-            },
-            "invalidcount": "Nummeret der blev angivet var ikke et tal!",
-            "negativecount": "Mindst én benådning skal tildeles!",
-            "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** benådning(er).",
-            "invaliduser": ""
+        "setusage": {
+          "info": "",
+          "usage": ""
+        }
+      },
+      "subcommandnotfound": "Kunne ikke finde en underkommando med navnet '{{subcommand}}'.",
+      "transferprompt": "{{target}}, {{user}} ønsker at overdrage ejerskabet af tagget '{{tag}}' til dig. Vil du acceptere? Dette vil ikke overføre variabler.",
+      "nobots": "[[emote.x]] Du kan ikke overføre et tag til en bot!",
+      "transfercancelled": "[[emote.x]] Overførslen er blevet annulleret.",
+      "transfercomplete": "[[emote.check]] {{user}} ejer nu tagget '{{tag}}'.",
+      "taginfo": "",
+      "descupdate": "Beskrivelsen af '{{tag}}' er blevet opdateret.",
+      "descreset": "Beskrivelsen for `{{tag}}` er blevet nulstillet.",
+      "subcommandconflict": "Du kan ikke bruge navnet '{{name}}', fordi der er en underkommando med navnet!",
+      "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favoritter: {{favourites}} Brug: {{uses}}",
+      "toptags": "Her er en liste over de 10 mest brugte tags!\n\n{{tags}}",
+      "tagauthor": "Tagget `{{tag}}` er skabt af **{{author}}**",
+      "favouriteadd": "Tagget '{{tag}}' er blevet føjet til din liste over favoritter.",
+      "favouriteremove": "Tagget '{{tag}}' er blevet fjernet fra din liste over favoritter.",
+      "favourites": "Du har {{count}} tags på din liste over favoritter. \n' ' '\nfix{{tags}}\n ' ' '"
+    },
+    "locale": {
+      "info": "Angiver, hvad landestandard beskeder vil blive sendt i.",
+      "set": "Din landestandard er indstillet til {{locale}}!",
+      "list": "Din nuværende landestandard er: {{current}} \n\nVælg venligst hvilken landestandard du vil bruge."
+    },
+    "tokenify": {
+      "info": ""
+    },
+    "nato": {
+      "info": ""
+    },
+    "invite": {
+      "info": "",
+      "message": ""
+    },
+    "donate": {
+      "info": "",
+      "willdm": "OK, vil jeg sende dig mine donations oplysninger i en privat besked.",
+      "message": "placeholder"
+    },
+    "mods": {
+      "info": "",
+      "mods": "Mods i **{{guild}} **",
+      "nomods": "Der er ingen mods i denne server.",
+      "nomodsonline": "Der er ingen online mods."
+    },
+    "help": {
+      "info": "",
+      "allcommands": "Her er alle de kommandoer du kan udføre i **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor mere info om kommandoerne, skriv `help <commandname>` eller besøg <https://blargbot.xyz/commands>.",
+      "nocommand": "Beklager, der er ingen kommando med navnet '{{name}}'!",
+      "commandinfo": "**{{type}}: {{name}}**\n\n**Aliases**: {{aliases}}\n**Usage**: {{usage}}\n\n{{description}}",
+      "aliases": "Ingen aliaser",
+      "subcommand": "Underkommando",
+      "command": "Kommando",
+      "nosubcommand": "Desværre, er der ingen underkommando for '{{command}}' med navnet '{{name}}'!",
+      "subcommands": "**Subkommandoer**: {{subcommands}}\n\nSkriv `help <command> <subcommand>` for at få mere info om en subkommando!"
+    },
+    "gamatoto": {
+      "info": "Tag på en magisk rejse med Gamototo! Brug denne kommando for at tjekke dine statistikker, eller bug en underkommando for at tage på eventyr!",
+      "subcommand": {
+        "start": {
+          "usage": "<location>",
+          "info": "Starter en ekspedition!"
         },
-        "kick": {
-            "usage": "",
-            "info": "Sparker en bruger.",
-            "flags": {
-                "reason": "Årsagen til sparket."
-            },
-            "kicked": ":ok_hand: **{{user}}** er blevet sparket.",
-            "invaliduser": "Den angivne bruger kunne ikke blive fundet."
+        "end": {
+          "info": "Slutter en ekspedition!"
+        },
+        "locations": {
+          "info": "Viser en liste over alle ekspeditions steder."
+        }
+      },
+      "stats": "<:bc_cat:345081695990710272> her er dine genstande! \n\n{{stats}}",
+      "alreadystarted": "En ekspedition er allerede i gang!",
+      "notstarted": "Du har ikke startet en ekspedition!",
+      "nolocation": "Desværre, det var ikke en gyldig placering. De steder, du kan i øjeblikket besøge er:\n\n{{locations}}",
+      "invalidlocation": "Noget underligt skete. Det sted du udforskede findes ikke længere! Start venligst en ny ekspedition.",
+      "expeditionbeings": "<:bc_cat:345081695990710272> SØGNINGEN STARTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\n\nTjek igen senere ved at skrive `gamatoto end`!",
+      "expeditionends": ":bc_cat:345081695990710272> EXPEDITIONS RESULTER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\nVarighed: {{minutes}} minutter\n\n{{results}}",
+      "notimeelapsed": "Ingen tid er forløbet, siden ekspeditionen startede. Gamatoto fandt ikke noget!",
+      "itemfound": "Gamatoto fandt {{amount}} {{item}} på {{location}}.",
+      "levelup": ":fireworks: Gamatoto er nu niveau {{level}}!",
+      "gamatotoxp": "Gamato fik **{{amount}}**XP ({{old}} → **{{new}}**)",
+      "itemincrease": "{{item}} Du fandt **{{amount}}** ({{old}} → **{{new}}**)",
+      "locations": "Her er alle ekspedition stederne! \n\n{{locations}}",
+      "wronglevel": "Desværre, skal du være level {{level}} for at udforske dette sted!",
+      "gamatotoitems": "Her er dine genstande:\n{{items}}",
+      "gamatotostats": "Gamatoto er i øjeblikket niveau {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
+      "gamatotocurrent": "Gamatoto har været ved at udforske **{{location}} ** på **{{minutes}} ** minutter. Brug 'gamatoto end' for at afslutte ekspeditionen.",
+      "gamatotoidle": "Gamatoto er ikke på en ekspedition lige nu. Send ham på et eventyr ved at bruge 'gamatoto start [location]'!"
+    },
+    "prefix": {
+      "info": "Henter eller angiver dine kommando præfikser. Denne kommando konfigurerer bruger præfikser. For Guild præfikser, brug kommandoen 'setup'.",
+      "subcommand": {
+        "add": {
+          "usage": "<prefix>",
+          "info": "Tilføjer et præfiks til din liste."
+        },
+        "remove": {
+          "usage": "<prefix>",
+          "info": "Fjerner et præfiks fra din liste."
+        }
+      },
+      "prefixlist": "{{content}}\nFor at konfigurere dine præfikser, brug `add` og `remove` subkommandoerne. For at konfigurere præfikserne for serveren, brug `setup` kommandoen.",
+      "userprefixes": "Her er dine præfikser:\n```md\n{{userprefixes}}\n```",
+      "guildprefixes": "Her er præfikserne i denne server: ' ' 'md\n{{guildprefixes}} \n' ' '",
+      "noprefixes": "Du har ingen brugerdefinerede præfikser.",
+      "defaultprefixes": "Du kan altid bruge disse præfikser:\n{{prefixes}}",
+      "prefixadded": "Dette præfiks er blevet tilføjet!",
+      "prefixremoved": "Dette præfiks er blevet fjernet!",
+      "nothingchanged": "Intet blev ændret."
+    },
+    "warnings": {
+      "output": "**{{user}}** har akkumuleret **{{amount}}** advarsel(er) i **{{guild}}**."
+    },
+    "economy": {
+      "info": "Konverterer valuta ved hjælp af de seneste omregningskurser.",
+      "invalidamount": "Venligst angiv en gyldig mængde der skal konverteres.",
+      "invalidcode": "Ukendt valutakode: {{code}}",
+      "converted": "{{amount}}{{from}} er det samme som {{converted}}{{to}}",
+      "usage": "<from><to><amount>"
+    },
+    "usettings": {
+      "info": "Ændrer eller viser dine brugerindstillinger.",
+      "subcommand": {
+        "dmerrors": {
+          "usage": "[sandt | falsk]",
+          "info": "Aktiverer eller deaktiverer private beskeder for fejl meddelelser."
+        }
+      },
+      "dmerrorsenabled": "DM fejl meddelelser er blevet aktiveret.",
+      "dmerrorsdisabled": "DM fejl meddelelser er blevet deaktiveret.",
+      "userinfo": "Her er dine bruger indstillinger:\n\n{{settings}}\nTilgængelige subkommandoer: {{sub}}"
+    },
+    "rr": {
+      "info": "Tager en runde russisk roulette. Som standard, kan din revolver holde 6 kugler.",
+      "usage": "[bullets]",
+      "flags": {
+        "capacity": "Angiver hvor mange kugler din revolver kan holde.",
+        "emote": "Angiver hvilken smiley (eller tekst) skal være den der spiller russisk roulette."
+      },
+      "capacitylow": "Din revolver skal være i stand til at holde mindst to kugler, lavere ville være garanteret død!",
+      "bulletslow": "Du kan ikke lade mindre end en kugle, din kegle.",
+      "bulletshigh": "Wow, din revolver kan kun holde {{capacity}} kugler! Det vil være garanteret dødsfald! Ønsker du at dø eller sådan noget?",
+      "begin": "Du lader {{bullets}} kugle(r) i din {{capacity}}-skuds revolver, drejer den og placerer den mod dit hoved.",
+      "death": "{{content}}\n\n***BUM!*** [[command.general.rr.deathmessages]]",
+      "life": "{{content}}\n\n*Klik!* [[command.general.rr.livemessages]]",
+      "livemessages": [
+        "Pistolen klikker, den er tom. Du har nu endnu en dag at leve i.",
+        "Du ånder lettet op da du indser, at du ikke skal dø idag.",
+        "Som om den overhovedet ville gå af! Heldet er med dig.",
+        "Du takker RNGesus mens du sænker pistolen.",
+        ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
+        "Du smiler da du indser, at du overlevede."
+      ],
+      "deathmessages": [
+        "Pistolen går af, sprøjter din hjerne på udover hele væggen. Uheldig!",
+        ":skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:",
+        "Før du ved af det, er det hele slut.",
+        "I det mindste fik du kylling!",
+        "Det der rydder jeg ***ikke*** op.",
+        "Skydevåben er ikke legetøj!",
+        "Tja. Man kan jo ikke vinde hver gang!",
+        "G-godt... Hvis hver kotelet var perfekt, ville vi overhovedethave hotdogs? Ærgerligt at du er død uanset hvad.",
+        "Skyd skylden på laggen!",
+        "Var i dag bare ikke din heldige dag.",
+        "Pssh, fremsyn er for tabere."
+      ]
+    },
+    "user": {
+      "usage": "[user]",
+      "info": "Returner info om den angivne bruger.",
+      "description": "**Brugernavn**: {{username}}\n**Diskriminator**: {{discriminator}}\n**ID**: {{id}}\n**Bot**: {{bot}}\n**Skabt**: {{created}}\n[Avatar]({{avatar}})",
+      "guildinfoheader": "Oplysninger om server",
+      "guildinfo": "**Kaldenavn**: {{nick}}\n**Tilladelser**: {{permissions}}\n**Status**: {{status}}\n**Tilsluttet**: {{joined}}\n{{game}}",
+      "status": [
+        "Spiller",
+        "Streamer",
+        "Lytter til",
+        "Ser"
+      ]
+    }
+  },
+  "image": {
+    "cat": {
+      "info": "Giver dig en meget sød og kærlig kat. Nuuuurr!"
+    },
+    "delete": {
+      "info": ""
+    },
+    "thesearch": {
+      "info": "",
+      "defaulttext": ""
+    },
+    "shit": {
+      "info": "Fortæller alle hvad du synes er lort.",
+      "usage": "[text]",
+      "flags": {
+        "plural": "Angiver, om den givne text skal være flertal."
+      }
+    },
+    "writepoem": {
+      "usage": "[text]",
+      "info": "Skriver et meget dejligt digt.",
+      "flags": {
+        "monika": "Kun Monika.",
+        "sayori": "Kun Monika.",
+        "yuri": "Kun Monika.",
+        "natsuki": "Kun Monika."
+      }
+    }
+  },
+  "admin": {
+    "setup": {
+      "staff": {
+        "setrole": "Personale-roller er blevet opdateret.",
+        "rolequery": "Vælg de roller, der vil blive betragtet som moderator roller. Brugere med disse roller vil være i stand til at bruge admin-kommandoer."
+      },
+      "info": "Konfigurerer forskellige indstillinger.",
+      "subcommand": {
+        "staffuser": {
+          "usage": "staffuser <add | remove><user>...",
+          "info": "Tilføjer eller fjerner brugere til listen over personale."
+        },
+        "staffrole": {
+          "info": "Bringer op en dialog til at vælge eller fravælge personale roller."
         },
         "mute": {
-            "usage": "<user>",
-            "info": "Dæmper en bruger.",
-            "flags": {
-                "reason": "Årsagen til dæmpningen.",
-                "duration": "Hvor længe dæmpningen skal vare.",
-                "time": "Hvor længe dæmpningen skal vare."
-            },
-            "muted": ":ok_hand: **{{user}}** er blevet dæmpet.",
-            "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
-            "norole": "",
-            "unmutein": ""
+          "info": "Sætter op den dæmpede rolle."
         },
-        "unmute": {
-            "usage": "",
-            "info": "Fjerner dæmpningen fra en bruger.",
-            "flags": {
-                "reason": "Årsagen til fjernelsen af dæmpningen."
-            },
-            "unmuted": ":ok_hand: Dæmpningen fra **{{user}}** er blevet fjernet.",
-            "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
-            "unmutedafter": "Fjerner automatisk dæmpningen efter {{seconds}} sekunder."
+        "announcement": {
+          "info": "Opsætter annonceringer."
         },
-        "ban": {
-            "usage": "",
-            "info": "Udelukker en bruger.",
-            "flags": {
-                "reason": "Årsagen til udelukkelsen.",
-                "days": "",
-                "time": "Hvor længe udelukkelsen skal vare."
-            },
-            "banned": "",
-            "invaliduser": "",
-            "unbunin": ""
+        "modlog": {
+          "usage": "modlog [event]...",
+          "info": "Opsætter modlog for de angivne begivenheder. Hvis ingen kanal er angivet, vil den aktuelle kanal som standard bruges. Hvis ingen hændelser er angivet, som standard bruges alle begivenheder."
         },
-        "unban": {
-            "usage": "",
-            "info": "Fjerner udelukkelsen fra en bruger.",
-            "flags": {
-                "reason": "Årsagen til udelukkelsen."
-            },
-            "banned": "",
-            "invaliduser": "",
-            "unbannedafter": ""
+        "punishment": {
+          "usage": "punishment <add | remove> <weight> [ban | mute | kick]",
+          "info": "Tilføjer eller fjerner en advarsel straf. 'vægt' refererer til antallet af advarsler der skal til for aktivere straffen."
         }
+      },
+      "mute": {
+        "setrole": "Den dæmpede rolle er blevet opdateret.",
+        "rolequery": "Vælg den dæmpede rolle. Den nuværende rolle er: {{current}}"
+      },
+      "announce": {
+        "set": "Annonceringer er blevet sat op.",
+        "rolequery": "Vælg den rolle, som bør være nævnt for meddelelser.",
+        "channelquery": "Vælg den kanal som annonceringer skal sendes til."
+      },
+      "modlog": {
+        "set": "Modloggen er sat til at være i kanalen {{channel}} med de følgende begivenheder:\n```\n{{events}}\n```\n{{hadInvalid}}",
+        "remove": "Modloggen med de følgende begivenheder er blevet fjernet:\n```\n{{events}}\n```\n{{hadInvalid}}",
+        "invalid": "Der blev ikke angivet nogen gyldige begivenheder. Listen over gyldige begivenheder er:\n```\n{{eventList}}\n```",
+        "hadinvalid": "Der blev ikke angivet nogen gyldige begivenheder. Listen over gyldige begivenheder er:\n```\n{{eventList}}\n```",
+        "list": "Her er de modlogs der er aktive i din server:\n\n{{events}}"
+      },
+      "subcommands": {
+        "modlog": {
+          "flags": {
+            "channel": "Angiver, hvilken kanal modloggen skal sættes i.",
+            "remove": "Angiver, at modloggen skal fjernes i stedet for at blive tilføjet.",
+            "list": "Returner en liste af konfigurerede modlogs."
+          }
+        },
+        "punishment": {
+          "flags": {
+            "kick": "Angiver, at straffen er at sparke. Kan ikke bruges med mute eller forbud.",
+            "ban": "Angiver, at straffen er at udelukke. Kan ikke bruges med dæmp eller spark.",
+            "mute": "Angiver, at straffen skal være mute. Kan ikke bruges med kick eller forbud.",
+            "time": "Angiver, hvor længe en udelukkelse eller et mute skal vare i.",
+            "list": "Lister de aktive straffe.",
+            "days": "Antallet dage som beskeder slettes, når en person udelukkes. Som standard sat til 1."
+          }
+        }
+      },
+      "punishment": {
+        "toolow": "Den angivne vægt skal være større end 0.",
+        "invalidweight": "Du skal angive et nummer for vægten.",
+        "invalidchoice": "Du skal angive, om du tilføjer eller fjerner en straf.",
+        "invalidtypes": "Ugyldige typer blev angivet. Kun én af '--mute', '--kick ', eller '--ban' kan gives.",
+        "added": "En straf er blevet tilføjet med en vægt på **{{weight}}**.",
+        "removed": "Straffen med en vægt på **{{weight}}** er blevet fjernet.",
+        "overwritten": "Straffen med en vægt på **{{weight}}** er blevet overskrevet.",
+        "doesntexist": "En straf med en vægt på **{{weight}}** findes ikke.",
+        "list": "Dette er de straffe der er aktive i din server:\n\n{{list}}"
+      },
+      "default": "Disse er de tilgængelige underkommandoer:\n\n{{subcommands}}"
+    },
+    "reason": {
+      "info": "",
+      "nocase": "",
+      "reasonset": ""
+    },
+    "help": {
+      "info": "",
+      "allcommands": "Her er alle de kommandoer du kan udføre i **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor mere info om kommandoerne, skriv `help <commandname>` eller besøg <https://blargbot.xyz/commands>.",
+      "nocommand": "Beklager, der er ingen kommando med navnet '{{name}}'!",
+      "commandinfo": "**Kommando: {{name}}**\n\n**Aliaser**: {{aliases}}\n**Brug**: {{usage}}\n\n{{description}}"
+    },
+    "warn": {
+      "info": "Tildeler en bruger en variabel række advarsler.",
+      "flags": {
+        "count": "Antallet af advarsler der skal tildeles.",
+        "reason": "Årsagen til advarslen."
+      },
+      "invalidcount": "Nummeret der blev angivet var ikke et tal!",
+      "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** advarsel(er).",
+      "negativecount": "Mindst én advarsel skal tildeles!",
+      "usage": "<user>",
+      "limitexceeded": ""
+    },
+    "pardon": {
+      "usage": "<user>",
+      "info": "Tildeler en bruger en variabel række benådninger.",
+      "flags": {
+        "count": "Antallet af benådninger der skal tildeles.",
+        "reason": "Årsagen til benådningen."
+      },
+      "invalidcount": "Nummeret der blev angivet var ikke et tal!",
+      "negativecount": "Mindst én benådning skal tildeles!",
+      "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** benådning(er).",
+      "invaliduser": ""
+    },
+    "kick": {
+      "usage": "",
+      "info": "Sparker en bruger.",
+      "flags": {
+        "reason": "Årsagen til sparket."
+      },
+      "kicked": ":ok_hand: **{{user}}** er blevet sparket.",
+      "invaliduser": "Den angivne bruger kunne ikke blive fundet."
     },
     "mute": {
-
+      "usage": "<user>",
+      "info": "Dæmper en bruger.",
+      "flags": {
+        "reason": "Årsagen til dæmpningen.",
+        "duration": "Hvor længe dæmpningen skal vare.",
+        "time": "Hvor længe dæmpningen skal vare."
+      },
+      "muted": ":ok_hand: **{{user}}** er blevet dæmpet.",
+      "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
+      "norole": "",
+      "unmutein": ""
+    },
+    "unmute": {
+      "usage": "",
+      "info": "Fjerner dæmpningen fra en bruger.",
+      "flags": {
+        "reason": "Årsagen til fjernelsen af dæmpningen."
+      },
+      "unmuted": ":ok_hand: Dæmpningen fra **{{user}}** er blevet fjernet.",
+      "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
+      "unmutedafter": "Fjerner automatisk dæmpningen efter {{seconds}} sekunder."
+    },
+    "ban": {
+      "usage": "",
+      "info": "Udelukker en bruger.",
+      "flags": {
+        "reason": "Årsagen til udelukkelsen.",
+        "days": "",
+        "time": "Hvor længe udelukkelsen skal vare."
+      },
+      "banned": "",
+      "invaliduser": "",
+      "unbunin": ""
+    },
+    "unban": {
+      "usage": "",
+      "info": "Fjerner udelukkelsen fra en bruger.",
+      "flags": {
+        "reason": "Årsagen til udelukkelsen."
+      },
+      "banned": "",
+      "invaliduser": "",
+      "unbannedafter": ""
+    },
+    "cc": {
+      "usage": "",
+      "info": "",
+      "subcommand": {
+        "set": {
+          "usage": "",
+          "info": ""
+        },
+        "delete": {
+          "usage": "",
+          "info": ""
+        },
+        "rename": {
+          "usage": "",
+          "info": ""
+        },
+        "raw": {
+          "usage": "",
+          "info": ""
+        },
+        "transfer": {
+          "usage": "",
+          "info": ""
+        },
+        "author": {
+          "usage": "",
+          "info": ""
+        },
+        "list": {
+          "info": ""
+        },
+        "test": {
+          "usage": "",
+          "info": ""
+        },
+        "help": {
+          "usage": "",
+          "info": ""
+        },
+        "setdesc": {
+          "usage": "",
+          "info": ""
+        },
+        "setusage": {
+          "usage": "",
+          "info": ""
+        }
+      },
+      "dontown": "",
+      "notag": "",
+      "tagset": "",
+      "tagrename": "",
+      "raw": "",
+      "alreadyexists": "",
+      "testoutput": "",
+      "subcommandnotfound": "",
+      "transferprompt": "",
+      "nobots": "",
+      "transfercancelled": "",
+      "transfercomplete": "",
+      "descupdate": "",
+      "descreset": "",
+      "subcommandconflict": "",
+      "tagauthor": ""
     }
+  }
 }
