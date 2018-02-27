@@ -85,15 +85,15 @@
                     "info": "Sucht nach einem Tag mit einem Namen, der deine Suche entspricht."
                 },
                 "list": {
-                    "usage": "[@user]",
+                    "usage": "",
                     "info": "Listet alle Tags oder optional alle Tags, die von einem bestimmten Benutzer erstellt wurden."
                 },
                 "favorite": {
-                    "usage": "<name>",
-                    "info": "Favorisier dein markierten tag"
+                    "usage": "",
+                    "info": ""
                 },
                 "report": {
-                    "usage": "<name>",
+                    "usage": "",
                     "info": "Meldet einen Tag für die Verletzung des ToS. Bitte verwende ihn verantwortungsbewusst."
                 },
                 "test": {
@@ -109,10 +109,12 @@
                     "info": "Gibt einen Link zu der BBTag Dokumentation, oder enthält Informationen zu einem bestimmten Kürzel."
                 },
                 "setdesc": {
-                    "info": "Info"
+                    "info": "",
+                    "usage": ""
                 },
                 "setusage": {
-                    "info": "info"
+                    "info": "",
+                    "usage": ""
                 }
             },
             "subcommandnotfound": "Ein Unterbefehl mit dem Namen '{{subcommand}}' wurde nicht gefunden.",
@@ -120,7 +122,7 @@
             "nobots": "[[emote.x]] du kannst nicht einen tag zu einem bot übertragen",
             "transfercancelled": "[[emote.x]] die übertragung wurde abgebrochen",
             "transfercomplete": "[[emote.check]] {{user}} besitzt nun den Tag \"{{tag}}\".",
-            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
+            "taginfo": "",
             "descupdate": "Die Beschreibung für \"{{tag}}\" wurde aktualisiert.",
             "descreset": "Die Beschreibung für '{{tag}}' wurde zurückgesetzt.",
             "subcommandconflict": "Sie können den Namen \"{{name}}\" nicht verwenden, da es bereits einen Unterbefehl mit diesen Namen gibt!",
