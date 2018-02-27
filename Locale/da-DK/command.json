@@ -85,15 +85,15 @@
                     "info": "Søger efter et tag med et navn der indeholder din forespørgsel."
                 },
                 "list": {
-                    "usage": "[@user]",
+                    "usage": "",
                     "info": "Viser en liste over alle tags, eller valgfrit alle tags skabt af en bestemt bruger."
                 },
                 "favorite": {
-                    "usage": "<name>",
-                    "info": "Favoriserer et bestemt tag."
+                    "usage": "",
+                    "info": ""
                 },
                 "report": {
-                    "usage": "<name>",
+                    "usage": "",
                     "info": "Raporterer et tag for at bryde brugervilkåerne. Venligst brug omhyggeligt."
                 },
                 "test": {
@@ -109,10 +109,12 @@
                     "info": "Giver et link til BBTag dokumentationen, eller giver oplysninger om et bestemt undertag."
                 },
                 "setdesc": {
-                    "info": "info"
+                    "info": "",
+                    "usage": ""
                 },
                 "setusage": {
-                    "info": "info"
+                    "info": "",
+                    "usage": ""
                 }
             },
             "subcommandnotfound": "Kunne ikke finde en underkommando med navnet '{{subcommand}}'.",
@@ -120,7 +122,7 @@
             "nobots": "[[emote.x]] Du kan ikke overføre et tag til en bot!",
             "transfercancelled": "[[emote.x]] Overførslen er blevet annulleret.",
             "transfercomplete": "[[emote.check]] {{user}} ejer nu tagget '{{tag}}'.",
-            "taginfo": "__**Tag | {{name}}**__\nForfatter: **{{author}}**\nSidst ændret: **{{lastModified}}**\nDette tag er blevet brugt **{{uses}} gange**!\nDette tag er blevet favoriseret **{{favourites}} gange**!",
+            "taginfo": "",
             "descupdate": "Beskrivelsen af '{{tag}}' er blevet opdateret.",
             "descreset": "Beskrivelsen for `{{tag}}` er blevet nulstillet.",
             "subcommandconflict": "Du kan ikke bruge navnet '{{name}}', fordi der er en underkommando med navnet!",
