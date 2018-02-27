@@ -85,15 +85,15 @@
                     "info": "Wyszukiwanie tagu o nazwie zawierającej twoje zapytanie."
                 },
                 "list": {
-                    "usage": "[@user]",
+                    "usage": "",
                     "info": "Wyświetla informacje o tagu."
                 },
                 "favorite": {
-                    "usage": "<name>",
-                    "info": "Favourites the specified tag."
+                    "usage": "",
+                    "info": ""
                 },
                 "report": {
-                    "usage": "<name>",
+                    "usage": "",
                     "info": "Raporty tag za naruszenie ToS. Proszę używać odpowiedzialnie."
                 },
                 "test": {
@@ -109,10 +109,12 @@
                     "info": "Daje link do dokumentacji BBTag, lub podaje informacje o określonym pod-tagu."
                 },
                 "setdesc": {
-                    "info": "informacje"
+                    "info": "",
+                    "usage": ""
                 },
                 "setusage": {
-                    "info": "informacje"
+                    "info": "",
+                    "usage": ""
                 }
             },
             "subcommandnotfound": "Nie mogłem znaleźć pod-komendy z nazwą '{{subcommand}}'.",
@@ -120,7 +122,7 @@
             "nobots": "[[emote.x]] Nie można oddać tagu do bota!",
             "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
             "transfercomplete": "[[emote.check]] {{user}} teraz posiada tag `{{tag}}`.",
-            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
+            "taginfo": "",
             "descupdate": "Zaktualizowano opis dla '{{tag}}'.",
             "descreset": "Opis dla `{{tag}}` został zresetowany.",
             "subcommandconflict": "Nie możesz używać nazwy `{{name}}` ponieważ jest już pod-komenda z taką nazwą!",
