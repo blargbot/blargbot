@@ -508,7 +508,7 @@
                 "reason": "Årsagen til fjernelsen af dæmpningen."
             },
             "unmuted": ":ok_hand: Dæmpningen fra **{{user}}** er blevet fjernet.",
-            "invaliduser": "",
+            "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
             "unmutedafter": "Fjerner automatisk dæmpningen efter {{seconds}} sekunder."
         },
         "ban": {
