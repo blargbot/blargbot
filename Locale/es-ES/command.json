@@ -1,560 +1,560 @@
 {
-  "general": {
-    "ping": {
-      "info": "Pong!\nMide la latencia del comando.",
-      "randmsg": [
-        "La existencia es una mentira.",
-        "Moriras algún día, quizás pronto.",
-        "Nada importa.",
-        "¿A donde quieres llegar?",
-        "No hay de que ver aquí.",
-        "Estás solo en un vacío infinito.",
-        "La verdad es falsa.",
-        "Abandonar todo.",
-        "Tu existencia es lamentable.",
-        "Estamos todos muertos ya.",
-        "Miau.",
-        "El miedo es libertad.",
-        "Subyugacion es liberación.",
-        "La contradicción es verdad.",
-        "¿Te gustaría hacer un contrato?",
-        "Dejarlo ir, y seguir adelante."
-      ],
-      "final": "¡Pon!{{time}}ms)"
-    },
-    "brainfuck": {
-      "info": "Ejecuta código que te jode el cerebro.",
-      "usage": "<code>",
-      "flags": {
-        "p": "Muestra una lista de punteros luego de la ejecución.",
-        "i": "Especifica la entrada para el operador `,`.",
-        "pointers": "Especifica que los indicadores resultantes deben ser mostrados.",
-        "input": "Especifica los parámetros de entrada."
-      }
-    },
-    "ship": {
-      "info": "Te da el nombre de la nave para dos usuarios.",
-      "usage": "<user1><user2>",
-      "final": "Your shipname is **{{name}}**!",
-      "notenough": "¡Tienes que decirme a quien enviar!"
-    },
-    "tag": {
-      "info": "Las etiquetas son un sistema de comandos públicos que cualquiera puede crear o ejecutar, utilizando el lenguaje BBTag. \n\n** Subcomandos **:\n{{subcommands}}\n\nPara obtener más información acerca de un subcomando, has `b!t help <subcommand>`para obtener más información acerca de BBTag, visita < https://blargbot.xyz/tags >. Mediante la creación de una etiqueta, usted reconoce que acepta los términos de servicio (<https://blargbot.xyz/tags/tos>).",
-      "usage": "<name | subcommand>[args]",
-      "dontown": "[emote.x]¡No tienes esa etiqueta!",
-      "alreadyexists": "[emote.x]¡Ya existe una etiqueta con ese nombre!",
-      "notag": "[[emote.x]] No existe ninguna etiqueta con ese nombre.",
-      "tagset": "[emote.check] eTIQUETA {{name}}{{process}}!",
-      "tagrename": "[emote.check]lA etiqueta {{old}}ha sido renombrada a {{new}}.",
-      "raw": "El codigo para {{name}} es:\n{{code}}",
-      "testoutput": "Prueba de Salida:\n\n{{output}}",
-      "subcommand": {
-        "set": {
-          "usage": "<name><content>",
-          "info": "Crea o edita una tag con el nombre y contenido previsto. No reemplazará alguna tag hecha por alguien más."
+    "general": {
+        "ping": {
+            "info": "Pong!\nMide la latencia del comando.",
+            "randmsg": [
+                "La existencia es una mentira.",
+                "Moriras algún día, quizás pronto.",
+                "Nada importa.",
+                "¿A donde quieres llegar?",
+                "No hay de que ver aquí.",
+                "Estás solo en un vacío infinito.",
+                "La verdad es falsa.",
+                "Abandonar todo.",
+                "Tu existencia es lamentable.",
+                "Estamos todos muertos ya.",
+                "Miau.",
+                "El miedo es libertad.",
+                "Subyugacion es liberación.",
+                "La contradicción es verdad.",
+                "¿Te gustaría hacer un contrato?",
+                "Dejarlo ir, y seguir adelante."
+            ],
+            "final": "¡Pon!{{time}}ms)"
         },
-        "delete": {
-          "usage": "<name>",
-          "info": "Elimina una tag que poseeas."
+        "brainfuck": {
+            "info": "Ejecuta código que te jode el cerebro.",
+            "usage": "<code>",
+            "flags": {
+                "p": "Muestra una lista de punteros luego de la ejecución.",
+                "i": "Especifica la entrada para el operador `,`.",
+                "pointers": "Especifica que los indicadores resultantes deben ser mostrados.",
+                "input": "Especifica los parámetros de entrada."
+            }
         },
-        "rename": {
-          "usage": "<name><new name>",
-          "info": "Cambia el nombre a una tag que poseeas."
+        "ship": {
+            "info": "Te da el nombre de la nave para dos usuarios.",
+            "usage": "<user1><user2>",
+            "final": "Your shipname is **{{name}}**!",
+            "notenough": "¡Tienes que decirme a quien enviar!"
         },
-        "raw": {
-          "usage": "<name>",
-          "info": "Muestra el código sin formato de una tag."
+        "tag": {
+            "info": "Las etiquetas son un sistema de comandos públicos que cualquiera puede crear o ejecutar, utilizando el lenguaje BBTag. \n\n** Subcomandos **:\n{{subcommands}}\n\nPara obtener más información acerca de un subcomando, has `b!t help <subcommand>`para obtener más información acerca de BBTag, visita < https://blargbot.xyz/tags >. Mediante la creación de una etiqueta, usted reconoce que acepta los términos de servicio (<https://blargbot.xyz/tags/tos>).",
+            "usage": "<name | subcommand>[args]",
+            "dontown": "[emote.x]¡No tienes esa etiqueta!",
+            "alreadyexists": "[emote.x]¡Ya existe una etiqueta con ese nombre!",
+            "notag": "[[emote.x]] No existe ninguna etiqueta con ese nombre.",
+            "tagset": "[emote.check] eTIQUETA {{name}}{{process}}!",
+            "tagrename": "[emote.check]lA etiqueta {{old}}ha sido renombrada a {{new}}.",
+            "raw": "El codigo para {{name}} es:\n{{code}}",
+            "testoutput": "Prueba de Salida:\n\n{{output}}",
+            "subcommand": {
+                "set": {
+                    "usage": "<name><content>",
+                    "info": "Crea o edita una tag con el nombre y contenido previsto. No reemplazará alguna tag hecha por alguien más."
+                },
+                "delete": {
+                    "usage": "<name>",
+                    "info": "Elimina una tag que poseeas."
+                },
+                "rename": {
+                    "usage": "<name><new name>",
+                    "info": "Cambia el nombre a una tag que poseeas."
+                },
+                "raw": {
+                    "usage": "<name>",
+                    "info": "Muestra el código sin formato de una tag."
+                },
+                "info": {
+                    "usage": "<name>",
+                    "info": "Muestra la información de una tag."
+                },
+                "transfer": {
+                    "usage": "<name><user>",
+                    "info": "Transfiere la tag al usuario especificado. Las variables no serán transferidas."
+                },
+                "top": {
+                    "info": "Muestra las tags que tienen más Favoritos."
+                },
+                "author": {
+                    "usage": "<name>",
+                    "info": "Muestra el autor de una tag."
+                },
+                "search": {
+                    "usage": "<query>",
+                    "info": "Busca por una tag con un nombre que contenga los términos."
+                },
+                "list": {
+                    "usage": "",
+                    "info": "Muestra todas las tags creadas por un usuario"
+                },
+                "favorite": {
+                    "usage": "",
+                    "info": ""
+                },
+                "report": {
+                    "usage": "",
+                    "info": "Reporta una tag por violar los Términos de Servicio. Úsalo con responsabilidad."
+                },
+                "test": {
+                    "usage": "<code>",
+                    "info": "Ejecuta el código previsto en un ambiente de pruebas."
+                },
+                "help": {
+                    "usage": "[subcommand]",
+                    "info": "Muestra esto!"
+                },
+                "docs": {
+                    "usage": "[subtag]",
+                    "info": "Muestra un enlace a la documentación de BBTag, o enseña información acerca de una subtag específica."
+                },
+                "setdesc": {
+                    "info": "",
+                    "usage": ""
+                },
+                "setusage": {
+                    "info": "",
+                    "usage": ""
+                }
+            },
+            "subcommandnotfound": "No se pudo encontrar un subcomando con el nombre '{{subcommand}}'.",
+            "transferprompt": "{{target}}, {{user}} desea transferir la propiedad de la etiqueta '{{tag}}' a ti. ¿Aceptas? Esto no transferirá las variables.",
+            "nobots": "[emote.x] ¡No puedes transferir la etiqueta a un bot!",
+            "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
+            "transfercomplete": "[emote.check]{{user}} ahora posee la etiqueta {{tag}}.",
+            "taginfo": "",
+            "descupdate": "Se actualizo la descripción para '{{tag}}'.",
+            "descreset": "La descripcion para {{tag}} ha sido reiniciada.",
+            "subcommandconflict": "No puedes usar mas el nombre {{name}} ¡por que hay un subcomando con ese nombre!",
+            "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+            "toptags": "¡Estas son las etiquetas del top 10!\n\n{{tags}}",
+            "tagauthor": "La etiqueta {{tag}} fue creada por **{{author}}**",
+            "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
+            "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
+            "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
         },
-        "info": {
-          "usage": "<name>",
-          "info": "Muestra la información de una tag."
+        "locale": {
+            "info": "Establece que mensajes locales serán enviados.",
+            "set": "Su configuración se ha establecido en {{ajuste}}!",
+            "list": "Su configuración actual es"
         },
-        "transfer": {
-          "usage": "<name><user>",
-          "info": "Transfiere la tag al usuario especificado. Las variables no serán transferidas."
+        "tokenify": {
+            "info": ""
         },
-        "top": {
-          "info": "Muestra las tags que tienen más Favoritos."
+        "nato": {
+            "info": ""
         },
-        "author": {
-          "usage": "<name>",
-          "info": "Muestra el autor de una tag."
+        "invite": {
+            "info": "",
+            "message": ""
         },
-        "search": {
-          "usage": "<query>",
-          "info": "Busca por una tag con un nombre que contenga los términos."
+        "donate": {
+            "info": "",
+            "willdm": "Esta bien, te enviare mi información de donaciones por mensaje directo.",
+            "message": "marcador de posición"
         },
-        "list": {
-          "usage": "",
-          "info": "Muestra todas las tags creadas por un usuario"
-        },
-        "favorite": {
-          "usage": "",
-          "info": ""
-        },
-        "report": {
-          "usage": "",
-          "info": "Reporta una tag por violar los Términos de Servicio. Úsalo con responsabilidad."
-        },
-        "test": {
-          "usage": "<code>",
-          "info": "Ejecuta el código previsto en un ambiente de pruebas."
+        "mods": {
+            "info": "",
+            "mods": "Moderadores en **{{guild}} **",
+            "nomods": "Hay no hay moderadores en este Gremio.",
+            "nomodsonline": "Hay no hay moderadores en línea."
         },
         "help": {
-          "usage": "[subcommand]",
-          "info": "Muestra esto!"
+            "info": "",
+            "allcommands": "Estos son todos los comandos que puedes ejecutar en **{{guild}}**.\n```markdown\n{{commands}}\n```\nPara mas información sobre comandos, ejecuta `help <commandname>` o visita <https://blargbot.xyz/commands>.",
+            "nocommand": "¡Lo sentimos, no hay ningún comando con el nombre '{{name}}'!",
+            "commandinfo": "**{{type}}: {{name}}**\n\n**Alias**: {{aliases}}\n**Uso**: {{usage}}\n\n{{description}}",
+            "aliases": "Sin alias",
+            "subcommand": "Sub-comando",
+            "command": "Comando",
+            "nosubcommand": "Lo sentimos, no hay subcomandos para {{command}} con el nombre {{name}}!",
+            "subcommands": "**Subcommandos**: {{subcommands}}\n\nEjecuta `help <command> <subcommand>`¡para obtener mas informacion sobre sub-comandos!"
         },
-        "docs": {
-          "usage": "[subtag]",
-          "info": "Muestra un enlace a la documentación de BBTag, o enseña información acerca de una subtag específica."
+        "gamatoto": {
+            "info": "¡Ir a una expedicion con Gamatoto! ¡Usa este comando para revisar tu estatus, o usa un subcomando para ir a una aventura!",
+            "subcommand": {
+                "start": {
+                    "usage": "<location>",
+                    "info": "¡Comienza una expedición!"
+                },
+                "end": {
+                    "info": "¡Termina una expedición!"
+                },
+                "locations": {
+                    "info": "Listar todos los lugares de expedición."
+                }
+            },
+            "stats": "<:bc_cat:345081695990710272> ¡Estos son tus items!\n\n{{stats}}",
+            "alreadystarted": "¡Ya hay una expedición en progreso!",
+            "notstarted": "¡No has comenzado una expedición!",
+            "nolocation": "Lo sentimos, esa no fue una locacio valida. las locaciones que puedes visitar actualmente son:\n\n{{locations}}",
+            "invalidlocation": "Algo raro paso. ¡El lugar en el que explorabas ya no existe! Por favor comienza otra expedición.",
+            "expeditionbeings": "<:bc_cat:345081695990710272> ¡LA BÚSQUEDA INICIA! <:bc_cat:345081695990710272>\n\nLocacion: {{location}}\n\n¡Por favor vuelve luego ejecutando `gamatoto end`!",
+            "expeditionends": "<:bc_cat:345081695990710272> ¡RESULTADOS DE LA EXPEDICION! <:bc_cat:345081695990710272>\n\nLocacion: {{location}}\nDuracion: {{minutes}} minutes\n\n{{results}}",
+            "notimeelapsed": "No ha transcurrido el tiempo desde que comenzó la expedición. ¡Gamatoto no encuentra nada!",
+            "itemfound": "Gamatoto encontró {{amount}}{{item}} en {{location}}.",
+            "levelup": "¡:fireworks: Gamatoto ahora es nivel {{level}}!",
+            "gamatotoxp": "Gamatoto ha ganado **{{amount}}**XP{{old}}→**{{new}}**)",
+            "itemincrease": "{{item}} Ensontrase **{{amount}}** ({{old}} → **{{new}}**)",
+            "locations": "¡Estas son todas las locaciones de las expediciones!\n\n{{locations}}",
+            "wronglevel": "Lo sentimos, ¡necesitas ser nivel {{level}} para poder explorar ese lugar!",
+            "gamatotoitems": "Estos son tus items:\n{{items}}",
+            "gamatotostats": "Gamatoto actualmente es nivel {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
+            "gamatotocurrent": "Gamatoto ha estado explorando el **{{location}}** por **{{minutes}}** minutos.",
+            "gamatotoidle": "Gamatoto no está en una expedición ahora mismo. ¡Envíalo a una aventura haciendo 'gamatoto start [location]'!"
         },
-        "setdesc": {
-          "info": "",
-          "usage": ""
+        "prefix": {
+            "info": "Obtiene o establece sus prefijos de comando. Este comando configura prefijos de usuario. Para prefijos de gremio, use el comando 'configuración'.",
+            "subcommand": {
+                "add": {
+                    "usage": "<prefix>",
+                    "info": "Añade un prefijo a tu lista."
+                },
+                "remove": {
+                    "usage": "<prefix>",
+                    "info": "Quita un prefijo de tu lista."
+                }
+            },
+            "prefixlist": "{{content}} \nPara configurar sus prefijos, uso los subcomandos 'Añadir' y 'eliminar'. Para configurar los prefijos de gremio, utilice el comando 'configuración'.",
+            "userprefixes": "Estos son tus prefijos:\n```md\n{{userprefixes}}\n```",
+            "guildprefixes": "Estos son los prefijos en este gremio:\n```md\n{{guildprefixes}}\n```",
+            "noprefixes": "No tienes prefijos personalizados.",
+            "defaultprefixes": "Siempre puedes utilizar estos prefijos:{{prefixes}}",
+            "prefixadded": "¡El prefijo ha sido añadido!",
+            "prefixremoved": "¡El prefijo ha sido removido!",
+            "nothingchanged": "Nada fue cambiado."
         },
-        "setusage": {
-          "info": "",
-          "usage": ""
+        "warnings": {
+            "output": "**{{user}}** ha acumulado **{{amount}}** advertencia(s) en **{{guild}}**."
+        },
+        "economy": {
+            "info": "Convierte divisas usando las tasas de conversión recientes.",
+            "invalidamount": "Por favor especifique una cantidad válida para convertir.",
+            "invalidcode": "Codigo de moneda desconocido: {{code}}",
+            "converted": "{{amount}}{{from}} es equivalente a {{converted}}{{to}}",
+            "usage": "<from><to><amount>"
+        },
+        "usettings": {
+            "info": "Modifica o muestra su configuración de usuario.",
+            "subcommand": {
+                "dmerrors": {
+                    "usage": "[true|false]",
+                    "info": "Habilita o deshabilita Mensajes privados para las notificaciones de error."
+                }
+            },
+            "dmerrorsenabled": "Se han habilitado las notificaciones de error por mensaje directo.",
+            "dmerrorsdisabled": "Que se haya desactivado las notificaciones de error por mensaje directo.",
+            "userinfo": "Aquí está la configuración de usuario: \n\n{{settings}}\n\nSubcomandos disponibles: {{sub}}"
+        },
+        "rr": {
+            "info": "Juega al juego de ruleta rusa. Por defecto, su revólver puede almacenar 6 balas.",
+            "usage": "[bullets]",
+            "flags": {
+                "capacity": "Establece cuántas balas de su revólver podrá sostener.",
+                "emote": "Especifica que emoticon (o texto) debería jugar a la ruleta rusa."
+            },
+            "capacitylow": "Su revólver debe ser capaz de mantener al menos dos balas, ¡con cualquier cantidad menor estaría garantizada la muerte!",
+            "bulletslow": "No puedes cargar menos de una bala, cobarde.",
+            "bulletshigh": "¡Vaya, tu revolver solo puede tener {{capacity}} balas! ¡Eso seria muerte garantizada! ¿Tienes deseo de morir o algo?",
+            "begin": "Cargaste {{bullets}} bala(s) en tu revolver de {{capacity}} tiros, dale una vuelta, y colócalo contra la cabeza.",
+            "death": "{{content}}\n\n***BOOM!*** [[command.general.rr.deathmessages]]",
+            "life": "{{content}}\n\n*Click!* [[command.general.rr.livemessages]]",
+            "livemessages": [
+                "La pistola percuta, vacía. Lograste vivir otro día.",
+                "Tu aliento es un signo de alivio al darte cuenta de que no morirás hoy.",
+                "¡Como si eso no fuer a cambiar! La suerte esta de tu lado.",
+                "Dale gracias a RNGesus al bajar el arma.",
+                ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
+                "Sonríes a medida que te das cuenta que has sobrevivido."
+            ],
+            "deathmessages": [
+                "La pistola se va, salpicando tus sesos a través de la pared. ¡Mala suerte!",
+                ":skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:",
+                "Sin darte cuenta, todo acabó.",
+                "¡Por lo menos tenias pollo!",
+                "Yo ***no*** limpiare eso.",
+                "¡Las armas de fuego no son juguetes!",
+                "¡Bueno, no las puedes ganar todas!",
+                "Bi-bien... ¿si cada chuleta de cerdo fuese perfecta, no habríamos tenido salchichas? Lastima que estas muerto de todas formas.",
+                "¡Culpa al lag!",
+                "Hoy simplemente no fue tu día de suerte.",
+                "Pfff, la previsión es para perdedores."
+            ]
+        },
+        "user": {
+            "usage": "[user]",
+            "info": "Devuelve información sobre el usuario especificado.",
+            "description": "**Nombre de usuario**: {{username}}\n**Discriminador**: {{discriminator}}\n**Identificador**: {{id}}\n**Bot**: {{bot}}\n**Creado**: {{created}}\n[Avatar]({{avatar}})",
+            "guildinfoheader": "Información de Gremio",
+            "guildinfo": "**Apodo**: {{nick}}\n**Permisos**: {{permissions}}\n**Estatus**: {{status}}\n**Se unió**: {{joined}}\n{{game}}",
+            "status": [
+                "Jugando",
+                "Emitiendo directo",
+                "Escuchando a",
+                "Viendo"
+            ]
         }
-      },
-      "subcommandnotfound": "No se pudo encontrar un subcomando con el nombre '{{subcommand}}'.",
-      "transferprompt": "{{target}}, {{user}} desea transferir la propiedad de la etiqueta '{{tag}}' a ti. ¿Aceptas? Esto no transferirá las variables.",
-      "nobots": "[emote.x] ¡No puedes transferir la etiqueta a un bot!",
-      "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
-      "transfercomplete": "[emote.check]{{user}} ahora posee la etiqueta {{tag}}.",
-      "taginfo": "",
-      "descupdate": "Se actualizo la descripción para '{{tag}}'.",
-      "descreset": "La descripcion para {{tag}} ha sido reiniciada.",
-      "subcommandconflict": "No puedes usar mas el nombre {{name}} ¡por que hay un subcomando con ese nombre!",
-      "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
-      "toptags": "¡Estas son las etiquetas del top 10!\n\n{{tags}}",
-      "tagauthor": "La etiqueta {{tag}} fue creada por **{{author}}**",
-      "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
-      "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
-      "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
     },
-    "locale": {
-      "info": "Establece que mensajes locales serán enviados.",
-      "set": "Su configuración se ha establecido en {{ajuste}}!",
-      "list": "Su configuración actual es"
-    },
-    "tokenify": {
-      "info": ""
-    },
-    "nato": {
-      "info": ""
-    },
-    "invite": {
-      "info": "",
-      "message": ""
-    },
-    "donate": {
-      "info": "",
-      "willdm": "Esta bien, te enviare mi información de donaciones por mensaje directo.",
-      "message": "marcador de posición"
-    },
-    "mods": {
-      "info": "",
-      "mods": "Moderadores en **{{guild}} **",
-      "nomods": "Hay no hay moderadores en este Gremio.",
-      "nomodsonline": "Hay no hay moderadores en línea."
-    },
-    "help": {
-      "info": "",
-      "allcommands": "Estos son todos los comandos que puedes ejecutar en **{{guild}}**.\n```markdown\n{{commands}}\n```\nPara mas información sobre comandos, ejecuta `help <commandname>` o visita <https://blargbot.xyz/commands>.",
-      "nocommand": "¡Lo sentimos, no hay ningún comando con el nombre '{{name}}'!",
-      "commandinfo": "**{{type}}: {{name}}**\n\n**Alias**: {{aliases}}\n**Uso**: {{usage}}\n\n{{description}}",
-      "aliases": "Sin alias",
-      "subcommand": "Sub-comando",
-      "command": "Comando",
-      "nosubcommand": "Lo sentimos, no hay subcomandos para {{command}} con el nombre {{name}}!",
-      "subcommands": "**Subcommandos**: {{subcommands}}\n\nEjecuta `help <command> <subcommand>`¡para obtener mas informacion sobre sub-comandos!"
-    },
-    "gamatoto": {
-      "info": "¡Ir a una expedicion con Gamatoto! ¡Usa este comando para revisar tu estatus, o usa un subcomando para ir a una aventura!",
-      "subcommand": {
-        "start": {
-          "usage": "<location>",
-          "info": "¡Comienza una expedición!"
+    "image": {
+        "cat": {
+            "info": "Te da un precioso dulce querido y hermoso gatito.\n¡Awwww!"
         },
-        "end": {
-          "info": "¡Termina una expedición!"
+        "delete": {
+            "info": ""
         },
-        "locations": {
-          "info": "Listar todos los lugares de expedición."
+        "thesearch": {
+            "info": "",
+            "defaulttext": ""
+        },
+        "shit": {
+            "info": "Le dice a todo el mundo que lo que piensas es una mierda.",
+            "usage": "[text]",
+            "flags": {
+                "plural": "Especifica si el texto debe ser plural."
+            }
+        },
+        "writepoem": {
+            "usage": "[text]",
+            "info": "Escribe un poema encantador.",
+            "flags": {
+                "monika": "Solo Monika.",
+                "sayori": "Solo Monika.",
+                "yuri": "Solo Monika.",
+                "natsuki": "Solo Monika."
+            }
         }
-      },
-      "stats": "<:bc_cat:345081695990710272> ¡Estos son tus items!\n\n{{stats}}",
-      "alreadystarted": "¡Ya hay una expedición en progreso!",
-      "notstarted": "¡No has comenzado una expedición!",
-      "nolocation": "Lo sentimos, esa no fue una locacio valida. las locaciones que puedes visitar actualmente son:\n\n{{locations}}",
-      "invalidlocation": "Algo raro paso. ¡El lugar en el que explorabas ya no existe! Por favor comienza otra expedición.",
-      "expeditionbeings": "<:bc_cat:345081695990710272> ¡LA BÚSQUEDA INICIA! <:bc_cat:345081695990710272>\n\nLocacion: {{location}}\n\n¡Por favor vuelve luego ejecutando `gamatoto end`!",
-      "expeditionends": "<:bc_cat:345081695990710272> ¡RESULTADOS DE LA EXPEDICION! <:bc_cat:345081695990710272>\n\nLocacion: {{location}}\nDuracion: {{minutes}} minutes\n\n{{results}}",
-      "notimeelapsed": "No ha transcurrido el tiempo desde que comenzó la expedición. ¡Gamatoto no encuentra nada!",
-      "itemfound": "Gamatoto encontró {{amount}}{{item}} en {{location}}.",
-      "levelup": "¡:fireworks: Gamatoto ahora es nivel {{level}}!",
-      "gamatotoxp": "Gamatoto ha ganado **{{amount}}**XP{{old}}→**{{new}}**)",
-      "itemincrease": "{{item}} Ensontrase **{{amount}}** ({{old}} → **{{new}}**)",
-      "locations": "¡Estas son todas las locaciones de las expediciones!\n\n{{locations}}",
-      "wronglevel": "Lo sentimos, ¡necesitas ser nivel {{level}} para poder explorar ese lugar!",
-      "gamatotoitems": "Estos son tus items:\n{{items}}",
-      "gamatotostats": "Gamatoto actualmente es nivel {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
-      "gamatotocurrent": "Gamatoto ha estado explorando el **{{location}}** por **{{minutes}}** minutos.",
-      "gamatotoidle": "Gamatoto no está en una expedición ahora mismo. ¡Envíalo a una aventura haciendo 'gamatoto start [location]'!"
     },
-    "prefix": {
-      "info": "Obtiene o establece sus prefijos de comando. Este comando configura prefijos de usuario. Para prefijos de gremio, use el comando 'configuración'.",
-      "subcommand": {
-        "add": {
-          "usage": "<prefix>",
-          "info": "Añade un prefijo a tu lista."
+    "admin": {
+        "setup": {
+            "staff": {
+                "setrole": "Los roles de personal han sido actualizados.",
+                "rolequery": "Seleccione las funciones que se considerarán funciones de moderador. Los usuarios con estos roles serán capaces de utilizar los comandos de administrador."
+            },
+            "info": "Configura varias configuraciones.",
+            "subcommand": {
+                "staffuser": {
+                    "usage": "usuario del personal <add | remove> <user>...",
+                    "info": "Añade o remueve usuarios de la lista de personal."
+                },
+                "staffrole": {
+                    "info": "Aparece un cuadro de diálogo para seleccionar o anular la selección de funciones del personal."
+                },
+                "mute": {
+                    "info": "Configura la función de silenciar."
+                },
+                "announcement": {
+                    "info": "Configura los avisos."
+                },
+                "modlog": {
+                    "usage": "modlog [event]...",
+                    "info": "Establece el modlog de los eventos especificados. Si no se especifica ningún canal, por defecto se usará el canal actual. Si no se especifican eventos, por defecto se elijen todos los eventos."
+                },
+                "punishment": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "mute": {
+                "setrole": "El rol de silenciar se ha actualizado.",
+                "rolequery": ""
+            },
+            "announce": {
+                "set": "Los anuncios se han configurado.",
+                "rolequery": "Seleccione el rol que debe ser fijado para anuncios.",
+                "channelquery": "Seleccione el canal en que deberían ir los anuncios."
+            },
+            "modlog": {
+                "set": "El modlog ha sido configurado en el canal {{channel}} con los siguientes eventos:\n```\n{{events}}\n```\n{{hadInvalid}}",
+                "remove": "El modlog ha sido removido para los siguientes eventos:\n```\n{{events}}\n```\n{{hadInvalid}}",
+                "invalid": "No se proporcionaron eventos validos. La lista de eventos validos es:\n```\n{{eventList}}\n```",
+                "hadinvalid": "Tenias algunos eventos inválidos en tu comando. La lista de eventos validos es:\n```\n{{eventList}}\n```",
+                "list": "Estos son los modlogs que están activos en tu gremio:\n\n{{events}}"
+            },
+            "subcommands": {
+                "modlog": {
+                    "flags": {
+                        "channel": "Especifica el canal en que el modlog se debe poner.",
+                        "remove": "Especifica que se debe eliminar el modlog en vez de ser añadido.",
+                        "list": "Devuelve una lista de modlogs configurados."
+                    }
+                },
+                "punishment": {
+                    "flags": {
+                        "kick": "",
+                        "ban": "",
+                        "mute": "",
+                        "time": "",
+                        "list": "",
+                        "days": ""
+                    }
+                }
+            },
+            "punishment": {
+                "toolow": "",
+                "invalidweight": "",
+                "invalidchoice": "",
+                "invalidtypes": "",
+                "added": "",
+                "removed": "",
+                "overwritten": "",
+                "doesntexist": "",
+                "list": ""
+            },
+            "default": ""
         },
-        "remove": {
-          "usage": "<prefix>",
-          "info": "Quita un prefijo de tu lista."
-        }
-      },
-      "prefixlist": "{{content}} \nPara configurar sus prefijos, uso los subcomandos 'Añadir' y 'eliminar'. Para configurar los prefijos de gremio, utilice el comando 'configuración'.",
-      "userprefixes": "Estos son tus prefijos:\n```md\n{{userprefixes}}\n```",
-      "guildprefixes": "Estos son los prefijos en este gremio:\n```md\n{{guildprefixes}}\n```",
-      "noprefixes": "No tienes prefijos personalizados.",
-      "defaultprefixes": "Siempre puedes utilizar estos prefijos:{{prefixes}}",
-      "prefixadded": "¡El prefijo ha sido añadido!",
-      "prefixremoved": "¡El prefijo ha sido removido!",
-      "nothingchanged": "Nada fue cambiado."
-    },
-    "warnings": {
-      "output": "**{{user}}** ha acumulado **{{amount}}** advertencia(s) en **{{guild}}**."
-    },
-    "economy": {
-      "info": "Convierte divisas usando las tasas de conversión recientes.",
-      "invalidamount": "Por favor especifique una cantidad válida para convertir.",
-      "invalidcode": "Codigo de moneda desconocido: {{code}}",
-      "converted": "{{amount}}{{from}} es equivalente a {{converted}}{{to}}",
-      "usage": "<from><to><amount>"
-    },
-    "usettings": {
-      "info": "Modifica o muestra su configuración de usuario.",
-      "subcommand": {
-        "dmerrors": {
-          "usage": "[true|false]",
-          "info": "Habilita o deshabilita Mensajes privados para las notificaciones de error."
-        }
-      },
-      "dmerrorsenabled": "Se han habilitado las notificaciones de error por mensaje directo.",
-      "dmerrorsdisabled": "Que se haya desactivado las notificaciones de error por mensaje directo.",
-      "userinfo": "Aquí está la configuración de usuario: \n\n{{settings}}\n\nSubcomandos disponibles: {{sub}}"
-    },
-    "rr": {
-      "info": "Juega al juego de ruleta rusa. Por defecto, su revólver puede almacenar 6 balas.",
-      "usage": "[bullets]",
-      "flags": {
-        "capacity": "Establece cuántas balas de su revólver podrá sostener.",
-        "emote": "Especifica que emoticon (o texto) debería jugar a la ruleta rusa."
-      },
-      "capacitylow": "Su revólver debe ser capaz de mantener al menos dos balas, ¡con cualquier cantidad menor estaría garantizada la muerte!",
-      "bulletslow": "No puedes cargar menos de una bala, cobarde.",
-      "bulletshigh": "¡Vaya, tu revolver solo puede tener {{capacity}} balas! ¡Eso seria muerte garantizada! ¿Tienes deseo de morir o algo?",
-      "begin": "Cargaste {{bullets}} bala(s) en tu revolver de {{capacity}} tiros, dale una vuelta, y colócalo contra la cabeza.",
-      "death": "{{content}}\n\n***BOOM!*** [[command.general.rr.deathmessages]]",
-      "life": "{{content}}\n\n*Click!* [[command.general.rr.livemessages]]",
-      "livemessages": [
-        "La pistola percuta, vacía. Lograste vivir otro día.",
-        "Tu aliento es un signo de alivio al darte cuenta de que no morirás hoy.",
-        "¡Como si eso no fuer a cambiar! La suerte esta de tu lado.",
-        "Dale gracias a RNGesus al bajar el arma.",
-        ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
-        "Sonríes a medida que te das cuenta que has sobrevivido."
-      ],
-      "deathmessages": [
-        "La pistola se va, salpicando tus sesos a través de la pared. ¡Mala suerte!",
-        ":skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:",
-        "Sin darte cuenta, todo acabó.",
-        "¡Por lo menos tenias pollo!",
-        "Yo ***no*** limpiare eso.",
-        "¡Las armas de fuego no son juguetes!",
-        "¡Bueno, no las puedes ganar todas!",
-        "Bi-bien... ¿si cada chuleta de cerdo fuese perfecta, no habríamos tenido salchichas? Lastima que estas muerto de todas formas.",
-        "¡Culpa al lag!",
-        "Hoy simplemente no fue tu día de suerte.",
-        "Pfff, la previsión es para perdedores."
-      ]
-    },
-    "user": {
-      "usage": "[user]",
-      "info": "Devuelve información sobre el usuario especificado.",
-      "description": "**Nombre de usuario**: {{username}}\n**Discriminador**: {{discriminator}}\n**Identificador**: {{id}}\n**Bot**: {{bot}}\n**Creado**: {{created}}\n[Avatar]({{avatar}})",
-      "guildinfoheader": "Información de Gremio",
-      "guildinfo": "**Apodo**: {{nick}}\n**Permisos**: {{permissions}}\n**Estatus**: {{status}}\n**Se unió**: {{joined}}\n{{game}}",
-      "status": [
-        "Jugando",
-        "Emitiendo directo",
-        "Escuchando a",
-        "Viendo"
-      ]
-    }
-  },
-  "image": {
-    "cat": {
-      "info": "Te da un precioso dulce querido y hermoso gatito.\n¡Awwww!"
-    },
-    "delete": {
-      "info": ""
-    },
-    "thesearch": {
-      "info": "",
-      "defaulttext": ""
-    },
-    "shit": {
-      "info": "Le dice a todo el mundo que lo que piensas es una mierda.",
-      "usage": "[text]",
-      "flags": {
-        "plural": "Especifica si el texto debe ser plural."
-      }
-    },
-    "writepoem": {
-      "usage": "[text]",
-      "info": "Escribe un poema encantador.",
-      "flags": {
-        "monika": "Solo Monika.",
-        "sayori": "Solo Monika.",
-        "yuri": "Solo Monika.",
-        "natsuki": "Solo Monika."
-      }
-    }
-  },
-  "admin": {
-    "setup": {
-      "staff": {
-        "setrole": "Los roles de personal han sido actualizados.",
-        "rolequery": "Seleccione las funciones que se considerarán funciones de moderador. Los usuarios con estos roles serán capaces de utilizar los comandos de administrador."
-      },
-      "info": "Configura varias configuraciones.",
-      "subcommand": {
-        "staffuser": {
-          "usage": "usuario del personal <add | remove> <user>...",
-          "info": "Añade o remueve usuarios de la lista de personal."
+        "reason": {
+            "info": "",
+            "nocase": "",
+            "reasonset": ""
         },
-        "staffrole": {
-          "info": "Aparece un cuadro de diálogo para seleccionar o anular la selección de funciones del personal."
+        "help": {
+            "info": "",
+            "allcommands": "Estos son todos los comandos que puedes ejecutar en **{{guild}}**.\n```markdown\n{{commands}}\n```\nPara mas informacion sobre los comandos, ejecuta `help <commandname>` o visita <https://blargbot.xyz/commands>.",
+            "nocommand": "Lo sentimos, ¡no hay ningún comando con el nombre {{name}}!",
+            "commandinfo": "**Comando: {{name}}**\n\n**Alias**: {{aliases}}\n**Uso**: {{usage}}\n\n{{descripción}}"
+        },
+        "warn": {
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "warningassigned": "",
+            "negativecount": "",
+            "usage": "",
+            "limitexceeded": ""
+        },
+        "pardon": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "negativecount": "",
+            "warningassigned": "",
+            "invaliduser": ""
+        },
+        "kick": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "kicked": "",
+            "invaliduser": ""
         },
         "mute": {
-          "info": "Configura la función de silenciar."
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": "",
+                "duration": "",
+                "time": ""
+            },
+            "muted": "",
+            "invaliduser": "",
+            "norole": "",
+            "unmutein": ""
         },
-        "announcement": {
-          "info": "Configura los avisos."
+        "unmute": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "unmuted": "",
+            "invaliduser": "",
+            "unmutedafter": ""
         },
-        "modlog": {
-          "usage": "modlog [event]...",
-          "info": "Establece el modlog de los eventos especificados. Si no se especifica ningún canal, por defecto se usará el canal actual. Si no se especifican eventos, por defecto se elijen todos los eventos."
+        "ban": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": "",
+                "days": "",
+                "time": ""
+            },
+            "banned": "",
+            "invaliduser": "",
+            "unbunin": ""
         },
-        "punishment": {
-          "usage": "",
-          "info": ""
+        "unban": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "banned": "",
+            "invaliduser": "",
+            "unbannedafter": ""
+        },
+        "cc": {
+            "usage": "",
+            "info": "",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": ""
+                },
+                "delete": {
+                    "usage": "",
+                    "info": ""
+                },
+                "rename": {
+                    "usage": "",
+                    "info": ""
+                },
+                "raw": {
+                    "usage": "",
+                    "info": ""
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": ""
+                },
+                "author": {
+                    "usage": "",
+                    "info": ""
+                },
+                "list": {
+                    "info": ""
+                },
+                "test": {
+                    "usage": "",
+                    "info": ""
+                },
+                "help": {
+                    "usage": "",
+                    "info": ""
+                },
+                "setdesc": {
+                    "usage": "",
+                    "info": ""
+                },
+                "setusage": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dontown": "",
+            "notag": "",
+            "tagset": "",
+            "tagrename": "",
+            "raw": "",
+            "alreadyexists": "",
+            "testoutput": "",
+            "subcommandnotfound": "",
+            "transferprompt": "",
+            "nobots": "",
+            "transfercancelled": "",
+            "transfercomplete": "",
+            "descupdate": "",
+            "descreset": "",
+            "subcommandconflict": "",
+            "tagauthor": ""
         }
-      },
-      "mute": {
-        "setrole": "El rol de silenciar se ha actualizado.",
-        "rolequery": ""
-      },
-      "announce": {
-        "set": "Los anuncios se han configurado.",
-        "rolequery": "Seleccione el rol que debe ser fijado para anuncios.",
-        "channelquery": "Seleccione el canal en que deberían ir los anuncios."
-      },
-      "modlog": {
-        "set": "El modlog ha sido configurado en el canal {{channel}} con los siguientes eventos:\n```\n{{events}}\n```\n{{hadInvalid}}",
-        "remove": "El modlog ha sido removido para los siguientes eventos:\n```\n{{events}}\n```\n{{hadInvalid}}",
-        "invalid": "No se proporcionaron eventos validos. La lista de eventos validos es:\n```\n{{eventList}}\n```",
-        "hadinvalid": "Tenias algunos eventos inválidos en tu comando. La lista de eventos validos es:\n```\n{{eventList}}\n```",
-        "list": "Estos son los modlogs que están activos en tu gremio:\n\n{{events}}"
-      },
-      "subcommands": {
-        "modlog": {
-          "flags": {
-            "channel": "Especifica el canal en que el modlog se debe poner.",
-            "remove": "Especifica que se debe eliminar el modlog en vez de ser añadido.",
-            "list": "Devuelve una lista de modlogs configurados."
-          }
-        },
-        "punishment": {
-          "flags": {
-            "kick": "",
-            "ban": "",
-            "mute": "",
-            "time": "",
-            "list": "",
-            "days": ""
-          }
-        }
-      },
-      "punishment": {
-        "toolow": "",
-        "invalidweight": "",
-        "invalidchoice": "",
-        "invalidtypes": "",
-        "added": "",
-        "removed": "",
-        "overwritten": "",
-        "doesntexist": "",
-        "list": ""
-      },
-      "default": ""
-    },
-    "reason": {
-      "info": "",
-      "nocase": "",
-      "reasonset": ""
-    },
-    "help": {
-      "info": "",
-      "allcommands": "Estos son todos los comandos que puedes ejecutar en **{{guild}}**.\n```markdown\n{{commands}}\n```\nPara mas informacion sobre los comandos, ejecuta `help <commandname>` o visita <https://blargbot.xyz/commands>.",
-      "nocommand": "Lo sentimos, ¡no hay ningún comando con el nombre {{name}}!",
-      "commandinfo": "**Comando: {{name}}**\n\n**Alias**: {{aliases}}\n**Uso**: {{usage}}\n\n{{descripción}}"
-    },
-    "warn": {
-      "info": "",
-      "flags": {
-        "count": "",
-        "reason": ""
-      },
-      "invalidcount": "",
-      "warningassigned": "",
-      "negativecount": "",
-      "usage": "",
-      "limitexceeded": ""
-    },
-    "pardon": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "count": "",
-        "reason": ""
-      },
-      "invalidcount": "",
-      "negativecount": "",
-      "warningassigned": "",
-      "invaliduser": ""
-    },
-    "kick": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": ""
-      },
-      "kicked": "",
-      "invaliduser": ""
-    },
-    "mute": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": "",
-        "duration": "",
-        "time": ""
-      },
-      "muted": "",
-      "invaliduser": "",
-      "norole": "",
-      "unmutein": ""
-    },
-    "unmute": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": ""
-      },
-      "unmuted": "",
-      "invaliduser": "",
-      "unmutedafter": ""
-    },
-    "ban": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": "",
-        "days": "",
-        "time": ""
-      },
-      "banned": "",
-      "invaliduser": "",
-      "unbunin": ""
-    },
-    "unban": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": ""
-      },
-      "banned": "",
-      "invaliduser": "",
-      "unbannedafter": ""
-    },
-    "cc": {
-      "usage": "",
-      "info": "",
-      "subcommand": {
-        "set": {
-          "usage": "",
-          "info": ""
-        },
-        "delete": {
-          "usage": "",
-          "info": ""
-        },
-        "rename": {
-          "usage": "",
-          "info": ""
-        },
-        "raw": {
-          "usage": "",
-          "info": ""
-        },
-        "transfer": {
-          "usage": "",
-          "info": ""
-        },
-        "author": {
-          "usage": "",
-          "info": ""
-        },
-        "list": {
-          "info": ""
-        },
-        "test": {
-          "usage": "",
-          "info": ""
-        },
-        "help": {
-          "usage": "",
-          "info": ""
-        },
-        "setdesc": {
-          "usage": "",
-          "info": ""
-        },
-        "setusage": {
-          "usage": "",
-          "info": ""
-        }
-      },
-      "dontown": "",
-      "notag": "",
-      "tagset": "",
-      "tagrename": "",
-      "raw": "",
-      "alreadyexists": "",
-      "testoutput": "",
-      "subcommandnotfound": "",
-      "transferprompt": "",
-      "nobots": "",
-      "transfercancelled": "",
-      "transfercomplete": "",
-      "descupdate": "",
-      "descreset": "",
-      "subcommandconflict": "",
-      "tagauthor": ""
     }
-  }
 }
