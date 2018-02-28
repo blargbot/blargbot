@@ -15,7 +15,8 @@
     "messagetoolong": "Ups! Jeg prøvede på at sende en besked der var for lang.\n[[error.pleasereport]]",
     "notenoughparams": "Ikke nok parametre! Udfør `{{prefix}}help {{name}}` for flere detaljer.\n\nForventede `{{expected}}` parametre, men fik `{{recieved}}` istedet.",
     "tag": {
-        "notfound": "Undertagget '{{tag}}' findes ikke.",
+        "restricted": "",
+        "notfound": "",
         "toomanyargs": "For mange argumenter (r:{{received}} e:{{expected}})",
         "toofewargs": "Ikke tilstrækkeligt argumenter (r:{{received}} e:{{expected}})",
         "isnan": "Forventede `{{arg}}` til at være et tal, men modtog istedet `{{value}}`",
