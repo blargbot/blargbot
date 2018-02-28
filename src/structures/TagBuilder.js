@@ -5,7 +5,7 @@ class TagBuilder {
   static ComplexTag(name) { return new TagBuilder().withCategory(bu.TagType.COMPLEX).withName(name); }
   static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name); }
   static CCommandTag(name) { return new TagBuilder().withCategory(bu.TagType.CCOMMAND).withName(name); }
-  static AutoTag(name) { return new TagBuilder().withCategory(false).withName(name); }
+  static AutoTag(name) { return new TagBuilder().withCategory(0).withName(name); }
 
   constructor(init) {
     this.tag = {};
@@ -21,8 +21,12 @@ class TagBuilder {
   }
 
   build() {
-    if (this.tag.category === false)
-      this.tag.category = this.tag.args && this.tag.args.length > 0 ? bu.TagType.COMPLEX : bu.TagType.SIMPLE;
+    if (this.tag.category === 0){
+      if (this.tag.args != null && this.tag.args.length !== 0)
+        this.tag.category = bu.TagType.COMPLEX;
+      else
+        this.tag.category = bu.TagType.SIMPLE;
+    }
 
     this.tag.execute = function (exec, tag) {
       return async function (params) {
