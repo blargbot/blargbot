@@ -15,7 +15,8 @@
     "messagetoolong": "Whoops! Hab versucht eine nachricht zu shicken die zu lang war\n[[error.pleasereport]]",
     "notenoughparams": "Nicht genug Parameter. Tu `{{prefix}}help\n{{name}}` für mehr Informationen\n\nErwartete `{{expected}}` parameter, aber geh\n`{{received}}` hin",
     "tag": {
-        "notfound": "Tag '{{tag}}' existiert nicht",
+        "restricted": "",
+        "notfound": "",
         "toomanyargs": "Zu viele argumente (r:{{received}} e:{{expected}})",
         "toofewargs": "Nicht genug argumente (r:{{received}} e:{{expected}})",
         "isnan": "Erwartete '{{arg}}' als Zahl, aber bekommen\n'{{value}}'",
