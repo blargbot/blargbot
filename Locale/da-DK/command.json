@@ -435,7 +435,7 @@
             "invalidcount": "Nummeret der blev angivet var ikke et tal!",
             "negativecount": "Mindst én benådning skal tildeles!",
             "warningassigned": "**{{user}}** er blevet tildelt **{{count}}** benådning(er).",
-            "invaliduser": ""
+            "invaliduser": "Den angivne bruger kunne ikke blive fundet."
         },
         "kick": {
             "usage": "<user>",
@@ -456,7 +456,7 @@
             },
             "muted": ":ok_hand: **{{user}}** er blevet dæmpet.",
             "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
-            "norole": "",
+            "norole": "En dæmpet rolle er ikke været sat! Brug kommandoen `setup mute` for at konfigurere den.",
             "unmutein": ""
         },
         "unmute": {
