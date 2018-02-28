@@ -4,7 +4,7 @@ class UserSettingsCommand extends GeneralCommand {
   constructor(client) {
     super(client, {
       name: 'usettings',
-      aliases: ['usersettings'],
+      aliases: ['usersettings', 'usetup'],
       info: 'Modifies or displays your user settings.',
       keys: {
         dmerrorsenabled: { key: '.dmerrorsenabled', value: 'DM error notifications have been enabled.' },
