@@ -7,7 +7,7 @@ class TagBuilder {
   static CCommandTag(name) { return new TagBuilder().withCategory(bu.TagType.CCOMMAND).withName(name); }
 
   constructor(init) {
-    this.tag = {}
+    this.tag = {};
     this.execute = {
       preExec: [],
       conditional: [],
@@ -51,7 +51,7 @@ class TagBuilder {
           console.error(e);
           throw e;
         }
-      }
+      };
 
       function EnsureResponse(params, result) {
         if (typeof result !== 'object')
@@ -164,7 +164,7 @@ class TagBuilder {
         this.whenArgs(args => args.length >= from && args.length <= to, action);
       } else if (/^\d+(,\d+)+$/.test(condition)) { //list of values ex 1, 2, 6
         let values = condition.split(',').map(v => parseInt(v));
-        this.whenArgs(args => values.indexOf(args.length) != -1, action)
+        this.whenArgs(args => values.indexOf(args.length) != -1, action);
       } else if (/^\d+$/.test(condition)) {//single value, no operator
         this.whenArgs(parseInt(condition), action);
       } else
@@ -207,8 +207,22 @@ TagBuilder.util = {
     }
     return result;
   },
+  async error(params, message) { return await bu.tagProcessError(params, '`' + message + '`'); },
+  parseChannel(params, channelId) {
+    let channel = params.msg.channel;
+    if (channel.id !== channelId) {
+      if (!/([0-9]{17,23})/.test(channelId))
+        return TagBuilder.errors.noChannelFound;
+      channelId = channelId.match(/([0-9]{17,23})/)[0];
+      channel = bot.getChannel(channelId);
 
-  async error(params, message) { return await bu.tagProcessError(params, '`' + message + '`'); }
+      if (channel == null)
+        return TagBuilder.errors.noChannelFound;
+      if (channel.guild.id !== params.msg.guild.id)
+        return p => TagBuilder.util.error(p, 'Channel must be in guild');
+    }
+    return channel;
+  }
 };
 
 TagBuilder.errors = {
@@ -217,9 +231,11 @@ TagBuilder.errors = {
   noUserFound(params) { return TagBuilder.util.error(params, 'No user found'); },
   noRoleFound(params) { return TagBuilder.util.error(params, 'No role found'); },
   noChannelFound(params) { return TagBuilder.util.error(params, 'No channel found'); },
+  noMessageFound(params) { return TagBuilder.util.error(params, 'No message found'); },
   notANumber(params) { return TagBuilder.util.error(params, 'Not a number'); },
   notAnArray(params) { return TagBuilder.util.error(params, 'Not an array'); },
-  invalidOperator(params) { return TagBuilder.util.error(params, 'Invalid operator'); }
+  invalidOperator(params) { return TagBuilder.util.error(params, 'Invalid operator'); },
+  userNotInGuild(params) { return TagBuilder.util.error(params, 'User not in guild'); }
 };
 
 module.exports = TagBuilder;
