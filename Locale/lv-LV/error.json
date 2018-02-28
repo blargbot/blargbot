@@ -15,6 +15,7 @@
     "messagetoolong": "Ups! Es mēģināju nosūtīt ziņu, kas bija pārāk gara. [[error.pleasereport]]",
     "notenoughparams": "",
     "tag": {
+        "restricted": "",
         "notfound": "",
         "toomanyargs": "",
         "toofewargs": "",
