@@ -15,7 +15,8 @@
     "messagetoolong": "Whoops! Ho provato ad inviare un messaggio troppo lungo. [[error.pleasereport]]",
     "notenoughparams": "Troppi pochi argomenti! Scrivi `{{prefix}}help {{name}}` per maggiori dettagli \n\nMi aspettavo `{{expected}}` parametri, ma ne ho ricevuti `{{received}}`",
     "tag": {
-        "notfound": "La tag '{{tag}}' non esiste.",
+        "restricted": "",
+        "notfound": "",
         "toomanyargs": "Troppi argomenti (r:{{received}} e:{{expected}})",
         "toofewargs": "Troppi pochi argomenti (r:{{received}} e:{{expected}})",
         "isnan": "Mi aspettavo '{{arg}}' che fosse un numero, invece ho ricevuto '{{value}}'",
