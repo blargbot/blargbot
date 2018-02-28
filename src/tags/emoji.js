@@ -32,5 +32,5 @@ module.exports =
         emojis.splice(amount);
         return emojis.join(' ');
     })
-    .whenDefault(Builder.errors.notEnoughArguments)
+    .whenDefault(Builder.errors.tooManyArguments)
     .build();

@@ -20,7 +20,7 @@ class TagBuilder {
   }
 
   build() {
-    this.tag.execute = function (exec) {
+    this.tag.execute = function (exec, tag) {
       return async function (params) {
         try {
           if (this.category === bu.TagType.CCOMMAND && !params.ccommand)
@@ -32,7 +32,7 @@ class TagBuilder {
           let callback;
 
           for (const c of exec.conditional) {
-            if (c.condition(params.args)) {
+            if (c.condition.apply(tag, [params.args])) {
               callback = c.action;
               break;
             }
@@ -43,9 +43,9 @@ class TagBuilder {
             throw new Error('Missing default execution on subtag ' + this.name + '\nParams:' + JSON.stringify(params));
 
           for (const preExec of exec.preExec)
-            await preExec(params);
+            await preExec.apply(tag, [params]);
 
-          return EnsureResponse(params, await callback(params));
+          return EnsureResponse(params, await callback.apply(tag, [params]));
         }
         catch (e) {
           console.error(e);
@@ -65,7 +65,7 @@ class TagBuilder {
 
         return result;
       }
-    }(this.execute);
+    }(this.execute, this.tag);
 
     console.debug('Tag built:', this.tag.name, ArgFactory.toString(this.tag.args));
     return this.tag;
