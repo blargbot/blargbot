@@ -7,34 +7,20 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = 'emoji';
-e.args = '&lt;text&gt; [amount]';
-e.usage = '{emoji;text[;amount]}';
-e.desc = 'Gets `amount` (or 5 if `amount` isn&apos;t specified) emojis related to the given text. There\'s a limit of 10 emojis.';
-e.exampleIn = '{emoji;I am hungry;5}';
-e.exampleOut = '🍔 🍕 😩 🍴 😐';
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    let parsedFallback = parseInt(params.fallback);
-    if (args[1]) {
-        let q = encodeURIComponent(args[1]);
-        let amount = parseInt(args[2]) || parsedFallback;
+module.exports =
+  Builder.ComplexTag('emoji')
+    .withArgs(a => [a.require('text'), a.optional('amount')])
+    .withDesc('Gets `amount` (or 5 if `amount` isn\'t specified) emojis related to the given text. There\'s a limit of 10 emojis.')
+    .withExample(
+      '{emoji;I am hungry;5}',
+      '🍔 🍕 😩 🍴 😐'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
+    .whenArgs('2-3', async params => {
+        let q = encodeURIComponent(params.args[1]);
+        let amount = parseInt(params.args[2]) || parseInt(params.fallback);
         if (amount > 10) amount = 10;
         else if (amount < 1) amount = 1;
         let emojis = await new Promise((resolve, reject) => {
@@ -44,14 +30,7 @@ e.execute = async function (params) {
             });
         });
         emojis.splice(amount);
-        replaceString = emojis.join(' ');
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+        return emojis.join(' ');
+    })
+    .whenDefault(Builder.errors.notEnoughArguments)
+    .build();
