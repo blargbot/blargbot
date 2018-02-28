@@ -15,7 +15,8 @@
     "messagetoolong": "Uuups! Potrudil sem se poslati poslati sporočilo, ki je bilo predolgo. [[error.pleasereport]]",
     "notenoughparams": "Premalo parametrov! Napišite '{{prefix}}pomoč {{name}}\" za več podrobnosti.\n\nPričakovani '{{expected}}\" parametri, vendar so '{{received}}\" namesto tega.",
     "tag": {
-        "notfound": "Podoznaka '{{tag}}« ne obstaja.",
+        "restricted": "",
+        "notfound": "",
         "toomanyargs": "Preveč argumentov (r:{{received}} e:{{expected}})",
         "toofewargs": "Premalo argumentov (r:{{received}} e:{{expected}})",
         "isnan": "Pričakovano, da bo '{{arg}}\" številka, vendar je bila prejeta \"{{value}}\"",
