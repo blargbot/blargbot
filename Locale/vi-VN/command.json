@@ -1,560 +1,560 @@
 {
-  "general": {
-    "ping": {
-      "info": "Pong!\nXác định thời gian lệnh được nhận từ máy chủ.",
-      "randmsg": [
-        "Sự tồn tại không là hiện thực.",
-        "Bạn không sở hữu một cơ thể vĩnh cửu, một ngày nào đó bạn sẽ tan biến khỏi thế gian này.",
-        "Không vấn đề gì.",
-        "Bạn đi đâu vậy?",
-        "Không có gì ở ngoài đâu.",
-        "Bạn không hề biết rằng, bạn đang cô đơn trong một vũ trụ rộng vô tận.",
-        "Sự thật trái ngược.",
-        "Bỏ đi mọi thứ.",
-        "Sự tồn tại của bạn thật đáng thương.",
-        "Chúng ta đều đã chết.",
-        "Meo.",
-        "Sự sợ hãi là tự do.",
-        "Sự chinh phục là giải phóng.",
-        "Mâu thuẫn là sự thật.",
-        "Bạn có muốn ký một hợp đồng không?",
-        "Hãy để nó đi, và tiếp tục."
-      ],
-      "final": ""
-    },
-    "brainfuck": {
-      "info": "Giải mã brainfuck.",
-      "usage": "",
-      "flags": {
-        "p": "Mở danh sách các con trỏ sau khi giải mã.",
-        "i": "Xác định giá trị đầu vào cho `,`",
-        "pointers": "",
-        "input": ""
-      }
-    },
-    "ship": {
-      "info": "Ghép đôi hai người và cho ra tên ship.",
-      "usage": "",
-      "final": "Tên ship của các bạn là **{{name}}**!",
-      "notenough": "Bạn phải nói cho mình biết ai với ai để rồi mình còn ship chớ!"
-    },
-    "tag": {
-      "info": "Tag là một hệ thống các lệnh công cộng mà bất kỳ ai cũng có thể tạo hoặc thực thi bằng cách sử dụng ngôn ngữ BBTag.\n\n**Các lệnh con**:\n{{subcommands}}\n\nĐể biết thêm thông tin về một lệnh con, nhập `b!t help <subcommand>`\nĐể biết thêm thông tin về ngôn ngữ BBTag, truy cập <https://blargbot.xyz/tags>.\nBằng cách tạo một Tag mới, hãy xác nhận rằng bạn đồng ý với các Điều khoản về Dịch vụ (<https://blargbot.xyz/tags/tos>).",
-      "usage": "",
-      "dontown": "[[emote.x]] Bạn không sở hữu tag đó!",
-      "alreadyexists": "[[emote.x]] Tag đó đã tồn tại rồi!",
-      "notag": "[[emote.x]] Không có tag nào tồn tại có tên như thế cả.",
-      "tagset": "",
-      "tagrename": "[[emote.check]] Tag `{{old}}` đã được đổi tên thành `{{new}}`!",
-      "raw": "Đây là dòng lệnh cho tag {{name}}:\n```{{code}}```",
-      "testoutput": "Đầu ra:\n\n{{output}}",
-      "subcommand": {
-        "set": {
-          "usage": "",
-          "info": "Tạo hoặc chỉnh sửa một tag với tên và nội dung đã cho. Nó sẽ không thay thế bất cứ tag nào được làm từ người khác."
+    "general": {
+        "ping": {
+            "info": "Pong!\nXác định thời gian lệnh được nhận từ máy chủ.",
+            "randmsg": [
+                "Sự tồn tại không là hiện thực.",
+                "Bạn không sở hữu một cơ thể vĩnh cửu, một ngày nào đó bạn sẽ tan biến khỏi thế gian này.",
+                "Không vấn đề gì.",
+                "Bạn đi đâu vậy?",
+                "Không có gì ở ngoài đâu.",
+                "Bạn không hề biết rằng, bạn đang cô đơn trong một vũ trụ rộng vô tận.",
+                "Sự thật trái ngược.",
+                "Bỏ đi mọi thứ.",
+                "Sự tồn tại của bạn thật đáng thương.",
+                "Chúng ta đều đã chết.",
+                "Meo.",
+                "Sự sợ hãi là tự do.",
+                "Sự chinh phục là giải phóng.",
+                "Mâu thuẫn là sự thật.",
+                "Bạn có muốn ký một hợp đồng không?",
+                "Hãy để nó đi, và tiếp tục."
+            ],
+            "final": ""
         },
-        "delete": {
-          "usage": "",
-          "info": "Xoá một tag mà bạn đã tạo ra trước đó."
+        "brainfuck": {
+            "info": "Giải mã brainfuck.",
+            "usage": "",
+            "flags": {
+                "p": "Mở danh sách các con trỏ sau khi giải mã.",
+                "i": "Xác định giá trị đầu vào cho `,`",
+                "pointers": "",
+                "input": ""
+            }
         },
-        "rename": {
-          "usage": "",
-          "info": "Đổi tên một tag mà bạn tạo ra."
+        "ship": {
+            "info": "Ghép đôi hai người và cho ra tên ship.",
+            "usage": "",
+            "final": "Tên ship của các bạn là **{{name}}**!",
+            "notenough": "Bạn phải nói cho mình biết ai với ai để rồi mình còn ship chớ!"
         },
-        "raw": {
-          "usage": "",
-          "info": "Lấy nội dung/dòng mã của tag được xác định."
+        "tag": {
+            "info": "Tag là một hệ thống các lệnh công cộng mà bất kỳ ai cũng có thể tạo hoặc thực thi bằng cách sử dụng ngôn ngữ BBTag.\n\n**Các lệnh con**:\n{{subcommands}}\n\nĐể biết thêm thông tin về một lệnh con, nhập `b!t help <subcommand>`\nĐể biết thêm thông tin về ngôn ngữ BBTag, truy cập <https://blargbot.xyz/tags>.\nBằng cách tạo một Tag mới, hãy xác nhận rằng bạn đồng ý với các Điều khoản về Dịch vụ (<https://blargbot.xyz/tags/tos>).",
+            "usage": "",
+            "dontown": "[[emote.x]] Bạn không sở hữu tag đó!",
+            "alreadyexists": "[[emote.x]] Tag đó đã tồn tại rồi!",
+            "notag": "[[emote.x]] Không có tag nào tồn tại có tên như thế cả.",
+            "tagset": "",
+            "tagrename": "[[emote.check]] Tag `{{old}}` đã được đổi tên thành `{{new}}`!",
+            "raw": "Đây là dòng lệnh cho tag {{name}}:\n```{{code}}```",
+            "testoutput": "Đầu ra:\n\n{{output}}",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": "Tạo hoặc chỉnh sửa một tag với tên và nội dung đã cho. Nó sẽ không thay thế bất cứ tag nào được làm từ người khác."
+                },
+                "delete": {
+                    "usage": "",
+                    "info": "Xoá một tag mà bạn đã tạo ra trước đó."
+                },
+                "rename": {
+                    "usage": "",
+                    "info": "Đổi tên một tag mà bạn tạo ra."
+                },
+                "raw": {
+                    "usage": "",
+                    "info": "Lấy nội dung/dòng mã của tag được xác định."
+                },
+                "info": {
+                    "usage": "",
+                    "info": "Gửi thông tin về một tag được xác định."
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": "Chuyển đổi quyền sở hữu tag được xác định cho một người dùng mà bạn muốn đổi. Tuy nhiên, các dữ liệu và hàm sẽ không được chuyển qua."
+                },
+                "top": {
+                    "info": "Hiện lên danh sách tags được yêu thích nhiều nhất."
+                },
+                "author": {
+                    "usage": "",
+                    "info": "Hiện lên chủ sở hữu một tag được xác định."
+                },
+                "search": {
+                    "usage": "",
+                    "info": "Tìm một tag với tên có chứa từ khoá mà bạn đưa ra."
+                },
+                "list": {
+                    "usage": "",
+                    "info": "Cho ra tất cả các tag đang hoạt động, hoặc các tag được tạo bởi một người dùng được xác định, nếu cần thiết."
+                },
+                "favorite": {
+                    "usage": "",
+                    "info": ""
+                },
+                "report": {
+                    "usage": "",
+                    "info": "Báo cáo một tag vi phạm Điều khoản về Dịch vụ của chúng tôi. Xin hãy dùng nó một cách chính đáng."
+                },
+                "test": {
+                    "usage": "",
+                    "info": "Cho ra kết quả từ dòng mã đã cho trong khung test."
+                },
+                "help": {
+                    "usage": "",
+                    "info": "Hiện cái này nè!"
+                },
+                "docs": {
+                    "usage": "",
+                    "info": "Gửi một đường link tới thông tin và danh sách BBTag, hay cho ra một thông tin về một subtag mà bạn cho."
+                },
+                "setdesc": {
+                    "info": "",
+                    "usage": ""
+                },
+                "setusage": {
+                    "info": "",
+                    "usage": ""
+                }
+            },
+            "subcommandnotfound": "",
+            "transferprompt": "",
+            "nobots": "",
+            "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
+            "transfercomplete": "",
+            "taginfo": "",
+            "descupdate": "",
+            "descreset": "",
+            "subcommandconflict": "",
+            "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
+            "toptags": "",
+            "tagauthor": "",
+            "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
+            "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
+            "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
         },
-        "info": {
-          "usage": "",
-          "info": "Gửi thông tin về một tag được xác định."
+        "locale": {
+            "info": "",
+            "set": "",
+            "list": ""
         },
-        "transfer": {
-          "usage": "",
-          "info": "Chuyển đổi quyền sở hữu tag được xác định cho một người dùng mà bạn muốn đổi. Tuy nhiên, các dữ liệu và hàm sẽ không được chuyển qua."
+        "tokenify": {
+            "info": ""
         },
-        "top": {
-          "info": "Hiện lên danh sách tags được yêu thích nhiều nhất."
+        "nato": {
+            "info": ""
         },
-        "author": {
-          "usage": "",
-          "info": "Hiện lên chủ sở hữu một tag được xác định."
+        "invite": {
+            "info": "",
+            "message": ""
         },
-        "search": {
-          "usage": "",
-          "info": "Tìm một tag với tên có chứa từ khoá mà bạn đưa ra."
+        "donate": {
+            "info": "",
+            "willdm": "",
+            "message": ""
         },
-        "list": {
-          "usage": "",
-          "info": "Cho ra tất cả các tag đang hoạt động, hoặc các tag được tạo bởi một người dùng được xác định, nếu cần thiết."
-        },
-        "favorite": {
-          "usage": "",
-          "info": ""
-        },
-        "report": {
-          "usage": "",
-          "info": "Báo cáo một tag vi phạm Điều khoản về Dịch vụ của chúng tôi. Xin hãy dùng nó một cách chính đáng."
-        },
-        "test": {
-          "usage": "",
-          "info": "Cho ra kết quả từ dòng mã đã cho trong khung test."
+        "mods": {
+            "info": "",
+            "mods": "",
+            "nomods": "",
+            "nomodsonline": ""
         },
         "help": {
-          "usage": "",
-          "info": "Hiện cái này nè!"
+            "info": "",
+            "allcommands": "",
+            "nocommand": "",
+            "commandinfo": "",
+            "aliases": "",
+            "subcommand": "",
+            "command": "",
+            "nosubcommand": "",
+            "subcommands": ""
         },
-        "docs": {
-          "usage": "",
-          "info": "Gửi một đường link tới thông tin và danh sách BBTag, hay cho ra một thông tin về một subtag mà bạn cho."
+        "gamatoto": {
+            "info": "",
+            "subcommand": {
+                "start": {
+                    "usage": "",
+                    "info": ""
+                },
+                "end": {
+                    "info": ""
+                },
+                "locations": {
+                    "info": ""
+                }
+            },
+            "stats": "",
+            "alreadystarted": "",
+            "notstarted": "",
+            "nolocation": "",
+            "invalidlocation": "",
+            "expeditionbeings": "",
+            "expeditionends": "",
+            "notimeelapsed": "",
+            "itemfound": "",
+            "levelup": "",
+            "gamatotoxp": "",
+            "itemincrease": "",
+            "locations": "",
+            "wronglevel": "",
+            "gamatotoitems": "",
+            "gamatotostats": "",
+            "gamatotocurrent": "",
+            "gamatotoidle": ""
         },
-        "setdesc": {
-          "info": "",
-          "usage": ""
+        "prefix": {
+            "info": "",
+            "subcommand": {
+                "add": {
+                    "usage": "",
+                    "info": ""
+                },
+                "remove": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "prefixlist": "",
+            "userprefixes": "",
+            "guildprefixes": "",
+            "noprefixes": "",
+            "defaultprefixes": "",
+            "prefixadded": "",
+            "prefixremoved": "",
+            "nothingchanged": ""
         },
-        "setusage": {
-          "info": "",
-          "usage": ""
+        "warnings": {
+            "output": ""
+        },
+        "economy": {
+            "info": "",
+            "invalidamount": "",
+            "invalidcode": "",
+            "converted": "",
+            "usage": ""
+        },
+        "usettings": {
+            "info": "",
+            "subcommand": {
+                "dmerrors": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dmerrorsenabled": "",
+            "dmerrorsdisabled": "",
+            "userinfo": ""
+        },
+        "rr": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "capacity": "",
+                "emote": ""
+            },
+            "capacitylow": "",
+            "bulletslow": "",
+            "bulletshigh": "",
+            "begin": "",
+            "death": "",
+            "life": "",
+            "livemessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "deathmessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ]
+        },
+        "user": {
+            "usage": "",
+            "info": "",
+            "description": "",
+            "guildinfoheader": "",
+            "guildinfo": "",
+            "status": [
+                "",
+                "",
+                "",
+                ""
+            ]
         }
-      },
-      "subcommandnotfound": "",
-      "transferprompt": "",
-      "nobots": "",
-      "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
-      "transfercomplete": "",
-      "taginfo": "",
-      "descupdate": "",
-      "descreset": "",
-      "subcommandconflict": "",
-      "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favourites: {{favourites}} Uses: {{uses}}",
-      "toptags": "",
-      "tagauthor": "",
-      "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
-      "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
-      "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
     },
-    "locale": {
-      "info": "",
-      "set": "",
-      "list": ""
-    },
-    "tokenify": {
-      "info": ""
-    },
-    "nato": {
-      "info": ""
-    },
-    "invite": {
-      "info": "",
-      "message": ""
-    },
-    "donate": {
-      "info": "",
-      "willdm": "",
-      "message": ""
-    },
-    "mods": {
-      "info": "",
-      "mods": "",
-      "nomods": "",
-      "nomodsonline": ""
-    },
-    "help": {
-      "info": "",
-      "allcommands": "",
-      "nocommand": "",
-      "commandinfo": "",
-      "aliases": "",
-      "subcommand": "",
-      "command": "",
-      "nosubcommand": "",
-      "subcommands": ""
-    },
-    "gamatoto": {
-      "info": "",
-      "subcommand": {
-        "start": {
-          "usage": "",
-          "info": ""
+    "image": {
+        "cat": {
+            "info": ""
         },
-        "end": {
-          "info": ""
+        "delete": {
+            "info": ""
         },
-        "locations": {
-          "info": ""
+        "thesearch": {
+            "info": "",
+            "defaulttext": ""
+        },
+        "shit": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "plural": ""
+            }
+        },
+        "writepoem": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "monika": "",
+                "sayori": "",
+                "yuri": "",
+                "natsuki": ""
+            }
         }
-      },
-      "stats": "",
-      "alreadystarted": "",
-      "notstarted": "",
-      "nolocation": "",
-      "invalidlocation": "",
-      "expeditionbeings": "",
-      "expeditionends": "",
-      "notimeelapsed": "",
-      "itemfound": "",
-      "levelup": "",
-      "gamatotoxp": "",
-      "itemincrease": "",
-      "locations": "",
-      "wronglevel": "",
-      "gamatotoitems": "",
-      "gamatotostats": "",
-      "gamatotocurrent": "",
-      "gamatotoidle": ""
     },
-    "prefix": {
-      "info": "",
-      "subcommand": {
-        "add": {
-          "usage": "",
-          "info": ""
+    "admin": {
+        "setup": {
+            "staff": {
+                "setrole": "",
+                "rolequery": ""
+            },
+            "info": "",
+            "subcommand": {
+                "staffuser": {
+                    "usage": "",
+                    "info": ""
+                },
+                "staffrole": {
+                    "info": ""
+                },
+                "mute": {
+                    "info": ""
+                },
+                "announcement": {
+                    "info": ""
+                },
+                "modlog": {
+                    "usage": "",
+                    "info": ""
+                },
+                "punishment": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "mute": {
+                "setrole": "",
+                "rolequery": ""
+            },
+            "announce": {
+                "set": "",
+                "rolequery": "",
+                "channelquery": ""
+            },
+            "modlog": {
+                "set": "",
+                "remove": "",
+                "invalid": "",
+                "hadinvalid": "",
+                "list": ""
+            },
+            "subcommands": {
+                "modlog": {
+                    "flags": {
+                        "channel": "",
+                        "remove": "",
+                        "list": ""
+                    }
+                },
+                "punishment": {
+                    "flags": {
+                        "kick": "",
+                        "ban": "",
+                        "mute": "",
+                        "time": "",
+                        "list": "",
+                        "days": ""
+                    }
+                }
+            },
+            "punishment": {
+                "toolow": "",
+                "invalidweight": "",
+                "invalidchoice": "",
+                "invalidtypes": "",
+                "added": "",
+                "removed": "",
+                "overwritten": "",
+                "doesntexist": "",
+                "list": ""
+            },
+            "default": ""
         },
-        "remove": {
-          "usage": "",
-          "info": ""
-        }
-      },
-      "prefixlist": "",
-      "userprefixes": "",
-      "guildprefixes": "",
-      "noprefixes": "",
-      "defaultprefixes": "",
-      "prefixadded": "",
-      "prefixremoved": "",
-      "nothingchanged": ""
-    },
-    "warnings": {
-      "output": ""
-    },
-    "economy": {
-      "info": "",
-      "invalidamount": "",
-      "invalidcode": "",
-      "converted": "",
-      "usage": ""
-    },
-    "usettings": {
-      "info": "",
-      "subcommand": {
-        "dmerrors": {
-          "usage": "",
-          "info": ""
-        }
-      },
-      "dmerrorsenabled": "",
-      "dmerrorsdisabled": "",
-      "userinfo": ""
-    },
-    "rr": {
-      "info": "",
-      "usage": "",
-      "flags": {
-        "capacity": "",
-        "emote": ""
-      },
-      "capacitylow": "",
-      "bulletslow": "",
-      "bulletshigh": "",
-      "begin": "",
-      "death": "",
-      "life": "",
-      "livemessages": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "deathmessages": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ]
-    },
-    "user": {
-      "usage": "",
-      "info": "",
-      "description": "",
-      "guildinfoheader": "",
-      "guildinfo": "",
-      "status": [
-        "",
-        "",
-        "",
-        ""
-      ]
-    }
-  },
-  "image": {
-    "cat": {
-      "info": ""
-    },
-    "delete": {
-      "info": ""
-    },
-    "thesearch": {
-      "info": "",
-      "defaulttext": ""
-    },
-    "shit": {
-      "info": "",
-      "usage": "",
-      "flags": {
-        "plural": ""
-      }
-    },
-    "writepoem": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "monika": "",
-        "sayori": "",
-        "yuri": "",
-        "natsuki": ""
-      }
-    }
-  },
-  "admin": {
-    "setup": {
-      "staff": {
-        "setrole": "",
-        "rolequery": ""
-      },
-      "info": "",
-      "subcommand": {
-        "staffuser": {
-          "usage": "",
-          "info": ""
+        "reason": {
+            "info": "",
+            "nocase": "",
+            "reasonset": ""
         },
-        "staffrole": {
-          "info": ""
+        "help": {
+            "info": "",
+            "allcommands": "",
+            "nocommand": "",
+            "commandinfo": ""
+        },
+        "warn": {
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "warningassigned": "",
+            "negativecount": "",
+            "usage": "",
+            "limitexceeded": ""
+        },
+        "pardon": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "negativecount": "",
+            "warningassigned": "",
+            "invaliduser": ""
+        },
+        "kick": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "kicked": "",
+            "invaliduser": ""
         },
         "mute": {
-          "info": ""
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": "",
+                "duration": "",
+                "time": ""
+            },
+            "muted": "",
+            "invaliduser": "",
+            "norole": "",
+            "unmutein": ""
         },
-        "announcement": {
-          "info": ""
+        "unmute": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "unmuted": "",
+            "invaliduser": "",
+            "unmutedafter": ""
         },
-        "modlog": {
-          "usage": "",
-          "info": ""
+        "ban": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": "",
+                "days": "",
+                "time": ""
+            },
+            "banned": "",
+            "invaliduser": "",
+            "unbunin": ""
         },
-        "punishment": {
-          "usage": "",
-          "info": ""
+        "unban": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "banned": "",
+            "invaliduser": "",
+            "unbannedafter": ""
+        },
+        "cc": {
+            "usage": "",
+            "info": "",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": ""
+                },
+                "delete": {
+                    "usage": "",
+                    "info": ""
+                },
+                "rename": {
+                    "usage": "",
+                    "info": ""
+                },
+                "raw": {
+                    "usage": "",
+                    "info": ""
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": ""
+                },
+                "author": {
+                    "usage": "",
+                    "info": ""
+                },
+                "list": {
+                    "info": ""
+                },
+                "test": {
+                    "usage": "",
+                    "info": ""
+                },
+                "help": {
+                    "usage": "",
+                    "info": ""
+                },
+                "setdesc": {
+                    "usage": "",
+                    "info": ""
+                },
+                "setusage": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dontown": "",
+            "notag": "",
+            "tagset": "",
+            "tagrename": "",
+            "raw": "",
+            "alreadyexists": "",
+            "testoutput": "",
+            "subcommandnotfound": "",
+            "transferprompt": "",
+            "nobots": "",
+            "transfercancelled": "",
+            "transfercomplete": "",
+            "descupdate": "",
+            "descreset": "",
+            "subcommandconflict": "",
+            "tagauthor": ""
         }
-      },
-      "mute": {
-        "setrole": "",
-        "rolequery": ""
-      },
-      "announce": {
-        "set": "",
-        "rolequery": "",
-        "channelquery": ""
-      },
-      "modlog": {
-        "set": "",
-        "remove": "",
-        "invalid": "",
-        "hadinvalid": "",
-        "list": ""
-      },
-      "subcommands": {
-        "modlog": {
-          "flags": {
-            "channel": "",
-            "remove": "",
-            "list": ""
-          }
-        },
-        "punishment": {
-          "flags": {
-            "kick": "",
-            "ban": "",
-            "mute": "",
-            "time": "",
-            "list": "",
-            "days": ""
-          }
-        }
-      },
-      "punishment": {
-        "toolow": "",
-        "invalidweight": "",
-        "invalidchoice": "",
-        "invalidtypes": "",
-        "added": "",
-        "removed": "",
-        "overwritten": "",
-        "doesntexist": "",
-        "list": ""
-      },
-      "default": ""
-    },
-    "reason": {
-      "info": "",
-      "nocase": "",
-      "reasonset": ""
-    },
-    "help": {
-      "info": "",
-      "allcommands": "",
-      "nocommand": "",
-      "commandinfo": ""
-    },
-    "warn": {
-      "info": "",
-      "flags": {
-        "count": "",
-        "reason": ""
-      },
-      "invalidcount": "",
-      "warningassigned": "",
-      "negativecount": "",
-      "usage": "",
-      "limitexceeded": ""
-    },
-    "pardon": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "count": "",
-        "reason": ""
-      },
-      "invalidcount": "",
-      "negativecount": "",
-      "warningassigned": "",
-      "invaliduser": ""
-    },
-    "kick": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": ""
-      },
-      "kicked": "",
-      "invaliduser": ""
-    },
-    "mute": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": "",
-        "duration": "",
-        "time": ""
-      },
-      "muted": "",
-      "invaliduser": "",
-      "norole": "",
-      "unmutein": ""
-    },
-    "unmute": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": ""
-      },
-      "unmuted": "",
-      "invaliduser": "",
-      "unmutedafter": ""
-    },
-    "ban": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": "",
-        "days": "",
-        "time": ""
-      },
-      "banned": "",
-      "invaliduser": "",
-      "unbunin": ""
-    },
-    "unban": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": ""
-      },
-      "banned": "",
-      "invaliduser": "",
-      "unbannedafter": ""
-    },
-    "cc": {
-      "usage": "",
-      "info": "",
-      "subcommand": {
-        "set": {
-          "usage": "",
-          "info": ""
-        },
-        "delete": {
-          "usage": "",
-          "info": ""
-        },
-        "rename": {
-          "usage": "",
-          "info": ""
-        },
-        "raw": {
-          "usage": "",
-          "info": ""
-        },
-        "transfer": {
-          "usage": "",
-          "info": ""
-        },
-        "author": {
-          "usage": "",
-          "info": ""
-        },
-        "list": {
-          "info": ""
-        },
-        "test": {
-          "usage": "",
-          "info": ""
-        },
-        "help": {
-          "usage": "",
-          "info": ""
-        },
-        "setdesc": {
-          "usage": "",
-          "info": ""
-        },
-        "setusage": {
-          "usage": "",
-          "info": ""
-        }
-      },
-      "dontown": "",
-      "notag": "",
-      "tagset": "",
-      "tagrename": "",
-      "raw": "",
-      "alreadyexists": "",
-      "testoutput": "",
-      "subcommandnotfound": "",
-      "transferprompt": "",
-      "nobots": "",
-      "transfercancelled": "",
-      "transfercomplete": "",
-      "descupdate": "",
-      "descreset": "",
-      "subcommandconflict": "",
-      "tagauthor": ""
     }
-  }
 }
