@@ -10,31 +10,31 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('userjoinedat')
-        .withArgs(a => [a.optional('format'), a.optional('user'), a.optional('quiet')])
-        .withDesc('Returns the date the user joined the current guild, in UTC+0. ' +
-            'If a `format` code is specified, the date is formatted accordingly. ' +
-            'Leave blank for default formatting. ' +
-            'See the <a href=\'http://momentjs.com/docs/#/displaying/format/\'>moment documentation</a> for more information. ' +
-            'If `user` is specified, gets that user instead. ' +
-            'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
-        .withExample(
-            'Your account joined this guild on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
-            'Your account joined this guild on 2016/01/01 01:00:00.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-4', async function (params) {
-            let user = await bu.getTagUser(params.msg, params.args, 2);
+  Builder.AutoTag('userjoinedat')
+    .withArgs(a => [a.optional('format'), a.optional('user'), a.optional('quiet')])
+    .withDesc('Returns the date the user joined the current guild, in UTC+0. ' +
+      'If a `format` code is specified, the date is formatted accordingly. ' +
+      'Leave blank for default formatting. ' +
+      'See the <a href=\'http://momentjs.com/docs/#/displaying/format/\'>moment documentation</a> for more information. ' +
+      'If `user` is specified, gets that user instead. ' +
+      'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withExample(
+      'Your account joined this guild on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
+      'Your account joined this guild on 2016/01/01 01:00:00.'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1-4', async function (params) {
+      let user = await bu.getUser(params.msg, params.args[2], params.args[3]);
 
-            if (user != null) {
-                let member = params.msg.channel.guild.members.get(user.id);
-                if (member != null)
-                    return dep.moment(member.joinedAt).format(params.args[1] || '');
-                return await Builder.errors.userNotInGuild(params);
-            }
+      if (user != null) {
+        let member = params.msg.channel.guild.members.get(user.id);
+        if (member != null)
+          return dep.moment(member.joinedAt).format(params.args[1] || '');
+        return await Builder.errors.userNotInGuild(params);
+      }
 
-            if (params.args[3])
-                return params.args[2];
-            return '';
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+      if (params.args[3])
+        return params.args[2];
+      return '';
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();

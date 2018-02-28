@@ -8,31 +8,31 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    gameTypes = {
-        default: '',
-        0: 'playing',
-        1: 'streaming'
-    };
+  gameTypes = {
+    default: '',
+    0: 'playing',
+    1: 'streaming'
+  };
 
 module.exports =
-    Builder.AutoTag('usergametype')
-        .withArgs(a => [a.optional('user'), a.optional('quiet')])
-        .withDesc('Returns how the user is playing the game (playing, streaming). ' +
-            'If `user` is specified, gets that user instead. ' +
-            'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
-        .withExample(
-            'You are {usergametype} right now!',
-            'You are playing right now!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-3', async function (params) {
-            let user = await bu.getTagUser(params.msg, params.args, 1);
+  Builder.AutoTag('usergametype')
+    .withArgs(a => [a.optional('user'), a.optional('quiet')])
+    .withDesc('Returns how the user is playing the game (playing, streaming). ' +
+      'If `user` is specified, gets that user instead. ' +
+      'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withExample(
+      'You are {usergametype} right now!',
+      'You are playing right now!'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1-3', async function (params) {
+      let user = await bu.getUser(params.msg, params.args[1], params.args[2]);
 
-            if (user != null)
-                return gameTypes[user.game || { type: -1 }] || gameTypes.default;
+      if (user != null)
+        return gameTypes[user.game || { type: -1 }] || gameTypes.default;
 
-            if (params.args[2])
-                return params.args[1];
-            return '';
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+      if (params.args[2])
+        return params.args[1];
+      return '';
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();

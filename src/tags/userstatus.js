@@ -10,26 +10,26 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('userstatus')
-        .withArgs(a => [a.optional('user'), a.optional('quiet')])
-        .withDesc('Returns the status of the specified user (`online`, `idle`, `dnd`, or `offline`). '+
-        'If `user` is specified, gets that user instead. '+
-        'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
-        .withExample(
-            'You are currently {userstatus}',
-            'You are currently online'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-3', async function (params) {
-            let user = await bu.getTagUser(params.msg, params.args, 1);
-            if (user != null) {
-                let member = params.msg.channel.guild.members.get(user.id);
-                if (member != null)
-                    return member.status;
-            }
+  Builder.AutoTag('userstatus')
+    .withArgs(a => [a.optional('user'), a.optional('quiet')])
+    .withDesc('Returns the status of the specified user (`online`, `idle`, `dnd`, or `offline`). '+
+    'If `user` is specified, gets that user instead. '+
+    'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withExample(
+      'You are currently {userstatus}',
+      'You are currently online'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1-3', async function (params) {
+      let user = await bu.getUser(params.msg, params.args[1], params.args[2]);
+      if (user != null) {
+        let member = params.msg.channel.guild.members.get(user.id);
+        if (member != null)
+          return member.status;
+      }
 
-            if (params.args[2])
-                return params.args[1];
-            return '';
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+      if (params.args[2])
+        return params.args[1];
+      return '';
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();

@@ -10,22 +10,22 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('usermention')
-        .withArgs(a => [a.optional('user'), a.optional('quiet')])
-        .withDesc('Mentions a user. If `user` is specified, gets that user instead. '+
-        'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
-        .withExample(
-            'Hello, {usermention}!',
-            'Hello, @user!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-3', async function (params) {
-            let user = await bu.getTagUser(params.msg, params.args, 1);
-            if (user != null)
-                return user.mention;
+  Builder.CCommandTag('usermention')
+    .withArgs(a => [a.optional('user'), a.optional('quiet')])
+    .withDesc('Mentions a user. If `user` is specified, gets that user instead. '+
+    'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withExample(
+      'Hello, {usermention}!',
+      'Hello, @user!'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1-3', async function (params) {
+      let user = await bu.getUser(params.msg, params.args[1], params.args[2]);
+      if (user != null)
+        return user.mention;
 
-            if (params.args[2])
-                return params.args[1];
-            return '';
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+      if (params.args[2])
+        return params.args[1];
+      return '';
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();
