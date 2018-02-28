@@ -108,7 +108,6 @@ class CCCommand extends AdminCommand {
         isCustomCommand: true
       }, data);
       await ctx.send((await tagContext.process()).toString());
-      await data.incrementUses();
     }
   }
 
