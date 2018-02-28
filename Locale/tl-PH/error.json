@@ -15,7 +15,8 @@
     "messagetoolong": "Oops! Masyadong mahaba yung mensaheng sinusubukan kong ipadala. \n[[error.pleasereport]]",
     "notenoughparams": "Kulang sa parameters! Para sa mga detalye, gawin ang `{{prefix}}help {{name}}`.\n\nInaasahan ang `{{expected}}` parameters, pero sa halip `{{received}}` ang nakuha.",
     "tag": {
-        "notfound": "Walang `{{tag}}` tag.",
+        "restricted": "",
+        "notfound": "",
         "toomanyargs": "Sobra sa argumento (r:{{received}} e:{{expected}})",
         "toofewargs": "Kulang sa argumento (r:{{received}} e:{{expected}})",
         "isnan": "Inaasahan ang `{{args}` ay numero, pero ang natanggap ay `{{value}}`",
