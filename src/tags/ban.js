@@ -24,8 +24,8 @@ module.exports =
             'If noperms is provided, do not check if the command executor is actually able to ban people. ' +
             'Only provide this if you know what you\'re doing.'
         ).withExample(
-            '{ban;@stupid cat#8160;0;This is a test ban} @stupid cat#8160 was banned!',
-            'Success @stupid cat#8160 was banned!'
+            '{ban;stupid cat;0;This is a test ban} @stupid cat was banned!',
+            'Success @stupid cat was banned!'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-6', )
