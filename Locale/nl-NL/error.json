@@ -15,7 +15,8 @@
     "messagetoolong": "Oeps! Ik probeerde een bericht te sturen dat te lang was. [[error.pleasereport]]",
     "notenoughparams": "Niet genoeg parameters! Gebruik `{{prefix}}help {{name}}` voor meer details.\n\nVerwachtte '{{expected}}' parameters, maar kreeg in plaats daarvan '{{received}}'.",
     "tag": {
-        "notfound": "Subtag '{{tag}}' bestaat niet.",
+        "restricted": "",
+        "notfound": "",
         "toomanyargs": "Te veel args (r:{{received}} e:{{expected}})",
         "toofewargs": "Niet genoeg args (r:{{received}} e:{{expected}})",
         "isnan": "Verwachtte '{{arg}}' als een nummer, maar ontving '{{value}}'",
