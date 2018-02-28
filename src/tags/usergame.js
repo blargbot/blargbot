@@ -7,47 +7,28 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.ComplexTag('usergame')
+        .withArgs(a => [a.optional('user'), a.optional('quiet')])
+        .withDesc('Returns the game the user is playing. ' +
+            'If the user isn\'t playing a game, returns the word `nothing`. ' +
+            'If `user` is specified, gets that user instead. ' +
+            'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+        .withExample(
+            'You are playing {usergame}',
+            'You are playing with bbtag'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-3', async function (params) {
+            let user = await bu.getTagUser(params.msg, params.args, 1);
 
-e.requireCtx = require;
+            if (user != null)
+                return (user.game || { name: 'nothing' }).name;
 
-e.isTag = true;
-e.name = 'usergame';
-e.args = '[user] [quiet]';
-e.usage = '{usergame[;user[;quiet]]}';
-e.desc = 'Returns the game the user is playing. '+
-'If the user isn\'t playing a game, returns the word `nothing`. '+
-'If `name` is specified, gets that user instead. '+
-'If `quiet` is specified, if a user can\'t be found it will simply return the `name`';
-e.exampleIn = 'You are playing {usergame}';
-e.exampleOut = 'You are playing with bbtag';
-
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-
-    var obtainedUser = await bu.getTagUser(msg, args);
-
-    if (obtainedUser)
-        replaceString = obtainedUser.game ? obtainedUser.game.name : 'nothing';
-
-    else if (!args[2])
-        return '';
-    else
-        replaceString = args[1];
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            if (params.args[2])
+                return params.args[1];
+            return '';
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

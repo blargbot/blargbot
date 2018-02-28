@@ -7,47 +7,32 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
-
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = 'usergametype';
-e.args = '[user] [quiet]';
-e.usage = '{usergametype[;user[;quiet]]}';
-e.desc = 'Returns how the user is playing the game (playing, streaming). '+
-'If `name` is specified, gets that user instead. '+
-'If `quiet` is specified, if a user can\'t be found it will simply return the `name`';
-e.exampleIn = 'You\'re {usergametype} right now!';
-e.exampleOut = 'You\'re playing right now!';
-
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-
-    var obtainedUser = await bu.getTagUser(msg, args);
-
-    if (obtainedUser)
-        replaceString = obtainedUser.game ? (obtainedUser.game.type > 0 ? 'streaming' : 'playing') : '';
-
-    else if (!args[2])
-        return '';
-    else
-        replaceString = args[1];
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
+const Builder = require('../structures/TagBuilder'),
+    gameTypes = {
+        default: '',
+        0: 'playing',
+        1: 'streaming'
     };
-};
+
+module.exports =
+    Builder.ComplexTag('usergametype')
+        .withArgs(a => [a.optional('user'), a.optional('quiet')])
+        .withDesc('Returns how the user is playing the game (playing, streaming). ' +
+            'If `user` is specified, gets that user instead. ' +
+            'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+        .withExample(
+            'You are {usergametype} right now!',
+            'You are playing right now!'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-3', async function (params) {
+            let user = await bu.getTagUser(params.msg, params.args, 1);
+
+            if (user != null)
+                return gameTypes[user.game || { type: -1 }] || gameTypes.default;
+
+            if (params.args[2])
+                return params.args[1];
+            return '';
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

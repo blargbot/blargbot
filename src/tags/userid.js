@@ -7,47 +7,26 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.ComplexTag('userid')
+        .withArgs(a => [a.optional('user'), a.optional('quiet')])
+        .withDesc('Returns the user\'s ID. If `user` is specified, gets that user instead. ' +
+            'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+        .withExample(
+            'Your id is {userid}',
+            'Your id is 123456789123456'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-3', async function (params) {
+            let user = await bu.getTagUser(params.msg, params.args, 1);
 
-e.requireCtx = require;
+            if (user != null)
+                return user.id;
 
-e.isTag = true;
-e.name = 'userid';
-e.args = '[user] [quiet]';
-e.usage = '{userid[;user[;quiet]]}';
-e.desc = 'Returns the user\'s ID. If `name` is specified, gets that user instead. '+
-'If `quiet` is specified, if a user can\'t be found it will simply return the `name`';
-e.exampleIn = 'Your id is {userid}';
-e.exampleOut = 'Your id is 123456789123456';
-
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-
-    var obtainedUser = await bu.getTagUser(msg, args);
-
-    if (obtainedUser)
-        replaceString = obtainedUser.id;
-
-    else if (!args[2])
-        return '';
-    else
-        replaceString = args[1];
-
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            if (params.args[2])
+                return params.args[1];
+            return '';
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();
