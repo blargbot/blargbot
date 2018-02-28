@@ -1,560 +1,560 @@
 {
-  "general": {
-    "ping": {
-      "info": "Pong!\nDétermine la latence des commandes.",
-      "randmsg": [
-        "Tu veux du gâteau ?",
-        "Un biscuit ?",
-        "Une tasse de thé ?",
-        "Tu veux un petit café ?",
-        "J'ai faim.",
-        "Un grand verre d'eau avec une paille, s'il vous plaît.",
-        "J'ai des P'tits Lu.",
-        "Tu veux un cookie?",
-        "J'ai soif.",
-        "Wouaf.",
-        "Miaou.",
-        "...",
-        "La soumission est une libération.",
-        "",
-        "",
-        ""
-      ],
-      "final": ""
-    },
-    "brainfuck": {
-      "info": "Exécute le code \"brainfuck\".",
-      "usage": "",
-      "flags": {
-        "p": "Montre une liste de pointeurs après exécution.",
-        "i": "Spécifie les données apportées pour l'opérateur `,`.",
-        "pointers": "",
-        "input": ""
-      }
-    },
-    "ship": {
-      "info": "Génère un surnom pour deux utilisateurs.",
-      "usage": "",
-      "final": "Votre surnom est **{{name}}**!",
-      "notenough": "Vous devez choisir deux membres!"
-    },
-    "tag": {
-      "info": "Les tags sont un système de commandes publiques que tout le monde peut créer ou utiliser, écrits avec le langage BBTag.\n\n**Sous-commandes**:\n{{subcommands}}\n\nPour plus d'informations sur une sous-commande, utilisez `b!t help <sous-command>`.\nPour plus d'informations sur le langage BBTag, visitez <https://blargbot.xyz/tags>.\nEn créant un tag, vous certifiez approuver les conditions d'utilisation. (<https://blargbot.xyz/tags/tos> - en anglais.)",
-      "usage": "",
-      "dontown": "[[emote.x]] Vous ne possédez pas ce tag!",
-      "alreadyexists": "[[emote.x]] Un tag avec ce nom existe déjà!",
-      "notag": "[[emote.x]] Aucun tag avec ce nom n'existe.",
-      "tagset": "",
-      "tagrename": "[[emote.check]] Le tag `{{old}}` a été renommé en `{{new}}`.",
-      "raw": "Le code pour {{name}} est:\n```{{code}}```",
-      "testoutput": "Résultat:\n\n{{output}}",
-      "subcommand": {
-        "set": {
-          "usage": "",
-          "info": "Crée ou modifie un tag avec un nom et un contenu donné. Ne remplacera aucun tag créé par quelqu'un d'autre."
+    "general": {
+        "ping": {
+            "info": "Pong!\nDétermine la latence des commandes.",
+            "randmsg": [
+                "Tu veux du gâteau ?",
+                "Un biscuit ?",
+                "Une tasse de thé ?",
+                "Tu veux un petit café ?",
+                "J'ai faim.",
+                "Un grand verre d'eau avec une paille, s'il vous plaît.",
+                "J'ai des P'tits Lu.",
+                "Tu veux un cookie?",
+                "J'ai soif.",
+                "Wouaf.",
+                "Miaou.",
+                "...",
+                "La soumission est une libération.",
+                "",
+                "",
+                ""
+            ],
+            "final": ""
         },
-        "delete": {
-          "usage": "",
-          "info": "Supprime un tag que vous possédez."
+        "brainfuck": {
+            "info": "Exécute le code \"brainfuck\".",
+            "usage": "",
+            "flags": {
+                "p": "Montre une liste de pointeurs après exécution.",
+                "i": "Spécifie les données apportées pour l'opérateur `,`.",
+                "pointers": "",
+                "input": ""
+            }
         },
-        "rename": {
-          "usage": "",
-          "info": "Renomme un tag que vous possédez."
+        "ship": {
+            "info": "Génère un surnom pour deux utilisateurs.",
+            "usage": "",
+            "final": "Votre surnom est **{{name}}**!",
+            "notenough": "Vous devez choisir deux membres!"
         },
-        "raw": {
-          "usage": "",
-          "info": "Renvoie le code d'un tag."
+        "tag": {
+            "info": "Les tags sont un système de commandes publiques que tout le monde peut créer ou utiliser, écrits avec le langage BBTag.\n\n**Sous-commandes**:\n{{subcommands}}\n\nPour plus d'informations sur une sous-commande, utilisez `b!t help <sous-command>`.\nPour plus d'informations sur le langage BBTag, visitez <https://blargbot.xyz/tags>.\nEn créant un tag, vous certifiez approuver les conditions d'utilisation. (<https://blargbot.xyz/tags/tos> - en anglais.)",
+            "usage": "",
+            "dontown": "[[emote.x]] Vous ne possédez pas ce tag!",
+            "alreadyexists": "[[emote.x]] Un tag avec ce nom existe déjà!",
+            "notag": "[[emote.x]] Aucun tag avec ce nom n'existe.",
+            "tagset": "",
+            "tagrename": "[[emote.check]] Le tag `{{old}}` a été renommé en `{{new}}`.",
+            "raw": "Le code pour {{name}} est:\n```{{code}}```",
+            "testoutput": "Résultat:\n\n{{output}}",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": "Crée ou modifie un tag avec un nom et un contenu donné. Ne remplacera aucun tag créé par quelqu'un d'autre."
+                },
+                "delete": {
+                    "usage": "",
+                    "info": "Supprime un tag que vous possédez."
+                },
+                "rename": {
+                    "usage": "",
+                    "info": "Renomme un tag que vous possédez."
+                },
+                "raw": {
+                    "usage": "",
+                    "info": "Renvoie le code d'un tag."
+                },
+                "info": {
+                    "usage": "",
+                    "info": "Affiche des informations à propos d'un tag."
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": "Transfère le tag vers un utilisateur. Les variables ne seront pas transférées."
+                },
+                "top": {
+                    "info": "Affiche des tags qui ont été les plus favorisés."
+                },
+                "author": {
+                    "usage": "",
+                    "info": "Affiche l'auteur d'un tag."
+                },
+                "search": {
+                    "usage": "",
+                    "info": "Recherche un tag avec le nom contenant votre saisie."
+                },
+                "list": {
+                    "usage": "",
+                    "info": "Liste tous les tags, ou optionnellement tous les tags créés par un utilisateur spécifique."
+                },
+                "favorite": {
+                    "usage": "",
+                    "info": ""
+                },
+                "report": {
+                    "usage": "",
+                    "info": "Signale un tag pour avoir violer les ToS. Merci de l'utiliser avec responsabilité."
+                },
+                "test": {
+                    "usage": "",
+                    "info": "Exécute le code donné dans un environnement d'essai."
+                },
+                "help": {
+                    "usage": "",
+                    "info": "Affiche ceci !"
+                },
+                "docs": {
+                    "usage": "",
+                    "info": "Donne un lien vers la documentation BBTag ou donne des informations à propos d'un sous-tag spécifique."
+                },
+                "setdesc": {
+                    "info": "",
+                    "usage": ""
+                },
+                "setusage": {
+                    "info": "",
+                    "usage": ""
+                }
+            },
+            "subcommandnotfound": "Aucune sous-commande trouvée avec le nom `{{subcommand}}`",
+            "transferprompt": "{{target}},acceptez-vous que {{user}} veut vous donner le tag `{{tag}}`.\nCela ne transférera pas les variables.",
+            "nobots": "[[emote.x]]Vous ne pouvez pas transférer de tag à un bot!!",
+            "transfercancelled": "[[emote.x]]Le transfert a été annuler.",
+            "transfercomplete": "[[emote.check]] {{user}} possède maintenant le tag `{{tag}}`.",
+            "taginfo": "",
+            "descupdate": "La description pour `{{tag}}` a été mise à jour.",
+            "descreset": "La description pour `{{tag}}` a été réinitialisée.",
+            "subcommandconflict": "Vous ne pouvez pas utiliser le nom `{{name}}` parce qu'il y a une sous-commande qui porte ce nom!",
+            "toptagformat": "{{index}}. **{{name}}** ({{author}})\n -Favoris: {{favourites}} Utilisations: {{uses}}",
+            "toptags": "Voici les 10 meilleurs tags!\n\n{{tags}}",
+            "tagauthor": "Le tag `{{tag}}` a été créé par **{{author}}**.",
+            "favouriteadd": "Le tag `{{tag}}` a été ajouté a votre liste de favoris.",
+            "favouriteremove": "Le tag `{{tag}}` a été retiré de votre liste de favoris.",
+            "favourites": "Vous avez {{count}} tags dans votre liste de favoris.\n```fix\n{{tags}}\n```"
         },
-        "info": {
-          "usage": "",
-          "info": "Affiche des informations à propos d'un tag."
+        "locale": {
+            "info": "",
+            "set": "",
+            "list": ""
         },
-        "transfer": {
-          "usage": "",
-          "info": "Transfère le tag vers un utilisateur. Les variables ne seront pas transférées."
+        "tokenify": {
+            "info": ""
         },
-        "top": {
-          "info": "Affiche des tags qui ont été les plus favorisés."
+        "nato": {
+            "info": ""
         },
-        "author": {
-          "usage": "",
-          "info": "Affiche l'auteur d'un tag."
+        "invite": {
+            "info": "",
+            "message": ""
         },
-        "search": {
-          "usage": "",
-          "info": "Recherche un tag avec le nom contenant votre saisie."
+        "donate": {
+            "info": "",
+            "willdm": "OK, je vais vous envoyer mes informations de don dans un MP.",
+            "message": ""
         },
-        "list": {
-          "usage": "",
-          "info": "Liste tous les tags, ou optionnellement tous les tags créés par un utilisateur spécifique."
-        },
-        "favorite": {
-          "usage": "",
-          "info": ""
-        },
-        "report": {
-          "usage": "",
-          "info": "Signale un tag pour avoir violer les ToS. Merci de l'utiliser avec responsabilité."
-        },
-        "test": {
-          "usage": "",
-          "info": "Exécute le code donné dans un environnement d'essai."
+        "mods": {
+            "info": "",
+            "mods": "",
+            "nomods": "",
+            "nomodsonline": ""
         },
         "help": {
-          "usage": "",
-          "info": "Affiche ceci !"
+            "info": "",
+            "allcommands": "Voici toutes les commandes que vous pouvez exécuter sur **{{guild}} **.\n```markdown\n{{commands}}\n ``` pour plus d’informations sur les commandes, tapez `help <commande>` ou visitez < https://blargbot.xyz/commands >.",
+            "nocommand": "Désolé, il n’y a pas de commande avec le nom « {{name}} » !",
+            "commandinfo": "**{{type}}: {{name}}**\n\n**Alias**: {{aliases}}\n**utilisation**: {{usage}}\n\n{{description}}",
+            "aliases": "Pas d'alias",
+            "subcommand": "Sous-commande",
+            "command": "Commande",
+            "nosubcommand": "Désolé, il n’y a aucune sous-commande de `{{command}}` avec le nom `{{name}}` !",
+            "subcommands": ""
         },
-        "docs": {
-          "usage": "",
-          "info": "Donne un lien vers la documentation BBTag ou donne des informations à propos d'un sous-tag spécifique."
+        "gamatoto": {
+            "info": "Allez sur une expédition magique avec Gamatoto ! Utilisez cette commande pour vérifier vos statistiques, ou utilisez une sous-commande pour partir à l’aventure !",
+            "subcommand": {
+                "start": {
+                    "usage": "",
+                    "info": ""
+                },
+                "end": {
+                    "info": ""
+                },
+                "locations": {
+                    "info": ""
+                }
+            },
+            "stats": "",
+            "alreadystarted": "",
+            "notstarted": "",
+            "nolocation": "",
+            "invalidlocation": "",
+            "expeditionbeings": "",
+            "expeditionends": "",
+            "notimeelapsed": "",
+            "itemfound": "",
+            "levelup": "",
+            "gamatotoxp": "",
+            "itemincrease": "",
+            "locations": "",
+            "wronglevel": "",
+            "gamatotoitems": "",
+            "gamatotostats": "",
+            "gamatotocurrent": "",
+            "gamatotoidle": ""
         },
-        "setdesc": {
-          "info": "",
-          "usage": ""
+        "prefix": {
+            "info": "",
+            "subcommand": {
+                "add": {
+                    "usage": "",
+                    "info": ""
+                },
+                "remove": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "prefixlist": "",
+            "userprefixes": "",
+            "guildprefixes": "",
+            "noprefixes": "",
+            "defaultprefixes": "",
+            "prefixadded": "",
+            "prefixremoved": "",
+            "nothingchanged": ""
         },
-        "setusage": {
-          "info": "",
-          "usage": ""
+        "warnings": {
+            "output": ""
+        },
+        "economy": {
+            "info": "",
+            "invalidamount": "",
+            "invalidcode": "",
+            "converted": "",
+            "usage": ""
+        },
+        "usettings": {
+            "info": "",
+            "subcommand": {
+                "dmerrors": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dmerrorsenabled": "",
+            "dmerrorsdisabled": "",
+            "userinfo": ""
+        },
+        "rr": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "capacity": "",
+                "emote": ""
+            },
+            "capacitylow": "",
+            "bulletslow": "",
+            "bulletshigh": "",
+            "begin": "",
+            "death": "",
+            "life": "",
+            "livemessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "deathmessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ]
+        },
+        "user": {
+            "usage": "",
+            "info": "",
+            "description": "",
+            "guildinfoheader": "",
+            "guildinfo": "",
+            "status": [
+                "",
+                "",
+                "",
+                ""
+            ]
         }
-      },
-      "subcommandnotfound": "Aucune sous-commande trouvée avec le nom `{{subcommand}}`",
-      "transferprompt": "{{target}},acceptez-vous que {{user}} veut vous donner le tag `{{tag}}`.\nCela ne transférera pas les variables.",
-      "nobots": "[[emote.x]]Vous ne pouvez pas transférer de tag à un bot!!",
-      "transfercancelled": "[[emote.x]]Le transfert a été annuler.",
-      "transfercomplete": "[[emote.check]] {{user}} possède maintenant le tag `{{tag}}`.",
-      "taginfo": "",
-      "descupdate": "La description pour `{{tag}}` a été mise à jour.",
-      "descreset": "La description pour `{{tag}}` a été réinitialisée.",
-      "subcommandconflict": "Vous ne pouvez pas utiliser le nom `{{name}}` parce qu'il y a une sous-commande qui porte ce nom!",
-      "toptagformat": "{{index}}. **{{name}}** ({{author}})\n -Favoris: {{favourites}} Utilisations: {{uses}}",
-      "toptags": "Voici les 10 meilleurs tags!\n\n{{tags}}",
-      "tagauthor": "Le tag `{{tag}}` a été créé par **{{author}}**.",
-      "favouriteadd": "Le tag `{{tag}}` a été ajouté a votre liste de favoris.",
-      "favouriteremove": "Le tag `{{tag}}` a été retiré de votre liste de favoris.",
-      "favourites": "Vous avez {{count}} tags dans votre liste de favoris.\n```fix\n{{tags}}\n```"
     },
-    "locale": {
-      "info": "",
-      "set": "",
-      "list": ""
-    },
-    "tokenify": {
-      "info": ""
-    },
-    "nato": {
-      "info": ""
-    },
-    "invite": {
-      "info": "",
-      "message": ""
-    },
-    "donate": {
-      "info": "",
-      "willdm": "OK, je vais vous envoyer mes informations de don dans un MP.",
-      "message": ""
-    },
-    "mods": {
-      "info": "",
-      "mods": "",
-      "nomods": "",
-      "nomodsonline": ""
-    },
-    "help": {
-      "info": "",
-      "allcommands": "Voici toutes les commandes que vous pouvez exécuter sur **{{guild}} **.\n```markdown\n{{commands}}\n ``` pour plus d’informations sur les commandes, tapez `help <commande>` ou visitez < https://blargbot.xyz/commands >.",
-      "nocommand": "Désolé, il n’y a pas de commande avec le nom « {{name}} » !",
-      "commandinfo": "**{{type}}: {{name}}**\n\n**Alias**: {{aliases}}\n**utilisation**: {{usage}}\n\n{{description}}",
-      "aliases": "Pas d'alias",
-      "subcommand": "Sous-commande",
-      "command": "Commande",
-      "nosubcommand": "Désolé, il n’y a aucune sous-commande de `{{command}}` avec le nom `{{name}}` !",
-      "subcommands": ""
-    },
-    "gamatoto": {
-      "info": "Allez sur une expédition magique avec Gamatoto ! Utilisez cette commande pour vérifier vos statistiques, ou utilisez une sous-commande pour partir à l’aventure !",
-      "subcommand": {
-        "start": {
-          "usage": "",
-          "info": ""
+    "image": {
+        "cat": {
+            "info": "Vous montre un adorable, très doux et précieux chaton."
         },
-        "end": {
-          "info": ""
+        "delete": {
+            "info": ""
         },
-        "locations": {
-          "info": ""
+        "thesearch": {
+            "info": "",
+            "defaulttext": ""
+        },
+        "shit": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "plural": ""
+            }
+        },
+        "writepoem": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "monika": "",
+                "sayori": "",
+                "yuri": "",
+                "natsuki": ""
+            }
         }
-      },
-      "stats": "",
-      "alreadystarted": "",
-      "notstarted": "",
-      "nolocation": "",
-      "invalidlocation": "",
-      "expeditionbeings": "",
-      "expeditionends": "",
-      "notimeelapsed": "",
-      "itemfound": "",
-      "levelup": "",
-      "gamatotoxp": "",
-      "itemincrease": "",
-      "locations": "",
-      "wronglevel": "",
-      "gamatotoitems": "",
-      "gamatotostats": "",
-      "gamatotocurrent": "",
-      "gamatotoidle": ""
     },
-    "prefix": {
-      "info": "",
-      "subcommand": {
-        "add": {
-          "usage": "",
-          "info": ""
+    "admin": {
+        "setup": {
+            "staff": {
+                "setrole": "les rôles du staff ont été mis a jour.",
+                "rolequery": "sélectionnez les rôles qui vont être considérés comme modérateurs. Les utilisateurs avec ce rôle pourront utiliser les commandes d'administateurs."
+            },
+            "info": "configure des options variées",
+            "subcommand": {
+                "staffuser": {
+                    "usage": "",
+                    "info": "ajoute ou retire le(s) utilisateur(s) spécifiés à la liste."
+                },
+                "staffrole": {
+                    "info": "Affiche un dialogue pour sélectionner ou désélectionner des rôles."
+                },
+                "mute": {
+                    "info": "Paramètre le rôle muet."
+                },
+                "announcement": {
+                    "info": "Paramètre les annonces."
+                },
+                "modlog": {
+                    "usage": "",
+                    "info": ""
+                },
+                "punishment": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "mute": {
+                "setrole": "Le rôle muet a été mis a jour.",
+                "rolequery": ""
+            },
+            "announce": {
+                "set": "Les annonces ont été paramétrées.",
+                "rolequery": "Sélectionnez le rôle qui sera la cible des annonces.",
+                "channelquery": "Sélectionnez le salon dans lequel seront envoyées les annonces."
+            },
+            "modlog": {
+                "set": "",
+                "remove": "",
+                "invalid": "",
+                "hadinvalid": "",
+                "list": ""
+            },
+            "subcommands": {
+                "modlog": {
+                    "flags": {
+                        "channel": "",
+                        "remove": "",
+                        "list": ""
+                    }
+                },
+                "punishment": {
+                    "flags": {
+                        "kick": "",
+                        "ban": "",
+                        "mute": "",
+                        "time": "",
+                        "list": "",
+                        "days": ""
+                    }
+                }
+            },
+            "punishment": {
+                "toolow": "",
+                "invalidweight": "",
+                "invalidchoice": "",
+                "invalidtypes": "",
+                "added": "",
+                "removed": "",
+                "overwritten": "",
+                "doesntexist": "",
+                "list": ""
+            },
+            "default": ""
         },
-        "remove": {
-          "usage": "",
-          "info": ""
-        }
-      },
-      "prefixlist": "",
-      "userprefixes": "",
-      "guildprefixes": "",
-      "noprefixes": "",
-      "defaultprefixes": "",
-      "prefixadded": "",
-      "prefixremoved": "",
-      "nothingchanged": ""
-    },
-    "warnings": {
-      "output": ""
-    },
-    "economy": {
-      "info": "",
-      "invalidamount": "",
-      "invalidcode": "",
-      "converted": "",
-      "usage": ""
-    },
-    "usettings": {
-      "info": "",
-      "subcommand": {
-        "dmerrors": {
-          "usage": "",
-          "info": ""
-        }
-      },
-      "dmerrorsenabled": "",
-      "dmerrorsdisabled": "",
-      "userinfo": ""
-    },
-    "rr": {
-      "info": "",
-      "usage": "",
-      "flags": {
-        "capacity": "",
-        "emote": ""
-      },
-      "capacitylow": "",
-      "bulletslow": "",
-      "bulletshigh": "",
-      "begin": "",
-      "death": "",
-      "life": "",
-      "livemessages": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "deathmessages": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ]
-    },
-    "user": {
-      "usage": "",
-      "info": "",
-      "description": "",
-      "guildinfoheader": "",
-      "guildinfo": "",
-      "status": [
-        "",
-        "",
-        "",
-        ""
-      ]
-    }
-  },
-  "image": {
-    "cat": {
-      "info": "Vous montre un adorable, très doux et précieux chaton."
-    },
-    "delete": {
-      "info": ""
-    },
-    "thesearch": {
-      "info": "",
-      "defaulttext": ""
-    },
-    "shit": {
-      "info": "",
-      "usage": "",
-      "flags": {
-        "plural": ""
-      }
-    },
-    "writepoem": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "monika": "",
-        "sayori": "",
-        "yuri": "",
-        "natsuki": ""
-      }
-    }
-  },
-  "admin": {
-    "setup": {
-      "staff": {
-        "setrole": "les rôles du staff ont été mis a jour.",
-        "rolequery": "sélectionnez les rôles qui vont être considérés comme modérateurs. Les utilisateurs avec ce rôle pourront utiliser les commandes d'administateurs."
-      },
-      "info": "configure des options variées",
-      "subcommand": {
-        "staffuser": {
-          "usage": "",
-          "info": "ajoute ou retire le(s) utilisateur(s) spécifiés à la liste."
+        "reason": {
+            "info": "",
+            "nocase": "",
+            "reasonset": ""
         },
-        "staffrole": {
-          "info": "Affiche un dialogue pour sélectionner ou désélectionner des rôles."
+        "help": {
+            "info": "",
+            "allcommands": "",
+            "nocommand": "",
+            "commandinfo": ""
+        },
+        "warn": {
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "warningassigned": "",
+            "negativecount": "",
+            "usage": "",
+            "limitexceeded": ""
+        },
+        "pardon": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "negativecount": "",
+            "warningassigned": "",
+            "invaliduser": ""
+        },
+        "kick": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "kicked": "",
+            "invaliduser": ""
         },
         "mute": {
-          "info": "Paramètre le rôle muet."
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": "",
+                "duration": "",
+                "time": ""
+            },
+            "muted": "",
+            "invaliduser": "",
+            "norole": "",
+            "unmutein": ""
         },
-        "announcement": {
-          "info": "Paramètre les annonces."
+        "unmute": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "unmuted": "",
+            "invaliduser": "",
+            "unmutedafter": ""
         },
-        "modlog": {
-          "usage": "",
-          "info": ""
+        "ban": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": "",
+                "days": "",
+                "time": ""
+            },
+            "banned": "",
+            "invaliduser": "",
+            "unbunin": ""
         },
-        "punishment": {
-          "usage": "",
-          "info": ""
+        "unban": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "banned": "",
+            "invaliduser": "",
+            "unbannedafter": ""
+        },
+        "cc": {
+            "usage": "",
+            "info": "",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": ""
+                },
+                "delete": {
+                    "usage": "",
+                    "info": ""
+                },
+                "rename": {
+                    "usage": "",
+                    "info": ""
+                },
+                "raw": {
+                    "usage": "",
+                    "info": ""
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": ""
+                },
+                "author": {
+                    "usage": "",
+                    "info": ""
+                },
+                "list": {
+                    "info": ""
+                },
+                "test": {
+                    "usage": "",
+                    "info": ""
+                },
+                "help": {
+                    "usage": "",
+                    "info": ""
+                },
+                "setdesc": {
+                    "usage": "",
+                    "info": ""
+                },
+                "setusage": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dontown": "",
+            "notag": "",
+            "tagset": "",
+            "tagrename": "",
+            "raw": "",
+            "alreadyexists": "",
+            "testoutput": "",
+            "subcommandnotfound": "",
+            "transferprompt": "",
+            "nobots": "",
+            "transfercancelled": "",
+            "transfercomplete": "",
+            "descupdate": "",
+            "descreset": "",
+            "subcommandconflict": "",
+            "tagauthor": ""
         }
-      },
-      "mute": {
-        "setrole": "Le rôle muet a été mis a jour.",
-        "rolequery": ""
-      },
-      "announce": {
-        "set": "Les annonces ont été paramétrées.",
-        "rolequery": "Sélectionnez le rôle qui sera la cible des annonces.",
-        "channelquery": "Sélectionnez le salon dans lequel seront envoyées les annonces."
-      },
-      "modlog": {
-        "set": "",
-        "remove": "",
-        "invalid": "",
-        "hadinvalid": "",
-        "list": ""
-      },
-      "subcommands": {
-        "modlog": {
-          "flags": {
-            "channel": "",
-            "remove": "",
-            "list": ""
-          }
-        },
-        "punishment": {
-          "flags": {
-            "kick": "",
-            "ban": "",
-            "mute": "",
-            "time": "",
-            "list": "",
-            "days": ""
-          }
-        }
-      },
-      "punishment": {
-        "toolow": "",
-        "invalidweight": "",
-        "invalidchoice": "",
-        "invalidtypes": "",
-        "added": "",
-        "removed": "",
-        "overwritten": "",
-        "doesntexist": "",
-        "list": ""
-      },
-      "default": ""
-    },
-    "reason": {
-      "info": "",
-      "nocase": "",
-      "reasonset": ""
-    },
-    "help": {
-      "info": "",
-      "allcommands": "",
-      "nocommand": "",
-      "commandinfo": ""
-    },
-    "warn": {
-      "info": "",
-      "flags": {
-        "count": "",
-        "reason": ""
-      },
-      "invalidcount": "",
-      "warningassigned": "",
-      "negativecount": "",
-      "usage": "",
-      "limitexceeded": ""
-    },
-    "pardon": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "count": "",
-        "reason": ""
-      },
-      "invalidcount": "",
-      "negativecount": "",
-      "warningassigned": "",
-      "invaliduser": ""
-    },
-    "kick": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": ""
-      },
-      "kicked": "",
-      "invaliduser": ""
-    },
-    "mute": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": "",
-        "duration": "",
-        "time": ""
-      },
-      "muted": "",
-      "invaliduser": "",
-      "norole": "",
-      "unmutein": ""
-    },
-    "unmute": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": ""
-      },
-      "unmuted": "",
-      "invaliduser": "",
-      "unmutedafter": ""
-    },
-    "ban": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": "",
-        "days": "",
-        "time": ""
-      },
-      "banned": "",
-      "invaliduser": "",
-      "unbunin": ""
-    },
-    "unban": {
-      "usage": "",
-      "info": "",
-      "flags": {
-        "reason": ""
-      },
-      "banned": "",
-      "invaliduser": "",
-      "unbannedafter": ""
-    },
-    "cc": {
-      "usage": "",
-      "info": "",
-      "subcommand": {
-        "set": {
-          "usage": "",
-          "info": ""
-        },
-        "delete": {
-          "usage": "",
-          "info": ""
-        },
-        "rename": {
-          "usage": "",
-          "info": ""
-        },
-        "raw": {
-          "usage": "",
-          "info": ""
-        },
-        "transfer": {
-          "usage": "",
-          "info": ""
-        },
-        "author": {
-          "usage": "",
-          "info": ""
-        },
-        "list": {
-          "info": ""
-        },
-        "test": {
-          "usage": "",
-          "info": ""
-        },
-        "help": {
-          "usage": "",
-          "info": ""
-        },
-        "setdesc": {
-          "usage": "",
-          "info": ""
-        },
-        "setusage": {
-          "usage": "",
-          "info": ""
-        }
-      },
-      "dontown": "",
-      "notag": "",
-      "tagset": "",
-      "tagrename": "",
-      "raw": "",
-      "alreadyexists": "",
-      "testoutput": "",
-      "subcommandnotfound": "",
-      "transferprompt": "",
-      "nobots": "",
-      "transfercancelled": "",
-      "transfercomplete": "",
-      "descupdate": "",
-      "descreset": "",
-      "subcommandconflict": "",
-      "tagauthor": ""
     }
-  }
 }
