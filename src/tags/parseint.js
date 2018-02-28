@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ComplexTag('parseint')
+  Builder.AutoTag('parseint')
     .withArgs(a => a.require('text'))
     .withDesc('Returns an integer from text. If it wasn\'t a number, returns NaN.')
     .withExample(

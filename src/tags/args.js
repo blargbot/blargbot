@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('args')
+    Builder.AutoTag('args')
         .withArgs(a => [a.optional('index'), a.optional('range')])
         .withDesc('Gets user input. Specifying an index will only get the word at that location, specifying' +
             'a range will get all the words between index and range. Specify range as `n` to get all' +

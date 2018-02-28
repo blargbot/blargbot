@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.SimpleTag('argslength')
+    Builder.AutoTag('argslength')
         .withDesc('Return the number of arguments the user provided.')
         .withExample(
             'You said {argslength} words.',

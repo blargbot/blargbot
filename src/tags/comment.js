@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ComplexTag('//')
+  Builder.AutoTag('//')
     .withArgs(a => a.literal('anything'))
     .withDesc('A subtag that just gets removed. Useful for documenting your code.')
     .withExample(

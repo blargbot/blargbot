@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ComplexTag('max')
+  Builder.AutoTag('max')
     .withArgs(a => a.require('number', true))
     .withDesc('Returns the largest number out of those provided.')
     .withExample(

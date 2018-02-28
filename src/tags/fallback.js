@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('fallback')
+    Builder.AutoTag('fallback')
         .withArgs(a => [a.require('message')])
         .withDesc('Should any tag fail to parse, it will be replaced with the fallback message instead of an error.')
         .withExample(

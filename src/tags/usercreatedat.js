@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('usercreatedat')
+    Builder.AutoTag('usercreatedat')
         .withArgs(a => [a.optional('format'), a.optional('user'), a.optional('quiet')])
         .withDesc('Returns the date the user was created, in UTC+0. ' +
             'If a `format` code is specified, the date is formatted accordingly.' +

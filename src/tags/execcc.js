@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('execcc')
+    Builder.AutoTag('execcc')
         .withArgs(a => [a.require('code'), a.optional('arguments')])
         .withDesc('Executes another ccommand. Useful for modules.')
         .withExample(

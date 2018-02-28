@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('usernick')
+    Builder.AutoTag('usernick')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Returns the user\'s nickname. If it doesn\'t exist, returns their username instead. '+
         'If `user` is specified, gets that user instead. '+

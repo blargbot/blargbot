@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ComplexTag('choose')
+  Builder.AutoTag('choose')
     .withArgs(a => [a.require('choice'), a.require('option', true)])
     .withDesc('Chooses from the given options, where `choice` is the index of the option selected.')
     .withExample(

@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ComplexTag('floor')
+  Builder.AutoTag('floor')
     .withArgs(a => a.require('number'))
     .withDesc('Rounds a number down.')
     .withExample(

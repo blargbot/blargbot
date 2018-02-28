@@ -18,7 +18,7 @@ const Builder = require('../structures/TagBuilder'),
     };
 
 module.exports =
-    Builder.ComplexTag('for')
+    Builder.AutoTag('for')
         .withArgs(a => [
             a.require('variable'),
             a.require('initial'),

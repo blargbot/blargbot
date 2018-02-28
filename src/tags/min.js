@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ComplexTag('min')
+  Builder.AutoTag('min')
     .withArgs(a => a.require('number', true))
     .withDesc('Returns the smallest number out of those provided.')
     .withExample(

@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('argsarray')
+    Builder.AutoTag('argsarray')
         .withDesc('Gets user input as an array.')
         .withExample(
             'Your input was {argsarray}',

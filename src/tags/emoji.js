@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ComplexTag('emoji')
+  Builder.AutoTag('emoji')
     .withArgs(a => [a.require('text'), a.optional('amount')])
     .withDesc('Gets `amount` (or 5 if `amount` isn\'t specified) emojis related to the given text. There\'s a limit of 10 emojis.')
     .withExample(

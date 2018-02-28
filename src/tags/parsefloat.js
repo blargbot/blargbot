@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ComplexTag('parsefloat')
+  Builder.AutoTag('parsefloat')
     .withArgs(a => a.require('text'))
     .withDesc('Returns an floating point number from text. If it wasn\'t a number, returns NaN.')
     .withExample(

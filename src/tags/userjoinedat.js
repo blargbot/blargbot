@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('userjoinedat')
+    Builder.AutoTag('userjoinedat')
         .withArgs(a => [a.optional('format'), a.optional('user'), a.optional('quiet')])
         .withDesc('Returns the date the user joined the current guild, in UTC+0. ' +
             'If a `format` code is specified, the date is formatted accordingly. ' +

@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('aset')
+    Builder.AutoTag('aset')
         .withDepreciated(true)
         .withArgs(a => [a.require('name'), a.optional('value', true)])
         .withDesc('Stores a variable. ' +

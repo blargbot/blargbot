@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ComplexTag('increment')
+  Builder.AutoTag('increment')
     .withArgs(a => [a.require('variable'), a.optional('amount')])
     .withDesc('Increases the value of the specified variable by the specified amount. Defaults to 1')
     .withExample(

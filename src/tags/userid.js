@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('userid')
+    Builder.AutoTag('userid')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Returns the user\'s ID. If `user` is specified, gets that user instead. ' +
             'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')

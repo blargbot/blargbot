@@ -22,7 +22,7 @@ const operators = {
 };
 
 module.exports =
-    Builder.ComplexTag('bool')
+    Builder.AutoTag('bool')
         .withArgs(a => [
             a.require('evaluator'),
             a.require('arg1'),

@@ -19,7 +19,7 @@ const operators = {
 };
 
 module.exports =
-  Builder.ComplexTag('math')
+  Builder.AutoTag('math')
     .withArgs(a => [a.require('operator'), a.require('values', true)])
     .withDesc('Returns a number based on the operator and values. ' +
       'Valid operators are `' + Object.keys(operators).join('`, `') + '`')

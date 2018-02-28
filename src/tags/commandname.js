@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.SimpleTag('commandname')
+  Builder.AutoTag('commandname')
     .withDesc('Gets the name of the current tag or custom command. Will throw an error in other instances.')
     .withExample(
       'This command is {commandname}',

@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('base')
+    Builder.AutoTag('base')
         .withArgs(a => [
             a.require('integer'),
             a.optional('origin'),

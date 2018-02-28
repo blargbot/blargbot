@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('usergame')
+    Builder.AutoTag('usergame')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Returns the game the user is playing. ' +
             'If the user isn\'t playing a game, returns the word `nothing`. ' +

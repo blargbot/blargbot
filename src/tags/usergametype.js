@@ -15,7 +15,7 @@ const Builder = require('../structures/TagBuilder'),
     };
 
 module.exports =
-    Builder.ComplexTag('usergametype')
+    Builder.AutoTag('usergametype')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Returns how the user is playing the game (playing, streaming). ' +
             'If `user` is specified, gets that user instead. ' +

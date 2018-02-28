@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ComplexTag('brainfuck')
+    Builder.AutoTag('brainfuck')
     .withArgs(a => [a.require('code'), a.optional('input')])
     .withDesc('Interprets brainfuck input.')
     .withExample(
