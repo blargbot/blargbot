@@ -15,7 +15,8 @@
     "messagetoolong": "Whoops! I tried to send a message that was too long. [[error.pleasereport]]",
     "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
     "tag": {
-        "notfound": "Subtag '{{tag}}' doesn't exist.",
+        "restricted": "",
+        "notfound": "",
         "toomanyargs": "Too many args (r:{{received}} e:{{expected}})",
         "toofewargs": "Not enough args (r:{{received}} e:{{expected}})",
         "isnan": "Expected '{{arg}}' to be a number, but received '{{value}}'",
