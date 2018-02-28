@@ -1,4 +1,5 @@
 const { Event, Context } = require('../../Core/Structures');
+const { TagContext } = require('../../Core/Tag');
 
 class CommandMessageEvent extends Event {
   constructor(client) {
@@ -36,7 +37,18 @@ class CommandMessageEvent extends Event {
     if (!ctx.words[0]) return;
     let commandName = ctx.words[0].toLowerCase();
     let didCommand = false;
-    if (this.client.CommandManager.has(commandName)) {
+
+    let data = await this.client.getDataCustomCommand(commandName, ctx.guild.id);
+    let ccommand = await data.getObject();
+    if (ccommand && !ccommand.get('restricted')) {
+      const tagContext = new TagContext(ctx.client, {
+        ctx, content: ccommand.get('content'),
+        author: ccommand.get('authorId'), name: ccommand.get('commandName'),
+        isCustomCommand: true
+      }, data);
+      await ctx.send((await tagContext.process()).toString());
+
+    } else if (this.client.CommandManager.has(commandName)) {
       console.output(`${ctx.author.fullNameId} has executed command ${commandName}`);
       didCommand = true;
       this.client.CommandManager.execute(commandName, ctx);

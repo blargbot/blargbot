@@ -22,9 +22,9 @@ class TagContext extends Context {
 
     this._author = params.author;
     this.name = params.name;
-    console.log(params);
     this.isCustomCommand = params.isCustomCommand || data instanceof DataCustomCommand || false;
-    console.log(this.isCustomCommand);
+    this.forced = params.forced;
+
     this.terminate = false;
     this.isStaff = false;
     this.isAuthorStaff = false;
@@ -54,6 +54,9 @@ class TagContext extends Context {
   }
 
   async process() {
+    if (this.isCustomCommand && (await this.data.getKey('restricted')) === true && !this.forced) {
+      return 'Error: ' + await this.decode('error.tag.restricted', { name: this.name });
+    }
     try {
       this.isAuthorStaff = await this.checkStaff(this.author);
       this.rawContent = this.content || await this.data.getContent();

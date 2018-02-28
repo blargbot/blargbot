@@ -212,13 +212,12 @@ class CCCommand extends AdminCommand {
   }
 
   async sub_test(ctx) {
-    const data = this.client.getDataCustomCommand('test', ctx.guild.id);
+    const data = this.client.getDataCustomCommand('_test', ctx.guild.id);
     await data.getOrCreateObject();
-    console.log('PLS HELP');
     const tagContext = new TagContext(ctx.client, {
       ctx, content: ctx.input._.raw.join(''),
-      author: ctx.author.id, name: 'test',
-      isCustomCommand: true
+      author: ctx.author.id, name: '_test',
+      isCustomCommand: true, forced: true
     }, data);
     let output = await tagContext.process() || '';
     await ctx.decodeAndSend(this.keys.testoutput, {
