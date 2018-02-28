@@ -1,4 +1,5 @@
 const DataBase = require('./DataBase');
+const DataTag = require('./DataTag');
 
 class DataCustomCommand extends DataBase {
   constructor(client, id, guildId) {
@@ -41,30 +42,18 @@ class DataCustomCommand extends DataBase {
   }
 
   async rename(id) {
-    let stored = await this.getObject();
-    // TODO: rename
-    await this.setObject(stored);
+    id = DataTag.stripTitle(id);
+    let obj = await this.getObject(id);
+    obj.set('commandName', id);
+    await obj.save();
+    this.id = id;
+    return obj;
   }
 
   async setContent(content) {
     return await this.setObject({
       content,
       lastmodified: Date.now()
-    });
-  }
-
-  async getUses() {
-    return await this.getKey('uses');
-  }
-
-  async setUses(uses) {
-    return await this.setKey('uses', uses);
-  }
-
-  async incrementUses() {
-    return await this.setObject({
-      uses: (await this.getUses()) + 1,
-      lastuse: Date.now()
     });
   }
 
@@ -76,6 +65,21 @@ class DataCustomCommand extends DataBase {
     return await this.setKey(`variables.${name}`, value);
   }
 
+  async getUsage() {
+    return await this.getKey('usage');
+  }
+
+  async setUsage(value) {
+    this.setKey('usage', value);
+  }
+
+  async getDesc() {
+    return await this.getKey('desc');
+  }
+
+  async setDesc(value) {
+    return await this.setKey('desc', value);
+  }
 }
 
 module.exports = DataCustomCommand;
