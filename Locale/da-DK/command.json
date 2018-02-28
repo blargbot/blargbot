@@ -62,11 +62,11 @@
                     "info": "Omdøber et tag du ejer."
                 },
                 "raw": {
-                    "usage": "<navn>",
+                    "usage": "<name>",
                     "info": "Anskaffer rå kode for et tag."
                 },
                 "info": {
-                    "usage": "<navn>",
+                    "usage": "<name>",
                     "info": "Viser info om et tag."
                 },
                 "transfer": {
@@ -85,15 +85,15 @@
                     "info": "Søger efter et tag med et navn der indeholder din forespørgsel."
                 },
                 "list": {
-                    "usage": "",
+                    "usage": "[user]",
                     "info": "Viser en liste over alle tags, eller valgfrit alle tags skabt af en bestemt bruger."
                 },
                 "favorite": {
-                    "usage": "",
+                    "usage": "[name]",
                     "info": ""
                 },
                 "report": {
-                    "usage": "",
+                    "usage": "<name><reason>",
                     "info": "Raporterer et tag for at bryde brugervilkåerne. Venligst brug omhyggeligt."
                 },
                 "test": {
@@ -110,11 +110,11 @@
                 },
                 "setdesc": {
                     "info": "",
-                    "usage": ""
+                    "usage": "<name><description>"
                 },
                 "setusage": {
                     "info": "",
-                    "usage": ""
+                    "usage": "<name><usage>"
                 }
             },
             "subcommandnotfound": "Kunne ikke finde en underkommando med navnet '{{subcommand}}'.",
@@ -438,7 +438,7 @@
             "invaliduser": ""
         },
         "kick": {
-            "usage": "",
+            "usage": "<user>",
             "info": "Sparker en bruger.",
             "flags": {
                 "reason": "Årsagen til sparket."
@@ -474,7 +474,7 @@
             "info": "Udelukker en bruger.",
             "flags": {
                 "reason": "Årsagen til udelukkelsen.",
-                "days": "",
+                "days": "Antallet dage som beskeder slettes (som standard sat til 1).",
                 "time": "Hvor længe udelukkelsen skal vare."
             },
             "banned": "",
@@ -516,26 +516,26 @@
                     "info": ""
                 },
                 "author": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": ""
                 },
                 "list": {
                     "info": ""
                 },
                 "test": {
-                    "usage": "",
+                    "usage": "<code>",
                     "info": ""
                 },
                 "help": {
                     "usage": "",
-                    "info": ""
+                    "info": "Viser dette!"
                 },
                 "setdesc": {
                     "usage": "",
                     "info": ""
                 },
                 "setusage": {
-                    "usage": "",
+                    "usage": "<name><usage>",
                     "info": ""
                 }
             },
@@ -545,7 +545,7 @@
             "tagrename": "",
             "raw": "",
             "alreadyexists": "",
-            "testoutput": "",
+            "testoutput": "Test udbytte:\n\n{{output}}",
             "subcommandnotfound": "",
             "transferprompt": "",
             "nobots": "",
