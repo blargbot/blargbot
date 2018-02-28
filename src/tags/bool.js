@@ -35,7 +35,7 @@ module.exports =
             'true'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('<4', Builder.errors.notEnoughArguments)
-        .whenArgs('4', async params => {
+        .whenArgs('4', async function(params) {
             const args = params.args;
             for (var i = 1; i < args.length; i++) {
                 let val = parseFloat(args[i]);

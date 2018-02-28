@@ -29,7 +29,7 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-6', )
-        .whenArgs('>6', async params => {
+        .whenArgs('>6', async function(params) {
             let user = await bu.getUser(params.msg, params.args[1], true);
             if (user) {
                 let noPerms = params.args[5] ? true : false;

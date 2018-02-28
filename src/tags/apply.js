@@ -19,7 +19,7 @@ module.exports =
             '3'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async params => {
+        .whenDefault(async function(params) {
             if (!TagManager.list.hasOwnProperty(params.args[1]))
                 return await Builder.util.error(params, 'No tag found');
             let tag = TagManager.list[params.args[1]];

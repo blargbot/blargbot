@@ -20,7 +20,7 @@ module.exports =
             '{aset;testvar;This is a test var}',
             ''
         ).whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async params => {
+        .whenDefault(async function(params) {
             params.args[1] = '@' + params.args[1];
             return await TagManager.list['set'].execute(params);
         })

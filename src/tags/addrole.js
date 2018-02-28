@@ -49,7 +49,7 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('<2', Builder.errors.notEnoughArguments)
         .whenArgs('2', async params => await grantRole(params, params.msg.member))
-        .whenArgs('3', async params => {
+        .whenArgs('3', async function(params) {
             let user = await bu.getUser(params.msg, params.args[2], true);
             if (user)
                 return await grantRole(params, params.msg.guild.members.get(user.id));

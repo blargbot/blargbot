@@ -18,7 +18,7 @@ module.exports =
       '1,2,3,4,5,6,7,8,9,10'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2-3', async params => {
+    .whenArgs('2-3', async function(params) {
       let argName = params.args[1],
         increment = 1;
 

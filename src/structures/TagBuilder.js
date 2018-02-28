@@ -24,10 +24,10 @@ class TagBuilder {
       return async function (params) {
         try {
           if (this.category === bu.TagType.CCOMMAND && !params.ccommand)
-            return EnsureResponse(params, await bu.tagProcessError(params, '`Can only use in CCommands`'));
+            return EnsureResponse(params, await TagBuilder.util.error(params, 'Can only use in CCommands'));
 
           if (this.staff && !params.isStaff)
-            return EnsureResponse(params, await bu.tagProcessError(params, '`Author must be staff`'));
+            return EnsureResponse(params, await TagBuilder.util.error(params, 'Author must be staff'));
 
           let callback;
 
@@ -54,15 +54,18 @@ class TagBuilder {
       };
 
       function EnsureResponse(params, result) {
+        console.debug('result: ', result);
         if (typeof result !== 'object')
           result = {
             replaceString: result
           };
 
-        if (result.terminate === undefined) result.terminate = params.terminate;
-        if (result.replaceContent === undefined) result.replaceContent = false;
-        if (result.replaceString === undefined) result.replaceString = '';
+        if (result.terminate == null) result.terminate = params.terminate;
+        if (result.replaceContent == null) result.replaceContent = false;
+        if (result.replaceString == null) result.replaceString = '';
 
+        console.debug('result: ', result);
+        
         return result;
       }
     }(this.execute, this.tag);

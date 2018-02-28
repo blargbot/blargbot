@@ -19,7 +19,7 @@ module.exports =
             '(the message got edited idk how to do examples for this)'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async params => {
+        .whenArgs('3-4', async function(params) {
             let content, messageId, channel;
 
             if (params.args.length == 3) {

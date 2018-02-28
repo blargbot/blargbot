@@ -20,7 +20,7 @@ module.exports =
             '{aget;testvar}',
             'This is a test var'
         ).whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async params => {
+        .whenArgs('2-3', async function(params) {
             params.args[1] = '@' + params.args[1];
             return await TagManager.list['get'].execute(params);
         }).whenDefault(Builder.errors.tooManyArguments)

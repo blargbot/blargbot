@@ -20,7 +20,7 @@ module.exports =
       'DM: Hello'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-2', Builder.errors.notEnoughArguments)
-    .whenArgs('3', async params => {
+    .whenArgs('3', async function(params) {
       if (params.msg.hasDmed)
         return await Builder.util.error(params, 'Already have DMed');
 

@@ -21,7 +21,7 @@ module.exports =
             'FF'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('<2', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async params => {
+        .whenArgs('2-3', async function(params) {
             let args = params.args.slice(1);
             if (args.length === 2)
                 args.splice(1, 0, '10');

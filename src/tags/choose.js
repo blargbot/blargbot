@@ -17,7 +17,7 @@ module.exports =
       'I feel like eating {choose;1;cake;pie;pudding} today.',
       'I feel like eating pie today.'
     ).whenArgs('<3', Builder.errors.notEnoughArguments)
-    .whenDefault(async params => {
+    .whenDefault(async function(params) {
       params.args[1] = await bu.processTagInner(params, 1);
       let index = parseInt(params.args[1]);
 

@@ -18,7 +18,7 @@ module.exports =
       '2'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.util.notEnoughArguments)
-    .whenDefault(async params => {
+    .whenDefault(async function(params) {
       let args = await Builder.util.flattenArgArrays(params.args.slice(1));
       args = args.map(parseFloat);
 

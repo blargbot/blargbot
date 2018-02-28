@@ -27,13 +27,13 @@ module.exports =
         ).withExample(
             '{switch;{args;0};yes;Correct!;no;Incorrect!;That is not yes or no}',
             'Correct!'
-        ).beforeExecute(async params => {
+        ).beforeExecute(async function(params) {
             params.args[1] = await bu.processTagInner(params, 1);
             for (let i = 2; i < params.args.length; i += 2) {
                 if (i != params.args.length - 1)
                     params.args[i] = await bu.processTagInner(params, i);
             }
-        }).whenDefault(async params => {
+        }).whenDefault(async function(params) {
             let args = params.args;
             var replaceString = '';
             var elseDo = '';

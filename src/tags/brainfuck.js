@@ -18,7 +18,7 @@ module.exports =
         'Hello World!'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2-3', async params => {
+    .whenArgs('2-3', async function(params) {
         try {
             return await bu.filterMentions((dep.brainfuck.execute(params.args[1], params.args[2])).output);
         } catch (e) {

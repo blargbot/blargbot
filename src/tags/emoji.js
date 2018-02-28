@@ -18,7 +18,7 @@ module.exports =
       '🍔 🍕 😩 🍴 😐'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2-3', async params => {
+    .whenArgs('2-3', async function(params) {
         let q = encodeURIComponent(params.args[1]);
         let amount = parseInt(params.args[2]) || parseInt(params.fallback);
         if (amount > 10) amount = 10;

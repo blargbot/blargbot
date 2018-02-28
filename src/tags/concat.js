@@ -18,7 +18,7 @@ module.exports =
       '["this","is","an","array"]'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenDefault(async params => {
+    .whenDefault(async function(params) {
       let result = [];
       for (const value of params.args.slice(1)) {
         let arr = await bu.getArray(params, value);

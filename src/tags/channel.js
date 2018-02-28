@@ -23,7 +23,7 @@ module.exports =
       'In #channel: Hello!'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2-3', async params => {
+    .whenArgs('2-3', async function(params) {
       if (/([0-9]{17,23})/.test(params.args[1])) {
         let channelid = params.args[1].match(/([0-9]{17,23})/)[1];
         let channel = bot.getChannel(channelid);

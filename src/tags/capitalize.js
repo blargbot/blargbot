@@ -18,7 +18,7 @@ module.exports =
       'Hello world!'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2-3', async params => {
+    .whenArgs('2-3', async function(params) {
       if (params.args[2])
         return params.args[1][0].toUpperCase() + params.args[1].substr(1).toLowerCase();
       return params.args[1][0].toUpperCase() + params.args[1].substr(1);

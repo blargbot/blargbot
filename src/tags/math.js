@@ -28,7 +28,7 @@ module.exports =
       '2 + 3 + 6 - 2 = 9'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('<3', Builder.util.notEnoughArguments)
-    .whenDefault(async params => {
+    .whenDefault(async function(params) {
       if (!operators.hasOwnProperty(params.args[1]))
         return await Builder.errors.invalidOperator(params);
 
