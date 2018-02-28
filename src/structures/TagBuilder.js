@@ -65,7 +65,7 @@ class TagBuilder {
         if (result.replaceString == null) result.replaceString = '';
 
         console.debug('result: ', result);
-        
+
         return result;
       }
     }(this.execute, this.tag);
@@ -238,7 +238,8 @@ TagBuilder.errors = {
   notANumber(params) { return TagBuilder.util.error(params, 'Not a number'); },
   notAnArray(params) { return TagBuilder.util.error(params, 'Not an array'); },
   invalidOperator(params) { return TagBuilder.util.error(params, 'Invalid operator'); },
-  userNotInGuild(params) { return TagBuilder.util.error(params, 'User not in guild'); }
+  userNotInGuild(params) { return TagBuilder.util.error(params, 'User not in guild'); },
+  tooManyLoops(params) { return TagBuilder.util.error(params, 'Too many loops'); }
 };
 
 module.exports = TagBuilder;
