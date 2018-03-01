@@ -9,51 +9,42 @@
 
 const Builder = require('../structures/TagBuilder');
 
-async function grantRole(params, target) {
-    if (!target)
-        return await Builder.util.noUserFound(params);
+module.exports =
+  Builder.CCommandTag('addrole')
+    .requireStaff(true)
+    .withArgs(a => [a.require('role'), a.optional('user'), a.optional('quiet')])
+    .withDesc('Gives a user a role, where role is a role ID or mention. ' +
+      'You can find a list of roles and their ids by doing `b!roles`. ' +
+      'Returns true if a role was given, and false otherwise.' +
+      'If `quiet` is specified, if a user can\'t be found it will simply return `false`'
+    ).withExample(
+      'Have a role! {addrole;11111111111111111}',
+      'Have a role! true'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('<2', Builder.errors.notEnoughArguments)
+    .whenArgs('2-3', async function (params) {
+      let result = await TagManager.list['hasrole'].checkRoles(params, ...params.args.slice(1, 4));
 
-    let regexp = /(\d{17,23})/, role;
-    if (regexp.test(params.args[1])) {
-        let roleId = params.args[1].match(regexp)[1];
-        role = params.msg.guild.roles.get(roleId);
-    }
-    if (!role)
-        return await Builder.util.noRoleFound(params);
+      if (result.user == null) {
+        if (params.args[3])
+          return false;
+        return await Builder.errors.noUserFound(params);
+      }
+      if (result.roles.length == 0)
+        return await Builder.errors.noRoleFound(params);
 
-    let hasRole = bu.hasRole(target, role.id, false);
-    if (hasRole)
+      let roles = result.roles.filter((e, i) => !result.hasRole[i]);
+      if (roles.length == 0)
         return 'false';
 
-    try {
-        await target.addRole(role.id);
+      try {
+        for (const role of roles)
+          await result.user.addRole(role.id);
         return 'true';
-    } catch (err) {
+      } catch (err) {
         console.error(err);
         return 'false';
-    }
-
-
-}
-
-module.exports =
-    Builder.CCommandTag('addrole')
-        .requireStaff(true)
-        .withArgs(a => [a.require('role'), a.optional('user')])
-        .withDesc('Gives a user a role, where role is a role ID or mention. ' +
-            'You can find a list of roles and their ids by doing `b!roles`. ' +
-            'Returns true if a role was given, and false otherwise.'
-        ).withExample(
-            'Have a role! {addrole;11111111111111111}',
-            'Have a role! true'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('<2', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async params => await grantRole(params, params.msg.member))
-        .whenArgs('3', async function(params) {
-            let user = await bu.getUser(params.msg, params.args[2], true);
-            if (user)
-                return await grantRole(params, params.msg.guild.members.get(user.id));
-            return await grantRole(params, params.msg.member);
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+      }
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();

@@ -7,82 +7,51 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.CCOMMAND;
-};
+module.exports =
+  Builder.CCommandTag('rolecreate')
+    .requireStaff(true)
+    .withArgs(a => [
+      a.require('name'),
+      a.optional('color'),
+      a.optional('permissions'),
+      a.optional('mentionable'),
+      a.optional('hoisted')
+    ])
+    .withDesc('Creates a role with the given information. ' +
+      'Provide color in hex. ' +
+      'Provide permissions as a number, which can be calculated [here](https://discordapi.com/permissions.html) ' +
+      'Color defaults to 000000 (uncolored role), permissions defaults to 0, mentionable defaults to false, hoisted defaults to false. ' +
+      'Returns the new role\'s ID.')
+    .withExample(
+      '{rolecreate;Super Cool Role!;ff0000;0;false;true}',
+      '11111111111111111'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
+    .whenArgs('2-6', async function (params) {
+      let errors = [],
+        options = {
+          name: params.args[1],
+          color: parseInt((params.args[2] || '0').replace(/[^0-9a-f]/gi, ''), 16),
+          permissions: parseInt(params.args[3]),
+          mentionable: (params.args[4] || 'false').toLowerCase() === 'true',
+          hoisted: (params.args[5] || 'false').toLowerCase() === 'true'
+        };
 
-e.requireCtx = require;
+      console.debug('role options: ', options);
 
-e.isTag = true;
-e.name = `rolecreate`;
-e.args = `&lt;name&gt; [color] [permissions] [mentionable] [hoisted]`;
-e.usage = `{rolesetmentionable;name[;color[;permissions[;mentionable[;hoisted]]]]}`;
-e.desc = `Creates a role with the given information. Provide color in hex. Provide permissions as a number, which can be calculated <a href='https://discordapi.com/permissions.html'>here</a>. Color defaults to 000000 (uncolored role), permissions defaults to 0, mentionable defaults to false, hoisted defaults to false. Returns the new role's ID.`;
-e.exampleIn = `{rolecreate;Super Cool Role!;ff0000;0;false;true}`;
-e.exampleOut = `11111111111111111`;
+      if (isNaN(options.color) && !bu.between(options.color, 0, 0xffffff)) errors.push('Not a valid color');
+      if (isNaN(options.permissions)) errors.push('Permissions not a number');
+      if (errors.length > 0) return Builder.util.error(params, errors.join(', '));
 
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-    if (!params.ccommand) {
-        replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
-    } else {
-        if (!params.isStaff) {
-            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
-        } else if (params.args.length > 1) {
-            let canCont = true;
-            let mentionable = false;
-            if (params.args[4]) {
-                mentionable = params.args[4].toLowerCase() == 'true';
-            }
-            let color = 0x000;
-            if (params.args[2]) {
-                color = parseInt(params.args[2].replace(/[^0-9a-f]/gi, ''), 16)
-                if (isNaN(color)) {
-                    replaceString = await bu.tagProcessError(params, '`Color not a number`');
-                    canCont = false;
-                }
-            }
-
-            let hoist = false;
-            if (params.args[5]) {
-                hoist = params.args[5].toLowerCase() == 'true';
-            }
-
-            let permissions = 0;
-            if (params.args[3]) {
-                permissions = parseInt(params.args[3]);
-                if (isNaN(permissions)) {
-                    replaceString = await bu.tagProcessError(params, '`Permissions not a number`');
-                    canCont = false;
-                }
-            }
-            if (canCont)
-                try {
-                    let role = await params.msg.guild.createRole({
-                        name: params.args[1],
-                        permissions,
-                        color,
-                        hoist,
-                        mentionable
-                    }, `Created with a custom command command, executed by user: ${msg.author.id}`);
-                    replaceString = role.id;
-                } catch (err) {
-                    console.error(err.stack);
-                    replaceString = await bu.tagProcessError(params, '`Failed to create role: no perms`');
-                }
-        }
-    }
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+      try {
+        let role = await params.msg.guild.createRole(options, `Created with a custom command command, executed by user: ${params.msg.author.id}`);
+        return role.id;
+      } catch (err) {
+        console.error(err.stack);
+        return await Builder.util.error(params, 'Failed to create role: no perms');
+      }
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();

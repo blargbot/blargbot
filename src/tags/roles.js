@@ -7,52 +7,30 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+  Builder.AutoTag('roles')
+    .withArgs(a => [a.optional('user'), a.optional('quiet')])
+    .withDesc('Returns an array of roles on the current guild. ' +
+      'If user is specified, get the roles that user has. ' +
+      'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withExample(
+      'The roles on this guild are: {roles}.',
+      'The roles on this guild are: ["11111111111111111","22222222222222222"].'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', async function (params) {
+      return JSON.stringify(params.msg.guild.roles.map(r => r.id));
+    })
+    .whenArgs('2-3', async function (params) {
+      let user = await bu.getUser(params.msg, params.args[1], params.args[2]);
 
-e.requireCtx = require;
+      if (user != null)
+        return JSON.stringify(params.msg.guild.members.get(user.id).roles);
 
-e.isTag = true;
-e.name = 'roles';
-e.args = '[user] [quiet]';
-e.usage = '{userid[;user[;quiet]]}';
-e.desc = 'Returns an array of roles on the current guild. '+
-'If user is specified, get the roles that user has. '+
-'If `quiet` is specified, if a user can\'t be found it will simply return the `name`';
-e.exampleIn = 'The roles on this guild are: {roles}';
-e.exampleOut = 'The roles on this guild are: ["11111111111111111","22222222222222222"]';
-
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-
-    let roles;
-    if (params.args.length > 1) {
-        var obtainedUser = await bu.getTagUser(msg, args);
-        if (obtainedUser)
-            roles = params.msg.guild.members.get(obtainedUser.id).roles;
-        else if (params.args[2])
-            replaceString = args[1];
-        else return '';
-    } else {
-        roles = params.msg.guild.roles.map(r => r.id);
-    }
-
-    if (roles && Array.isArray(roles))
-        replaceString = JSON.stringify(roles);
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+      if (params.args[2])
+        return params.args[1];
+      return '';
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();

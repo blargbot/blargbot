@@ -7,56 +7,36 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.CCOMMAND;
-};
+module.exports =
+  Builder.CCommandTag('rolesetmentionable')
+    .requireStaff(true)
+    .withArgs(a => [a.require('name'), a.optional('value'), a.optional('quiet')])
+    .withDesc('Sets whether a role can be mentioned. `value` can be either `true` to set the role as mentionable, ' +
+      'or anything else to set it to unmentionable. If `value` isn\'t provided, defaults to true. ' +
+      'Throws an error if a role can\'t be found.')
+    .withExample(
+      'The admin role is now mentionable. {rolesetmentionable;admin;true}',
+      'The admin role is now mentionable.'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
+    .whenArgs('2-4', async function (params) {
+      let role = await bu.getRole(params.msg, params.args[1], params.args[2]),
+        mentionable = true;
+      if (params.args[2]) {
+        mentionable = params.args[2].toLowerCase() == 'true';
+      }
 
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = 'rolesetmentionable';
-e.args = '<name> [value] [quiet]';
-e.usage = '{rolesetmentionable;name[;value]}';
-e.desc = 'Sets whether a role can be mentioned. `value` can be either `true` to set the role as mentionable, '+
-'or anything else to set it to unmentionable. If `value` isn\'t provided, defaults to true. '+
-'Throws an error if a role can\'t be found.';
-e.exampleIn = 'The admin role is now mentionable. {rolesetmentionable;admin;true}';
-e.exampleOut = 'The admin role is now mentionable.';
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-    if (!params.ccommand) {
-        replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
-    } else {
-        if (!params.isStaff) {
-            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
-        } else if (params.args.length > 1) {
-            var obtainedRole = await bu.getTagRole(msg, args);
-            let mentionable = true;
-            if (params.args[2]) {
-                mentionable = params.args[2].toLowerCase() == 'true';
-            }
-
-            if (obtainedRole) {
-                try {
-                    await obtainedRole.edit({ mentionable });
-                } catch (err) {
-                    replaceString = await bu.tagProcessError(params, '`Failed to edit role: no perms`');
-                }
-            } else replaceString = await bu.tagProcessError(params, '`Role not found`');
+      if (role != null) {
+        try {
+          await role.edit({ mentionable });
+          return '';
+        } catch (err) {
+          return await Builder.util.error(params, 'Failed to edit role: no perms');
         }
-    }
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+      }
+      return await Builder.util.error(params, 'Role not found');
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();

@@ -7,46 +7,29 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+  Builder.AutoTag('roleid')
+    .withArgs(a => [a.require('role'), a.optional('quiet')])
+    .withDesc('Returns a role\'s ID. '+
+    'If `quiet` is specified, if a role can\'t be found it will simply return the `role`')
+    .withExample(
+      'The admin role ID is: {roleid;admin}.',
+      'The admin role ID is: 123456789123456.'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
+    .whenArgs('2-3', async function (params) {
+      console.debug(params);
 
-e.requireCtx = require;
+      let role = await bu.getRole(params.msg, params.args[1], params.args[2]);
+      console.debug(params);
+      if (role != null)
+        return role.id;
 
-e.isTag = true;
-e.name = 'roleid';
-e.args = '<name> [quiet]';
-e.usage = '{roleid;name[;quiet]}';
-e.desc = 'Returns a role\'s ID. '+
-'If `quiet` is specified, if a role can\'t be found it will simply return the `name`';
-e.exampleIn = 'The admin role ID is: {roleid;admin}';
-e.exampleOut = 'The admin role ID is: 123456789123456';
-
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-
-    var obtainedRole = await bu.getTagRole(msg, args);
-
-    if (obtainedRole)
-        replaceString = obtainedRole.id;
-
-    else if (!args[2])
-        return '';
-    else
-        replaceString = args[1];
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+      if (params.args[2])
+        return params.args[1];
+      return '';
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();

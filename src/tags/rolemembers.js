@@ -7,51 +7,29 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+  Builder.AutoTag('rolemembers')
+    .withArgs(a => [a.require('role'), a.optional('quiet')])
+    .withDesc('Returns an array of members in the specified role. ' +
+      'If `quiet` is specified, if a role can\'t be found it will simply return the `role`')
+    .withExample(
+      'The admins are: {rolemembers;Admin}.',
+      'The admins are: ["11111111111111111","22222222222222222"].'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
+    .whenArgs('2-3', async function (params) {
+      let role = await bu.getRole(params.msg, params.args[1], params.args[2]);
 
-e.requireCtx = require;
+      if (role != null)
+        return JSON.stringify(params.msg.guild.members
+          .filter(m => m.roles.includes(role.id))
+          .map(m => m.user.id));
 
-e.isTag = true;
-e.name = 'rolemembers';
-e.args = '&lt;role&gt; [quiet]';
-e.usage = '{rolemembers;role[;quiet]}';
-e.desc = 'Returns an array of members in the specified role. '+
-'If `quiet` is specified, if a role can\'t be found it will simply return the `role`';
-e.exampleIn = 'The admins are: {rolemembers;Admin}';
-e.exampleOut = 'The admins are: ["11111111111111111","22222222222222222"]';
-
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-
-    let members;
-    if (params.args.length > 1) {
-        let obtainedRole = await bu.getTagRole(msg, args);
-        if (obtainedRole)
-            members = params.msg.guild.members.filter(m => m.roles.includes(obtainedRole.id)).map(m => m.user.id);
-        else if (params.args[2])
-            replaceString = args[1];
-        else return '';
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    if (members && Array.isArray(members))
-        replaceString = JSON.stringify(members);
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+      if (params.args[2])
+        return params.args[1];
+      return '';
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();

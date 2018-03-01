@@ -102,7 +102,7 @@ class TagBuilder {
   withName(name) {
     return this.withProp('name', name);
   }
-
+  
   withArgs(args) {
     if (typeof args === 'function')
       args = args(ArgFactory);
