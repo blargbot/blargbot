@@ -75,6 +75,7 @@ e.execute = async function (params) {
                 }
                 await set.setVar(params, varName, i);
                 replaceString += await bu.processTagInner(params, code);
+                if (params.terminate) break;
             }
         } else {
             replaceString = await bu.tagProcessError(params, '`' + errors.join(', ') + '`');
