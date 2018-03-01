@@ -152,6 +152,61 @@ bu.getVariable = async function (name, key, type, guildId) {
     return returnVar;
 };
 
+bu.tagVariableScopes = [
+    {
+        name: 'guild',
+        prefix: '_',
+        setter: async (params, name, value) =>
+            await bu.setVariable(params.msg.guild.id, name, value,
+                params.ccommand ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
+        getter: async (params, name) =>
+            await bu.getVariable(params.msg.guild.id, name,
+                params.ccommand ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD)
+    },
+    {
+        name: 'author',
+        prefix: '@',
+        setter: async (params, name, value) => {
+            if (params.author)
+                return await bu.setVariable(params.author, name, value, bu.TagVariableType.AUTHOR);
+            return await bu.tagProcessError(params, '`No author found`');
+        },
+        getter: async (params, name) => {
+            if (params.author)
+                return await bu.getVariable(params.author, name, bu.TagVariableType.AUTHOR);
+            return await bu.tagProcessError(params, '`No author found`');
+        }
+    },
+    {
+        name: 'global',
+        prefix: '*',
+        setter: async (params, name, value) =>
+            await bu.setVariable(undefined, name, value, bu.TagVariableType.GLOBAL),
+        getter: async (params, name) =>
+            await bu.getVariable(undefined, name, bu.TagVariableType.GLOBAL)
+    },
+    {
+        name: 'temporary',
+        prefix: '~',
+        setter: async (params, name, value) => { params.vars[name] = value; },
+        getter: async (params, name) => params.vars[name]
+    },
+    {
+        name: 'tag',
+        prefix: '',
+        setter: async (params, name, value) => {
+            if (params.ccommand)
+                return await bu.setVariable(params.tagName, name, value, bu.TagVariableType.GUILDLOCAL, params.msg.guild.id);
+            return await bu.setVariable(params.tagName, name, value, bu.TagVariableType.LOCAL);
+        },
+        getter: async (params, name) => {
+            if (params.ccommand)
+                return await bu.getVariable(params.tagName, name, bu.TagVariableType.GUILDLOCAL, params.msg.guild.id);
+            return await bu.getVariable(params.tagName, name, bu.TagVariableType.LOCAL);
+        }
+    }
+];
+
 bu.processTagInner = async function (params, i) {
     if (i)
         params.content = params.args[i];
