@@ -22,7 +22,7 @@ class TagBuilder {
   }
 
   build() {
-    if (this.tag.category === 0){
+    if (this.tag.category === 0) {
       if (this.tag.args != null && this.tag.args.length !== 0)
         this.tag.category = bu.TagType.COMPLEX;
       else
@@ -103,11 +103,7 @@ class TagBuilder {
   withName(name) {
     return this.withProp('name', name);
   }
-  
-  /**
-   * 
-   * @param {ArgBuilderCallback} args 
-   */
+
   withArgs(args) {
     if (typeof args === 'function')
       args = args(ArgFactory);
@@ -258,8 +254,3 @@ TagBuilder.errors = {
 module.exports = TagBuilder;
 
 console.info('TagBuilder loaded');
-
-/**
- * @callback ArgBuilderCallback
- * @param {ArgFactory} factory
- */
