@@ -7,31 +7,17 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.SIMPLE;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = 'rb';
-e.args = '';
-e.usage = '{rb}';
-e.desc = 'Will be replaced by `}` on execution.';
-e.exampleIn = 'This is a bracket! {rb}';
-e.exampleOut = 'This is a bracket! }';
-
-
-e.execute = async function(params) {
-    var replaceString = bu.specialCharBegin + 'RB' + bu.specialCharEnd;
-    var replaceContent = false;
-
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+  Builder.AutoTag('rb')
+    .withDesc('Will be replaced by `}` on execution.')
+    .withExample(
+      'This is a bracket! {rb}',
+      'This is a bracket! {'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', async function (params) {
+      return bu.specialCharBegin + 'RB' + bu.specialCharEnd;
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();
