@@ -7,32 +7,15 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.SIMPLE;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `nsfw`;
-e.args = ``;
-e.usage = `{nsfw}`;
-e.desc = `Marks the message is being NSFW, and only to be outputted in NSFW channels. A requirement for any tag with NSFW content.`;
-e.exampleIn = `This command is not safe! {nsfw}`;
-e.exampleOut = `This command is not safe!`;
-
-
-e.execute = async function(params) {
-
-    var replaceString = '';
-    var replaceContent = false;
-
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('nsfw')
+        .withDesc('Marks the message is being NSFW, and only to be outputted in NSFW channels. A requirement for any tag with NSFW content.')
+        .withExample(
+            'This command is not safe! {nsfw}',
+            'This command is not safe!'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', async function (params) { return ''; })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

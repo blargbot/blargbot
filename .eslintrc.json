@@ -54,6 +54,8 @@
         "tags": false,
         "bu": false,
         "r": false,
+        "TagManager": false,
+        "CommandManager": false,
         "_dep": false,
         "_client": false,
         "_constants": false,

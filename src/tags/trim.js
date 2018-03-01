@@ -7,38 +7,17 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `trim`;
-e.args = `&lt;text&gt;`;
-e.usage = `{trim;text}`;
-e.desc = `Trims whitespace and newlines before and after the provided text.`;
-e.exampleIn = `{trim;    trimmed!    }`;
-e.exampleOut = `trimmed!`;
-
-
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    if (!args[1]) {
-        args[1] = '';
-    }
-    replaceString = args[1].replace(/^[\s\n]+|[\s\b]+$/g, '');
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('trim')
+        .withArgs(a => a.require('text'))
+        .withDesc('Trims whitespace and newlines before and after the provided text.')
+        .withExample(
+            'Hello {trim;{space;10}beautiful{space;10}} World',
+            'Hello beautiful World'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) { return params.args[1].trim(); })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

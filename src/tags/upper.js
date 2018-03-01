@@ -7,40 +7,19 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = 'upper';
-e.args = '&lt;text&gt;';
-e.usage = '{upper;text}';
-e.desc = 'Returns `string` as uppercase';
-e.exampleIn = '{upper;this will become uppercase}';
-e.exampleOut = 'THIS WILL BECOME UPPERCASE';
-
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    if (args.length > 1)
-        replaceString = args[1].toUpperCase();
-    else
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('upper')
+        .withArgs(a => a.require('text'))
+        .withDesc('Returns `text` as lowercase.')
+        .withExample(
+            '{upper;this will become uppercase}',
+            'THIS WILL BECOME UPPERCASE'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) {
+            return params.args[1].toUpperCase();
+         })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

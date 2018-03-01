@@ -7,25 +7,17 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-e.requireCtx = require;
-e.isTag = true;
-e.name = 'lang';
-e.args = '&lt;language&gt;';
-e.usage = '{lang;language}';
-e.desc = 'Specifies the language used to display the raw contents of this tag.';
-e.exampleIn = 'This will be displayed with js! {lang;js}';
-e.exampleOut = 'This will be displayed with js!';
-e.execute = async function (params) {
-    var replaceString = '';
-    var replaceContent = false;
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('lang')
+        .withArgs(a => a.require('language'))
+        .withDesc('Specifies the language used to display the raw contents of this tag.')
+        .withExample(
+            'This will be displayed with js! {lang;js}.',
+            'This will be displayed with js!.'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) { return ''; })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

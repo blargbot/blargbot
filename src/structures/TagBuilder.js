@@ -18,6 +18,7 @@ class TagBuilder {
     this.withProp('init', init);
     this.withProp('isTag', true);
     this.withProp('requireCtx', false);
+    this.withProp('source', 'TagBuilder');
   }
 
   build() {
@@ -103,6 +104,10 @@ class TagBuilder {
     return this.withProp('name', name);
   }
   
+  /**
+   * 
+   * @param {ArgBuilderCallback} args 
+   */
   withArgs(args) {
     if (typeof args === 'function')
       args = args(ArgFactory);
@@ -253,3 +258,8 @@ TagBuilder.errors = {
 module.exports = TagBuilder;
 
 console.info('TagBuilder loaded');
+
+/**
+ * @callback ArgBuilderCallback
+ * @param {ArgFactory} factory
+ */

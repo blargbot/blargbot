@@ -25,7 +25,6 @@ e.desc = 'Replaces the `phrase` with `replacewith`. ' +
 e.exampleIn = 'I like {replace;to eat;eat;nom} cheese. {replace;cheese;ham}';
 e.exampleOut = 'I like to nom ham';
 
-
 e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
         params.args[i] = await bu.processTagInner(params, i);

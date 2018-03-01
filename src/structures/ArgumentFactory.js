@@ -14,11 +14,11 @@ function optional(value, multiple) {
 }
 
 function literal(value, multiple) {
-  return makeArg(types.optional, value, multiple);
+  return makeArg(types.literal, value, multiple);
 }
 
 function selection(value, multiple) {
-  return makeArg(types.optional, value, multiple);
+  return makeArg(types.selection, value, multiple);
 }
 
 //accepts (string, string | [1 string] | [object | string], boolean)

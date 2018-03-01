@@ -7,44 +7,23 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = 'hash';
-e.args = '&lt;text&gt;';
-e.usage = '{hash;text}';
-e.desc = 'Returns the numeric hash of any given text, based on the unicode value of each individual character. This results in seemingly randomly generated numbers that are constant for each specific query.';
-e.exampleIn = 'The hash of brown is {hash;brown}';
-e.exampleOut = 'The hash of brown is 94011702';
-
-
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-
-    if (args[1]) {
-        replaceString = args[1].split('').reduce(function(a, b) {
-            a = ((a << 5) - a) + b.charCodeAt(0);
-            return a & a;
-        }, 0);
-    } else
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('hash')
+        .withArgs(a => a.require('text'))
+        .withDesc('Returns the numeric hash of any given text, based on the unicode value of each individual character. ' +
+            'This results in seemingly randomly generated numbers that are constant for each specific query.')
+        .withExample(
+            'The hash of brown is {hash;brown}.',
+            'The hash of brown is 94011702.'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) {
+            return params.args[1].split('').reduce(function (a, b) {
+                a = ((a << 5) - a) + b.charCodeAt(0);
+                return a & a;
+            }, 0);
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();
