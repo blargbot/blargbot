@@ -53,6 +53,7 @@ e.execute = async (msg, words) => {
 
             let msg2 = await bu.send(queue, `**${snippet ? '✂ Snippet' : '💻 Command'} \`${id}\`**
 **Title**: ${title}
+**Author**: <@${msg.author.id}>
 **Description**:
 
 ${desc}
