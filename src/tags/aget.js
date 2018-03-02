@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('aget')
-        .withDepreciated(true)
+        .isDepreciated()
         .withArgs(a => [a.require('name'), a.optional('index')])
         .withDesc('Returns a stored variable, or an index in a stored array. ' +
             'Variables are unique per-author. ' +

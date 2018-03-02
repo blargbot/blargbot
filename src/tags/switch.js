@@ -10,9 +10,8 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    new Builder()
-        .withCategory(bu.TagType.COMPLEX)
-        .withName('switch')
+    Builder.AutoTag('switch')
+        .usesArrays()
         .withArgs(a => [
             a.require('value'),
             a.optional([

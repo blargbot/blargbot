@@ -3,7 +3,7 @@ const ArgFactory = require('./ArgumentFactory');
 class TagBuilder {
   static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
   static ComplexTag(name) { return new TagBuilder().withCategory(bu.TagType.COMPLEX).withName(name); }
-  static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name); }
+  static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name).usesArrays(true); }
   static CCommandTag(name) { return new TagBuilder().withCategory(bu.TagType.CCOMMAND).withName(name); }
   static AutoTag(name) { return new TagBuilder().withCategory(0).withName(name); }
 
@@ -88,16 +88,20 @@ class TagBuilder {
     return tag;
   }
 
-  requireStaff(staff) {
-    return this.withProp('staff', true);
-  }
-
   withProp(key, value) {
     this.properties[key] = value;
     return this;
   }
 
-  withDepreciated(depreciated) {
+  requireStaff(staff = true) {
+    return this.withProp('staff', true);
+  }
+
+  usesArrays(array = true) {
+    return this.withProp('array', array);
+  }
+
+  isDepreciated(depreciated = true) {
     return this.withProp('depreciated', depreciated);
   }
 

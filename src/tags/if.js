@@ -22,6 +22,7 @@ const Builder = require('../structures/TagBuilder'),
 
 module.exports =
     Builder.AutoTag('if')
+        .usesArrays()
         .withArgs(a => [
             a.require('value1'),
             a.optional([a.require('evaluator'), a.require('value2')]),

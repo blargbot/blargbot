@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.CCommandTag('roledelete')
-    .requireStaff(true)
+    .requireStaff()
     .withArgs(a => [a.require('role'), a.optional('quiet')])
     .withDesc('Deletes a role. If `quiet` is specified, if a role can\'t be found it will return nothing')
     .withExample(

@@ -53,7 +53,7 @@ module.exports =
             if (isNaN(limit)) errors.push('Limit must be a number');
             if (isNaN(increment)) errors.push('Increment must be a number');
             if (errors.length > 0) return await Builder.util.error(params, errors.join(', '));
-            
+
             for (let i = initial; operator(i, limit); i += increment) {
                 params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
                 if (params.msg.repeats > 1500) {

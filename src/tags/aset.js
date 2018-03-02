@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('aset')
-        .withDepreciated(true)
+        .isDepreciated().usesArrays()
         .withArgs(a => [a.require('name'), a.optional('value', true)])
         .withDesc('Stores a variable. ' +
             'Variables are unique per-author. ' +

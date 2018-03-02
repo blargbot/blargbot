@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.CCommandTag('ban')
-        .requireStaff(true)
+        .requireStaff()
         .withArgs(a => [
             a.require('user'),
             a.optional('daysToDelete'),

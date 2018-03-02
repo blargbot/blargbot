@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.CCommandTag('rolesetmentionable')
-    .requireStaff(true)
+    .requireStaff()
     .withArgs(a => [a.require('name'), a.optional('value'), a.optional('quiet')])
     .withDesc('Sets whether a role can be mentioned. `value` can be either `true` to set the role as mentionable, ' +
       'or anything else to set it to unmentionable. If `value` isn\'t provided, defaults to true. ' +

@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.CCommandTag('rolecreate')
-    .requireStaff(true)
+    .requireStaff()
     .withArgs(a => [
       a.require('name'),
       a.optional('color'),

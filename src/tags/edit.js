@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.CCommandTag('edit')
-        .requireStaff(true)
+        .requireStaff()
         .withArgs(a => [a.optional('channelid'), a.require('messageid'), a.require('message')])
         .withDesc('Edits a message outputted by the bot with the given message ID. The channel defaults to the current channel.')
         .withExample(

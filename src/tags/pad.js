@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('pad')
-        .withDepreciated('{pad} will be replaced by {realpad} in v2')
+        .isDepreciated('{pad} will be replaced by {realpad} in v2')
         .withArgs(a => [a.require('direction'), a.require('back'), a.require('text')])
         .withDesc('Pads `back` to the `direction` of `text`. Direction can be `left` or `right`')
         .withExample(

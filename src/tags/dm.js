@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder'),
 
 module.exports =
   Builder.CCommandTag('dm')
-    .requireStaff(true)
+    .requireStaff()
     .withArgs(a => [a.require('user'), a.require('message')])
     .withDesc('DMs a user. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.'
     ).withExample(

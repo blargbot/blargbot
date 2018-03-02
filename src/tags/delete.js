@@ -28,7 +28,7 @@ async function deleteMessage(params, channelId, messageId) {
 
 module.exports =
   Builder.CCommandTag('delete')
-    .requireStaff(true)
+    .requireStaff()
     .withArgs(a => [a.optional('channelid'), a.optional('messageid')])
     .withDesc('Deletes the specified message, defaulting to the message that invoked the command. Only ccommands can delete other messages.')
     .withExample(
