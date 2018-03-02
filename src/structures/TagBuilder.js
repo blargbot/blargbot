@@ -8,7 +8,7 @@ class TagBuilder {
   static AutoTag(name) { return new TagBuilder().withCategory(0).withName(name); }
 
   constructor(init) {
-    this.tag = {};
+    this.properties = {};
     this.execute = {
       preExec: [],
       conditional: [],
@@ -22,14 +22,16 @@ class TagBuilder {
   }
 
   build() {
-    if (this.tag.category === 0) {
-      if (this.tag.args != null && this.tag.args.length !== 0)
-        this.tag.category = bu.TagType.COMPLEX;
+    let tag = Object.assign({}, this.properties);
+
+    if (tag.category === 0) {
+      if (tag.args != null && tag.args.length !== 0)
+        tag.category = bu.TagType.COMPLEX;
       else
-        this.tag.category = bu.TagType.SIMPLE;
+        tag.category = bu.TagType.SIMPLE;
     }
 
-    this.tag.execute = function (exec, tag) {
+    tag.execute = function (tag, beforeExec, execConditional, execDefault) {
       return async function (params) {
         try {
           if (this.category === bu.TagType.CCOMMAND && !params.ccommand)
@@ -40,18 +42,18 @@ class TagBuilder {
 
           let callback;
 
-          for (const c of exec.conditional) {
+          for (const c of execConditional) {
             if (c.condition.apply(tag, [params.args])) {
               callback = c.action;
               break;
             }
           }
-          callback = callback || exec.default;
+          callback = callback || execDefault;
 
           if (callback == null)
-            throw new Error('Missing default execution on subtag ' + this.name + '\nParams:' + JSON.stringify(params));
+            throw new Error('Missing default execution on subtag ' + tag.name + '\nParams:' + JSON.stringify(params));
 
-          for (const preExec of exec.preExec)
+          for (const preExec of beforeExec)
             await preExec.apply(tag, [params]);
 
           return EnsureResponse(params, await callback.apply(tag, [params]));
@@ -77,10 +79,13 @@ class TagBuilder {
 
         return result;
       }
-    }(this.execute, this.tag);
+    }(tag,
+      this.execute.preExec.slice(0),
+      this.execute.conditional.slice(0),
+      this.execute.default);
 
-    console.debug(this.tag.category, 'Tag built:', this.tag.name, ArgFactory.toString(this.tag.args));
-    return this.tag;
+    console.debug(tag.category, 'Tag built:', tag.name, ArgFactory.toString(tag.args));
+    return tag;
   }
 
   requireStaff(staff) {
@@ -88,7 +93,7 @@ class TagBuilder {
   }
 
   withProp(key, value) {
-    this.tag[key] = value;
+    this.properties[key] = value;
     return this;
   }
 
