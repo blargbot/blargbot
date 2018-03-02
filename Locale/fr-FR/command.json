@@ -187,7 +187,7 @@
             "stats": "",
             "alreadystarted": "Une expédition est déjà en cours!",
             "notstarted": "Vous n’avez pas commencé d'expédition !",
-            "nolocation": "",
+            "nolocation": "Désolé, ce n'est pas une destination valide. Les destination que vous pouvez actuellement visiter sont :\n\n{{locations}}",
             "invalidlocation": "",
             "expeditionbeings": "",
             "expeditionends": "",
