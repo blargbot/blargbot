@@ -126,7 +126,7 @@ class TagBuilder {
     }
     this.withProp('exampleCode', code);
     this.withProp('exampleIn', input);
-    this.withProp('exampleOut'.output);
+    this.withProp('exampleOut', output);
     return this;
   }
 
@@ -198,9 +198,11 @@ class TagBuilder {
 
 TagBuilder.util = {
   async processAllSubtags(params) {
-    for (let i = 1; i < params.args.length; i++) {
-      params.args[i] = await bu.processTagInner(params, i);
-    }
+    TagBuilder.util.processSubtags(params, Array.from(Array(params.args.length).keys()));
+  },
+  async processSubtags(params, ...indexes) {
+    for (const index of indexes)
+      params.args[index] = await bu.processTagInner(params, index);
   },
   escapeInjection(text) {
     return bu.fixContent(text)
@@ -246,6 +248,7 @@ TagBuilder.errors = {
   noMessageFound(params) { return TagBuilder.util.error(params, 'No message found'); },
   notANumber(params) { return TagBuilder.util.error(params, 'Not a number'); },
   notAnArray(params) { return TagBuilder.util.error(params, 'Not an array'); },
+  notABoolean(params) { return TagBuilder.util.error(params, 'Not a boolean'); },
   invalidOperator(params) { return TagBuilder.util.error(params, 'Invalid operator'); },
   userNotInGuild(params) { return TagBuilder.util.error(params, 'User not in guild'); },
   tooManyLoops(params) { return TagBuilder.util.error(params, 'Too many loops'); }

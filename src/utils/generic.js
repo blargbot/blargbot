@@ -195,7 +195,7 @@ bu.send = async function (channel, message, file, embed) {
             else {
                 response = {};
             }
-            let dmMsg;
+            let dmMsg, warnMsg;
             switch (response.code) {
                 case 10003:
                     warnMsg = 'Channel not found';
@@ -1227,11 +1227,45 @@ bu.escapeHTML = function (text) {
     return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 };
 
-bu.between = function(value, lower, upper, inclusive){
+bu.between = function (value, lower, upper, inclusive) {
     if (lower > upper)
         lower = [upper, upper = lower][0];
-    
+
     if (inclusive)
         return value >= lower && value <= upper;
     return value > lower && value < upper;
-}
+};
+
+bu.parseBoolean = function (value) {
+    if (typeof value == 'boolean')
+        return value;
+
+    if (typeof value == 'number')
+        return value !== 0;
+
+    if (typeof value != 'string')
+        return null;
+
+    let asNum = parseFloat(value);
+    if (!isNaN(asNum))
+        return asNum !== 0;
+
+    switch (value.toLowerCase()) {
+        case 'true':
+        case 't':
+        case 'yes':
+        case 'y':
+            return true;
+        case 'false':
+        case 'f':
+        case 'no':
+        case 'n':
+            return false;
+        default:
+            return null;
+    }
+};
+
+bu.isBoolean = function (value){
+    return typeof value == 'boolean';
+};
