@@ -3,7 +3,7 @@ const ArgFactory = require('./ArgumentFactory');
 class TagBuilder {
   static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
   static ComplexTag(name) { return new TagBuilder().withCategory(bu.TagType.COMPLEX).withName(name); }
-  static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name).usesArrays(true); }
+  static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name).acceptsArrays(true); }
   static CCommandTag(name) { return new TagBuilder().withCategory(bu.TagType.CCOMMAND).withName(name); }
   static AutoTag(name) { return new TagBuilder().withCategory(0).withName(name); }
 
@@ -97,7 +97,7 @@ class TagBuilder {
     return this.withProp('staff', true);
   }
 
-  usesArrays(array = true) {
+  acceptsArrays(array = true) {
     return this.withProp('array', array);
   }
 
@@ -210,7 +210,14 @@ TagBuilder.util = {
     for (let i = 0; i < params.args.length; i++)
       params.args[i] = await bu.processTagInner(params, i);
   },
+  /**
+   * If params is an array rather than actually a params object then it will be used as an indexes array and this function will return another function.
+   * Basically TagBuilder.util.processSubTags([1])(params) === TagBuilder.util.processSubTags(params, [1])
+   */
   async processSubtags(params, indexes) {
+    if (Array.isArray(params))
+      return function (params) { return TagBuilder.util.processSubtags(params, indexes); };
+
     for (const index of indexes)
       params.args[index] = await bu.processTagInner(params, index);
   },
@@ -224,7 +231,7 @@ TagBuilder.util = {
     let result = [];
     for (const arg of args) {
       let arr = await bu.deserializeTagArray(arg);
-      if (typeof arr === 'object' && Array.isArray(arr.v))
+      if (arr != null && Array.isArray(arr.v))
         result.push(...arr.v);
       else
         result.push(arg);

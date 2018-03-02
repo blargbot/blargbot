@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('switch')
-        .usesArrays()
+        .acceptsArrays()
         .withArgs(a => [
             a.require('value'),
             a.optional([

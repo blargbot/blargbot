@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('hasrole')
-        .usesArrays()
+        .acceptsArrays()
         .withArgs(a => [a.require('roleids'), a.optional('user'), a.optional('quiet')])
         .withDesc('Checks if a user has a role with the same id as the provided argument, and returns either \'true\' or \'false\'. ' +
             'Roleid can also be an array of role ids. ' +

@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.AutoTag('max')
-    .usesArrays()
+    .acceptsArrays()
     .withArgs(a => a.require('number', true))
     .withDesc('Returns the largest number out of those provided.')
     .withExample(

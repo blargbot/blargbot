@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('length')
-        .usesArrays()
+        .acceptsArrays()
         .withArgs(a => a.require('value'))
         .withDesc('Gives the amount of characters in `value`, or the number of elements if it is an array.')
         .withExample(

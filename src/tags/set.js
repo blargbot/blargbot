@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('set')
-        .usesArrays()
+        .acceptsArrays()
         .withArgs(a => [a.require('name'), a.optional('value', true)])
         .withDesc('Stores a variable. These variables are saved between sessions. ' +
             'You can use a character prefix to determine the scope of your variable.\n' +
