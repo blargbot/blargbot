@@ -17,6 +17,7 @@ e.execute = async (msg, words) => {
         if (isNaN(id))
             return await bu.send(msg, 'that wasn\'t even a number pls');
 
+        await bu.send('398946258854871052', `**${bu.getFullName(msg.author)}** has called for a respawn of shard ${id}.`);
         bot.sender.send('respawn', { id, channel: msg.channel.id });
         await bu.send(msg, 'ok shard ' + id + ' is being respawned and stuff now');
     }
