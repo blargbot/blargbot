@@ -18,7 +18,7 @@
                 "La soumission est une libération.",
                 "",
                 "",
-                ""
+                "Laissez tomber, et passez à autre chose."
             ],
             "final": ""
         },
@@ -90,7 +90,7 @@
                 },
                 "favorite": {
                     "usage": "",
-                    "info": ""
+                    "info": "Met en favoris le tag spécifié, ou donne une liste de vos tags favoris."
                 },
                 "report": {
                     "usage": "",
@@ -109,7 +109,7 @@
                     "info": "Donne un lien vers la documentation BBTag ou donne des informations à propos d'un sous-tag spécifique."
                 },
                 "setdesc": {
-                    "info": "",
+                    "info": "Paramètre la description du tag spécifié.",
                     "usage": ""
                 },
                 "setusage": {
@@ -175,18 +175,18 @@
             "subcommand": {
                 "start": {
                     "usage": "",
-                    "info": ""
+                    "info": "Démarre une expédition!"
                 },
                 "end": {
-                    "info": ""
+                    "info": "Finis une expédition!"
                 },
                 "locations": {
                     "info": ""
                 }
             },
             "stats": "",
-            "alreadystarted": "",
-            "notstarted": "",
+            "alreadystarted": "Une expédition est déjà en cours!",
+            "notstarted": "Vous n’avez pas commencé d'expédition !",
             "nolocation": "",
             "invalidlocation": "",
             "expeditionbeings": "",
