@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-12 13:53:04
+ * @Last Modified time: 2018-03-02 13:28:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,6 +10,14 @@
 bot.on('ready', async function () {
     bot.sender.send('ready', bot.guilds.map(g => g.id));
     console.init('Ready! Logged in as ' + bot.user.username + '#' + bot.user.discriminator);
+
+    let g;
+    if (g = bot.guilds.get('194232473931087872')) {
+        let police = g.members.filter(m => m.roles.includes('280159905825161216')).map(m => m.id);
+        await r.table('vars').get('police').replace({
+            value: police, varname: 'police'
+        });
+    }
 
     if (process.env.SHARD_ID == 0) {
         let restart = await r.table('vars').get('restart').run();

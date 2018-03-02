@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-26 08:39:37
+ * @Last Modified time: 2018-03-02 13:24:09
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -78,15 +78,15 @@ class DiscordClient extends dep.Eris.Client {
                 commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
             else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
                 commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
-
-            let func;
-            if (commandToProcess.split('\n').length === 1) {
-                func = eval(`async () => ${commandToProcess}`);
-            } else {
-                func = eval(`async () => { ${commandToProcess} }`);
-            }
-            func.bind(this);
             try {
+
+                let func;
+                if (commandToProcess.split('\n').length === 1) {
+                    func = eval(`async () => ${commandToProcess}`);
+                } else {
+                    func = eval(`async () => { ${commandToProcess} }`);
+                }
+                func.bind(this);
                 let res = await func();
                 await bu.send(msg, `Input:
 \`\`\`js
@@ -99,7 +99,7 @@ ${res}
             } catch (err) {
                 await bu.send(msg, `An error occured!
 \`\`\`js
-\${err.stack}
+${err.stack}
 \`\`\``);
             }
         }
