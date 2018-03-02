@@ -16,10 +16,11 @@ e.flags = [
 ]
 
 let queue = '419235660088606739';
-// let snippetChannel = '387709753758842883';
-// let commandChannel = '414754839059365908';
-let snippetChannel = queue;
-let commandChannel = '229692244746043393';
+
+let snippetChannel = '387709753758842883';
+let commandChannel = '414754839059365908';
+// let snippetChannel = queue;
+// let commandChannel = '229692244746043393';
 let id;
 
 e.execute = async (msg, words) => {
