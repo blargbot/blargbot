@@ -207,9 +207,10 @@ class TagBuilder {
 
 TagBuilder.util = {
   async processAllSubtags(params) {
-    TagBuilder.util.processSubtags(params, Array.from(Array(params.args.length).keys()));
+    for (let i = 0; i < params.args.length; i++)
+      params.args[i] = await bu.processTagInner(params, i);
   },
-  async processSubtags(params, ...indexes) {
+  async processSubtags(params, indexes) {
     for (const index of indexes)
       params.args[index] = await bu.processTagInner(params, index);
   },
