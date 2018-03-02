@@ -20,11 +20,12 @@ module.exports =
         .withExample(
             '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
             'I like apples\nI like oranges\nI like c#'
-        ).whenArgs('<4', Builder.util.notEnoughArguments)
+        ).beforeExecute(Builder.util.processSubtags([1,2]))
+        .whenArgs('<4', Builder.util.notEnoughArguments)
         .whenArgs('4', async function (params) {
             let set = TagManager.list['set'],
-                varName = await bu.processTagInner(params, 1),
-                deserialized = await bu.getArray(params, await bu.processTagInner(params, 2)),
+                varName = params.args[1],
+                deserialized = await bu.getArray(params, params.args[2]),
                 arr = deserialized.v,
                 result = '';
 

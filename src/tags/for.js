@@ -31,14 +31,15 @@ module.exports =
         .withExample(
             '{for;~index;0;<;10;{get;~index},}',
             '0,1,2,3,4,5,6,7,8,9,'
-        ).whenArgs('<6', Builder.errors.notEnoughArguments)
+        ).beforeExecute(Builder.util.processSubtags([1,2,3,4]))
+        .whenArgs('<6', Builder.errors.notEnoughArguments)
         .whenArgs('6-7', async function (params) {
             let errors = [],
                 set = TagManager.list['set'],
-                varName = await bu.processTagInner(params, 1),
-                initial = parseFloat(await bu.processTagInner(params, 2)),
-                operator = operators[await bu.processTagInner(params, 3)],
-                limit = parseFloat(await bu.processTagInner(params, 4)),
+                varName = params.args[1],
+                initial = parseFloat(params.args[2]),
+                operator = operators[params.args[3]],
+                limit = parseFloat(params.args[4]),
                 code = params.args.length - 1,
                 result = '',
                 increment;
