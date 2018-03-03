@@ -34,7 +34,7 @@ e.execute = async (msg, words) => {
             id = idVal.value;
         }
     }
-    let input = bu.parseInput(e.flags, words);
+    let input = bu.parseInput(e.flags, words, true);
 
     let isStaff = msg.member.roles.includes('280159905825161216') || msg.member.roles.includes('263066486636019712');
     switch ((words[1] || '').toLowerCase()) {
