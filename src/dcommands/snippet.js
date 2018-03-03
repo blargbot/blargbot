@@ -38,7 +38,7 @@ e.execute = async (msg, words, text) => {
     let isStaff = msg.member.roles.includes('280159905825161216') || msg.member.roles.includes('263066486636019712');
     switch ((words[1] || '').toLowerCase()) {
         case 'submit': {
-            let eee = text.replace(/^.*?snippet/i, '');
+            let eee = text.replace(/^.*?snippet\s+/i, '');
             console.log(eee);
             let input = bu.parseInput(e.flags, eee, true);
             console.verbose(input);
