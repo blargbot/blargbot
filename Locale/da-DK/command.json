@@ -553,7 +553,7 @@
             "transfercomplete": "",
             "descupdate": "",
             "descreset": "",
-            "subcommandconflict": "",
+            "subcommandconflict": "Du kan ikke bruge navnet '{{name}}', fordi der er en underkommando med det navn!",
             "tagauthor": "",
             "list": ""
         }
