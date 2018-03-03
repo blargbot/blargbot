@@ -7,56 +7,45 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.ARRAY;
-};
+module.exports =
+    Builder.ArrayTag('splice')
+        .withArgs(a => [a.require('array'), a.require('start'), a.optional('deleteCount'), a.optional('items', true)])
+        .withDesc('Removes deleteCount elements (defaults to all) starting at index start from the specified array. ' +
+            'Then, adds each subsequent item at that position in the array. Returns the removed items.')
+        .withExample(
+            '{set;array;["this", "is", "an", "array"]} {splice;{get;array};1;1;was} {get;array}',
+            '["is"] {"v":["this","was","an","array"],"n":"array"}'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (params) {
+            let arr = bu.deserializeTagArray(params.args[1]),
+                start = parseInt(params.args[2]),
+                delCount = parseInt(params.args[3] || 0),
+                insert = params.args.slice(4),
+                fallback = parseInt(params.fallback);
 
-e.requireCtx = require;
+            if (arr == null || !Array.isArray(arr.v))
+                return await Builder.errors.notAnArray(params);
 
-e.isTag = true;
-e.name = `splice`;
-e.args = `&lt;array&gt; &lt;start&gt; [deleteCount] [items]...`;
-e.usage = `{splice;array;start[;deleteCount[;items]...]}`;
-e.desc = `Removes deleteCount elements (defaults to all) starting at index start from the specified array. Then, adds each subsequent item at that position in the array. Returns the removed items.`;
-e.exampleIn = `{set;array;['this', 'is', 'an', 'array']} {splice;{get;array};1;1;was} {get;array}`;
-e.exampleOut = `['is'] ['this','was','an','array']`;
+            if (isNaN(start)) start = fallback;
+            if (isNaN(delCount)) delCount = fallback;
+            if (isNaN(start) || isNaN(delCount))
+                return await Builder.errors.notANumber(params);
 
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let replaceContent = false;
-    let replaceString;
-    if (params.args.length >= 3) {
-        params.args[1] = await bu.processTagInner(params, 1);
-        let args = params.args;
-        let deserialized = await bu.getArray(params, args[1]);
-        if (deserialized && Array.isArray(deserialized.v)) {
-            let start = parseInt(args[2]);
-            let end;
-            if (args[3]) end = parseInt(args[3]);
-
-            if (isNaN(start) || (end && isNaN(end))) {
-                replaceString = await bu.tagProcessError(params, '`Invalid start or end`');
-            } else {
-                let argss = [start, end];
-                if (args[4]) argss = argss.concat(args.slice(4));
-                let newArray = [].splice.apply(deserialized.v, argss);
-                replaceString = bu.serializeTagArray(newArray);
-                await bu.setArray(deserialized, params);
+            for (let i = 0; i < insert.length; i++) {
+                let arr = bu.deserializeTagArray(insert[i]);
+                if (arr == null || !Array.isArray(arr.v))
+                    continue;
+                insert.splice(i, 1, ...arr.v);
+                i += arr.v.length - 1;
             }
-        } else {
-            replaceString = await bu.tagProcessError(params, '`Not an array`');
-        }
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
 
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            let result = arr.v.splice(start, delCount, ...insert);
+            if (arr.n)
+                await bu.setArray(arr, params);
+
+            return bu.serializeTagArray(result);
+        })
+        .build();

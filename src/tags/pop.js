@@ -7,48 +7,27 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.ARRAY;
-};
+module.exports =
+    Builder.ArrayTag('pop')
+        .withArgs(a => a.require('array'))
+        .withDesc('Returns the last element in an array. If used with {get} this will remove the last element from the array as well.')
+        .withExample(
+            '{pop;["this", "is", "an", "array"]}',
+            'array'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) {
+            let arr = await bu.getArray(params, params.args[1]), result;
 
-e.requireCtx = require;
+            if (arr == null || !Array.isArray(arr.v))
+                return await Builder.errors.notAnArray(params);
 
-e.isTag = true;
-e.name = `pop`;
-e.args = `&lt;pop&gt;`;
-e.usage = `{pop;array}`;
-e.desc = `Returns the last element in an array. If used with {get} or {aget}, this will remove the last element from the array as well.`;
-e.exampleIn = `{pop;['this', 'is', 'an', 'array']}`;
-e.exampleOut = `array`;
+            result = arr.v.pop();
+            if (arr.n != null)
+                await bu.setArray(arr, params);
 
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let replaceContent = false;
-    let replaceString;
-    if (params.args.length >= 2) {
-        params.args[1] = await bu.processTagInner(params, 1);
-        let args1 = params.args[1];
-        let deserialized = await bu.getArray(params, args1);
-
-        if (deserialized && Array.isArray(deserialized.v)) {
-            replaceString = deserialized.v.pop();
-            if (deserialized.n) {
-                await bu.setArray(deserialized, params);
-            }
-        } else {
-            replaceString = await bu.tagProcessError(params, '`Not an array`');
-        }
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            return result;
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

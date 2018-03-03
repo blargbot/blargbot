@@ -7,57 +7,39 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.ARRAY;
-};
+module.exports =
+    Builder.ArrayTag('sort')
+        .withArgs(a => [a.require('array'), a.optional('descending')])
+        .withDesc('Sorts the provided array in ascending order. ' +
+            'If descending is provided, sorts in descending order. ' +
+            'If {get} is used, will modify the original array.')
+        .withExample(
+            '{sort;[3, 2, 5, 1, 4]}',
+            '[1,2,3,4,5]'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-3', async function (params) {
+            let arr = bu.deserializeTagArray(params.args[1]),
+                descending = bu.parseBoolean(params.args[2] || 'false');
 
-e.requireCtx = require;
+            if (arr == null || !Array.isArray(arr.v))
+                return await Builder.errors.notAnArray(params);
 
-e.isTag = true;
-e.name = `sort`;
-e.args = `&lt;array&gt; [descending]`;
-e.usage = `{sort;array[;descending]}`;
-e.desc = `Sorts the provided array in ascending order. If descending is provided, sorts in descending order. If {get} or {aget} are used, will modify the original array.`;
-e.exampleIn = `{sort;[3, 2, 5, 1, 4]}`;
-e.exampleOut = `[1,2,3,4,5]`;
+            let toSort = arr.v.map(parseFloat);
+            if (toSort.filter(isNaN).length > 0)
+                toSort = arr.v;
 
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let words = params.words;
-    var replaceString = '';
-    var replaceContent = false;
-    let args = params.args;
-    if (params.args[1]) {
-        let deserialized = await bu.getArray(params, args[1]);
+            arr.v = toSort.sort();
+            if (descending) arr.v.reverse();
 
-        if (deserialized && Array.isArray(deserialized.v)) {
-            let intArray = true;
-            let parsed = deserialized.v.map(e => {
-                if (/^-?\d+(\.\d*)?$/.test(e)) e = parseFloat(e);
-                else intArray = false;
-                return e;
-            });
-            if (intArray) {
-                parsed.sort((a, b) => a - b);
-                deserialized.v = parsed;
-            } else deserialized.v.sort();
-            if (args[2]) deserialized.v.reverse();
-            if (deserialized.n) {
-                await bu.setArray(deserialized, params);
-            } else replaceString = bu.serializeTagArray(deserialized.v);
-        } else {
-            replaceString = await bu.tagProcessError(params, '`Not an array`');
-        }
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            console.error(arr);
+
+            if (!arr.n)
+                return bu.serializeTagArray(arr.v);
+            await bu.setArray(arr, params);
+            return '';
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();
