@@ -268,7 +268,8 @@ TagBuilder.errors = {
   notABoolean(params) { return TagBuilder.util.error(params, 'Not a boolean'); },
   invalidOperator(params) { return TagBuilder.util.error(params, 'Invalid operator'); },
   userNotInGuild(params) { return TagBuilder.util.error(params, 'User not in guild'); },
-  tooManyLoops(params) { return TagBuilder.util.error(params, 'Too many loops'); }
+  tooManyLoops(params) { return TagBuilder.util.error(params, 'Too many loops'); },
+  unsafeRegex(params) { return TagBuilder.util.error(params, 'Unsafe regex detected'); }
 };
 
 module.exports = TagBuilder;
