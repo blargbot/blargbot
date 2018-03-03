@@ -11,22 +11,22 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.AutoTag('space')
-  .withArgs(a => a.optional('count'))
+    .withArgs(a => a.optional('count'))
     .withDesc('Will be replaced by a specified number of spaces (Default to 1).')
     .withExample(
       '{space;4}Hello, world!',
       '    Hello, world!'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-2', async function (params) {
-        let count = parseInt(params.args[1] || '1'),
+      let count = parseInt(params.args[1] || '1'),
         fallback = parseInt(params.fallback);
 
-        if (isNaN(count)) count = fallback;
-        if (isNaN(count)) return Builder.errors.notANumber(params);
+      if (isNaN(count)) count = fallback;
+      if (isNaN(count)) return Builder.errors.notANumber(params);
 
-        if (count < 0) count = 0;
+      if (count < 0) count = 0;
 
-        return new Array(count).join(' ');
+      return new Array(count + 1).join(' ');
     })
     .whenDefault(Builder.errors.tooManyArguments)
     .build();
