@@ -496,7 +496,7 @@
             "info": "",
             "subcommand": {
                 "set": {
-                    "usage": "",
+                    "usage": "<navn><indhold>",
                     "info": ""
                 },
                 "delete": {
