@@ -554,7 +554,8 @@
             "descupdate": "",
             "descreset": "",
             "subcommandconflict": "",
-            "tagauthor": ""
+            "tagauthor": "",
+            "list": ""
         }
     }
 }
