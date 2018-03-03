@@ -19,8 +19,8 @@ const Builder = require('../structures/TagBuilder'),
 module.exports =
     Builder.AutoTag('logic')
         .withArgs(a => [a.require('operator'), a.require('values', true)])
-        .withDesc('Accepts 1 or more boolean values (`true` or `false`) and returns the result of a logic operation on them. '+
-        'Valid logic operators are `||`, `&&`, `XOR`, `!`.')
+        .withDesc('Accepts 1 or more boolean values (`true` or `false`) and returns the result of a logic operation on them. ' +
+            'Valid logic operators are `||`, `&&`, `XOR`, `!`.')
         .withExample(
             '{logic;&&;true;false}',
             'false'
@@ -30,8 +30,8 @@ module.exports =
             let values = params.args.slice(1),
                 operator;
 
-            for (let i = 0; i < values.length; i++){
-                if (this.operators[values[i]]){
+            for (let i = 0; i < values.length; i++) {
+                if (this.operators[values[i]]) {
                     operator = this.operators[values[i]];
                     values.splice(i, 1);
                 }
@@ -45,6 +45,6 @@ module.exports =
                 return await Builder.errors.notABoolean(params);
 
             return operator(values);
-         })
+        })
         .withProp('operators', operators)
         .build();
