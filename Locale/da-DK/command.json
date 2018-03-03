@@ -460,7 +460,7 @@
             "unmutein": ""
         },
         "unmute": {
-            "usage": "",
+            "usage": "<bruger>",
             "info": "Fjerner dæmpningen fra en bruger.",
             "flags": {
                 "reason": "Årsagen til fjernelsen af dæmpningen."
@@ -470,7 +470,7 @@
             "unmutedafter": "Fjerner automatisk dæmpningen efter {{seconds}} sekunder."
         },
         "ban": {
-            "usage": "",
+            "usage": "<bruger>",
             "info": "Udelukker en bruger.",
             "flags": {
                 "reason": "Årsagen til udelukkelsen.",
@@ -482,7 +482,7 @@
             "unbunin": ""
         },
         "unban": {
-            "usage": "",
+            "usage": "<bruger>",
             "info": "Fjerner udelukkelsen fra en bruger.",
             "flags": {
                 "reason": "Årsagen til udelukkelsen."
@@ -500,15 +500,15 @@
                     "info": ""
                 },
                 "delete": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn>",
+                    "info": "Sletter en brugerdefineret kommando som du ejer."
                 },
                 "rename": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn><nyt navn>",
+                    "info": "Omdøber en brugerdefineret kommando som du ejer."
                 },
                 "raw": {
-                    "usage": "",
+                    "usage": "<navn>",
                     "info": ""
                 },
                 "transfer": {
