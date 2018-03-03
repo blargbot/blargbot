@@ -14,8 +14,8 @@ e.flags = [
     { flag: 'd', word: 'description', desc: 'The description of the snippet' },
     { flag: 'c', word: 'command', desc: 'Use this to designate it as a command instead of a snippet' }
 ]
-let queue = '229692244746043393';
-//let queue = '419235660088606739';
+// let queue = '229692244746043393';
+let queue = '419235660088606739';
 
 let snippetChannel = '387709753758842883';
 let commandChannel = '414754839059365908';
