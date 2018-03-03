@@ -14,8 +14,8 @@ e.flags = [
     { flag: 'd', word: 'description', desc: 'The description of the snippet' },
     { flag: 'c', word: 'command', desc: 'Use this to designate it as a command instead of a snippet' }
 ]
-
-let queue = '419235660088606739';
+let queue = '229692244746043393';
+//let queue = '419235660088606739';
 
 let snippetChannel = '387709753758842883';
 let commandChannel = '414754839059365908';
@@ -23,7 +23,7 @@ let commandChannel = '414754839059365908';
 // let commandChannel = '229692244746043393';
 let id;
 
-e.execute = async (msg, words) => {
+e.execute = async (msg, words, text) => {
     if (msg.guild.id !== '194232473931087872') return;
     if (!id) {
         let idVal = (await r.table('vars').get('snippetid'));
@@ -34,11 +34,14 @@ e.execute = async (msg, words) => {
             id = idVal.value;
         }
     }
-    let input = bu.parseInput(e.flags, words, true);
 
     let isStaff = msg.member.roles.includes('280159905825161216') || msg.member.roles.includes('263066486636019712');
     switch ((words[1] || '').toLowerCase()) {
         case 'submit': {
+            let eee = text.replace(/^.*?snippet/i, '');
+            console.log(eee);
+            let input = bu.parseInput(e.flags, eee, true);
+            console.verbose(input);
             if (!input.t)
                 return await bu.send(msg, 'You must include a title.');
             if (!input.d)

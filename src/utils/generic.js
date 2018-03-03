@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-06 13:37:42
+ * @Last Modified time: 2018-03-02 19:23:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -990,6 +990,7 @@ bu.parseInput = function (map, text, noTrim) {
     let words;
     if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
     else words = bu.splitInput(text, noTrim);
+    console.verbose(words);
     let output = {
         undefined: []
     };
@@ -1015,8 +1016,7 @@ bu.parseInput = function (map, text, noTrim) {
             if (currentFlag != '') {
                 output[currentFlag].push(words[i]);
             } else {
-                if (words[i] != '')
-                    output['undefined'].push(words[i]);
+                output['undefined'].push(words[i]);
             }
         }
     }
