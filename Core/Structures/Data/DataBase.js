@@ -54,8 +54,9 @@ class DataBase {
 
   async getObject() {
     await this.reloadObject();
-    if (this.object !== null) return this.object;
-    else throw new Error('Instance ' + this.id + ' of ' + this.constructor.name + ' does not exist.');
+    return this.object;
+    // if (this.object !== null) return this.object;
+    // else throw new Error('Instance ' + this.id + ' of ' + this.constructor.name + ' does not exist.');
   }
 
   async saveTemp() {

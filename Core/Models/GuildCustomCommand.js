@@ -56,10 +56,16 @@ class GuildCustomCommandModel extends Base {
       restricted: {
         type: this.Sequelize.VIRTUAL,
         get() {
-          console.log(this.getDataValue('commandName'));
-          return ['_greeting', '_farewell', '_test'].includes(this.getDataValue('commandName'));
+          return ['_greeting', '_farewell', '_test'].includes(this.get('commandName'));
         },
-        comment: 'Whether users can execute this custom command. Only for greeting, farewell, and test..'
+        comment: 'Whether users can execute this custom command. Only for greeting, farewell.'
+      },
+      hidden: {
+        type: this.Sequelize.VIRTUAL,
+        get() {
+          return this.get('commandName').startsWith('*');
+        },
+        comment: 'Whether a custom command should be visisble or executable. For system commands and autoresponses.'
       }
     });
   }

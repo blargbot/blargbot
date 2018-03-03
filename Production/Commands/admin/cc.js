@@ -37,7 +37,7 @@ class CCCommand extends AdminCommand {
         setinfo: 'setdesc'
       },
       keys: {
-        dontown: { key: '.dontown', value: "[[emote.x]] You don't own that custom command!" },
+        dontown: { key: '.dontown', value: "[[emote.x]] You cannot modify this system custom command." },
         notag: { key: '.notag', value: "[[emote.x]] There is no custom command with that name." },
         tagset: { key: '.tagset', value: "[[emote.check]] Custom command `{{name}}` {{process}}!" },
         tagrename: { key: '.tagrename', value: "[[emote.check]] The custom command `{{old}}` has been renamed to `{{new}}`." },
@@ -53,7 +53,8 @@ class CCCommand extends AdminCommand {
         descupdate: { key: '.descupdate', value: "The description for `{{tag}}` has been updated." },
         descreset: { key: '.descreset', value: "The description for `{{tag}}` has been reset." },
         subcommandconflict: { key: '.subcommandconflict', value: "You can't use the name `{{name}}` because there is a subcommand with that name!" },
-        tagauthor: { key: '.tagauthor', value: "The custom command `{{tag}}` was created by **{{author}}**" }
+        tagauthor: { key: '.tagauthor', value: "The custom command `{{tag}}` was created by **{{author}}**" },
+        list: { key: '.list', value: 'Here are the custom commands on your guild:\n```\n{{commands}}\n```' }
       }
     });
 
@@ -80,20 +81,18 @@ class CCCommand extends AdminCommand {
     let tag;
     try {
       tag = await data.getObject();
+      if (tag.get('hidden') && !tag.get('restricted')) {
+        tag = null;
+      }
     } catch (err) { }
     return { data, tag };
   }
 
   async ownershipTest(ctx) {
     const { data, tag } = await this.getTag(this.filterName(ctx.input._[0]).name, ctx.guild.id);
-    if (!tag) {
-      await ctx.decodeAndSend(this.keys.notag);
-    } else if (tag.get('authorId') !== ctx.author.id) {
-      await ctx.decodeAndSend(this.keys.dontown);
-    } else {
-      return { data, tag, owner: true };
-    }
-    return { data, tag, owner: false };
+    let owner = true;
+    if (tag) owner = !tag.get('hidden');
+    return { data, tag, owner };
   }
 
   async execute(ctx) {
@@ -136,15 +135,23 @@ class CCCommand extends AdminCommand {
   async sub_delete(ctx) {
     const { data, tag, owner } = await this.ownershipTest(ctx);
     if (owner) {
+      if (!tag)
+        return await ctx.decodeAndSend(this.keys.notag);
+
       await tag.destroy();
       await ctx.decodeAndSend(this.keys.tagset, {
         name: ctx.input._[0], process: await ctx.decode('generic.deleted')
       });
+    } else {
+      await ctx.decodeAndSend(this.keys.dontown);
     }
   }
 
   async sub_rename(ctx) {
     const { data, tag, owner } = await this.ownershipTest(ctx);
+    if (!tag)
+      return await ctx.decodeAndSend(this.keys.notag);
+
     const tag2 = await this.getTag(ctx.input._[1], ctx.guild.id);
     if (tag2.tag) {
       await ctx.decodeAndSend(this.keys.alreadyexists);
@@ -173,6 +180,9 @@ class CCCommand extends AdminCommand {
 
   async sub_transfer(ctx) {
     const { data, tag, owner } = await this.ownershipTest(ctx);
+    if (!tag)
+      return await ctx.decodeAndSend(this.keys.notag);
+
     if (owner) {
       let user = await this.client.Helpers.Resolve.user(ctx, ctx.input._[1]);
       if (user) {
@@ -211,11 +221,11 @@ class CCCommand extends AdminCommand {
   }
 
   async sub_test(ctx) {
-    const data = this.client.getDataCustomCommand('_test', ctx.guild.id);
+    const data = this.client.getDataCustomCommand('*test', ctx.guild.id);
     await data.getOrCreateObject();
     const tagContext = new TagContext(ctx.client, {
       ctx, content: ctx.input._.raw.join(''),
-      author: ctx.author.id, name: '_test',
+      author: ctx.author.id, name: '*test',
       isCustomCommand: true, forced: true
     }, data);
     let output = await tagContext.process() || '';
@@ -226,6 +236,9 @@ class CCCommand extends AdminCommand {
 
   async sub_setdesc(ctx) {
     const { data, tag, owner } = await this.ownershipTest(ctx);
+    if (!tag)
+      return await ctx.decodeAndSend(this.keys.notag);
+
     if (owner) {
       let toSet = null;
       if (ctx.input._.length > 1) toSet = ctx.input._.raw.slice(1).join('');
@@ -246,6 +259,9 @@ class CCCommand extends AdminCommand {
   }
   async sub_setusage(ctx) {
     const { data, tag, owner } = await this.ownershipTest(ctx);
+    if (!tag)
+      return await ctx.decodeAndSend(this.keys.notag);
+
     if (owner) {
       let toSet = null;
       if (ctx.input._.length > 1) toSet = ctx.input._.raw.slice(1).join('');
@@ -263,6 +279,18 @@ class CCCommand extends AdminCommand {
         tag: await tag.get('commandName')
       });
     }
+  }
+
+  async sub_list(ctx) {
+    let ccs = await ctx.client.models.GuildCustomCommand.findAll({ where: { guildId: ctx.guild.id } });
+    let ccStr = [];
+    for (const cc of ccs) {
+      console.log(cc.get('commandName'), cc.get('hidden'));
+      if (!cc.get('hidden'))
+        ccStr.push(cc.get('commandName'));
+    }
+    ccStr.sort((a, b) => { a > b; });
+    return await ctx.decodeAndSend(this.keys.list, { commands: ccStr.join(', ') });
   }
 
   async sub_help(ctx) {

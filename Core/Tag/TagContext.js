@@ -54,7 +54,7 @@ class TagContext extends Context {
   }
 
   async process() {
-    if (this.isCustomCommand && (await this.data.getKey('restricted')) === true && !this.forced) {
+    if (this.isCustomCommand && (await this.data.getKey('restricted')) === true || (await this.data.getKey('hidden')) === true && !this.forced) {
       return 'Error: ' + await this.decode('error.tag.restricted', { name: this.name });
     }
     try {

@@ -539,7 +539,7 @@
                     "info": "Sets the usage docs for the specified custom command."
                 }
             },
-            "dontown": "[[emote.x]] You don't own that custom command!",
+            "dontown": "[[emote.x]] You cannot modify this system custom command.",
             "notag": "[[emote.x]] There is no custom command with that name.",
             "tagset": "[[emote.check]] Custom command `{{name}}` {{process}}!",
             "tagrename": "[[emote.check]] The custom command `{{old}}` has been renamed to `{{new}}`.",
@@ -554,7 +554,8 @@
             "descupdate": "The description for `{{tag}}` has been updated.",
             "descreset": "The description for `{{tag}}` has been reset.",
             "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",
-            "tagauthor": "The custom command `{{tag}}` was created by **{{author}}**"
+            "tagauthor": "The custom command `{{tag}}` was created by **{{author}}**",
+            "list": "Here are the custom commands on your guild:\n```\n{{commands}}\n```"
         }
     }
 }
