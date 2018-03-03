@@ -512,15 +512,15 @@
                     "info": ""
                 },
                 "transfer": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn><bruger>",
+                    "info": "Overfører en brugerdefineret kommando til den angivne bruger. Variabler vil ikke blive overført."
                 },
                 "author": {
                     "usage": "<name>",
-                    "info": ""
+                    "info": "Viser forfatteren af en brugerdefineret kommando."
                 },
                 "list": {
-                    "info": ""
+                    "info": "Viser alle brugerdefinerede kommandoer."
                 },
                 "test": {
                     "usage": "<code>",
@@ -531,7 +531,7 @@
                     "info": "Viser dette!"
                 },
                 "setdesc": {
-                    "usage": "",
+                    "usage": "<navn><beskrivelse>",
                     "info": ""
                 },
                 "setusage": {
