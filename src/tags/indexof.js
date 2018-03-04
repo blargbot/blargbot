@@ -15,8 +15,8 @@ module.exports =
         .withArgs(a => [a.require('text'), a.require('searchfor'), a.optional('start')])
         .withDesc('Finds the index of `searchfor` in `text`, after `start`. `text` can either be plain text or an array. If it\'s not found, returns -1.')
         .withExample(
-            'The index of \'o\' in \'hello world\' is {indexof;hello world;o}',
-            'The index of \'o\' in \'hello world\' is 4'
+            'The index of "o" in "hello world" is {indexof;hello world;o}',
+            'The index of "o" in "hello world" is 4'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3-4', async function (params) {

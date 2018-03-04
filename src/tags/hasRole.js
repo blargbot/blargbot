@@ -13,7 +13,7 @@ module.exports =
     Builder.AutoTag('hasrole')
         .acceptsArrays()
         .withArgs(a => [a.require('roleids'), a.optional('user'), a.optional('quiet')])
-        .withDesc('Checks if a user has a role with the same id as the provided argument, and returns either \'true\' or \'false\'. ' +
+        .withDesc('Checks if a user has a role with the same id as the provided argument, and returns either `true` or `false`. ' +
             'Roleid can also be an array of role ids. ' +
             'You can find a list of roles and their ids by doing \`b!roles\`. ' +
             'If a user is provided, check that user.' +

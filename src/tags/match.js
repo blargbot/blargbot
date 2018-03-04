@@ -26,7 +26,7 @@ module.exports =
                 regex = bu.createRegExp(params.args[2]);
             }
             catch (e) {
-                return await Builder.error.unsafeRegex(params);
+                return await Builder.errors.unsafeRegex(params);
             }
 
             return bu.serializeTagArray(text.match(regex) || []);
