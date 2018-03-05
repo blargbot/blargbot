@@ -22,7 +22,7 @@ module.exports =
         fallback = parseInt(params.fallback);
 
       if (isNaN(count)) count = fallback;
-      if (isNaN(count)) return Builder.errors.notANumber(params);
+      if (isNaN(count)) return await Builder.errors.notANumber(params);
 
       if (count < 0) count = 0;
 

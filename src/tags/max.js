@@ -18,13 +18,13 @@ module.exports =
       '{max;50;2;65}',
       '65'
     ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', Builder.util.notEnoughArguments)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenDefault(async function(params) {
       let args = await Builder.util.flattenArgArrays(params.args.slice(1));
       args = args.map(parseFloat);
 
       if (args.filter(isNaN).length > 0)
-        return await Builder.util.notANumber(params);
+        return await Builder.errors.notANumber(params);
 
       return Math.max(...args);
     })

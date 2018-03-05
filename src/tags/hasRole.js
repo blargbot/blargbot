@@ -27,9 +27,9 @@ module.exports =
             let result = await this.checkRoles(params, ...params.args.slice(1, 4));
 
             if (result.user == null)
-                return Builder.errors.noUserFound(params);
+                return await Builder.errors.noUserFound(params);
             if (result.roles.length == 0)
-                return Builder.errors.noRoleFound(params);
+                return await Builder.errors.noRoleFound(params);
 
             return result.hasRole.reduce((a, b) => a || b, false);
         })
@@ -52,7 +52,7 @@ module.exports =
 
             for (const entry of roleText) {
                 if (roleExpr.test(entry)) {
-                    let roleId = entry.match(roleExpr)[0];
+                    let roleId = entry.match(roleExpr)[1];
                     result.roles.push(params.msg.guild.roles.get(roleId));
                 }
             }

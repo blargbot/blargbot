@@ -24,7 +24,7 @@ module.exports =
                 regex = bu.createRegExp(params.args[2]);
             } catch (e) {
                 console.error(e, params);
-                return Builder.util.error(params, e);
+                return await Builder.util.error(params, e);
             }
 
             return regex.test(text);

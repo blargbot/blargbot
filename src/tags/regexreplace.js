@@ -25,7 +25,7 @@ module.exports =
                 regex = bu.createRegExp(params.args[params.args.length - 2]);
             } catch (e) {
                 console.error(e, params);
-                return Builder.util.error(params, e);
+                return await Builder.util.error(params, e);
             }
 
             if (params.args.length == 3)

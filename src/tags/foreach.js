@@ -21,7 +21,7 @@ module.exports =
             '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
             'I like apples\nI like oranges\nI like c#'
         ).beforeExecute(Builder.util.processSubtags([1,2]))
-        .whenArgs('<4', Builder.util.notEnoughArguments)
+        .whenArgs('<4', Builder.errors.notEnoughArguments)
         .whenArgs('4', async function (params) {
             let set = TagManager.list['set'],
                 varName = params.args[1],
@@ -45,5 +45,5 @@ module.exports =
                     break;
             }
             return result;
-        }).whenDefault(Builder.util.tooManyArguments)
+        }).whenDefault(Builder.errors.tooManyArguments)
         .build();

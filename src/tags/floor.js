@@ -17,11 +17,11 @@ module.exports =
       '{floor;1.23}',
       '1'
     ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', Builder.util.notEnoughArguments)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenArgs('2', async function(params) {
       let number = parseFloat(params.args[1]);
       if (isNaN(number))
         return await Builder.errors.notANumber(params);
       return Math.floor(number);
-    }).whenDefault(Builder.util.tooManyArguments)
+    }).whenDefault(Builder.errors.tooManyArguments)
     .build();

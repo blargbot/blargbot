@@ -28,7 +28,7 @@ module.exports =
       '2 + 3 + 6 - 2 = {math;-;{math;+;2;3;6};2}',
       '2 + 3 + 6 - 2 = 9'
     ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('<3', Builder.util.notEnoughArguments)
+    .whenArgs('<3', Builder.errors.notEnoughArguments)
     .whenDefault(async function(params) {
       if (!operators.hasOwnProperty(params.args[1]))
         return await Builder.errors.invalidOperator(params);
@@ -38,7 +38,7 @@ module.exports =
       values = values.map(parseFloat);
 
       if (values.filter(isNaN).length > 0)
-        return await Builder.util.notANumber(params);
+        return await Builder.errors.notANumber(params);
 
       return values.reduce(operator);
     })

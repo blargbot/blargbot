@@ -16,7 +16,7 @@ module.exports =
         .withExample(
             '{repeat;e;10}',
             'eeeeeeeeee'
-        ).whenArgs('1-2', Builder.util.notEnoughArguments)
+        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3', async function (params) {
             let fallback = parseInt(params.fallback),
                 amount = parseInt(await bu.processTagInner(params, 2)),
@@ -41,5 +41,5 @@ module.exports =
                     break;
             }
             return result;
-        }).whenDefault(Builder.util.tooManyArguments)
+        }).whenDefault(Builder.errors.tooManyArguments)
         .build();
