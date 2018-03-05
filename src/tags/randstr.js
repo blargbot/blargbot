@@ -7,55 +7,27 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('randstr')
+        .withArgs(a => [a.require('chars'), a.require('length')])
+        .withDesc('Creates a random string with characters from `chars` that is `length` characters long.')
+        .withExample(
+            'You rolled a {randint;1;6}.',
+            'You rolled a 5.'
+        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
+        .whenArgs('3', async function (params) {
+            let chars = params.args[1].split(''),
+                count = parseInt(params.args[2]),
+                fallback = parseInt(params.fallback);
 
-e.requireCtx = require;
+            if (isNaN(count)) count = fallback;
+            if (isNaN(count)) return await Builder.errors.notANumber(params);
 
-e.isTag = true;
-e.name = 'randstr';
-e.args = '&lt;chars&gt; &lt;length&gt;';
-e.usage = '{randstr;chars;length}';
-e.desc = 'Creates a random string with characters from `chars` that is `length` characters long.';
-e.exampleIn = '{randstr;1234567890;10}';
-e.exampleOut = '3789327305';
+            if (chars.length == 0) return await Builder.util.error(params, 'Not enough characters');
 
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    var parsedFallback = parseInt(fallback);
-    if (params.args[1] && params.args[2]) {
-        let args1 = args[1];
-        let args2 = parseInt(args[2]);
-        if (isNaN(args2)) {
-            if (isNaN(parsedFallback)) {
-                return {
-                    replaceString: await bu.tagProcessError(params, '`Not a number`'),
-                    replaceContent: replaceContent
-                };
-            } else {
-                args1 = parsedFallback;
-            }
-        } else {
-            for (let i = 0; i < args2; i++) {
-                replaceString += args1[Math.floor(Math.random() * args[1].length)];
-            }
-        }
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            return bu.range(count).map(k => chars[bu.getRandomInt(0, chars.length - 1)]).join('');
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();
