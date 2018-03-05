@@ -16,7 +16,7 @@ module.exports =
             '{username;{randuser}} is a lovely person! {username;{randuser}} isn\'t as good.',
             'abalabahaha is a lovely person! stupid cat isn\'t as good.'
         ).whenArgs('1', async function (params) {
-            let members = params.msg.channel.guild.members.map(m => m)
+            let members = params.msg.channel.guild.members.map(m => m);
             return members[bu.getRandomInt(0, members.length - 1)].user.id;
         })
         .whenDefault(Builder.errors.tooManyArguments)
