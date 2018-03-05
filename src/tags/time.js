@@ -7,48 +7,37 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('time')
+        .withArgs(a => [
+            a.optional('format'),
+            a.optional('time'),
+            a.optional('parseformat'),
+            a.optional('timezone')
+        ])
+        .withDesc('Returns the current time, in UTC+0. If a `format` code is specified, ' +
+            'the date is formatted accordingly. Leave blank for default formatting. ' +
+            'See the <a href=\'http://momentjs.com/docs/#/displaying/format/\'>moment documentation</a> ' +
+            'for more information.\nAdditionally, you can specify another ' +
+            'time to display, and a format to parse it with. ' +
+            'See <a href=\'http://momentjs.com/docs/#/parsing/\'>here</a> for parsing documentation. ' +
+            'See <a href=\'https://en.wikipedia.org/wiki/List_of_tz_database_time_zones\'>here</a> for a list of timezone codes.')
+        .withExample(
+            'It\'s currently {time;YYYY/MM/DD HH:mm:ss}',
+            'It\'s currently 2016/01/01 01:00:00'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-5', async function (params) {
+            let format = params.args[1],
+                time = params.args[2],
+                parse = params.args[3],
+                timezone = params.args[4],
+                date = dep.moment.tz(time, parse, timezone || 'Etc/UTC');
 
-e.requireCtx = require;
+            if (!date.isValid()) return await Builder.util.error(params, 'Invalid date');
 
-e.isTag = true;
-e.name = 'time';
-e.args = '[format] [time] [parseformat] [timezone]';
-e.usage = '{time[;format[;time[;parseformat[;timezone]]]]}';
-e.desc = 'Returns the current time, in UTC+0. If a `format` code is specified, '+
-'the date is formatted accordingly. Leave blank for default formatting. '+
-'See the <a href=\'http://momentjs.com/docs/#/displaying/format/\'>moment documentation</a> ' +
-'for more information.\nAdditionally, you can specify another '+
-'time to display, and a format to parse it with. '+ 
-'See <a href=\'http://momentjs.com/docs/#/parsing/\'>here</a> for parsing documentation. '+
-'See <a href=\'https://en.wikipedia.org/wiki/List_of_tz_database_time_zones\'>here</a> for a list of timezone codes.';
-e.exampleIn = 'It\'s currently {time;YYYY/MM/DD HH:mm:ss}';
-e.exampleOut = 'It\'s currently 2016/01/01 01:00:00';
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-    var formatCode = '';
-    if (args[1])
-        formatCode = args[1];
-    let date = dep.moment.tz(args[2] || undefined, args[3] || undefined, args[4] || 'Etc/UTC');
-    if (!date.isValid()) {
-        replaceString = await bu.tagProcessError(params, '`Invalid date`');
-    } else
-        replaceString = date.format(formatCode);
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            return date.format(format || '');
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

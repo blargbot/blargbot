@@ -7,51 +7,32 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.CCOMMAND;
-};
+module.exports =
+  Builder.CCommandTag('unban')
+    .requireStaff()
+    .withArgs(a => [a.require('user'), a.optional('reason'), a.optional('noperms')])
+    .withDesc('Unbans a user. This functions the same as the unban command. '+
+    'If noperms is provided, do not check if the command executor is actually able to ban people. '+
+    'Only provide this if you know what you\'re doing.')
+    .withExample(
+      '{unban;@user;0;This is a test unban}@user was unbanned!',
+      '@user was unbanned!'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', Builder.errors.notEnoughArguments)
+    .whenArgs('2-4', async function (params) {
+        let user = await bu.getUser(params.msg, params.args[1], false),
+            reason = params.args[2],
+            noPerms = params.args[3] != null;
 
-e.requireCtx = require;
+        if (user == null) return await Builder.errors.noUserFound(params);
+        let response = await CommandManager.list['unban'].unban(params.msg, user, reason, true, noPerms);
 
-e.isTag = true;
-e.name = `unban`;
-e.args = `&lt;user&gt; [reason] [noperms]`;
-e.usage = `{channel;user[;reason[;noperms]]}`;
-e.desc = `Unbans a user. This functions the same as the unban command. If noperms is provided, do not check if the command executor is actually able to ban people. Only provide this if you know what you're doing.`;
-e.exampleIn = `{unban;@user;0;This is a test unban}@user was unbanned!`;
-e.exampleOut = `@user was unbanned!`;
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    var replaceString = '';
-    var replaceContent = false;
-    if (!params.ccommand) {
-        replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
-    } else {
-        if (!params.isStaff) {
-            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
-        } else if (params.args.length > 1) {
-            let user = await bu.getUser(params.msg, params.args[1], true);
-            if (user) {
-                let noPerms = params.args[3] ? true : false;
-                let response = await CommandManager.list['unban'].unban(params.msg, user, params.args[2], true, noPerms);
-                console.debug('Response', response);
-                if (typeof response[1] == 'string' && response[1].startsWith('`')) {
-                    replaceString = await bu.tagProcessError(params, response[1]);
-                } else replaceString = response[1];
-            } else {
-                replaceString = await bu.tagProcessError(params, '`No user found`');
-            }
+        if (typeof response[1] == 'string' && response[1].startsWith('`')) {
+            return await bu.tagProcessError(params, response[1]);
         }
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+        return response[1];
+    })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();
