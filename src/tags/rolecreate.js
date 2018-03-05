@@ -22,7 +22,7 @@ module.exports =
     .withDesc('Creates a role with the given information. ' +
       'Provide color in hex. ' +
       'Provide permissions as a number, which can be calculated [here](https://discordapi.com/permissions.html) ' +
-      'Color defaults to 000000 (uncolored role), permissions defaults to 0, mentionable defaults to false, hoisted defaults to false. ' +
+      'Color defaults to #000000 (uncolored role), permissions defaults to 0, mentionable defaults to false, hoisted defaults to false. ' +
       'Returns the new role\'s ID.')
     .withExample(
       '{rolecreate;Super Cool Role!;ff0000;0;false;true}',
@@ -33,7 +33,7 @@ module.exports =
       let errors = [],
         options = {
           name: params.args[1],
-          color: parseInt((params.args[2] || '0').replace(/[^0-9a-f]/gi, ''), 16),
+          color: bu.parseColor(params.args[2]) || 0,
           permissions: parseInt(params.args[3]),
           mentionable: (params.args[4] || 'false').toLowerCase() === 'true',
           hoisted: (params.args[5] || 'false').toLowerCase() === 'true'
@@ -41,9 +41,8 @@ module.exports =
 
       console.debug('role options: ', options);
 
-      if (isNaN(options.color) && !bu.between(options.color, 0, 0xffffff)) errors.push('Not a valid color');
-      if (isNaN(options.permissions)) errors.push('Permissions not a number');
-      if (errors.length > 0) return Builder.util.error(params, errors.join(', '));
+      if (isNaN(options.permissions)) 
+        return await Builder.util.error('Permissions not a number');
 
       try {
         let role = await params.msg.guild.createRole(options, `Created with a custom command command, executed by user: ${params.msg.author.id}`);

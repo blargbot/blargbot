@@ -7,58 +7,38 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.CCOMMAND;
-};
+module.exports =
+    Builder.CCommandTag('modlog')
+        .requireStaff()
+        .withArgs(a => [
+            a.require('action'),
+            a.require('user'),
+            a.optional('mod'),
+            a.optional('reason'),
+            a.optional('color')
+        ])
+        .withDesc('Creates a custom modlog entry for the given action and user. A color is a 6-digit hex code preceded by #.')
+        .withExample(
+            'You did a bad! {modlog;Bad;{userid};;They did a bad;#ffffff}',
+            'You did a bad! (modlog entry)'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', Builder.errors.notEnoughArguments)
+        .whenArgs('3-6', async function (params) {
+            let action = params.args[1],
+                user = await bu.getUser(params.msg, params.args[2]),
+                mod = params.args[3],
+                reason = params.args[4],
+                color = bu.parseColor(params.args[5]);
 
-e.requireCtx = require;
+            if (mod != null)
+                mod = await bu.getUser(params.msg, mod);
 
-e.isTag = true;
-e.name = `modlog`;
-e.args = `&lt;action&gt; &lt;user&gt; [mod] [reason] [color]`;
-e.usage = `{modlog;action;user[;mod[;reason[;color]]]}`;
-e.desc = `Creates a custom modlog entry for the given action and user. A color is a 6-digit hex code preceded by #.`;
-e.exampleIn = `You did a bad! {modlog;Bad;{userid};;They did a bad;#ffffff}`;
-e.exampleOut = `You did a bad! (modlog entry)`;
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    var replaceString = '';
-    var replaceContent = false;
-    if (!params.ccommand) {
-        replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
-    } else {
-        if (!params.isStaff) {
-            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
-        } else if (params.args[1] && params.args[2]) {
-            let action = params.args[1];
-            let user = await bu.getUser(params.msg, params.args[2]);
-            let mod, reason, color;
-            if (user) {
-                if (params.args[3])
-                    mod = await bu.getUser(params.msg, params.args[3]);
-                reason = params.args[4];
-                if (params.args[5]) {
-                    let toParse = params.args[5];
-                    if (/^#[a-f0-9]{6}$/i.test(toParse)) {
-                        color = parseInt(toParse.replace('#', ''), 16);
-                    }
-                }
-                console.verbose('Color:', color, 'meow');
-                await bu.logAction(params.msg.guild, user, mod, action, reason, color);
-            } else {
-                replaceString = await bu.tagProcessError(params, '`No user found`');
-            }
-        }
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            if (user == null)
+                return await  Builder.errors.noUserFound(params);
+            await bu.logAction(params.msg.guild, user, mod, action, reason, color);
+            return '';
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

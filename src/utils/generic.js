@@ -1266,6 +1266,33 @@ bu.parseBoolean = function (value) {
     }
 };
 
-bu.isBoolean = function (value){
+bu.isBoolean = function (value) {
     return typeof value == 'boolean';
 };
+
+bu.parseColor = function (text) {
+    if (typeof text == 'number') return text;
+    if (typeof text != 'string') return null;
+
+    let match = text.trim().match(/(?:^|\b)#?([0-9a-f]{6})(?:\b|$)/i);
+    if (match != null)
+        return parseInt(match[1], 16);
+
+    match = text.trim().match(/(?:^|\b)#?([0-9a-f]{3})(?:\b|$)/i);
+    if (match != null)
+        return parseInt(match[1].split('').map(v => v + v).join(''), 16);
+
+    return null;
+}
+
+bu.range = function(from, to) {
+    from = Math.floor(from || 0);
+    to = Math.floor(to || 0);
+
+    if (isNaN(from) || isNaN(to)) throw 'Range bounds must be numbers';
+
+    if (from > to)
+        from = [to, to = from][0];
+
+    return [...Array(to - from).keys()].map(v => v + from);
+}
