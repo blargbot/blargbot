@@ -7,42 +7,30 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('replace')
+        .withArgs(a => [a.optional('text'), a.require('phrase'), a.require('replacewith')])
+        .withDesc('Replaces the `phrase` with `replacewith`. ' +
+            'If `text` is specified, the subtag is replaced with the new `toreplace`. ' +
+            'If not, it replaces the message that will be sent from this tag.')
+        .withExample(
+            'I like {replace;to eat;eat;nom} cheese. {replace;cheese;ham}',
+            'I like to nom ham. ham'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', Builder.errors.notEnoughArguments)
+        .whenArgs('3-4', async function (params) {
+            let phrase = params.args[params.args.length - 2],
+                replaceWith = params.args[params.args.length - 1];
 
-e.requireCtx = require;
+            if (params.args.length == 4)
+                return params.args[1].replace(phrase, replaceWith);
 
-e.isTag = true;
-e.name = 'replace';
-e.args = '[toreplace] &lt;phrase&gt; &lt;replacewith&gt;';
-e.usage = '{replace[;textToReplace];phrase;replaceWith}';
-e.desc = 'Replaces the `phrase` with `replacewith`. ' +
-'If `toreplace` is specified, the tag is replaced with the new `toreplace`. '+
-'If not, it replaces the message.';
-e.exampleIn = 'I like {replace;to eat;eat;nom} cheese. {replace;cheese;ham}';
-e.exampleOut = 'I like to nom ham';
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var returnObj = {
-        replaceContent: false
-    };
-    if (args.length > 3) {
-
-        returnObj.replaceString = args[1].replace(args[2], args[3]);
-    } else if (args.length == 3) {
-        returnObj.replaceString = args[2];
-        returnObj.replaceContent = true;
-        returnObj.replace = args[1];
-    } else {
-        returnObj.replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-    return returnObj;
-};
+            return {
+                replaceString: replaceWith,
+                replace: phrase,
+                replaceContent: true
+            };
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

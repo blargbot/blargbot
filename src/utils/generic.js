@@ -1274,15 +1274,36 @@ bu.parseColor = function (text) {
     if (typeof text == 'number') return text;
     if (typeof text != 'string') return null;
 
-    let match = text.trim().match(/(?:^|\b)#?([0-9a-f]{6})(?:\b|$)/i);
+    let match = text.match(/(?:^|\b)#?([0-9a-f]{6})(?:\b|$)/i);
     if (match != null)
         return parseInt(match[1], 16);
 
-    match = text.trim().match(/(?:^|\b)#?([0-9a-f]{3})(?:\b|$)/i);
+    match = text.match(/(?:^|\b)#?([0-9a-f]{3})(?:\b|$)/i);
     if (match != null)
         return parseInt(match[1].split('').map(v => v + v).join(''), 16);
 
     return null;
+}
+
+bu.parseEntityId = function(text, identifier, acceptOnlyId = false) {
+    if (typeof text != 'string') return null;
+
+    let regex = new RegExp('\\<'+identifier+'(\\d{17,23})\\>');
+    let match = text.match(regex);
+    if (match != null)
+        return match[1];
+    
+    if (!acceptOnlyId) return null;
+    match = text.match(/\d{17,23}/);
+    if (match != null)
+        return match[1];
+    return null;
+}
+
+bu.parseChannel = function (text, acceptOnlyId = false) {
+    let id = bu.parseEntityId(text, '#', acceptOnlyId);
+    if (id == null) return null;
+    return bot.getChannel(id);
 }
 
 bu.range = function(from, to) {

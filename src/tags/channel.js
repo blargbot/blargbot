@@ -22,29 +22,19 @@ module.exports =
       'In #channel: Hello!'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2-3', async function(params) {
-      if (/([0-9]{17,23})/.test(params.args[1])) {
-        let channelid = params.args[1].match(/([0-9]{17,23})/)[1];
-        let channel = bot.getChannel(channelid);
-        if (channel) {
-          if (channel.guild.id == params.msg.guild.id) {
-            if (params.args[2]) {
-              bu.send(channel.id, {
-                content: params.args[2],
-                disableEveryone: false
-              });
-            }
-            else
-              params.msg.channel = channel;
-            return '';
-          } else {
-            return await Builder.util.error(params, 'Channel must be in guild');
-          }
-        } else {
-          return await Builder.errors.noChannelFound(params);
-        }
-      } else {
-        return await Builder.errors.noChannelFound(params);
-      }
+    .whenArgs('2-3', async function (params) {
+      let channel = bu.parseChannel(params.args[1], true),
+        message = params.args[2];
+
+      if (channel == null) return await Builder.errors.noChannelFound(params);
+      if (channel.guild.id != params.msg.guild.id) return await Builder.errors.channelNotInGuild(params);
+
+      if (params.args.length == 2)
+        params.msg.channel = channel;
+      else
+        bu.send(channel.id, {
+          content: params.args[2],
+          disableEveryone: false
+        });
     }).whenDefault(Builder.errors.tooManyArguments)
     .build();

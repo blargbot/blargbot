@@ -16,7 +16,8 @@ module.exports =
         .withExample(
             'You rolled a {randint;1;6}.',
             'You rolled a 5.'
-        ).whenArgs('1', Builder.errors.notEnoughArguments)
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (params) {
             let min = parseInt(params.args[1]),
                 max = parseInt(params.args[2] || 0),

@@ -38,7 +38,6 @@ module.exports =
             if (user == null)
                 return await  Builder.errors.noUserFound(params);
             await bu.logAction(params.msg.guild, user, mod, action, reason, color);
-            return '';
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

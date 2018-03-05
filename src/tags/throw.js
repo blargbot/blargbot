@@ -7,37 +7,20 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `throw`;
-e.args = `&lt;error&gt;`;
-e.usage = `{throw;error}`;
-e.desc = `Throws an error.`;
-e.exampleIn = `{throw;Custom Error}`;
-e.exampleOut = `\`Custom Error\``;
-
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args;
-    var replaceString = '';
-    var replaceContent = false;
-    if (args[1]) {
-        replaceString = await bu.tagProcessError(params, '`' + args[1] + '`');
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('throw')
+        .withArgs(a => a.require('error'))
+        .withDesc('Throws an error.')
+        .withExample(
+            '{throw;Custom Error}',
+            '`Custom Error`'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) {
+            let error = params.args[1];
+            return await Builder.util.error(error);
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

@@ -29,7 +29,6 @@ module.exports =
           return await Builder.util.error(params, 'Failed to delete role: no perms');
         }
       }
-      return '';
     })
     .whenDefault(Builder.errors.tooManyArguments)
     .build();

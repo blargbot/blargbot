@@ -16,7 +16,8 @@ module.exports =
         .withExample(
             'You rolled a {randint;1;6}.',
             'You rolled a 5.'
-        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3', async function (params) {
             let chars = params.args[1].split(''),
                 count = parseInt(params.args[2]),

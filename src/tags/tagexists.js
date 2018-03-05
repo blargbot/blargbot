@@ -7,36 +7,20 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `tagexists`;
-e.args = `&lt;tagName&gt;`;
-e.usage = `{tagexists;tagName}`;
-e.desc = `Checks to see if the given subtag exists (system subtags, not usertags)`;
-e.exampleIn = `{tagexists;ban} {tagexists;AllenKey}`;
-e.exampleOut = `true false`;
-
-e.execute = async function (params) {
-    let replaceString = '', replaceContent = false;
-    if (params.args.length == 2) {
-        let tagName = await bu.processTagInner(params, 1);
-        replaceString = (TagManager.list[tagName.toLowerCase()] != undefined).toString();
-    } else if (params.args.length > 2) {
-        replaceString = await bu.tagProcessError(params, '`Too many arguments`');
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('tagexists')
+        .withArgs(a => a.require('tagName'))
+        .withDesc('Checks to see if the given subtag exists.')
+        .withExample(
+            '{tagexists;ban} {tagexists;AllenKey}',
+            'true false'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) {
+            let tagName = params.args[1];
+            return TagManager.list[tagName.toLowerCase()] != null;
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

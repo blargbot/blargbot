@@ -49,7 +49,6 @@ module.exports =
                 if (message.edit)
                     message.edit(content);
             } catch (err) { }
-            return '';
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

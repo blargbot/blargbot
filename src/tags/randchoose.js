@@ -17,7 +17,8 @@ module.exports =
         .withExample(
             'I feel like eating {randchoose;cake;pie;pudding} today',
             'I feel like eating pudding today.'
-        ).whenArgs('1', Builder.errors.notEnoughArguments)
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenDefault(async function (params) {
             let options = await Builder.util.flattenArgArrays(params.args.splice(1)),
                 selection = bu.getRandomInt(0, options.length - 1);

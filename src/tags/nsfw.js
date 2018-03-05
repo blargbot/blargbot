@@ -16,6 +16,6 @@ module.exports =
             'This command is not safe! {nsfw}',
             'This command is not safe!'
         ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) { return ''; })
+        .whenArgs('1', async function (params) { })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

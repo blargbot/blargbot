@@ -29,7 +29,6 @@ module.exports =
                 return bu.serializeTagArray(arr.v);
 
             await bu.setArray(arr, params);
-            return '';
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

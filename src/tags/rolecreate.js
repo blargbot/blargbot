@@ -41,7 +41,7 @@ module.exports =
 
       console.debug('role options: ', options);
 
-      if (isNaN(options.permissions)) 
+      if (isNaN(options.permissions))
         return await Builder.util.error('Permissions not a number');
 
       try {

@@ -20,7 +20,8 @@ module.exports =
         ).withExample(
             '{set;testvar;This is a test var}',
             ''
-        ).whenArgs('1', Builder.errors.notEnoughArguments)
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenDefault(async function (params) {
             let value;
 

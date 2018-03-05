@@ -18,6 +18,6 @@ module.exports =
             'This will be displayed with js!.'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) { return ''; })
+        .whenArgs('2', async function (params) { })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

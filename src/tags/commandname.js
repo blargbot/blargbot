@@ -15,6 +15,7 @@ module.exports =
     .withExample(
       'This command is {commandname}',
       'This command is test'
-    ).whenArgs('1', async params => params.tagName || await Builder.util.error(params, 'Not a command'))
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', async params => params.tagName || await Builder.util.error(params, 'Not a command'))
     .whenDefault(Builder.errors.tooManyArguments)
     .build();

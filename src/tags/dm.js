@@ -49,6 +49,5 @@ module.exports =
       } catch (e) {
         return await Builder.util.error(params, 'Could not send DM');
       }
-      return '';
     }).whenDefault(Builder.errors.tooManyArguments)
     .build();

@@ -16,6 +16,7 @@ module.exports =
   .withExample(
     'This channel\'s id is {channelid}',
     'This channel\'s id is 1234567890123456'
-  ).whenArgs('1', async params => params.msg.channel.id)
+  ).beforeExecute(Builder.util.processAllSubtags)
+  .whenArgs('1', async params => params.msg.channel.id)
   .whenDefault(Builder.errors.tooManyArguments)
   .build();

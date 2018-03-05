@@ -31,7 +31,7 @@ module.exports =
       if (role != null) {
         try {
           await role.edit({ mentionable });
-          return '';
+          return;
         } catch (err) {
           return await Builder.util.error(params, 'Failed to edit role: no perms');
         }

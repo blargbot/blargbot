@@ -19,7 +19,8 @@ module.exports =
         ).withExample(
             '{get;testvar}',
             'This is a test var'
-        ).whenArgs('1', Builder.errors.notEnoughArguments)
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (params) {
             let result = await this.getVar(params, params.args[1]),
                 index = parseInt(params.args[2]);

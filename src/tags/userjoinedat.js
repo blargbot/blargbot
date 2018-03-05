@@ -34,7 +34,6 @@ module.exports =
 
       if (params.args[3])
         return params.args[2];
-      return '';
     })
     .whenDefault(Builder.errors.tooManyArguments)
     .build();

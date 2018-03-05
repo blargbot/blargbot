@@ -19,7 +19,8 @@ module.exports =
         ).withExample(
             '{aget;testvar}',
             'This is a test var'
-        ).whenArgs('1', Builder.errors.notEnoughArguments)
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function(params) {
             params.args[1] = '@' + params.args[1];
             return await TagManager.list['get'].execute(params);

@@ -66,6 +66,8 @@ class TagBuilder {
 
       function EnsureResponse(params, result) {
         console.debug('result: ', result);
+        if (result == null)
+          result = '';
         if (typeof result !== 'object')
           result = {
             replaceString: result
@@ -85,6 +87,8 @@ class TagBuilder {
       this.execute.default);
 
     console.debug(tag.category, 'Tag built:', tag.name, ArgFactory.toString(tag.args));
+    if (this.execute.preExec.length == 0)
+      console.warn(`Tag ${this.properties.name} has no BeforeExecute set`);
     return tag;
   }
 
@@ -268,6 +272,7 @@ TagBuilder.errors = {
   notABoolean(params) { return TagBuilder.util.error(params, 'Not a boolean'); },
   invalidOperator(params) { return TagBuilder.util.error(params, 'Invalid operator'); },
   userNotInGuild(params) { return TagBuilder.util.error(params, 'User not in guild'); },
+  channelNotInGuild(params) { return TagBuilder.util.error(params, 'Channel not in guild'); },
   tooManyLoops(params) { return TagBuilder.util.error(params, 'Too many loops'); },
   unsafeRegex(params) { return TagBuilder.util.error(params, 'Unsafe regex detected'); }
 };

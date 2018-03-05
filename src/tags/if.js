@@ -62,7 +62,6 @@ module.exports =
                 return bu.processTagInner(params, then);
             else if (!isNaN(otherwise))
                 return bu.processTagInner(params, otherwise);
-            return '';
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .withProp("runCondition", async function (params, val1, val2, val3) {
