@@ -97,6 +97,11 @@ const subcommands = [
         name: 'help',
         args: '[command]',
         desc: 'Returns general help, or help for the specified subcommand.'
+    },
+    {
+        name: 'docs',
+        args: '[documentation]',
+        desc: 'Returns helpful information about the specified topic.'
     }
 ];
 
@@ -630,6 +635,9 @@ ${Object.keys(user.favourites).join(', ')}
                     } else {
                         await bu.send(msg, 'You must provide a reason.');
                     }
+                break;
+            case 'docs':
+                tags.docs(msg, words[0], words[2]);
                 break;
             default:
                 var command = words.slice(2);

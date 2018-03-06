@@ -7,6 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const argFactory = require('../structures/ArgumentFactory');
+
 var e = module.exports = {};
 
 e.processTag = async function (msg, contents, command, tagName, author, isCcommand) {
@@ -80,4 +82,95 @@ Reason: ${tag.reason}`);
         if (message != '')
             bu.send(msg, message);
     }
+};
+
+e.sendHelp = async function (msg, message, type) {
+    if (typeof message != 'object')
+        message = { content: message };
+
+    if (msg.channel.guild && await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp')) {
+        let dmChannel = await bot.getDMChannel(msg.author.id);
+        await bu.send(msg, '📧 DMing you the ' + type + ' 📧');
+        message.content = 'Here is the ' + type + ' you requested in <#' + msg.channel.id + '>\n' + message.content;
+        await bu.send(dmChannel.id, message);
+    } else
+        await bu.send(msg, message);
+};
+
+
+e.docs = async function (msg, command, topic, ccommand = false) {
+    let tags = Object.keys(TagManager.list).map(k => TagManager.list[k]),
+        prefix = '',
+        embed = {
+            title: 'BBTag documentation',
+            url: 'https://blargbot.xyz/tags',
+            color: 0Xefff00,
+            author: {
+                name: bot.user.username,
+                icon_url: bot.user.avatarURL
+            }
+        };
+    if (msg.channel.guild)
+        prefix = await bu.guildSettings.get(msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
+
+    if (!ccommand)
+        tags = tags.filter(t => t.category != bu.TagType.CCOMMAND);
+
+    switch ((topic || 'index').toLowerCase()) {
+        case 'index':
+            embed.description = 'Please use `' + prefix + command + ' docs [topic]` to view available information on a topic\nAvailable topics are:';
+            embed.fields = Object.keys(bu.TagType.properties)
+                .map(k => {
+                    return {
+                        properties: bu.TagType.properties[k],
+                        tags: tags.filter(t => t.category == k)
+                    };
+                }).filter(c => c.tags.length > 0)
+                .map(c => {
+                    return {
+                        name: c.properties.name + ' subtags (' + c.properties.desc + ')',
+                        value: '```\n' + c.tags.map(t => t.name).join(', ') + '```'
+                    };
+                }).concat({
+                    name: 'Other useful resources',
+                    value: '```\nvariables, terminology```'
+                }).filter(f => f.value.length > 0);
+            await e.sendHelp(msg, { embed }, 'BBTag documentation');
+            return;
+        default:
+            let tag = tags.filter(t => t.name == topic.toLowerCase())[0];
+            if (tag == null)
+                break;
+            embed.description = tag.desc;
+            embed.title += ' - ' + tag.name;
+            embed.url += '/#' + encodeURIComponent(tag.name);
+            embed.fields = [
+                {
+                    name: 'Usage',
+                    value: '```\n{' + tag.name + ';' + argFactory.toString(tag.args, {
+                        separator: { default: ';' }
+                    }) + '}```',
+                    inline: true
+                }
+            ];
+            if (tag.exampleCode)
+                embed.fields.push({
+                    name: 'Example code',
+                    value: '```\n\u200B' + tag.exampleCode + '\u200B```'
+                });
+            if (tag.exampleIn)
+                embed.fields.push({
+                    name: 'Example user input',
+                    value: '```\n\u200B' + tag.exampleIn + '\u200B```'
+                });
+            if (tag.exampleOut)
+                embed.fields.push({
+                    name: 'Example output',
+                    value: '```\n\u200B' + tag.exampleOut + '\u200B```'
+                });
+            await e.sendHelp(msg, { embed }, 'BBTag documentation');
+            return;
+    }
+
+    await bu.send(msg, 'Oops, I didnt recognise that topic! Try using `' + prefix + command + ' docs` for a list of all topics');
 };
