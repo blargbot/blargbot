@@ -24,7 +24,8 @@ module.exports =
             'If there is no matching `case` and `default` is specified,' +
             '`default` is returned. If not, it returns blank.'
         ).withExample(
-            '{switch;{args;0};yes;Correct!;no;Incorrect!;That is not yes or no}',
+            '{switch;{args;0};\n  yes;\n    Correct!;\n  no;\n    Incorrect!;\n  That is not yes or no\n}',
+            'yes',
             'Correct!'
         ).beforeExecute(async function(params) {
             params.args[1] = await bu.processTagInner(params, 1);
