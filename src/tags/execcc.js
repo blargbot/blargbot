@@ -11,8 +11,8 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('execcc')
-        .withArgs(a => [a.require('code'), a.optional('arguments')])
-        .withDesc('Executes another ccommand. Useful for modules.')
+        .withArgs(a => [a.require('ccommand'), a.optional('args')])
+        .withDesc('Executes `ccommand` using `args` as the input. Useful for modules.')
         .withExample(
             'Let me do a ccommand for you. {execcc;f}',
             'Let me do a ccommand for you. User#1111 has paid their respects. Total respects given: 5'

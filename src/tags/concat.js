@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.ArrayTag('concat')
     .withArgs(a => a.require('arrays', true))
-    .withDesc('Combines multiple arrays and outputs the new array.')
+    .withDesc('Takes `arrays` and joins them together to form a single array.')
     .withExample(
       '{concat;["this", "is"];["an", "array"]}',
       '["this","is","an","array"]'

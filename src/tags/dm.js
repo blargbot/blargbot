@@ -14,7 +14,7 @@ module.exports =
   Builder.CCommandTag('dm')
     .requireStaff()
     .withArgs(a => [a.require('user'), a.require('message')])
-    .withDesc('DMs a user. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.'
+    .withDesc('DMs `user` the given `message`. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.'
     ).withExample(
       '{dm;stupid cat;Hello}',
       'DM: Hello'

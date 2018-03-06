@@ -14,9 +14,8 @@ module.exports =
     .isDepreciated().requireStaff()
     .withArgs(a => [a.require('channel'), a.optional('message')])
     .withDesc('Please use the {send} subtag instead of this.\n' +
-      'Sends the output to a specific channel. ' +
-      'Only works in custom commands. ' +
-      'If a message is specified, it will create a new message in the specified channel instead of rerouting output.')
+      'Sends the output to `channel`. ' +
+      'If `message` is specified, it will send `message` in the specified channel instead of rerouting output.')
     .withExample(
       '{channel;#channel}Hello!',
       'In #channel: Hello!'

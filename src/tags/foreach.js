@@ -16,12 +16,12 @@ module.exports =
             a.require('array'),
             a.require('code')
         ])
-        .withDesc('For every element in `array` `variable` will be set and then `code` will be run.')
+        .withDesc('For every element in `array`, `variable` will be set and then `code` will be run.')
         .withExample(
             '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
             'I like apples\nI like oranges\nI like c#'
         ).beforeExecute(Builder.util.processSubtags([1,2]))
-        .whenArgs('<4', Builder.errors.notEnoughArguments)
+        .whenArgs('1-3', Builder.errors.notEnoughArguments)
         .whenArgs('4', async function (params) {
             let set = TagManager.list['set'],
                 varName = params.args[1],

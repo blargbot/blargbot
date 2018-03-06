@@ -12,16 +12,16 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('args')
         .withArgs(a => [a.optional('index'), a.optional('range')])
-        .withDesc('Gets user input. Specifying an index will only get the word at that location, specifying' +
-            'a range will get all the words between index and range. Specify range as `n` to get all' +
-            'the words from index to the end'
+        .withDesc('Gets user input. Specifying `index` will only get the word at that location, specifying' +
+            '`range` will get all the words between `index` and `range`. Specify `range` as `n` to get all' +
+            'the words from `index` to the end'
         ).withExample(
             'Your second word was {args;1}',
             'Hello world!',
             'Your second word was world!'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', async params => params.words.join(' '))
-        .whenArgs('2,3', async function(params) {
+        .whenArgs('2-3', async function(params) {
             let from = parseInt(params.args[1]),
                 to = params.args[2];
 

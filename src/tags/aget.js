@@ -12,8 +12,9 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('aget')
         .isDepreciated()
-        .withArgs(a => [a.require('name'), a.optional('index')])
-        .withDesc('Returns a stored variable, or an index in a stored array. ' +
+        .withArgs(a => [a.require('varName'), a.optional('index')])
+        .withDesc('Returns the value of `varName`. If `index` is specified and `varName` is stored as an array, ' +
+            'then `index` of the array will be returned. ' +
             'Variables are unique per-author. ' +
             'This tag is functionally equivalent to {get;@name;index}'
         ).withExample(
@@ -21,7 +22,7 @@ module.exports =
             'This is a test var'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function(params) {
+        .whenArgs('2-3', async function (params) {
             params.args[1] = '@' + params.args[1];
             return await TagManager.list['get'].execute(params);
         }).whenDefault(Builder.errors.tooManyArguments)

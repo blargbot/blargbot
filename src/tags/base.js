@@ -15,13 +15,13 @@ module.exports =
             a.require('integer'),
             a.optional('origin'),
             a.require('radix')
-        ]).withDesc('Converts a Base `origin` number into `radix`. Default `origin` is 10. `radix` must be between 2 and 36.')
+        ]).withDesc('Converts a Base `origin` `integer` into a base `radix` number. Default `origin` is 10. `radix` must be between 2 and 36.')
         .withExample(
             '{base;255;16}',
             'FF'
         ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('<2', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function(params) {
+        .whenArgs('1-2', Builder.errors.notEnoughArguments)
+        .whenArgs('3-4', async function(params) {
             let args = params.args.slice(1);
             if (args.length === 2)
                 args.splice(1, 0, '10');

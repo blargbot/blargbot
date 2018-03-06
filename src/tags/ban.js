@@ -18,18 +18,17 @@ module.exports =
             a.optional('reason'),
             a.optional('timeToUnban'),
             a.optional('noperms')
-        ]).withDesc('Bans a user. ' +
+        ]).withDesc('Bans `user`. ' +
             'This functions the same as the ban command. ' +
             'If the ban is successful, `Success` will be returned, unless a duration was provided in which case the duration in ms will be returned' +
-            'If noperms is provided, do not check if the command executor is actually able to ban people. ' +
+            'If `noperms` is provided, do not check if the command executor is actually able to ban people. ' +
             'Only provide this if you know what you\'re doing.'
         ).withExample(
             '{ban;stupid cat;0;This is a test ban} @stupid cat was banned!',
             'Success @stupid cat was banned!'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-6', )
-        .whenArgs('>6', async function(params) {
+        .whenArgs('2-6', async function(params) {
             let user = await bu.getUser(params.msg, params.args[1], true);
             if (user) {
                 let noPerms = params.args[5] ? true : false;

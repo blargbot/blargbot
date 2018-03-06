@@ -12,14 +12,16 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.CCommandTag('edit')
         .requireStaff()
-        .withArgs(a => [a.optional('channelid'), a.require('messageid'), a.require('message')])
-        .withDesc('Edits a message outputted by the bot with the given message ID. The channel defaults to the current channel.')
+        .withArgs(a => [a.optional('channelId'), a.require('messageId'), a.require('message')])
+        .withDesc('Edits `messageId` in `channelId` to say `message`. ' +
+            'If `channelId` is not supplied, it defaults to the current channel. ' +
+            'Only messages created by the bot may be edited')
         .withExample(
             'A message got edited: {edit;111111111111111111;New content}',
             '(the message got edited idk how to do examples for this)'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async function(params) {
+        .whenArgs('3-4', async function (params) {
             let content, messageId, channel;
 
             if (params.args.length == 3) {

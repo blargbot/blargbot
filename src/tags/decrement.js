@@ -11,8 +11,8 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.AutoTag('decrement')
-    .withArgs(a => [a.require('variable'), a.optional('amount')])
-    .withDesc('Decreases the value of the specified variable by the specified amount. Defaults to 1')
+    .withArgs(a => [a.require('varName'), a.optional('amount')])
+    .withDesc('Decreases `varName`\'s value by `amount`. `amount` defaults to 1.')
     .withExample(
       '{set;counter;0} {repeat;{decrement;counter},;10}',
       '-1,-2,-3,-4,-5,-6,-7,-8,-9,-10'

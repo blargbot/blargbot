@@ -13,14 +13,13 @@ module.exports =
     Builder.AutoTag('aset')
         .isDepreciated().acceptsArrays()
         .withArgs(a => [a.require('name'), a.optional('value', true)])
-        .withDesc('Stores a variable. ' +
+        .withDesc('Stores `value` under the variable `name`. ' +
             'Variables are unique per-author. ' +
-            'This tag is functionally equivalent to {set;@name;value}'
+            'This tag is functionally equivalent to `{set;@name;value}`'
         ).withExample(
             '{aset;testvar;This is a test var}',
             ''
         ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenDefault(async function(params) {
             params.args[1] = '@' + params.args[1];
             return await TagManager.list['set'].execute(params);

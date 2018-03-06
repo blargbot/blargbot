@@ -11,8 +11,8 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('exec')
-        .withArgs(a => [a.require('code'), a.optional('arguments')])
-        .withDesc('Executes another tag. Useful for modules.')
+        .withArgs(a => [a.require('tag'), a.optional('args')])
+        .withDesc('Executes another `tag`, giving it `args` as the input. Useful for modules.')
         .withExample(
             'Let me do a tag for you. {exec;f}',
             'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'

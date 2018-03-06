@@ -27,12 +27,14 @@ module.exports =
             a.optional('increment'),
             a.require('code')
         ])
-        .withDesc('This will increase the value of `variable` by `increment` (defaults to +1), starting at `initial`.')
+        .withDesc('To start, `variable` is set to `initial`. Then, the tag will loop, first checking `variable` against `limit` using `comparison`. ' +
+            'If the check succeeds, `code` will be run before `variable` being incremented by `increment` and the cycle repeating.\n' +
+            'This is very useful for repeating an action (or similar action) a set number of times. Edits to `variable` inside `code` will be ignored')
         .withExample(
             '{for;~index;0;<;10;{get;~index},}',
             '0,1,2,3,4,5,6,7,8,9,'
-        ).beforeExecute(Builder.util.processSubtags([1,2,3,4]))
-        .whenArgs('<6', Builder.errors.notEnoughArguments)
+        ).beforeExecute(Builder.util.processSubtags([1, 2, 3, 4]))
+        .whenArgs('1-5', Builder.errors.notEnoughArguments)
         .whenArgs('6-7', async function (params) {
             let errors = [],
                 set = TagManager.list['set'],

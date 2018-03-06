@@ -18,7 +18,7 @@ module.exports =
             '535'
         )
         .beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('<2', Builder.errors.notEnoughArguments)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2', async function(params) {
             let asNumber = parseFloat(params.args[1]);
             if (!isNaN(asNumber)) {

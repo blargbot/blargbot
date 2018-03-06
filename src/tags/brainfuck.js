@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('brainfuck')
     .withArgs(a => [a.require('code'), a.optional('input')])
-    .withDesc('Interprets brainfuck input.')
+    .withDesc('Interprets `code` as brainfuck, using `input` as the text for `,`.')
     .withExample(
         '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
         'Hello World!'
