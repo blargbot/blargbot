@@ -488,7 +488,7 @@
                 "reason": "Årsagen til udelukkelsen."
             },
             "banned": "",
-            "invaliduser": "",
+            "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
             "unbannedafter": ""
         },
         "cc": {
@@ -524,7 +524,7 @@
                 },
                 "test": {
                     "usage": "<code>",
-                    "info": ""
+                    "info": "Udfører den givne kode i et test miljø."
                 },
                 "help": {
                     "usage": "[subcommand]",
@@ -543,7 +543,7 @@
             "notag": "",
             "tagset": "",
             "tagrename": "",
-            "raw": "",
+            "raw": "Koden for {{name}} er:\n```{{code}}```",
             "alreadyexists": "",
             "testoutput": "Test udbytte:\n\n{{output}}",
             "subcommandnotfound": "",
