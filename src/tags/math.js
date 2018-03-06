@@ -13,7 +13,9 @@ const operators = {
   '+': (a, b) => a + b,
   '-': (a, b) => a - b,
   '*': (a, b) => a * b,
+  'x': (a, b) => a * b,
   '/': (a, b) => a / b,
+  ':': (a, b) => a / b,
   '%': (a, b) => a % b,
   '^': (a, b) => Math.pow(a, b)
 };
