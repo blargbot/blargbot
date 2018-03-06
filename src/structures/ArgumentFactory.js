@@ -49,6 +49,7 @@ function makeArg(type, value, multiple) {
 
 const defaultOptions = {
   brackets: {
+    default: ['', ''],
     required: ['<', '>'],
     optional: ['[', ']'],
     literal: ['', ''],
@@ -82,8 +83,8 @@ function toString(args, options) {
       throw invalid(arg);
 
     let content = arg.content.map(process),
-      separator = options.separator[arg.type],
-      brackets = options.brackets[arg.type];
+      separator = options.separator[arg.type] || options.separator.default,
+      brackets = options.brackets[arg.type] || options.brackets.default;
 
     return brackets[0] +
       content.join(separator) +
