@@ -65,7 +65,6 @@ class TagBuilder {
       };
 
       function EnsureResponse(params, result) {
-        console.debug('result: ', result);
         if (result == null)
           result = '';
         if (typeof result !== 'object')
@@ -76,8 +75,7 @@ class TagBuilder {
         if (result.terminate == null) result.terminate = params.terminate;
         if (result.replaceContent == null) result.replaceContent = false;
         if (result.replaceString == null) result.replaceString = '';
-
-        console.debug('result: ', result);
+        if (result.reactions == null) result.reactions = params.reactions;
 
         return result;
       }

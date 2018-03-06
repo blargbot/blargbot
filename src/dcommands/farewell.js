@@ -51,6 +51,8 @@ e.execute = async function (msg, words) {
             }
         }
     }
-    bu.send(msg, `Farewell set. ${suffix}Simulation:
-${await tags.processTag(msg, farewell, '', undefined, msg.author.id, true)}`);
+    let output = await tags.processTag(msg, farewell, '', undefined, msg.author.id, true);
+    let message = bu.send(msg, `Farewell set. ${suffix}Simulation:
+${output.contents}`);
+    await bu.addReactions(message.channel.id, message.id, output.reactions);
 };

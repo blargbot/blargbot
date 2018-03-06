@@ -143,6 +143,15 @@ bu.hasRole = (msg, roles, override = true) => {
     return false;
 };
 
+bu.addReactions = async function (channelId, messageId, reactions) {
+    for (const reaction of new Set(reactions || []))
+        try {
+            await bot.addMessageReaction(channelId, messageId, reaction);
+        } catch (e) {
+            console.error(e);
+        }
+}
+
 /**
  * Sends a message to discord.
  * @param channel - the channel id (String) or message object (Object)
@@ -159,33 +168,34 @@ bu.send = async function (channel, message, file, embed) {
     if (!message) message = '';
 
     bu.messageStats++;
-    let content = {};
+    let toSend = {};
     if (typeof message === "string") {
-        content.content = message;
+        toSend.content = message;
     } else {
-        content = message;
+        toSend = message;
     }
-    if (!content.content) content.content = '';
-    content.content = content.content.trim();
+    if (!toSend.content) toSend.content = '';
+    console.debug(toSend);
+    toSend.content = toSend.content.trim();
 
-    if (embed) content.embed = embed;
+    if (embed) toSend.embed = embed;
     // content.content = dep.emoji.emojify(content.content).trim();
 
-    if (content.content.length <= 0 && !file && !embed && !content.embed) {
+    if (toSend.content.length <= 0 && !file && !embed && !toSend.embed) {
         console.info('Tried to send a message with no content.');
         return Error('No content');
     }
 
-    if (content.content.length > 2000) {
+    if (toSend.content.length > 2000) {
         if (!file) file = {
-            file: Buffer.from(content.content.toString()),
+            file: Buffer.from(toSend.content.toString()),
             name: 'output.txt'
         };
-        content.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+        toSend.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
 
     }
     try {
-        return await bot.createMessage(channelid, content, file);
+        return await bot.createMessage(channelid, toSend, file);
     } catch (err) {
 
         try {
@@ -1285,28 +1295,28 @@ bu.parseColor = function (text) {
     return null;
 }
 
-bu.parseEntityId = function(text, identifier, acceptOnlyId = false) {
+bu.parseEntityId = function (text, identifier, allowJustId = false) {
     if (typeof text != 'string') return null;
 
-    let regex = new RegExp('\\<'+identifier+'(\\d{17,23})\\>');
+    let regex = new RegExp('\\<' + identifier + '(\\d{17,23})\\>');
     let match = text.match(regex);
     if (match != null)
         return match[1];
-    
-    if (!acceptOnlyId) return null;
+
+    if (!allowJustId) return null;
     match = text.match(/\d{17,23}/);
     if (match != null)
-        return match[1];
+        return match[0];
     return null;
 }
 
-bu.parseChannel = function (text, acceptOnlyId = false) {
-    let id = bu.parseEntityId(text, '#', acceptOnlyId);
+bu.parseChannel = function (text, allowJustId = false) {
+    let id = bu.parseEntityId(text, '#', allowJustId);
     if (id == null) return null;
     return bot.getChannel(id);
 }
 
-bu.range = function(from, to) {
+bu.range = function (from, to) {
     from = Math.floor(from || 0);
     to = Math.floor(to || 0);
 
