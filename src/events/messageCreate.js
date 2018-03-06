@@ -408,7 +408,8 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                     }
                     let output = await tags.processTag(msg, content, msg.content, undefined, undefined, true);
                     let message = await bu.send(msg, output.contents);
-                    await bu.addReactions(message.channel.id, message.id, output.reactions);
+                    if (message != null)
+                        await bu.addReactions(message.channel.id, message.id, output.reactions);
                     return;
                 }
             }
