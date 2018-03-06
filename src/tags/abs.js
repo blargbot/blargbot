@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('abs')
         .withArgs(a => a.require('number'))
-        .withDesc('Gets the absolute value of a number')
+        .withDesc('Gets the absolute value of `number`')
         .withExample(
             '{abs;-535}',
             '535'

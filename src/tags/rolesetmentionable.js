@@ -22,11 +22,9 @@ module.exports =
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenArgs('2-4', async function (params) {
-      let role = await bu.getRole(params.msg, params.args[1], params.args[2]),
-        mentionable = true;
-      if (params.args[2]) {
-        mentionable = params.args[2].toLowerCase() == 'true';
-      }
+      let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
+        role = await bu.getRole(params.msg, params.args[1], quiet),
+        mentionable = bu.parseBoolean(params.args[2], true);
 
       if (role != null) {
         try {

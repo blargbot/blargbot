@@ -23,12 +23,13 @@ module.exports =
       return JSON.stringify(params.msg.guild.roles.map(r => r.id));
     })
     .whenArgs('2-3', async function (params) {
-      let user = await bu.getUser(params.msg, params.args[1], params.args[2]);
+      let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
+      user = await bu.getUser(params.msg, params.args[1], quiet);
 
       if (user != null)
         return JSON.stringify(params.msg.guild.members.get(user.id).roles);
 
-      if (params.args[2])
+      if (quiet)
         return params.args[1];
     })
     .whenDefault(Builder.errors.tooManyArguments)

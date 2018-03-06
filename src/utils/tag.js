@@ -240,7 +240,7 @@ bu.processTagInner = async function (params, i) {
 
 
 bu.processTag = async function (params) {
-    let { msg, words, contents, fallback, author, tagName, terminate, isStaff, vars, reactions } = params;
+    let { msg, words, contents, fallback, author, tagName, terminate, isStaff, vars, reactions, quiet } = params;
     if (params.content) contents = params.content;
     if (!contents) contents = '';
     if (isStaff === undefined)
@@ -300,7 +300,7 @@ bu.processTag = async function (params) {
             args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
         let title = (await bu.processTag({
-            msg, words, contents: args[0], fallback, author, tagName, terminate, vars, reactions
+            msg, words, contents: args[0], fallback, author, tagName, terminate, vars, reactions, quiet
         })).contents.toLowerCase();
 
         if (i === 0 || i === subtags.length - 1 && title === '//')
@@ -316,7 +316,7 @@ bu.processTag = async function (params) {
                 tagName: tagName,
                 ccommand: params.ccommand,
                 terminate,
-                isStaff, vars, reactions
+                isStaff, vars, reactions, quiet
             };
             if (TagManager.list[title].category == bu.TagType.CCOMMAND && !params.ccommand) {
                 replaceObj = {
@@ -339,7 +339,7 @@ bu.processTag = async function (params) {
                             tagName: tagName,
                             ccommand: params.ccommand,
                             terminate,
-                            isStaff, vars, reactions
+                            isStaff, vars, reactions, quiet
                         }, `\`An internal error occurred. This has been reported.\``);
                         bu.send('250859956989853696', {
                             content: 'A tag error occurred.',
@@ -365,12 +365,15 @@ bu.processTag = async function (params) {
                 tagName: tagName,
                 ccommand: params.ccommand,
                 terminate,
-                isStaff, vars, reactions
+                isStaff, vars, reactions, quiet
             }, `\`Tag "${title}" doesn\'t exist\``);
         }
 
         if (replaceObj.fallback !== undefined) {
             fallback = replaceObj.fallback;
+        }
+        if (replaceObj.quiet !== undefined){
+            quiet = replaceObj.quiet;
         }
         if (replaceObj.reactions !== undefined) {
             result.reactions = reactions = replaceObj.reactions;

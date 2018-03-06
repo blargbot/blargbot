@@ -1246,7 +1246,7 @@ bu.between = function (value, lower, upper, inclusive) {
     return value > lower && value < upper;
 };
 
-bu.parseBoolean = function (value) {
+bu.parseBoolean = function (value, defValue = null) {
     if (typeof value == 'boolean')
         return value;
 
@@ -1254,7 +1254,7 @@ bu.parseBoolean = function (value) {
         return value !== 0;
 
     if (typeof value != 'string')
-        return null;
+        return defValue;
 
     let asNum = parseFloat(value);
     if (!isNaN(asNum))
@@ -1272,7 +1272,7 @@ bu.parseBoolean = function (value) {
         case 'n':
             return false;
         default:
-            return null;
+            return defValue;
     }
 };
 

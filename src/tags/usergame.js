@@ -21,12 +21,13 @@ module.exports =
       'You are playing with bbtag'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-3', async function (params) {
-      let user = await bu.getUser(params.msg, params.args[1], params.args[2]);
+      let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
+        user = await bu.getUser(params.msg, params.args[1], quiet);
 
       if (user != null)
         return (user.game || { name: 'nothing' }).name;
 
-      if (params.args[2])
+      if (quiet)
         return params.args[1];
     })
     .whenDefault(Builder.errors.tooManyArguments)

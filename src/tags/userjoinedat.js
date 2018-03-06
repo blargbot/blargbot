@@ -23,7 +23,8 @@ module.exports =
       'Your account joined this guild on 2016/01/01 01:00:00.'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-4', async function (params) {
-      let user = await bu.getUser(params.msg, params.args[2], params.args[3]);
+      let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
+      user = await bu.getUser(params.msg, params.args[2], quiet);
 
       if (user != null) {
         let member = params.msg.channel.guild.members.get(user.id);
@@ -32,7 +33,7 @@ module.exports =
         return await Builder.errors.userNotInGuild(params);
       }
 
-      if (params.args[3])
+      if (quiet)
         return params.args[2];
     })
     .whenDefault(Builder.errors.tooManyArguments)

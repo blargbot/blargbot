@@ -33,6 +33,7 @@ class TagBuilder {
 
     tag.execute = function (tag, beforeExec, execConditional, execDefault) {
       return async function (params) {
+        console.debug('Processing subtag ' + tag.name);
         try {
           if (this.category === bu.TagType.CCOMMAND && !params.ccommand)
             return EnsureResponse(params, await TagBuilder.util.error(params, 'Can only use in CCommands'));

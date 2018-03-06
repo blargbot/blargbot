@@ -20,12 +20,13 @@ module.exports =
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenArgs('2-3', async function (params) {
-      let role = await bu.getRole(params.msg, params.args[1], params.args[2]);
+      let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
+        role = await bu.getRole(params.msg, params.args[1], quiet);
 
       if (role != null)
         return role.mention;
 
-      if (params.args[2])
+      if (quiet)
         return params.args[1];
     })
     .whenDefault(Builder.errors.tooManyArguments)

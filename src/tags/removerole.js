@@ -21,12 +21,13 @@ module.exports =
       'No more role! {removerole;11111111111111111}',
       'No more role! true'
     ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('<2', Builder.errors.notEnoughArguments)
-    .whenArgs('2-3', async function (params) {
-      let result = await TagManager.list['hasrole'].checkRoles(params, ...params.args.slice(1, 4));
+    .whenArgs('1', Builder.errors.notEnoughArguments)
+    .whenArgs('2-4', async function (params) {
+      let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
+        result = await TagManager.list['hasrole'].checkRoles(params, ...params.args.slice(1, 3), quiet);
 
       if (result.user == null) {
-        if (params.args[3])
+        if (quiet)
           return false;
         return await Builder.errors.noUserFound(params);
       }

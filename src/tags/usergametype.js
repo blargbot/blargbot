@@ -25,12 +25,13 @@ module.exports =
       'You are playing right now!'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-3', async function (params) {
-      let user = await bu.getUser(params.msg, params.args[1], params.args[2]);
+      let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
+        user = await bu.getUser(params.msg, params.args[1], quiet);
 
       if (user != null)
         return gameTypes[user.game || { type: -1 }] || gameTypes.default;
 
-      if (params.args[2])
+      if (quiet)
         return params.args[1];
     })
     .whenDefault(Builder.errors.tooManyArguments)
