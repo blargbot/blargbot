@@ -234,13 +234,13 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             let command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
             let output = await tags.processTag(msg, ccommandContent, command, ccommandName, author, true);
-            console.debug(output);
-            if (output.contents !== 'null' && output.contents !== '') {
+            if (/\S/.test(output.contents || '')) {
                 let message = await bu.send(msg, {
-                    content: output.contents,
+                    content: output.contents.trim(),
                     disableEveryone: false
                 });
                 await bu.addReactions(message.channel.id, message.id, output.reactions);
+
             }
             return true;
         }
@@ -517,10 +517,10 @@ function query(input) {
                 let content = bod.match(/<font size="2" face="Verdana" color=darkred>(.+)<\/font>/);
                 if (content)
                     res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2'));
-                else console.warn('An error occured in scraping a cleverbot response:', bod)
+                else console.warn('An error occured in scraping a cleverbot response:', bod);
             }
-        })
-    })
+        });
+    });
 }
 
 async function handleCleverbot(msg) {

@@ -51,7 +51,8 @@ e.execute = async function (msg, words) {
         }
     }
     let output = await tags.processTag(msg, greeting, '', undefined, msg.author.id, true);
-    let message = bu.send(msg, `Greeting set. ${suffix}Simulation:
+    let message = await bu.send(msg, `Greeting set. ${suffix}Simulation:
 ${output.contents}`);
-    await bu.addReactions(message.channel.id, message.id, output.reactions);
+    if (message != null)
+        await bu.addReactions(message.channel.id, message.id, output.reactions);
 };

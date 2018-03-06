@@ -29,7 +29,8 @@ bot.on('guildMemberRemove', async function (guild, member) {
             content: output.contents,
             disableEveryone: false
         });
-        await bu.addReactions(message.channel.id, message.id, output.reactions);
+        if (message != null)
+            await bu.addReactions(message.channel.id, message.id, output.reactions);
     }
     bu.logEvent(guild.id, 'memberleave', [{
         name: 'User',
