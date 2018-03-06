@@ -527,7 +527,7 @@
                     "info": ""
                 },
                 "help": {
-                    "usage": "",
+                    "usage": "[subcommand]",
                     "info": "Viser dette!"
                 },
                 "setdesc": {
@@ -548,7 +548,7 @@
             "testoutput": "Test udbytte:\n\n{{output}}",
             "subcommandnotfound": "",
             "transferprompt": "",
-            "nobots": "",
+            "nobots": "[[emote.x][] Du kan ikke overføre ejerskab over en brugerdefineret kommando til en bot!",
             "transfercancelled": "",
             "transfercomplete": "",
             "descupdate": "",
