@@ -231,17 +231,22 @@ e.docs = async function (msg, command, topic, ccommand = false) {
             if (tag == null)
                 break;
             let category = bu.TagType.properties[tag.category];
-            embed.description = tag.desc;
             embed.title += ' - ' + tag.name[0].toUpperCase() + tag.name.substring(1);
             embed.url += '/#' + encodeURIComponent(tag.name);
             embed.fields = [
                 {
                     name: 'Category',
-                    value: category.name + ' - ' + category.desc
+                    value: category.name,
+                    inline: true
                 },
                 {
                     name: 'Usage',
-                    value: '```\n{' + [tag.name, argFactory.toString(tag.args, argsOptions)].filter(t => t.length > 0).join(';') + '}```'
+                    value: '```\n{' + [tag.name, argFactory.toString(tag.args, argsOptions)].filter(t => t.length > 0).join(';') + '}```',
+                    inline: true
+                },
+                {
+                    name: 'Description',
+                    value: tag.desc + '\n\u200B'
                 }
             ];
             if (tag.exampleCode)
