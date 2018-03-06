@@ -13,8 +13,7 @@ module.exports =
   Builder.AutoTag('guildcreatedat')
     .withArgs(a => a.optional('format'))
     .withDesc('Returns the date the current guild was created, in UTC+0. If a `format` code is specified, the date is '+
-    'formatted accordingly. Leave blank for default formatting. See the <a href=\'http://momentjs.com/docs/#/displaying/format/\'>moment '+
-    'documentation</a> for more information.')
+    'formatted accordingly. Leave blank for default formatting. See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.')
     .withExample(
       'This guild was created on {guildcreatedat;YYYY/MM/DD HH:mm:ss}',
       'This guild was created on 2016/01/01 01:00:00'

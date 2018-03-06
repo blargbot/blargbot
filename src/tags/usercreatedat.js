@@ -15,7 +15,7 @@ module.exports =
     .withDesc('Returns the date the user was created, in UTC+0. ' +
       'If a `format` code is specified, the date is formatted accordingly.' +
       'Leave blank for default formatting. ' +
-      'See the <a href=\'http://momentjs.com/docs/#/displaying/format/\'>moment documentation</a> for more information. ' +
+      'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information. ' +
       'If `user` is specified, gets that user instead. If `quiet` isspecified,' +
       'if a user can\'t be found it will simply return the `user`')
     .withExample(

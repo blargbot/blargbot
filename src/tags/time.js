@@ -19,11 +19,10 @@ module.exports =
         ])
         .withDesc('Returns the current time, in UTC+0. If a `format` code is specified, ' +
             'the date is formatted accordingly. Leave blank for default formatting. ' +
-            'See the <a href=\'http://momentjs.com/docs/#/displaying/format/\'>moment documentation</a> ' +
-            'for more information.\nAdditionally, you can specify another ' +
-            'time to display, and a format to parse it with. ' +
-            'See <a href=\'http://momentjs.com/docs/#/parsing/\'>here</a> for parsing documentation. ' +
-            'See <a href=\'https://en.wikipedia.org/wiki/List_of_tz_database_time_zones\'>here</a> for a list of timezone codes.')
+            'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.\n' +
+            'Additionally, you can specify another time to display, and a format to parse it with. ' +
+            'See [here](http://momentjs.com/docs/#/parsing/) for parsing documentation. ' +
+            'See [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for a list of timezone codes.')
         .withExample(
             'It\'s currently {time;YYYY/MM/DD HH:mm:ss}',
             'It\'s currently 2016/01/01 01:00:00'

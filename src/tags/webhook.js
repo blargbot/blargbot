@@ -20,7 +20,7 @@ module.exports =
             a.optional('avatarURL')
         ])
         .withDesc('Executes a webhook. The `embed` must be provided in a raw JSON format, properly escaped for BBTag. ' +
-            'A simple escaping utility can be accessed <a href=\'https://rewrite.blargbot.xyz/v1escaper\'>here</a>. ' +
+            'A simple escaping utility can be accessed [here](https://rewrite.blargbot.xyz/v1escaper). ' +
             'Please assign your webhook credentials to private variables! Do not leave them in your code.')
         .withExample(
             '{webhook;1111111111111111;t.OK-en;Hello!}',
