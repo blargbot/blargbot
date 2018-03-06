@@ -23,7 +23,6 @@ module.exports =
             try {
                 regex = bu.createRegExp(params.args[2]);
             } catch (e) {
-                console.error(e, params);
                 return await Builder.util.error(params, e);
             }
 

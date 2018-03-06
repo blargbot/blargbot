@@ -19,7 +19,6 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2', async function (params) {
-            console.error(params.args);
             let input = await bu.deserializeTagArray(params.args[1]);
             return (input != null && Array.isArray(input.v)) === true;
         }).whenDefault(Builder.errors.tooManyArguments)

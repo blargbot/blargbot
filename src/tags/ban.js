@@ -45,7 +45,6 @@ module.exports =
                     true,
                     noPerms
                 );
-                console.debug('Response', response);
                 if (typeof response[1] == 'string' && response[1].startsWith('`'))
                     return await bu.tagProcessError(params, response[1]);
                 return response[1];

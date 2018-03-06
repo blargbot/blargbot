@@ -34,8 +34,6 @@ module.exports =
             arr.v = toSort.sort();
             if (descending) arr.v.reverse();
 
-            console.error(arr);
-
             if (!arr.n)
                 return bu.serializeTagArray(arr.v);
             await bu.setArray(arr, params);

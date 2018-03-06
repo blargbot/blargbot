@@ -39,8 +39,6 @@ module.exports =
           hoisted: (params.args[5] || 'false').toLowerCase() === 'true'
         };
 
-      console.debug('role options: ', options);
-
       if (isNaN(options.permissions))
         return await Builder.util.error('Permissions not a number');
 

@@ -20,10 +20,7 @@ module.exports =
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenArgs('2-3', async function (params) {
-      console.debug(params);
-
       let role = await bu.getRole(params.msg, params.args[1], params.args[2]);
-      console.debug(params);
       if (role != null)
         return role.id;
 
