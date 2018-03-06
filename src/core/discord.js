@@ -59,10 +59,12 @@ class DiscordClient extends dep.Eris.Client {
         const Manager = require('./Manager.js');
         global.EventManager = new Manager('events', true);
         global.TagManager = new Manager('tags');
-        let tags = Object.keys(TagManager.list).map(k => TagManager.list[k]),
-            oldTags = tags.filter(t => t.source == null),
-            newTags = tags.filter(t => t.source == 'TagBuilder');
-        console.info(`Tags: ${tags.length} Old: ${oldTags.length} New: ${newTags.length}`);
+        let tags = Object.keys(TagManager.list).map(k => TagManager.list[k].category);
+        console.info('Tags: ' + tags.length +
+            ' | Simple: ' + tags.filter(t => t == bu.TagType.SIMPLE).length +
+            ' | Complex: ' + tags.filter(t => t == bu.TagType.COMPLEX).length +
+            ' | Array: ' + tags.filter(t => t == bu.TagType.ARRAY).length +
+            ' | CCommand: ' + tags.filter(t => t == bu.TagType.CCOMMAND).length);
 
         const CommandManagerClass = require('./CommandManager.js');
         global.CommandManager = new CommandManagerClass();

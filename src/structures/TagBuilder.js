@@ -86,7 +86,7 @@ class TagBuilder {
       this.execute.conditional.slice(0),
       this.execute.default);
 
-    console.debug(tag.category, 'Tag built:', tag.name, ArgFactory.toString(tag.args));
+    //console.debug(tag.category, 'Tag built:', tag.name, ArgFactory.toString(tag.args));
     if (this.execute.preExec.length == 0)
       console.warn(`Tag ${this.properties.name} has no BeforeExecute set`);
     return tag;
