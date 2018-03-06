@@ -1,25 +1,25 @@
 {
-    "language": "",
+    "language": "Αγγλικά",
     "header": {
-        "login": "",
-        "logout": "",
-        "commands": "",
+        "login": "Σύνδεση",
+        "logout": "Αποσύνδεση",
+        "commands": "Εντολές",
         "bbtag": "",
         "subtags": "",
-        "dashboard": ""
+        "dashboard": "Πίνακας Ελέγχου"
     },
     "generic": {
-        "loading": "",
-        "collapse": "",
-        "expand": "",
-        "search": "",
+        "loading": "Φόρτωση",
+        "collapse": "Σύμπτηξη όλων",
+        "expand": "Ανάπτυξη Όλων",
+        "search": "Φίλτρο...",
         "noresults": "",
         "resultsfound": ""
     },
     "index": {
         "desc": "",
         "commands": {
-            "title": "",
+            "title": "Εντολές",
             "desc": ""
         },
         "bbtag": {
@@ -27,15 +27,15 @@
             "desc": ""
         },
         "customization": {
-            "title": "",
+            "title": "Προσαρμογή",
             "desc": ""
         },
         "moderation": {
-            "title": "",
+            "title": "Εποπτεία",
             "desc": ""
         },
         "opensource": {
-            "title": "",
+            "title": "Ανοικτού Κώδικα",
             "desc": ""
         },
         "suggestions": {
@@ -70,17 +70,17 @@
         "referdocs": ""
     },
     "commands": {
-        "title": "",
+        "title": "Εντολές",
         "desc": "",
         "components": {
-            "usage": "",
-            "flags": "",
+            "usage": "Χρήση:",
+            "flags": "Σημαίες:",
             "aliases": "",
             "subcommands": ""
         }
     },
     "dashboard": {
-        "userheader": "",
+        "userheader": "Ρυθμίσεις Χρήστη",
         "guildheader": "",
         "notauthed": "",
         "user": {
