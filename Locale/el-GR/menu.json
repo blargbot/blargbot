@@ -1,10 +1,10 @@
 {
     "cancel": {
-        "name": "",
-        "description": ""
+        "name": "Ακύρωση",
+        "description": "Κλείσιμο μενού."
     },
     "confirm": {
-        "name": "",
+        "name": "Επιβεβαίωση",
         "description": ""
     }
 }
