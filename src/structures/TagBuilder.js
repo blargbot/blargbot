@@ -252,7 +252,7 @@ TagBuilder.util = {
       if (channel == null)
         return TagBuilder.errors.noChannelFound;
       if (channel.guild.id !== params.msg.guild.id)
-        return p => TagBuilder.util.error(p, 'Channel must be in guild');
+        return TagBuilder.errors.channelNotInGuild;
     }
     return channel;
   }

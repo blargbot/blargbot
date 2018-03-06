@@ -13,7 +13,7 @@ e.info = 'Gets a list of command or specific command help.';
 e.longinfo = `<p>Returns a list of commands and custom commands. If a command name is specified, it will return a description
         of that command instead.</p>`;
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     if (words.length > 1) {
         var message = '';
         if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden) {
@@ -87,7 +87,7 @@ ${flags}`;
         generalCommands.sort();
         commandsString += generalCommands.join(', ');
 
-        var onComplete = async function() {
+        var onComplete = async function () {
             if (msg.channel.guild) {
                 let ccommands = storedGuild.ccommands;
                 //      console.debug(ccommands);
@@ -105,21 +105,14 @@ ${flags}`;
             }
 
             commandsString += '```';
-            let dmhelp = msg.channel.guild ? await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp') : true;
-            let doDM = dmhelp && dmhelp != 0;
-            let sendString = `${doDM ? `Here are your commands ${msg.channel.guild ? 'for ' + msg.channel.guild.name : ''}.\n` : ''}${commandsString}\n${!msg.channel.guild
-                ? 'Not all of these bu.commands work in DMs.\n'
-                : ''
-                }For more information about commands, do \`help <commandname>\` or visit <https://blargbot.xyz/commands>`;
+            let prefix = '';
+            if (!msg.channel.guild)
+                commandsString += 'Not all of these commands will work in DM\'s\n';
+            else
+                prefix = await bu.guildSettings.get(msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
+            commandsString += 'For more information about commands, do `'+prefix+'help <commandname>` or visit <https://blargbot.xyz/commands>';
 
-            if (doDM) {
-                bot.getDMChannel(msg.author.id).then(pc => {
-                    bu.send(msg, '📧 DMing you a list of commands 📧');
-                    bu.send(pc.id, sendString);
-                });
-            } else {
-                bu.send(msg, sendString);
-            }
+            await e.sendHelp(msg, commandsString, 'commands');
         };
 
         function nextCommand(category, completeCommandList) {
@@ -170,4 +163,17 @@ ${flags}`;
         }
         processCategory(i);
     }
+};
+
+e.sendHelp = async function (msg, message, type, isPlural = false) {
+    if (typeof message != 'object')
+        message = { content: message };
+
+    if (msg.channel.guild && await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp')) {
+        let dmChannel = await bot.getDMChannel(msg.author.id);
+        await bu.send(msg, '📧 DMing you the ' + type + ' 📧');
+        message.content = 'Here '+(isPlural ? 'are' : 'is')+' the ' + type + ' you requested in <#' + msg.channel.id + '>\n' + message.content;
+        await bu.send(dmChannel.id, message);
+    } else
+        await bu.send(msg, message);
 };

@@ -518,7 +518,8 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
             case 'test':
                 if (words.length > 2) {
                     let output = await tags.processTag(msg, words.slice(2).join(' '), '', 'test', msg.author.id);
-                    await bu.send(msg, `Output:\n${output.trim()}`);
+                    let message = await bu.send(msg, `Output:\n${output.contents.trim()}`);
+                    await bu.addReactions(message.channel.id, message.id, output.reactions);
                 }
                 break;
             case 'favourite':
@@ -637,7 +638,7 @@ ${Object.keys(user.favourites).join(', ')}
                     }
                 break;
             case 'docs':
-                tags.docs(msg, words[0], words[2]);
+                tags.docs(msg, words[0], words.slice(2).join(' '));
                 break;
             default:
                 var command = words.slice(2);
