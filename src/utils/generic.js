@@ -174,8 +174,6 @@ bu.send = async function (channel, message, file, embed) {
     } else {
         toSend = message;
     }
-    if (typeof message === 'object')
-        toSend.embed = message.embed;
 
     if (!toSend.content) toSend.content = '';
     toSend.content = toSend.content.trim();
@@ -196,8 +194,10 @@ bu.send = async function (channel, message, file, embed) {
         toSend.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
 
     }
+
     try {
-    return await bot.createMessage(channelid, toSend, file);
+        console.debug('Sending content: ', JSON.stringify(toSend));
+        return await bot.createMessage(channelid, toSend, file);
     } catch (err) {
         try {
             let response;
