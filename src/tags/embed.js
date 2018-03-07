@@ -12,8 +12,9 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('embed')
     .requireStaff()
-    .withArgs(a => a.require('embed', true))
-    .withDesc('Takes whatever input you pass to `embed` and attempts to form an embed from it. `embed` must be a validd json embed object.')
+    .withArgs(a => a.require('embed'))
+    .withDesc('Takes whatever input you pass to `embed` and attempts to form an embed from it. `embed` must be a valid json embed object. '+
+      'You can find a helpful tool for designing embeds [here](https://leovoel.github.io/embed-visualizer/)')
     .withExample(
       '{embed;{lb}"title":"Hello!"{rb}}',
       '(an embed with "Hello!" as the title)'
@@ -32,5 +33,5 @@ module.exports =
       return {
         embed
       };
-    }).whenDefault(Builder.errors.notEnoughArguments)
+    }).whenDefault(Builder.errors.tooManyArguments)
     .build();

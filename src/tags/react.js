@@ -12,7 +12,10 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('react')
     .withArgs(a => [a.optional([a.optional('channelId'), a.require('messageId')]), a.require('emotes', true)])
-    .withDesc('Adds `emotes` as reactions to the given `messageId`. If the `messageId` is not supplied, it instead adds the `emotes` to the output from the containing tag')
+    .withDesc('Adds `emotes` as reactions to the given `messageId`. If the `messageId` is not supplied, ' +
+      'it instead adds the `emotes` to the output from the containing tag.\n' +
+      'Please note that to be able to add a reaction, I must be on the server that you got that reaction from. ' +
+      'If I am not, then I will return an error if you are trying to apply the reaction to another message.')
     .withExample(
       '{react;:thinking:;:joy:}',
       '(On message) 🤔(1) 😂(1)'
