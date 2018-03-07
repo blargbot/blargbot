@@ -263,6 +263,11 @@ e.docs = async function (msg, command, topic, ccommand = false) {
                     name: 'Example output',
                     value: '```\n\u200B' + tag.exampleOut + '\u200B```'
                 });
+
+            embed.fields.push({
+                name: '\u200B',
+                value: '*Use `' + prefix + command + ' docs arguments` for detailed info about the argument syntax!*'
+            });
             return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);
     }
 

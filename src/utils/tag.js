@@ -366,7 +366,7 @@ bu.processTag = async function (params) {
                 ccommand: params.ccommand,
                 terminate,
                 isStaff, vars, reactions, quiet
-            }, `\`Tag "${title}" doesn\'t exist\``);
+            }, `\`Subtag "${title}" doesn\'t exist\``);
         }
 
         if (replaceObj.fallback !== undefined) {
