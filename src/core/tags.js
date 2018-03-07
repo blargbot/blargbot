@@ -71,7 +71,7 @@ Reason: ${tag.reason}`);
         var output = await e.processTag(msg, tag.content, command, tagName, tag.author);
         while (/<@!?[0-9]{17,21}>/.test(output.contents)) {
             let match = output.contents.match(/<@!?([0-9]{17,21})>/)[1];
-            console.debug(match);
+            //console.debug(match);
             let obtainedUser = await bu.getUser(msg, match, true);
             let name = '';
             if (obtainedUser) {
@@ -251,17 +251,17 @@ e.docs = async function (msg, command, topic, ccommand = false) {
             if (tag.exampleCode)
                 embed.fields.push({
                     name: 'Example code',
-                    value: '```\n\u200B' + tag.exampleCode + '\u200B```'
+                    value: '```\n' + tag.exampleCode + '```'
                 });
             if (tag.exampleIn)
                 embed.fields.push({
                     name: 'Example user input',
-                    value: '```\n\u200B' + tag.exampleIn + '\u200B```'
+                    value: '```\n' + tag.exampleIn + '```'
                 });
             if (tag.exampleOut)
                 embed.fields.push({
                     name: 'Example output',
-                    value: '```\n\u200B' + tag.exampleOut + '\u200B```'
+                    value: '```' + tag.exampleOut + '```'
                 });
 
             embed.fields.push({

@@ -14,8 +14,8 @@ module.exports =
     .withArgs(a => a.optional('count'))
     .withDesc('Will be replaced by `count` spaces (Default to 1).')
     .withExample(
-      '{space;4}Hello, world!',
-      '    Hello, world!'
+      'Hello,{space;4}world!',
+      'Hello,    world!'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-2', async function (params) {
       let count = parseInt(params.args[1] || '1'),

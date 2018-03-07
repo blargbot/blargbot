@@ -14,8 +14,8 @@ module.exports =
     .withArgs(a => a.optional('count'))
     .withDesc('Will be replaced by `count` newline characters (\\n).')
     .withExample(
-      '{newline}Hello, world!',
-      '\nHello, world!'
+      'Hello,{newline}world!',
+      'Hello,\nworld!'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-2', async function (params) {
       let count = parseInt(params.args[1] || '1'),
