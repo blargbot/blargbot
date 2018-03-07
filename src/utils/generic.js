@@ -146,7 +146,7 @@ bu.hasRole = (msg, roles, override = true) => {
 bu.addReactions = async function (channelId, messageId, reactions) {
     for (const reaction of new Set(reactions || []))
         try {
-            await bot.addMessageReaction(channelId, messageId, reaction);
+            await bot.addMessageReaction(channelId, messageId, reaction.replace(/[<>]/g, ''));
         } catch (e) {
             console.error(e);
         }
