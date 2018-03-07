@@ -197,7 +197,6 @@ bu.send = async function (channel, message, file, embed) {
 
     }
     try {
-    console.debug(toSend);
     return await bot.createMessage(channelid, toSend, file);
     } catch (err) {
         try {
@@ -754,7 +753,7 @@ bu.splitInput = (content, noTrim) => {
         words[i] = words[i].replace(/\\"/g, '"');
         if (!noTrim) words[i] = words[i].replace(/^ +/g, '');
     }
-    console.debug(words);
+    //console.debug(words);
     return words;
 };
 
@@ -783,7 +782,7 @@ bu.canExecuteCommand = async function (msg, commandName, quiet) {
         storedGuild = await bu.getGuild(msg.guild.id);
         let val = storedGuild.settings.permoverride,
             val1 = storedGuild.settings.staffperms;
-        console.debug(storedGuild.settings.adminrole);
+        //console.debug(storedGuild.settings.adminrole);
 
         let command = storedGuild.commandperms[commandName];
         let commandObj = CommandManager.list[commandName];

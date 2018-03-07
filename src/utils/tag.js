@@ -400,7 +400,7 @@ bu.processTag = async function (params) {
                 replaceString = replaceString.replace(/\}/gi, `${bu.specialCharBegin}RB${bu.specialCharEnd}`)
                     .replace(/\{/gi, `${bu.specialCharBegin}LB${bu.specialCharEnd}`)
                     .replace(/\;/g, `${bu.specialCharBegin}SEMI${bu.specialCharEnd}`);
-                console.debug('result.contents:', result.contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
+                //console.debug('result.contents:', result.contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
                 result.contents = result.contents.replace(tagBrackets, replaceString);
                 if (replaceObj.replaceContent) {
                     if (replaceObj.replace == undefined) {
@@ -414,12 +414,12 @@ bu.processTag = async function (params) {
         }
         if (result.terminate) break;
     }
-    console.debug(result);
+    //console.debug('End of processTag', result);
     return result;
 };
 
 bu.processSpecial = (contents, final) => {
-    console.debug('Processing special tags');
+    //console.debug('Processing special tags');
     contents += '';
     if (final)
         contents = contents
