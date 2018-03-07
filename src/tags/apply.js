@@ -21,10 +21,8 @@ module.exports =
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenDefault(async function(params) {
             if (!TagManager.list.hasOwnProperty(params.args[1]))
-                return await Builder.util.error(params, 'No tag found');
+                return await Builder.util.error(params, 'No subtag found');
             let tag = TagManager.list[params.args[1]];
-            if (tag == null)
-                return await Builder.util.error(params, 'No tag found');
             let tagArgs = await Builder.util.flattenArgArrays(params.args.slice(2));
 
             params.args = [params.args[1], ...tagArgs];
