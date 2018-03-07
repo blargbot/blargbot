@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.CCommandTag('embed')
+  Builder.AutoTag('embed')
     .requireStaff()
     .withArgs(a => a.require('embed', true))
     .withDesc('Takes whatever input you pass to `embed` and attempts to form an embed from it. `embed` must be a validd json embed object.')
