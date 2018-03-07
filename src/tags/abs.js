@@ -11,21 +11,22 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('abs')
-        .withArgs(a => a.require('number'))
-        .withDesc('Gets the absolute value of `number`')
+        .acceptsArrays()
+        .withArgs(a => a.require('number', true))
+        .withDesc('Gets the absolute value of `number`. If multiple are supplied, then an array will be returned')
         .withExample(
             '{abs;-535}',
             '535'
         )
         .beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function(params) {
-            let asNumber = parseFloat(params.args[1]);
-            if (!isNaN(asNumber)) {
-                return Math.abs(asNumber);
-            } else {
+        .whenDefault(async function (params) {
+            let values = (await Builder.util.flattenArgArrays(params.args.slice(1))).map(parseFloat);
+            if (values.filter(isNaN).length > 0)
                 return await Builder.errors.notANumber(params);
-            }
+            values = values.map(Math.abs);
+            if (values.length == 1)
+                return values[0];
+            return bu.serializeTagArray(values);
         })
-        .whenDefault(Builder.errors.tooManyArguments)
         .build();
