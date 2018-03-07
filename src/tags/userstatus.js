@@ -21,7 +21,11 @@ module.exports =
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-3', async function (params) {
       let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
+        user = params.msg.author;
+
+      if (params.args.length > 1)
         user = await bu.getUser(params.msg, params.args[1], quiet);
+
       if (user != null) {
         let member = params.msg.channel.guild.members.get(user.id);
         if (member != null)

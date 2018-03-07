@@ -22,6 +22,9 @@ module.exports =
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-4', async function (params) {
       let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
+        user = params.msg.author;
+
+      if (params.args.length > 2)
         user = await bu.getUser(params.msg, params.args[2], quiet);
 
       if (user != null)
