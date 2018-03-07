@@ -22,16 +22,17 @@ module.exports =
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (params) {
             let arr = bu.deserializeTagArray(params.args[1]),
-                descending = bu.parseBoolean(params.args[2] || 'false');
+                descending = bu.parseBoolean(params.args[2]);
+
+            if (!bu.isBoolean(descending)) 
+                descending = !!params.args[2];
 
             if (arr == null || !Array.isArray(arr.v))
                 return await Builder.errors.notAnArray(params);
 
-            let toSort = arr.v.map(parseFloat);
-            if (toSort.filter(isNaN).length > 0)
-                toSort = arr.v;
+            let sorter = new Intl.Collator(undefined,   {numeric: true, sensitivity: 'base'});
 
-            arr.v = toSort.sort((a, b) => (a - b));
+            arr.v = arr.v.sort(sorter.compare);
             if (descending) arr.v.reverse();
 
             if (!arr.n)
