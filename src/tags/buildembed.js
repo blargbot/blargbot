@@ -176,9 +176,9 @@ module.exports =
 
       if (embed.fields) {
         if (embed.fields.filter(f => !(f.value || '').trim()).length > 0)
-          return await Builder.error.invalidEmbed(params, 'Field missing value');
+          return await Builder.errors.invalidEmbed(params, 'Field missing value');
         if (embed.fields.filter(f => !(f.name || '').trim()).length > 0)
-          return await Builder.error.invalidEmbed(params, 'Field missing name');
+          return await Builder.errors.invalidEmbed(params, 'Field missing name');
       }
 
       let embedText = JSON.stringify(embed);
