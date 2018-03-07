@@ -31,7 +31,7 @@ module.exports =
             if (toSort.filter(isNaN).length > 0)
                 toSort = arr.v;
 
-            arr.v = toSort.sort();
+            arr.v = toSort.sort((a, b) => (a - b));
             if (descending) arr.v.reverse();
 
             if (!arr.n)
