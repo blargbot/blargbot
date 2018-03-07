@@ -23,9 +23,19 @@ module.exports =
             if (!TagManager.list.hasOwnProperty(params.args[1]))
                 return await Builder.util.error(params, 'No tag found');
             let tag = TagManager.list[params.args[1]];
-            let tagArgs = Builder.util.flattenArgArrays(params.args.slice(2));
+            let tagArgs = await Builder.util.flattenArgArrays(params.args.slice(2));
+            
+            params.args = [params.args[1], ...tagArgs];
 
-            params.args = [params.args[0], ...tagArgs];
+            params.args = params.args.map(v => {
+                if (typeof v === 'string')
+                    return v;
+                try {
+                    return JSON.stringify(v);
+                } catch (e){
+                    return '';
+                }
+            });
 
             return await tag.execute(params);
         })
