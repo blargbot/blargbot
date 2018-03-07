@@ -15,8 +15,8 @@ module.exports =
     .withArgs(a => a.require('embed', true))
     .withDesc('Takes whatever input you pass to `embed` and attempts to form an embed from it. `embed` must be a validd json embed object.')
     .withExample(
-      '(fuck doing this, its too much work)',
-      '(an embed)'
+      '{embed;{lb}"title":"Hello!"{rb}}',
+      '(an embed with "Hello!" as the title)'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenArgs('2', async function (params) {
