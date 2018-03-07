@@ -273,7 +273,8 @@ TagBuilder.errors = {
   userNotInGuild(params) { return TagBuilder.util.error(params, 'User not in guild'); },
   channelNotInGuild(params) { return TagBuilder.util.error(params, 'Channel not in guild'); },
   tooManyLoops(params) { return TagBuilder.util.error(params, 'Too many loops'); },
-  unsafeRegex(params) { return TagBuilder.util.error(params, 'Unsafe regex detected'); }
+  unsafeRegex(params) { return TagBuilder.util.error(params, 'Unsafe regex detected'); },
+  invalidEmbed(params, issue) { return TagBuilder.util.error(params, 'Inavlid embed: ' + issue); }
 };
 
 module.exports = TagBuilder;
