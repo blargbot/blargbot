@@ -12,8 +12,8 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('rolecolor')
     .withArgs(a => [a.require('role'), a.optional('quiet')])
-    .withDesc('Returns a role\'s hex color code. ' +
-      'If `quiet` is specified, if a role can\'t be found it will simply return the `role`')
+    .withDesc('Returns `role`\'s hex color code. ' +
+      'If `quiet` is specified, if `role` can\'t be found it will simply return `role`')
     .withExample(
       'The admin role color is: #{rolecolor;admin}.',
       'The admin role ID is: #1b1b1b.'

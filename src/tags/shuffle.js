@@ -13,7 +13,7 @@ module.exports =
     Builder.AutoTag('shuffle')
         .acceptsArrays()
         .withArgs(a => a.optional('array'))
-        .withDesc('Shuffles the {args} the user provided, or the provided array.')
+        .withDesc('Shuffles the `{args}` the user provided, or the elements of `array`. If used with `{get}` this will modify the original array')
         .withExample(
             '{shuffle} {args;0} {args;1} {args;2}',
             'one two three',
@@ -28,7 +28,7 @@ module.exports =
 
             bu.shuffle(arr.v);
             if (!arr.n)
-                return bu.serializeTagArray(arr.n);
+                return bu.serializeTagArray(arr.v);
 
             await bu.setArray(arr, params);
         })

@@ -12,12 +12,10 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('usercreatedat')
     .withArgs(a => [a.optional('format'), a.optional('user'), a.optional('quiet')])
-    .withDesc('Returns the date the user was created, in UTC+0. ' +
-      'If a `format` code is specified, the date is formatted accordingly.' +
-      'Leave blank for default formatting. ' +
+    .withDesc('Returns the date that `user` was created using `format` for the output, in UTC+0. ' +
+      '`user` defaults to the user executing the containing tag. `format` defaults to `YYYY-MM-DDTHH:mm:ssZ`. ' +
       'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information. ' +
-      'If `user` is specified, gets that user instead. If `quiet` isspecified,' +
-      'if a user can\'t be found it will simply return the `user`')
+      'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
     .withExample(
       'Your account was created on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
       'Your account was created on 2016/01/01 01:00:00.'

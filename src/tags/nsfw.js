@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('nsfw')
-        .withDesc('Marks the message is being NSFW, and only to be outputted in NSFW channels. A requirement for any tag with NSFW content.')
+        .withDesc('Marks the message is being NSFW, and only to be output in NSFW channels. A requirement for any tag with NSFW content.')
         .withExample(
             'This command is not safe! {nsfw}',
             'This command is not safe!'

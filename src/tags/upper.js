@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('upper')
         .withArgs(a => a.require('text'))
-        .withDesc('Returns `text` as lowercase.')
+        .withDesc('Returns `text` as uppercase.')
         .withExample(
             '{upper;this will become uppercase}',
             'THIS WILL BECOME UPPERCASE'

@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.CCommandTag('timer')
         .withArgs(a => [a.require('code'), a.require('duration')])
-        .withDesc('Executes the provided code after `duration`. ' +
+        .withDesc('Executes `code` after `duration`. ' +
             'Three timers are allowed per custom command, with no recursive timers.')
         .withExample(
             '{timer;Hello!;20s}',

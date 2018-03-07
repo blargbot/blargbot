@@ -199,13 +199,13 @@ e.docs = async function (msg, command, topic, ccommand = false) {
                     'Subtag: `math`\nArguments: `+`, `1`, `2`\nResult: `3`',
                 Tag: 'A tag is a user-made block of text which may or may not contain subtags. ' +
                     'Any subtags that it does contain will be executed and be replaced by their output.',
-                Argument: 'An argument is a single value which gets given to a subtag. Arguments can be numbers, text, arrays, anything you can type really. '+
+                Argument: 'An argument is a single value which gets given to a subtag. Arguments can be numbers, text, arrays, anything you can type really. ' +
                     'Each subtag will require a different argument pattern, so be sure to check what pattern your subtag needs!',
-                Variable: 'A variable is a value that is stored in the bots memory ready to access it later on. '+
+                Variable: 'A variable is a value that is stored in the bots memory ready to access it later on. ' +
                     'For more in-depth details about variables, please use `' + prefix + command + ' docs variable`.',
-                Array: 'An array is a collection of values all grouped together, commonly done so by enclosing them inside `[]`. '+
+                Array: 'An array is a collection of values all grouped together, commonly done so by enclosing them inside `[]`. ' +
                     'In BBTag, arrays can be assigned to a variable to store them for later use. In this situation, you might ' +
-                    'see an array displayed like this `{"v":["1","2","3"],"n":"varname"}`. If you do, dont worry, nothing is broken! '+
+                    'see an array displayed like this `{"v":["1","2","3"],"n":"varname"}`. If you do, dont worry, nothing is broken! ' +
                     'That is just there to allow ' + bot.user.username + ' to modify the array in place within certain subtags.'
             };
             embed.title += ' - Terminology';
@@ -217,8 +217,8 @@ e.docs = async function (msg, command, topic, ccommand = false) {
                 return await help.sendHelp(msg, { embed }, 'BBTag documentation');
             }
 
-            embed.description = 'There are various terms used in BBTag that might not be intuitive, '+
-            'so here is a list of definitions for some of the most important ones:\n\u200B';
+            embed.description = 'There are various terms used in BBTag that might not be intuitive, ' +
+                'so here is a list of definitions for some of the most important ones:\n\u200B';
             embed.fields = Object.keys(terms).map(k => {
                 return {
                     name: k,
@@ -227,28 +227,27 @@ e.docs = async function (msg, command, topic, ccommand = false) {
             });
             return await help.sendHelp(msg, { embed }, 'BBTag documentation');
         default:
+            topic = topic.replace(/[\{\}]/g, '');
             let tag = tags.filter(t => t.name == topic.toLowerCase())[0];
             if (tag == null)
                 break;
             let category = bu.TagType.properties[tag.category];
             embed.title += ' - ' + tag.name[0].toUpperCase() + tag.name.substring(1);
+
+            embed.description = '';
+            if (tag.deprecated) {
+                embed.color = 0xff0000;
+                embed.description += '**This subtag is deprecated' + (typeof tag.deprecated == 'string'
+                    ? ' and has been replaced by `{' + tag.deprecated + '}`'
+                    : '') + '**\n';
+            }
+            if (tag.staff) embed.description += '**This subtag may only be used by staff members**\n';
+            if (tag.category == bu.TagType.CCOMMAND) embed.description += '**This subtag may only be used within custom commands**\n';
+            embed.description += '```\n{' + [tag.name, argFactory.toString(tag.args, argsOptions)].filter(t => t.length > 0).join(';') + '}```';
+            embed.description += tag.desc + '\n\u200B';
+
             embed.url += '/#' + encodeURIComponent(tag.name);
-            embed.fields = [
-                {
-                    name: 'Category',
-                    value: category.name,
-                    inline: true
-                },
-                {
-                    name: 'Usage',
-                    value: '```\n{' + [tag.name, argFactory.toString(tag.args, argsOptions)].filter(t => t.length > 0).join(';') + '}```',
-                    inline: true
-                },
-                {
-                    name: 'Description',
-                    value: tag.desc + '\n\u200B'
-                }
-            ];
+            embed.fields = [];
             if (tag.exampleCode)
                 embed.fields.push({
                     name: 'Example code',
@@ -265,7 +264,6 @@ e.docs = async function (msg, command, topic, ccommand = false) {
                     value: '```\n\u200B' + tag.exampleOut + '\u200B```'
                 });
             return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);
-
     }
 
     return await bu.send(msg, 'Oops, I didnt recognise that topic! Try using `' + prefix + command + ' docs` for a list of all topics');

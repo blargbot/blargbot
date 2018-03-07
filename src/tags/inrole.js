@@ -11,8 +11,8 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('inrole')
-        .withArgs(a => a.require('roleid'))
-        .withDesc('Returns how many people are in a specific role.')
+        .withArgs(a => a.require('roleId'))
+        .withDesc('Returns how many people have the `roleId` role.')
         .withExample(
             'There are {inrole;11111111111111111} people in the role!',
             'There are 5 people in the role!'

@@ -12,10 +12,10 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.CCommandTag('rolesetmentionable')
     .requireStaff()
-    .withArgs(a => [a.require('name'), a.optional('value'), a.optional('quiet')])
-    .withDesc('Sets whether a role can be mentioned. `value` can be either `true` to set the role as mentionable, ' +
-      'or anything else to set it to unmentionable. If `value` isn\'t provided, defaults to true. ' +
-      'Throws an error if a role can\'t be found.')
+    .withArgs(a => [a.require('role'), a.optional('value'), a.optional('quiet')])
+    .withDesc('Sets whether `role` can be mentioned. `value` can be either `true` to set the role as mentionable, ' +
+      'or anything else to set it to unmentionable. If `value` isn\'t provided, defaults to `true`. ' +
+      'If `quiet` is specified, if `role` can\'t be found it will simply return nothing')
     .withExample(
       'The admin role is now mentionable. {rolesetmentionable;admin;true}',
       'The admin role is now mentionable.'
@@ -31,7 +31,8 @@ module.exports =
           await role.edit({ mentionable });
           return;
         } catch (err) {
-          return await Builder.util.error(params, 'Failed to edit role: no perms');
+          if (!quiet)
+            return await Builder.util.error(params, 'Failed to edit role: no perms');
         }
       }
       return await Builder.util.error(params, 'Role not found');

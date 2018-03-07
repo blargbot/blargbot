@@ -11,12 +11,11 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('aget')
-        .isDepreciated()
+        .isDeprecated('get')
         .withArgs(a => [a.require('varName'), a.optional('index')])
         .withDesc('Returns the value of `varName`. If `index` is specified and `varName` is stored as an array, ' +
             'then `index` of the array will be returned. ' +
-            'Variables are unique per-author. ' +
-            'This tag is functionally equivalent to {get;@name;index}'
+            'Variables are unique per-author.'
         ).withExample(
             '{aget;testvar}',
             'This is a test var'

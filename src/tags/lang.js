@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('lang')
         .withArgs(a => a.require('language'))
-        .withDesc('Specifies the language used to display the raw contents of this tag.')
+        .withDesc('Specifies which `language` should be used when viewing the raw of this tag')
         .withExample(
             'This will be displayed with js! {lang;js}.',
             'This will be displayed with js!.'

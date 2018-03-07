@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('shift')
         .withArgs(a => a.require('array'))
-        .withDesc('Returns the first element in an array. If used with {get} this will remove the first element from the array as well.')
+        .withDesc('Returns the first element in `array`. If used with `{get}` this will remove the first element from `array` as well.')
         .withExample(
             '{shift;["this", "is", "an", "array"]}',
             'this'

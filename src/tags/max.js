@@ -12,8 +12,8 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('max')
     .acceptsArrays()
-    .withArgs(a => a.require('number', true))
-    .withDesc('Returns the largest number out of those provided.')
+    .withArgs(a => a.require('numbers', true))
+    .withDesc('Returns the largest entry out of `numbers`. If an array is provided, it will be expanded to its individual values')
     .withExample(
       '{max;50;2;65}',
       '65'

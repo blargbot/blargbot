@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('round')
     .withArgs(a => a.require('number'))
-    .withDesc('Rounds a number up or down.')
+    .withDesc('Rounds `number` to the nearest whole number.')
     .withExample(
       '{round;1.23}',
       '1'

@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('uriencode')
         .withArgs(a => a.require('text'))
-        .withDesc('Encodes a chunk of text in URI format. Useful for constructing links.')
+        .withDesc('Encodes `text` in URI format. Useful for constructing links.')
         .withExample(
             '{uriencode;Hello world!}',
             'Hello%20world!'

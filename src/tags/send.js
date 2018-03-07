@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.CCommandTag('send')
         .requireStaff()
-        .withArgs(a => [a.require('channel'), a.optional('message')])
+        .withArgs(a => [a.require('channel'), a.require('message')])
         .withDesc('Sends `message` to `channel`, and returns the message ID. `channel` is either an ID or channel mention.')
         .withExample(
             '{send;#channel;Hello!}',

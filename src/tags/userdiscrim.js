@@ -12,8 +12,8 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('userdiscrim')
     .withArgs(a => [a.optional('user'), a.optional('quiet')])
-    .withDesc('Returns the user\'s discriminator. If `user` is specified, gets that user instead.' +
-      'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withDesc('Returns `user`\'s discriminator. `user` defaults to defaults to the user who executed the containing tag. ' +
+      'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
     .withExample(
       'Your discrim is {userdiscrim}',
       'Your discrim is 1234'

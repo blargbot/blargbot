@@ -11,10 +11,10 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.AutoTag('void')
-  .withArgs(a => a.optional('anything', true))
-    .withDesc('Parses its inner tags, but doesn\'t return anything.')
+  .withArgs(a => a.optional('code'))
+    .withDesc('Executes `code` but does not return the output from it. Useful for silent functionality')
     .withExample(
-      '{void;This won\'t be outputted!}',
+      '{void;This won\'t be output!}',
       ''
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenDefault(async params => '')

@@ -13,7 +13,7 @@ module.exports =
     Builder.AutoTag('reverse')
         .acceptsArrays()
         .withArgs(a => a.require('text'))
-        .withDesc('Reverses the order of text or an array. If {get} is used with an array, will modify the original array.')
+        .withDesc('Reverses the order of `text`. If `text` is an array, the array will be reversed. If `{get}` is used with an array, this will modify the original array.')
         .withExample(
             '{reverse;palindrome}',
             'emordnilap'

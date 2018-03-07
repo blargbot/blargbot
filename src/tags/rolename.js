@@ -12,8 +12,8 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('rolename')
     .withArgs(a => [a.require('role'), a.optional('quiet')])
-    .withDesc('Returns a role\'s name. ' +
-      'If `quiet` is specified, if a role can\'t be found it will simply return the `role`')
+    .withDesc('Returns `role`\'s name. ' +
+      'If `quiet` is specified, if `role` can\'t be found it will simply return `role`')
     .withExample(
       'The admin role name is: {rolename;admin}.',
       'The admin role name is: Administrator.'

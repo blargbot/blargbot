@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('newline')
     .withArgs(a => a.optional('count'))
-    .withDesc('Will be replaced by a specified number of newline characters (\\n).')
+    .withDesc('Will be replaced by `count` newline characters (\\n).')
     .withExample(
       '{newline}Hello, world!',
       '\nHello, world!'

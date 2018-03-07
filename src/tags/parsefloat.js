@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('parsefloat')
     .withArgs(a => a.require('text'))
-    .withDesc('Returns an floating point number from text. If it wasn\'t a number, returns NaN.')
+    .withDesc('Returns an floating point number from `text`. If it wasn\'t a number, returns `NaN`.')
     .withExample(
       '{parsefloat;abcd} {parsefloat;12.34} {parsefloat;1.2cd}',
       'NaN 12.34 1.2'

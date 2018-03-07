@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('space')
     .withArgs(a => a.optional('count'))
-    .withDesc('Will be replaced by a specified number of spaces (Default to 1).')
+    .withDesc('Will be replaced by `count` spaces (Default to 1).')
     .withExample(
       '{space;4}Hello, world!',
       '    Hello, world!'

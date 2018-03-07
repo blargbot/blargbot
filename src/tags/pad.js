@@ -11,9 +11,9 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('pad')
-        .isDepreciated('{pad} will be replaced by {realpad} in v2')
+        .isDeprecated('realpad')
         .withArgs(a => [a.require('direction'), a.require('back'), a.require('text')])
-        .withDesc('Pads `back` to the `direction` of `text`. Direction can be `left` or `right`')
+        .withDesc('Places `text` ontop of `back` with it being aligned to the opposite of `direction`. If `text` is longer than `back` then it will simply overlap')
         .withExample(
             '{pad;left;000000;ABC}',
             '000ABC'

@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('isarray')
         .withArgs(a => a.require('text'))
-        .withDesc('Determines whether the provided text is a valid array.')
+        .withDesc('Determines whether `text` is a valid array.')
         .withExample(
             '{isarray;["array?"]} {isarray;array?}',
             'true false'

@@ -12,12 +12,11 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('userjoinedat')
     .withArgs(a => [a.optional('format'), a.optional('user'), a.optional('quiet')])
-    .withDesc('Returns the date the user joined the current guild, in UTC+0. ' +
-      'If a `format` code is specified, the date is formatted accordingly. ' +
-      'Leave blank for default formatting. ' +
+    .withDesc('Returns the date that `user` joined the current guild using `format` for the output, in UTC+0. ' +
+      '`user` defaults to the user who executed the containing tag. ' +
+      '`format` defaults to `YYYY-MM-DDTHH:mm:ssZ`. ' +
       'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information. ' +
-      'If `user` is specified, gets that user instead. ' +
-      'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+      'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
     .withExample(
       'Your account joined this guild on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
       'Your account joined this guild on 2016/01/01 01:00:00.'

@@ -13,7 +13,7 @@ module.exports =
     Builder.AutoTag('randchoose')
         .acceptsArrays()
         .withArgs(a => a.require('choices', true))
-        .withDesc('Picks a random entry that you provided. If an entry is an array, it will be chosen from one of the values in the array')
+        .withDesc('Picks one random entry from `choices`. If an array is supplied, it will be exapnded to its individual elements')
         .withExample(
             'I feel like eating {randchoose;cake;pie;pudding} today',
             'I feel like eating pudding today.'

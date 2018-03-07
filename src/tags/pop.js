@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('pop')
         .withArgs(a => a.require('array'))
-        .withDesc('Returns the last element in an array. If used with {get} this will remove the last element from the array as well.')
+        .withDesc('Returns the last element in `array`. If used with `{get}` this will remove the last element from `array` as well.')
         .withExample(
             '{pop;["this", "is", "an", "array"]}',
             'array'

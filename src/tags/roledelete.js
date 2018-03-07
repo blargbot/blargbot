@@ -13,7 +13,7 @@ module.exports =
   Builder.CCommandTag('roledelete')
     .requireStaff()
     .withArgs(a => [a.require('role'), a.optional('quiet')])
-    .withDesc('Deletes a role. If `quiet` is specified, if a role can\'t be found it will return nothing')
+    .withDesc('Deletes `role`. If `quiet` is specified, if `role` can\'t be found it will return nothing')
     .withExample(
       '{roledelete;Super Cool Role!}',
       '(rip no more super cool roles for anyone)'

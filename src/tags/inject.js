@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ComplexTag('inject')
         .withArgs(a => a.require('code'))
-        .withDesc('Injects code into the tag. For example, doing {inject;{args}} will let any user execute any code. Use with caution.')
+        .withDesc('Executes any arbitrary BBTag that is within `code` and returns the result. Useful for making dynamic code, or as a testing tool (`{inject;{args}}`)')
         .withExample(
             'Random Number: {inject;{lb}randint{semi}1{semi}4{lb}}',
             'Random Number: 3'

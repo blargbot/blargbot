@@ -13,7 +13,7 @@ module.exports =
   Builder.AutoTag('min')
     .acceptsArrays()
     .withArgs(a => a.require('number', true))
-    .withDesc('Returns the smallest number out of those provided.')
+    .withDesc('Returns the smallest entry out of `numbers`. If an array is provided, it will be expanded to its individual values.')
     .withExample(
       '{min;50;2;65}',
       '2'

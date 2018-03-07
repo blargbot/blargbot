@@ -11,11 +11,10 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('aset')
-        .isDepreciated().acceptsArrays()
+        .isDeprecated('set').acceptsArrays()
         .withArgs(a => [a.require('name'), a.optional('value', true)])
         .withDesc('Stores `value` under the variable `name`. ' +
-            'Variables are unique per-author. ' +
-            'This tag is functionally equivalent to `{set;@name;value}`'
+            'Variables are unique per-author.'
         ).withExample(
             '{aset;testvar;This is a test var}',
             ''

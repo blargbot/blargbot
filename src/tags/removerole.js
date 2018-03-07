@@ -13,9 +13,9 @@ module.exports =
   Builder.CCommandTag('removerole')
     .requireStaff()
     .withArgs(a => [a.require('role'), a.optional('user'), a.optional('quiet')])
-    .withDesc('Removes a role from a user, where role is a role ID or mention. ' +
+    .withDesc('Removes `role` from `user`, where `role` is a role ID or mention. ' +
       'You can find a list of roles and their ids by doing \`b!roles\`. ' +
-      'Returns true if a role was removed, and false otherwise.' +
+      'Returns true if `role` was removed, and false otherwise.' +
       'If `quiet` is specified, if a user can\'t be found it will simply return `false`'
     ).withExample(
       'No more role! {removerole;11111111111111111}',

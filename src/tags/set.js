@@ -13,7 +13,7 @@ module.exports =
     Builder.AutoTag('set')
         .acceptsArrays()
         .withArgs(a => [a.require('name'), a.optional('value', true)])
-        .withDesc('Stores a variable. These variables are saved between sessions. ' +
+        .withDesc('Stores `value` under `name`. These variables are saved between sessions. ' +
             'You can use a character prefix to determine the scope of your variable.\n' +
             'Valid scopes are: ' + bu.tagVariableScopes.map(s => `\`${s.prefix}\` (${s.name})`).join(', ') +
             'For more information, use `b!t define variable` or `b!cc define variable`'

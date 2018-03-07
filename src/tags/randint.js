@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('randint')
         .withArgs(a => [a.optional('min'), a.require('max')])
-        .withDesc('Chooses a random whole number between two values (inclusive). `min` defaults to 0.')
+        .withDesc('Chooses a random whole number between `min` and `max` (inclusive). `min` defaults to 0.')
         .withExample(
             'You rolled a {randint;1;6}.',
             'You rolled a 5.'

@@ -17,9 +17,9 @@ const Builder = require('../structures/TagBuilder'),
 module.exports =
   Builder.AutoTag('usergametype')
     .withArgs(a => [a.optional('user'), a.optional('quiet')])
-    .withDesc('Returns how the user is playing the game (playing, streaming). ' +
-      'If `user` is specified, gets that user instead. ' +
-      'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withDesc('Returns how `user` is playing the game (playing, streaming). ' +
+      '`user` defaults to the user who executed the containing tag. ' +
+      'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
     .withExample(
       'You are {usergametype} right now!',
       'You are playing right now!'

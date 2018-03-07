@@ -12,10 +12,10 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('usergame')
     .withArgs(a => [a.optional('user'), a.optional('quiet')])
-    .withDesc('Returns the game the user is playing. ' +
-      'If the user isn\'t playing a game, returns the word `nothing`. ' +
-      'If `user` is specified, gets that user instead. ' +
-      'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withDesc('Returns the game `user` is playing. ' +
+      'If `user` isn\'t playing a game, returns the word `nothing`. ' +
+      '`user` defaults to the user who executed the containing tag. ' +
+      'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
     .withExample(
       'You are playing {usergame}',
       'You are playing with bbtag'

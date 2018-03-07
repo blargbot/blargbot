@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('hash')
         .withArgs(a => a.require('text'))
-        .withDesc('Returns the numeric hash of any given text, based on the unicode value of each individual character. ' +
+        .withDesc('Returns the numeric hash of `text`, based on the unicode value of each individual character. ' +
             'This results in seemingly randomly generated numbers that are constant for each specific query.')
         .withExample(
             'The hash of brown is {hash;brown}.',

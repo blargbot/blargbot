@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('split')
         .withArgs(a => [a.require('text'), a.optional('splitter')])
-        .withDesc('Splits text using the provided splitter, and the returns an array.')
+        .withDesc('Splits `text` using `splitter`, and the returns an array.')
         .withExample(
             '{split;Hello! This is a sentence.;{space}}',
             '["Hello!","This","is","a","sentence."]'

@@ -24,13 +24,13 @@ module.exports =
   Builder.AutoTag('math')
     .acceptsArrays()
     .withArgs(a => [a.require('operator'), a.require('values', true)])
-    .withDesc('Returns a number based on the operator and values. ' +
+    .withDesc('Accepts multiple `values` and returns the result of `operator` on them. ' +
       'Valid operators are `' + Object.keys(operators).join('`, `') + '`')
     .withExample(
       '2 + 3 + 6 - 2 = {math;-;{math;+;2;3;6};2}',
       '2 + 3 + 6 - 2 = 9'
     ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('<3', Builder.errors.notEnoughArguments)
+    .whenArgs('1-2', Builder.errors.notEnoughArguments)
     .whenDefault(async function(params) {
       if (!operators.hasOwnProperty(params.args[1]))
         return await Builder.errors.invalidOperator(params);

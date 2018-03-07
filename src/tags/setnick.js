@@ -13,13 +13,13 @@ module.exports =
     Builder.CCommandTag('setnick')
         .requireStaff()
         .withArgs(a => [a.require('nick'), a.optional('user')])
-        .withDesc('Sets a user\'s nickname. Leave `nick` blank to reset their nickname.')
+        .withDesc('Sets `user`\'s nickname to `nick`. Leave `nick` blank to reset their nickname.')
         .withExample(
             '{setnick;super cool nickname}',
             ''
         ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-3', async function (params) {
             let nick = params.args[1],
                 user = params.args[2];
 

@@ -15,7 +15,7 @@ module.exports =
     .withArgs(a => [a.require('role'), a.optional('user'), a.optional('quiet')])
     .withDesc('Gives `user` the chosen `role`, where `role` is a role ID or mention. ' +
       'You can find a list of roles and their ids by doing `b!roles`. ' +
-      'Returns `true` if `role` was given, and `false` otherwise.' +
+      'Returns `true` if `role` was given, and `false` otherwise. ' +
       'If `quiet` is specified, if a user can\'t be found it will simply return `false`'
     ).withExample(
       'Have a role! {addrole;11111111111111111}',

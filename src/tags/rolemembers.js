@@ -12,8 +12,8 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('rolemembers')
     .withArgs(a => [a.require('role'), a.optional('quiet')])
-    .withDesc('Returns an array of members in the specified role. ' +
-      'If `quiet` is specified, if a role can\'t be found it will simply return the `role`')
+    .withDesc('Returns an array of members in `role`. ' +
+      'If `quiet` is specified, if `role` can\'t be found it will simply return `role`')
     .withExample(
       'The admins are: {rolemembers;Admin}.',
       'The admins are: ["11111111111111111","22222222222222222"].'

@@ -12,8 +12,8 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.CCommandTag('usermention')
     .withArgs(a => [a.optional('user'), a.optional('quiet')])
-    .withDesc('Mentions a user. If `user` is specified, gets that user instead. '+
-    'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withDesc('Mentions `user`. `user` defaults to the user who executed the containing tag. '+
+    'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
     .withExample(
       'Hello, {usermention}!',
       'Hello, @user!'

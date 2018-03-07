@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('realpad')
         .withArgs(a => [a.require('text'), a.require('length'), a.optional('filler'), a.optional('direction')])
-        .withDesc('Pads the provided text to the provided length, using the provided character and direction. ' +
+        .withDesc('Pads `text` using `filler` until it has `length` characters. `filler` is applied to the `direction` of `text` ' +
             '`filler` defaults to space, `direction` defaults to right.\n\n' +
             'This is how padding <em>should</em> be implemented, and the {pad} subtag is a sucks. ' +
             'The past me who thought it would be a good idea is also a sucks.')

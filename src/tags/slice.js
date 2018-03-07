@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('slice')
         .withArgs(a => [a.require('array'), a.require('start'), a.optional('end')])
-        .withDesc('Grabs elements between the zero-indexed start and end points (inclusive).')
+        .withDesc('Grabs elements between the zero-indexed `start` and `end` points (inclusive) from `array`.')
         .withExample(
             '{slice;["this", "is", "an", "array"];1}',
             '["is","an","array"]'

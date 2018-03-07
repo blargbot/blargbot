@@ -17,7 +17,8 @@ module.exports =
             a.optional('count'),
             a.optional('reason')
         ])
-        .withDesc('Gives a user the specified number of pardons with the given reason, and returns their new warning count.')
+        .withDesc('Gives `user` `count` pardons with `reason`, and returns their new warning count. ' +
+            '`user` defaults to the person running the tag and `count` defaults to 1')
         .withExample(
             'Be pardoned! {pardon}',
             'Be pardoned! 0'

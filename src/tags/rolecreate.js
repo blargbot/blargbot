@@ -20,9 +20,10 @@ module.exports =
       a.optional('hoisted')
     ])
     .withDesc('Creates a role with the given information. ' +
-      'Provide color in hex. ' +
-      'Provide permissions as a number, which can be calculated [here](https://discordapi.com/permissions.html) ' +
-      'Color defaults to #000000 (uncolored role), permissions defaults to 0, mentionable defaults to false, hoisted defaults to false. ' +
+      'Provide `color` in hex. ' +
+      'Provide `permissions` as a number, which can be calculated [here](https://discordapi.com/permissions.html) ' +
+      '`hoisted` is if the role should be displayed separately from other roles ' +
+      '`color` defaults to #000000 (uncolored role), `permissions` defaults to 0, `mentionable` defaults to false, `hoisted` defaults to false. ' +
       'Returns the new role\'s ID.')
     .withExample(
       '{rolecreate;Super Cool Role!;ff0000;0;false;true}',

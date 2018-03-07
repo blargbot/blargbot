@@ -13,8 +13,8 @@ module.exports =
   Builder.CCommandTag('unban')
     .requireStaff()
     .withArgs(a => [a.require('user'), a.optional('reason'), a.optional('noperms')])
-    .withDesc('Unbans a user. This functions the same as the unban command. '+
-    'If noperms is provided, do not check if the command executor is actually able to ban people. '+
+    .withDesc('Unbans `user` with the given `reason`. This functions the same as the unban command. '+
+    'If `noperms` is provided, do not check if the command executor is actually able to ban people. '+
     'Only provide this if you know what you\'re doing.')
     .withExample(
       '{unban;@user;0;This is a test unban}@user was unbanned!',

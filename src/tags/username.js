@@ -12,8 +12,8 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('username')
     .withArgs(a => [a.optional('user'), a.optional('quiet')])
-    .withDesc('Returns the user\'s name. If `user` is specified, gets that user instead. ' +
-      'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withDesc('Returns `user`\'s name. `user` defaults to the user who executed the containing tag. ' +
+      'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
     .withExample(
       'Your username is {username}!',
       'Your username is user!'

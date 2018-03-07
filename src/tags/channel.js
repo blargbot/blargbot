@@ -11,13 +11,12 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.CCommandTag('channel')
-    .isDepreciated().requireStaff()
+    .isDeprecated('send').requireStaff()
     .withArgs(a => [a.require('channel'), a.optional('message')])
-    .withDesc('Please use the {send} subtag instead of this.\n' +
-      'Sends the output to `channel`. ' +
+    .withDesc('Sends the output to `channel`. ' +
       'If `message` is specified, it will send `message` in the specified channel instead of rerouting output.')
     .withExample(
-      '{channel;#channel}Hello!',
+      '{channel;#channel} Hello!',
       'In #channel: Hello!'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)

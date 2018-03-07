@@ -12,9 +12,9 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
   Builder.AutoTag('userstatus')
     .withArgs(a => [a.optional('user'), a.optional('quiet')])
-    .withDesc('Returns the status of the specified user (`online`, `idle`, `dnd`, or `offline`). ' +
-      'If `user` is specified, gets that user instead. ' +
-      'If `quiet` is specified, if a user can\'t be found it will simply return the `user`')
+    .withDesc('Returns the status of `user` (`online`, `idle`, `dnd`, or `offline`). ' +
+      '`user` defaults to the user who executed the containing tag. ' +
+      'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
     .withExample(
       'You are currently {userstatus}',
       'You are currently online'

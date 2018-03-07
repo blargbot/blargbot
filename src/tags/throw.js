@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('throw')
         .withArgs(a => a.require('error'))
-        .withDesc('Throws an error.')
+        .withDesc('Throws `error`.')
         .withExample(
             '{throw;Custom Error}',
             '`Custom Error`'

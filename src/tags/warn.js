@@ -13,7 +13,8 @@ module.exports =
     Builder.CCommandTag('warn')
         .requireStaff()
         .withArgs(a => [a.optional('user'), a.optional('count'), a.optional('reason')])
-        .withDesc('Gives a user the specified number of warnings with the given reason, and returns their new warning count.')
+        .withDesc('Gives `user` the specified number of warnings with the given reason, and returns their new warning count. '+
+            '`user` defaults to the user who executed the containing tag. `count` defaults to 1.')
         .withExample(
             'Be warned! {warn}',
             'Be warned! 1'

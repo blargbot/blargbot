@@ -17,10 +17,9 @@ module.exports =
             a.optional('parseformat'),
             a.optional('timezone')
         ])
-        .withDesc('Returns the current time, in UTC+0. If a `format` code is specified, ' +
-            'the date is formatted accordingly. Leave blank for default formatting. ' +
+        .withDesc('Returns `time` formatted using `format`. `format` defaults to `YYYY-MM-DDTHH:mm:ssZ`. `time` defaults to the current time. ' +
             'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.\n' +
-            'Additionally, you can specify another time to display, and a format to parse it with. ' +
+            'If you provide `time`, you should also provide `parseformat` to ensure it is being interpreted correctly. ' +
             'See [here](http://momentjs.com/docs/#/parsing/) for parsing documentation. ' +
             'See [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for a list of timezone codes.')
         .withExample(

@@ -12,9 +12,9 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('sort')
         .withArgs(a => [a.require('array'), a.optional('descending')])
-        .withDesc('Sorts the provided array in ascending order. ' +
-            'If descending is provided, sorts in descending order. ' +
-            'If {get} is used, will modify the original array.')
+        .withDesc('Sorts the `array` in ascending order. ' +
+            'If `descending` is provided, sorts in descending order. ' +
+            'If `{get}` is used, will modify the original `array`.')
         .withExample(
             '{sort;[3, 2, 5, 1, 4]}',
             '[1,2,3,4,5]'
