@@ -235,8 +235,9 @@ bu.processTagInner = async function (params, i) {
 
 
 bu.processTag = async function (params) {
-    let { msg, words, contents, fallback, author, tagName, terminate, isStaff, vars, reactions = [], quiet, embed } = params;
+    let { msg, words, contents, fallback, author, tagName, terminate, isStaff, vars, reactions, quiet, embed } = params;
     if (params.content) contents = params.content;
+    if (!reactions) params.reactions = reactions = [];
     if (!contents) contents = '';
     if (isStaff === undefined)
         isStaff = author == params.msg.guild.id || await bu.isUserStaff(author, msg.guild.id);
@@ -283,7 +284,7 @@ bu.processTag = async function (params) {
         let subtagindex = subtags.push(contents.substring(coords[i][0], coords[i][1]));
     }
     let result = {
-        contents, reactions, embed
+        contents, reactions: [], embed: undefined, terminate: false
     };
     for (let i = 0; i < subtags.length; i++) {
         let tagBrackets = subtags[i],
@@ -365,7 +366,6 @@ bu.processTag = async function (params) {
                 isStaff, vars, reactions, quiet, embed
             }, `\`Subtag "${title}" doesn\'t exist\``);
         }
-
         if (replaceObj.fallback !== undefined) {
             fallback = replaceObj.fallback;
         }
@@ -377,10 +377,10 @@ bu.processTag = async function (params) {
                 result.reactions.push(...replaceObj.reactions);
             else
                 result.reactions.push(replaceObj.reactions);
-            reactions = result.reactions;
+            params.reactions = result.reactions;
         }
         if (replaceObj.embed !== undefined) {
-            result.embed = embed = replaceObj.embed;
+            params.embed = result.embed = replaceObj.embed;
         }
         if (replaceObj.terminate) {
             result.contents = result.contents.substring(0, result.contents.indexOf(tagBrackets) + tagBrackets.length);
@@ -414,7 +414,7 @@ bu.processTag = async function (params) {
         }
         if (result.terminate) break;
     }
-    //console.debug('End of processTag', result);
+    console.debug('End of processTag', result);
     return result;
 };
 
