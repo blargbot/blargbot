@@ -414,7 +414,7 @@ bu.processTag = async function (params) {
         }
         if (result.terminate) break;
     }
-    console.debug('End of processTag', result);
+    //console.debug('End of processTag', result);
     return result;
 };
 
