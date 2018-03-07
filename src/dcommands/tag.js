@@ -679,11 +679,15 @@ e.event = async function (args) {
     let params = args.params;
     params.msg = msg;
     params.msg.didTimer = true;
-    let output = await bu.processTagInner(params, 1);
-    bu.send(params.msg.channel.id, {
-        content: output,
+    params.content = params.args[1];
+    let output = await bu.processTag(params);
+    let message = await bu.send(params.msg.channel.id, {
+        content: output.contents,
+        embed: output.embed,
         disableEveryone: false
     });
+    if (message)
+        await bu.addReactions(message.channel.id, message.id, output.reactions);
 };
 
 function escapeRegex(str) {
