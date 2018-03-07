@@ -8,13 +8,14 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
+collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base'}),
 operators = {
-    '==': (a, b) => a.toString() === b.toString(),
+    '==': (a, b) => a === b,
     '!=': (a, b) => !operators['=='](a, b),
-    '>=': (a, b) => a >= b,
-    '>': (a, b) => a > b,
-    '<=': (a, b) => a <= b,
-    '<': (a, b) => a < b,
+    '>=': (a, b) => collator.compare(a, b) >= 0,
+    '>': (a, b) => collator.compare(a, b) > 0,
+    '<=': (a, b) => collator.compare(a, b) <= 0,
+    '<': (a, b) => collator.compare(a, b) < 0,
     'startswith': (a, b) => Array.isArray(a) ? a[0] == b.toString() : a.toString().startsWith(b),
     'endswith': (a, b) => Array.isArray(a) ? a[a.length - 1] == b.toString() : a.toString().endsWith(b),
     'includes': (a, b) => Array.isArray(a) ? a.includes(b.toString()) : a.toString().includes(b)
@@ -54,9 +55,6 @@ module.exports =
                 opKey = val3;
             } else
                 return await Builder.errors.invalidOperator(params);
-
-            if (!isNaN(parseInt(left))) left = parseInt(left);
-            if (!isNaN(parseInt(right))) right = parseInt(right);
 
             let leftArr = await bu.deserializeTagArray(left),
                 rightArr = await bu.deserializeTagArray(right);
