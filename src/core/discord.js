@@ -58,7 +58,8 @@ class DiscordClient extends dep.Eris.Client {
 
         const Manager = require('./Manager.js');
         global.EventManager = new Manager('events', true);
-        global.TagManager = new Manager('tags');
+        global.TagManager = new Manager('tags', undefined, false);
+        TagManager.init();
         let tags = Object.keys(TagManager.list).map(k => TagManager.list[k].category);
         console.info('Tags: ' + tags.length +
             ' | Simple: ' + tags.filter(t => t == bu.TagType.SIMPLE).length +
