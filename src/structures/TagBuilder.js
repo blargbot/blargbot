@@ -33,12 +33,11 @@ class TagBuilder {
 
     tag.execute = function (tag, beforeExec, execConditional, execDefault) {
       return async function (params) {
-        console.debug('Processing subtag ' + tag.name);
         try {
-          if (this.category === bu.TagType.CCOMMAND && !params.ccommand)
+          if (tag.category === bu.TagType.CCOMMAND && !params.ccommand)
             return EnsureResponse(params, await TagBuilder.util.error(params, 'Can only use in CCommands'));
 
-          if (this.staff && !params.isStaff)
+          if (tag.staff && !params.isStaff)
             return EnsureResponse(params, await TagBuilder.util.error(params, 'Author must be staff'));
 
           let callback;
@@ -104,8 +103,8 @@ class TagBuilder {
     return this.withProp('array', array);
   }
 
-  isDepreciated(depreciated = true) {
-    return this.withProp('depreciated', depreciated);
+  isDeprecated(replacement) {
+    return this.withProp('deprecated', replacement || true);
   }
 
   withCategory(category) {
