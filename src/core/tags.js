@@ -13,7 +13,7 @@ const argFactory = require('../structures/ArgumentFactory'),
 var e = module.exports = {};
 
 e.processTag = async function (msg, contents, command, tagName, author, isCcommand) {
-    let result = { contents, reactions: [] };
+    let result = { contents, reactions: [], embed: [] };
     try {
         author = author || msg.channel.guild.id;
         var words = typeof command === 'string' ? bu.splitInput(command) : command;
@@ -83,7 +83,7 @@ Reason: ${tag.reason}`);
         }
         if (output.contents == '')
             return;
-        let message = bu.send(msg, output.contents);
+        let message = bu.send(msg, { content: output.contents, embed: output.embed });
         await bu.addReactions(message.channel.id, message.id, output.reactions);
     }
 };

@@ -234,9 +234,10 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             let command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
             let output = await tags.processTag(msg, ccommandContent, command, ccommandName, author, true);
-            if (/\S/.test(output.contents || '')) {
+            if (/\S/.test(output.contents || '') || output.embed != null) {
                 let message = await bu.send(msg, {
-                    content: output.contents.trim(),
+                    content: (output.contents || '').trim(),
+                    embed: output.embed,
                     disableEveryone: false
                 });
                 await bu.addReactions(message.channel.id, message.id, output.reactions);
@@ -407,7 +408,7 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                             break;
                     }
                     let output = await tags.processTag(msg, content, msg.content, undefined, undefined, true);
-                    let message = await bu.send(msg, output.contents);
+                    let message = await bu.send(msg, { content: output.contents, embed: output.embed });
                     if (message != null)
                         await bu.addReactions(message.channel.id, message.id, output.reactions);
                     return;
@@ -448,7 +449,7 @@ async function handleRoleme(msg, storedGuild) {
                         let output = roleme[i].output ?
                             await tags.processTag(msg, roleme[i].output, '', undefined, undefined, true) :
                             { content: 'Your roles have been edited!' };
-                        let message = await bu.send(msg, output.contents);
+                        let message = await bu.send(msg, { content: output.contents, embed: output.embed });
                         await bu.addReactions(message.channel.id, message.id, output.reactions);
                     } catch (err) {
                         bu.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');

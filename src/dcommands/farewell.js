@@ -52,8 +52,10 @@ e.execute = async function (msg, words) {
         }
     }
     let output = await tags.processTag(msg, farewell, '', undefined, msg.author.id, true);
-    let message = await bu.send(msg, `Farewell set. ${suffix}Simulation:
-${output.contents}`);
+    let message = await bu.send(msg, {
+        content: `Farewell set. ${suffix}Simulation:
+${output.contents}`, embed: output.embed
+    });
     if (message != null)
         await bu.addReactions(message.channel.id, message.id, output.reactions);
 };

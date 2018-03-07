@@ -76,6 +76,7 @@ class TagBuilder {
         if (result.replaceContent == null) result.replaceContent = false;
         if (result.replaceString == null) result.replaceString = '';
         if (result.reactions == null) result.reactions = params.reactions;
+        if (result.embed == null) result.embed = params.embed;
 
         return result;
       }

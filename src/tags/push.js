@@ -27,9 +27,10 @@ module.exports =
                 return await Builder.errors.notAnArray(params);
 
             arr.v.push(...values);
+
             if (arr.n != null)
                 await bu.setArray(arr, params);
-
-            return bu.serializeTagArray(arr.v);
+            else
+                return bu.serializeTagArray(arr.v);
         })
         .build();

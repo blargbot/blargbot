@@ -518,7 +518,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
             case 'test':
                 if (words.length > 2) {
                     let output = await tags.processTag(msg, words.slice(2).join(' '), '', 'test', msg.author.id);
-                    let message = await bu.send(msg, `Output:\n${output.contents.trim()}`);
+                    let message = await bu.send(msg, { content: `Output:\n${output.contents.trim()}`, embed: output.embed });
                     await bu.addReactions(message.channel.id, message.id, output.reactions);
                 }
                 break;

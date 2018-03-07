@@ -230,17 +230,12 @@ bu.processTagInner = async function (params, i) {
 
     if (result.terminate)
         params.terminate = true;
-
-    if (!Array.isArray(params.reactions))
-        params.reactions = [];
-    params.reactions.push(...(result.reactions || []));
-
     return result.contents;
 };
 
 
 bu.processTag = async function (params) {
-    let { msg, words, contents, fallback, author, tagName, terminate, isStaff, vars, reactions, quiet } = params;
+    let { msg, words, contents, fallback, author, tagName, terminate, isStaff, vars, reactions = [], quiet, embed } = params;
     if (params.content) contents = params.content;
     if (!contents) contents = '';
     if (isStaff === undefined)
@@ -250,7 +245,8 @@ bu.processTag = async function (params) {
     if (terminate) return {
         contents: contents,
         terminate: true,
-        reactions
+        reactions,
+        embed
     };
 
     let openBraceCount = (contents.match(/\{/g) || []).length;
@@ -258,7 +254,8 @@ bu.processTag = async function (params) {
     if (openBraceCount !== closeBraceCount) return {
         contents: `\`Unmatched Brace Error\``,
         terminate: true,
-        reactions
+        reactions,
+        embed
     };
 
     let level = 0;
@@ -286,7 +283,7 @@ bu.processTag = async function (params) {
         let subtagindex = subtags.push(contents.substring(coords[i][0], coords[i][1]));
     }
     let result = {
-        contents, reactions
+        contents, reactions, embed
     };
     for (let i = 0; i < subtags.length; i++) {
         let tagBrackets = subtags[i],
@@ -300,7 +297,7 @@ bu.processTag = async function (params) {
             args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
         let title = (await bu.processTag({
-            msg, words, contents: args[0], fallback, author, tagName, terminate, vars, reactions, quiet
+            msg, words, contents: args[0], fallback, author, tagName, terminate, vars, reactions, quiet, embed
         })).contents.toLowerCase();
 
         if (i === 0 || i === subtags.length - 1 && title === '//')
@@ -316,14 +313,14 @@ bu.processTag = async function (params) {
                 tagName: tagName,
                 ccommand: params.ccommand,
                 terminate,
-                isStaff, vars, reactions, quiet
+                isStaff, vars, reactions, quiet, embed
             };
             if (TagManager.list[title].category == bu.TagType.CCOMMAND && !params.ccommand) {
                 replaceObj = {
                     replaceString: await bu.tagProcessError(params, '`Can only use {' + title + '} in CCommands`'),
                     terminate,
                     replaceContent: false,
-                    reactions
+                    reactions, embed
                 };
             } else
                 try {
@@ -339,7 +336,7 @@ bu.processTag = async function (params) {
                             tagName: tagName,
                             ccommand: params.ccommand,
                             terminate,
-                            isStaff, vars, reactions, quiet
+                            isStaff, vars, reactions, quiet, embed
                         }, `\`An internal error occurred. This has been reported.\``);
                         bu.send('250859956989853696', {
                             content: 'A tag error occurred.',
@@ -353,7 +350,7 @@ bu.processTag = async function (params) {
                                 ]
                             }
                         })
-                    } else replaceObj = { terminate: true, replaceString: '', reactions };
+                    } else replaceObj = { terminate: true, replaceString: '', reactions, embed };
                 }
         } else {
             replaceObj.replaceString = await bu.tagProcessError({
@@ -365,18 +362,25 @@ bu.processTag = async function (params) {
                 tagName: tagName,
                 ccommand: params.ccommand,
                 terminate,
-                isStaff, vars, reactions, quiet
+                isStaff, vars, reactions, quiet, embed
             }, `\`Subtag "${title}" doesn\'t exist\``);
         }
 
         if (replaceObj.fallback !== undefined) {
             fallback = replaceObj.fallback;
         }
-        if (replaceObj.quiet !== undefined){
+        if (replaceObj.quiet !== undefined) {
             quiet = replaceObj.quiet;
         }
         if (replaceObj.reactions !== undefined) {
-            result.reactions = reactions = replaceObj.reactions;
+            if (Array.isArray(replaceObj.reactions))
+                result.reactions.push(...replaceObj.reactions);
+            else
+                result.reactions.push(replaceObj.reactions);
+            reactions = result.reactions;
+        }
+        if (replaceObj.embed !== undefined) {
+            result.embed = embed = replaceObj.embed;
         }
         if (replaceObj.terminate) {
             result.contents = result.contents.substring(0, result.contents.indexOf(tagBrackets) + tagBrackets.length);

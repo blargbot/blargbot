@@ -27,6 +27,7 @@ bot.on('guildMemberAdd', async function (guild, member) {
         }, ccommandContent, '', undefined, author, true);
         let message = await bu.send(chan, {
             content: output.contents,
+            embed: output.embed,
             disableEveryone: false
         });
         if (message != null)
