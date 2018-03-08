@@ -252,7 +252,7 @@ e.docs = async function (msg, command, topic, ccommand = false) {
             if (tag.exampleCode)
                 embed.fields.push({
                     name: 'Example code',
-                    value: '```\n' + tag.exampleCode + '```'
+                    value: '```csharp\n' + tag.exampleCode + '```'
                 });
             if (tag.exampleIn)
                 embed.fields.push({
