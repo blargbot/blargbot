@@ -124,7 +124,7 @@ const Builder = require('../structures/TagBuilder'),
           : false,
       parse: bu.parseBoolean,
       setter: (e, v) => lastElem(getObj(e, 'fields', [])).inline = v
-    },
+    }
   ];
 
 function getObj(embed, objName, defVal) {

@@ -1403,8 +1403,6 @@ bu.parseEmbed = function (embedText) {
     }
 };
 
-let test = require('moment-timezone'); test().add
-
 const prettyTimeMagnitudes = {
     //defaults
     year: 'year', years: 'years', y: 'y',
@@ -1441,4 +1439,4 @@ bu.parseTime = function (text, format = undefined) {
 
     console.debug('using default moment parsing');
     return dep.moment(text, format).utcOffset(0);
-}
+};
