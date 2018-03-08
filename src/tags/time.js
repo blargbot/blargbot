@@ -31,7 +31,7 @@ module.exports =
                 time = params.args[2],
                 parse = params.args[3],
                 timezone = params.args[4],
-                date = dep.moment.tz(time, parse, timezone || 'Etc/UTC');
+                date = bu.parseTime(time, parse, timezone);
 
             if (!date.isValid()) return await Builder.util.error(params, 'Invalid date');
 
