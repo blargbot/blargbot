@@ -10,11 +10,11 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('tagexists')
+    Builder.AutoTag('subtagexists')
         .withArgs(a => a.require('subTag'))
         .withDesc('Checks to see if `subTag` exists.')
         .withExample(
-            '{tagexists;ban} {tagexists;AllenKey}',
+            '{subtagexists;ban} {subtagexists;AllenKey}',
             'true false'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
