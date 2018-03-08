@@ -35,6 +35,7 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'color',
+      desc: 'can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number.',
       error: (e, v) => v == null
         ? 'Invalid color'
         : false,
@@ -109,6 +110,7 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'fields.name',
+      desc: 'Must have `fields.value` after. Cannot be empty.',
       error: (e, v) => getObj(e, 'fields', []).length >= 25
         ? 'Too many fields'
         : v.length > 256
@@ -119,6 +121,7 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'fields.value',
+      desc: 'Must come after a `fields.name`. Cannot be empty',
       error: (e, v) => getObj(e, 'fields', []).length == 0
         ? 'Field name not specified'
         : v.length > 1024
@@ -129,6 +132,7 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'fields.inline',
+      desc: 'Must come after a `fields.name`',
       error: (e, v) => getObj(e, 'fields', []).length == 0
         ? 'Field name not specified'
         : !bu.isBoolean(v)
@@ -158,9 +162,8 @@ module.exports =
     .withArgs(a => a.require('values',
       true))
     .withDesc('This tag is designed to allow you to generate embed code for `{webhook}` and `{embed}` with much less effort.\n' +
-      'This tag uses a key/value system, with each entry in `values` looking like `key:value`. ' +
-      'Valid keys are:\n`' + fields.map(k => k.key).join('`\n`') + '`\n' +
-      'For the `fields` related keys, `fields.name` must precede a `fields.value`\n' +
+      'This tag uses a key/value system, with each entry in `values` looking like `key:value`.\n\n' +
+      'Valid keys are:\n' + fields.map(k => '`' + k.key + '`' + (k.desc == null ? '' : ' - ' + k.desc)).join('\n') + '\n\n' +
       'You can find information about embeds [here (embed structure)](https://discordapp.com/developers/docs/resources/channel#embed-object) ' +
       'and [here (embed limits)](https://discordapp.com/developers/docs/resources/channel#embed-limits) as well as a useful tool for testing embeds ' +
       '[here](https://leovoel.github.io/embed-visualizer/)')
