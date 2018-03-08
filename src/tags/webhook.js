@@ -32,19 +32,9 @@ module.exports =
             let id = params.args[1],
                 token = params.args[2],
                 content = params.args[3],
-                embed = bu.processSpecial(params.args[4], true),
+                embed = bu.parseEmbed(params.args[4]),
                 username = params.args[5],
                 avatar = params.args[6];
-
-            if (embed != null) {
-                try {
-                    embed = JSON.parse(embed);
-                } catch (err) {
-                    embed = {
-                        fields: [{ name: 'Malformed JSON', value: params.args[4] }]
-                    };
-                }
-            }
 
             try {
                 await bot.executeWebhook(id, token, {
