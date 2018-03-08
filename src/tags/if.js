@@ -34,7 +34,10 @@ module.exports =
                 case 4:
                     otherwise = 3;
                 case 3:
-                    if (bu.parseBoolean(val1))
+                    let bool = bu.parseBoolean(val1);
+                    if (!bu.isBoolean(bool))
+                        return await Builder.errors.notABoolean(params);
+                    if (bool)
                         return await bu.processTagInner(params, 2);
                     else if (otherwise)
                         return await bu.processTagInner(params, otherwise);
