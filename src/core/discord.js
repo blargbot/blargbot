@@ -102,11 +102,11 @@ ${commandToProcess}
 Output:
 \`\`\`js
 ${res}
-\`\`\``)
+\`\`\``);
             } catch (err) {
                 await bu.send(msg, `An error occured!
 \`\`\`js
-\${err.stack}
+${err}
 \`\`\``);
             }
         }
@@ -167,10 +167,10 @@ process.on('message', async msg => {
                                 exampleIn: t.exampleIn,
                                 exampleOut: t.exampleOut,
                                 deprecated: t.deprecated
-                            }
+                            };
                         }
                     }
-                    bot.sender.send(eventKey, JSON.stringify(tags))
+                    bot.sender.send(eventKey, JSON.stringify(tags));
                     break;
                 }
                 case 'commandList': {
@@ -186,7 +186,7 @@ process.on('message', async msg => {
                                 category: c.category,
                                 alias: c.alias,
                                 flags: c.flags
-                            }
+                            };
                         }
                     }
                     bot.sender.send(eventKey, JSON.stringify(commands));
