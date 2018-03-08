@@ -30,8 +30,8 @@ module.exports =
             }
             params.msg.iterations = (params.msg.iterations + 1) || 1;
 
-            if (!tag)
-                return await Builder.util.error('Tag not found');
+            if (tag == null)
+                return await Builder.util.error(params, 'Tag not found');
 
             if (typeof tag == 'string')
                 tag = { content: tag };
