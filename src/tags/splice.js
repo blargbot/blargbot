@@ -16,8 +16,8 @@ module.exports =
             'Then, adds each `item` at that position in `array`. Returns the removed items. ' +
             'If used with `{get}` this will modify the original array')
         .withExample(
-            '{set;array;["this", "is", "an", "array"]} {splice;{get;array};1;1;was} {get;array}',
-            '["is"] {"v":["this","was","an","array"],"n":"array"}'
+            '{set;~array;["this", "is", "an", "array"]} {splice;{get;~array};1;1;was} {get;~array}',
+            '["is"] {"v":["this","was","an","array"],"n":"~array"}'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenDefault(async function (params) {

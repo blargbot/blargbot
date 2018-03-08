@@ -18,7 +18,7 @@ module.exports =
             'Valid scopes are: ' + bu.tagVariableScopes.map(s => `\`${s.prefix}\` (${s.name})`).join(', ') +
             'For more information, use `b!t define variable` or `b!cc define variable`'
         ).withExample(
-            '{set;testvar;This is a test var}',
+            '{set;~testvar;This is a test var}',
             ''
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
