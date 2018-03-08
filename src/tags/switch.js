@@ -20,11 +20,12 @@ module.exports =
             ], true),
             a.optional('default')
         ])
-        .withDesc('Finds the `case` that matches `value` and returns the following `then`.' +
-            'If there is no matching `case` and `default` is specified,' +
+        .withDesc('Finds the `case` that matches `value` and returns the following `then`. ' +
+            'If a `case` value is an array, it will be expanded and matching will be done against its elements. ' +
+            'If there is no matching `case` and `default` is specified, ' +
             '`default` is returned. If not, it returns blank.'
         ).withExample(
-            '{switch;{args;0};\n  yes;\n    Correct!;\n  no;\n    Incorrect!;\n  That is not yes or no\n}',
+            '{switch;{args;0};\n  ["yes","definitely"]; {//;Match "yes" OR "definitely"}\n    Correct!;\n  no;\n    Incorrect!;\n  That is not yes or no\n}',
             'yes',
             'Correct!'
         ).whenArgs('1', Builder.errors.notEnoughArguments)
