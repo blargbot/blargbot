@@ -27,39 +27,21 @@ module.exports =
             '{switch;{args;0};\n  yes;\n    Correct!;\n  no;\n    Incorrect!;\n  That is not yes or no\n}',
             'yes',
             'Correct!'
-        ).beforeExecute(async function(params) {
-            params.args[1] = await bu.processTagInner(params, 1);
-            for (let i = 2; i < params.args.length; i += 2) {
-                if (i != params.args.length - 1)
-                    params.args[i] = await bu.processTagInner(params, i);
+        ).whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (params) {
+            let value = await bu.processTagInner(params, 1),
+                indexes = [...params.args.keys()].splice(2).reverse(),
+                cases = {}, elseDo = -1;
+
+            if (indexes.length % 2 == 1) elseDo = indexes.shift();
+
+            for (let i = 0; i < indexes.length; i += 2) {
+                let caseValue = await bu.processTagInner(params, indexes[i + 1]);
+                for (const key of Builder.util.flattenArgArrays([caseValue]))
+                    cases[key] = indexes[i];
             }
-        }).whenDefault(async function(params) {
-            let args = params.args;
-            var replaceString = '';
-            var elseDo = '';
-            var cases = {};
-            args.shift();
-            var arg = args[0];
-            args.shift();
-            for (let i = 0; i < args.length; i++) {
-                if (i != args.length - 1) {
-                    let deserialized = bu.deserializeTagArray(args[i]);
-                    if (deserialized && Array.isArray(deserialized.v)) {
-                        for (let j = 0; j < deserialized.v.length; j++) {
-                            cases[deserialized.v[j]] = args[i + 1];
-                        }
-                    } else {
-                        cases[args[i]] = args[i + 1];
-                    }
-                    i++;
-                } else {
-                    elseDo = args[i];
-                }
-            }
-            if (args.length % 2 != 0)
-                replaceString = cases[arg] || elseDo;
-            else
-                replaceString = cases[arg] || '';
-            params.content = replaceString;
-            return await bu.processTagInner(params);
+
+            let result = cases[value] || elseDo;
+            if (result != -1)
+                return await bu.processTagInner(params, result);
         }).build();
