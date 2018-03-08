@@ -41,7 +41,9 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'timestamp',
-      error: () => false,
+      error: (e, v) => !v.isValid() 
+        ? 'Invalid timestamp'
+        : false,
       parse: v => dep.moment(v),
       setter: (e, v) => e.timestamp = v
     },
@@ -157,6 +159,8 @@ module.exports =
     .whenDefault(async function (params) {
       let embed = {};
       for (const entry of params.args.slice(1)) {
+        if (entry.trim() == '')
+          continue;
         let splitAt = entry.indexOf(':');
 
         if (splitAt == -1) return await Builder.errors.invalidEmbed(params, 'Missing \':\'');
