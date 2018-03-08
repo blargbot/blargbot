@@ -1247,19 +1247,21 @@ bu.between = function (value, lower, upper, inclusive) {
     return value > lower && value < upper;
 };
 
-bu.parseBoolean = function (value, defValue = null) {
+bu.parseBoolean = function (value, defValue = null, includeNumbers = true) {
     if (typeof value == 'boolean')
         return value;
 
-    if (typeof value == 'number')
+    if (includeNumbers && typeof value == 'number')
         return value !== 0;
 
     if (typeof value != 'string')
         return defValue;
 
-    let asNum = parseFloat(value);
-    if (!isNaN(asNum))
-        return asNum !== 0;
+    if (includeNumbers) {
+        let asNum = parseFloat(value);
+        if (!isNaN(asNum))
+            return asNum !== 0;
+    }
 
     switch (value.toLowerCase()) {
         case 'true':

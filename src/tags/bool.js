@@ -8,18 +8,26 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base'}),
-operators = {
-    '==': (a, b) => a === b,
-    '!=': (a, b) => !operators['=='](a, b),
-    '>=': (a, b) => collator.compare(a, b) >= 0,
-    '>': (a, b) => collator.compare(a, b) > 0,
-    '<=': (a, b) => collator.compare(a, b) <= 0,
-    '<': (a, b) => collator.compare(a, b) < 0,
-    'startswith': (a, b) => Array.isArray(a) ? a[0] == b.toString() : a.toString().startsWith(b),
-    'endswith': (a, b) => Array.isArray(a) ? a[a.length - 1] == b.toString() : a.toString().endsWith(b),
-    'includes': (a, b) => Array.isArray(a) ? a.includes(b.toString()) : a.toString().includes(b)
-};
+    collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }),
+    operators = {
+        '==': (a, b) => Array.isArray(a) && Array.isArray(b)
+            ? a.length == b.length && a.map((e, i) => e == b[i]).reduce((c, n) => c && n, true)
+            : collator.compare(a, b) == 0,
+        '!=': (a, b) => !operators['=='](a, b),
+        '>=': (a, b) => collator.compare(a, b) >= 0,
+        '>': (a, b) => collator.compare(a, b) > 0,
+        '<=': (a, b) => collator.compare(a, b) <= 0,
+        '<': (a, b) => collator.compare(a, b) < 0,
+        'startswith': (a, b) => Array.isArray(a)
+            ? a[0] == ('' + b)
+            : ('' + a).startsWith(b),
+        'endswith': (a, b) => Array.isArray(a)
+            ? a[a.length - 1] == ('' + b)
+            : ('' + a).endsWith(b),
+        'includes': (a, b) => Array.isArray(a)
+            ? a.includes(b)
+            : ('' + a).includes(b)
+    };
 
 module.exports =
     Builder.AutoTag('bool')
@@ -62,8 +70,8 @@ module.exports =
             if (leftArr && Array.isArray(leftArr.v)) left = leftArr.v.map(v => '' + v);
             if (rightArr && Array.isArray(rightArr.v)) right = rightArr.v.map(v => '' + v);
 
-            let leftBool = bu.parseBoolean(left),
-                rightBool = bu.parseBoolean(right);
+            let leftBool = bu.parseBoolean(left, null, false),
+                rightBool = bu.parseBoolean(right, null, false);
 
             if (bu.isBoolean(leftBool)) left = leftBool;
             if (bu.isBoolean(rightBool)) right = rightBool;
