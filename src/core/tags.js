@@ -83,8 +83,9 @@ Reason: ${tag.reason}`);
         }
         if (output.contents == '')
             return;
-        let message = bu.send(msg, { content: output.contents, embed: output.embed });
-        await bu.addReactions(message.channel.id, message.id, output.reactions);
+        let message = await bu.send(msg, { content: output.contents, embed: output.embed });
+        if (message != null)
+            await bu.addReactions(message.channel.id, message.id, output.reactions);
     }
 };
 
