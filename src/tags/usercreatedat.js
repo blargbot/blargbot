@@ -28,7 +28,7 @@ module.exports =
         user = await bu.getUser(params.msg, params.args[2], quiet);
 
       if (user != null)
-        return dep.moment(user.createdAt).format(params.args[1] || '');
+        return dep.moment(user.createdAt).utcOffset(0).format(params.args[1] || '');
 
       if (quiet)
         return params.args[2];

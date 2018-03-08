@@ -1421,11 +1421,12 @@ const prettyTimeMagnitudes = {
 };
 
 bu.parseTime = function (text, format = undefined) {
+    let now = dep.moment().utcOffset(0);
     switch (text.toLowerCase()) {
-        case 'now': return dep.moment();
-        case 'today': return dep.moment().startOf('day');
-        case 'tomorrow': return dep.moment().startOf('day').add(1, 'day');
-        case 'yesterday': return dep.moment().startOf('day').add(-1, 'days');
+        case 'now': return now;
+        case 'today': return now.startOf('day');
+        case 'tomorrow': return now.startOf('day').add(1, 'day');
+        case 'yesterday': return now.startOf('day').add(-1, 'days');
     }
 
     let match = text.match(/^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i), sign = 1;
@@ -1435,9 +1436,9 @@ bu.parseTime = function (text, format = undefined) {
             quantity = prettyTimeMagnitudes[match[2].toLowerCase()];
         if (quantity == null)
             return 'Invalid quantity ' + match[2];
-        return dep.moment().add(magnitude, quantity);
+        return now.add(magnitude, quantity);
     }
 
     console.debug('using default moment parsing');
-    return dep.moment(text, format);
+    return dep.moment(text, format).utcOffset(0);
 }
