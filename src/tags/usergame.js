@@ -24,7 +24,7 @@ module.exports =
       let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
         user = params.msg.author;
 
-      if (params.args.length > 1)
+      if (params.args[1])
         user = await bu.getUser(params.msg, params.args[1], quiet);
 
       if (user != null)

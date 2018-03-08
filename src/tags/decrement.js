@@ -25,10 +25,10 @@ module.exports =
         decrement = 1,
         floor = true;
 
-      if (params.args.length > 2)
+      if (params.args[2])
         decrement = parseFloat(params.args[2]);
 
-      if (params.args.length > 3){
+      if (params.args[3]){
         floor = bu.parseBoolean(params.args[3]);
         if (!bu.isBoolean(floor))
           return await Builder.errors.notABoolean(params);
