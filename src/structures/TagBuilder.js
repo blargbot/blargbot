@@ -53,8 +53,13 @@ class TagBuilder {
           if (callback == null)
             throw new Error('Missing default execution on subtag ' + tag.name + '\nParams:' + JSON.stringify(params));
 
-          for (const preExec of beforeExec)
+          for (const preExec of beforeExec) {
+            if (typeof preExec != 'function'){
+              console.error('Invalid preExec on ' + tag.name, preExec);
+              console.error(...beforeExec);
+            }
             await preExec.apply(tag, [params]);
+          }
 
           return EnsureResponse(params, await callback.apply(tag, [params]));
         }
@@ -219,9 +224,6 @@ TagBuilder.util = {
    * Basically TagBuilder.util.processSubTags([1])(params) === TagBuilder.util.processSubTags(params, [1])
    */
   async processSubtags(params, indexes) {
-    if (Array.isArray(params))
-      return function (params) { return TagBuilder.util.processSubtags(params, indexes); };
-
     for (const index of indexes)
       params.args[index] = await bu.processTagInner(params, index);
   },

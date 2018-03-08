@@ -20,7 +20,7 @@ module.exports =
         .withExample(
             '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
             'I like apples\nI like oranges\nI like c#'
-        ).beforeExecute(Builder.util.processSubtags([1,2]))
+        ).beforeExecute(params => Builder.util.processSubtags(params, [1,2]))
         .whenArgs('1-3', Builder.errors.notEnoughArguments)
         .whenArgs('4', async function (params) {
             let set = TagManager.list['set'],

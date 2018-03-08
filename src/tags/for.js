@@ -33,7 +33,7 @@ module.exports =
         .withExample(
             '{for;~index;0;<;10;{get;~index},}',
             '0,1,2,3,4,5,6,7,8,9,'
-        ).beforeExecute(Builder.util.processSubtags([1, 2, 3, 4]))
+        ).beforeExecute(params => Builder.util.processSubtags(params, [1, 2, 3, 4]))
         .whenArgs('1-5', Builder.errors.notEnoughArguments)
         .whenArgs('6-7', async function (params) {
             let errors = [],

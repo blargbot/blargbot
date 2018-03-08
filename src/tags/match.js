@@ -16,7 +16,7 @@ module.exports =
         .withExample(
             '{match;I have $1 and 25 cents;/\\d+/g}',
             '["1", "25"]'
-        ).beforeExecute(Builder.util.processSubtags([1]))
+        ).beforeExecute(params => Builder.util.processSubtags(params, [1]))
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3', async function (params) {
             let text = params.args[1],
