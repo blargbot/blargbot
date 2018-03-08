@@ -20,7 +20,7 @@ module.exports =
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenDefault(async function(params) {
-      let args = await Builder.util.flattenArgArrays(params.args.slice(1));
+      let args = Builder.util.flattenArgArrays(params.args.slice(1));
       args = args.map(parseFloat);
 
       if (args.filter(isNaN).length > 0)

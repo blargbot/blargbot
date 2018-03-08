@@ -20,7 +20,7 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenDefault(async function (params) {
-            let options = await Builder.util.flattenArgArrays(params.args.splice(1)),
+            let options = Builder.util.flattenArgArrays(params.args.splice(1)),
                 selection = bu.getRandomInt(0, options.length - 1);
 
             return options[selection];

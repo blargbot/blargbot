@@ -21,7 +21,7 @@ module.exports =
         .beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenDefault(async function (params) {
-            let values = (await Builder.util.flattenArgArrays(params.args.slice(1))).map(parseFloat);
+            let values = Builder.util.flattenArgArrays(params.args.slice(1)).map(parseFloat);
             if (values.filter(isNaN).length > 0)
                 return await Builder.errors.notANumber(params);
             values = values.map(Math.abs);

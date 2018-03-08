@@ -36,7 +36,7 @@ module.exports =
         return await Builder.errors.invalidOperator(params);
 
       let operator = operators[params.args[1]];
-      let values = await Builder.util.flattenArgArrays(params.args.slice(2));
+      let values = Builder.util.flattenArgArrays(params.args.slice(2));
       values = values.map(parseFloat);
 
       if (values.filter(isNaN).length > 0)

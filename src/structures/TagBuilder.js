@@ -233,10 +233,10 @@ TagBuilder.util = {
       .replace(new RegExp(bu.specialCharDiv, 'g'), '')
       .replace(new RegExp(bu.specialCharEnd, 'g'), '');
   },
-  async flattenArgArrays(args) {
+  flattenArgArrays(args) {
     let result = [];
     for (const arg of args) {
-      let arr = await bu.deserializeTagArray(arg);
+      let arr = bu.deserializeTagArray(arg);
       if (arr != null && Array.isArray(arr.v))
         result.push(...arr.v);
       else
