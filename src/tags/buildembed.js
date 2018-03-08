@@ -27,9 +27,11 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'url',
-      error: () => false,
-      parse: v => v,
-      setter: (e, v) => e.url = v
+      error: (e, v) => v.host == null
+        ? 'Invalid url'
+        : false,
+      parse: v => dep.url.parse(v),
+      setter: (e, v) => e.url = v.href
     },
     {
       key: 'color',
@@ -51,9 +53,11 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'footer.icon_url',
-      error: () => false,
-      parse: v => v,
-      setter: (e, v) => getObj(e, 'footer').icon_url = v
+      error: (e, v) => v.host == null
+        ? 'Invalid footer.icon_url'
+        : false,
+      parse: v => dep.url.parse(v),
+      setter: (e, v) => getObj(e, 'footer').icon_url = v.href
     },
     {
       key: 'footer.text',
@@ -65,15 +69,19 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'thumbnail.url',
-      error: () => false,
-      parse: v => v,
-      setter: (e, v) => getObj(e, 'thumbnail').url = v
+      error: (e, v) => v.host == null
+        ? 'Invalid thumbnail.url'
+        : false,
+      parse: v => dep.url.parse(v),
+      setter: (e, v) => getObj(e, 'thumbnail').url = v.href
     },
     {
       key: 'image.url',
-      error: () => false,
-      parse: v => v,
-      setter: (e, v) => getObj(e, 'image').url = v
+      error: (e, v) => v.host == null
+        ? 'Invalid image.url'
+        : false,
+      parse: v => dep.url.parse(v),
+      setter: (e, v) => getObj(e, 'image').url = v.href
     },
     {
       key: 'author.name',
@@ -85,15 +93,19 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'author.url',
-      error: () => false,
-      parse: v => v,
-      setter: (e, v) => getObj(e, 'author').url = v
+      error: (e, v) => v.host == null
+        ? 'Invalid author.url'
+        : false,
+      parse: v => dep.url.parse(v),
+      setter: (e, v) => getObj(e, 'author').url = v.href
     },
     {
       key: 'author.icon_url',
-      error: () => false,
-      parse: v => v,
-      setter: (e, v) => getObj(e, 'author').icon_url = v
+      error: (e, v) => v.host == null
+        ? 'Invalid author.icon_url'
+        : false,
+      parse: v => dep.url.parse(v),
+      setter: (e, v) => getObj(e, 'author').icon_url = v.href
     },
     {
       key: 'fields.name',
@@ -148,7 +160,10 @@ module.exports =
     .withDesc('This tag is designed to allow you to generate embed code for `{webhook}` and `{embed}` with much less effort.\n' +
       'This tag uses a key/value system, with each entry in `values` looking like `key:value`. ' +
       'Valid keys are:\n`' + fields.map(k => k.key).join('`\n`') + '`\n' +
-      'For the `fields` related keys, `fields.name` must precede a `fields.value`')
+      'For the `fields` related keys, `fields.name` must precede a `fields.value`\n' +
+      'You can find information about embeds [here (embed structure)](https://discordapp.com/developers/docs/resources/channel#embed-object) ' +
+      'and [here (embed limits)](https://discordapp.com/developers/docs/resources/channel#embed-limits) as well as a useful tool for testing embeds ' +
+      '[here](https://leovoel.github.io/embed-visualizer/)')
     .withExample(
       '{buildembed;\n  title:hello!;\n  description:I am an example embed;\n  fields.name:Field 1;\n  fields.value:This is the first field!;\n  ' +
       'fields.name:Field 2;\n  fields.value:This is the next field and is inline!;\n  fields.inline:true\n}',
