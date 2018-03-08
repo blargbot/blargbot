@@ -1402,3 +1402,42 @@ bu.parseEmbed = function (embedText) {
         return { fields: [{ name: 'Malformed JSON', value: embedText + '' }], malformed: true };
     }
 };
+
+let test = require('moment-timezone'); test().add
+
+const prettyTimeMagnitudes = {
+    //defaults
+    year: 'year', years: 'years', y: 'y',
+    month: 'month', months: 'months', M: 'M',
+    week: 'week', weeks: 'weeks', w: 'w',
+    day: 'day', days: 'days', d: 'd',
+    hour: 'hour', hours: 'hours', h: 'h',
+    minute: 'minute', minutes: 'minutes', m: 'm',
+    second: 'second', seconds: 'seconds', s: 's',
+    millisecond: 'millisecond', milliseconds: 'milliseconds', ms: 'ms',
+    quarter: 'quarter', quarters: 'quarters', q: 'Q',
+    //Custom
+    mins: 'minutes', min: 'minute'
+};
+
+bu.parseTime = function (text, format = undefined) {
+    switch (text.toLowerCase()) {
+        case 'now': return dep.moment();
+        case 'today': return dep.moment().startOf('day');
+        case 'tomorrow': return dep.moment().startOf('day').add(1, 'day');
+        case 'yesterday': return dep.moment().startOf('day').add(-1, 'days');
+    }
+
+    let match = text.match(/^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i), sign = 1;
+    if (match == null) match = text.match(/^\s*(-?\d+(?:\.\d+)?)\s+(\S+)\s+ago\s*$/i), sign = -1;
+    if (match != null) {
+        let magnitude = sign * parseFloat(match[1]),
+            quantity = prettyTimeMagnitudes[match[2].toLowerCase()];
+        if (quantity == null)
+            return 'Invalid quantity ' + match[2];
+        return dep.moment().add(magnitude, quantity);
+    }
+
+    console.debug('using default moment parsing');
+    return dep.moment(text, format);
+}

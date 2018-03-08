@@ -41,10 +41,12 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'timestamp',
-      error: (e, v) => !v.isValid()
-        ? 'Invalid timestamp'
-        : false,
-      parse: v => dep.moment(v),
+      error: (e, v) => typeof v == 'string'
+        ? v
+        : !v.isValid()
+          ? 'Invalid timestamp'
+          : false,
+      parse: v => bu.parseTime(v),
       setter: (e, v) => e.timestamp = v
     },
     {
