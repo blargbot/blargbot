@@ -1418,8 +1418,10 @@ const prettyTimeMagnitudes = {
     mins: 'minutes', min: 'minute'
 };
 
-bu.parseTime = function (text, format = undefined) {
-    let now = dep.moment().utcOffset(0);
+let test = require('moment-timezone');
+
+bu.parseTime = function (text, format = undefined, timezone = 'Etc|UTC') {
+    let now = test.tz(timezone);
     switch (text.toLowerCase()) {
         case 'now': return now;
         case 'today': return now.startOf('day');
