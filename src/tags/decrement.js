@@ -28,7 +28,7 @@ module.exports =
       if (isNaN(decrement))
         return await Builder.errors.notANumber(params);
 
-      let value = parseFloat(await TagManager.list['get'].getVar(params, argName));
+      let value = parseInt(await TagManager.list['get'].getVar(params, argName));
       if (isNaN(value))
         return await Builder.errors.notANumber(params);
 
