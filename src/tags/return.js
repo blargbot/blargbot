@@ -18,7 +18,6 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', async function(params){
             return {
-                replaceString: '',
                 terminate: true
             };
         })
