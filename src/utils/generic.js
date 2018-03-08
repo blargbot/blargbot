@@ -1320,13 +1320,15 @@ bu.parseColor = function (text) {
     if (typeof text == 'number') return text;
     if (typeof text != 'string') return null;
 
+    text = text.replace(/\s+/g, '').toLowerCase();
+
     //By name
-    let named = namedColors[text.toLowerCase().replace(/\s+/g, '')];
+    let named = namedColors[text];
     if (named != null)
         return named;
 
     //RGB 256,256,256
-    let match = text.match(/(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/);
+    let match = text.match(/^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/);
     if (match != null) {
         let r = parseInt(match[1]),
             g = parseInt(match[2]),
@@ -1340,12 +1342,12 @@ bu.parseColor = function (text) {
     }
 
     //Hex code with 6 digits
-    match = text.match(/(?:^|\b)#?([0-9a-f]{6})(?:\b|$)/i);
+    match = text.match(/^#?([0-9a-f]{6})$/i);
     if (match != null)
         return parseInt(match[1], 16);
 
     //Hex code with 3 digits
-    match = text.match(/(?:^|\b)#?([0-9a-f]{3})(?:\b|$)/i);
+    match = text.match(/^#?([0-9a-f]{3})$/i);
     if (match != null)
         return parseInt(match[1].split('').map(v => v + v).join(''), 16);
 
