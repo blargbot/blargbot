@@ -41,7 +41,7 @@ const Builder = require('../structures/TagBuilder'),
     },
     {
       key: 'timestamp',
-      error: (e, v) => !v.isValid() 
+      error: (e, v) => !v.isValid()
         ? 'Invalid timestamp'
         : false,
       parse: v => dep.moment(v),

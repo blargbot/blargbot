@@ -350,7 +350,7 @@ bu.processTag = async function (params) {
                                     { name: 'CCommand', value: params.ccommand ? 'Yes' : 'No', inline: true }
                                 ]
                             }
-                        })
+                        });
                     } else replaceObj = { terminate: true, replaceString: '', reactions, embed };
                 }
         } else {
@@ -425,10 +425,10 @@ bu.processSpecial = (contents, final) => {
         contents = contents
             .replace(new RegExp(bu.specialCharBegin + 'rb' + bu.specialCharEnd, 'gi'), '}')
             .replace(new RegExp(bu.specialCharBegin + 'lb' + bu.specialCharEnd, 'gi'), '{')
-            .replace(new RegExp(bu.specialCharBegin + 'semi' + bu.specialCharEnd, 'gi'), ';')
+            .replace(new RegExp(bu.specialCharBegin + 'semi' + bu.specialCharEnd, 'gi'), ';');
 
     contents = contents
-        .replace(new RegExp(bu.specialCharBegin + 'break' + bu.specialCharEnd, 'gi'), '')
+        .replace(new RegExp(bu.specialCharBegin + 'break' + bu.specialCharEnd, 'gi'), '');
 
     // while (contents.indexOf(bu.specialCharBegin) > -1 && contents.indexOf(bu.specialCharEnd) > -1 &&
     //     contents.indexOf(bu.specialCharBegin) < contents.indexOf(bu.specialCharEnd)) {
