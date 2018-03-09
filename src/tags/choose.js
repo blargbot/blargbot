@@ -16,7 +16,7 @@ module.exports =
     .withExample(
       'I feel like eating {choose;1;cake;pie;pudding} today.',
       'I feel like eating pie today.'
-    ).beforeExecute(Builder.util.processAllSubtags)
+    ).beforeExecute(params => Builder.util.processSubtags(params, [1]))
     .whenArgs('1-2', Builder.errors.notEnoughArguments)
     .whenDefault(async function(params) {
       params.args[1] = await bu.processTagInner(params, 1);
@@ -28,7 +28,6 @@ module.exports =
       if (index < 0)
         return await Builder.util.error(params, 'Choice cannot be negative');
 
-      params.content = params.args[index + 2];
-      return await bu.processTagInner(params);
+      return await bu.processTagInner(params, index + 2);
     })
     .build();
