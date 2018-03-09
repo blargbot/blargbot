@@ -21,7 +21,7 @@ module.exports =
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-2', Builder.errors.notEnoughArguments)
     .whenArgs('3', async function(params) {
-      if (params.msg.hasDmed)
+      if (params.dmsent)
         return await Builder.util.error(params, 'Already have DMed');
 
       let user = await bu.getUser(params.msg, params.args[1]);
@@ -46,6 +46,9 @@ module.exports =
         }
         await bu.send(DMChannel.id, params.args[2]);
         DMCache[user.id].count++;
+        return {
+          dmsent: true
+        }
       } catch (e) {
         return await Builder.util.error(params, 'Could not send DM');
       }

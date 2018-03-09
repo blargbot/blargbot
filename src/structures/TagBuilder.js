@@ -78,10 +78,13 @@ class TagBuilder {
           };
 
         if (result.terminate == null) result.terminate = params.terminate;
+        if (result.nsfw == null) result.nsfw = params.nsfw;
         if (result.replaceContent == null) result.replaceContent = false;
         if (result.replaceString == null) result.replaceString = '';
         if (result.reactions == null) result.reactions = params.reactions;
         if (result.embed == null) result.embed = params.embed;
+        if (result.timers == null) result.timers = params.timers;
+        if (result.dmsent == null) result.dmsent = params.dmsent;
         
         //console.debug('Exit ' + tag.name + ' execute', result);
         return result;
@@ -244,7 +247,7 @@ TagBuilder.util = {
     }
     return result;
   },
-  async error(params, message) { return await bu.tagProcessError(params, '`' + message + '`'); },
+  async error(params, message) { return await bu.tagProcessError(params, '`'  + message + '`'); },
   parseChannel(params, channelId) {
     let channel = params.msg.channel;
     if (channel.id !== channelId) {

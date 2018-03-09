@@ -19,15 +19,21 @@ module.exports =
             '(after 20 seconds:) Hello!'
         ).whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3', async function (params) {
+            if (params.disabletimer)
+              return await Builder.util.error(params, 'Nested timers are not allowed');
+              
             let code = params.args[1],
                 duration = await bu.processTagInner(params, 2);
 
             duration = bu.parseDuration(duration);
 
-            if (duration.asMilliseconds() <= 0) return await Builder.util.error('Invalid duration');
+            if (duration.asMilliseconds() <= 0) return await Builder.util.error(params, 'Invalid duration');
+
+            if (params.timers > 2) return await Builder.util.error(params, 'Max 3 timers per tag');
 
             let msg = params.msg;
             params.msg = msg.id;
+            params.disabletimer = true;
             await r.table('events').insert({
                 type: 'tag',
                 params,
@@ -36,7 +42,9 @@ module.exports =
                 endtime: r.epochTime(dep.moment().add(duration).unix())
             });
             params.msg = msg;
-            params.msg.timers = params.msg.timers ? params.msg.timers + 1 : 1;
+            return {
+              timers: (params.timers || 0) + 1
+            }
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

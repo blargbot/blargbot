@@ -10,12 +10,12 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('nsfw')
-        .withDesc('Marks the message is being NSFW, and only to be output in NSFW channels. A requirement for any tag with NSFW content.')
-        .withExample(
-            'This command is not safe! {nsfw}',
-            'This command is not safe!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) { })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+  Builder.AutoTag('nsfw')
+    .withDesc('Marks the message is being NSFW, and only to be output in NSFW channels. A requirement for any tag with NSFW content.')
+    .withExample(
+      'This command is not safe! {nsfw}',
+      'This command is not safe!'
+    ).beforeExecute(Builder.util.processAllSubtags)
+    .whenArgs('1', async function (params) { return { nsfw: true }; })
+    .whenDefault(Builder.errors.tooManyArguments)
+    .build();

@@ -225,17 +225,11 @@ bu.processTagInner = async function (params, i) {
         params.content = params.args[i];
     let result = await bu.processTag(params);
 
-    // if (result.trim)
-    //     result.contents = result.contents.replace(/^[\s\n]+|[\s\n]+$/g, '');
-
-    if (result.terminate)
-        params.terminate = true;
     return result.contents;
 };
 
-
 bu.processTag = async function (params) {
-    let { msg, words, contents, fallback, author, tagName, terminate, isStaff, vars, reactions, quiet, embed } = params;
+    let { msg, words, contents, fallback, author, tagName, terminate, isStaff, vars, reactions, quiet, embed, nsfw, timers, disabletimer, dmsent } = params;
     if (params.content) contents = params.content;
     if (!reactions) params.reactions = reactions = [];
     if (!contents) contents = '';
@@ -247,7 +241,11 @@ bu.processTag = async function (params) {
         contents: contents,
         terminate: true,
         reactions,
-        embed
+        embed,
+        nsfw,
+        dmsent,
+        timers,
+        disabletimer
     };
 
     let openBraceCount = (contents.match(/\{/g) || []).length;
@@ -256,7 +254,11 @@ bu.processTag = async function (params) {
         contents: `\`Unmatched Brace Error\``,
         terminate: true,
         reactions,
-        embed
+        embed,
+        nsfw,
+        dmsent,
+        timers,
+        disabletimer
     };
 
     let level = 0;
@@ -284,7 +286,14 @@ bu.processTag = async function (params) {
         let subtagindex = subtags.push(contents.substring(coords[i][0], coords[i][1]));
     }
     let result = {
-        contents, reactions: [], embed: undefined, terminate: false
+        contents, 
+        reactions: [], 
+        embed: undefined, 
+        terminate: false,
+        nsfw,
+        dmsent,
+        timers,
+        disabletimer
     };
     for (let i = 0; i < subtags.length; i++) {
         let tagBrackets = subtags[i],
@@ -298,7 +307,7 @@ bu.processTag = async function (params) {
             args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
         }
         let title = (await bu.processTag({
-            msg, words, contents: args[0], fallback, author, tagName, terminate, vars, reactions, quiet, embed
+            msg, words, contents: args[0], fallback, author, tagName, terminate, vars, reactions, quiet, embed, nsfw, dmsent, timers, disabletimer
         })).contents.toLowerCase();
 
         if (i === 0 || i === subtags.length - 1 && title === '//')
@@ -314,14 +323,14 @@ bu.processTag = async function (params) {
                 tagName: tagName,
                 ccommand: params.ccommand,
                 terminate,
-                isStaff, vars, reactions, quiet, embed
+                isStaff, vars, reactions, quiet, embed, nsfw, dmsent, timers, disabletimer
             };
             if (TagManager.list[title].category == bu.TagType.CCOMMAND && !params.ccommand) {
                 replaceObj = {
                     replaceString: await bu.tagProcessError(params, '`Can only use {' + title + '} in CCommands`'),
                     terminate,
                     replaceContent: false,
-                    reactions, embed
+                    reactions, embed, quiet, nsfw, dmsent, timers, disabletimer
                 };
             } else
                 try {
@@ -337,7 +346,7 @@ bu.processTag = async function (params) {
                             tagName: tagName,
                             ccommand: params.ccommand,
                             terminate,
-                            isStaff, vars, reactions, quiet, embed
+                            isStaff, vars, reactions, quiet, embed, nsfw, dmsent, timers, disabletimer
                         }, `\`An internal error occurred. This has been reported.\``);
                         bu.send('250859956989853696', {
                             content: 'A tag error occurred.',
@@ -363,28 +372,27 @@ bu.processTag = async function (params) {
                 tagName: tagName,
                 ccommand: params.ccommand,
                 terminate,
-                isStaff, vars, reactions, quiet, embed
+                isStaff, vars, reactions, quiet, embed, nsfw, dmsent, timers, disabletimer
             }, `\`Subtag "${title}" doesn\'t exist\``);
         }
-        if (replaceObj.fallback !== undefined) {
-            fallback = replaceObj.fallback;
-        }
-        if (replaceObj.quiet !== undefined) {
-            quiet = replaceObj.quiet;
-        }
+        //To propogate laterally, set varname, to propogate vertically, set result.varname
+        if (replaceObj.fallback !== undefined) fallback = replaceObj.fallback; //lateral
+        if (replaceObj.quiet !== undefined) quiet = replaceObj.quiet; //lateral
+        if (replaceObj.embed !== undefined) embed = result.embed = replaceObj.embed; //lateral, vertical
+        if (replaceObj.nsfw !== undefined) nsfw = result.nsfw = replaceObj.nsfw; //lateral, vertical
+        if (replaceObj.dmsent !== undefined) dmsent = result.dmsent = replaceObj.dmsent; //lateral, vertical
+        if (replaceObj.timers !== undefined) timers = result.timers = replaceObj.timers; //lateral, vertical
+        if (replaceObj.disabletimer !== undefined) disabletimer = result.disabletimer = replaceObj.disabletimer; //lateral
         if (replaceObj.reactions !== undefined) {
             if (Array.isArray(replaceObj.reactions))
                 result.reactions.push(...replaceObj.reactions);
             else
                 result.reactions.push(replaceObj.reactions);
-            params.reactions = result.reactions;
-        }
-        if (replaceObj.embed !== undefined) {
-            params.embed = result.embed = replaceObj.embed;
+            reactions = result.reactions; //lateral, vertical
         }
         if (replaceObj.terminate) {
             result.contents = result.contents.substring(0, result.contents.indexOf(tagBrackets) + tagBrackets.length);
-            result.terminate = true;
+            result.terminate = true; //vertical
         }
         if (replaceObj == '') {
             return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
