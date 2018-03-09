@@ -35,11 +35,8 @@ module.exports =
 
             if (typeof tag == 'string')
                 tag = { content: tag };
-            if (tag.content.toLowerCase().indexOf('{nsfw}') > -1 &&
-                await bu.isNsfwChannel(params.msg.channel.id))
-                return await Builder.util.error(params, 'NSFW tag');
 
             params.words = bu.splitInput(params.args[2] || '');
             params.content = tag.content;
-            return await bu.processTagInner(params);
+            return await bu.processTag(params);
         }).build();

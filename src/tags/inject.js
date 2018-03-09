@@ -20,7 +20,7 @@ module.exports =
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2', async function (params) {
             params.content = bu.processSpecial(params.args[1], true);
-            let result = await bu.processTag(params);
+            return await bu.processTag(params);
             if (result.terminate)
                 params.terminate = true;
             return {

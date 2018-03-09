@@ -175,6 +175,9 @@ bu.send = async function (channel, message, file, embed) {
         toSend = message;
     }
 
+    if (toSend.nsfw && !(await bu.isNsfwChannel(channelid)))
+      return await bu.send(channelid, toSend.nsfw === true ? '❌ This contains NSFW content! Go to a NSFW channel. ❌' : toSend.nsfw);
+
     if (!toSend.content) toSend.content = '';
     toSend.content = toSend.content.trim();
 

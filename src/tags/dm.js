@@ -20,7 +20,7 @@ module.exports =
       'DM: Hello'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-2', Builder.errors.notEnoughArguments)
-    .whenArgs('3', async function(params) {
+    .whenArgs('3', async function (params) {
       if (params.dmsent)
         return await Builder.util.error(params, 'Already have DMed');
 
@@ -44,7 +44,11 @@ module.exports =
           );
           DMCache[user.id] = { user: params.msg.author.id, guild: params.msg.guild.id, count: 1 };
         }
-        await bu.send(DMChannel.id, params.args[2]);
+        await bu.send(DMChannel.id, {
+          content: params.args[2],
+          embed: null,
+          nsfw: params.nsfw
+        });
         DMCache[user.id].count++;
         return {
           dmsent: true

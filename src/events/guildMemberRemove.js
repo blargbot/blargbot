@@ -28,6 +28,7 @@ bot.on('guildMemberRemove', async function (guild, member) {
         let message = await bu.send(chan, {
             content: output.contents,
             embed: output.embed,
+            nsfw: output.nsfw,
             disableEveryone: false
         });
         if (message && message.channel)

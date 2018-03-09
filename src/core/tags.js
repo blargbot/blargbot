@@ -18,13 +18,13 @@ e.processTag = async function (msg, contents, command, tagName, author, isCcomma
         author = author || msg.channel.guild.id;
         var words = typeof command === 'string' ? bu.splitInput(command) : command;
 
-        if (contents.toLowerCase().indexOf('{nsfw') > -1) {
-            let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
-            if (!nsfwChan) {
-                bu.send(msg, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
-                return;
-            }
-        }
+        // if (contents.toLowerCase().indexOf('{nsfw') > -1) {
+        //     let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
+        //     if (!nsfwChan) {
+        //         bu.send(msg, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
+        //         return;
+        //     }
+        // }
 
         if (contents.split(' ')[0].indexOf('help') > -1) {
             contents = '\u200B' + contents;
@@ -57,13 +57,13 @@ e.executeTag = async function (msg, tagName, command) {
 Reason: ${tag.reason}`);
             return;
         }
-        if (tag.content.toLowerCase().indexOf('{nsfw') > -1) {
-            let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
-            if (!nsfwChan) {
-                bu.send(msg, `❌ This command contains NSFW content! Go to an NSFW channel. ❌`);
-                return;
-            }
-        }
+        // if (tag.content.toLowerCase().indexOf('{nsfw') > -1) {
+        //     let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
+        //     if (!nsfwChan) {
+        //         bu.send(msg, `❌ This command contains NSFW content! Go to an NSFW channel. ❌`);
+        //         return;
+        //     }
+        // }
         r.table('tag').get(tagName).update({
             uses: tag.uses + 1,
             lastuse: r.now()
@@ -83,7 +83,7 @@ Reason: ${tag.reason}`);
         }
         if (output.contents == '')
             return;
-        let message = await bu.send(msg, { content: output.contents, embed: output.embed });
+        let message = await bu.send(msg, { content: output.contents, embed: output.embed, nsfw: output.nsfw });
         if (message && message.channel)
             await bu.addReactions(message.channel.id, message.id, output.reactions);
     }

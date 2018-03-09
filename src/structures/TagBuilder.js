@@ -77,14 +77,14 @@ class TagBuilder {
             replaceString: result
           };
 
-        if (result.terminate == null) result.terminate = params.terminate;
-        if (result.nsfw == null) result.nsfw = params.nsfw;
-        if (result.replaceContent == null) result.replaceContent = false;
-        if (result.replaceString == null) result.replaceString = '';
-        if (result.reactions == null) result.reactions = params.reactions;
-        if (result.embed == null) result.embed = params.embed;
-        if (result.timers == null) result.timers = params.timers;
-        if (result.dmsent == null) result.dmsent = params.dmsent;
+        if (result.terminate === undefined) result.terminate = params.terminate;
+        if (result.nsfw === undefined) result.nsfw = params.nsfw;
+        if (result.replaceContent === undefined) result.replaceContent = false;
+        if (result.replaceString === undefined) result.replaceString = '';
+        if (result.reactions === undefined) result.reactions = params.reactions;
+        if (result.embed === undefined) result.embed = params.embed;
+        if (result.timers === undefined) result.timers = params.timers;
+        if (result.dmsent === undefined) result.dmsent = params.dmsent;
         
         //console.debug('Exit ' + tag.name + ' execute', result);
         return result;

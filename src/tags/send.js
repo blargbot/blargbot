@@ -36,6 +36,7 @@ module.exports =
             let sent = await bu.send(channel.id, {
                 content: message,
                 embed: embed,
+                nsfw: params.nsfw,
                 disableEveryone: false
             });
 

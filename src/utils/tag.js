@@ -225,6 +225,9 @@ bu.processTagInner = async function (params, i) {
         params.content = params.args[i];
     let result = await bu.processTag(params);
 
+    if (result.terminate !== undefined) params.terminate = result.terminate;
+    if (result.nsfw !== undefined) params.nsfw = result.nsfw;
+
     return result.contents;
 };
 
