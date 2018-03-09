@@ -15,12 +15,12 @@ module.exports =
         .withDesc('Throws `error`.')
         .withExample(
             '{throw;Custom Error}',
-            '`Custom Error`'
+            '\u200B`Custom Error`\u200B'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2', async function (params) {
             let error = params.args[1];
-            return await Builder.util.error(error);
+            return await Builder.util.error(params, error);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
