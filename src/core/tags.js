@@ -230,8 +230,11 @@ e.docs = async function (msg, command, topic, ccommand = false) {
         default:
             topic = topic.replace(/[\{\}]/g, '');
             let tag = tags.filter(t => t.name == topic.toLowerCase())[0];
-            if (tag == null)
+            if (tag == null) {
+                if (TagManager.list[topic.toLowerCase()])
+                    return await bu.send(msg, 'Oops, that subtag seems to be a CCommand only subtag. Try using `' + prefix + 'cc docs` for CCommand subtags');
                 break;
+            }
             let category = bu.TagType.properties[tag.category];
             embed.title += ' - ' + tag.name[0].toUpperCase() + tag.name.substring(1);
 
