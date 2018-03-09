@@ -24,14 +24,12 @@ module.exports =
             'Be pardoned! 0'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-4', async function (params) {
-            let user = params.args[1],
+            let user = params.msg.author,
                 count = parseInt(params.args[2] || 1),
                 reason = params.args[3];
 
-            if (!user)
-                user = params.msg.author;
-            else
-                user = await bu.getUser(params.msg, user);
+            if (params.args[1])
+                user = await bu.getUser(params.msg, params.args[1]);
 
             if (user == null)
                 return await Builder.errors.noUserFound(params);

@@ -24,7 +24,7 @@ module.exports =
                 user = params.msg.member;
 
             if (params.args[2])
-                user = await bu.getUser(params.msg, user, false);
+                user = await bu.getUser(params.msg, params.args[2], false);
 
             if (user == null) return await Builder.errors.noUserFound(params);
 

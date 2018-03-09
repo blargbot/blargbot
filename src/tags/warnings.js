@@ -23,7 +23,7 @@ module.exports =
             let user = params.msg.author;
 
             if (params.args[1])
-                user = await bu.getUser(params.msg, user);
+                user = await bu.getUser(params.msg, params.args[1]);
 
             if (user == null)
                 return await Builder.errors.noUserFound(params);
