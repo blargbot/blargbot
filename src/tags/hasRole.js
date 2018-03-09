@@ -25,7 +25,7 @@ module.exports =
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-4', async function (params) {
             let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
-                result = await this.checkRoles(params, ...params.args.slice(1, 3), quiet);
+                result = await this.checkRoles(params, params.args[1], params.args[2], quiet);
 
             if (result.user == null)
                 return await Builder.errors.noUserFound(params);
@@ -45,17 +45,21 @@ module.exports =
                 };
 
             roleText = [roleText];
-            if (userText != null)
+            if (userText) {
                 result.user = await bu.getUser(params.msg, userText, quiet);
+                if (result.user)
+                    result.user = params.msg.guild.members.get(result.user.id);
+            }
 
             if (deserialized && Array.isArray(deserialized.v))
                 roleText = deserialized.v;
 
             for (const entry of roleText) {
-                if (roleExpr.test(entry)) {
-                    let roleId = entry.match(roleExpr)[1];
-                    result.roles.push(params.msg.guild.roles.get(roleId));
-                }
+                let match = entry.match(roleExpr) || [],
+                    role = params.msg.guild.roles.get(match[1]);
+                if (role == null)
+                    continue;
+                result.roles.push(role);
             }
 
             if (result.user && result.roles.length > 0)
