@@ -20,11 +20,9 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2', async function (params) {
-            let user = params.args[1];
+            let user = params.msg.author;
 
-            if (user == null)
-                user = params.msg.author;
-            else
+            if (params.args[1])
                 user = await bu.getUser(params.msg, user);
 
             if (user == null)

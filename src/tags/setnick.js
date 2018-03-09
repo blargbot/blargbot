@@ -21,12 +21,10 @@ module.exports =
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (params) {
             let nick = params.args[1],
-                user = params.args[2];
-
-            if (user != null)
-                user = await bu.getUser(params.msg, user, false);
-            else
                 user = params.msg.member;
+
+            if (params.args[2])
+                user = await bu.getUser(params.msg, user, false);
 
             if (user == null) return await Builder.errors.noUserFound(params);
 

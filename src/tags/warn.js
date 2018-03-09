@@ -13,21 +13,18 @@ module.exports =
     Builder.CCommandTag('warn')
         .requireStaff()
         .withArgs(a => [a.optional('user'), a.optional('count'), a.optional('reason')])
-        .withDesc('Gives `user` the specified number of warnings with the given reason, and returns their new warning count. '+
+        .withDesc('Gives `user` the specified number of warnings with the given reason, and returns their new warning count. ' +
             '`user` defaults to the user who executed the containing tag. `count` defaults to 1.')
         .withExample(
             'Be warned! {warn}',
             'Be warned! 1'
         ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-4', async function (params) {
-            let user = params.args[1],
+        .whenArgs('1-4', async function (params) {
+            let user = params.msg.author,
                 count = parseInt(params.args[2] || 1),
                 reason = params.args[3];
 
-            if (user == null)
-                user = params.msg.author;
-            else
+            if (params.args[1])
                 user = await bu.getUser(params.msg, user);
 
             if (user == null)

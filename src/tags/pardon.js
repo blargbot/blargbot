@@ -28,7 +28,7 @@ module.exports =
                 count = parseInt(params.args[2] || 1),
                 reason = params.args[3];
 
-            if (user == null)
+            if (!user)
                 user = params.msg.author;
             else
                 user = await bu.getUser(params.msg, user);

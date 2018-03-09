@@ -19,7 +19,7 @@ module.exports =
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-2', async function (params) {
       let channel = params.msg.channel;
-      if (params.args.length == 2)
+      if (params.args[1])
         channel = bu.parseChannel(params.args[1], true);
 
       if (channel == null) return await Builder.errors.noChannelFound(params);

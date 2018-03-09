@@ -25,7 +25,7 @@ module.exports =
             let from = parseInt(params.args[1]),
                 to = params.args[2];
 
-            if (to == null)
+            if (!to)
                 to = from + 1;
             else if (to === 'n')
                 to = params.words.length;

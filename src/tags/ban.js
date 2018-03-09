@@ -28,27 +28,32 @@ module.exports =
             'Success @stupid cat was banned!'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-6', async function(params) {
+        .whenArgs('2-6', async function (params) {
             let user = await bu.getUser(params.msg, params.args[1], true);
-            if (user) {
-                let noPerms = params.args[5] ? true : false;
-                let duration;
-                if (params.args[4])
-                    duration = bu.parseDuration(params.args[4]);
-                let response = await CommandManager.list['ban'].ban(
-                    params.msg,
-                    user,
-                    params.args[2],
-                    params.args[3],
-                    duration,
-                    true,
-                    noPerms
-                );
-                if (typeof response[1] == 'string' && response[1].startsWith('`'))
-                    return await bu.tagProcessError(params, response[1]);
-                return response[1];
-            }
-            return await Builder.errors.noUserFound(params);
+
+            if (!user)
+                return await Builder.errors.noUserFound(params);
+
+            let noPerms = params.args[5] ? true : false;
+            let duration;
+
+            if (params.args[4])
+                duration = bu.parseDuration(params.args[4]);
+
+            let response = await CommandManager.list['ban'].ban(
+                params.msg,
+                user,
+                params.args[2],
+                params.args[3],
+                duration,
+                true,
+                noPerms
+            );
+
+            if (typeof response[1] == 'string' && response[1].startsWith('`'))
+                return await bu.tagProcessError(params, response[1]);
+                
+            return response[1];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

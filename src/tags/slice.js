@@ -25,7 +25,7 @@ module.exports =
                 fallback = parseInt(params.fallback);
 
 
-            if (params.args[3] == null)
+            if (!params.args[3])
                 end = arr.v.length;
 
             if (arr == null || !Array.isArray(arr.v))
