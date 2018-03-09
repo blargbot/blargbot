@@ -227,6 +227,10 @@ bu.processTagInner = async function (params, i) {
 
     if (result.terminate !== undefined) params.terminate = result.terminate;
     if (result.nsfw !== undefined) params.nsfw = result.nsfw;
+    if (result.reactions !== undefined) params.reactions = result.reactions;
+    if (result.embed !== undefined) params.embed = result.embed;
+    if (result.timers !== undefined) params.timers = result.timers;
+    if (result.dmsent !== undefined) params.dmsent = result.dmsent;
 
     return result.contents;
 };
@@ -289,9 +293,9 @@ bu.processTag = async function (params) {
         let subtagindex = subtags.push(contents.substring(coords[i][0], coords[i][1]));
     }
     let result = {
-        contents, 
-        reactions: [], 
-        embed: undefined, 
+        contents,
+        reactions: [],
+        embed: undefined,
         terminate: false,
         nsfw,
         dmsent,
