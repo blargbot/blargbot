@@ -29,9 +29,9 @@ module.exports =
         .whenArgs('3-6', async function (params) {
             let action = params.args[1],
                 user = await bu.getUser(params.msg, params.args[2]),
-                mod = params.args[3],
-                reason = params.args[4],
-                color = bu.parseColor(params.args[5]);
+                mod = params.args[3] || undefined,
+                reason = params.args[4] || undefined,
+                color = bu.parseColor(params.args[5]) || undefined;
 
             if (mod != null)
                 mod = await bu.getUser(params.msg, mod);
