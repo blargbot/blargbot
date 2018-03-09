@@ -32,8 +32,7 @@ module.exports =
         return await Builder.errors.notAnArray(params);
 
       let arr = deserialized.v;
-
-      console.verbose(arr);
+      
       for (const item of arr) {
         params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
         if (params.msg.repeats > 1500) {

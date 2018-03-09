@@ -73,8 +73,6 @@ module.exports =
       if ((text == null || text.trim() == '') && embed == null)
         return await Builder.util.error(params, 'Message cannot be empty');
 
-      console.debug('message', message);
-
       try {
         if (message.edit)
           message.edit({
