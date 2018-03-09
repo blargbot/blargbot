@@ -24,7 +24,7 @@ module.exports =
       args = args.map(parseFloat);
 
       if (args.filter(isNaN).length > 0)
-        return await Builder.errors.notANumber(params);
+        return NaN;
 
       return Math.min(...args);
     })
