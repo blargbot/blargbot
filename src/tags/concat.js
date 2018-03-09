@@ -19,14 +19,7 @@ module.exports =
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenDefault(async function(params) {
-      let result = [];
-      for (const value of params.args.slice(1)) {
-        let arr = await bu.getArray(params, value);
-        if (typeof arr === "object" && Array.isArray(arr.v))
-          result.push(...arr.v);
-        else
-          return await Builder.errors.notAnArray(params);
-      }
+      let result = Builder.util.flattenArgArrays(params.args.slice(1));
       return bu.serializeTagArray(result);
     })
     .build();
