@@ -17,7 +17,11 @@ async function deleteMessage(params, channelId, messageId) {
     return await channel(params);
 
   if (msg.id !== messageId)
-    msg = await bot.getMessage(channel.id, messageId);
+    try {
+      msg = await bot.getMessage(channel.id, messageId);
+    } catch (err) {
+      return await Builder.errors.noMessageFound(params);
+    }
 
   try {
     if (msg != null)
