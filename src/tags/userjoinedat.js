@@ -31,7 +31,7 @@ module.exports =
       if (user != null) {
         let member = params.msg.channel.guild.members.get(user.id);
         if (member != null)
-          return dep.moment(member.joinedAt).format(params.args[1] || '');
+          return dep.moment(member.joinedAt).utcOffset(0).format(params.args[1] || '');
         return await Builder.errors.userNotInGuild(params);
       }
 

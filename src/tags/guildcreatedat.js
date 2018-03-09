@@ -19,7 +19,7 @@ module.exports =
       'This guild was created on 2016/01/01 01:00:00'
     ).beforeExecute(Builder.util.processAllSubtags)
     .whenArgs('1-2', async function (params) {
-      return dep.moment(params.msg.channel.guild.createdAt).format(params.args[1] || '');
+      return dep.moment(params.msg.channel.guild.createdAt).utcOffset(0).format(params.args[1] || '');
     })
     .whenDefault(Builder.errors.tooManyArguments)
     .build();
