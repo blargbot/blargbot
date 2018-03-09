@@ -21,7 +21,7 @@ module.exports =
     .whenArgs('1', Builder.errors.notEnoughArguments)
     .whenArgs('2-3', async function (params) {
       let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-      role = await bu.getRole(params.msg, params.args[1], quiet);
+        role = await bu.getRole(params.msg, params.args[1], quiet);
 
       if (role != null)
         return role.color.toString(16).padStart(6, '0');
