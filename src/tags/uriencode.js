@@ -19,7 +19,7 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2', async function (params) {
-            return encodeURIComponent(params.args[1]);
+            return encodeURIComponent(bu.processSpecial(params.args[1], true));
          })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
