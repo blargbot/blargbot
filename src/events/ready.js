@@ -182,8 +182,8 @@ async function switchGame(forced) {
                         name = `in a box!`;
                         break;
                     case 10:
-                        type = 2;
-                        name = `on shard ${shard[1].id}!`;
+                        type = 3;
+                        name = `you on shard ${shard[1].id}!`;
                         break;
                     case 11:
                         type = 2;
