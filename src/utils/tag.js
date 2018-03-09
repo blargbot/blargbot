@@ -202,9 +202,9 @@ bu.tagVariableScopes = [
         getter: async (params, name) => params.vars[name]
     },
     {
-        name: 'Tag',
+        name: 'Local',
         prefix: '',
-        description: 'Tag variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
+        description: 'Local variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
             'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
             'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
         setter: async (params, name, value) => {
