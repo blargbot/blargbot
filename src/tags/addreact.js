@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('react')
+  Builder.AutoTag('addreact')
     .withArgs(a => [a.optional([a.optional('channelId'), a.require('messageId')]), a.require('emotes', true)])
     .withDesc('Adds `emotes` as reactions to the given `messageId`. If the `messageId` is not supplied, ' +
       'it instead adds the `emotes` to the output from the containing tag.\n' +
