@@ -11,16 +11,15 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('throw')
-        .withArgs(a => a.require('error'))
+        .withArgs(a => a.optional('error'))
         .withDesc('Throws `error`.')
         .withExample(
             '{throw;Custom Error}',
             '\u200B`Custom Error`\u200B'
         ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
+        .whenArgs('1-2', async function (params) {
             let error = params.args[1];
-            return await Builder.util.error(params, error);
+            return await Builder.util.error(params, error || 'A custom error occured');
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
