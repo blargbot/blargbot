@@ -80,7 +80,7 @@ class TagBuilder {
         if (result.terminate === undefined) result.terminate = params.terminate;
         if (result.nsfw === undefined) result.nsfw = params.nsfw;
         if (result.replaceContent === undefined) result.replaceContent = false;
-        if (result.replaceString === undefined) result.replaceString = '';
+        if (result.replaceString === undefined) result.replaceString = result.contents || '';
         if (result.reactions === undefined) result.reactions = params.reactions;
         if (result.embed === undefined) result.embed = params.embed;
         if (result.timers === undefined) result.timers = params.timers;
