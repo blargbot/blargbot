@@ -84,7 +84,7 @@ Reason: ${tag.reason}`);
         if (output.contents == '')
             return;
         let message = await bu.send(msg, { content: output.contents, embed: output.embed });
-        if (message != null)
+        if (message && message.channel)
             await bu.addReactions(message.channel.id, message.id, output.reactions);
     }
 };

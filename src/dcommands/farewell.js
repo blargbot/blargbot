@@ -56,6 +56,6 @@ e.execute = async function (msg, words) {
         content: `Farewell set. ${suffix}Simulation:
 ${output.contents}`, embed: output.embed
     });
-    if (message != null)
+    if (message && message.channel)
         await bu.addReactions(message.channel.id, message.id, output.reactions);
 };

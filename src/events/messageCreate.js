@@ -240,7 +240,8 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
                     embed: output.embed,
                     disableEveryone: false
                 });
-                await bu.addReactions(message.channel.id, message.id, output.reactions);
+                if (message && message.channel)
+                  await bu.addReactions(message.channel.id, message.id, output.reactions);
 
             }
             return true;
@@ -409,7 +410,7 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                     }
                     let output = await tags.processTag(msg, content, msg.content, undefined, undefined, true);
                     let message = await bu.send(msg, { content: output.contents, embed: output.embed });
-                    if (message != null)
+                    if (message && message.channel)
                         await bu.addReactions(message.channel.id, message.id, output.reactions);
                     return;
                 }
@@ -450,7 +451,8 @@ async function handleRoleme(msg, storedGuild) {
                             await tags.processTag(msg, roleme[i].output, '', undefined, undefined, true) :
                             { content: 'Your roles have been edited!' };
                         let message = await bu.send(msg, { content: output.contents, embed: output.embed });
-                        await bu.addReactions(message.channel.id, message.id, output.reactions);
+                        if (message && message.channel)
+                          await bu.addReactions(message.channel.id, message.id, output.reactions);
                     } catch (err) {
                         bu.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
                     }

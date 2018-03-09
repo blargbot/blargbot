@@ -30,7 +30,7 @@ bot.on('guildMemberRemove', async function (guild, member) {
             embed: output.embed,
             disableEveryone: false
         });
-        if (message != null)
+        if (message && message.channel)
             await bu.addReactions(message.channel.id, message.id, output.reactions);
     }
     bu.logEvent(guild.id, 'memberleave', [{

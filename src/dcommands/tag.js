@@ -519,7 +519,8 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                 if (words.length > 2) {
                     let output = await tags.processTag(msg, words.slice(2).join(' '), '', 'test', msg.author.id);
                     let message = await bu.send(msg, { content: `Output:\n${output.contents.trim()}`, embed: output.embed });
-                    await bu.addReactions(message.channel.id, message.id, output.reactions);
+                    if (message && message.channel)
+                      await bu.addReactions(message.channel.id, message.id, output.reactions);
                 }
                 break;
             case 'favourite':
@@ -678,7 +679,6 @@ e.event = async function (args) {
     }
     let params = args.params;
     params.msg = msg;
-    params.msg.didTimer = true;
     params.content = params.args[1];
     let output = await bu.processTag(params);
     let message = await bu.send(params.msg.channel.id, {
@@ -686,7 +686,7 @@ e.event = async function (args) {
         embed: output.embed,
         disableEveryone: false
     });
-    if (message)
+    if (message && message.channel)
         await bu.addReactions(message.channel.id, message.id, output.reactions);
 };
 
