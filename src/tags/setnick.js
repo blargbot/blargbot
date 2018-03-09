@@ -35,7 +35,7 @@ module.exports =
                     nick: nick
                 });
             } catch (err) {
-                return await bu.tagProcessError(params, '`Could not change nickname`');
+                return await Builder.util.error(params, 'Could not change nickname');
             }
         })
         .whenDefault(Builder.errors.tooManyArguments)
