@@ -35,16 +35,24 @@ module.exports =
         options = {
           name: params.args[1],
           color: bu.parseColor(params.args[2]) || 0,
-          permissions: parseInt(params.args[3]),
-          mentionable: (params.args[4] || 'false').toLowerCase() === 'true',
-          hoisted: (params.args[5] || 'false').toLowerCase() === 'true'
+          permissions: parseInt(params.args[3] || 0),
+          mentionable: bu.parseBoolean(params.args[4] || 'false', false),
+          hoisted: bu.parseBoolean(params.args[5] || 'false', false)
         };
 
       if (isNaN(options.permissions))
-        return await Builder.util.error('Permissions not a number');
+        return await Builder.util.error(params, 'Permissions not a number');
 
       try {
         let role = await params.msg.guild.createRole(options, `Created with a custom command command, executed by user: ${params.msg.author.id}`);
+        let waitCount = 0;
+        while (waitCount < 10 && params.msg.guild.roles.filter(r => r.id == role.id).length == 0) {
+          console.error("New role does not exist yet. Waiting 500ms");
+          waitCount ++;
+          await new Promise(resulve => setTimeout(resulve, 500));
+        }
+        if (waitCount >= 10)
+          throw "Role did not create successfully!";
         return role.id;
       } catch (err) {
         console.error(err.stack);
