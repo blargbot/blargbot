@@ -40,7 +40,7 @@
         },
         "tag": {
             "info": "Tags er et system af offentlige kommandoer som alle kan skabe eller udføre, ved brug af BBTag sproget.\n\n**Subkommandoer**\n{{subcommands}}\n\nFor mere info om en subkommando, skriv `b!t help <subcommand>`\nFor mere info om BBTag, besøg <https://blargbot.xyz/tags>.\nVed at skabe et tag anderkender du, at du er enig med servicevilkårene (<https://blargbot.xyz/tags/tos>).",
-            "usage": "<name | subcommand>[args]",
+            "usage": "<navn | underkommando>[args]",
             "dontown": "[[emote.x]] Du ejer ikke dette tag!",
             "alreadyexists": "[[emote.x]] Et tag med dette navn findes allerede!",
             "notag": "[[emote.x]] Der er intet tag med dette navn.",
