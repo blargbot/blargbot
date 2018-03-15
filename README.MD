@@ -1,4 +1,4 @@
-# blargbot
+# blargbot  　　  [![Mentioned in Awesome Discord](https://awesome.re/mentioned-badge.svg)](https://github.com/jacc/awesome-discord)
 blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.
 
 ### Commands
