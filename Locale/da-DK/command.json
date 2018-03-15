@@ -555,7 +555,7 @@
             "descreset": "Beskrivelsen for `{{tag}}` er blevet nulstillet.",
             "subcommandconflict": "Du kan ikke bruge navnet '{{name}}', fordi der er en underkommando med det navn!",
             "tagauthor": "",
-            "list": ""
+            "list": "Her er de brugerdefinerede kommandoer for din server: \n'''\n{{commands}}\n'''"
         }
     }
 }
