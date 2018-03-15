@@ -478,7 +478,7 @@
                 "time": "Hvor længe udelukkelsen skal vare."
             },
             "banned": "",
-            "invaliduser": "",
+            "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
             "unbunin": ""
         },
         "unban": {
