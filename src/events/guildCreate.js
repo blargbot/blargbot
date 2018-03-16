@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:21:21
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-06-04 14:33:54
+ * @Last Modified time: 2018-03-16 14:56:06
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -19,14 +19,14 @@ bot.on('guildCreate', async function (guild) {
         var message = `:white_check_mark: Guild: \`${guild.name}\`` +
             ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
         bu.send(`205153826162868225`, message);
-        if (bot.guilds.size % 100 == 0) {
-            bu.send(`205153826162868225`, `🎉 I'm now ` +
-                `in ${bot.guilds.size} guilds! 🎉`);
-        }
-        if (bot.guilds.size % 1000 == 0) {
-            bu.send(`229135592720433152`, `🎊🎉🎊🎉 I'm now ` +
-                `in ${bot.guilds.size} guilds! WHOOOOO! 🎉🎊🎉🎊`);
-        }
+        // if (bot.guilds.size % 100 == 0) {
+        //     bu.send(`205153826162868225`, `🎉 I'm now ` +
+        //         `in ${bot.guilds.size} guilds! 🎉`);
+        // }
+        // if (bot.guilds.size % 1000 == 0) {
+        //     bu.send(`229135592720433152`, `🎊🎉🎊🎉 I'm now ` +
+        //         `in ${bot.guilds.size} guilds! WHOOOOO! 🎉🎊🎉🎊`);
+        // }
         var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you!
 - 💻 For command information, please do \`${config.discord.defaultPrefix}help\`!
 - 🛠 For Admin commands, please make sure you have a role titled \`Admin\`.
