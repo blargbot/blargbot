@@ -477,9 +477,9 @@
                 "days": "Antallet dage som beskeder slettes (som standard sat til 1).",
                 "time": "Hvor længe udelukkelsen skal vare."
             },
-            "banned": "",
+            "banned": ":ok_hand:**{{user}}** er blevet udelukket.",
             "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
-            "unbunin": ""
+            "unbunin": "Udelukkelsen vil blive fjernet om **{{seconds}}** sekunder."
         },
         "unban": {
             "usage": "<bruger>",
@@ -554,7 +554,7 @@
             "descupdate": "Beskrivelsen for `{{tag}}` er blevet opdateret.",
             "descreset": "Beskrivelsen for `{{tag}}` er blevet nulstillet.",
             "subcommandconflict": "Du kan ikke bruge navnet '{{name}}', fordi der er en underkommando med det navn!",
-            "tagauthor": "",
+            "tagauthor": "Den brugerdefinerede kommando `{{tag}}`blev skabt af **{{author}}**",
             "list": "Her er de brugerdefinerede kommandoer for din server: \n'''\n{{commands}}\n'''"
         }
     }
