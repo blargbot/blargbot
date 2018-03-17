@@ -16,7 +16,8 @@ e.longinfo = `<p>Returns a list of commands and custom commands. If a command na
 e.execute = async function (msg, words) {
     if (words.length > 1) {
         var message = '';
-        if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden) {
+        if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden
+            && (!CommandManager.commandList[words[1]].onlyOn || CommandManager.commandList[words[1]].onlyOn === msg.guild.id)) {
             let aliases = '';
             let flags = '';
             if (CommandManager.list[CommandManager.commandList[words[1]].name].alias)
@@ -72,7 +73,7 @@ ${flags}`;
         //   console.debug(otherCommands);
         for (var command in CommandManager.list) {
             if (modifiedCommands.indexOf(command) == -1)
-                if (!CommandManager.list[command].hidden) {
+                if (!CommandManager.list[command].hidden && (!CommandManager.list[command].onlyOn || CommandManager.list[command].onlyOn === msg.guild.id)) {
                     if (CommandManager.list[command].category == bu.CommandType.GENERAL) {
                         if ((await bu.canExecuteCommand(msg, command, true))[0])
                             generalCommands.push(command);

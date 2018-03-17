@@ -91,9 +91,9 @@ e.ban = async function (msg, user, deleteDays = 1, reason, duration, tag = false
             });
             return [`:ok_hand: The user will be unbanned ${duration.humanize(true)}.`, duration.asMilliseconds()];
         } else {
-            return [`:ok_hand:`, 'Success'];
+            return [`:ok_hand:`, true];
         }
     } catch (err) {
-        return [`Failed to ban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, '`Couldn\'t ban user`'];
+        return [`Failed to ban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, false];
     }
 };
