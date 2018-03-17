@@ -26,12 +26,13 @@ module.exports =
             let set = TagManager.list['set'],
                 varName = params.args[1],
                 deserialized = await bu.getArray(params, params.args[2]),
-                result = '';
+                result = '',
+                arr;
 
             if (deserialized == null || !Array.isArray(deserialized.v))
-                return await Builder.errors.notAnArray(params);
-
-            let arr = deserialized.v;
+                arr = params.args[2].split('');
+            else
+                arr = deserialized.v;
 
             for (const item of arr) {
                 params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
