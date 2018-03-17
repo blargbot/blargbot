@@ -7,29 +7,46 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('username')
-        .withArgs(a => [a.optional('user'), a.optional('quiet')])
-        .withDesc('Returns `user`\'s name. `user` defaults to the user who executed the containing tag. ' +
-            'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
-        .withExample(
-            'Your username is {username}!',
-            'Your username is user!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-3', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-                user = params.msg.author;
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-            if (params.args[1])
-                user = await bu.getUser(params.msg, params.args[1], quiet);
+e.requireCtx = require;
 
-            if (user != null)
-                return user.username;
+e.isTag = true;
+e.name = `username`;
+e.args = `[user] [quiet]`;
+e.usage = `{username[;user[;quiet]]}`;
+e.desc = `Returns the user's name. If <code>name</code> is specified, gets that user instead. If
+<code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
+e.exampleIn = `Your username is {username;stupid;this can be anything}`;
+e.exampleOut = `Your username is stupid cat`;
 
-            if (quiet)
-                return params.args[1];
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+e.execute = async function(params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args,
+        msg = params.msg;
+    var replaceString = '';
+    var replaceContent = false;
+
+    var obtainedUser = await bu.getTagUser(msg, args);
+
+    if (obtainedUser)
+        replaceString = obtainedUser.username;
+    else {
+        if (!args[2])
+            return '';
+        else
+            replaceString = args[1];
+    }
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

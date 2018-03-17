@@ -143,15 +143,6 @@ bu.hasRole = (msg, roles, override = true) => {
     return false;
 };
 
-bu.addReactions = async function (channelId, messageId, reactions) {
-    for (const reaction of new Set(reactions || []))
-        try {
-            await bot.addMessageReaction(channelId, messageId, reaction.replace(/[<>]/g, ''));
-        } catch (e) {
-            console.error(e);
-        }
-};
-
 /**
  * Sends a message to discord.
  * @param channel - the channel id (String) or message object (Object)
@@ -168,37 +159,35 @@ bu.send = async function (channel, message, file, embed) {
     if (!message) message = '';
 
     bu.messageStats++;
-    let toSend = {};
+    let content = {};
     if (typeof message === "string") {
-        toSend.content = message;
+        content.content = message;
     } else {
-        toSend = message;
+        content = message;
     }
+    if (!content.content) content.content = '';
+    content.content = content.content.trim();
 
-    if (!toSend.content) toSend.content = '';
-    toSend.content = toSend.content.trim();
-
-    if (embed) toSend.embed = embed;
+    if (embed) content.embed = embed;
     // content.content = dep.emoji.emojify(content.content).trim();
 
-    if (toSend.content.length <= 0 && !file && !embed && !toSend.embed) {
+    if (content.content.length <= 0 && !file && !embed && !content.embed) {
         console.info('Tried to send a message with no content.');
         return Error('No content');
     }
 
-    if (toSend.content.length > 2000) {
+    if (content.content.length > 2000) {
         if (!file) file = {
-            file: Buffer.from(toSend.content.toString()),
+            file: Buffer.from(content.content.toString()),
             name: 'output.txt'
         };
-        toSend.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+        content.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
 
     }
-
     try {
-        console.debug('Sending content: ', JSON.stringify(toSend));
-        return await bot.createMessage(channelid, toSend, file);
+        return await bot.createMessage(channelid, content, file);
     } catch (err) {
+
         try {
             let response;
             if (err.response)
@@ -206,7 +195,7 @@ bu.send = async function (channel, message, file, embed) {
             else {
                 response = {};
             }
-            let dmMsg, warnMsg;
+            let dmMsg;
             switch (response.code) {
                 case 10003:
                     warnMsg = 'Channel not found';
@@ -753,7 +742,7 @@ bu.splitInput = (content, noTrim) => {
         words[i] = words[i].replace(/\\"/g, '"');
         if (!noTrim) words[i] = words[i].replace(/^ +/g, '');
     }
-    //console.debug(words);
+    console.debug(words);
     return words;
 };
 
@@ -782,7 +771,7 @@ bu.canExecuteCommand = async function (msg, commandName, quiet) {
         storedGuild = await bu.getGuild(msg.guild.id);
         let val = storedGuild.settings.permoverride,
             val1 = storedGuild.settings.staffperms;
-        //console.debug(storedGuild.settings.adminrole);
+        console.debug(storedGuild.settings.adminrole);
 
         let command = storedGuild.commandperms[commandName];
         let commandObj = CommandManager.list[commandName];
@@ -1236,228 +1225,4 @@ bu.sleep = function (time) {
 
 bu.escapeHTML = function (text) {
     return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-};
-
-bu.between = function (value, lower, upper, inclusive) {
-    if (lower > upper)
-        lower = [upper, upper = lower][0];
-
-    if (inclusive)
-        return value >= lower && value <= upper;
-    return value > lower && value < upper;
-};
-
-bu.parseBoolean = function (value, defValue = null, includeNumbers = true) {
-    if (typeof value == 'boolean')
-        return value;
-
-    if (includeNumbers && typeof value == 'number')
-        return value !== 0;
-
-    if (typeof value != 'string')
-        return defValue;
-
-    if (includeNumbers) {
-        let asNum = parseFloat(value);
-        if (!isNaN(asNum))
-            return asNum !== 0;
-    }
-
-    switch (value.toLowerCase()) {
-        case 'true':
-        case 't':
-        case 'yes':
-        case 'y':
-            return true;
-        case 'false':
-        case 'f':
-        case 'no':
-        case 'n':
-            return false;
-        default:
-            return defValue;
-    }
-};
-
-bu.isBoolean = function (value) {
-    return typeof value == 'boolean';
-};
-
-const namedColors = {
-    "aliceblue": 0xf0f8ff, "antiquewhite": 0xfaebd7, "aqua": 0x00ffff, "aquamarine": 0x7fffd4, "azure": 0xf0ffff,
-    "beige": 0xf5f5dc, "bisque": 0xffe4c4, "black": 0x000000, "blanchedalmond": 0xffebcd, "blue": 0x0000ff,
-    "blueviolet": 0x8a2be2, "brown": 0xa52a2a, "burlywood": 0xdeb887, "cadetblue": 0x5f9ea0, "chartreuse": 0x7fff00,
-    "chocolate": 0xd2691e, "coral": 0xff7f50, "cornflowerblue": 0x6495ed, "cornsilk": 0xfff8dc, "crimson": 0xdc143c,
-    "cyan": 0x00ffff, "darkblue": 0x00008b, "darkcyan": 0x008b8b, "darkgoldenrod": 0xb8860b, "darkgray": 0xa9a9a9,
-    "darkgreen": 0x006400, "darkkhaki": 0xbdb76b, "darkmagenta": 0x8b008b, "darkolivegreen": 0x556b2f,
-    "darkorange": 0xff8c00, "darkorchid": 0x9932cc, "darkred": 0x8b0000, "darksalmon": 0xe9967a,
-    "darkseagreen": 0x8fbc8f, "darkslateblue": 0x483d8b, "darkslategray": 0x2f4f4f, "darkturquoise": 0x00ced1,
-    "darkviolet": 0x9400d3, "deeppink": 0xff1493, "deepskyblue": 0x00bfff, "dimgray": 0x696969, "dodgerblue": 0x1e90ff,
-    "firebrick": 0xb22222, "floralwhite": 0xfffaf0, "forestgreen": 0x228b22, "fuchsia": 0xff00ff,
-    "gainsboro": 0xdcdcdc, "ghostwhite": 0xf8f8ff, "gold": 0xffd700, "goldenrod": 0xdaa520, "gray": 0x808080,
-    "green": 0x008000, "greenyellow": 0xadff2f, "honeydew": 0xf0fff0, "hotpink": 0xff69b4, "indianred ": 0xcd5c5c,
-    "indigo": 0x4b0082, "ivory": 0xfffff0, "khaki": 0xf0e68c, "lavender": 0xe6e6fa, "lavenderblush": 0xfff0f5,
-    "lawngreen": 0x7cfc00, "lemonchiffon": 0xfffacd, "lightblue": 0xadd8e6, "lightcoral": 0xf08080,
-    "lightcyan": 0xe0ffff, "lightgoldenrodyellow": 0xfafad2, "lightgrey": 0xd3d3d3, "lightgreen": 0x90ee90,
-    "lightpink": 0xffb6c1, "lightsalmon": 0xffa07a, "lightseagreen": 0x20b2aa, "lightskyblue": 0x87cefa,
-    "lightslategray": 0x778899, "lightsteelblue": 0xb0c4de, "lightyellow": 0xffffe0, "lime": 0x00ff00,
-    "limegreen": 0x32cd32, "linen": 0xfaf0e6, "magenta": 0xff00ff, "maroon": 0x800000, "mediumaquamarine": 0x66cdaa,
-    "mediumblue": 0x0000cd, "mediumorchid": 0xba55d3, "mediumpurple": 0x9370d8, "mediumseagreen": 0x3cb371,
-    "mediumslateblue": 0x7b68ee, "mediumspringgreen": 0x00fa9a, "mediumturquoise": 0x48d1cc, "mediumvioletred": 0xc71585,
-    "midnightblue": 0x191970, "mintcream": 0xf5fffa, "mistyrose": 0xffe4e1, "moccasin": 0xffe4b5, "navajowhite": 0xffdead,
-    "navy": 0x000080, "oldlace": 0xfdf5e6, "olive": 0x808000, "olivedrab": 0x6b8e23, "orange": 0xffa500,
-    "orangered": 0xff4500, "orchid": 0xda70d6, "palegoldenrod": 0xeee8aa, "palegreen": 0x98fb98, "paleturquoise": 0xafeeee,
-    "palevioletred": 0xd87093, "papayawhip": 0xffefd5, "peachpuff": 0xffdab9, "peru": 0xcd853f, "pink": 0xffc0cb,
-    "plum": 0xdda0dd, "powderblue": 0xb0e0e6, "purple": 0x800080, "rebeccapurple": 0x663399, "red": 0xff0000,
-    "rosybrown": 0xbc8f8f, "royalblue": 0x4169e1, "saddlebrown": 0x8b4513, "salmon": 0xfa8072, "sandybrown": 0xf4a460,
-    "seagreen": 0x2e8b57, "seashell": 0xfff5ee, "sienna": 0xa0522d, "silver": 0xc0c0c0, "skyblue": 0x87ceeb,
-    "slateblue": 0x6a5acd, "slategray": 0x708090, "snow": 0xfffafa, "springgreen": 0x00ff7f, "steelblue": 0x4682b4,
-    "tan": 0xd2b48c, "teal": 0x008080, "thistle": 0xd8bfd8, "tomato": 0xff6347, "turquoise": 0x40e0d0, "violet": 0xee82ee,
-    "wheat": 0xf5deb3, "white": 0xffffff, "whitesmoke": 0xf5f5f5, "yellow": 0xffff00, "yellowgreen": 0x9acd32
-};
-
-bu.parseColor = function (text) {
-    if (typeof text == 'number') return text;
-    if (typeof text != 'string') return null;
-
-    text = text.replace(/\s+/g, '').toLowerCase();
-
-    //By name
-    let named = namedColors[text];
-    if (named != null)
-        return named;
-
-    //RGB 256,256,256
-    let match = text.match(/^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/);
-    if (match != null) {
-        let r = parseInt(match[1]),
-            g = parseInt(match[2]),
-            b = parseInt(match[3]),
-            valid = (v => bu.between(v, 0, 255, true)),
-            toHex = (v => v.toString(16).padStart(2, '0'));
-        if (isNaN(r + g + b) || !valid(r) || !valid(g) || !valid(b))
-            return null;
-        console.debug('color: ' + toHex(r) + toHex(g) + toHex(b));
-        return parseInt(toHex(r) + toHex(g) + toHex(b), 16);
-    }
-
-    //Hex code with 6 digits
-    match = text.match(/^#?([0-9a-f]{6})$/i);
-    if (match != null)
-        return parseInt(match[1], 16);
-
-    //Hex code with 3 digits
-    match = text.match(/^#?([0-9a-f]{3})$/i);
-    if (match != null)
-        return parseInt(match[1].split('').map(v => v + v).join(''), 16);
-
-    //Decimal number
-    match = text.match(/^([0-9]{1,8})$/);
-    if (match != null) {
-        let value = parseInt(match[1]);
-        if (bu.between(value, 0, 16777215, true))
-            return value;
-    }
-
-    return null;
-};
-
-bu.parseEntityId = function (text, identifier, allowJustId = false) {
-    if (typeof text != 'string') return null;
-
-    let regex = new RegExp('\\<' + identifier + '(\\d{17,23})\\>');
-    let match = text.match(regex);
-    if (match != null)
-        return match[1];
-
-    if (!allowJustId) return null;
-    match = text.match(/\d{17,23}/);
-    if (match != null)
-        return match[0];
-    return null;
-};
-
-bu.parseChannel = function (text, allowJustId = false) {
-    let id = bu.parseEntityId(text, '#', allowJustId);
-    if (id == null) return null;
-    return bot.getChannel(id);
-};
-
-bu.range = function (from, to) {
-    from = Math.floor(from || 0);
-    to = Math.floor(to || 0);
-
-    if (isNaN(from) || isNaN(to)) throw 'Range bounds must be numbers';
-
-    if (from > to)
-        from = [to, to = from][0];
-
-    return [...Array(to - from).keys()].map(v => v + from);
-};
-
-bu.parseEmbed = function (embedText) {
-    if (embedText == null)
-        return undefined;
-
-    embedText = bu.processSpecial(embedText, true);
-
-    if (!embedText || !embedText.trim())
-        return undefined;
-
-    try {
-        return JSON.parse(embedText);
-    } catch (e) {
-        return { fields: [{ name: 'Malformed JSON', value: embedText + '' }], malformed: true };
-    }
-};
-
-const prettyTimeMagnitudes = {
-    //defaults
-    year: 'year', years: 'years', y: 'y',
-    month: 'month', months: 'months', M: 'M',
-    week: 'week', weeks: 'weeks', w: 'w',
-    day: 'day', days: 'days', d: 'd',
-    hour: 'hour', hours: 'hours', h: 'h',
-    minute: 'minute', minutes: 'minutes', m: 'm',
-    second: 'second', seconds: 'seconds', s: 's',
-    millisecond: 'millisecond', milliseconds: 'milliseconds', ms: 'ms',
-    quarter: 'quarter', quarters: 'quarters', q: 'Q',
-    //Custom
-    mins: 'minutes', min: 'minute'
-};
-
-bu.parseTime = function (text, format = undefined, timezone = 'Etc|UTC') {
-    let now = dep.moment.tz(timezone);
-    if (!text) return now;
-    switch (text.toLowerCase()) {
-        case 'now': return now;
-        case 'today': return now.startOf('day');
-        case 'tomorrow': return now.startOf('day').add(1, 'day');
-        case 'yesterday': return now.startOf('day').add(-1, 'days');
-    }
-
-    let match = text.match(/^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i), sign = 1;
-    if (match == null) match = text.match(/^\s*(-?\d+(?:\.\d+)?)\s+(\S+)\s+ago\s*$/i), sign = -1;
-    if (match != null) {
-        let magnitude = sign * parseFloat(match[1]),
-            quantity = prettyTimeMagnitudes[match[2].toLowerCase()];
-        if (quantity == null)
-            return 'Invalid quantity ' + match[2];
-        return now.add(magnitude, quantity);
-    }
-
-    console.debug('using default moment parsing');
-    return dep.moment.tz(text, format, timezone).utcOffset(0);
-};
-
-bu.parseInt = function (s, radix = 10) {
-    if (typeof s != 'string') return parseInt(s, radix);
-    //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
-    return parseInt(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'), radix);
-};
-
-bu.parseFloat = function (s) {
-    if (typeof s != 'string') return parseFloat(s);
-    //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
-    return parseFloat(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'));
 };

@@ -86,7 +86,7 @@ class Version {
 bu.getVersion = async function () {
     let v = await r.table('vars').get('version');
     return new Version(v.major, v.minor, v.patch);
-};
+}
 
 bu.ccommand = {
     set: async function (guildid, key, value) {

@@ -7,78 +7,73 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.CCommandTag('edit')
-        .requireStaff()
-        .withArgs(a => [a.optional('channelId'), a.require('messageId'), a.require([a.optional('text'), a.optional('embed')])])
-        .withDesc('Edits `messageId` in `channelId` to say `text` or `embed`. ' +
-            'Atleast one of `text` and `embed` is required. ' +
-            'If `channelId` is not supplied, it defaults to the current channel. ' +
-            'Only messages created by the bot may be edited')
-        .withExample(
-            'A message got edited: {edit;111111111111111111;New content}',
-            '(the message got edited idk how to do examples for this)'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) { //params.args = ["edit",<messageId>,<text|embed>]
-            let message = params.args[2],
-                embed = bu.parseEmbed(params.args[2]);
+e.init = () => {
+    e.category = bu.TagType.CCOMMAND;
+};
 
-            if (embed != null && !embed.malformed)
-                message = undefined; //params.args = ["edit",<messageId>,<embed>]
-            else
-                embed = undefined; //params.args = ["edit",<messageId>,<text>]
+e.requireCtx = require;
 
-            return await this.runEdit(params, params.msg.channel, params.args[1], message, embed);
-        })
-        .whenArgs('4', async function (params) { //params.args = ["edit",(<messageId>,<text>,<embed>)|(<channelid>,<messageId>,<text|embed>)]
+e.isTag = true;
+e.name = `edit`;
+e.args = `[channelid] &lt;messageid&gt; &lt;message&gt;`;
+e.usage = `{edit[;channelid];messageid;message}`;
+e.desc = `Edits a message outputted by the bot with the given message ID. The channel defaults to the current channel.`;
+e.exampleIn = `A message got edited: {edit;111111111111111111;New content}`;
+e.exampleOut = `(the message got edited idk how to do examples for this)`;
 
-            let channel = bu.parseChannel(params.args[1], true);
-            if (channel == null) { //params.args = ["edit",<messageId>,<text>,<embed>]
-                let text = params.args[2],
-                    embed = bu.parseEmbed(params.args[3]);
-                return await this.runEdit(params, params.msg.channel, params.args[1], text, embed);
+e.execute = async function (params) {
+    var replaceString = ``;
+    var replaceContent = false;
+
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let msg, content = '';
+    try {
+        if (params.isStaff) {
+            if (params.args.length == 3) {
+                msg = await bot.getMessage(params.msg.channel.id, params.args[1]);
+                content = params.args[2];
+            } else if (params.args.length > 3) {
+                if (/([0-9]{17,23})/.test(params.args[1])) {
+                    let channelid = params.args[1].match(/([0-9]{17,23})/)[1];
+                    let channel = bot.getChannel(channelid);
+                    if (channel) {
+                        if (channel.guild.id == params.msg.guild.id) {
+                            msg = await bot.getMessage(params.args[1], params.args[2]);
+                            content = params.args[3];
+
+                        } else
+                            replaceString = await bu.tagProcessError(params, '`Channel must be in guild`');
+                    } else
+                        replaceString = await bu.tagProcessError(params, '`Channel not found`');
+                }
+            } else
+                replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+
+            if (replaceString == "") {
+                if (!msg)
+                    replaceString = await bu.tagProcessError(params, '`No message provided`');
+                else if (msg.author.id != bot.user.id)
+                    replaceString = await bu.tagProcessError(params, '`I must be message author`');
+                else if (content == '')
+                    replaceString = await bu.tagProcessError(params, '`New message cannot be empty`');
+                try {
+                    if (replaceString == "" && msg.edit) msg.edit(content);
+                } catch (err) { }
             }
 
-            let text = params.args[3],
-                embed = bu.parseEmbed(params.args[3]);
+        } else
+            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
+    } catch (err) {
+        replaceString = await bu.tagProcessError(params, '`Message not found`');
+    }
 
-            if (embed != null && !embed.malformed)
-                text = null; //params.args = ["edit",<channelId>,<messageId>,<embed>]
-            else
-                embed = null; //params.args = ["edit",<channelId>,<messageId>,<text>]
-            return await this.runEdit(params, channel, params.args[2], text, embed);
-        })
-        .whenArgs('5', async function (params) { //params.args = ["edit",<channelId>,<messageId>,<text>,<embed>]
-            let channel = bu.parseChannel(params.args[1], true),
-                messageId = params.args[2],
-                text = params.args[3],
-                embed = bu.parseEmbed(params.args[4]);
-            return await this.runEdit(params, channel, messageId, text, embed);
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .withProp('runEdit', async function (params, channel, messageId, text, embed) {
-            if (channel == null)
-                return await Builder.errors.noChannelFound(params);
-            if (!channel.guild || !params.msg.guild || channel.guild.id != params.msg.guild.id)
-                return await Builder.errors.channelNotInGuild(params);
-
-            let message = await bot.getMessage(channel.id, messageId);
-
-            if (message == null) return await Builder.errors.noMessageFound(params);
-            if (message.author.id != bot.user.id) return await Builder.util.error(params, 'I must be the message author');
-
-            if ((text == null || text.trim() == '') && embed == null)
-                return await Builder.util.error(params, 'Message cannot be empty');
-
-            try {
-                if (message.edit)
-                    message.edit({
-                        content: text || message.content,
-                        embed: embed || message.embeds[0]
-                    });
-            } catch (err) { }
-        })
-        .build();
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

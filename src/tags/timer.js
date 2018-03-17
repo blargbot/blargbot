@@ -7,44 +7,58 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.CCommandTag('timer')
-        .withArgs(a => [a.require('code'), a.require('duration')])
-        .withDesc('Executes `code` after `duration`. ' +
-            'Three timers are allowed per custom command, with no recursive timers.')
-        .withExample(
-            '{timer;Hello!;20s}',
-            '(after 20 seconds:) Hello!'
-        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
-            if (params.disabletimer)
-                return await Builder.util.error(params, 'Nested timers are not allowed');
+e.init = () => {
+    e.category = bu.TagType.CCOMMAND;
+};
 
-            let code = params.args[1],
-                duration = await bu.processTagInner(params, 2);
+e.requireCtx = require;
 
-            duration = bu.parseDuration(duration);
+e.isTag = true;
+e.name = `timer`;
+e.args = `&lt;code&gt; &lt;time&gt;`;
+e.usage = `{timer;code;time}`;
+e.desc = `Executes the provided code after a certain amount of time. Three timers are allowed per custom command, with no recursive timers.`;
+e.exampleIn = `{timer;Hello!;20s}`;
+e.exampleOut = `(after 20 seconds:) Hello!`;
 
-            if (duration.asMilliseconds() <= 0) return await Builder.util.error(params, 'Invalid duration');
+e.execute = async function (params) {
+    var replaceString = '';
+    var replaceContent = false;
+    if (params.msg.didTimer == true) {
+        replaceString = await bu.tagProcessError(params, '`No recursive timers`');
+    } else if (params.msg.timers && params.msg.timers >= 3) {
+        replaceString = await bu.tagProcessError(params, '`Only allowed 3 timers`');
+    } else if (!params.ccommand) {
+        replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
+    } else {
+        if (params.args.length > 2) {
+            params.args[2] = await bu.processTagInner(params, 2);
+            let duration = bu.parseDuration(params.args[2]);
+            if (duration.asMilliseconds() > 0) {
+                let msg = params.msg;
+                params.msg = msg.id;
+                await r.table('events').insert({
+                    type: 'tag',
+                    params,
+                    msg: JSON.stringify(msg),
+                    channel: msg.channel.id,
+                    endtime: r.epochTime(dep.moment().add(duration).unix())
+                });
+                params.msg = msg;
+                params.msg.timers = params.msg.timers ? params.msg.timers + 1 : 1;
+            } else {
+                replaceString = await bu.tagProcessError(params, '`Invalid duration`');
+            }
+        } else {
+            replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+        }
+    }
 
-            if (params.timers > 2) return await Builder.util.error(params, 'Max 3 timers per tag');
-
-            let msg = params.msg;
-            params.msg = msg.id;
-            params.disabletimer = true;
-            await r.table('events').insert({
-                type: 'tag',
-                params,
-                msg: JSON.stringify(msg),
-                channel: msg.channel.id,
-                endtime: r.epochTime(dep.moment().add(duration).unix())
-            });
-            params.msg = msg;
-            return {
-                timers: (params.timers || 0) + 1
-            };
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

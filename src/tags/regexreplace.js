@@ -7,37 +7,58 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-module.exports =
-    Builder.AutoTag('regexreplace')
-        .withArgs(a => [a.optional('text'), a.require('regex'), a.require('replaceWith')])
-        .withDesc('Replaces the `regex` phrase with `replacewith`. ' +
-            'If `text` is specified, the tag is replaced with the new `toreplace`. ' +
-            'If not, it is run on the output from the containing tag.')
-        .withExample(
-            'I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e/gi;n}',
-            'I likn ta cansumn chnnsn.'
-        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async function (params) {
-            let regex;
-            try {
-                regex = bu.createRegExp(params.args[params.args.length - 2]);
-            } catch (e) {
-                return await Builder.util.error(params, e);
-            }
+e.requireCtx = require;
 
-            if (params.args.length == 3)
-                return {
-                    replace: regex,
-                    replaceString: await bu.processTagInner(params, 2),
-                    replaceContent: true
-                };
+e.isTag = true;
+e.name = `regexreplace`;
+e.args = `[toreplace] &lt;regex&gt; &lt;replacewith&gt;`;
+e.usage = `{regexreplace[;textToReplace];regex;replaceWith}`;
+e.desc = `Replaces the <code>regex</code> phrase with <code>replacewith</code>. If
+<code>toreplace</code> is specified, the tag is replaced with the new <code>toreplace</code>. 
+If not, it replaces the message.`;
 
-            let text = await bu.processTagInner(params, 1),
-                replace = await bu.processTagInner(params, 3);
+e.exampleIn = `I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e/gi;n}`;
+e.exampleOut = `I likn ta cansumn chnnsn.`;
 
-            return text.replace(regex, replace);
 
-        }).whenDefault(Builder.errors.tooManyArguments)
-        .build();
+e.execute = async function (params) {
+    //for (let i = 1; i < params.args.length; i++) {
+    //    params.args[i] = await bu.processTagInner(params, i);
+    //}
+    let fallback = params.fallback;
+    var returnObj = {
+        replaceContent: false
+    };
+
+    var regexList;
+    if (params.args.length > 3) {
+        try {
+            let regex = bu.createRegExp(params.args[2]);
+            params.args[1] = await bu.processTagInner(params, 1);
+            params.args[3] = await bu.processTagInner(params, 3);
+            returnObj.replaceString = regex.test(params.args[1]);
+            returnObj.replaceString = params.args[1].replace(regex, params.args[3]);
+        } catch (err) {
+            returnObj.replaceString = await bu.tagProcessError(params, `\`${err}\``)
+        }
+    } else if (params.args.length == 3) {
+        try {
+            let regex = bu.createRegExp(params.args[1]);
+            params.args[2] = await bu.processTagInner(params, 2);
+            returnObj.replace = regex;
+            returnObj.replaceString = params.args[2];
+            returnObj.replaceContent = true;
+        } catch (err) {
+            returnObj.replaceString = await bu.tagProcessError(params, `\`${err}\``)
+        }
+    } else {
+        returnObj.replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
+
+    return returnObj;
+};

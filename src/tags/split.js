@@ -7,19 +7,39 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.ArrayTag('split')
-        .withArgs(a => [a.require('text'), a.optional('splitter')])
-        .withDesc('Splits `text` using `splitter`, and the returns an array.')
-        .withExample(
-            '{split;Hello! This is a sentence.;{space}}',
-            '["Hello!","This","is","a","sentence."]'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            return bu.serializeTagArray(params.args[1].split(params.args[2]));
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+e.init = () => {
+    e.category = bu.TagType.ARRAY;
+};
+
+e.requireCtx = require;
+
+e.isTag = true;
+e.name = `split`;
+e.args = `&lt;text&gt; &lt;splitter&gt;`;
+e.usage = `{split;text;splitter}`;
+e.desc = `Splits text using the provided splitter, and the returns an array.`;
+e.exampleIn = `{split;Hello! This is a sentence.;{space}}`;
+e.exampleOut = `["Hello!","This","is","a","sentence."]`;
+
+e.execute = async function(params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let words = params.words;
+    var replaceString = '';
+    var replaceContent = false;
+    let args = params.args;
+    if (params.args.length >= 3) {
+        let array = params.args[1].split(params.args[2]);
+        replaceString = bu.serializeTagArray(array);
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

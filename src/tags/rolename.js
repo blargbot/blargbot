@@ -7,27 +7,46 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('rolename')
-        .withArgs(a => [a.require('role'), a.optional('quiet')])
-        .withDesc('Returns `role`\'s name. ' +
-            'If `quiet` is specified, if `role` can\'t be found it will simply return `role`')
-        .withExample(
-            'The admin role name is: {rolename;admin}.',
-            'The admin role name is: Administrator.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-                role = await bu.getRole(params.msg, params.args[1], quiet);
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-            if (role != null)
-                return role.name;
+e.requireCtx = require;
 
-            if (quiet)
-                return params.args[1];
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+e.isTag = true;
+e.name = `rolename`;
+e.args = `<name> [quiet]`;
+e.usage = `{rolename;name[;quiet]}`;
+e.desc = `Returns a role's name. If
+<code>quiet</code> is specified, if a role can't be found it will simply return the <code>name</code>`;
+e.exampleIn = `The admin role name is: {rolename;admin}`;
+e.exampleOut = `The admin role name is: Administrator`;
+
+
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args,
+        msg = params.msg;
+    var replaceString = '';
+    var replaceContent = false;
+
+    var obtainedRole = await bu.getTagRole(msg, args);
+
+    if (obtainedRole)
+        replaceString = obtainedRole.name;
+
+    else if (!args[2])
+        return '';
+    else
+        replaceString = args[1];
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

@@ -9,12 +9,11 @@
 
 class Manager {
 
-    constructor(type, removeListeners, init = true) {
+    constructor(type, removeListeners) {
         this.list = {};
         this.type = type;
         this.removeListeners = removeListeners;
-        if (init)
-            this.init();
+        this.init();
     }
 
     init() {

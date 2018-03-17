@@ -7,54 +7,62 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    DMCache = {};
+var e = module.exports = {};
 
-module.exports =
-    Builder.CCommandTag('dm')
-        .requireStaff()
-        .withArgs(a => [a.require('user'), a.require('message')])
-        .withDesc('DMs `user` the given `message`. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.'
-        ).withExample(
-            '{dm;stupid cat;Hello}',
-            'DM: Hello'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
-            if (params.dmsent)
-                return await Builder.util.error(params, 'Already have DMed');
+e.init = () => {
+    e.category = bu.TagType.CCOMMAND;
+};
 
-            let user = await bu.getUser(params.msg, params.args[1]);
-            if (user == null)
-                return await Builder.errors.noUserFound(params);
-            if (!params.msg.guild.members.get(user.id))
-                return await Builder.errors.userNotInGuild(params);
+e.requireCtx = require;
 
+e.isTag = true;
+e.name = `dm`;
+e.args = `<user> <message>`;
+e.usage = `{dm;user;message}`;
+e.desc = `DMs a user. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.`;
+e.exampleIn = `{dm;stupid cat;Hello}`;
+e.exampleOut = `DM: Hello`;
+
+const DMCache = {};
+
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args,
+        msg = params.msg;
+    var replaceString = '';
+    var replaceContent = false;
+    if (params.msg.hasDmed) replaceString = await bu.tagProcessError(params, '`Already Have DMed`');
+    else if (!params.isStaff) {
+        replaceString = await bu.tagProcessError(params, '`Author must be staff`');
+    } else {
+        params.msg.hasDmed = true;
+        let user = await bu.getUser(msg, args[1]);
+
+        if (user === null)
+            replaceString = await bu.tagProcessError(params, '`User not found`');
+        else if (!params.msg.guild.members.get(user.id))
+            replaceString = await bu.tagProcessError(params, '`User not on guild`');
+        else {
             try {
                 const DMChannel = await user.getDMChannel();
-                if (!DMCache[user.id] ||
-                    DMCache[user.id].count > 5 ||
-                    DMCache[user.id].user != params.msg.author.id ||
-                    DMCache[user.id].guild != params.msg.guild.id) {
+                if (!DMCache[user.id] || DMCache[user.id].count > 5 || DMCache[user.id].user != msg.author.id || DMCache[user.id].guild != params.msg.guild.id) {
                     // Ew we're gonna send a message first? It was voted...
-                    await bu.send(DMChannel.id, 'The following message was sent from ' +
-                        `**__${params.msg.guild.name}__** (${params.msg.guild.id}), ` +
-                        'and was sent by ' +
-                        `**__${bu.getFullName(params.msg.author)}__** (${params.msg.author.id}):`
-                    );
+                    await bu.send(DMChannel.id, `The following message was sent from **__${params.msg.guild.name}__** (${params.msg.guild.id}), and was sent by **__${bu.getFullName(params.msg.author)}__** (${params.msg.author.id}):`)
                     DMCache[user.id] = { user: params.msg.author.id, guild: params.msg.guild.id, count: 1 };
                 }
-                await bu.send(DMChannel.id, {
-                    content: params.args[2],
-                    embed: null,
-                    nsfw: params.nsfw
-                });
+                await bu.send(DMChannel.id, params.args[2]);
                 DMCache[user.id].count++;
-                return {
-                    dmsent: true
-                };
-            } catch (e) {
-                return await Builder.util.error(params, 'Could not send DM');
+            } catch (err) {
+                replaceString = await bu.tagProcessError(params, '`Could not send DM`');
             }
-        }).whenDefault(Builder.errors.tooManyArguments)
-        .build();
+        }
+    }
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

@@ -7,30 +7,48 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('shuffle')
-        .acceptsArrays()
-        .withArgs(a => a.optional('array'))
-        .withDesc('Shuffles the `{args}` the user provided, or the elements of `array`. If used with `{get}` this will modify the original array')
-        .withExample(
-            '{shuffle} {args;0} {args;1} {args;2}',
-            'one two three',
-            'three one two'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) { bu.shuffle(params.words); })
-        .whenArgs('2', async function (params) {
-            let arr = bu.deserializeTagArray(params.args[1]);
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-            if (arr == null || !Array.isArray(arr.v))
-                return await Builder.errors.notAnArray(params);
+e.requireCtx = require;
 
-            bu.shuffle(arr.v);
-            if (!arr.n)
-                return bu.serializeTagArray(arr.v);
+e.isTag = true;
+e.array = true;
+e.name = `shuffle`;
+e.args = `[array]`;
+e.usage = `{shuffle[;array]}`;
+e.desc = `Shuffles the args the user provided, or the provided array.`;
+e.exampleIn = `{shuffle} {args;0} {args;1} {args;2}`;
+e.exampleOut = `Input: <code>one two three</code><br>Output: <code>three one two</code>`;
 
-            await bu.setArray(arr, params);
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let words = params.words;
+    var replaceString = '';
+    var replaceContent = false;
+    let args = params.args;
+    if (params.args[1]) {
+        let deserialized = bu.deserializeTagArray(args[1]);
+
+        if (deserialized && Array.isArray(deserialized.v)) {
+            bu.shuffle(deserialized.v);
+            if (deserialized.n) {
+                await bu.setArray(deserialized, params);
+            } else replaceString = bu.serializeTagArray(deserialized.v)
+        } else {
+            replaceString = await bu.tagProcessError(params, '`Not an array`');
+        }
+    } else
+        bu.shuffle(words);
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

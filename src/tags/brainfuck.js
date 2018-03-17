@@ -7,22 +7,42 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('brainfuck')
-    .withArgs(a => [a.require('code'), a.optional('input')])
-    .withDesc('Interprets `code` as brainfuck, using `input` as the text for `,`.')
-    .withExample(
-        '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
-        'Hello World!'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2-3', async function(params) {
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
+
+e.requireCtx = require;
+
+e.isTag = true;
+e.name = `brainfuck`;
+e.args = `&lt;code&gt; [input]`;
+e.usage = `{brainfuck;code[;input]}`;
+e.desc = `Interprets brainfuck input.`;
+e.exampleIn = `{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}`;
+e.exampleOut = `Hello World!`;
+
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args,
+        fallback = params.fallback;
+    var replaceString = '';
+    var replaceContent = false;
+    if (args[1]) {
         try {
-            return await bu.filterMentions((dep.brainfuck.execute(params.args[1], params.args[2])).output);
-        } catch (e) {
-            return await Builder.util.error(params, e.message);
+            replaceString = await bu.filterMentions((dep.brainfuck.execute(args[1], args[2])).output);
+        } catch (err) {
+            replaceString = await bu.tagProcessError(params, '`' + err.message + '`');
         }
-    }).whenDefault(Builder.errors.tooManyArguments)
-    .build();
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

@@ -7,42 +7,68 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-async function deleteMessage(params, channelId, messageId) {
-    let msg = params.msg,
-        channel = Builder.util.parseChannel(params, channelId);
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-    if (typeof channel === 'function')
-        return await channel(params);
+e.requireCtx = require;
 
-    if (msg.id !== messageId)
-        try {
-            msg = await bot.getMessage(channel.id, messageId);
-        } catch (err) {
-            return await Builder.errors.noMessageFound(params);
-        }
+e.isTag = true;
+e.name = `delete`;
+e.args = `[channelid] [messageid]`;
+e.usage = `{delete[;channelid][;messageid]}`;
+e.desc = `Deletes the specified message, defaulting to the message that invoked the command. Only ccommands can delete other messages.`;
+e.exampleIn = `The message that triggered this will be deleted. {delete}`;
+e.exampleOut = `(the message got deleted idk how to do examples for this)`;
 
-    try {
-        if (msg != null)
-            msg.delete();
-    } catch (e) {
+e.execute = async function (params) {
+    var replaceString = ``;
+    var replaceContent = false;
+
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
     }
-}
+    let msg = params.msg;
+    try {
+        if (params.args.length > 1 && params.ccommand) {
+            if (params.isStaff) {
+                if (params.args.length == 2) {
+                    msg = await bot.getMessage(params.msg.channel.id, params.args[1]);
+                } else if (params.args.length > 2) {
+                    if (/([0-9]{17,23})/.test(params.args[1])) {
+                        let channelid = params.args[1].match(/([0-9]{17,23})/)[1];
+                        let channel = bot.getChannel(channelid);
+                        if (channel) {
+                            if (channel.guild.id == params.msg.guild.id) {
+                                msg = await bot.getMessage(params.args[1], params.args[2]);
+                            } else
+                                replaceString = await bu.tagProcessError(params, '`Channel must be in guild`');
+                        } else
+                            replaceString = await bu.tagProcessError(params, '`Channel not found`');
+                    }
+                }
+            } else
+                replaceString = await bu.tagProcessError(params, '`Author must be staff`');
+        }
+        if (replaceString == "") {
+            if (!bu.notCommandMessages[msg.guild.id])
+                bu.notCommandMessages[msg.guild.id] = {};
+            bu.notCommandMessages[msg.guild.id][msg.id] = true;
 
-module.exports =
-    Builder.AutoTag('delete')
-        .requireStaff()
-        .withArgs(a => a.optional([a.optional('channelId'), a.require('messageId')]))
-        .withDesc('Deletes the specified `messageId` from `channelId`, defaulting to the message that invoked the command. ' +
-            'If `channelId` is not provided, it defaults to the current channel. ' +
-            'Only ccommands can delete other messages.')
-        .withExample(
-            'The message that triggered this will be deleted. {delete}',
-            '(the message got deleted idk how to do examples for this)'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async params => await deleteMessage(params, params.msg.channel.id, params.msg.id))
-        .whenArgs('2', async params => await deleteMessage(params, params.msg.channel.id, params.args[1]))
-        .whenArgs('3', async params => await deleteMessage(params, params.args[1], params.args[2]))
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+            try {
+                if (msg.delete) msg.delete();
+            } catch (err) { }
+        }
+    } catch (err) {
+        replaceString = await bu.tagProcessError(params, '`Message not found`');
+    }
+
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

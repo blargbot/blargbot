@@ -7,39 +7,63 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.CCommandTag('warn')
-        .requireStaff()
-        .withArgs(a => [a.optional('user'), a.optional('count'), a.optional('reason')])
-        .withDesc('Gives `user` the specified number of warnings with the given reason, and returns their new warning count. ' +
-            '`user` defaults to the user who executed the containing tag. `count` defaults to 1.')
-        .withExample(
-            'Be warned! {warn}',
-            'Be warned! 1'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-4', async function (params) {
-            let user = params.msg.author,
-                count = bu.parseInt(params.args[2] || 1),
-                reason = params.args[3];
+e.init = () => {
+    e.category = bu.TagType.CCOMMAND;
+};
 
-            if (params.args[1])
-                user = await bu.getUser(params.msg, params.args[1]);
+e.requireCtx = require;
 
-            if (user == null)
-                return await Builder.errors.noUserFound(params);
+e.isTag = true;
+e.name = `warn`;
+e.args = `[user] [count] [reason]`;
+e.usage = `{warn[;user[;count[;reason]]]}`;
+e.desc = `Gives a user the specified number of warnings with the given reason, and returns their new warning count.`;
+e.exampleIn = `Be warned! {warn}`;
+e.exampleOut = `Be warned! 1`;
 
-            if (isNaN(count))
-                return await Builder.errors.notANumber(params);
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    var replaceString = '';
+    var replaceContent = false;
+    if (!params.ccommand) {
+        replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
+    } else {
+        if (!params.isStaff) {
+            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
+        } else {
+            let user = params.msg.author;
+            if (params.args[1]) {
+                user = await bu.getUser(params.msg, params.args[1], true);
+            }
 
-            let result = await bu.issueWarning(user, params.msg.guild, count);
-            await bu.logAction(params.msg.guild, user, undefined, 'Tag Warning', reason, bu.ModLogColour.WARN, [{
-                name: 'Warnings',
-                value: `Assigned: ${count}\nNew Total: ${result.count || 0}`,
-                inline: true
-            }]);
-            return result.count;
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+            if (user) {
+                let count = 1;
+                if (params.args[2]) count = parseInt(params.args[2]);
+                if (!isNaN(count)) {
+                    let reason = params.args[3];
+                    let res = await bu.issueWarning(user, params.msg.guild, count);
+                    await bu.logAction(params.msg.guild, user, undefined, 'Tag Warning', reason, bu.ModLogColour.WARN, [{
+                        name: 'Warnings',
+                        value: `Assigned: ${count}\nNew Total: ${res.count || 0}`,
+                        inline: true
+                    }]);
+                    replaceString = res.count;
+                } else {
+                    replaceString = await bu.tagProcessError(params, '`Not a number`');
+                }
+            } else {
+                replaceString = await bu.tagProcessError(params, '`No user found`');
+            }
+        }
+    }
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

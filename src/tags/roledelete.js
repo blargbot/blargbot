@@ -7,29 +7,49 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.CCommandTag('roledelete')
-        .requireStaff()
-        .withArgs(a => [a.require('role'), a.optional('quiet')])
-        .withDesc('Deletes `role`. If `quiet` is specified, if `role` can\'t be found it will return nothing')
-        .withExample(
-            '{roledelete;Super Cool Role!}',
-            '(rip no more super cool roles for anyone)'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-                role = await bu.getRole(params.msg, params.args[1], quiet);
-            if (role) {
+e.init = () => {
+    e.category = bu.TagType.CCOMMAND;
+};
+
+e.requireCtx = require;
+
+e.isTag = true;
+e.name = `roledelete`;
+e.args = `&lt;name&gt;`;
+e.usage = `{roledelete;name}`;
+e.desc = `Deletes a role.`;
+e.exampleIn = `{roledelete;Super Cool Role!}`;
+e.exampleOut = `(rip no more super cool roles for anyone)`;
+
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args,
+        msg = params.msg;
+    var replaceString = '';
+    var replaceContent = false;
+    if (!params.ccommand) {
+        replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
+    } else {
+        if (!params.isStaff) {
+            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
+        } else if (params.args.length > 1) {
+            var obtainedRole = await bu.getTagRole(msg, args);
+            if (obtainedRole)
                 try {
-                    await role.delete(`Deleted with the '${params.tagName}' command, executed by ${params.msg.author.username}#${params.msg.author.discrim} (${params.msg.author.id})`);
+                    await obtainedRole.delete(`Deleted with the '${params.tagName}' command, executed by ${msg.author.username}#${msg.author.discrim} (${msg.author.id})`);
                 } catch (err) {
                     console.error(err.stack);
-                    return await Builder.util.error(params, 'Failed to delete role: no perms');
+                    replaceString = await bu.tagProcessError(params, '`Failed to create role: no perms`');
                 }
-            }
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+        }
+    }
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

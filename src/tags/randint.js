@@ -7,30 +7,77 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('randint')
-        .withArgs(a => [a.optional('min'), a.require('max')])
-        .withDesc('Chooses a random whole number between `min` and `max` (inclusive). `min` defaults to 0.')
-        .withExample(
-            'You rolled a {randint;1;6}.',
-            'You rolled a 5.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            let min = bu.parseInt(params.args[1]),
-                max = bu.parseInt(params.args[2] || 0),
-                fallback = bu.parseInt(params.fallback);
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-            if (isNaN(min)) min = fallback;
-            if (isNaN(max)) max = fallback;
-            if (isNaN(min) || isNaN(max)) return await Builder.errors.notANumber(params);
+e.requireCtx = require;
 
-            if (min > max)
-                min = [max, max = min][0];
+e.isTag = true;
+e.name = `randint`;
+e.args = `[min] &lt;max&gt;`;
+e.usage = `{randint[;min];max}`;
+e.desc = `If only max is specified, gets a random number between max and 0. If both arguments are
+specified, gets a random number between them.`;
+e.exampleIn = `You rolled a {randint;1;6}`;
+e.exampleOut = `You rolled a 5`;
 
-            return bu.getRandomInt(min, max);
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+
+e.execute = async function(params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args,
+        fallback = params.fallback;
+    var replaceString = '';
+    var replaceContent = false;
+    var parsedFallback = parseInt(fallback);
+    if (args.length == 2) {
+        let args1 = parseInt(args[1]);
+        if (isNaN(args1)) {
+            if (isNaN(parsedFallback)) {
+                return {
+                    replaceString: await bu.tagProcessError(params, '`Not a number`'),
+                    replaceContent: replaceContent
+                };
+            } else {
+                args1 = parsedFallback;
+            }
+        }
+        replaceString = bu.getRandomInt(0, args1);
+    } else if (args.length > 2) {
+        let args1 = parseInt(args[1]);
+        if (isNaN(args1)) {
+            if (isNaN(parsedFallback)) {
+                return {
+                    replaceString: await bu.tagProcessError(params, '`Not a number`'),
+                    replaceContent: replaceContent
+                };
+            } else {
+                args1 = parsedFallback;
+            }
+        }
+        let args2 = parseInt(args[2]);
+        if (isNaN(args2)) {
+            if (isNaN(parsedFallback)) {
+                return {
+                    replaceString: await bu.tagProcessError(params, '`Not a number`'),
+                    replaceContent: replaceContent
+                };
+            } else {
+                args2 = parsedFallback;
+            }
+        }
+        replaceString = bu.getRandomInt(args1, args2);
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

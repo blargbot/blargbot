@@ -50,8 +50,7 @@ var e = module.exports = {
     Trello: require('node-trello'),
     babel: require('babel-core'),
     brainfuck: new (require('brainfuck-node'))(),
-    BigNumber: require('big-number'),
-    url: require('url')
+    BigNumber: require('big-number')
 };
 
 Object.defineProperty(e.Eris.Message.prototype, "guild", {

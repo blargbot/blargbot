@@ -7,30 +7,51 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('emoji')
-        .withArgs(a => [a.require('text'), a.optional('amount')])
-        .withDesc('Gets `amount` (or 5 if `amount` isn\'t specified) emojis related to `text`. There\'s a limit of 10 emojis.')
-        .withExample(
-            '{emoji;I am hungry;5}',
-            '🍔 🍕 😩 🍴 😐'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            let q = encodeURIComponent(params.args[1]);
-            let amount = bu.parseInt(params.args[2]) || bu.parseInt(params.fallback);
-            if (amount > 10) amount = 10;
-            else if (amount < 1) amount = 1;
-            let emojis = await new Promise((resolve, reject) => {
-                dep.request(`https://emoji.getdango.com/api/emoji?q=${q}`, (req, res, body) => {
-                    body = JSON.parse(body);
-                    resolve(body.results.map(result => result.text));
-                });
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
+
+e.requireCtx = require;
+
+e.isTag = true;
+e.name = 'emoji';
+e.args = '&lt;text&gt; [amount]';
+e.usage = '{emoji;text[;amount]}';
+e.desc = 'Gets <code>amount</code> (or 5 if <code>amount</code> isn&apos;t specified) emojis related to the given text. There\'s a limit of 10 emojis.';
+e.exampleIn = '{emoji;I am hungry;5}';
+e.exampleOut = '🍔 🍕 😩 🍴 😐';
+
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args,
+        fallback = params.fallback;
+    var replaceString = '';
+    var replaceContent = false;
+    let parsedFallback = parseInt(params.fallback);
+    if (args[1]) {
+        let q = encodeURIComponent(args[1]);
+        let amount = parseInt(args[2]) || parsedFallback;
+        if (amount > 10) amount = 10;
+        else if (amount < 1) amount = 1;
+        let emojis = await new Promise((resolve, reject) => {
+            dep.request(`https://emoji.getdango.com/api/emoji?q=${q}`, (req, res, body) => {
+                body = JSON.parse(body);
+                resolve(body.results.map(result => result.text));
             });
-            emojis.splice(amount);
-            return emojis.join(' ');
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+        });
+        emojis.splice(amount);
+        replaceString = emojis.join(' ');
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

@@ -7,31 +7,47 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.CCommandTag('warnings')
-        .requireStaff()
-        .withArgs(a => a.optional('user'))
-        .withDesc('Gets the number of warnings `user` has. `user` defaults to the user who executed the containing tag.')
-        .withExample(
-            'You have {warnings} warning(s)!',
-            'You have 0 warning(s)!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let user = params.msg.author;
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-            if (params.args[1])
-                user = await bu.getUser(params.msg, params.args[1]);
+e.requireCtx = require;
 
-            if (user == null)
-                return await Builder.errors.noUserFound(params);
+e.isTag = true;
+e.name = 'warnings';
+e.args = '[user]';
+e.usage = '{warnings[;user]}';
+e.desc = 'Gets the number of warnings a user has.';
+e.exampleIn = 'You have {warnings} warning(s)!';
+e.exampleOut = 'You have 0 warning(s)!';
 
-            let storedGuild = await bu.getGuild(params.msg.guild.id);
-            if (storedGuild.warnings && storedGuild.warnings.users && storedGuild.warnings.users[user.id])
-                return storedGuild.warnings.users[user.id];
-            return 0;
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    var replaceString = '';
+    var replaceContent = false;
+    let parsedFallback = parseInt(params.fallback);
+    let user = params.msg.author;
+    if (params.args[1]) {
+        user = await bu.getUser(params.msg, params.args[1]);
+    }
+    if (!user) {
+        replaceString = await bu.tagProcessError(params, '`No user found`');
+    } else {
+        let storedGuild = await bu.getGuild(params.msg.guild.id);
+        let warnings = 0;
+        if (storedGuild.warnings && storedGuild.warnings.users && storedGuild.warnings.users[user.id]) {
+            warnings = storedGuild.warnings.users[user.id];
+        }
+        replaceString = warnings;
+    }
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

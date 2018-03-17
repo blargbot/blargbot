@@ -7,16 +7,31 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+var e = module.exports = {};
 
-const Builder = require('../structures/TagBuilder');
+e.init = () => {
+    e.category = bu.TagType.SIMPLE;
+};
 
-module.exports =
-    Builder.AutoTag('channelid')
-        .withDesc('Returns the ID of the current channel.')
-        .withExample(
-            'This channel\'s id is {channelid}',
-            'This channel\'s id is 1234567890123456'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async params => params.msg.channel.id)
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+e.requireCtx = require;
+
+e.isTag = true;
+e.name = `channelid`;
+e.args = ``;
+e.usage = `{channelid}`;
+e.desc = `Returns the ID of the current channel`;
+e.exampleIn = `This channel's id is {channelid}`;
+e.exampleOut = `This channel's id is 1234567890123456`;
+
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    var replaceString = params.msg.channel.id;
+    var replaceContent = false;
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

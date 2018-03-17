@@ -7,40 +7,62 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('realpad')
-        .withArgs(a => [a.require('text'), a.require('length'), a.optional('filler'), a.optional('direction')])
-        .withDesc('Pads `text` using `filler` until it has `length` characters. `filler` is applied to the `direction` of `text` ' +
-            '`filler` defaults to space, `direction` defaults to right.\n\n' +
-            'This is how padding <em>should</em> be implemented, and the {pad} subtag is a sucks. ' +
-            'The past me who thought it would be a good idea is also a sucks.')
-        .withExample(
-            '{realpad;ABC;6;0;left}',
-            '000ABC'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-5', async function (params) {
-            let text = params.args[1],
-                length = bu.parseInt(params.args[2]),
-                filler = params.args[3] || ' ',
-                direction = params.args[4] || 'right';
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-            if (isNaN(length))
-                return await Builder.errors.notANumber(params);
-            if (filler.length != 1)
-                return await Builder.util.error(params, 'Filler must be 1 character');
+e.requireCtx = require;
 
-            let padAmount = Math.max(0, length - text.length);
+e.isTag = true;
+e.name = 'realpad';
+e.args = '&lt;text&gt; &lt;length&gt; [character] [direction]';
+e.usage = '{pad;text;length[;character[;direction]]}';
+e.desc = 'Pads the provided text to the provided length, using the provided character and direction. Character defaults to space, direction defaults to right.<br><br>This is how padding <em>should</em> be implemented, and the {pad} subtag is a sucks. The past me who thought it would be a good idea is also a sucks.';
+e.exampleIn = '{realpad;ABC;6;0;left}';
+e.exampleOut = '000ABC';
 
-            if (direction.toLowerCase() == 'right')
-                return text + filler.repeat(padAmount);
-            if (direction.toLowerCase() == 'left')
-                return filler.repeat(padAmount) + text;
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args;
+    var replaceString = '';
+    var replaceContent = false;
+    if (params.args[1] && params.args[2]) {
+        let text = args[1];
+        let length = args[2];
+        let character = args[3] || ' ';
+        let direction = args[4] || 'right';
+        if (character.length > 1) {
+            replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+        } else {
+            let quantity = Math.max(0, length - text.length);
+            switch (direction.toLowerCase()) {
+                case 'left':
+                    {
+                        replaceString = character.repeat(quantity) + text;
+                        break;
+                    }
+                case 'right':
+                    {
+                        replaceString = text + character.repeat(quantity);
+                        break;
+                    }
+                default:
+                    {
+                        replaceString = await bu.tagProcessError(params, '`Invalid direction`');
+                    }
+            }
+        }
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
 
-            return await Builder.util.error(params, 'Invalid direction');
-
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

@@ -7,38 +7,56 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.ArrayTag('splice')
-        .withArgs(a => [a.require('array'), a.require('start'), a.optional('deleteCount'), a.optional('items', true)])
-        .withDesc('Removes `deleteCount` elements (defaults to 0) from `array` starting at `start`. ' +
-            'Then, adds each `item` at that position in `array`. Returns the removed items. ' +
-            'If used with `{get}` this will modify the original array')
-        .withExample(
-            '{set;~array;["this", "is", "an", "array"]} {splice;{get;~array};1;1;was} {get;~array}',
-            '["is"] {"v":["this","was","an","array"],"n":"~array"}'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let arr = await bu.getArray(params, params.args[1]),
-                start = bu.parseInt(params.args[2]),
-                delCount = bu.parseInt(params.args[3] || 0),
-                fallback = bu.parseInt(params.fallback),
-                insert = Builder.util.flattenArgArrays(params.args.slice(4));
+e.init = () => {
+    e.category = bu.TagType.ARRAY;
+};
 
-            if (arr == null || !Array.isArray(arr.v))
-                return await Builder.errors.notAnArray(params);
+e.requireCtx = require;
 
-            if (isNaN(start)) start = fallback;
-            if (isNaN(delCount)) delCount = fallback;
-            if (isNaN(start) || isNaN(delCount))
-                return await Builder.errors.notANumber(params);
+e.isTag = true;
+e.name = `splice`;
+e.args = `&lt;array&gt; &lt;start&gt; [deleteCount] [items]...`;
+e.usage = `{splice;array;start[;deleteCount[;items]...]}`;
+e.desc = `Removes deleteCount elements (defaults to all) starting at index start from the specified array. Then, adds each subsequent item at that position in the array. Returns the removed items.`;
+e.exampleIn = `{set;array;["this", "is", "an", "array"]} {splice;{get;array};1;1;was} {get;array}`;
+e.exampleOut = `["is"] ["this","was","an","array"]`;
 
-            let result = arr.v.splice(start, delCount, ...insert);
-            if (arr.n)
-                await bu.setArray(arr, params);
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let replaceContent = false;
+    let replaceString;
+    if (params.args.length >= 3) {
+        params.args[1] = await bu.processTagInner(params, 1);
+        let args = params.args;
+        let deserialized = await bu.getArray(params, args[1]);
+        if (deserialized && Array.isArray(deserialized.v)) {
+            let start = parseInt(args[2]);
+            let end;
+            if (args[3]) end = parseInt(args[3]);
 
-            return bu.serializeTagArray(result);
-        })
-        .build();
+            if (isNaN(start) || (end && isNaN(end))) {
+                replaceString = await bu.tagProcessError(params, '`Invalid start or end`');
+            } else {
+                let argss = [start, end];
+                if (args[4]) argss = argss.concat(args.slice(4));
+                let newArray = [].splice.apply(deserialized.v, argss);
+                replaceString = bu.serializeTagArray(newArray);
+                await bu.setArray(deserialized, params);
+            }
+        } else {
+            replaceString = await bu.tagProcessError(params, '`Not an array`');
+        }
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};
