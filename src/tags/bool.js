@@ -10,24 +10,24 @@
 const Builder = require('../structures/TagBuilder'),
     collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }),
     operators = {
-        '==': (a, b) => Array.isArray(a) && Array.isArray(b)
-            ? a.length == b.length && a.map((e, i) => e == b[i]).reduce((c, n) => c && n, true)
-            : collator.compare(a, b) == 0,
-        '!=': (a, b) => !operators['=='](a, b),
+        '==': (a, b) => a == b,
+        '!=': (a, b) => a != b,
         '>=': (a, b) => collator.compare(a, b) >= 0,
         '>': (a, b) => collator.compare(a, b) > 0,
         '<=': (a, b) => collator.compare(a, b) <= 0,
         '<': (a, b) => collator.compare(a, b) < 0,
-        'startswith': (a, b) => Array.isArray(a)
-            ? a[0] == ('' + b)
-            : ('' + a).startsWith(b),
-        'endswith': (a, b) => Array.isArray(a)
-            ? a[a.length - 1] == ('' + b)
-            : ('' + a).endsWith(b),
-        'includes': (a, b) => Array.isArray(a)
-            ? a.includes(b)
-            : ('' + a).includes(b)
+        'startswith': (a, b) => tryArray(a).startsWith(b),
+        'endswith': (a, b) => tryArray(a).endsWith(b),
+        'includes': (a, b) => tryArray(a).includes(b)
     };
+
+function tryArray(text) {
+    text = '' + text;
+    let arr = bu.deserializeTagArray(text);
+    if (arr && Array.isArray(arr.v))
+        return arr.v;
+    return text;
+}
 
 module.exports =
     Builder.AutoTag('bool')
@@ -63,12 +63,6 @@ module.exports =
                 opKey = val3;
             } else
                 return await Builder.errors.invalidOperator(params);
-
-            let leftArr = await bu.deserializeTagArray(left),
-                rightArr = await bu.deserializeTagArray(right);
-
-            if (leftArr && Array.isArray(leftArr.v)) left = leftArr.v.map(v => '' + v);
-            if (rightArr && Array.isArray(rightArr.v)) right = rightArr.v.map(v => '' + v);
 
             let leftBool = bu.parseBoolean(left, null, false),
                 rightBool = bu.parseBoolean(right, null, false);
