@@ -7,51 +7,22 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('randchoose')
+        .acceptsArrays()
+        .withArgs(a => a.require('choices', true))
+        .withDesc('Picks one random entry from `choices`. If an array is supplied, it will be exapnded to its individual elements')
+        .withExample(
+            'I feel like eating {randchoose;cake;pie;pudding} today',
+            'I feel like eating pudding today.'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (params) {
+            let options = Builder.util.flattenArgArrays(params.args.splice(1)),
+                selection = bu.getRandomInt(0, options.length - 1);
 
-e.requireCtx = require;
-
-e.isTag = true;
-e.array = true;
-e.name = `randchoose`;
-e.args = `&lt;choices...&gt;`;
-e.usage = `{randchoose;choices...}`;
-e.desc = `Chooses a random choice`;
-e.exampleIn = `I feel like eating {randchoose;cake;pie;pudding} today.`;
-e.exampleOut = `I feel like eating pudding today.`;
-
-
-e.execute = async function (params) {
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    if (args.length > 1) {
-        if (args.length == 2) {
-            params.args[1] = await bu.processTagInner(params, 1);
-        }
-        let deserialized = await bu.getArray(params, args[1]);
-        console.verbose(deserialized);
-        if (deserialized && Array.isArray(deserialized.v)) {
-            console.verbose(deserialized);
-            let seed = bu.getRandomInt(0, deserialized.v.length - 1);
-            replaceString = deserialized.v[seed];
-            console.verbose(replaceString);
-        } else {
-            let seed = bu.getRandomInt(1, args.length - 1);
-            replaceString = await bu.processTagInner(params, seed);
-        }
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            return options[selection];
+        })
+        .build();

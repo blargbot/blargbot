@@ -7,62 +7,32 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('indexof')
+        .acceptsArrays()
+        .withArgs(a => [a.require('text'), a.require('searchfor'), a.optional('start')])
+        .withDesc('Finds the index of `searchfor` in `text`, after `start`. `text` can either be plain text or an array. If it\'s not found, returns -1.')
+        .withExample(
+            'The index of "o" in "hello world" is {indexof;hello world;o}',
+            'The index of "o" in "hello world" is 4'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', Builder.errors.notEnoughArguments)
+        .whenArgs('3-4', async function (params) {
+            let input = await bu.deserializeTagArray(params.args[1]),
+                search = params.args[2],
+                from = bu.parseInt(params.args[3] || '0'),
+                fallback = bu.parseInt(params.fallback);
 
-e.requireCtx = require;
+            if (isNaN(from)) from = fallback;
+            if (isNaN(from)) return await Builder.errors.notANumber(params);
 
-e.isTag = true;
-e.array = true;
+            if (input != null && Array.isArray(input.v))
+                input = input.v;
+            else
+                input = params.args[1];
 
-e.name = 'indexof';
-e.args = '&lt;text&gt; &lt;searchfor&gt; [start]';
-e.usage = '{indexof;text;search[;start]}';
-e.desc = 'Finds the index of <code>searchfor</code> in <code>text</code>, after <code>start</code>. <code>text</code> can either be plain text or an array. If it\'s not found, returns -1.';
-e.exampleIn = 'The index of \'o\' in \'hello world\' is {indexof;hello world;o}';
-e.exampleOut = 'The index of \'o\' in \'hello world\' is 4';
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    var replaceString = '';
-    var replaceContent = false;
-    let parsedFallback = parseInt(params.fallback);
-    let args = params.args;
-    if (args.length >= 3) {
-        let start;
-        if (args[3]) {
-            start = parseInt(args[3]);
-            if (isNaN(start)) {
-                if (isNaN(parsedFallback)) {
-                    return {
-                        replaceString: await bu.tagProcessError(params, '`Not a number`'),
-                        replaceContent: replaceContent
-                    };
-                } else {
-                    start = parsedFallback;
-                }
-            }
-        }
-        let deserialized = bu.deserializeTagArray(args[1]);
-
-        if (deserialized && Array.isArray(deserialized.v)) {
-            replaceString = deserialized.v.indexOf(args[2], start);
-        } else {
-            replaceString = args[1].indexOf(args[2], start);
-        }
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            return input.indexOf(search, from);
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

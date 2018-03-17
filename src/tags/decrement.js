@@ -7,59 +7,45 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('decrement')
+        .withArgs(a => [a.require('varName'), a.optional('amount'), a.optional('floor')])
+        .withDesc('Decreases `varName`\'s value by `amount`. ' +
+            '`floor` is a boolean, and if it is `true` then the value will be rounded down. ' +
+            '`amount` defaults to 1. `floor` defaults to `true`')
+        .withExample(
+            '{set;~counter;0} {repeat;{decrement;~counter},;10}',
+            '-1,-2,-3,-4,-5,-6,-7,-8,-9,-10'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-4', async function (params) {
+            let argName = params.args[1],
+                decrement = 1,
+                floor = true;
 
-e.requireCtx = require;
+            if (params.args[2])
+                decrement = bu.parseFloat(params.args[2]);
 
-e.isTag = true;
-e.name = `decrement`;
-e.args = `&lt;variable name&gt; [amount]`;
-e.usage = `{decrement;variable name[;amount]}`;
-e.desc = `Decreases the value of the specified variable by the specified amount. Defaults to 1`;
-e.exampleIn = `{set;counter;0} {repeat;{decrement;counter},;10}`;
-e.exampleOut = `-1,-2,-3,-4,-5,-6,-7,-8,-9,-10`;
+            if (params.args[3]) {
+                floor = bu.parseBoolean(params.args[3]);
+                if (!bu.isBoolean(floor))
+                    return await Builder.errors.notABoolean(params);
+            }
 
-//@Stupid cat The idea of this is to accept a variable name and an optional amount to increment by (dafaults to 1)
-//If the variable name supplied relates to an integer variable, then increment the value and re-assign it
-//Then, return the new value of the counter
-//To decrement, you just pass a negative number as the amount
+            if (isNaN(decrement))
+                return await Builder.errors.notANumber(params);
 
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback,
-        tagName = params.tagName;
-    var replaceString = '';
-    var replaceContent = false;
+            let value = bu.parseFloat(await TagManager.list['get'].getVar(params, argName));
+            if (isNaN(value))
+                return await Builder.errors.notANumber(params);
 
-    let decrementBy = parseInt(args[2]);
-    if (isNaN(decrementBy)) {
-        decrementBy = 1;
-    }
-    if (args.length >= 2) {
-        let result = await TagManager.list['get'].getVar(params, args[1]);
-        if (result == undefined) {
-            replaceString = await bu.tagProcessError(params, '`Variable not defined`');
-        } else {
-            result = parseInt(result) - decrementBy;
-            if (isNaN(result)) {
-                replaceString = await bu.tagProcessError(params, '`Not a number`');
-            } else replaceString = result;
-            await TagManager.list['set'].setVar(params, args[1], result);
-        }
-    } else if (args.length < 2) {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
+            if (floor) value = Math.floor(value), decrement = Math.floor(decrement);
 
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            value -= decrement;
+            await TagManager.list['set'].setVar(params, argName, value);
+
+            return value;
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

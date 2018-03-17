@@ -7,47 +7,27 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('rolecolor')
+        .withArgs(a => [a.require('role'), a.optional('quiet')])
+        .withDesc('Returns `role`\'s hex color code. ' +
+            'If `quiet` is specified, if `role` can\'t be found it will simply return `role`')
+        .withExample(
+            'The admin role color is: #{rolecolor;admin}.',
+            'The admin role ID is: #1b1b1b.'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-3', async function (params) {
+            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
+                role = await bu.getRole(params.msg, params.args[1], quiet);
 
-e.requireCtx = require;
+            if (role != null)
+                return role.color.toString(16).padStart(6, '0');
 
-e.isTag = true;
-e.name = `rolecolor`;
-e.args = `<name> [quiet]`;
-e.usage = `{rolecolor;name[;quiet]}`;
-e.desc = `Returns a role's hex color code. If
-<code>quiet</code> is specified, if a role can't be found it will simply return the <code>name</code>`;
-e.exampleIn = `The admin role color is: #{rolecolor;admin}`;
-e.exampleOut = `The admin role ID is: #1b1b1b`;
-
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-
-    var obtainedRole = await bu.getTagRole(msg, args);
-
-    if (obtainedRole) {
-        replaceString = obtainedRole.color.toString(16);
-        replaceString = '0'.repeat(6 - replaceString.length) + replaceString;
-    }
-    else if (!args[2])
-        return '';
-    else
-        replaceString = args[1];
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            if (quiet)
+                return params.args[1];
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

@@ -161,11 +161,11 @@ async function switchGame(forced) {
                         break;
                     case 1:
                         type = 2;
-                        name = `in ${bot.guilds.size} guilds!`;
+                        name = `${bot.guilds.size} guilds!`;
                         break;
                     case 2:
                         type = 2;
-                        name = `in ${Object.keys(bot.channelGuildMap).length} channels!`;
+                        name = `${Object.keys(bot.channelGuildMap).length} channels!`;
                         break;
                     case 3:
                         name = `with tiny bits of string!`;
@@ -190,12 +190,12 @@ async function switchGame(forced) {
                         name = `in a box!`;
                         break;
                     case 10:
-                        type = 2;
-                        name = `on shard ${shard[1].id}!`;
+                        type = 3;
+                        name = `you on shard ${shard[1].id}!`;
                         break;
                     case 11:
                         type = 2;
-                        name = 'to the pitter-patter of tiny feet.'
+                        name = 'the pitter-patter of tiny feet.'
                 }
         }
 

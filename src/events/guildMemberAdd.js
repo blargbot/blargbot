@@ -19,16 +19,20 @@ bot.on('guildMemberAdd', async function (guild, member) {
         } else {
             ccommandContent = val;
         }
-        var message = await tags.processTag({
+        let output = await tags.processTag({
             channel: bot.getChannel(chan),
             author: member.user,
             member: member,
             guild: guild
         }, ccommandContent, '', undefined, author, true);
-        bu.send(chan, {
-            content: message,
+        let message = await bu.send(chan, {
+            content: output.contents,
+            embed: output.embed,
+            nsfw: output.nsfw,
             disableEveryone: false
         });
+        if (message && message.channel)
+            await bu.addReactions(message.channel.id, message.id, output.reactions);
     }
     bu.logEvent(guild.id, 'memberjoin', [{
         name: 'User',

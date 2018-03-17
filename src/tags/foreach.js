@@ -7,62 +7,44 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.ARRAY;
-};
+module.exports =
+    Builder.ArrayTag('foreach')
+        .withArgs(a => [
+            a.require('variable'),
+            a.require('array'),
+            a.require('code')
+        ])
+        .withDesc('For every element in `array`, `variable` will be set and then `code` will be run.')
+        .withExample(
+            '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
+            'I like apples\nI like oranges\nI like c#'
+        ).beforeExecute(params => Builder.util.processSubtags(params, [1, 2]))
+        .whenArgs('1-3', Builder.errors.notEnoughArguments)
+        .whenArgs('4', async function (params) {
+            let set = TagManager.list['set'],
+                varName = params.args[1],
+                deserialized = await bu.getArray(params, params.args[2]),
+                result = '',
+                arr;
 
-e.requireCtx = require;
+            if (deserialized == null || !Array.isArray(deserialized.v))
+                arr = params.args[2].split('');
+            else
+                arr = deserialized.v;
 
-e.isTag = true;
-e.name = 'foreach';
-e.args = '&lt;variable&gt; &lt;array&gt; &lt;code&gt;';
-e.usage = '{foreach;variable;array;code}';
-e.desc = 'For every element in <code>array</code> <code>variable</code> will be set and then <code>code</code> will be run';
-e.exampleIn = '{set;~array;apples;oranges;c#}<br />{foreach;~element;~array;I like {get;~element}{newline}}';
-e.exampleOut = 'I like apples<br />I like oranges<br />I like c#';
-
-e.execute = async function (params) {
-    let fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    var parsedFallback = parseInt(fallback);
-    if (params.args.length == 4) {
-        let args2 = await bu.processTagInner(params, 2);
-        let args1 = await bu.processTagInner(params, 1);
-        let deserialized = await bu.getArray(params, args2);
-        let arr;
-        if (deserialized && Array.isArray(deserialized.v))
-            arr = deserialized.v;
-        else {
-            replaceString = await bu.tagProcessError(params, '`Argument 2 is not an array`');
-        }
-
-        if (arr != undefined) {
-            replaceString = '';
-            let set = TagManager.list['set'];
-            console.verbose(arr);
             for (const item of arr) {
                 params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
                 if (params.msg.repeats > 1500) {
-                    replaceString += await bu.tagProcessError(params, '`Too Many Loops`');
+                    result += await Builder.errors.tooManyLoops(params);
                     break;
                 }
-                await set.setVar(params, args1, item);
-                replaceString += await bu.processTagInner(params, 3);
-                if (params.terminate) break;
+                await set.setVar(params, varName, item);
+                result += await bu.processTagInner(params, 3);
+                if (params.terminate)
+                    break;
             }
-        }
-    } else if (params.args.length < 4) {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Too many arguments`');
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            return result;
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

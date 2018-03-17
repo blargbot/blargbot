@@ -7,92 +7,54 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('if')
+        .acceptsArrays()
+        .withArgs(a => [
+            a.require('value1'),
+            a.optional([a.require('evaluator'), a.require('value2')]),
+            a.require('then'),
+            a.optional('else')
+        ]).withDesc('If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
+            'If they are not provided, `value1` is read as `true` or `false`. ' +
+            'If the resulting value is `true` then the tag returns `then`, otherwise it returns `else`.\n' +
+            'Valid evaluators are `' + Object.keys(TagManager.list['bool'].operators).join('`, `') + '`.')
+        .withExample(
+            '{if;5;<=;10;5 is less than or equal to 10;5 is greater than 10}.',
+            '5 is less than or equal to 10.'
+        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
+        .whenArgs('3-6', async function (params) {
+            let val1 = await bu.processTagInner(params, 1),
+                otherwise = NaN,
+                opKey, operator, val2, then;
 
-e.requireCtx = require;
+            switch (params.args.length) {
+                case 4:
+                    otherwise = 3;
+                case 3:
+                    let bool = bu.parseBoolean(val1);
+                    if (!bu.isBoolean(bool))
+                        return await Builder.errors.notABoolean(params);
+                    if (bool)
+                        return await bu.processTagInner(params, 2);
+                    else if (otherwise)
+                        return await bu.processTagInner(params, otherwise);
+                    return '';
+                case 6:
+                    otherwise = 5;
+                case 5:
+                    opKey = await bu.processTagInner(params, 2);
+                    val2 = await bu.processTagInner(params, 3);
+                    then = 4;
+                    break;
+            }
 
-e.isTag = true;
-e.name = `if`;
-e.args = `&lt;arg1&gt; &lt;evaluator&gt; &lt;arg2&gt; &lt;then&gt; &lt;else&gt;`;
-e.usage = `{if;evaluator;arg1;arg2;then;else}`;
-e.desc = `Evaluates <code>arg1</code> and <code>arg2</code> using the <code>evaluator</code>. If it
-returns true, the tag returns <code>then</code>. Otherwise, it returns <code>else</code>. Valid
-evaluators are <code>==</code><code>!=</code> <code>&lt;</code> <code>&lt;=</code> <code>&gt;</code> <code>
-&gt;=</code> <code>startswith</code> <code>endswith</code> <code>includes</code>`;
-
-e.exampleIn = `{if;5;&lt;=;10;5 is less than or equal to 10;5 is greater than 10}`;
-e.exampleOut = `5 is less than or equal to 10`;
-
-const operators = {
-    '==': (a, b) => a === b,
-    '!=': (a, b) => a !== b,
-    '>=': (a, b) => a >= b,
-    '>': (a, b) => a > b,
-    '<=': (a, b) => a <= b,
-    '<': (a, b) => a < b,
-    'startswith': (a, b) => a.toString().startsWith(b),
-    'endswith': (a, b) => a.toString().endsWith(b),
-    'includes': (a, b) => a.toString().includes(b)
-};
-
-e.execute = async function (params) {
-    // for (let i = 1; i < params.args.length; i++) {
-    //      params.args[i] =await bu.processTagInner(params, i);
-    // }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-
-
-    if (args.length == 3 || args.length == 4) {
-        //{if;bool;then} or {if;bool;then;else}
-        args[1] = await bu.processTagInner(params, 1);
-        if (args[1].toLowerCase() == "true" || args[1] == true) {
-            params.content = args[2];
-            replaceString = await bu.processTagInner(params);
-        } else if (args[1].toLowerCase() == "false" || args[1] == false) {
-            params.content = args[3];
-            replaceString = await bu.processTagInner(params);
-        } else {
-            replaceString = await bu.tagProcessError(params, '`Invalid boolean`');
-        }
-    } else if (args.length == 5 || args.length == 6) {
-        //{if;val;condition;val;then} or {if;val;condition;val;then;else}
-        args[1] = await bu.processTagInner(params, 1);
-        if (/^-?\d+(\.\d*)?$/.test(args[1])) args[1] = parseFloat(args[1]);
-        args[2] = await bu.processTagInner(params, 2);
-        if (/^-?\d+(\.\d*)?$/.test(args[2])) args[2] = parseFloat(args[2]);
-        args[3] = await bu.processTagInner(params, 3);
-        if (/^-?\d+(\.\d*)?$/.test(args[3])) args[3] = parseFloat(args[3]);
-
-        let res;
-        if (typeof args[1] == 'string' && operators.hasOwnProperty(args[1].toLowerCase())) {
-            res = operators[args[1].toLowerCase()](args[2], args[3]);
-        } else if (typeof args[2] == 'string' && operators.hasOwnProperty(args[2].toLowerCase())) {
-            res = operators[args[2].toLowerCase()](args[1], args[3]);
-        } else replaceString = await bu.tagProcessError(params, '`Invalid Operator`');
-        if (res === true) {
-            params.content = args[4];
-            replaceString = await bu.processTagInner(params);
-        } else if (res === false) {
-            params.content = args[5];
-            replaceString = await bu.processTagInner(params);
-        }
-    } else if (args.length > 6) {
-        replaceString = await bu.tagProcessError(params, '`Too many arguments`');
-    } else {
-        console.verbose(args.length);
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            if (await TagManager.list['bool'].runCondition(params, val1, opKey, val2))
+                return bu.processTagInner(params, then);
+            else if (!isNaN(otherwise))
+                return bu.processTagInner(params, otherwise);
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

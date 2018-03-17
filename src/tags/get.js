@@ -7,93 +7,40 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('get')
+        .withArgs(a => [a.require('varName'), a.optional('index')])
+        .withDesc('Returns the stored variable `varName`, or an index within it if it is a stored array. ' +
+            'You can use a character prefix to determine the scope of your variable.\n' +
+            'Valid scopes are: ' + bu.tagVariableScopes.map(s => '`' + (s.prefix || 'none') + '` (' + s.name + ')').join(', ') +
+            '. For more information, use `b!t docs variable` or `b!cc docs variable`'
+        ).withExample(
+            '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{set;var3;this;is;an;array}\n' +
+            '{get;var1}\n{get;~var2}\n{get;var3}',
+            'This is local var1\nThis is temporary var2\n{"v":["this","is","an","array"],"n":"var3"}'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-3', async function (params) {
+            let result = await this.getVar(params, params.args[1]),
+                index = bu.parseInt(params.args[2]);
 
-e.requireCtx = require;
+            if (!Array.isArray(result)) return result;
 
-e.isTag = true;
-e.name = `get`;
-e.args = `&lt;name&gt; [index]`;
-e.usage = `{get;name[;index]}`;
-e.desc = `Returns a stored variable, or an index in a stored array. Variables are unique per-tag.`;
-e.exampleIn = `{get;testvar}`;
-e.exampleOut = `This is a test var`;
+            if (!params.args[2]) return bu.serializeTagArray(result, params.args[1]);
 
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback,
-        tagName = params.tagName;
-    var replaceString = '';
-    var replaceContent = false;
-    let result = await e.getVar(params, args[1]);
-    if (args.length == 2) {
-        if (Array.isArray(result)) {
-            replaceString = bu.serializeTagArray(result, args[1]);
-        } else
-            replaceString = result;
-    } else if (args.length > 2) {
-        if (Array.isArray(result)) {
-            let index = parseInt(args[2]);
-            if (isNaN(index)) {
-                replaceString = await bu.tagProcessError(params, '`Invalid index`');
-            } else {
-                if (result[index] === undefined && result[index] === null) {
-                    replaceString = await bu.tagProcessError(params, '`Undefined index`');
-                } else
-                    replaceString = result[index];
+            if (isNaN(index)) return await Builder.errors.notANumber(params);
+
+            if (!result[index]) return await Builder.util.error(params, 'Index out of range');
+
+            return result[index];
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .withProp('getVar', async function (params, varName = '') {
+            for (const scope of bu.tagVariableScopes) {
+                if (varName.startsWith(scope.prefix))
+                    return await scope.getter(params, varName.substring(scope.prefix.length));
             }
-        } else
-            replaceString = result;
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
-
-e.getVar = async function (params, varName = '') {
-    let vars = {};
-    let subVarName = varName.substring(1);
-    let prefix = varName.substring(0, 1);
-    let type;
-    switch (prefix) {
-        case '_': // local to guild
-            if (params.ccommand) { //custom command
-                vars = await bu.getVariable(params.msg.guild.id, subVarName, bu.TagVariableType.GUILD);
-            } else { //guild variable in tag
-                vars = await bu.getVariable(params.msg.guild.id, subVarName, bu.TagVariableType.TAGGUILD);
-            }
-            break;
-        case '@': // local to author
-            if (params.author)
-                vars = await bu.getVariable(params.author, subVarName, bu.TagVariableType.AUTHOR);
-            else return await bu.tagProcessError(params, '`No author found`');
-            break;
-        case '*': // global
-            console.verbose('get', params.vars);
-            vars = await bu.getVariable(undefined, subVarName, bu.TagVariableType.GLOBAL);
-            break;
-        case '~': // temp
-            vars = params.vars[subVarName];
-            break;
-        default: // local to tag
-            if (params.ccommand) { // custom command
-                vars = await bu.getVariable(params.tagName, varName, bu.TagVariableType.GUILDLOCAL, params.msg.guild.id);
-            } else { // normal tag
-                vars = await bu.getVariable(params.tagName, varName, bu.TagVariableType.LOCAL);
-            }
-            break;
-    }
-    return vars;
-};
+            throw new Error('Missing default variable scope!');
+        })
+        .build();

@@ -7,43 +7,26 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `abs`;
-e.args = `&lt;number&gt;`;
-e.usage = `{abs;number}`;
-e.desc = `Gets the absolute value of a number`;
-e.exampleIn = `{abs;-535}`;
-e.exampleOut = `535`;
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    if (args[1]) {
-        var asNumber = parseFloat(args[1]);
-        if (!isNaN(asNumber)) {
-            replaceString = Math.abs(asNumber);
-        } else {
-            replaceString = await bu.tagProcessError(params, '`Not a number`');
-        }
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('abs')
+        .acceptsArrays()
+        .withArgs(a => a.require('number', true))
+        .withDesc('Gets the absolute value of `number`. If multiple are supplied, then an array will be returned')
+        .withExample(
+            '{abs;-535}',
+            '535'
+        )
+        .beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (params) {
+            let values = Builder.util.flattenArgArrays(params.args.slice(1)).map(bu.parseFloat);
+            if (values.filter(isNaN).length > 0)
+                return await Builder.errors.notANumber(params);
+            values = values.map(Math.abs);
+            if (values.length == 1)
+                return values[0];
+            return bu.serializeTagArray(values);
+        })
+        .build();

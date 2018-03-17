@@ -7,44 +7,26 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+const Builder = require('../structures/TagBuilder');
 
-e.requireCtx = require;
+module.exports =
+    Builder.AutoTag('regextest')
+        .withArgs(a => [a.require('text'), a.require('regex')])
+        .withDesc('Tests if the `regex` phrase matches the `text`, and returns a boolean (true/false).')
+        .withExample(
+            '{regextest;apple;/p+/i} {regextest;banana;/p+/i}',
+            'true false'
+        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
+        .whenArgs('3', async function (params) {
+            let text = await bu.processTagInner(params, 1), regex;
 
-e.isTag = true;
-e.name = `regextest`;
-e.args = `&lt;query&gt; &lt;regex&gt;`;
-e.usage = `{regexreplace;query;regex}`;
-e.desc = `Tests if the <code>regex</code> phrase matches the <code>query</code>, and returns a boolean.`;
+            try {
+                regex = bu.createRegExp(params.args[2]);
+            } catch (e) {
+                return await Builder.util.error(params, e);
+            }
 
-e.exampleIn = `{regextest;apple;/p+/i} {regextest;banana;/p+/i}`;
-e.exampleOut = `true false`;
+            return regex.test(text);
 
-
-e.execute = async function (params) {
-    //for (let i = 1; i < params.args.length; i++) {
-    //    params.args[i] = await bu.processTagInner(params, i);
-    //}
-    let fallback = params.fallback;
-    var returnObj = {
-        replaceContent: false
-    };
-
-    var regexList;
-    if (params.args.length > 2) {
-        try {
-            let regex = bu.createRegExp(params.args[2]);
-            params.args[1] = await bu.processTagInner(params, 1);
-            returnObj.replaceString = regex.test(params.args[1]);
-        } catch (err) {
-            returnObj.replaceString = await bu.tagProcessError(params, `\`${err}\``)
-        }
-    } else {
-        returnObj.replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    return returnObj;
-};
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();
