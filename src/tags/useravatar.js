@@ -10,26 +10,26 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('useravatar')
-    .withArgs(a => [a.optional('user'), a.optional('quiet')])
-    .withDesc('Returns the avatar of `user`. `user` defaults to the user who executed the containing tag. ' +
-      'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
-    .withExample(
-      'Your avatar is {useravatar}',
-      'Your avatar is (avatar url)'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1-3', async function (params) {
-      let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-        user = params.msg.author;
+    Builder.AutoTag('useravatar')
+        .withArgs(a => [a.optional('user'), a.optional('quiet')])
+        .withDesc('Returns the avatar of `user`. `user` defaults to the user who executed the containing tag. ' +
+            'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
+        .withExample(
+            'Your avatar is {useravatar}',
+            'Your avatar is (avatar url)'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-3', async function (params) {
+            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
+                user = params.msg.author;
 
-      if (params.args[1])
-        user = await bu.getUser(params.msg, params.args[1], quiet);
+            if (params.args[1])
+                user = await bu.getUser(params.msg, params.args[1], quiet);
 
-      if (user != null)
-        return user.avatarURL;
+            if (user != null)
+                return user.avatarURL;
 
-      if (quiet)
-        return params.args[1];
-    })
-    .whenDefault(Builder.errors.tooManyArguments)
-    .build();
+            if (quiet)
+                return params.args[1];
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

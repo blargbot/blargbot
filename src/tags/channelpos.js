@@ -10,12 +10,12 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('channelpos')
-  .withDesc('Returns the position of the current channel.')
-  .withExample(
-    'This channel is in position {channelpos}',
-    'This channel is in position 1'
-  ).beforeExecute(Builder.util.processAllSubtags)
-  .whenArgs('1', async params => params.msg.channel.position)
-  .whenDefault(Builder.errors.tooManyArguments)
-  .build();
+    Builder.AutoTag('channelpos')
+        .withDesc('Returns the position of the current channel.')
+        .withExample(
+            'This channel is in position {channelpos}',
+            'This channel is in position 1'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', async params => params.msg.channel.position)
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

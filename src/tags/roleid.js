@@ -10,23 +10,23 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('roleid')
-    .withArgs(a => [a.require('role'), a.optional('quiet')])
-    .withDesc('Returns `role`\'s ID. '+
-    'If `quiet` is specified, if `role` can\'t be found it will simply return `role`')
-    .withExample(
-      'The admin role ID is: {roleid;admin}.',
-      'The admin role ID is: 123456789123456.'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2-3', async function (params) {
-      let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-      role = await bu.getRole(params.msg, params.args[1], quiet);
-      if (role != null)
-        return role.id;
+    Builder.AutoTag('roleid')
+        .withArgs(a => [a.require('role'), a.optional('quiet')])
+        .withDesc('Returns `role`\'s ID. ' +
+            'If `quiet` is specified, if `role` can\'t be found it will simply return `role`')
+        .withExample(
+            'The admin role ID is: {roleid;admin}.',
+            'The admin role ID is: 123456789123456.'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-3', async function (params) {
+            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
+                role = await bu.getRole(params.msg, params.args[1], quiet);
+            if (role != null)
+                return role.id;
 
-      if (quiet)
-        return params.args[1];
-    })
-    .whenDefault(Builder.errors.tooManyArguments)
-    .build();
+            if (quiet)
+                return params.args[1];
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

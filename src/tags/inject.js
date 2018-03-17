@@ -21,12 +21,5 @@ module.exports =
         .whenArgs('2', async function (params) {
             params.content = bu.processSpecial(params.args[1], true);
             return await bu.processTag(params);
-            if (result.terminate)
-                params.terminate = true;
-            return {
-                replaceString: result.contents,
-                embed: result.embed,
-                reactions: result.reactions
-            };
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

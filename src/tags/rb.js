@@ -10,14 +10,14 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('rb')
-    .withDesc('Will be replaced by `}` on execution.')
-    .withExample(
-      'This is a bracket! {rb}',
-      'This is a bracket! {'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', async function (params) {
-      return bu.specialCharBegin + 'RB' + bu.specialCharEnd;
-    })
-    .whenDefault(Builder.errors.tooManyArguments)
-    .build();
+    Builder.AutoTag('rb')
+        .withDesc('Will be replaced by `}` on execution.')
+        .withExample(
+            'This is a bracket! {rb}',
+            'This is a bracket! {'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', async function (params) {
+            return bu.specialCharBegin + 'RB' + bu.specialCharEnd;
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

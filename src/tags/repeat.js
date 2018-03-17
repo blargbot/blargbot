@@ -18,8 +18,8 @@ module.exports =
             'eeeeeeeeee'
         ).whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3', async function (params) {
-            let fallback = parseInt(params.fallback),
-                amount = parseInt(await bu.processTagInner(params, 2)),
+            let fallback = bu.parseInt(params.fallback),
+                amount = bu.parseInt(await bu.processTagInner(params, 2)),
                 result = '';
 
             if (isNaN(amount)) {

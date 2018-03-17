@@ -19,9 +19,9 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (params) {
-            let min = parseInt(params.args[1]),
-                max = parseInt(params.args[2] || 0),
-                fallback = parseInt(params.fallback);
+            let min = bu.parseInt(params.args[1]),
+                max = bu.parseInt(params.args[2] || 0),
+                fallback = bu.parseInt(params.fallback);
 
             if (isNaN(min)) min = fallback;
             if (isNaN(max)) max = fallback;

@@ -10,13 +10,13 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('prefix')
-    .withDesc('Gets the current guild\'s prefix.')
-    .withExample(
-      'Your prefix is {prefix}',
-      'Your prefix is b!'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', async function(params) {
-        return await bu.guildSettings.get(params.msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
-    }).whenDefault(Builder.errors.tooManyArguments)
-    .build();
+    Builder.AutoTag('prefix')
+        .withDesc('Gets the current guild\'s prefix.')
+        .withExample(
+            'Your prefix is {prefix}',
+            'Your prefix is b!'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', async function (params) {
+            return await bu.guildSettings.get(params.msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

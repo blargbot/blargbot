@@ -16,7 +16,7 @@ module.exports =
             'The message id was {messageid}',
             'The message id was 111111111111111111'
         ).beforeExecute(params => Builder.util.processSubtags(params, [1]))
-        .whenArgs('1', async function(params){
+        .whenArgs('1', async function (params) {
             return params.msg.id;
         })
         .whenDefault(Builder.errors.tooManyArguments)

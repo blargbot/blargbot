@@ -39,9 +39,9 @@ module.exports =
             let errors = [],
                 set = TagManager.list['set'],
                 varName = params.args[1],
-                initial = parseFloat(params.args[2]),
+                initial = bu.parseFloat(params.args[2]),
                 operator = operators[params.args[3]],
-                limit = parseFloat(params.args[4]),
+                limit = bu.parseFloat(params.args[4]),
                 code = params.args.length - 1,
                 result = '',
                 increment;
@@ -49,7 +49,7 @@ module.exports =
             if (params.args.length == 6)
                 increment = 1;
             else
-                increment = parseFloat(await bu.processTagInner(params, 5));
+                increment = bu.parseFloat(await bu.processTagInner(params, 5));
 
             if (isNaN(initial)) errors.push('Initial must be a number');
             if (!operator) errors.push('Invalid operator');

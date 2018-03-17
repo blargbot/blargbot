@@ -10,40 +10,40 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.ArrayTag('foreach')
-    .withArgs(a => [
-      a.require('variable'),
-      a.require('array'),
-      a.require('code')
-    ])
-    .withDesc('For every element in `array`, `variable` will be set and then `code` will be run.')
-    .withExample(
-      '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
-      'I like apples\nI like oranges\nI like c#'
-    ).beforeExecute(params => Builder.util.processSubtags(params, [1, 2]))
-    .whenArgs('1-3', Builder.errors.notEnoughArguments)
-    .whenArgs('4', async function (params) {
-      let set = TagManager.list['set'],
-        varName = params.args[1],
-        deserialized = await bu.getArray(params, params.args[2]),
-        result = '';
+    Builder.ArrayTag('foreach')
+        .withArgs(a => [
+            a.require('variable'),
+            a.require('array'),
+            a.require('code')
+        ])
+        .withDesc('For every element in `array`, `variable` will be set and then `code` will be run.')
+        .withExample(
+            '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
+            'I like apples\nI like oranges\nI like c#'
+        ).beforeExecute(params => Builder.util.processSubtags(params, [1, 2]))
+        .whenArgs('1-3', Builder.errors.notEnoughArguments)
+        .whenArgs('4', async function (params) {
+            let set = TagManager.list['set'],
+                varName = params.args[1],
+                deserialized = await bu.getArray(params, params.args[2]),
+                result = '';
 
-      if (deserialized == null || !Array.isArray(deserialized.v))
-        return await Builder.errors.notAnArray(params);
+            if (deserialized == null || !Array.isArray(deserialized.v))
+                return await Builder.errors.notAnArray(params);
 
-      let arr = deserialized.v;
+            let arr = deserialized.v;
 
-      for (const item of arr) {
-        params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
-        if (params.msg.repeats > 1500) {
-          result += await Builder.errors.tooManyLoops(params);
-          break;
-        }
-        await set.setVar(params, varName, item);
-        result += await bu.processTagInner(params, 3);
-        if (params.terminate)
-          break;
-      }
-      return result;
-    }).whenDefault(Builder.errors.tooManyArguments)
-    .build();
+            for (const item of arr) {
+                params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
+                if (params.msg.repeats > 1500) {
+                    result += await Builder.errors.tooManyLoops(params);
+                    break;
+                }
+                await set.setVar(params, varName, item);
+                result += await bu.processTagInner(params, 3);
+                if (params.terminate)
+                    break;
+            }
+            return result;
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

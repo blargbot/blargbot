@@ -20,6 +20,6 @@ module.exports =
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2', async function (params) {
             return params.args[1].toLowerCase();
-         })
+        })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

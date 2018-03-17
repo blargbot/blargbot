@@ -10,18 +10,18 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('nsfw')
-    .withArgs(a => a.optional('message'))
-    .withDesc('Marks the output as being NSFW, and only to be sent in NSFW channels. A requirement for any tag with NSFW content. ' + 
-      '`message` is the error to show, defaults to "❌ This contains NSFW content! Go to a NSFW channel. ❌"')
-    .withExample(
-      'This command is not safe! {nsfw}',
-      'This command is not safe!'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1-2', async function (params) {
-      return {
-        nsfw: params.args[1] || '❌ This contains NSFW content! Go to a NSFW channel. ❌'
-      };
-    })
-    .whenDefault(Builder.errors.tooManyArguments)
-    .build();
+    Builder.AutoTag('nsfw')
+        .withArgs(a => a.optional('message'))
+        .withDesc('Marks the output as being NSFW, and only to be sent in NSFW channels. A requirement for any tag with NSFW content. ' +
+            '`message` is the error to show, defaults to "❌ This contains NSFW content! Go to a NSFW channel. ❌"')
+        .withExample(
+            'This command is not safe! {nsfw}',
+            'This command is not safe!'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', async function (params) {
+            return {
+                nsfw: params.args[1] || '❌ This contains NSFW content! Go to a NSFW channel. ❌'
+            };
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

@@ -21,14 +21,14 @@ module.exports =
             'FF'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async function(params) {
+        .whenArgs('3-4', async function (params) {
             let args = params.args.slice(1);
             if (args.length === 2)
                 args.splice(1, 0, '10');
 
-            let fallback = parseInt(params.fallback),
-                origin = parseInt(args[1]),
-                radix = parseInt(args[2]);
+            let fallback = bu.parseInt(params.fallback),
+                origin = bu.parseInt(args[1]),
+                radix = bu.parseInt(args[2]);
 
             let radixFallback = !isNaN(fallback) && bu.between(fallback, 2, 36, true);
 
@@ -45,7 +45,7 @@ module.exports =
             if (!bu.between(origin, 2, 36, true) || !bu.between(radix, 2, 36, true))
                 return await Builder.util.error(params, 'Base must be between 2 and 36');
 
-            let value = parseInt(args[0], origin);
+            let value = bu.parseInt(args[0], origin);
             if (isNaN(value)) {
                 if (!isNaN(fallback))
                     value = fallback;

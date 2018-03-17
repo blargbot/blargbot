@@ -24,13 +24,13 @@ module.exports =
             let arr = bu.deserializeTagArray(params.args[1]),
                 descending = bu.parseBoolean(params.args[2]);
 
-            if (!bu.isBoolean(descending)) 
+            if (!bu.isBoolean(descending))
                 descending = !!params.args[2];
 
             if (arr == null || !Array.isArray(arr.v))
                 return await Builder.errors.notAnArray(params);
 
-            let sorter = new Intl.Collator(undefined,   {numeric: true, sensitivity: 'base'});
+            let sorter = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
 
             arr.v = arr.v.sort(sorter.compare);
             if (descending) arr.v.reverse();

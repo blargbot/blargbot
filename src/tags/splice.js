@@ -22,10 +22,10 @@ module.exports =
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenDefault(async function (params) {
             let arr = bu.deserializeTagArray(params.args[1]),
-                start = parseInt(params.args[2]),
-                delCount = parseInt(params.args[3] || 0),
+                start = bu.parseInt(params.args[2]),
+                delCount = bu.parseInt(params.args[3] || 0),
                 insert = params.args.slice(4),
-                fallback = parseInt(params.fallback);
+                fallback = bu.parseInt(params.fallback);
 
             if (arr == null || !Array.isArray(arr.v))
                 return await Builder.errors.notAnArray(params);

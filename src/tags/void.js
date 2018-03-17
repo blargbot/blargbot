@@ -10,12 +10,12 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('void')
-  .withArgs(a => a.optional('code'))
-    .withDesc('Executes `code` but does not return the output from it. Useful for silent functionality')
-    .withExample(
-      '{void;This won\'t be output!}',
-      ''
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenDefault(async params => '')
-    .build();
+    Builder.AutoTag('void')
+        .withArgs(a => a.optional('code'))
+        .withDesc('Executes `code` but does not return the output from it. Useful for silent functionality')
+        .withExample(
+            '{void;This won\'t be output!}',
+            ''
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenDefault(async params => '')
+        .build();

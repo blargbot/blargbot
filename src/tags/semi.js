@@ -10,14 +10,14 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('semi')
-    .withDesc('Will be replaced by `;` on execution.')
-    .withExample(
-      'This is a semicolon! {semi}',
-      'This is a semicolon! ;'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', async function (params) {
-      return bu.specialCharBegin + 'SEMI' + bu.specialCharEnd;
-    })
-    .whenDefault(Builder.errors.tooManyArguments)
-    .build();
+    Builder.AutoTag('semi')
+        .withDesc('Will be replaced by `;` on execution.')
+        .withExample(
+            'This is a semicolon! {semi}',
+            'This is a semicolon! ;'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', async function (params) {
+            return bu.specialCharBegin + 'SEMI' + bu.specialCharEnd;
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

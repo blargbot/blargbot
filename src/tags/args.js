@@ -21,8 +21,8 @@ module.exports =
             'Your second word was world!'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', async params => params.words.join(' '))
-        .whenArgs('2-3', async function(params) {
-            let from = parseInt(params.args[1]),
+        .whenArgs('2-3', async function (params) {
+            let from = bu.parseInt(params.args[1]),
                 to = params.args[2];
 
             if (!to)
@@ -30,7 +30,7 @@ module.exports =
             else if (to === 'n')
                 to = params.words.length;
             else
-                to = parseInt(to);
+                to = bu.parseInt(to);
 
             if (isNaN(from) || isNaN(to))
                 return await Builder.errors.notANumber(params);

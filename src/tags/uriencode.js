@@ -20,6 +20,6 @@ module.exports =
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2', async function (params) {
             return encodeURIComponent(bu.processSpecial(params.args[1], true));
-         })
+        })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

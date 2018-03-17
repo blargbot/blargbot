@@ -23,7 +23,7 @@ module.exports =
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3-5', async function (params) {
             let text = params.args[1],
-                length = parseInt(params.args[2]),
+                length = bu.parseInt(params.args[2]),
                 filler = params.args[3] || ' ',
                 direction = params.args[4] || 'right';
 

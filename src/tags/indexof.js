@@ -22,8 +22,8 @@ module.exports =
         .whenArgs('3-4', async function (params) {
             let input = await bu.deserializeTagArray(params.args[1]),
                 search = params.args[2],
-                from = parseInt(params.args[3] || '0'),
-                fallback = parseInt(params.fallback);
+                from = bu.parseInt(params.args[3] || '0'),
+                fallback = bu.parseInt(params.fallback);
 
             if (isNaN(from)) from = fallback;
             if (isNaN(from)) return await Builder.errors.notANumber(params);

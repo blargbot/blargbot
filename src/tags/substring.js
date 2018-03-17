@@ -20,10 +20,10 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3-4', async function (params) {
-            let fallback = parseInt(params.fallback),
+            let fallback = bu.parseInt(params.fallback),
                 text = params.args[1],
-                start = parseInt(params.args[2]),
-                end = parseInt(params.args[3] || text.length);
+                start = bu.parseInt(params.args[2]),
+                end = bu.parseInt(params.args[3] || text.length);
 
             if (isNaN(start)) start = fallback;
             if (isNaN(end)) end = fallback;

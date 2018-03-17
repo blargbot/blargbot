@@ -20,8 +20,8 @@ module.exports =
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3', async function (params) {
             let chars = params.args[1].split(''),
-                count = parseInt(params.args[2]),
-                fallback = parseInt(params.fallback);
+                count = bu.parseInt(params.args[2]),
+                fallback = bu.parseInt(params.fallback);
 
             if (isNaN(count)) count = fallback;
             if (isNaN(count)) return await Builder.errors.notANumber(params);

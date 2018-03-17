@@ -10,23 +10,23 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('space')
-    .withArgs(a => a.optional('count'))
-    .withDesc('Will be replaced by `count` spaces (Default to 1).')
-    .withExample(
-      'Hello,{space;4}world!',
-      'Hello,    world!'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1-2', async function (params) {
-      let count = parseInt(params.args[1] || '1'),
-        fallback = parseInt(params.fallback);
+    Builder.AutoTag('space')
+        .withArgs(a => a.optional('count'))
+        .withDesc('Will be replaced by `count` spaces (Default to 1).')
+        .withExample(
+            'Hello,{space;4}world!',
+            'Hello,    world!'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', async function (params) {
+            let count = bu.parseInt(params.args[1] || '1'),
+                fallback = bu.parseInt(params.fallback);
 
-      if (isNaN(count)) count = fallback;
-      if (isNaN(count)) return await Builder.errors.notANumber(params);
+            if (isNaN(count)) count = fallback;
+            if (isNaN(count)) return await Builder.errors.notANumber(params);
 
-      if (count < 0) count = 0;
+            if (count < 0) count = 0;
 
-      return new Array(count + 1).join(' ');
-    })
-    .whenDefault(Builder.errors.tooManyArguments)
-    .build();
+            return new Array(count + 1).join(' ');
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

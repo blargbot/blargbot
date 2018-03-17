@@ -18,7 +18,7 @@ module.exports =
             'This tag failed'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function(params) {
+        .whenArgs('2', async function (params) {
             return {
                 fallback: params.fallback = params.args[1]
             };

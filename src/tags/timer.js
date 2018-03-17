@@ -20,8 +20,8 @@ module.exports =
         ).whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3', async function (params) {
             if (params.disabletimer)
-              return await Builder.util.error(params, 'Nested timers are not allowed');
-              
+                return await Builder.util.error(params, 'Nested timers are not allowed');
+
             let code = params.args[1],
                 duration = await bu.processTagInner(params, 2);
 
@@ -43,8 +43,8 @@ module.exports =
             });
             params.msg = msg;
             return {
-              timers: (params.timers || 0) + 1
-            }
+                timers: (params.timers || 0) + 1
+            };
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

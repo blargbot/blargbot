@@ -10,21 +10,21 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('isnsfw')
-    .withArgs(a => a.optional('channelId'))
-    .withDesc('Checks if `channelId` is a NSFW channel. `channelId` defaults to the current channel')
-    .withExample(
-      '{if;{isnsfw};Spooky nsfw stuff;fluffy bunnies}',
-      'fluffy bunnies'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1-2', async function (params) {
-      let channel = params.msg.channel;
-      if (params.args[1])
-        channel = bu.parseChannel(params.args[1], true);
+    Builder.AutoTag('isnsfw')
+        .withArgs(a => a.optional('channelId'))
+        .withDesc('Checks if `channelId` is a NSFW channel. `channelId` defaults to the current channel')
+        .withExample(
+            '{if;{isnsfw};Spooky nsfw stuff;fluffy bunnies}',
+            'fluffy bunnies'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', async function (params) {
+            let channel = params.msg.channel;
+            if (params.args[1])
+                channel = bu.parseChannel(params.args[1], true);
 
-      if (channel == null) return await Builder.errors.noChannelFound(params);
+            if (channel == null) return await Builder.errors.noChannelFound(params);
 
-      return await bu.isNsfwChannel(channel.id);
-    })
-    .whenDefault(Builder.errors.tooManyArguments)
-    .build();
+            return await bu.isNsfwChannel(channel.id);
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

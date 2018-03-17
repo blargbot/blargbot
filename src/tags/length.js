@@ -25,6 +25,6 @@ module.exports =
             if (deserialized && Array.isArray(deserialized.v))
                 return deserialized.v.length;
             return params.args[1].length;
-         })
+        })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

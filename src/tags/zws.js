@@ -10,10 +10,10 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('zws')
-    .withDesc('Will be replaced by a single zero width space (unicode 200B)')
-    .withExample('{zws}', '\u200B')
-    .beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', async function (params) { return '\u200B'; })
-    .whenDefault(Builder.errors.tooManyArguments)
-    .build();
+    Builder.AutoTag('zws')
+        .withDesc('Will be replaced by a single zero width space (unicode 200B)')
+        .withExample('{zws}', '\u200B')
+        .beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', async function (params) { return '\u200B'; })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

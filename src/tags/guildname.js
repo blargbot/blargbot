@@ -10,14 +10,14 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('guildname')
-    .withDesc('Returns the name of the current guild.')
-    .withExample(
-      'This guild\'s name is {guildname}.',
-      'This guild\'s name is TestGuild.'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', async function (params) {
-      return params.msg.channel.guild.name;
-    })
-    .whenDefault(Builder.errors.tooManyArguments)
-    .build();
+    Builder.AutoTag('guildname')
+        .withDesc('Returns the name of the current guild.')
+        .withExample(
+            'This guild\'s name is {guildname}.',
+            'This guild\'s name is TestGuild.'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', async function (params) {
+            return params.msg.channel.guild.name;
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

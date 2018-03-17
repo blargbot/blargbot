@@ -10,18 +10,18 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('parseint')
-    .withArgs(a => a.require('text'))
-    .withDesc('Returns an integer from `text`. If it wasn\'t a number, returns `NaN`.')
-    .withExample(
-      '{parseint;abcd} {parseint;1234} {parseint;12cd}',
-      'NaN 1234 12'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2', async function(params) {
-      let number = parseInt(params.args[1]);
-      if (isNaN(number))
-        return 'NaN';
-      return number;
-    }).whenDefault(Builder.errors.tooManyArguments)
-    .build();
+    Builder.AutoTag('parseInt')
+        .withArgs(a => a.require('text'))
+        .withDesc('Returns an integer from `text`. If it wasn\'t a number, returns `NaN`.')
+        .withExample(
+            'bu.parseInt;abcd} bu.parseInt;1234} bu.parseInt;12cd}',
+            'NaN 1234 12'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) {
+            let number = bu.parseInt(params.args[1]);
+            if (isNaN(number))
+                return 'NaN';
+            return number;
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

@@ -29,6 +29,6 @@ module.exports =
             if (direction.toLowerCase() == 'right')
                 return overlay + backing.substr(overlay.length);
             return await Builder.util.error(params, 'Invalid drection');
-         })
+        })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -16,7 +16,7 @@ module.exports =
             'This will display. {return} This will not.',
             'This will display.'
         ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function(params){
+        .whenArgs('1', async function (params) {
             return {
                 terminate: true
             };

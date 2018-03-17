@@ -12,7 +12,7 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', async function (params) {
             return {
-              quiet: bu.parseBoolean(params.args[1] || true)
-            }
+                quiet: bu.parseBoolean(params.args[1] || true)
+            };
         })
         .build();

@@ -10,18 +10,18 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('round')
-    .withArgs(a => a.require('number'))
-    .withDesc('Rounds `number` to the nearest whole number.')
-    .withExample(
-      '{round;1.23}',
-      '1'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2', async function(params) {
-      let number = parseFloat(params.args[1]);
-      if (isNaN(number))
-        return await Builder.errors.notANumber(params);
-      return Math.round(number);
-    }).whenDefault(Builder.errors.tooManyArguments)
-    .build();
+    Builder.AutoTag('round')
+        .withArgs(a => a.require('number'))
+        .withDesc('Rounds `number` to the nearest whole number.')
+        .withExample(
+            '{round;1.23}',
+            '1'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) {
+            let number = bu.parseFloat(params.args[1]);
+            if (isNaN(number))
+                return await Builder.errors.notANumber(params);
+            return Math.round(number);
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

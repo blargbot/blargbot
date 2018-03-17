@@ -10,12 +10,12 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-  Builder.AutoTag('commandname')
-    .withDesc('Gets the name of the current tag or custom command. Will throw an error in other instances.')
-    .withExample(
-      'This command is {commandname}',
-      'This command is test'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', async params => params.tagName || await Builder.util.error(params, 'Not a command'))
-    .whenDefault(Builder.errors.tooManyArguments)
-    .build();
+    Builder.AutoTag('commandname')
+        .withDesc('Gets the name of the current tag or custom command. Will throw an error in other instances.')
+        .withExample(
+            'This command is {commandname}',
+            'This command is test'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', async params => params.tagName || await Builder.util.error(params, 'Not a command'))
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

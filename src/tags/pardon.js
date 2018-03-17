@@ -25,7 +25,7 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-4', async function (params) {
             let user = params.msg.author,
-                count = parseInt(params.args[2] || 1),
+                count = bu.parseInt(params.args[2] || 1),
                 reason = params.args[3];
 
             if (params.args[1])
