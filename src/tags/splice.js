@@ -21,11 +21,11 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenDefault(async function (params) {
-            let arr = bu.deserializeTagArray(params.args[1]),
+            let arr = await bu.getArray(params, params.args[1]),
                 start = bu.parseInt(params.args[2]),
                 delCount = bu.parseInt(params.args[3] || 0),
-                insert = params.args.slice(4),
-                fallback = bu.parseInt(params.fallback);
+                fallback = bu.parseInt(params.fallback),
+                insert = Builder.util.flattenArgArrays(params.args.slice(4));
 
             if (arr == null || !Array.isArray(arr.v))
                 return await Builder.errors.notAnArray(params);
@@ -34,14 +34,6 @@ module.exports =
             if (isNaN(delCount)) delCount = fallback;
             if (isNaN(start) || isNaN(delCount))
                 return await Builder.errors.notANumber(params);
-
-            for (let i = 0; i < insert.length; i++) {
-                let arr = bu.deserializeTagArray(insert[i]);
-                if (arr == null || !Array.isArray(arr.v))
-                    continue;
-                insert.splice(i, 1, ...arr.v);
-                i += arr.v.length - 1;
-            }
 
             let result = arr.v.splice(start, delCount, ...insert);
             if (arr.n)

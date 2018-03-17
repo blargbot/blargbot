@@ -21,7 +21,7 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (params) {
-            let arr = bu.deserializeTagArray(params.args[1]),
+            let arr = await bu.getArray(params, params.args[1]),
                 descending = bu.parseBoolean(params.args[2]);
 
             if (!bu.isBoolean(descending))

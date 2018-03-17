@@ -19,7 +19,7 @@ module.exports =
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3-4', async function (params) {
-            let arr = bu.deserializeTagArray(params.args[1]),
+            let arr = await bu.getArray(params, params.args[1]),
                 start = bu.parseInt(params.args[2]),
                 end = bu.parseInt(params.args[3]),
                 fallback = bu.parseInt(params.fallback);
