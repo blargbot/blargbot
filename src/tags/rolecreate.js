@@ -45,6 +45,8 @@ module.exports =
 
             try {
                 let role = await params.msg.guild.createRole(options, `Created with a custom command command, executed by user: ${params.msg.author.id}`);
+                if (!params.msg.guild.roles.get(role.id))
+                    params.msg.guild.roles.add(role);
                 return role.id;
             } catch (err) {
                 console.error(err.stack);
