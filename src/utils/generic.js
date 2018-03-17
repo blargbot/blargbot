@@ -1449,3 +1449,15 @@ bu.parseTime = function (text, format = undefined, timezone = 'Etc|UTC') {
     console.debug('using default moment parsing');
     return dep.moment.tz(text, format, timezone).utcOffset(0);
 };
+
+bu.parseInt = function (s, radix = 10) {
+    if (typeof s != 'string') return parseInt(s, radix);
+    //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
+    return parseInt(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'), radix);
+};
+
+bu.parseFloat = function (s) {
+    if (typeof s != 'string') return parseFloat(s);
+    //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
+    return parseFloat(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'));
+};
