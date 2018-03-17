@@ -7,42 +7,60 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('switch')
-        .acceptsArrays()
-        .withArgs(a => [
-            a.require('value'),
-            a.optional([
-                a.require('case'),
-                a.require('then')
-            ], true),
-            a.optional('default')
-        ])
-        .withDesc('Finds the `case` that matches `value` and returns the following `then`. ' +
-            'If a `case` value is an array, it will be expanded and matching will be done against its elements. ' +
-            'If there is no matching `case` and `default` is specified, ' +
-            '`default` is returned. If not, it returns blank.'
-        ).withExample(
-            '{switch;{args;0};\n  ["yes","definitely"]; {//;Match "yes" OR "definitely"}\n    Correct!;\n  no;\n    Incorrect!;\n  That is not yes or no\n}',
-            'yes',
-            'Correct!'
-        ).whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let value = await bu.processTagInner(params, 1),
-                indexes = [...params.args.keys()].splice(2).reverse(),
-                cases = {}, elseDo = -1;
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-            if (indexes.length % 2 == 1) elseDo = indexes.shift();
+e.requireCtx = require;
 
-            for (let i = 0; i < indexes.length; i += 2) {
-                let caseValue = await bu.processTagInner(params, indexes[i + 1]);
-                for (const key of Builder.util.flattenArgArrays([caseValue]))
-                    cases[key] = indexes[i];
+e.isTag = true;
+e.name = 'switch';
+e.args = '&lt;arg&gt; &lt;case1&gt; &lt;then1&gt; [case2] [then2].. [default]';
+e.usage = '{switch;arg;case1;then1[;case2;then2..][;default]}';
+e.desc = 'Finds the <code>case</code> that matches <code>arg</code> and returns the following <code>then</code>.' +
+    'If there is no matching <code>case</code> and <code>default</code> is specified,' +
+    '<code>default</code> is returned. If not, it returns blank.';
+e.exampleIn = '{switch;{args;0};yes;Correct!;no;Incorrect!;That is not yes or no}';
+e.exampleOut = 'Correct!';
+
+e.execute = async function (params) {
+    params.args[1] = await bu.processTagInner(params, 1);
+    for (let i = 2; i < params.args.length; i += 2) {
+        if (i != params.args.length - 1)
+            params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args;
+    var replaceString = '';
+    var replaceContent = false;
+    var elseDo = '';
+    var cases = {};
+    args.shift();
+    var arg = args[0];
+    args.shift();
+    for (let i = 0; i < args.length; i++) {
+        if (i != args.length - 1) {
+            let deserialized = bu.deserializeTagArray(args[i]);
+            if (deserialized && Array.isArray(deserialized.v)) {
+                for (let j = 0; j < deserialized.v.length; j++) {
+                    cases[deserialized.v[j]] = args[i + 1];
+                }
+            } else {
+                cases[args[i]] = args[i + 1];
             }
-
-            let result = cases[value] || elseDo;
-            if (result != -1)
-                return await bu.processTagInner(params, result);
-        }).build();
+            i++;
+        } else {
+            elseDo = args[i];
+        }
+    }
+    if (args.length % 2 != 0) replaceString = cases[arg] || elseDo;
+    else replaceString = cases[arg] || '';
+    params.content = replaceString;
+    replaceString = await bu.processTagInner(params);
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

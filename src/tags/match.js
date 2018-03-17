@@ -1,34 +1,37 @@
-/*
- * @Author: stupid cat
- * @Date: 2017-05-07 18:49:46
- * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:49:46
- *
- * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
- */
+var e = module.exports = {};
 
-const Builder = require('../structures/TagBuilder');
+e.init = () => {
+    e.category = bu.TagType.ARRAY;
+};
 
-module.exports =
-    Builder.ArrayTag('match')
-        .withArgs(a => [a.require('text'), a.require('regex')])
-        .withDesc('Returns an array of everything in `text` that matches `regex`.')
-        .withExample(
-            '{match;I have $1 and 25 cents;/\\d+/g}',
-            '["1", "25"]'
-        ).beforeExecute(params => Builder.util.processSubtags(params, [1]))
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
-            let text = params.args[1],
-                regex;
+e.requireCtx = require;
 
-            try {
-                regex = bu.createRegExp(params.args[2]);
-            }
-            catch (e) {
-                return await Builder.errors.unsafeRegex(params);
-            }
+e.isTag = true;
+e.name = `match`;
+e.args = `&lt;text&gt; &lt;regex&gt;`;
+e.usage = `{match;text;regex}`;
+e.desc = `Returns an array of everything in <code>text</code> that matches <code>regex</code>.`;
+e.exampleIn = `{match;I have $1 and 25 cents;/\\d+/g}`;
+e.exampleOut = `["1", "25"]`;
 
-            return bu.serializeTagArray(text.match(regex) || []);
-        }).whenDefault(Builder.errors.tooManyArguments)
-        .build();
+e.execute = async function(params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let words = params.words;
+    var replaceString = '';
+    var replaceContent = false;
+    let args = params.args;
+    if (args.length >= 2) {
+        let regex = bu.createRegExp(args[2]);
+        let array = args[1].match(regex) || [];
+        replaceString = bu.serializeTagArray(array);
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

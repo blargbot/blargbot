@@ -7,46 +7,70 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.CCommandTag('removerole')
-        .requireStaff()
-        .withArgs(a => [a.require('role'), a.optional('user'), a.optional('quiet')])
-        .withDesc('Removes `role` from `user`, where `role` is a role ID or mention. ' +
-            'You can find a list of roles and their ids by doing \`b!roles\`. ' +
-            'Returns true if `role` was removed, and false otherwise.' +
-            'If `quiet` is specified, if a user can\'t be found it will simply return `false`'
-        ).withExample(
-            'No more role! {removerole;11111111111111111}',
-            'No more role! true'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-4', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
-                result = await TagManager.list['hasrole'].checkRoles(params, ...params.args.slice(1, 3), quiet);
+e.init = () => {
+    e.category = bu.TagType.CCOMMAND;
+};
 
-            if (result.user == null) {
-                if (quiet)
-                    return false;
-                return await Builder.errors.noUserFound(params);
+e.requireCtx = require;
+
+e.isTag = true;
+e.name = `removerole`;
+e.args = `&lt;role&gt; [user]`;
+e.usage = `{removerole;role[;user]}`;
+e.desc = `Removes a role from a user, where role is a role ID or mention. You can find a list of roles and their ids by doing \`b!roles\`. Returns true if a role was removed, and false otherwise.`;
+e.exampleIn = `No more role! {removerole;11111111111111111}`;
+e.exampleOut = `No more role! true`;
+
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    var replaceString = '';
+    var replaceContent = false;
+    if (!params.ccommand) {
+        replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
+    } else {
+        if (!params.isStaff) {
+            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
+        } else if (params.args.length > 1) {
+            let member = params.msg.member;
+            if (params.args[2]) {
+                let user = await bu.getUser(params.msg, params.args[2], true);
+                if (user) member = params.msg.guild.members.get(user.id);
             }
-
-            if (result.roles.length == 0)
-                return await Builder.errors.noRoleFound(params);
-
-            let roles = result.roles.filter((e, i) => result.hasRole[i]);
-            if (roles.length == 0)
-                return 'false';
-
-            try {
-                for (const role of roles)
-                    await result.user.removeRole(role.id);
-                return 'true';
-            } catch (err) {
-                console.error(err);
-                return 'false';
+            if (member) {
+                let regexp = /(\d{17,23})/;
+                let role;
+                if (regexp.test(params.args[1])) {
+                    let roleId = params.args[1].match(regexp)[1];
+                    role = params.msg.guild.roles.get(roleId);
+                }
+                if (!role)
+                    replaceString = await bu.tagProcessError(params, '`No role found`');
+                else {
+                    let hasRole = bu.hasRole(member, role.id, false);
+                    if (!hasRole) replaceString = 'false';
+                    else {
+                        try {
+                            await member.removeRole(role.id);
+                            replaceString = 'true';
+                        } catch (err) {
+                            console.error(err);
+                            replaceString = 'false';
+                        }
+                    }
+                }
+            } else {
+                replaceString = await bu.tagProcessError(params, '`No user found`');
             }
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+        }
+    }
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
- * @Date: 2017-05-07 18:57:04
+ * @Date: 2017-05-07 18:30:03
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:57:04
+ * @Last Modified time: 2017-10-16 12:10:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -16,12 +16,13 @@ e.init = () => {
 e.requireCtx = require;
 
 e.isTag = true;
-e.name = `send`;
-e.args = `&lt;channel&gt; &lt;message&gt;`;
-e.usage = `{send;#channel;message}`;
-e.desc = `Sends the message to a specific channel, and returns the message ID. A channel is either an ID or channel mention.`;
-e.exampleIn = `{send;#channel;Hello!}`;
-e.exampleOut = `1111111111111111111\nIn #channel: Hello!`;
+e.name = `channel`;
+e.args = `&lt;channel&gt; [message]`;
+e.usage = `{channel;#channel[;message]}`;
+e.desc = `Please use the {send} tag instead of this. Sends the output to a specific channel. Only works in custom commands. If a message is specified, it will create a new message in the specified channel instead of rerouting output.`;
+e.exampleIn = `{channel;#channel}Hello!`;
+e.exampleOut = `In #channel: Hello!`;
+e.deprecated = true;
 
 e.execute = async function (params) {
     for (let i = 1; i < params.args.length; i++) {
@@ -41,14 +42,11 @@ e.execute = async function (params) {
                 if (channel) {
                     if (channel.guild.id == params.msg.guild.id) {
                         if (params.args[2]) {
-                            let msg = await bu.send(channel.id, {
+                            bu.send(channel.id, {
                                 content: params.args[2],
                                 disableEveryone: false
                             });
-                            replaceString = msg.id;
-                        } else {
-                            replaceString = await bu.tagProcessError(params, '`Must provide a message`');
-                        }
+                        } else params.msg.channel = channel;
                     } else {
                         replaceString = await bu.tagProcessError(params, '`Channel must be in guild`');
                     }

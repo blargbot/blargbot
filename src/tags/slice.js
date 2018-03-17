@@ -7,37 +7,50 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.ArrayTag('slice')
-        .withArgs(a => [a.require('array'), a.require('start'), a.optional('end')])
-        .withDesc('Grabs elements between the zero-indexed `start` and `end` points (inclusive) from `array`.')
-        .withExample(
-            '{slice;["this", "is", "an", "array"];1}',
-            '["is","an","array"]'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async function (params) {
-            let arr = await bu.getArray(params, params.args[1]),
-                start = bu.parseInt(params.args[2]),
-                end = bu.parseInt(params.args[3]),
-                fallback = bu.parseInt(params.fallback);
+e.init = () => {
+    e.category = bu.TagType.ARRAY;
+};
 
+e.requireCtx = require;
 
-            if (!params.args[3])
-                end = arr.v.length;
+e.isTag = true;
+e.name = `slice`;
+e.args = `&lt;array&gt; &lt;start&gt; [end]`;
+e.usage = `{slice;array;start;end}`;
+e.desc = `Grabs elements between the zero-indexed start and end points (inclusive).`;
+e.exampleIn = `{slice;["this", "is", "an", "array"];1}`;
+e.exampleOut = `["is", "an", "array"]`;
 
-            if (arr == null || !Array.isArray(arr.v))
-                return await Builder.errors.notAnArray(params);
+e.execute = async function(params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let replaceContent = false;
+    let replaceString;
+    if (params.args.length >= 3) {
+        params.args[1] = await bu.processTagInner(params, 1);
+        let args = params.args;
+        let deserialized = await bu.getArray(params, args[1]);
+        
+        if (deserialized && Array.isArray(deserialized.v)) {
+            let start = parseInt(args[2]);
+            let end;
+            if (args[3]) end = parseInt(args[3]);
+            if (isNaN(start) || (end && isNaN(end))) {
+                replaceString = await bu.tagProcessError(params, '`Invalid start or end`');
+            } else replaceString = bu.serializeTagArray(deserialized.v.slice(start, end));
+        } else {
+            replaceString = await bu.tagProcessError(params, '`Not an array`');
+        }
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
 
-            if (isNaN(start)) start = fallback;
-            if (isNaN(end)) end = fallback;
-            if (isNaN(start) || isNaN(end))
-                return await Builder.errors.notANumber(params);
-
-
-            return bu.serializeTagArray(arr.v.slice(start, end));
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

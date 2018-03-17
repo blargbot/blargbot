@@ -7,35 +7,51 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('roles')
-        .withArgs(a => [a.optional('user'), a.optional('quiet')])
-        .withDesc('Returns an array of roles on the current guild. ' +
-            'If `user` is specified, get the roles that `user` has. ' +
-            'If `quiet` is specified, if a `user` can\'t be found it will simply return `user`')
-        .withExample(
-            'The roles on this guild are: {roles}.',
-            'The roles on this guild are: ["11111111111111111","22222222222222222"].'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) {
-            let roles = params.msg.guild.roles.map(r => r);
-            roles = roles.sort((a, b) => b.position - a.position);
-            return JSON.stringify(roles.map(r => r.id));
-        })
-        .whenArgs('2-3', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-                user = await bu.getUser(params.msg, params.args[1], quiet);
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-            if (user != null) {
-                let guildRoles = params.msg.guild.roles.map(r => r).reduce((o, r) => (o[r.id] = r, o), {});
-                let roles = params.msg.guild.members.get(user.id).roles.map(r => guildRoles[r]);
-                return JSON.stringify(roles.sort((a, b) => b.position - a.position).map(r => r.id));
-            }
+e.requireCtx = require;
 
-            if (quiet)
-                return params.args[1];
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+e.isTag = true;
+e.name = `roles`;
+e.args = `[user] [quiet]`;
+e.usage = `{userid[;user[;quiet]]}`;
+e.desc = `Returns an array of roles on the current guild. If user is specified, get the roles that user has. If
+<code>quiet</code> is specified, if a user can't be found it will simply return the <code>name</code>`;
+e.exampleIn = `The roles on this guild are: {roles}`;
+e.exampleOut = `The roles on this guild are: ["11111111111111111","22222222222222222"]`;
+
+
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args,
+        msg = params.msg;
+    var replaceString = '';
+    var replaceContent = false;
+
+    let roles;
+    if (params.args.length > 1) {
+        var obtainedUser = await bu.getTagUser(msg, args);
+        if (obtainedUser)
+            roles = params.msg.guild.members.get(obtainedUser.id).roles;
+        else if (params.args[2])
+            replaceString = args[1];
+        else return '';
+    } else {
+        roles = params.msg.guild.roles.map(r => r.id);
+    }
+
+    if (roles && Array.isArray(roles))
+        replaceString = JSON.stringify(roles);
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

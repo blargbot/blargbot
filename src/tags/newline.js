@@ -7,26 +7,52 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('newline')
-        .withArgs(a => a.optional('count'))
-        .withDesc('Will be replaced by `count` newline characters (\\n).')
-        .withExample(
-            'Hello,{newline}world!',
-            'Hello,\nworld!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', async function (params) {
-            let count = bu.parseInt(params.args[1] || '1'),
-                fallback = bu.parseInt(params.fallback);
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-            if (isNaN(count)) count = fallback;
-            if (isNaN(count)) return await Builder.errors.notANumber(params);
+e.requireCtx = require;
 
-            if (count < 0) count = 0;
+e.isTag = true;
+e.name = `newline`;
+e.args = `[length]`;
+e.usage = `{newline[;length]}`;
+e.desc = `Will be replaced by a specified number of newline characters (\\n).`;
+e.exampleIn = `{newline}Hello, world!`;
+e.exampleOut = `\nHello, world!`;
 
-            return new Array(count + 1).join('\n');
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+
+e.execute = async function(params) {
+    let length = 1;
+    var parsedFallback = parseInt(params.fallback);
+    if (params.args[1]) {
+        length = parseInt(await bu.processTagInner(params, 1));
+        if (isNaN(length)) {
+            if (isNaN(parsedFallback)) {
+                return {
+                    terminate: params.terminate,
+                    replaceString: await bu.tagProcessError(params, '`Not a number`'),
+                    replaceContent: replaceContent
+                };
+            } else {
+                length = parsedFallback;
+            }
+        }
+    }
+    var replaceString = '';
+
+    for (let i = 0; i < length; i++) {
+        replaceString += '\n';
+    }
+
+    var replaceContent = false;
+
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

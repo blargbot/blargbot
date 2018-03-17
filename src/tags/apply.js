@@ -7,36 +7,53 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.ArrayTag('apply')
-        .withArgs(a => [a.require('subtag'), a.optional('args', true)])
-        .withDesc('Executes `subtag`, using the `args` as parameters. ' +
-            'If `args` is an array, it will get deconstructed to it\'s individual elements.'
-        ).withExample(
-            '{apply;randint;[1,4]}',
-            '3'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            if (!TagManager.list.hasOwnProperty(params.args[1]))
-                return await Builder.util.error(params, 'No subtag found');
-            let tag = TagManager.list[params.args[1]];
-            let tagArgs = Builder.util.flattenArgArrays(params.args.slice(2));
+e.init = () => {
+    e.category = bu.TagType.ARRAY;
+};
 
-            params.args = [params.args[1], ...tagArgs];
+e.requireCtx = require;
 
-            params.args = params.args.map(v => {
-                if (typeof v === 'string')
-                    return v;
-                try {
-                    return JSON.stringify(v);
-                } catch (e) {
-                    return '';
-                }
-            });
+e.isTag = true;
+e.name = `apply`;
+e.args = `&lt;subtag&gt; &lt;args&gt;...`;
+e.usage = `{apply;subtag;args...}`;
+e.desc = `Executes the provided subtag, using the <code>args</code> as parameters. If <code>args</code> is an array, it will get deconstructed to it's individual elements.`;
+e.exampleIn = `{apply;randint;[1,4]}`;
+e.exampleOut = `3`;
 
-            return await tag.execute(params);
-        })
-        .build();
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let replaceContent = false;
+    let replaceString;
+    if (params.args.length >= 2) {
+        let nArgs = [];
+        for (let i = 2; i < params.args.length; i++) {
+            let deserialized = await bu.getArray(params, params.args[i]);
+            if (deserialized && Array.isArray(deserialized.v)) {
+                nArgs.push(deserialized.v);
+            } else nArgs.push([params.args[i]]);
+        }
+
+        let aArgs = [].concat(...nArgs);
+        let title = params.args[1];
+        if (TagManager.list.hasOwnProperty(title)) {
+            params.args.splice(1, params.args.length);
+            for (const element of aArgs) params.args.push(element.toString());
+            return await TagManager.list[title].execute(params);
+        } else {
+            replaceString = await bu.tagProcessError(params, '`No tag found`');
+        }
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

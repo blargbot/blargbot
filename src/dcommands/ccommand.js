@@ -22,7 +22,6 @@ __**Usage:**__
   **cc setrole <name> [role names...]** - sets the roles required to execute the ccommand
   **cc help** - shows this message
   **cc sethelp** <name> [help text] - set the help message for a custom command
-  **cc docs** [topic] - view help docuentation for BBTag, specific to ccommands
   
 For more information about BBTag, visit https://blargbot.xyz/tags`;
 e.longinfo = `<p>Creates a custom command using the <a href="/tags">BBTag language</a>. Once created, whenever you say the command name, blargbot will respond with the
@@ -59,9 +58,7 @@ blargbot&gt; Hello, User. This is a test command.
     <pre><code>cc help</code></pre>
     <p>Gets basic ccommand help.</p>
     <pre><code>cc sethelp &lt;name&gt; &#91;help text&#93;</code></pre>
-    <p>sets the help message for the given ccommand</p>
-    <pre><code>cc docs [topic]</code></pre>
-    <p>Displays the BBTag documentation for the given topic</p>`;
+    <p>sets the help message for the given ccommand</p>`;
 e.alias = ['cc'];
 
 function filterTitle(title) {
@@ -244,9 +241,6 @@ e.execute = async function (msg, words, text) {
                 break;
             case 'help':
                 bu.send(msg, e.info);
-                break;
-            case 'docs':
-                tags.docs(msg, words[0], words.slice(2).join(' '), true);
                 break;
             default:
                 bu.send(msg, 'Improper usage. Do \`help ccommand\` for more details.');

@@ -7,52 +7,58 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
 
-module.exports =
-    Builder.AutoTag('base')
-        .withArgs(a => [
-            a.require('integer'),
-            a.optional('origin'),
-            a.require('radix')
-        ]).withDesc('Converts a Base `origin` `integer` into a base `radix` number. Default `origin` is 10. `radix` must be between 2 and 36.')
-        .withExample(
-            '{base;255;16}',
-            'FF'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async function (params) {
-            let args = params.args.slice(1);
-            if (args.length === 2)
-                args.splice(1, 0, '10');
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-            let fallback = bu.parseInt(params.fallback),
-                origin = bu.parseInt(args[1]),
-                radix = bu.parseInt(args[2]);
+e.requireCtx = require;
 
-            let radixFallback = !isNaN(fallback) && bu.between(fallback, 2, 36, true);
+e.isTag = true;
+e.name = 'base';
+e.args = '&lt;integer&gt; [origin] &lt;radix&gt;';
+e.usage = '{base;integer[;origin];radix}';
+e.desc = 'Converts a Base <code>origin</code> number into <code>radix</code>. Default <code>origin</code> is 10. <code>radix</code> must be between 2 and 36.';
+e.exampleIn = '{base;255;16}';
+e.exampleOut = 'FF';
 
-            if (isNaN(origin) && radixFallback) origin = fallback;
-            if (isNaN(radix) && radixFallback) radix = fallback;
-
-            if (isNaN(origin) || isNaN(radix))
-                return await Builder.errors.notANumber(params);
-
-            //This check is needed because js cant natively handle radixes over 36 (0-9, a-z)
-            if (!bu.between(origin, 2, 36, true) && radixFallback) origin = fallback;
-            if (!bu.between(radix, 2, 36, true) && radixFallback) radix = fallback;
-
-            if (!bu.between(origin, 2, 36, true) || !bu.between(radix, 2, 36, true))
-                return await Builder.util.error(params, 'Base must be between 2 and 36');
-
-            let value = bu.parseInt(args[0], origin);
-            if (isNaN(value)) {
-                if (!isNaN(fallback))
-                    value = fallback;
-                else
-                    return await Builder.errors.notANumber(params);
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let args = params.args,
+        fallback = params.fallback;
+    var replaceString = '';
+    var replaceContent = false;
+    var parsedFallback = parseInt(fallback);
+    if (args.length > 1) {
+        let args2 = parseInt(args[2]);
+        let args3 = parseInt(args[3]);
+        if (!args3) {
+            args3 = args2;
+            args2 = 10;
+        }
+        let args1 = parseInt(args[1], args2);
+        if (isNaN(args1) || isNaN(args2) || isNaN(args2)) {
+            if (isNaN(parsedFallback)) {
+                return {
+                    replaceString: await bu.tagProcessError(params, '`Not a number`'),
+                    replaceContent: replaceContent
+                };
+            } else {
+                args1 = parsedFallback;
             }
-            return value.toString(radix);
+        } else {
+            replaceString = args1.toString(args3);
+        }
+    } else {
+        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+    }
 
-        }).whenDefault(Builder.errors.tooManyArguments)
-        .build();
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

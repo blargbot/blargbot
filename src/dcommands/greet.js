@@ -48,13 +48,6 @@ e.execute = async function (msg, words) {
             suffix = `This greeting will be outputted in <#${channel}>. `;
         }
     }
-    let output = await tags.processTag(msg, greeting, '', undefined, msg.author.id, true);
-    let message = await bu.send(msg, {
-        content: `Greeting set. ${suffix}Simulation:
-${output.contents}`,
-        embed: output.embed,
-        nsfw: output.nsfw
-    });
-    if (message && message.channel)
-        await bu.addReactions(message.channel.id, message.id, output.reactions);
+    bu.send(msg, `Greeting set. ${suffix}Simulation:
+${await tags.processTag(msg, greeting, '', undefined, msg.author.id, true)}`);
 };

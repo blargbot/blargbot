@@ -7,38 +7,61 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+var e = module.exports = {};
+e.init = () => {
+    e.category = bu.TagType.COMPLEX;
+};
 
-module.exports =
-    Builder.AutoTag('args')
-        .withArgs(a => [a.optional('index'), a.optional('range')])
-        .withDesc('Gets user input. Specifying `index` will only get the word at that location, specifying' +
-            '`range` will get all the words between `index` and `range`. Specify `range` as `n` to get all' +
-            'the words from `index` to the end'
-        ).withExample(
-            'Your second word was {args;1}',
-            'Hello world!',
-            'Your second word was world!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async params => params.words.join(' '))
-        .whenArgs('2-3', async function (params) {
-            let from = bu.parseInt(params.args[1]),
-                to = params.args[2];
+e.requireCtx = require;
 
-            if (!to)
-                to = from + 1;
-            else if (to === 'n')
-                to = params.words.length;
-            else
-                to = bu.parseInt(to);
+e.isTag = true;
+e.name = `args`;
+e.args = `[index] [range]`;
+e.usage = `{args[;index;[range]]}`;
+e.desc = `Gets user input. Specifying an index will only get the word at that location, specifying
+a range will get all the words between index and range. Specify range as <code>n</code> to get all
+the words from index to the end`;
+e.exampleIn = `Your second word was {args;1}`;
+e.exampleOut = `Input: <code>Hello world!</code> <br>Output: <code>Your second word was world!</code>`;
 
-            if (isNaN(from) || isNaN(to))
-                return await Builder.errors.notANumber(params);
 
-            if (from > to)
-                from = [to, to = from][0];
+e.execute = async function (params) {
+    for (let i = 1; i < params.args.length; i++) {
+        params.args[i] = await bu.processTagInner(params, i);
+    }
+    let words = params.words,
+        args = params.args,
+        fallback = params.fallback;
+    var replaceString = '';
+    var replaceContent = false;
 
-            return Builder.util.escapeInjection(params.words.slice(from, to).join(' '));
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
-        .build();
+    if (args.length > 2) {
+        var min = parseInt(args[1]);
+        var max = args[2] == 'n' ? words.length : parseInt(args[2]);
+        if (min < max) {
+            for (var i = min; i < max; i++) {
+                if (words[i])
+                    replaceString += ` ${words[i]}`;
+            }
+        } else {
+            replaceString = await bu.tagProcessError(params, '`MIN is greater than MAX`');
+        }
+    } else if (args.length == 2) {
+        if (words[parseInt(args[1])]) {
+            replaceString = words[parseInt(args[1])];
+        } else {
+            replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
+        }
+    } else {
+        replaceString = words.join(' ');
+    }
+    replaceString = replaceString + '';
+    replaceString = bu.fixContent(replaceString);
+    replaceString = replaceString.replace(new RegExp(bu.specialCharBegin, 'g'), '').replace(new RegExp(bu.specialCharDiv, 'g'), '').replace(new RegExp(bu.specialCharEnd, 'g'), '');
+
+    return {
+        terminate: params.terminate,
+        replaceString: replaceString,
+        replaceContent: replaceContent
+    };
+};

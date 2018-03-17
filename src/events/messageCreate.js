@@ -231,19 +231,14 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
 
         if (await bu.canExecuteCcommand(msg, ccommandName, true)) {
             console.command(outputLog);
-            let command = text.replace(words[0], '').trim();
+            var command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
-            let output = await tags.processTag(msg, ccommandContent, command, ccommandName, author, true);
-            if (/\S/.test(output.contents || '') || output.embed != null) {
-                let message = await bu.send(msg, {
-                    content: (output.contents || '').trim(),
-                    embed: output.embed,
-                    nsfw: output.nsfw,
+            var response = await tags.processTag(msg, ccommandContent, command, ccommandName, author, true);
+            if (response !== 'null' && response !== '') {
+                bu.send(msg, {
+                    content: response,
                     disableEveryone: false
                 });
-                if (message && message.channel)
-                    await bu.addReactions(message.channel.id, message.id, output.reactions);
-
             }
             return true;
         }
@@ -391,28 +386,26 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                     } catch (err) {
                         // bu.send(msg, `${bu.getFullName(msg.author)} said a blacklisted word, but I was not able to delete it.`);
                     }
-                    let content = '';
+                    let message = '';
                     switch (res.type) {
                         case 0:
-                            if (cens.deleteMessage) content = cens.deleteMessage;
-                            else if (censor.rule.deleteMessage) content = censor.rule.deleteMessage;
-                            else content = CommandManager.list['censor'].defaultDeleteMessage;
+                            if (cens.deleteMessage) message = cens.deleteMessage;
+                            else if (censor.rule.deleteMessage) message = censor.rule.deleteMessage;
+                            else message = CommandManager.list['censor'].defaultDeleteMessage;
                             break;
                         case 1:
-                            if (cens.banMessage) content = cens.banMessage;
-                            else if (censor.rule.banMessage) content = censor.rule.banMessage;
-                            else content = CommandManager.list['censor'].defaultBanMessage;
+                            if (cens.banMessage) message = cens.banMessage;
+                            else if (censor.rule.banMessage) message = censor.rule.banMessage;
+                            else message = CommandManager.list['censor'].defaultBanMessage;
                             break;
                         case 2:
-                            if (cens.kickMessage) content = cens.kickMessage;
-                            else if (censor.rule.kickMessage) content = censor.rule.kickMessage;
-                            else content = CommandManager.list['censor'].defaultKickMessage;
+                            if (cens.kickMessage) message = cens.kickMessage;
+                            else if (censor.rule.kickMessage) message = censor.rule.kickMessage;
+                            else message = CommandManager.list['censor'].defaultKickMessage;
                             break;
                     }
-                    let output = await tags.processTag(msg, content, msg.content, undefined, undefined, true);
-                    let message = await bu.send(msg, { content: output.contents, embed: output.embed });
-                    if (message && message.channel)
-                        await bu.addReactions(message.channel.id, message.id, output.reactions);
+                    let output = await tags.processTag(msg, message, msg.content, undefined, undefined, true);
+                    bu.send(msg, output);
                     return;
                 }
             }
@@ -450,14 +443,8 @@ async function handleRoleme(msg, storedGuild) {
                         console.verbose(roleme[i].output);
                         let output = roleme[i].output ?
                             await tags.processTag(msg, roleme[i].output, '', undefined, undefined, true) :
-                            { content: 'Your roles have been edited!' };
-                        let message = await bu.send(msg, {
-                            content: output.contents, 
-                            embed: output.embed,
-                            nsfw: output.nsfw
-                        });
-                        if (message && message.channel)
-                            await bu.addReactions(message.channel.id, message.id, output.reactions);
+                            'Your roles have been edited!';
+                        bu.send(msg, output);
                     } catch (err) {
                         bu.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
                     }
@@ -526,10 +513,10 @@ function query(input) {
                 let content = bod.match(/<font size="2" face="Verdana" color=darkred>(.+)<\/font>/);
                 if (content)
                     res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2'));
-                else console.warn('An error occured in scraping a cleverbot response:', bod);
+                else console.warn('An error occured in scraping a cleverbot response:', bod)
             }
-        });
-    });
+        })
+    })
 }
 
 async function handleCleverbot(msg) {
