@@ -41,7 +41,7 @@ module.exports =
                 };
 
             if (isNaN(options.permissions))
-                return await Builder.util.error('Permissions not a number');
+                return await Builder.util.error(params, 'Permissions not a number');
 
             try {
                 let role = await params.msg.guild.createRole(options, `Created with a custom command command, executed by user: ${params.msg.author.id}`);

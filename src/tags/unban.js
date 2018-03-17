@@ -30,7 +30,7 @@ module.exports =
             let response = await CommandManager.list['unban'].unban(params.msg, user, reason, true, noPerms);
 
             if (typeof response[1] == 'string' && response[1].startsWith('`')) {
-                return await bu.tagProcessError(params, response[1]);
+                return await Builder.util.error(params, response[1]);
             }
             return response[1];
         })

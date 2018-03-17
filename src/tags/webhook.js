@@ -45,7 +45,7 @@ module.exports =
                 });
             }
             catch (err) {
-                return await Builder.util.error('Error executing webhook: ' + err.message);
+                return await Builder.util.error(params, 'Error executing webhook: ' + err.message);
             }
         })
         .whenDefault(Builder.errors.tooManyArguments)
