@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:28:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-07 09:51:34
+ * @Last Modified time: 2018-03-02 13:48:29
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -73,6 +73,7 @@ class CommandManager extends Manager {
             var command = {
                 name: name,
                 usage: this.list[name].usage,
+                onlyOn: this.list[name].onlyOn,
                 info: this.list[name].info,
                 hidden: this.list[name].hidden,
                 category: this.list[name].category

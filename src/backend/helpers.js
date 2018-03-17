@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:35
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-05 13:28:32
+ * @Last Modified time: 2018-03-02 15:26:11
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -87,7 +87,7 @@ e.init = () => {
             return ((commands[a].category - commands[b].category) * 1000) + (a > b ? 1 : -1);
         });
         for (let i = 0; i < keys.length; i++) {
-            if (commands[keys[i]].category != bu.CommandType.CAT && commands[keys[i]].category != bu.CommandType.MUSIC) {
+            if (commands[keys[i]].category != bu.CommandType.CAT && commands[keys[i]].category != bu.CommandType.MUSIC && !commands[keys[i]].onlyOn) {
                 if (commands[keys[i]].category != lastType) {
                     sidebar += `<li class=\"sidebar-header blue-grey darken-3\"><a class='grey-text text-lighten-5 waves-effect waves-light' href='/commands/#${commands[keys[i]].category}'>${commandType[commands[keys[i]].category]}</a></li>`;
                     lastType = commands[keys[i]].category;
@@ -223,7 +223,7 @@ e.init = () => {
             return ((commands[a].category - commands[b].category) * 1000) + (a > b ? 1 : -1);
         });
         for (let i = 0; i < keys.length; i++) {
-            if (commands[keys[i]].category != bu.CommandType.CAT && commands[keys[i]].category != bu.CommandType.MUSIC) {
+            if (commands[keys[i]].category != bu.CommandType.CAT && commands[keys[i]].category != bu.CommandType.MUSIC && !commands[keys[i]].onlyOn) {
                 if (commands[keys[i]].category != lastType) {
                     toReturn += `<div class='centre white-text'><h2 id='${commands[keys[i]].category}' class='white-text'>${commandType[commands[keys[i]].category]}</h2></div>`;
                     lastType = commands[keys[i]].category;
