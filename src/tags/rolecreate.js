@@ -35,9 +35,9 @@ module.exports =
                 options = {
                     name: params.args[1],
                     color: bu.parseColor(params.args[2]) || 0,
-                    permissions: bu.parseInt(params.args[3]),
-                    mentionable: (params.args[4] || 'false').toLowerCase() === 'true',
-                    hoisted: (params.args[5] || 'false').toLowerCase() === 'true'
+                    permissions: bu.parseInt(params.args[3] || 0),
+                    mentionable: bu.parseBoolean(params.args[4], false),
+                    hoisted: bu.parseBoolean(params.args[5], false)
                 };
 
             if (isNaN(options.permissions))
