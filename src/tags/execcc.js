@@ -21,7 +21,7 @@ module.exports =
         .whenArgs('2-3', async function (params) {
             let storedGuild = await bu.getGuild(params.msg.guild.id);
             let tag = storedGuild.ccommands[params.args[1].toLowerCase()];
-            return TagManager.list['exec'].execTag(params, tag);
+            return TagManager.list['exec'].execTag(params, tag, params.args[1], 'CCommand');
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

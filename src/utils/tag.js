@@ -246,7 +246,7 @@ bu.processTag = async function (params) {
 
     if (terminate) return {
         contents: contents,
-        terminate: true,
+        terminate,
         reactions,
         embed,
         nsfw,
@@ -259,7 +259,7 @@ bu.processTag = async function (params) {
     let closeBraceCount = (contents.match(/\}/g) || []).length;
     if (openBraceCount !== closeBraceCount) return {
         contents: `\`Unmatched Brace Error\``,
-        terminate: true,
+        terminate: -1,
         reactions,
         embed,
         nsfw,
@@ -296,7 +296,7 @@ bu.processTag = async function (params) {
         contents,
         reactions: [],
         embed: undefined,
-        terminate: false,
+        terminate,
         nsfw,
         dmsent,
         timers,
@@ -400,7 +400,7 @@ bu.processTag = async function (params) {
         }
         if (replaceObj.terminate) {
             result.contents = result.contents.substring(0, result.contents.indexOf(tagBrackets) + tagBrackets.length);
-            result.terminate = true; //vertical
+            result.terminate = replaceObj.terminate; //vertical
         }
         if (replaceObj == '') {
             return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
