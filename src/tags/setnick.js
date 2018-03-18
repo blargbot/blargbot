@@ -27,6 +27,7 @@ module.exports =
                 user = await bu.getUser(params.msg, params.args[2], false);
 
             if (user == null) return await Builder.errors.noUserFound(params);
+            else user = params.msg.guild.members.get(user.id);
 
             try {
                 await user.edit({
