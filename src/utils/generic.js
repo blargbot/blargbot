@@ -1325,7 +1325,7 @@ bu.parseColor = function (text) {
         return parseInt(match[1].split('').map(v => v + v).join(''), 16);
 
     //Decimal number
-    match = text.match(/^([0-9]{1,8})$/);
+    match = text.match(/^d([0-9]{1,8})$/);
     if (match != null) {
         let value = parseInt(match[1]);
         if (bu.between(value, 0, 16777215, true))
