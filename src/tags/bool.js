@@ -10,8 +10,8 @@
 const Builder = require('../structures/TagBuilder'),
     collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }),
     operators = {
-        '==': (a, b) => a == b,
-        '!=': (a, b) => a != b,
+        '==': (a, b) => collator.compare(a, b) == 0,
+        '!=': (a, b) => collator.compare(a, b) != 0,
         '>=': (a, b) => collator.compare(a, b) >= 0,
         '>': (a, b) => collator.compare(a, b) > 0,
         '<=': (a, b) => collator.compare(a, b) <= 0,
