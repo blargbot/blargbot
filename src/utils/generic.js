@@ -1426,7 +1426,7 @@ const prettyTimeMagnitudes = {
     mins: 'minutes', min: 'minute'
 };
 
-bu.parseTime = function (text, format = undefined, timezone = 'Etc|UTC') {
+bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
     let now = dep.moment.tz(timezone);
     if (!text) return now;
     switch (text.toLowerCase()) {
