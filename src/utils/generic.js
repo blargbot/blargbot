@@ -1291,8 +1291,12 @@ bu.parseColor = function (text) {
 
     text = text.replace(/\s+/g, '').toLowerCase();
 
+    let name = text.toLowerCase().replace(/[^a-z]/g, '');
+    if (name == 'random')
+        return bu.getRandomInt(0, 0xffffff);
+
     //By name
-    let named = colors[text.toLowerCase().replace(/[^a-z]/g, '')];
+    let named = colors[name];
     if (named != null)
         return parseInt(named, 16);
 
