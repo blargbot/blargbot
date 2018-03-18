@@ -20,10 +20,10 @@ module.exports =
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (params) {
             let tag = await r.table('tag').get(params.args[1]).run();
-            return await this.execTag(params, tag);
+            return await this.execTag(params, tag, params.args[1], 'Tag');
         })
         .whenDefault(Builder.errors.tooManyArguments)
-        .withProp('execTag', async function (params, tag) {
+        .withProp('execTag', async function (params, tag, tagName, kind) {
             if (params.msg.iterations >= 200) {
                 bu.send(params.msg, 'Terminated recursive tag after 200 execs.');
                 throw ('Too Much Exec');
@@ -31,12 +31,14 @@ module.exports =
             params.msg.iterations = (params.msg.iterations + 1) || 1;
 
             if (tag == null)
-                return await Builder.util.error(params, 'Tag not found');
+                return await Builder.util.error(params, kind + ' not found: ' + tagName);
 
             if (typeof tag == 'string')
                 tag = { content: tag };
 
             params.words = bu.splitInput(params.args[2] || '');
             params.content = tag.content;
-            return await bu.processTag(params);
+            let result = await bu.processTag(params);
+            if (result.terminate) result.terminate--;
+            return result;
         }).build();
