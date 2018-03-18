@@ -30,7 +30,7 @@ function tryArray(text) {
             startsWith(value) { return this.value[0] == value; },
             endsWith(value) { return this.value.slice(-1)[0] == value; },
             includes(value) { return this.value.find(v => v == value) != null; }
-        }
+        };
     return text;
 }
 
