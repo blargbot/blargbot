@@ -7,6 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const argumentFactory = require('../structures/ArgumentFactory')
 let e = module.exports = {};
 let TagManager = {
     list: {}
@@ -44,8 +45,23 @@ const commandType = {
 const tagType = {
     1: "Simple Tags",
     2: "General Tags",
-    3: "Array Tags"
+    3: "Array Tags",
+    4: "CCommand Tags"
 };
+
+function mdToHtml(text) {
+    return text
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br />')
+        .replace(/\r/g, '')
+        .replace(/`(.*?)`/g, function (match, content) {
+            return `<code>${content}</code>`;
+        })
+        .replace(/\[(.+?)\]\((.+?)\)/g, function (match, text, link) {
+            return `<a href='${link}'>${text}</a>`;
+        });
+}
 
 e.init = () => {
     dep.hbs.registerPartials(dep.path.join(__dirname, 'views', 'partials'));
@@ -127,9 +143,10 @@ e.init = () => {
         });
         // console.debug(tags);
         for (let i = 0; i < keys.length; i++) {
-            if (tags[keys[i]].category != lastType) {
-                console.debug(tags[keys[i]]);
-                lastType = tags[keys[i]].category;
+            let subtag = tags[keys[i]];
+            if (subtag.category != lastType) {
+                console.debug(subtag);
+                lastType = subtag.category;
                 if (lastType == 1) {
                     toReturn += `
                 <div class="row">
@@ -166,7 +183,7 @@ e.init = () => {
         <div class="col s12 m10 offset-m1 l10 offset-l1">`;
                 } else {
                     toReturn += '</div></div>';
-                    console.debug(lastType, bu.TagType.properties);
+                    //console.debug(lastType, bu.TagType.properties);
 
                     toReturn += `<div class='row'>
         <h3 class='centre' id='${lastType}'>${bu.TagType.properties[lastType].name}</h3>
@@ -177,20 +194,26 @@ e.init = () => {
                 }
             }
             let colour = 'blue-grey darken-2';
-            if (tags[keys[i]].deprecated) colour = 'red darken-4';
+            if (subtag.deprecated) colour = 'red darken-4';
             toReturn += `<div class="card ${colour}"><div class="card-content">`;
             toReturn += `<h4 id='${keys[i]}'>${keys[i]}</h4>`;
-            if (tags[keys[i]].deprecated) {
-                toReturn += `<p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${typeof tags[keys[i]].deprecated === 'string' ? tags[keys[i]].deprecated : ''}</p>`;
+            if (subtag.deprecated) {
+                toReturn += `<p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${
+                    typeof subtag.deprecated === 'string' ? 'Please use ' + subtag.deprecated + ' instead' : ''
+                    }</p>`;
             }
             if (lastType != 1) {
-                toReturn += `<p>Arguments: <code>${tags[keys[i]].args}</code></p>`;
+                toReturn += `<p>Arguments: <code>${mdToHtml(argumentFactory.toString(subtag.args))}</code></p>`;
             }
-            if (tags[keys[i]].array) toReturn += `<p>Array compatible</p>`;
-            toReturn += `<p>${tags[keys[i]].desc}</p>`;
+            if (subtag.array) toReturn += `<p>Array compatible</p>`;
+            toReturn += `<p>${mdToHtml(subtag.desc)}</p>`;
 
-            toReturn += `<h5>Example Input:</h5><blockquote>${tags[keys[i]].exampleIn}</blockquote>`;
-            toReturn += `<h5>Example Output:</h5><blockquote>${tags[keys[i]].exampleOut}</blockquote>`;
+            if (subtag.exampleCode)
+                toReturn += `<h5>Example Code:</h5><blockquote>${mdToHtml(subtag.exampleCode)}</blockquote>`;
+            if (subtag.exampleIn)
+                toReturn += `<h5>Example Input:</h5><blockquote>${mdToHtml(subtag.exampleIn)}</blockquote>`;
+            if (subtag.exampleOut)
+                toReturn += `<h5>Example Output:</h5><blockquote>${mdToHtml(subtag.exampleOut)}</blockquote>`;
             toReturn += ' </div></div>';
         }
         toReturn += `

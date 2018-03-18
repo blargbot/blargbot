@@ -164,6 +164,7 @@ process.on('message', async msg => {
                                 args: t.args,
                                 usage: t.usage,
                                 desc: t.desc,
+                                exampleCode: t.exampleCode,
                                 exampleIn: t.exampleIn,
                                 exampleOut: t.exampleOut,
                                 deprecated: t.deprecated
