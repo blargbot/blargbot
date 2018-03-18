@@ -14,7 +14,7 @@ module.exports =
         .withArgs(a => a.require('text'))
         .withDesc('Returns an integer from `text`. If it wasn\'t a number, returns `NaN`.')
         .withExample(
-            'bu.parseInt;abcd} bu.parseInt;1234} bu.parseInt;12cd}',
+            '{parseint;abcd} {parseint;1234} {parseint;12cd}',
             'NaN 1234 12'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)

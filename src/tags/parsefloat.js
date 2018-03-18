@@ -14,7 +14,7 @@ module.exports =
         .withArgs(a => a.require('text'))
         .withDesc('Returns an floating point number from `text`. If it wasn\'t a number, returns `NaN`.')
         .withExample(
-            'bu.parseFloat;abcd} bu.parseFloat;12.34} bu.parseFloat;1.2cd}',
+            '{parsefloat;abcd} {parsefloat;12.34} {parsefloat;1.2cd}',
             'NaN 12.34 1.2'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
