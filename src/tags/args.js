@@ -38,6 +38,9 @@ module.exports =
             if (from > to)
                 from = [to, to = from][0];
 
+            if (from >= params.words.length)
+                return await Builder.errors.notEnoughArguments(params);
+
             return Builder.util.escapeInjection(params.words.slice(from, to).join(' '));
         })
         .whenDefault(Builder.errors.tooManyArguments)
