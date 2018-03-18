@@ -100,7 +100,7 @@ const subcommands = [
     },
     {
         name: 'docs',
-        args: '[documentation]',
+        args: '[topic]',
         desc: 'Returns helpful information about the specified topic.'
     }
 ];
