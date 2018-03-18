@@ -25,7 +25,12 @@ function tryArray(text) {
     text = '' + text;
     let arr = bu.deserializeTagArray(text);
     if (arr && Array.isArray(arr.v))
-        return arr.v;
+        return {
+            value: arr.v,
+            startsWith(value) { return this.value[0] == value; },
+            endsWith(value) { return this.value.slice(-1)[0] == value; },
+            includes(value) { return this.value.find(v => v == value) != null; }
+        }
     return text;
 }
 
