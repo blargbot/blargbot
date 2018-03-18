@@ -329,6 +329,7 @@ bu.processTag = async function (params) {
                 author: author,
                 tagName: tagName,
                 ccommand: params.ccommand,
+                subtag: title,
                 terminate,
                 isStaff, vars, reactions, quiet, embed, nsfw, dmsent, timers, disabletimer
             };

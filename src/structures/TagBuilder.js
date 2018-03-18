@@ -247,7 +247,10 @@ TagBuilder.util = {
         }
         return result;
     },
-    async error(params, message) { return await bu.tagProcessError(params, '`' + message + '`'); },
+    async error(params, message) {
+        console.error('Subtag error', message, 'Subtag:', params.subtag);
+        return await bu.tagProcessError(params, '`' + message + '`');
+    },
     parseChannel(params, channelId) {
         let channel = params.msg.channel;
         if (channel.id !== channelId) {
