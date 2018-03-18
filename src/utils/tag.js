@@ -26,7 +26,6 @@ bu.serializeTagArray = function (array, varName) {
 bu.deserializeTagArray = function (value) {
     try {
         let obj = JSON.parse(value
-            .replace(/'/g, '"')
             .replace(new RegExp(bu.specialCharBegin + 'LB' + bu.specialCharEnd, "g"), '{')
             .replace(new RegExp(bu.specialCharBegin + 'RB' + bu.specialCharEnd, "g"), '}'));
         if (Array.isArray(obj)) obj = {
