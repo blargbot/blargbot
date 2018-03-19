@@ -24,7 +24,7 @@ e.flags = [{
     flag: 'c',
     word: 'channel',
     desc: 'The channel to put the farewell messages in.'
-}]
+}];
 
 e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words);
@@ -37,18 +37,16 @@ e.execute = async function (msg, words) {
     var farewell = input.undefined.join(' ');
     await bu.guildSettings.set(msg.channel.guild.id, 'farewell', farewell);
     let suffix = '';
-    if (input.c) {
-        let channelStr = input.c.join(' ');
-        if (/[0-9]{17,23}/.test(channelStr)) {
-            let channel = channelStr.match(/([0-9]{17,23})/)[1];
-            if (!bot.getChannel(channel)) {
-                suffix = `A channel could not be found from the channel input, so this message will go into the default channel. `;
-            } else if (bot.channelGuildMap[channel] != msg.guild.id) {
-                suffix = `The channel must be on this guild! `;
-            } else {
-                await bu.guildSettings.set(msg.guild.id, 'farewellchan', channel);
-                suffix = `This farewell will be outputted in <#${channel}>. `;
-            }
+    let channelStr = input.c ? input.c.join(' ') : msg.channel.id;
+    if (/[0-9]{17,23}/.test(channelStr)) {
+        let channel = channelStr.match(/([0-9]{17,23})/)[1];
+        if (!bot.getChannel(channel)) {
+            suffix = `A channel could not be found from the channel input, so this message will go into the default channel. `;
+        } else if (bot.channelGuildMap[channel] != msg.guild.id) {
+            suffix = `The channel must be on this guild! `;
+        } else {
+            await bu.guildSettings.set(msg.guild.id, 'farewellchan', channel);
+            suffix = `This farewell will be outputted in <#${channel}>. `;
         }
     }
     bu.send(msg, `Farewell set. ${suffix}Simulation:
