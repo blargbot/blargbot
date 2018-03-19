@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-11-01 09:52:12
+ * @Last Modified time: 2018-03-19 14:13:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -73,6 +73,8 @@ e.execute = async function (params) {
                         hoist,
                         mentionable
                     }, `Created with a custom command command, executed by user: ${msg.author.id}`);
+                    if (!params.msg.guild.roles.get(role.id))
+                        params.msg.guild.roles.add(role);
                     replaceString = role.id;
                 } catch (err) {
                     console.error(err.stack);
