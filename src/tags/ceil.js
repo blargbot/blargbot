@@ -7,43 +7,21 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `ceil`;
-e.args = `&lt;number&gt;`;
-e.usage = `{ceil;number}`;
-e.desc = `Rounds a number up.`;
-e.exampleIn = `{ceil;1.23}`;
-e.exampleOut = `2`;
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    if (args[1]) {
-        var asNumber = parseFloat(args[1]);
-        if (!isNaN(asNumber)) {
-            replaceString = Math.ceil(asNumber);
-        } else {
-            replaceString = await bu.tagProcessError(params, '`Not a number`');
-        }
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('ceil')
+        .withArgs(a => a.require('number'))
+        .withDesc('Rounds `number` up.')
+        .withExample(
+            '{ceil;1.23}',
+            '2'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) {
+            let number = bu.parseFloat(params.args[1]);
+            if (isNaN(number))
+                return await Builder.errors.notANumber(params);
+            return Math.ceil(number);
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

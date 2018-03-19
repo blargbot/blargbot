@@ -97,6 +97,11 @@ const subcommands = [
         name: 'help',
         args: '[command]',
         desc: 'Returns general help, or help for the specified subcommand.'
+    },
+    {
+        name: 'docs',
+        args: '[topic]',
+        desc: 'Returns helpful information about the specified topic.'
     }
 ];
 
@@ -513,7 +518,13 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
             case 'test':
                 if (words.length > 2) {
                     let output = await tags.processTag(msg, words.slice(2).join(' '), '', 'test', msg.author.id);
-                    await bu.send(msg, `Output:\n${output.trim()}`);
+                    let message = await bu.send(msg, {
+                        content: `Output:\n${output.contents.trim()}`,
+                        embed: output.embed,
+                        nsfw: output.nsfw
+                    });
+                    if (message && message.channel)
+                        await bu.addReactions(message.channel.id, message.id, output.reactions);
                 }
                 break;
             case 'favourite':
@@ -631,6 +642,9 @@ ${Object.keys(user.favourites).join(', ')}
                         await bu.send(msg, 'You must provide a reason.');
                     }
                 break;
+            case 'docs':
+                tags.docs(msg, words[0], words.slice(2).join(' '));
+                break;
             default:
                 var command = words.slice(2);
 
@@ -669,12 +683,16 @@ e.event = async function (args) {
     }
     let params = args.params;
     params.msg = msg;
-    params.msg.didTimer = true;
-    let output = await bu.processTagInner(params, 1);
-    bu.send(params.msg.channel.id, {
-        content: output,
+    params.content = params.args[1];
+    let output = await bu.processTag(params);
+    let message = await bu.send(params.msg.channel.id, {
+        content: output.contents,
+        embed: output.embed,
+        nsfw: output.nsfw,
         disableEveryone: false
     });
+    if (message && message.channel)
+        await bu.addReactions(message.channel.id, message.id, output.reactions);
 };
 
 function escapeRegex(str) {

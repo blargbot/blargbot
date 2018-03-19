@@ -7,6 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const colors = require('../../res/colors') || {};
+
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
         return -1;
@@ -143,6 +145,15 @@ bu.hasRole = (msg, roles, override = true) => {
     return false;
 };
 
+bu.addReactions = async function (channelId, messageId, reactions) {
+    for (const reaction of new Set(reactions || []))
+        try {
+            await bot.addMessageReaction(channelId, messageId, reaction.replace(/[<>]/g, ''));
+        } catch (e) {
+            console.error(e);
+        }
+};
+
 /**
  * Sends a message to discord.
  * @param channel - the channel id (String) or message object (Object)
@@ -159,35 +170,37 @@ bu.send = async function (channel, message, file, embed) {
     if (!message) message = '';
 
     bu.messageStats++;
-    let content = {};
+    let toSend = {};
     if (typeof message === "string") {
-        content.content = message;
+        toSend.content = message;
     } else {
-        content = message;
+        toSend = message;
     }
-    if (!content.content) content.content = '';
-    content.content = content.content.trim();
 
-    if (embed) content.embed = embed;
+    if (!toSend.content) toSend.content = '';
+    toSend.content = toSend.content.trim();
+
+    if (embed) toSend.embed = embed;
     // content.content = dep.emoji.emojify(content.content).trim();
 
-    if (content.content.length <= 0 && !file && !embed && !content.embed) {
+    if (toSend.content.length <= 0 && !file && !embed && !toSend.embed) {
         console.info('Tried to send a message with no content.');
         return Error('No content');
     }
 
-    if (content.content.length > 2000) {
+    if (toSend.content.length > 2000) {
         if (!file) file = {
-            file: Buffer.from(content.content.toString()),
+            file: Buffer.from(toSend.content.toString()),
             name: 'output.txt'
         };
-        content.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+        toSend.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
 
     }
-    try {
-        return await bot.createMessage(channelid, content, file);
-    } catch (err) {
 
+    try {
+        console.debug('Sending content: ', JSON.stringify(toSend));
+        return await bot.createMessage(channelid, toSend, file);
+    } catch (err) {
         try {
             let response;
             if (err.response)
@@ -195,7 +208,7 @@ bu.send = async function (channel, message, file, embed) {
             else {
                 response = {};
             }
-            let dmMsg;
+            let dmMsg, warnMsg;
             switch (response.code) {
                 case 10003:
                     warnMsg = 'Channel not found';
@@ -742,7 +755,7 @@ bu.splitInput = (content, noTrim) => {
         words[i] = words[i].replace(/\\"/g, '"');
         if (!noTrim) words[i] = words[i].replace(/^ +/g, '');
     }
-    console.debug(words);
+    //console.debug(words);
     return words;
 };
 
@@ -771,7 +784,7 @@ bu.canExecuteCommand = async function (msg, commandName, quiet) {
         storedGuild = await bu.getGuild(msg.guild.id);
         let val = storedGuild.settings.permoverride,
             val1 = storedGuild.settings.staffperms;
-        console.debug(storedGuild.settings.adminrole);
+        //console.debug(storedGuild.settings.adminrole);
 
         let command = storedGuild.commandperms[commandName];
         let commandObj = CommandManager.list[commandName];
@@ -1225,4 +1238,199 @@ bu.sleep = function (time) {
 
 bu.escapeHTML = function (text) {
     return text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+};
+
+bu.between = function (value, lower, upper, inclusive) {
+    if (lower > upper)
+        lower = [upper, upper = lower][0];
+
+    if (inclusive)
+        return value >= lower && value <= upper;
+    return value > lower && value < upper;
+};
+
+bu.parseBoolean = function (value, defValue = null, includeNumbers = true) {
+    if (typeof value == 'boolean')
+        return value;
+
+    if (includeNumbers && typeof value == 'number')
+        return value !== 0;
+
+    if (typeof value != 'string')
+        return defValue;
+
+    if (includeNumbers) {
+        let asNum = parseFloat(value);
+        if (!isNaN(asNum))
+            return asNum !== 0;
+    }
+
+    switch (value.toLowerCase()) {
+        case 'true':
+        case 't':
+        case 'yes':
+        case 'y':
+            return true;
+        case 'false':
+        case 'f':
+        case 'no':
+        case 'n':
+            return false;
+        default:
+            return defValue;
+    }
+};
+
+bu.isBoolean = function (value) {
+    return typeof value == 'boolean';
+};
+
+bu.parseColor = function (text) {
+    if (typeof text == 'number') return text;
+    if (typeof text != 'string') return null;
+
+    text = text.replace(/\s+/g, '').toLowerCase();
+
+    let name = text.toLowerCase().replace(/[^a-z]/g, '');
+    if (name == 'random')
+        return bu.getRandomInt(0, 0xffffff);
+
+    //By name
+    let named = colors[name];
+    if (named != null)
+        return parseInt(named, 16);
+
+    //RGB 256,256,256
+    let match = text.match(/^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/);
+    if (match != null) {
+        let r = parseInt(match[1]),
+            g = parseInt(match[2]),
+            b = parseInt(match[3]),
+            valid = (v => bu.between(v, 0, 255, true)),
+            toHex = (v => v.toString(16).padStart(2, '0'));
+        if (isNaN(r + g + b) || !valid(r) || !valid(g) || !valid(b))
+            return null;
+        console.debug('color: ' + toHex(r) + toHex(g) + toHex(b));
+        return parseInt(toHex(r) + toHex(g) + toHex(b), 16);
+    }
+
+    //Hex code with 6 digits
+    match = text.match(/^#?([0-9a-f]{6})$/i);
+    if (match != null)
+        return parseInt(match[1], 16);
+
+    //Hex code with 3 digits
+    match = text.match(/^#?([0-9a-f]{3})$/i);
+    if (match != null)
+        return parseInt(match[1].split('').map(v => v + v).join(''), 16);
+
+    //Decimal number
+    match = text.match(/^d([0-9]{1,8})$/);
+    if (match != null) {
+        let value = parseInt(match[1]);
+        if (bu.between(value, 0, 16777215, true))
+            return value;
+    }
+
+    return null;
+};
+
+bu.parseEntityId = function (text, identifier, allowJustId = false) {
+    if (typeof text != 'string') return null;
+
+    let regex = new RegExp('\\<' + identifier + '(\\d{17,23})\\>');
+    let match = text.match(regex);
+    if (match != null)
+        return match[1];
+
+    if (!allowJustId) return null;
+    match = text.match(/\d{17,23}/);
+    if (match != null)
+        return match[0];
+    return null;
+};
+
+bu.parseChannel = function (text, allowJustId = false) {
+    let id = bu.parseEntityId(text, '#', allowJustId);
+    if (id == null) return null;
+    return bot.getChannel(id);
+};
+
+bu.range = function (from, to) {
+    from = Math.floor(from || 0);
+    to = Math.floor(to || 0);
+
+    if (isNaN(from) || isNaN(to)) throw 'Range bounds must be numbers';
+
+    if (from > to)
+        from = [to, to = from][0];
+
+    return [...Array(to - from).keys()].map(v => v + from);
+};
+
+bu.parseEmbed = function (embedText) {
+    if (embedText == null)
+        return undefined;
+
+    embedText = bu.processSpecial(embedText, true);
+
+    if (!embedText || !embedText.trim())
+        return undefined;
+
+    try {
+        return JSON.parse(embedText);
+    } catch (e) {
+        return { fields: [{ name: 'Malformed JSON', value: embedText + '' }], malformed: true };
+    }
+};
+
+const prettyTimeMagnitudes = {
+    //defaults
+    year: 'year', years: 'years', y: 'y',
+    month: 'month', months: 'months', M: 'M',
+    week: 'week', weeks: 'weeks', w: 'w',
+    day: 'day', days: 'days', d: 'd',
+    hour: 'hour', hours: 'hours', h: 'h',
+    minute: 'minute', minutes: 'minutes', m: 'm',
+    second: 'second', seconds: 'seconds', s: 's',
+    millisecond: 'millisecond', milliseconds: 'milliseconds', ms: 'ms',
+    quarter: 'quarter', quarters: 'quarters', q: 'Q',
+    //Custom
+    mins: 'minutes', min: 'minute'
+};
+
+bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
+    let now = dep.moment.tz(timezone);
+    if (!text) return now;
+    switch (text.toLowerCase()) {
+        case 'now': return now;
+        case 'today': return now.startOf('day');
+        case 'tomorrow': return now.startOf('day').add(1, 'day');
+        case 'yesterday': return now.startOf('day').add(-1, 'days');
+    }
+
+    let match = text.match(/^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i), sign = 1;
+    if (match == null) match = text.match(/^\s*(-?\d+(?:\.\d+)?)\s+(\S+)\s+ago\s*$/i), sign = -1;
+    if (match != null) {
+        let magnitude = sign * parseFloat(match[1]),
+            quantity = prettyTimeMagnitudes[match[2].toLowerCase()];
+        if (quantity == null)
+            return 'Invalid quantity ' + match[2];
+        return now.add(magnitude, quantity);
+    }
+
+    console.debug('using default moment parsing');
+    return dep.moment.tz(text, format, timezone).utcOffset(0);
+};
+
+bu.parseInt = function (s, radix = 10) {
+    if (typeof s != 'string') return parseInt(s, radix);
+    //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
+    return parseInt(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'), radix);
+};
+
+bu.parseFloat = function (s) {
+    if (typeof s != 'string') return parseFloat(s);
+    //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
+    return parseFloat(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'));
 };

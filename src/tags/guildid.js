@@ -7,34 +7,17 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.SIMPLE;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `guildid`;
-e.args = ``;
-e.usage = `{guildid}`;
-e.desc = `Returns the id of the current guild`;
-e.exampleIn = `This guild's id is {guildid}`;
-e.exampleOut = `This guild's id is 1234567890123456`;
-
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let msg = params.msg;
-    var replaceString = msg.channel.guild.id;
-    var replaceContent = false;
-
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('guildid')
+        .withDesc('Returns the id of the current guild.')
+        .withExample(
+            'The guild\'s id is {guildid}',
+            'The guild\'s id is 1234567890123456'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', async function (params) {
+            return params.msg.channel.guild.id;
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

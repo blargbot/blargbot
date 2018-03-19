@@ -7,56 +7,35 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.CCOMMAND;
-};
+module.exports =
+    Builder.CCommandTag('setnick')
+        .requireStaff()
+        .withArgs(a => [a.require('nick'), a.optional('user')])
+        .withDesc('Sets `user`\'s nickname to `nick`. Leave `nick` blank to reset their nickname.')
+        .withExample(
+            '{setnick;super cool nickname}',
+            ''
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-3', async function (params) {
+            let nick = params.args[1],
+                user = params.msg.member;
 
-e.requireCtx = require;
+            if (params.args[2])
+                user = await bu.getUser(params.msg, params.args[2], false);
 
-e.isTag = true;
-e.name = `setnick`;
-e.args = `&gt;nick&lt; [user]`;
-e.usage = `{addrole;nick[;user]}`;
-e.desc = `Sets a user's nickname. Leave <code>nick</code> blank to reset their nickname.`;
-e.exampleIn = `{setnick;super cool nickname}`;
-e.exampleOut = ``;
+            if (user == null) return await Builder.errors.noUserFound(params);
+            else user = params.msg.guild.members.get(user.id);
 
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    var replaceString = '';
-    var replaceContent = false;
-    if (!params.ccommand) {
-        replaceString = await bu.tagProcessError(params, '`Can only use in CCommands`');
-    } else {
-        if (!params.isStaff) {
-            replaceString = await bu.tagProcessError(params, '`Author must be staff`');
-        } else if (params.args.length > 1) {
-            let member = params.msg.member;
-            if (params.args[2]) {
-                let user = await bu.getUser(params.msg, params.args[2], true);
-                if (user) member = params.msg.guild.members.get(user.id);
+            try {
+                await user.edit({
+                    nick: nick
+                });
+            } catch (err) {
+                return await Builder.util.error(params, 'Could not change nickname');
             }
-            if (member) {
-                try {
-                    await member.edit({
-                        nick: params.args[1]
-                    });
-                } catch (err) {
-                    replaceString = await bu.tagProcessError(params, '`Could not change nickname`');
-                }
-            } else {
-                replaceString = await bu.tagProcessError(params, '`No user found`');
-            }
-        }
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

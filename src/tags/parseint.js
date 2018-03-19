@@ -7,38 +7,21 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = 'parseint';
-e.args = '&lt;text&gt;';
-e.usage = '{parseint;text}';
-e.desc = 'Returns an integer from text. If it wasn\'t a number, returns NaN';
-e.exampleIn = '{parseint;abcd} {parseint;1234} {parseint;12cd}';
-e.exampleOut = 'NaN 1234 12';
-
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    
-    let val = parseInt(args[1]);
-    if (isNaN(val)) replaceString = 'NaN';
-    else replaceString = val;
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('parseint')
+        .withArgs(a => a.require('text'))
+        .withDesc('Returns an integer from `text`. If it wasn\'t a number, returns `NaN`.')
+        .withExample(
+            '{parseint;abcd} {parseint;1234} {parseint;12cd}',
+            'NaN 1234 12'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) {
+            let number = bu.parseInt(params.args[1]);
+            if (isNaN(number))
+                return 'NaN';
+            return number;
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

@@ -7,33 +7,15 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = 'void';
-e.args = '[anything]';
-e.usage = '{void[;anything]}';
-e.desc = 'Parses its inner tags, but doesn\'t return anything.';
-e.exampleIn = '{void;This won\'t be outputted!}';
-e.exampleOut = '';
-
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        fallback = params.fallback;
-    var replaceString = '';
-    var replaceContent = false;
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('void')
+        .withArgs(a => a.optional('code'))
+        .withDesc('Executes `code` but does not return the output from it. Useful for silent functionality')
+        .withExample(
+            '{void;This won\'t be output!}',
+            ''
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenDefault(async params => '')
+        .build();

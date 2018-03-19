@@ -7,34 +7,23 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.SIMPLE;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `return`;
-e.args = ``;
-e.usage = `{return}`;
-e.desc = `Stops execution of the tag and returns what has been parsed.`;
-e.exampleIn = `This will display. {return} This will not.`;
-e.exampleOut = `This will display.`;
-
-
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    var replaceString = '';
-    var replaceContent = false;
-
-
-    return {
-        replaceString: replaceString,
-        replaceContent: replaceContent,
-        terminate: true
-    };
-};
+module.exports =
+    Builder.AutoTag('return')
+        .withArgs(a => a.optional('force'))
+        .withDesc('Stops execution of the tag and returns what has been parsed. ' +
+            'If `force` is `true` then it will also return from any tags calling this tag. ' +
+            '`force` defaults to `true`')
+        .withExample(
+            'This will display. {return} This will not.',
+            'This will display.'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', async function (params) {
+            let force = bu.parseBoolean(params.args[1], true);
+            return {
+                terminate: force ? -1 : 1
+            };
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

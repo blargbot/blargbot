@@ -7,53 +7,31 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('usercreatedat')
+        .withArgs(a => [a.optional('format'), a.optional('user'), a.optional('quiet')])
+        .withDesc('Returns the date that `user` was created using `format` for the output, in UTC+0. ' +
+            '`user` defaults to the user executing the containing tag. `format` defaults to `YYYY-MM-DDTHH:mm:ssZ`. ' +
+            'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information. ' +
+            'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
+        .withExample(
+            'Your account was created on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
+            'Your account was created on 2016/01/01 01:00:00.'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-4', async function (params) {
+            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
+                user = params.msg.author;
 
-e.requireCtx = require;
+            if (params.args[2])
+                user = await bu.getUser(params.msg, params.args[2], quiet);
 
-e.isTag = true;
-e.name = `usercreatedat`;
-e.args = `[format] [user] [quiet]`;
-e.usage = `{usercreatedat[;format[;user[;quiet]]]}`;
-e.desc = `Returns the date the user was created, in UTC+0. If a <code>format</code> code is specified, the
-date is formatted accordingly. Leave blank for default formatting. See the 
-<a href="http://momentjs.com/docs/#/displaying/format/">moment documentation</a> for more information. 
-If <code>name</code> is specified, gets that user instead. If <code>quiet</code> is
-specified, if a user can't be found it will simply return the <code>name</code>`;
-e.exampleIn = `Your account was created on {usercreatedat;YYYY/MM/DD HH:mm:ss}`;
-e.exampleOut = `Your account was created on 2016/01/01 01:00:00.`;
+            if (user != null)
+                return dep.moment(user.createdAt).utcOffset(0).format(params.args[1] || '');
 
-
-e.execute = async function(params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let args = params.args,
-        msg = params.msg;
-    var replaceString = '';
-    var replaceContent = false;
-
-    var obtainedUser = await bu.getTagUser(msg, args, 2);
-
-    if (obtainedUser) {
-        var createdDate = obtainedUser.createdAt;
-        var formatCode = '';
-        if (args[1])
-            formatCode = args[1];
-
-        replaceString = dep.moment(createdDate).format(formatCode);
-    } else if (!args[3])
-        return '';
-    else
-        replaceString = args[2];
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            if (quiet)
+                return params.args[2];
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

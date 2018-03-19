@@ -7,50 +7,26 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
+module.exports =
+    Builder.AutoTag('space')
+        .withArgs(a => a.optional('count'))
+        .withDesc('Will be replaced by `count` spaces (Default to 1).')
+        .withExample(
+            'Hello,{space;4}world!',
+            'Hello,    world!'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', async function (params) {
+            let count = bu.parseInt(params.args[1] || '1'),
+                fallback = bu.parseInt(params.fallback);
 
-e.requireCtx = require;
+            if (isNaN(count)) count = fallback;
+            if (isNaN(count)) return await Builder.errors.notANumber(params);
 
-e.isTag = true;
-e.name = `space`;
-e.args = `[length]`;
-e.usage = `{space[;length]}`;
-e.desc = `Will be replaced by a specified number of spaces.`;
-e.exampleIn = `{space;4}Hello, world!`;
-e.exampleOut = `    Hello, world!`;
+            if (count < 0) count = 0;
 
-e.execute = async function (params) {
-    let length = 1;
-    var parsedFallback = parseInt(params.fallback);
-    if (params.args[1]) {
-        length = parseInt(await bu.processTagInner(params, 1));
-        if (isNaN(length)) {
-            if (isNaN(parsedFallback)) {
-                return {
-                    replaceString: await bu.tagProcessError(params, '`Not a number`'),
-                    replaceContent: replaceContent
-                };
-            } else {
-                length = parsedFallback;
-            }
-        }
-    }
-    var replaceString = '';
-
-    for (let i = 0; i < length; i++) {
-        replaceString += ' ';
-    }
-
-    var replaceContent = false;
-
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            return new Array(count + 1).join(' ');
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

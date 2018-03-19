@@ -7,29 +7,17 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.SIMPLE;
-};
-
-e.requireCtx = require;
-
-e.isTag = true;
-e.name = `messageid`;
-e.args = ``;
-e.usage = `{messageid}`;
-e.desc = `Returns the ID of the invoking message.`;
-e.exampleIn = `The message id was {messageid}`;
-e.exampleOut = `The message id was 111111111111111111`;
-
-e.execute = async function (params) {
-    var replaceString = params.msg.id;
-    var replaceContent = false;
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    Builder.AutoTag('messageid')
+        .withDesc('Returns the ID of the invoking message.')
+        .withExample(
+            'The message id was {messageid}',
+            'The message id was 111111111111111111'
+        ).beforeExecute(params => Builder.util.processSubtags(params, [1]))
+        .whenArgs('1', async function (params) {
+            return params.msg.id;
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

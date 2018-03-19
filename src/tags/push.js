@@ -7,50 +7,30 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+const Builder = require('../structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.ARRAY;
-};
+module.exports =
+    Builder.ArrayTag('push')
+        .withArgs(a => [a.require('array'), a.require('values', true)])
+        .withDesc('Pushes `values` onto the end of `array`. If used with `{get}` this will update the original variable. Otherwise, it will simply output the new array.')
+        .withExample(
+            '{push;["this", "is", "an"];array}',
+            '["this","is","an","array"]'
+        ).beforeExecute(Builder.util.processAllSubtags)
+        .whenArgs('1-2', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (params) {
+            let arr = await bu.getArray(params, params.args[1]),
+                values = params.args.slice(2),
+                result;
 
-e.requireCtx = require;
+            if (arr == null || !Array.isArray(arr.v))
+                return await Builder.errors.notAnArray(params);
 
-e.isTag = true;
-e.name = `push`;
-e.args = `&lt;array&gt; &lt;values&gt;...`;
-e.usage = `{push;array;values...}`;
-e.desc = `Pushes values into an array. If used with {get} or {aget}, this will update the original variable. Otherwise, it will simply output the new array.`;
-e.exampleIn = `{push;["this", "is", "an"];array}`;
-e.exampleOut = `["this","is","an","array"]`;
+            arr.v.push(...values);
 
-e.execute = async function (params) {
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    let replaceContent = false;
-    let replaceString;
-    if (params.args.length >= 3) {
-        params.args[1] = await bu.processTagInner(params, 1);
-        let args1 = params.args[1];
-        let deserialized = await bu.getArray(params, args1);
-
-        if (deserialized && Array.isArray(deserialized.v)) {
-            let toPush = params.args.slice(2);
-            for (const val of toPush)
-                deserialized.v.push(val);
-            if (deserialized.n) {
-                await bu.setArray(deserialized, params);
-            } else replaceString = bu.serializeTagArray(deserialized.v);
-        } else {
-            replaceString = await bu.tagProcessError(params, '`Not an array`');
-        }
-    } else {
-        replaceString = await bu.tagProcessError(params, '`Not enough arguments`');
-    }
-
-    return {
-        terminate: params.terminate,
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+            if (arr.n != null)
+                await bu.setArray(arr, params);
+            else
+                return bu.serializeTagArray(arr.v);
+        })
+        .build();

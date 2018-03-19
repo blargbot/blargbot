@@ -32,19 +32,20 @@ bu.TagType = {
     CCOMMAND: 4,
     properties: {
         1: {
-            name: 'Simple'
+            name: 'Simple',
+            desc: 'Subtags that require no arguments.'
         },
         2: {
             name: 'General',
-            desc: 'General purpose functions.'
+            desc: 'General purpose subtags.'
         },
         3: {
             name: 'Array',
-            desc: 'Functions designed specifically for arrays.'
+            desc: 'Subtags designed specifically for arrays.'
         },
         4: {
             name: 'Custom Command',
-            desc: 'Functions that only work in custom commands (not tags).'
+            desc: 'Subtags that only work in custom commands.'
         }
     }
 };
