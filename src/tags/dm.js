@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 12:20:00
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 13:44:19
+ * @Last Modified time: 2018-03-20 09:37:33
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,9 +14,9 @@ module.exports =
     Builder.CCommandTag('dm')
         .requireStaff()
         .withArgs(a => [a.require('user'), a.require([a.optional('message'), a.optional('embed')])])
-        .withDesc('DMs `user` the given `message` and `embed`. Atleast one of `message` and `embed` must be provided. ' +
+        .withDesc('DMs `user` the given `message` and `embed`. At least one of `message` and `embed` must be provided. ' +
             'You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\n' +
-            'Please note that `embed` is the JSON for an embed object, dont put the `{embed}` subtag there, as nothing will show.'
+            'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.'
         ).withExample(
             '{dm;stupid cat;Hello;{buildembed;title:Youre cool}}',
             'DM: Hello\nEmbed: Youre cool'
