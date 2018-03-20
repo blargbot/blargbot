@@ -111,7 +111,7 @@ ${flags}`;
                 commandsString += 'Not all of these commands will work in DM\'s\n';
             else
                 prefix = await bu.guildSettings.get(msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
-            commandsString += 'For more information about commands, do `'+prefix+'help <commandname>` or visit <https://blargbot.xyz/commands>';
+            commandsString += 'For more information about commands, do `' + prefix + 'help <commandname>` or visit <https://blargbot.xyz/commands>';
 
             await e.sendHelp(msg, commandsString, 'commands');
         };
@@ -173,7 +173,7 @@ e.sendHelp = async function (msg, message, type, isPlural = false) {
     if (msg.channel.guild && await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp')) {
         let dmChannel = await bot.getDMChannel(msg.author.id);
         await bu.send(msg, '📧 DMing you the ' + type + ' 📧');
-        message.content = 'Here '+(isPlural ? 'are' : 'is')+' the ' + type + ' you requested in <#' + msg.channel.id + '>\n' + message.content;
+        message.content = 'Here ' + (isPlural ? 'are' : 'is') + ' the ' + type + ' you requested in <#' + msg.channel.id + '>\n' + (message.content || '');
         await bu.send(dmChannel.id, message);
     } else
         await bu.send(msg, message);
