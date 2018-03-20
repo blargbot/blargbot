@@ -14,7 +14,7 @@ module.exports =
         .withDesc('Will be replaced by `}` on execution.')
         .withExample(
             'This is a bracket! {rb}',
-            'This is a bracket! {'
+            'This is a bracket! }'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', async function (params) {
             return bu.specialCharBegin + 'RB' + bu.specialCharEnd;
