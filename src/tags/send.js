@@ -34,7 +34,7 @@ module.exports =
             if (channel.guild.id != params.msg.guild.id) return await Builder.errors.channelNotInGuild(params);
 
             let sent = await bu.send(channel.id, {
-                content: bu.processSpecial(message, true),
+                content: bu.processSpecial(message || '', true),
                 embed: embed,
                 nsfw: params.nsfw,
                 disableEveryone: false
