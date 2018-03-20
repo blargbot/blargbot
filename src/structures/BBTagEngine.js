@@ -93,7 +93,7 @@ class SubTag extends BaseTag {
     constructor(parent) { super(parent); }
 }
 
-class BBTagExecContext {
+class Context {
     get channel() { return this.message.channel; }
     get member() { return this.message.member; }
     get guild() { return this.message.channel.guild; }
@@ -121,8 +121,8 @@ class BBTagExecContext {
             return: 0,
             /** @type {Object} */
             embed: null,
-            /** @type {string[]} */
-            reactions: [],
+            /** @type {Set<string>} */
+            reactions: new Set(),
             /** @type {string} */
             nsfw: null,
             /** @type {number} */
@@ -133,6 +133,10 @@ class BBTagExecContext {
             replace: null
         };
     }
+}
+
+class SubTagHandler {
+
 }
 
 class StateScopes {
@@ -235,7 +239,7 @@ function parse(content) {
  * This will execute all SubTags contained within a given BBTag element,
  * and then return the string to replace the BBTag element with
  * @param {BBTag} bbtag The BBTag node to begin execution at
- * @param {BBTagExecContext} context The context to be used for execution
+ * @param {Context} context The context to be used for execution
  * @returns {string}
  */
 async function execute(bbtag, context) {
@@ -267,24 +271,82 @@ async function execute(bbtag, context) {
 }
 
 /**
+ * Parses a string as BBTag and executes it
+ * @param {string} string The string content of BBTag to execute
+ * @param {Context} context The context to perform execution in
+ * @returns {string} The string result from executing the string
+ */
+async function execString(string, context) {
+    let parsed = parse(string);
+    if (!parsed.success)
+        return addError(context, parsed.error);
+    return await execute(parsed.bbtag, context);
+}
+
+/**
  * Adds an error in the place of the subtag
- * @param {BBTagExecContext} context The context in which the error will be places
+ * @param {Context} context The context in which the error will be places
  * @param {string} message The error message to show
  * @returns {string} The formatted error message
  */
-function addError(context, message) {
+function addError(subtag, context, message) {
     message = '`' + message + '`';
-    context.errors.push({ subtag: context.subtag, message });
+    context.errors.push({ subtag: subtag, error: message });
     return message;
 }
+
+/** 
+ * @typedef {Object} runArgs
+ * @property {Object} runArgs.msg The message that triggered this tag.
+ * @property {string} runArgs.tagContent The content of the tag to be run
+ * @property {string} runArgs.input The input provided to the tag
+ * @property {boolean} runArgs.isCC Is the context a custom command context
+ * @property {function(string):(Promise<string>|string)} runArgs.modResult Modifies the result before it is sent
+ * @property {string} [runArgs.tagName] The name of the tag being run
+ * @property {string} [runArgs.author] The ID of the author of the tag being run
+ */
+
+/**
+ * @param {runArgs} config
+ */
+async function runTag(config) {
+    console.debug('Begin run tag', config);
+    let context = new Context(config.msg, bu.splitInput(config.input), config.isCC);
+    let result = await execString(config.tagContent, context);
+
+    if (context.state.embed == null && (result == null || result.trim() == ''))
+        return console.debug('End run tag - No output');
+
+    if (context.state.replace != null) {
+        let regex = bu.createRegExp(context.state.replace);
+        result.replace(context.state.replace.replace);
+    }
+
+    result = (config.modResult || (c => c))(result);
+
+    if (typeof result == 'object')
+        result = await result;
+
+    let response = await bu.send(config.msg,
+        {
+            content: result,
+            embed: context.state.embed,
+            nsfw: context.state.nsfw
+        });
+    if (response != null && response.channel != null)
+        await bu.addReactions(response.channel.id, response.id, context.state.reactions);
+    console.debug('End run tag - Complete');
+};
 
 module.exports = {
     BBTag,
     SubTag,
-    BBTagExecContext,
+    Context,
     parse,
     execute,
-    addError
+    execString,
+    addError,
+    runTag
 };
 
 /**

@@ -1,6 +1,7 @@
 var e = module.exports = {};
 
-var tags = require('../core/tags');
+var tags = require('../core/tags'),
+    bbEngine = require('../structures/BBTagEngine');
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
@@ -49,13 +50,12 @@ e.execute = async function (msg, words) {
             suffix = `This farewell will be outputted in <#${channel}>. `;
         }
     }
-    let output = await tags.processTag(msg, farewell, '', undefined, msg.author.id, true);
-    let message = await bu.send(msg, {
-        content: `Farewell set. ${suffix}Simulation:
-${output.contents}`,
-        embed: output.embed,
-        nsfw: output.nsfw
+    await bbEngine.runTag({
+        msg,
+        tagContent: farewell,
+        input: '',
+        isCC: true,
+        author: msg.author,
+        modResult(text) { return 'Farewell set. ' + suffix + 'Simulation:\n' + text; }
     });
-    if (message && message.channel)
-        await bu.addReactions(message.channel.id, message.id, output.reactions);
 };

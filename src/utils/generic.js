@@ -8,6 +8,7 @@
  */
 
 const colors = require('../../res/colors') || {};
+const eris = require('eris');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -164,9 +165,10 @@ bu.addReactions = async function (channelId, messageId, reactions) {
  */
 bu.send = async function (channel, message, file, embed) {
     let channelid = channel;
-    if (channel instanceof dep.Eris.Message) {
+    if ('channel' in channel && channel.channel instanceof dep.Eris.Channel) {
         channelid = channel.channel.id;
     }
+
     if (!message) message = '';
 
     bu.messageStats++;

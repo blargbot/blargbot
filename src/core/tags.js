@@ -8,43 +8,10 @@
  */
 
 const argFactory = require('../structures/ArgumentFactory'),
-    af = argFactory;
+    af = argFactory,
+    bbEngine = require('../structures/BBTagEngine');
 
 var e = module.exports = {};
-
-e.processTag = async function (msg, contents, command, tagName, author, isCcommand) {
-    let result = { contents, reactions: [], embed: [] };
-    try {
-        author = author || msg.channel.guild.id;
-        var words = typeof command === 'string' ? bu.splitInput(command) : command;
-
-        // if (contents.toLowerCase().indexOf('{nsfw') > -1) {
-        //     let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
-        //     if (!nsfwChan) {
-        //         bu.send(msg, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
-        //         return;
-        //     }
-        // }
-
-        if (contents.split(' ')[0].indexOf('help') > -1) {
-            contents = '\u200B' + contents;
-        }
-        contents = contents.replace(new RegExp(bu.specialCharBegin, 'g'), '').replace(new RegExp(bu.specialCharDiv, 'g'), '').replace(new RegExp(bu.specialCharEnd, 'g'), '');
-
-        result = await bu.processTag({
-            msg,
-            words,
-            contents,
-            author,
-            tagName,
-            ccommand: isCcommand
-        });
-        result.contents = bu.processSpecial(result.contents, true);
-    } catch (err) {
-        console.error(err);
-    }
-    return result;
-};
 
 e.executeTag = async function (msg, tagName, command) {
     let tag = await r.table('tag').get(tagName).run();
@@ -57,35 +24,33 @@ e.executeTag = async function (msg, tagName, command) {
 Reason: ${tag.reason}`);
             return;
         }
-        // if (tag.content.toLowerCase().indexOf('{nsfw') > -1) {
-        //     let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
-        //     if (!nsfwChan) {
-        //         bu.send(msg, `❌ This command contains NSFW content! Go to an NSFW channel. ❌`);
-        //         return;
-        //     }
-        // }
         r.table('tag').get(tagName).update({
             uses: tag.uses + 1,
             lastuse: r.now()
         }).run();
-        var output = await e.processTag(msg, tag.content, command, tagName, tag.author);
-        while (/<@!?[0-9]{17,21}>/.test(output.contents)) {
-            let match = output.contents.match(/<@!?([0-9]{17,21})>/)[1];
-            //console.debug(match);
-            let obtainedUser = await bu.getUser(msg, match, true);
-            let name = '';
-            if (obtainedUser) {
-                name = `@${obtainedUser.username}#${obtainedUser.discriminator}`;
-            } else {
-                name = `@${match}`;
+        await bbEngine.runTag({
+            msg,
+            tagContent: tag.content,
+            input: command.map(c => '"' + c + '"').join(' '),
+            isCC: false,
+            tagName: tagName,
+            author: tag.author,
+            modResult: async function (text) {
+                while (/<@!?[0-9]{17,21}>/.test(text)) {
+                    let match = text.match(/<@!?([0-9]{17,21})>/)[1];
+                    //console.debug(match);
+                    let obtainedUser = await bu.getUser(msg, match, true);
+                    let name = '';
+                    if (obtainedUser) {
+                        name = `@${obtainedUser.username}#${obtainedUser.discriminator}`;
+                    } else {
+                        name = `@${match}`;
+                    }
+                    text = text.replace(new RegExp(`<@!?${match}>`, 'g'), name);
+                }
+                return text;
             }
-            output.contents = output.contents.replace(new RegExp(`<@!?${match}>`, 'g'), name);
-        }
-        if (output.contents == '')
-            return;
-        let message = await bu.send(msg, { content: output.contents, embed: output.embed, nsfw: output.nsfw });
-        if (message && message.channel)
-            await bu.addReactions(message.channel.id, message.id, output.reactions);
+        });
     }
 };
 

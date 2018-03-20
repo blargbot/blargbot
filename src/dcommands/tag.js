@@ -8,7 +8,8 @@
  */
 
 var e = module.exports = {};
-var tags = require('../core/tags');
+var tags = require('../core/tags'),
+    bbEngine = require('../structures/BBTagEngine');
 
 const results = 100;
 e.init = () => {
@@ -517,14 +518,14 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
             case 'eval':
             case 'test':
                 if (words.length > 2) {
-                    let output = await tags.processTag(msg, words.slice(2).join(' '), '', 'test', msg.author.id);
-                    let message = await bu.send(msg, {
-                        content: `Output:\n${output.contents.trim()}`,
-                        embed: output.embed,
-                        nsfw: output.nsfw
+                    await bbEngine.runTag({
+                        msg,
+                        tagContent: words.slice(2).join(' '),
+                        input: '',
+                        tagName: 'test',
+                        author: msg.author.id,
+                        modResult(text) { return 'Output:\n' + text; }
                     });
-                    if (message && message.channel)
-                        await bu.addReactions(message.channel.id, message.id, output.reactions);
                 }
                 break;
             case 'favourite':
@@ -658,6 +659,7 @@ ${Object.keys(user.favourites).join(', ')}
 const Message = require('eris/lib/structures/Message')
 
 e.event = async function (args) {
+    console.debug('TIMER CALLBACK', args);
     let msg;
     if (args.params.msg) {
         try {
