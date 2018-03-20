@@ -8,7 +8,6 @@
  */
 
 const colors = require('../../res/colors') || {};
-const eris = require('eris');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
