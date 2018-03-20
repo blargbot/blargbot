@@ -14,10 +14,11 @@ module.exports =
         .requireStaff()
         .withArgs(a => [a.require('channel'), a.require([a.optional('message'), a.optional('embed')])])
         .withDesc('Sends `message` and `embed` to `channel`, and returns the message ID. `channel` is either an ID or channel mention. ' +
-            'At least one out of `message` and `embed` must be supplied')
+            'At least one out of `message` and `embed` must be supplied.\n' +
+            'Please note that `embed` is the JSON for an embed object, dont put the `{embed}` subtag there, as nothing will show')
         .withExample(
-            '{send;#channel;Hello!}',
-            '1111111111111111111\nIn #channel: Hello!'
+            '{send;#channel;Hello!;{buildembed;title:Youre cool}}',
+            '1111111111111111111\nIn #channel: Hello!\nEmbed: Youre cool'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3-4', async function (params) {

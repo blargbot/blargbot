@@ -15,10 +15,11 @@ module.exports =
         .requireStaff()
         .withArgs(a => [a.require('user'), a.require([a.optional('message'), a.optional('embed')])])
         .withDesc('DMs `user` the given `message` and `embed`. Atleast one of `message` and `embed` must be provided. ' +
-            'You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.'
+            'You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\n' +
+            'Please note that `embed` is the JSON for an embed object, dont put the `{embed}` subtag there, as nothing will show.'
         ).withExample(
-            '{dm;stupid cat;Hello}',
-            'DM: Hello'
+            '{dm;stupid cat;Hello;{buildembed;title:Youre cool}}',
+            'DM: Hello\nEmbed: Youre cool'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3', async function (params) {
