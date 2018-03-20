@@ -32,12 +32,17 @@ async function reload() {
     })).join('\n - ');
     console.log('reloaded');
 }
+let titan;
 
 setInterval(reload, 60 * 60 * 1000);
 
 reload();
 
 e.execute = async (msg) => {
+    if (!titan) {
+        let t = await bot.getRESTUser('135556895086870528');
+        titan = bu.getFullName(t);
+    }
     let age = dep.moment.duration(dep.moment() - dep.moment(startDate));
     let dateStr = `${age.years()} year${age.years() != 1 ? 's' : ''}, ${age.months()} month${age.months() != 1 ? 's' : ''}, ${age.days()} day${age.days() != 1 ? 's' : ''}, ${age.hours()} hour${age.hours() != 1 ? 's' : ''}, ${age.minutes()} minute${age.minutes() != 1 ? 's' : ''}, and ${age.seconds()} second${age.seconds() != 1 ? 's' : ''}`;
     try {
@@ -50,6 +55,8 @@ e.execute = async (msg) => {
 
 :heart: __**Special thanks to all my other donators!**__ :heart:
 ** - ${donatorStr}**
+
+Special huge thanks to the awesome **${titan}** for massive contributions to the BBTag system! :tada:
 
 Additional credits to Aurieh#0258! :thumbsup:
 

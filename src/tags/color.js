@@ -13,8 +13,8 @@ module.exports =
     Builder.AutoTag('color')
         .withDesc('Attempts to convert `color` to a hex code. `color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number.')
         .withExample(
-            'This command is {commandname}',
-            'This command is test'
+            '{color;pink}',
+            'ffc0cb'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenArgs('2', async function (params) {
