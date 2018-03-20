@@ -17,7 +17,7 @@ module.exports =
         .withExample(
             'I feel like eating {randchoose;cake;pie;pudding} today',
             'I feel like eating pudding today.'
-        )//.beforeExecute(Builder.util.processAllSubtags)
+        )
         .whenArgs('1', Builder.errors.notEnoughArguments)
         .whenDefault(async function (params) {
             let options = Builder.util.flattenArgArrays(params.args.splice(1)),

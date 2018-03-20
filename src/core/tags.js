@@ -81,7 +81,7 @@ Reason: ${tag.reason}`);
             }
             output.contents = output.contents.replace(new RegExp(`<@!?${match}>`, 'g'), name);
         }
-        if (output.contents == '')
+        if (output.contents == '' && output.embed == null)
             return;
         let message = await bu.send(msg, { content: output.contents, embed: output.embed, nsfw: output.nsfw });
         if (message && message.channel)

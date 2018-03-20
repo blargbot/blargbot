@@ -13,8 +13,9 @@ const Builder = require('../structures/TagBuilder'),
 module.exports =
     Builder.CCommandTag('dm')
         .requireStaff()
-        .withArgs(a => [a.require('user'), a.require('message')])
-        .withDesc('DMs `user` the given `message`. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.'
+        .withArgs(a => [a.require('user'), a.require([a.optional('message'), a.optional('embed')])])
+        .withDesc('DMs `user` the given `message` and `embed`. Atleast one of `message` and `embed` must be provided. ' +
+            'You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.'
         ).withExample(
             '{dm;stupid cat;Hello}',
             'DM: Hello'
@@ -24,11 +25,19 @@ module.exports =
             if (params.dmsent)
                 return await Builder.util.error(params, 'Already have DMed');
 
-            let user = await bu.getUser(params.msg, params.args[1]);
+            let user = await bu.getUser(params.msg, params.args[1]),
+                message = params.args[2],
+                embed = bu.parseEmbed(params.args[2]);
+
             if (user == null)
                 return await Builder.errors.noUserFound(params);
             if (!params.msg.guild.members.get(user.id))
                 return await Builder.errors.userNotInGuild(params);
+
+            if (!embed.malformed)
+                message = undefined;
+            else
+                embed = bu.parseEmbed(params.args[3]);
 
             try {
                 const DMChannel = await user.getDMChannel();
@@ -45,8 +54,8 @@ module.exports =
                     DMCache[user.id] = { user: params.msg.author.id, guild: params.msg.guild.id, count: 1 };
                 }
                 await bu.send(DMChannel.id, {
-                    content: params.args[2],
-                    embed: null,
+                    content: bu.processSpecial(message || '', true),
+                    embed: embed,
                     nsfw: params.nsfw
                 });
                 DMCache[user.id].count++;
