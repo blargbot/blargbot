@@ -25,7 +25,7 @@ module.exports =
                 message = params.args[2],
                 embed = bu.parseEmbed(params.args[2]);
 
-            if (!embed.malformed)
+            if (embed != null && !embed.malformed)
                 message = undefined;
             else
                 embed = bu.parseEmbed(params.args[3]);

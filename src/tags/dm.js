@@ -34,7 +34,7 @@ module.exports =
             if (!params.msg.guild.members.get(user.id))
                 return await Builder.errors.userNotInGuild(params);
 
-            if (!embed.malformed)
+            if (embed != null && !embed.malformed)
                 message = undefined;
             else
                 embed = bu.parseEmbed(params.args[3]);
