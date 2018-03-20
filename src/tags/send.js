@@ -34,14 +34,17 @@ module.exports =
             if (channel == null) return await Builder.errors.noChannelFound(params);
             if (channel.guild.id != params.msg.guild.id) return await Builder.errors.channelNotInGuild(params);
 
-            let sent = await bu.send(channel.id, {
-                content: bu.processSpecial(message || '', true),
-                embed: embed,
-                nsfw: params.nsfw,
-                disableEveryone: false
-            });
-
-            return sent.id;
+            try {
+                let sent = await bu.send(channel.id, {
+                    content: bu.processSpecial(message || '', true),
+                    embed: embed,
+                    nsfw: params.nsfw,
+                    disableEveryone: false
+                });
+                return sent.id;
+            } catch (err) {
+                return await Builder.util.error(params, 'Failed to send');
+            }
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
