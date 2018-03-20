@@ -15,10 +15,11 @@ module.exports =
         .withArgs(a => [a.optional('channelId'), a.require('messageId'), a.require([a.optional('text'), a.optional('embed')])])
         .withDesc('Edits `messageId` in `channelId` to say `text` or `embed`. ' +
             'Atleast one of `text` and `embed` is required. ' +
-            'If `channelId` is not supplied, it defaults to the current channel. ' +
+            'If `channelId` is not supplied, it defaults to the current channel.\n' +
+            'Please note that `embed` is the JSON for an embed object, dont put the `{embed}` subtag there, as nothing will show.\n'+ 
             'Only messages created by the bot may be edited')
         .withExample(
-            'A message got edited: {edit;111111111111111111;New content}',
+            'A message got edited: {edit;111111111111111111;New content;{buildembed;title:Youre cool}}',
             '(the message got edited idk how to do examples for this)'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)

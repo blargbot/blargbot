@@ -14,10 +14,11 @@ module.exports =
         .requireStaff()
         .withArgs(a => [a.require('channel'), a.require([a.optional('message'), a.optional('embed')])])
         .withDesc('Sends `message` and `embed` to `channel`, and returns the message ID. `channel` is either an ID or channel mention. ' +
-            'At least one out of `message` and `embed` must be supplied')
+            'At least one out of `message` and `embed` must be supplied.\n' +
+            'Please note that `embed` is the JSON for an embed object, dont put the `{embed}` subtag there, as nothing will show')
         .withExample(
-            '{send;#channel;Hello!}',
-            '1111111111111111111\nIn #channel: Hello!'
+            '{send;#channel;Hello!;{buildembed;title:Youre cool}}',
+            '1111111111111111111\nIn #channel: Hello!\nEmbed: Youre cool'
         ).beforeExecute(Builder.util.processAllSubtags)
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3-4', async function (params) {
@@ -25,7 +26,7 @@ module.exports =
                 message = params.args[2],
                 embed = bu.parseEmbed(params.args[2]);
 
-            if (!embed.malformed)
+            if (embed != null && !embed.malformed)
                 message = undefined;
             else
                 embed = bu.parseEmbed(params.args[3]);
@@ -33,14 +34,17 @@ module.exports =
             if (channel == null) return await Builder.errors.noChannelFound(params);
             if (channel.guild.id != params.msg.guild.id) return await Builder.errors.channelNotInGuild(params);
 
-            let sent = await bu.send(channel.id, {
-                content: bu.processSpecial(message, true),
-                embed: embed,
-                nsfw: params.nsfw,
-                disableEveryone: false
-            });
-
-            return sent.id;
+            try {
+                let sent = await bu.send(channel.id, {
+                    content: bu.processSpecial(message || '', true),
+                    embed: embed,
+                    nsfw: params.nsfw,
+                    disableEveryone: false
+                });
+                return sent.id;
+            } catch (err) {
+                return await Builder.util.error(params, 'Failed to send');
+            }
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
