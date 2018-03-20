@@ -12,8 +12,8 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('args')
         .withArgs(a => [a.optional('index'), a.optional('range')])
-        .withDesc('Gets user input. Specifying `index` will only get the word at that location, specifying' +
-            '`range` will get all the words between `index` and `range`. Specify `range` as `n` to get all' +
+        .withDesc('Gets user input. Specifying `index` will only get the word at that location, specifying ' +
+            '`range` will get all the words between `index` and `range`. Specify `range` as `n` to get all ' +
             'the words from `index` to the end'
         ).withExample(
             'Your second word was {args;1}',
