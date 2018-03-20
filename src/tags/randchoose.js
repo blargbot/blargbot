@@ -19,11 +19,16 @@ module.exports =
             'I feel like eating pudding today.'
         )
         .whenArgs('1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (params) {
+            let value = await bu.processTagInner(params, 1);
+            let options = await bu.getArray(params, value);
+            if (options == null || !Array.isArray(options.v))
+                return value;
+            let selection = bu.getRandomInt(0, options.v.length - 1);
+            return options.v[selection];
+        })
         .whenDefault(async function (params) {
-            let options = Builder.util.flattenArgArrays(params.args.splice(1)),
-                selection = bu.getRandomInt(0, options.length - 1);
-
-            params.content = options[selection];
-            return await bu.processTagInner(params);
+            let selection = bu.getRandomInt(1, params.args.length - 1);
+            return await bu.processTagInner(params, selection);
         })
         .build();
