@@ -1,14 +1,21 @@
 'use strict';
+
 /**
  * This represents a block of text within the BBTag language.
  */
 class BaseTag {
 
+    /** The whole text from which this tag and its relatives can be derived */
     get source() { return this._protected.source; }
+    /** The position in `source` where this tag starts */
     get start() { return this._protected.start; }
+    /** The position in `source` where this tag ends */
     get end() { return this._protected.end; }
+    /** The text that is contained in this tag */
     get content() { return this.source.slice(this.start, this.end); }
+    /** The tag which this tag is contained within */
     get parent() { return this._protected.parent; }
+    /** All the tags contained withinin this tag */
     get children() { return this._protected.children; }
 
     /** @param {string|BaseTag} parent The parent of this tag */
@@ -102,21 +109,19 @@ class Context {
 
     /**
      * Creates a new BBTagExecContext instance
-     * @param {Object} message The message that this context is regarding
-     * @param {string[]} input The input the user gave to the bot
-     * @param {boolean} isCC If the tag is to be executed in the context of a custom command
+     * @param {runArgs} options The message that this context is regarding
      */
-    constructor(message, input, isCC) {
-        this.message = this.msg = message;
-        this.input = this.input = input;
-        this.isCC = isCC;
-        /** @type {SubTag} */
-        this.subtag = null;
+    constructor(options) {
+        this.message = this.msg = options.msg;
+        this.input = this.input = bu.splitInput(options.input);
+        this.isCC = options.isCC;
+        this.author = options.author;
+        this.tagName = options.tagName;
 
         /** @type {{subtag: SubTag, error: string}[]} */
         this.errors = [];
         this.scopes = new StateScopes();
-        this.variables = new VariableCache();
+        this.variables = new VariableCache(this);
         this.state = {
             /** @type {number} */
             return: 0,
@@ -158,6 +163,15 @@ class StateScopes {
     }
 }
 
+class CacheEntry {
+    get updated() { return JSON.stringify(this.original) != JSON.stringify(this.value); }
+
+    constructor(original) {
+        this.original = original;
+        this.value = original;
+    }
+}
+
 class VariableCache {
     constructor(parent) {
         this.parent = parent;
@@ -166,15 +180,15 @@ class VariableCache {
 
     /** @param {string} variable The name of the variable to retrieve @returns {string}*/
     async get(variable) {
-        if (this.cached[variable] == undefined) {
-            for (const scope of bu.tagVariableScopes) {
-                if (variable.startsWith(scope.prefix))
-                    this.cached[variable] = await scope.getter(this.parent, variable.substring(scope.prefix.length));
-            }
+        if (this.cache[variable] == null) {
+            console.debug(variable + ' missing, getting from DB');
+            let scope = bu.tagVariableScopes.find(s => variable.startsWith(s.prefix));
+            if (scope == null) throw ('Missing default variable scope!');
+
+            this.cache[variable] = new CacheEntry(
+                await scope.getter(this.parent, variable.substring(scope.prefix.length)) || '');
         }
-        if (this.cached[variable] == undefined)
-            throw ('Missing default variable scope!');
-        return this.cached[variable];
+        return this.cache[variable].value;
     }
 
     /**
@@ -182,7 +196,23 @@ class VariableCache {
      * @param {string} value The value to set the variable to
      */
     async set(variable, value) {
-        this.cached[variable] = value;
+        if (this.cache[variable] == null)
+            await this.get(variable);
+        this.cache[variable].value = value;
+    }
+
+    async persist() {
+        let scopes = bu.tagVariableScopes.map(s => s.prefix);
+        let stored = Object.keys(this.cache).filter(k => this.cache[k].updated);
+        let grouped = bu.groupBy(stored, k => scopes.find(s => k.startsWith(s)) || '');
+
+        for (const group of grouped) {
+            let scope = bu.tagVariableScopes.find(s => s.prefix == group.key);
+            if (scope == null) throw ('Missing scope `' + group.key + '`');
+            for (const entry of group)
+                scope.setter(this.parent, entry.substring(group.key.length), this.cache[entry].value || undefined);
+        }
+        console.debug('Persisted', grouped);
     }
 }
 
@@ -316,11 +346,15 @@ function addError(subtag, context, message) {
  * @param {runArgs} config
  */
 async function runTag(config) {
-    let context = new Context(config.msg, bu.splitInput(config.input.trim()), config.isCC);
+    let context = new Context(config);
     let result = await execString(config.tagContent.trim(), context);
 
-    if (context.state.embed == null && (result == null || result.trim() == ''))
-        return console.debug('End run tag - No output');
+    await context.variables.persist();
+
+    if (context.state.embed == null && (result == null || result.trim() == '')) {
+        console.debug('End run tag - No output');
+        return { context, result, response: null };
+    }
 
     if (context.state.replace != null) {
         let regex = bu.createRegExp(context.state.replace);
@@ -340,6 +374,8 @@ async function runTag(config) {
         });
     if (response != null && response.channel != null)
         await bu.addReactions(response.channel.id, response.id, context.state.reactions);
+
+    return { context, result, response };
 };
 
 module.exports = {

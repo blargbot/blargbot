@@ -65,9 +65,9 @@ class SubTagDefBuilder {
                         throw new Error('Missing default execution on subtag ' + definition.name + '\nParams:' + JSON.stringify(context));
 
                     let result = callback.apply(definition, [subtag, context, subtagArgs]);
-                    if (result instanceof Promise)
-                        return await result;
-                    return result;
+                    if (typeof result != 'string')
+                        return '' + ((await result) || '');
+                    return '' + (result || '');
                 }
                 catch (e) {
                     console.error(e);

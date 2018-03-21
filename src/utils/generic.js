@@ -1326,7 +1326,7 @@ bu.parseColor = function (text) {
         return parseInt(match[1].split('').map(v => v + v).join(''), 16);
 
     //Decimal number
-    match = text.match(/^d([0-9]{1,8})$/);
+    match = text.match(/^\.([0-9]{1,8})$/);
     if (match != null) {
         let value = parseInt(match[1]);
         if (bu.between(value, 0, 16777215, true))
@@ -1434,4 +1434,24 @@ bu.parseFloat = function (s) {
     if (typeof s != 'string') return parseFloat(s);
     //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
     return parseFloat(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'));
+};
+
+/**
+ * @template T
+ * @param {T[]} values The values to group
+ * @param {function(any):string} selector The key selector
+ * @returns {T[][]} The grouped values. Each element of the outer array has a `key` property.
+ */
+bu.groupBy = function (values, selector) {
+    let groups = {};
+    for (const value of values) {
+        const key = selector(value);
+        if (groups[key] == null) {
+            groups[key] = [];
+            groups[key].key = key;
+        }
+        groups[key].push(value);
+    }
+
+    return Object.keys(groups).map(k => groups[k]);
 };

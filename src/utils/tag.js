@@ -25,9 +25,7 @@ bu.serializeTagArray = function (array, varName) {
 
 bu.deserializeTagArray = function (value) {
     try {
-        let obj = JSON.parse(value
-            .replace(new RegExp(bu.specialCharBegin + 'LB' + bu.specialCharEnd, "g"), '{')
-            .replace(new RegExp(bu.specialCharBegin + 'RB' + bu.specialCharEnd, "g"), '}'));
+        let obj = JSON.parse(value);
         if (Array.isArray(obj)) obj = {
             v: obj
         };
@@ -159,27 +157,27 @@ bu.tagVariableScopes = [
         description: 'Server variables (also referred to as Guild variables) are commonly used if you wish to store data on a per server level. ' +
             'They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\n' +
             'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.',
-        setter: async (params, name, value) =>
-            await bu.setVariable(params.msg.guild.id, name, value,
-                params.ccommand ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
-        getter: async (params, name) =>
-            await bu.getVariable(params.msg.guild.id, name,
-                params.ccommand ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD)
+        setter: async (context, name, value) =>
+            await bu.setVariable(context.guild.id, name, value,
+                context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
+        getter: async (context, name) =>
+            await bu.getVariable(context.guild.id, name,
+                context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD)
     },
     {
         name: 'Author',
         prefix: '@',
         description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\n' +
             'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.',
-        setter: async (params, name, value) => {
-            if (params.author)
-                return await bu.setVariable(params.author, name, value, bu.TagVariableType.AUTHOR);
-            return await bu.tagProcessError(params, '`No author found`');
+        setter: async (context, name, value) => {
+            if (context.author)
+                return await bu.setVariable(context.author, name, value, bu.TagVariableType.AUTHOR);
+            return await bu.tagProcessError(context, '`No author found`');
         },
-        getter: async (params, name) => {
-            if (params.author)
-                return await bu.getVariable(params.author, name, bu.TagVariableType.AUTHOR);
-            return await bu.tagProcessError(params, '`No author found`');
+        getter: async (context, name) => {
+            if (context.author)
+                return await bu.getVariable(context.author, name, bu.TagVariableType.AUTHOR);
+            return await bu.tagProcessError(context, '`No author found`');
         }
     },
     {
@@ -187,9 +185,9 @@ bu.tagVariableScopes = [
         prefix: '*',
         description: 'Global variables are completely public, anyone can read **OR EDIT** your global variables.\n' +
             'These are very useful if you like pain.',
-        setter: async (params, name, value) =>
+        setter: async (context, name, value) =>
             await bu.setVariable(undefined, name, value, bu.TagVariableType.GLOBAL),
-        getter: async (params, name) =>
+        getter: async (context, name) =>
             await bu.getVariable(undefined, name, bu.TagVariableType.GLOBAL)
     },
     {
@@ -197,8 +195,8 @@ bu.tagVariableScopes = [
         prefix: '~',
         description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
             'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type',
-        setter: async (params, name, value) => { params.vars[name] = value; },
-        getter: async (params, name) => params.vars[name]
+        setter: async (context, name, value) => { return ''; }, //Temporary is never persisted to the database
+        getter: async (context, name) => { } //Temporary is never persisted to the database
     },
     {
         name: 'Local',
@@ -206,15 +204,15 @@ bu.tagVariableScopes = [
         description: 'Local variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
             'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
             'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
-        setter: async (params, name, value) => {
-            if (params.ccommand)
-                return await bu.setVariable(params.tagName, name, value, bu.TagVariableType.GUILDLOCAL, params.msg.guild.id);
-            return await bu.setVariable(params.tagName, name, value, bu.TagVariableType.LOCAL);
+        setter: async (context, name, value) => {
+            if (context.isCC)
+                return await bu.setVariable(context.tagName, name, value, bu.TagVariableType.GUILDLOCAL, context.guild.id);
+            return await bu.setVariable(context.tagName, name, value, bu.TagVariableType.LOCAL);
         },
-        getter: async (params, name) => {
-            if (params.ccommand)
-                return await bu.getVariable(params.tagName, name, bu.TagVariableType.GUILDLOCAL, params.msg.guild.id);
-            return await bu.getVariable(params.tagName, name, bu.TagVariableType.LOCAL);
+        getter: async (context, name) => {
+            if (context.isCC)
+                return await bu.getVariable(context.tagName, name, bu.TagVariableType.GUILDLOCAL, context.guild.id);
+            return await bu.getVariable(context.tagName, name, bu.TagVariableType.LOCAL);
         }
     }
 ];
