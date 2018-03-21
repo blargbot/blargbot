@@ -17,13 +17,13 @@ module.exports =
             '{regextest;apple;/p+/i} {regextest;banana;/p+/i}',
             'true false'
         ).whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
+        .whenArgs('3', async function (subtag, context, args) {
             let text = await bu.processTagInner(params, 1), regex;
 
             try {
                 regex = bu.createRegExp(params.args[2]);
             } catch (e) {
-                return await Builder.util.error(params, e);
+                return Builder.util.error(subtag, context, e);
             }
 
             return regex.test(text);

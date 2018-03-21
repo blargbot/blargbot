@@ -98,6 +98,7 @@ class Context {
     get member() { return this.message.member; }
     get guild() { return this.message.channel.guild; }
     get user() { return this.message.author; }
+    get scope() { return this.scopes.local; }
 
     /**
      * Creates a new BBTagExecContext instance
@@ -145,7 +146,7 @@ class StateScopes {
         this._scopes = [{}];
     }
 
-    local() { return this._scopes[this._scopes.length - 1]; };
+    get local() { return this._scopes[this._scopes.length - 1]; };
     get(offset) { return this._scopes[this._scopes.length - 1 - offset]; }
 
     beginScope() {
@@ -243,7 +244,12 @@ function parse(content) {
  * @returns {string}
  */
 async function execute(bbtag, context) {
-    let result = [], prevIndex = bbtag.start, content = bbtag.source;
+    let result = [],
+        startOffset = (bbtag.content.match(/^\s+/) || [''])[0].length,
+        endOffset = (bbtag.content.match(/\s+$/) || [''])[0].length,
+        prevIndex = bbtag.start + startOffset,
+        content = bbtag.source;
+
     context.scopes.beginScope();
     for (const subtag of bbtag.children) {
         result.push(content.slice(prevIndex, subtag.start));
@@ -265,7 +271,7 @@ async function execute(bbtag, context) {
             break;
     }
     if (context.state.return == 0)
-        result.push(content.slice(prevIndex, bbtag.end));
+        result.push(content.slice(prevIndex, Math.max(prevIndex, bbtag.end - endOffset)));
     context.scopes.finishScope();
     return result.join('');
 }
@@ -295,7 +301,7 @@ function addError(subtag, context, message) {
     return message;
 }
 
-/** 
+/**
  * @typedef {Object} runArgs
  * @property {Object} runArgs.msg The message that triggered this tag.
  * @property {string} runArgs.tagContent The content of the tag to be run
@@ -310,9 +316,8 @@ function addError(subtag, context, message) {
  * @param {runArgs} config
  */
 async function runTag(config) {
-    console.debug('Begin run tag', config);
-    let context = new Context(config.msg, bu.splitInput(config.input), config.isCC);
-    let result = await execString(config.tagContent, context);
+    let context = new Context(config.msg, bu.splitInput(config.input.trim()), config.isCC);
+    let result = await execString(config.tagContent.trim(), context);
 
     if (context.state.embed == null && (result == null || result.trim() == ''))
         return console.debug('End run tag - No output');
@@ -335,7 +340,6 @@ async function runTag(config) {
         });
     if (response != null && response.channel != null)
         await bu.addReactions(response.channel.id, response.id, context.state.reactions);
-    console.debug('End run tag - Complete');
 };
 
 module.exports = {
@@ -361,4 +365,5 @@ module.exports = {
  /**
   * @typedef {Object} StateScope
   * @property {boolean} StateScope.quiet
+  * @property {string} StateScope.fallback
   */

@@ -19,12 +19,12 @@ module.exports =
             'I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e/gi;n}',
             'I likn ta cansumn chnnsn.'
         ).whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async function (params) {
+        .whenArgs('3-4', async function (subtag, context, args) {
             let regex;
             try {
                 regex = bu.createRegExp(params.args[params.args.length - 2]);
             } catch (e) {
-                return await Builder.util.error(params, e);
+                return Builder.util.error(subtag, context, e);
             }
 
             if (params.args.length == 3)

@@ -29,7 +29,7 @@ module.exports =
             'yes',
             'Correct!'
         ).whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
+        .whenDefault(async function (subtag, context, args) {
             let value = await bu.processTagInner(params, 1),
                 indexes = [...params.args.keys()].splice(2).reverse(),
                 cases = {}, elseDo = -1;

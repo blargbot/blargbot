@@ -17,23 +17,23 @@ module.exports =
             '{repeat;e;10}',
             'eeeeeeeeee'
         ).whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
+        .whenArgs('3', async function (subtag, context, args) {
             let fallback = bu.parseInt(params.fallback),
                 amount = bu.parseInt(await bu.processTagInner(params, 2)),
                 result = '';
 
             if (isNaN(amount)) {
                 if (isNaN(fallback))
-                    return await Builder.errors.notANumber(params);
+                    return Builder.errors.notANumber(subtag, context);
                 amount = fallback;
             }
 
-            if (amount < 0) return await Builder.util.error(params, 'Cant be negative');
+            if (amount < 0) return Builder.util.error(subtag, context, 'Cant be negative');
 
             for (let i = 0; i < amount; i++) {
                 params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
                 if (params.msg.repeats > 1500) {
-                    result += await Builder.errors.tooManyLoops(params);
+                    result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }
                 result += await bu.processTagInner(params, 1);
