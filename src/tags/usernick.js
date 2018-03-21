@@ -28,6 +28,7 @@ module.exports =
 
             if (user != null) {
                 let member = params.msg.channel.guild.members.get(user.id);
+                if (member == null) return user.username;
                 return member.nick || user.username;
             }
 
