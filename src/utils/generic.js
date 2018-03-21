@@ -164,7 +164,9 @@ bu.addReactions = async function (channelId, messageId, reactions) {
  */
 bu.send = async function (channel, message, file, embed) {
     let channelid = channel;
-    if ('channel' in channel && channel.channel instanceof dep.Eris.Channel) {
+    if (typeof channel == 'object' &&
+        'channel' in channel &&
+        channel.channel instanceof dep.Eris.Channel) {
         channelid = channel.channel.id;
     }
 

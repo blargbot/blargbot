@@ -91,8 +91,13 @@ const subcommands = [
     },
     {
         name: 'test',
-        args: '<code>',
-        desc: 'Executes code in a tag sandbox'
+        args: '[debug] <code>',
+        desc: 'Executes code in a tag sandbox. If debug is included, the result will have a debug file attached'
+    },
+    {
+        name: 'debug',
+        args: '<name> <args>',
+        desc: 'Executes the specified tag and will DM you a file containg all the debug information. Debug information wont be sent if you dont own the tag.'
     },
     {
         name: 'help',
@@ -443,6 +448,7 @@ ${content}
                 if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
 
                 tag = await r.table('tag').get(words[2]).run();
+                console.debug(tag);
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
@@ -517,16 +523,39 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                 break;
             case 'eval':
             case 'test':
-                if (words.length > 2) {
+                let args = words.slice(2), debug = false;
+                if (args.length == 0) break;
+                if (args[0].toLowerCase() == 'debug') {
+                    debug = true;
+                    args.shift();
+                }
+                if (args.length > 0) {
+                    if (await r.table('tag').get('test').run() == null)
+                        await r.table('tag').get('test').replace(systemTag('test')).run();
                     await bbEngine.runTag({
                         msg,
-                        tagContent: words.slice(2).join(' '),
+                        tagContent: args.join(' '),
                         input: '',
                         tagName: 'test',
                         author: msg.author.id,
-                        modResult(text) { return 'Output:\n' + text; }
+                        modResult(text) { return 'Output:\n' + text; },
+                        attach: debug ? generateDebug(args.join(' ')) : null
                     });
                 }
+                break;
+            case 'debug':
+                let command = words.slice(3);
+
+                let result = await tags.executeTag(msg, filterTitle(words[2]), command);
+                let dmChannel = await result.context.user.getDMChannel();
+
+                if (dmChannel == null)
+                    break;
+                if (result.context.author != result.context.user.id)
+                    await bu.send(dmChannel.id, "Oops! I cant send a debug output for someone elses tag!");
+                else
+                    await bu.send(dmChannel.id, null, generateDebug(result.code, result.context, result.result));
+
                 break;
             case 'favourite':
             case 'favorite':
@@ -647,9 +676,9 @@ ${Object.keys(user.favourites).join(', ')}
                 tags.docs(msg, words[0], words.slice(2).join(' '));
                 break;
             default:
-                var command = words.slice(2);
+                command = words.slice(2);
 
-                tags.executeTag(msg, filterTitle(words[1]), command);
+                await tags.executeTag(msg, filterTitle(words[1]), command);
                 break;
         }
     } else {
@@ -699,6 +728,38 @@ e.event = async function (args) {
 
 function escapeRegex(str) {
     return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+}
+
+function systemTag(name) {
+    return {
+        name,
+        content: 'System Generated Tag',
+        author: '1',
+        lastmodified: r.epochTime(0),
+        uses: 0,
+        systemOwned: true
+    };
+}
+
+function generateDebug(code, context, result) {
+    if (arguments.length == 1)
+        return (context, result) => generateDebug(code, context, result);
+
+    let errors = context.errors.map(e => 'Position ' + e.subtag.start + ' - ' + e.subtag.end + ': ' + e.error);
+    let variables = Object.keys(context.variables.cache)
+        .map(key => {
+            let offset = ''.padStart(key.length + 2, ' ');
+            let json = JSON.stringify(context.variables.cache[key].value);
+            json.replace(/\n/, '\n' + offset);
+            return key + ': ' + json;
+        }).slice(0, 24);
+    return {
+        name: 'BBTag.debug.txt',
+        file: 'User input:\n' + JSON.stringify(context.input.length > 0 ? context.input : 'No input.') + '\n\n' +
+            'Code Executed:\n' + code + '\n\n' +
+            'Errors:\n' + (errors.length > 0 ? errors.join('\n') : 'No errors') + '\n\n' +
+            'Variables:\n' + (variables.length > 0 ? variables.join('\n') : 'No variables')
+    };
 }
 
 function logChange(action, msg, actionObj) {

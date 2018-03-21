@@ -175,13 +175,13 @@ class CacheEntry {
 class VariableCache {
     constructor(parent) {
         this.parent = parent;
+        /** @type {Object.<string, CacheEntry>} */
         this.cache = {};
     }
 
     /** @param {string} variable The name of the variable to retrieve @returns {string}*/
     async get(variable) {
         if (this.cache[variable] == null) {
-            console.debug(variable + ' missing, getting from DB');
             let scope = bu.tagVariableScopes.find(s => variable.startsWith(s.prefix));
             if (scope == null) throw ('Missing default variable scope!');
 
@@ -208,11 +208,11 @@ class VariableCache {
 
         for (const group of grouped) {
             let scope = bu.tagVariableScopes.find(s => s.prefix == group.key);
-            if (scope == null) throw ('Missing scope `' + group.key + '`');
+            if (scope == null)
+                throw ('Missing scope `' + group.key + '`');
             for (const entry of group)
                 scope.setter(this.parent, entry.substring(group.key.length), this.cache[entry].value || undefined);
         }
-        console.debug('Persisted', grouped);
     }
 }
 
@@ -340,6 +340,7 @@ function addError(subtag, context, message) {
  * @property {function(string):(Promise<string>|string)} runArgs.modResult Modifies the result before it is sent
  * @property {string} [runArgs.tagName] The name of the tag being run
  * @property {string} [runArgs.author] The ID of the author of the tag being run
+ * @property {function(Context,string):{name:string,file:string}} [runArgs.attach] A function to generate an attachment
  */
 
 /**
@@ -366,12 +367,14 @@ async function runTag(config) {
     if (typeof result == 'object')
         result = await result;
 
+    let attachment = (config.attach || (c => null))(context, result);
+
     let response = await bu.send(config.msg,
         {
             content: result,
             embed: context.state.embed,
             nsfw: context.state.nsfw
-        });
+        }, attachment);
     if (response != null && response.channel != null)
         await bu.addReactions(response.channel.id, response.id, context.state.reactions);
 

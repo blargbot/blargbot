@@ -28,7 +28,7 @@ Reason: ${tag.reason}`);
             uses: tag.uses + 1,
             lastuse: r.now()
         }).run();
-        await bbEngine.runTag({
+        let result = await bbEngine.runTag({
             msg,
             tagContent: tag.content,
             input: command.map(c => '"' + c + '"').join(' '),
@@ -51,6 +51,9 @@ Reason: ${tag.reason}`);
                 return text;
             }
         });
+        /** @type {string} */
+        result.code = tag.content;
+        return result;
     }
 };
 
