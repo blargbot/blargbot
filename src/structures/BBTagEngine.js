@@ -99,7 +99,11 @@ class SubTag extends BaseTag {
     /** @param {string|SubTag} parent */
     constructor(parent) { super(parent); }
 }
-
+/**
+ * @typedef {Object} bbError An error that ocurred while executing BBTag
+ * @property {BaseTag} bbError.tag The loacation that the error ocurred
+ * @property {string|bbError[]} bbError.error The error that happened
+ */
 class Context {
     get channel() { return this.message.channel; }
     get member() { return this.message.member; }
@@ -110,34 +114,47 @@ class Context {
     /**
      * Creates a new BBTagExecContext instance
      * @param {runArgs} options The message that this context is regarding
+     * @param {Context} parent The parent scope to initialize this one from
      */
     constructor(options) {
         this.message = this.msg = options.msg;
-        this.input = this.input = bu.splitInput(options.input);
+        this.input = bu.splitInput(options.input || '');
         this.isCC = options.isCC;
         this.author = options.author;
         this.tagName = options.tagName;
 
-        /** @type {{subtag: SubTag, error: string}[]} */
+        /** @type {bbError[]} */
         this.errors = [];
         this.scopes = new StateScopes();
         this.variables = new VariableCache(this);
         this.state = {
-            /** @type {number} */
             return: 0,
-            /** @type {Object} */
+            stackSize: 0,
             embed: null,
-            /** @type {Set<string>} */
             reactions: new Set(),
-            /** @type {string} */
             nsfw: null,
-            /** @type {number} */
             dmCount: 0,
-            /** @type {number} */
             timerCount: 0,
-            /** @type {{replace: string, with: string}} */
             replace: null
         };
+    }
+
+    /**
+     * @param {runArgs} options The option overrides to give to the new context
+     */
+    makeChild(options = {}) {
+        let context = new Context(options, this);
+        context.state = this.state;
+        context.scopes = this.scopes;
+        context.variables = this.variables;
+
+        if (options.msg === undefined) context.msg = context.message = this.msg;
+        if (options.input === undefined) context.input = this.input;
+        if (options.isCC === undefined) context.isCC = this.isCC;
+        if (options.tagName === undefined) context.tagName = this.tagName;
+        if (options.author === undefined) context.author = this.author;
+
+        return context;
     }
 }
 
@@ -320,14 +337,16 @@ async function execString(string, context) {
 }
 
 /**
- * Adds an error in the place of the subtag
+ * Adds an error in the place of the tag
+ * @param {BaseTag} tag The tag which contained the error
  * @param {Context} context The context in which the error will be places
  * @param {string} message The error message to show
  * @returns {string} The formatted error message
  */
-function addError(subtag, context, message) {
-    message = '`' + message + '`';
-    context.errors.push({ subtag: subtag, error: message });
+function addError(tag, context, message) {
+    if (typeof message == 'string')
+        message = '`' + message + '`';
+    context.errors.push({ tag: tag, error: message });
     return message;
 }
 
@@ -401,8 +420,8 @@ module.exports = {
  * @property {number} end
  */
 
- /**
-  * @typedef {Object} StateScope
-  * @property {boolean} StateScope.quiet
-  * @property {string} StateScope.fallback
-  */
+/**
+ * @typedef {Object} StateScope
+ * @property {boolean} StateScope.quiet
+ * @property {string} StateScope.fallback
+ */

@@ -247,8 +247,8 @@ SubTagDefBuilder.util = {
     error(subtag, context, message) {
         return bbEngine.addError(subtag, context, message);
     },
-    parseChannel(params, channelId) {
-        let channel = params.msg.channel;
+    parseChannel(context, channelId) {
+        let channel = context.channel;
         if (channel.id !== channelId) {
             if (!/([0-9]{17,23})/.test(channelId))
                 return SubTagDefBuilder.errors.noChannelFound;
@@ -257,7 +257,7 @@ SubTagDefBuilder.util = {
 
             if (channel == null)
                 return SubTagDefBuilder.errors.noChannelFound;
-            if (channel.guild.id !== params.msg.guild.id)
+            if (channel.guild.id !== context.guild.id)
                 return SubTagDefBuilder.errors.channelNotInGuild;
         }
         return channel;

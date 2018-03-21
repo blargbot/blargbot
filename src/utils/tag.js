@@ -29,29 +29,22 @@ bu.deserializeTagArray = function (value) {
         if (Array.isArray(obj)) obj = {
             v: obj
         };
-        return obj;
+        return { v: obj.v, n: obj.n }; //Done to prevent injection
     } catch (err) {
         return null;
     }
 };
 
-bu.getArray = async function (params, arrName) {
+bu.getArray = async function (context, arrName) {
     let obj = bu.deserializeTagArray(arrName);
-    if (!obj) {
-        try {
-            let arr = await TagManager.list['get'].getVar(params, arrName);
-            if (arr != undefined) {
-                obj = bu.deserializeTagArray(bu.serializeTagArray(arr, arrName));
-            }
-        } catch (err) {
-            return undefined;
-        }
+    if (obj != null) return obj;
+    try {
+        let arr = await context.variables.get(arrName);
+        if (arr != undefined)
+            return { v: arr, n: arrName };
+    } catch (err) {
+        return undefined;
     }
-    return obj;
-};
-
-bu.setArray = async function (deserialized, params) {
-    await TagManager.list['set'].setVar(params, deserialized.n, deserialized.v);
 };
 
 bu.setVariable = async function (name, key, value, type, guildId) {

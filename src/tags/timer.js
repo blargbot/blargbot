@@ -17,12 +17,13 @@ module.exports =
         .withExample(
             '{timer;Hello!;20s}',
             '(after 20 seconds:) Hello!'
-        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (subtag, context, args) {
+        ).resolveArgs(1)
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (subtag, context, args) {
             if (params.disabletimer)
                 return Builder.util.error(subtag, context, 'Nested timers are not allowed');
 
-            let code = params.args[1],
+            let code = args[0],
                 duration = await bu.processTagInner(params, 2);
 
             duration = bu.parseDuration(duration);

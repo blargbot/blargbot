@@ -448,7 +448,6 @@ ${content}
                 if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
 
                 tag = await r.table('tag').get(words[2]).run();
-                console.debug(tag);
                 if (!tag) {
                     bu.send(msg, `❌ That tag doesn't exist! ❌`);
                     break;
@@ -685,7 +684,7 @@ ${Object.keys(user.favourites).join(', ')}
         bu.send(msg, e.info);
     }
 };
-const Message = require('eris/lib/structures/Message')
+const Message = require('eris/lib/structures/Message');
 
 e.event = async function (args) {
     console.debug('TIMER CALLBACK', args);
@@ -745,7 +744,7 @@ function generateDebug(code, context, result) {
     if (arguments.length == 1)
         return (context, result) => generateDebug(code, context, result);
 
-    let errors = context.errors.map(e => 'Position ' + e.subtag.start + ' - ' + e.subtag.end + ': ' + e.error);
+    let errors = context.errors.map(e => 'Position ' + e.tag.start + ' - ' + e.tag.end + ': ' + e.error);
     let variables = Object.keys(context.variables.cache)
         .map(key => {
             let offset = ''.padStart(key.length + 2, ' ');

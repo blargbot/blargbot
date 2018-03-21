@@ -16,8 +16,9 @@ module.exports =
         .withExample(
             '{repeat;e;10}',
             'eeeeeeeeee'
-        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (subtag, context, args) {
+        ).resolveArgs(1)
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (subtag, context, args) {
             let fallback = bu.parseInt(params.fallback),
                 amount = bu.parseInt(await bu.processTagInner(params, 2)),
                 result = '';

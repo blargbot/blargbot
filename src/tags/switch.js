@@ -28,10 +28,11 @@ module.exports =
             '{switch;{args;0};\n  ["yes","definitely"]; {//;Match "yes" OR "definitely"}\n    Correct!;\n  no;\n    Incorrect!;\n  That is not yes or no\n}',
             'yes',
             'Correct!'
-        ).whenArgs('1', Builder.errors.notEnoughArguments)
+        ).resolveArgs(0)
+        .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
             let value = await bu.processTagInner(params, 1),
-                indexes = [...params.args.keys()].splice(2).reverse(),
+                indexes = [...args.keys()].slice(1).reverse(),
                 cases = {}, elseDo = -1;
 
             if (indexes.length % 2 == 1) elseDo = indexes.shift();

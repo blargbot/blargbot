@@ -16,12 +16,13 @@ module.exports =
         .withExample(
             '{regextest;apple;/p+/i} {regextest;banana;/p+/i}',
             'true false'
-        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
+        ).resolveArgs(0)
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('3', async function (subtag, context, args) {
             let text = await bu.processTagInner(params, 1), regex;
 
             try {
-                regex = bu.createRegExp(params.args[2]);
+                regex = bu.createRegExp(args[1]);
             } catch (e) {
                 return Builder.util.error(subtag, context, e);
             }
