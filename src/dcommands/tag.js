@@ -361,9 +361,9 @@ e.execute = async function (msg, words, text) {
                     content = (await bu.awaitMessage(msg, tagContentsMsg)).content;
 
                 //    content = content.replace(/(?:^)(\s+)|(?:\n)(\s+)/g, '');
-                console.debug('First:', content, words);
+                //console.debug('First:', content, words);
                 //  content = bu.fixContent(content);
-                console.debug('Second:', content);
+                //console.debug('Second:', content);
                 await r.table('tag').get(title).replace({
                     name: title,
                     author: msg.author.id,
