@@ -12,5 +12,5 @@ module.exports =
         )
         .whenArgs('0-1', async function (subtag, context, args) {
             context.scope.quiet = bu.parseBoolean(args[0] || true);
-        })
+        }).whenDefault(Builder.errors.tooManyArguments)
         .build();
