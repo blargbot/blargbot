@@ -230,12 +230,6 @@ SubTagDefBuilder.util = {
                 return new Promise(resolve => resolve());
             }));
     },
-    escapeInjection(text) {
-        return bu.fixContent(text)
-            .replace(new RegExp(bu.specialCharBegin, 'g'), '')
-            .replace(new RegExp(bu.specialCharDiv, 'g'), '')
-            .replace(new RegExp(bu.specialCharEnd, 'g'), '');
-    },
     flattenArgArrays(args) {
         let result = [];
         for (const arg of args) {

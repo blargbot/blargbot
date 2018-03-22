@@ -1375,8 +1375,6 @@ bu.parseEmbed = function (embedText) {
     if (embedText == null)
         return undefined;
 
-    embedText = bu.processSpecial(embedText, true);
-
     if (!embedText || !embedText.trim())
         return undefined;
 
