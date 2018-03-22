@@ -20,12 +20,12 @@ module.exports =
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let storedGuild = await bu.getGuild(context.guild.id),
-                tag = storedGuild.ccommands[args[0].toLowerCase()];
+                ccommand = storedGuild.ccommands[args[0].toLowerCase()];
 
-            if (tag == null)
+            if (ccommand == null)
                 return Builder.util.error(subtag, context, 'CCommand not found: ' + args[0]);
 
-            return TagManager.list['exec'].execTag(subtag, context, tag.content, args[1] || '');
+            return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1] || '');
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

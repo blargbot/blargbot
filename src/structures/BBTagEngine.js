@@ -114,6 +114,8 @@ class Context {
     get guild() { return this.message.channel.guild; }
     get user() { return this.message.author; }
     get scope() { return this.scopes.local; }
+    /** @type {Promise<boolean>} */
+    get isStaff() { return this['_isStaff'] || (this['_isStaff'] = bu.isUserStaff(this.author, this.guild.id)); }
 
     /**
      * Creates a new BBTagExecContext instance
@@ -128,8 +130,6 @@ class Context {
         this.isCC = options.isCC;
         this.author = options.author;
         this.tagName = options.tagName;
-        /** @type {Promise<boolean>} */
-        this.isStaff = bu.isUserStaff(this.author, this.guild.id);
 
         /** @type {bbError[]} */
         this.errors = [];

@@ -13,7 +13,7 @@ const argFactory = require('../structures/ArgumentFactory'),
 
 var e = module.exports = {};
 
-e.executeTag = async function (msg, tagName, command) {
+e.executeTag = async function (msg, tagName, args) {
     let tag = await r.table('tag').get(tagName).run();
     if (!tag)
         bu.send(msg, `❌ That tag doesn't exist! ❌`);
@@ -31,7 +31,7 @@ Reason: ${tag.reason}`);
         let result = await bbEngine.runTag({
             msg,
             tagContent: tag.content,
-            input: command.map(c => '"' + c + '"').join(' '),
+            input: args.map(c => '"' + c + '"').join(' '),
             isCC: false,
             tagName: tagName,
             author: tag.author,
@@ -55,7 +55,27 @@ Reason: ${tag.reason}`);
     }
 };
 
-e.docs = async function (msg, command, topic, ccommand = false) {
+e.executeCC = async function (msg, ccName, args, debug = false) {
+    let ccommand = (await bu.getGuild(msg.guild.id)).ccommands[ccName.toLowerCase()];
+    if (!ccommand)
+        bu.send(msg, `❌ That CCommand doesn't exist! ❌`);
+    else {
+        let result = await bbEngine.runTag({
+            msg,
+            tagContent: ccommand.content,
+            input: args.map(c => '"' + c + '"').join(' '),
+            isCC: false,
+            tagName: ccName,
+            author: ccommand.author,
+            attach: debug ? this.generateDebug(ccommand.content) : null
+        });
+        /** @type {string} */
+        result.code = ccommand.content;
+        return result;
+    }
+};
+
+e.docs = async function (msg, command, topic) {
     let help = CommandManager.list['help'],
         argsOptions = { separator: { default: ';' } },
         tags = Object.keys(TagManager.list).map(k => TagManager.list[k]),
@@ -72,9 +92,6 @@ e.docs = async function (msg, command, topic, ccommand = false) {
         };
     if (msg.channel.guild)
         prefix = await bu.guildSettings.get(msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
-
-    if (!ccommand)
-        tags = tags.filter(t => t.category != bu.TagType.CCOMMAND);
 
     switch (words[0]) {
         case 'index':
@@ -196,11 +213,8 @@ e.docs = async function (msg, command, topic, ccommand = false) {
         default:
             topic = topic.replace(/[\{\}]/g, '');
             let tag = tags.filter(t => t.name == topic.toLowerCase())[0];
-            if (tag == null) {
-                if (TagManager.list[topic.toLowerCase()])
-                    return await bu.send(msg, 'Oops, that subtag seems to be a CCommand only subtag. Try using `' + prefix + 'cc docs` for CCommand subtags');
+            if (tag == null)
                 break;
-            }
             let category = bu.TagType.properties[tag.category];
             embed.title += ' - ' + tag.name[0].toUpperCase() + tag.name.substring(1);
 
@@ -243,3 +257,47 @@ e.docs = async function (msg, command, topic, ccommand = false) {
 
     return await bu.send(msg, 'Oops, I didnt recognise that topic! Try using `' + prefix + command + ' docs` for a list of all topics');
 };
+
+e.generateDebug = function (code, context, result) {
+    if (arguments.length == 1)
+        return (context, result) => this.generateDebug(code, context, result);
+
+    let errors = viewErrors(...context.errors);
+    let variables = Object.keys(context.variables.cache)
+        .map(key => {
+            let offset = ''.padStart(key.length + 2, ' ');
+            let json = JSON.stringify(context.variables.cache[key].value);
+            json.replace(/\n/, '\n' + offset);
+            return key + ': ' + json;
+        }).slice(0, 24);
+    return {
+        name: 'BBTag.debug.txt',
+        file: 'User input:\n' + JSON.stringify(context.input.length > 0 ? context.input : 'No input.') + '\n\n' +
+            'Code Executed:\n' + code + '\n\n' +
+            'Errors:\n' + (errors.length > 0 ? errors.join('\n') : 'No errors') + '\n\n' +
+            'Variables:\n' + (variables.length > 0 ? variables.join('\n') : 'No variables')
+    };
+};
+
+function viewErrors(...errors) {
+    let result = [];
+    for (const e of errors) {
+        let text = '';
+        if (e.tag.start == null || e.tag.end == null)
+            text += 'General';
+        else
+            text += 'Position ' + e.tag.start + ' - ' + e.tag.end;
+        text += ': ';
+
+        if (typeof e.error == 'string') {
+            result.push(text + e.error);
+            continue;
+        }
+
+        let offset = ''.padStart(text.length, ' ');
+        let lines = viewErrors(...e.error).map(l => offset + l);
+        lines[0] = text + lines[0].substring(offset.length);
+        result.push(...lines);
+    }
+    return result;
+}

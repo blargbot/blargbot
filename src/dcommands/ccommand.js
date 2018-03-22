@@ -1,3 +1,6 @@
+const bbEngine = require('../structures/BBTagEngine'),
+    bbtag = require('../core/bbtag');
+
 var e = module.exports = {};
 
 e.init = () => {
@@ -90,7 +93,7 @@ e.execute = async function (msg, words, text) {
                         roles: roles
                     });
                     if (roles.length === 0) {
-                        bu.send(msg, `Removed the custom role requirement of '${title}'.`)
+                        bu.send(msg, `Removed the custom role requirement of '${title}'.`);
                     } else
                         bu.send(msg, `Set the custom role requirements of '${title}' to \`\`\`fix\n${words.slice(3).join(', ')}\n\`\`\` `);
                 } else {
@@ -140,7 +143,7 @@ e.execute = async function (msg, words, text) {
                 break;
             case 'set':
                 if (words.length > 3) {
-                    title = filterTitle(words[2])
+                    title = filterTitle(words[2]);
                     if (title == 'cc' || title == 'ccommand') {
                         bu.send(msg, 'You cannot overwrite the `ccommand` command!');
                         break;
@@ -246,7 +249,31 @@ e.execute = async function (msg, words, text) {
                 bu.send(msg, e.info);
                 break;
             case 'docs':
-                tags.docs(msg, words[0], words.slice(2).join(' '), true);
+                bbtag.docs(msg, words[0], words.slice(2).join(' '));
+                break;
+            case 'exec':
+            case 'test':
+                let args = words.slice(2), debug = false;
+                if (args.length == 0) break;
+                if (args[0].toLowerCase() == 'debug') {
+                    debug = true;
+                    args.shift();
+                }
+                if (args.length > 0) {
+                    await bbEngine.runTag({
+                        msg,
+                        tagContent: args.join(' '),
+                        input: '',
+                        tagName: 'test',
+                        isCC: true,
+                        author: msg.author.id,
+                        modResult(text) { return 'Output:\n' + text; },
+                        attach: debug ? bbtag.generateDebug(args.join(' ')) : null
+                    });
+                }
+                break;
+            case 'debug':
+                bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3), true);
                 break;
             default:
                 bu.send(msg, 'Improper usage. Do \`help ccommand\` for more details.');

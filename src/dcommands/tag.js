@@ -8,7 +8,7 @@
  */
 
 var e = module.exports = {};
-var tags = require('../core/tags'),
+var bbtag = require('../core/bbtag'),
     bbEngine = require('../structures/BBTagEngine');
 
 const results = 100;
@@ -538,12 +538,12 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                         tagName: 'test',
                         author: msg.author.id,
                         modResult(text) { return 'Output:\n' + text; },
-                        attach: debug ? generateDebug(args.join(' ')) : null
+                        attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                     });
                 }
                 break;
             case 'debug':
-                let result = await tags.executeTag(msg, filterTitle(words[2]), words.slice(3));
+                let result = await bbtag.executeTag(msg, filterTitle(words[2]), words.slice(3));
                 let dmChannel = await result.context.user.getDMChannel();
 
                 if (dmChannel == null)
@@ -551,7 +551,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                 if (result.context.author != result.context.user.id)
                     await bu.send(dmChannel.id, "Oops! I cant send a debug output for someone elses tag!");
                 else
-                    await bu.send(dmChannel.id, null, generateDebug(result.code, result.context, result.result));
+                    await bu.send(dmChannel.id, null, bbtag.generateDebug(result.code, result.context, result.result));
 
                 break;
             case 'favourite':
@@ -670,10 +670,10 @@ ${Object.keys(user.favourites).join(', ')}
                     }
                 break;
             case 'docs':
-                tags.docs(msg, words[0], words.slice(2).join(' '));
+                bbtag.docs(msg, words[0], words.slice(2).join(' '));
                 break;
             default:
-                await tags.executeTag(msg, filterTitle(words[1]), words.slice(2));
+                await bbtag.executeTag(msg, filterTitle(words[1]), words.slice(2));
                 break;
         }
     } else {
@@ -734,50 +734,6 @@ function systemTag(name) {
         uses: 0,
         systemOwned: true
     };
-}
-
-function generateDebug(code, context, result) {
-    if (arguments.length == 1)
-        return (context, result) => generateDebug(code, context, result);
-
-    let errors = viewErrors(...context.errors);
-    let variables = Object.keys(context.variables.cache)
-        .map(key => {
-            let offset = ''.padStart(key.length + 2, ' ');
-            let json = JSON.stringify(context.variables.cache[key].value);
-            json.replace(/\n/, '\n' + offset);
-            return key + ': ' + json;
-        }).slice(0, 24);
-    return {
-        name: 'BBTag.debug.txt',
-        file: 'User input:\n' + JSON.stringify(context.input.length > 0 ? context.input : 'No input.') + '\n\n' +
-            'Code Executed:\n' + code + '\n\n' +
-            'Errors:\n' + (errors.length > 0 ? errors.join('\n') : 'No errors') + '\n\n' +
-            'Variables:\n' + (variables.length > 0 ? variables.join('\n') : 'No variables')
-    };
-}
-
-function viewErrors(...errors) {
-    let result = [];
-    for (const e of errors) {
-        let text = '';
-        if (e.tag.start == null || e.tag.end == null)
-            text += 'General';
-        else
-            text += 'Position ' + e.tag.start + ' - ' + e.tag.end;
-        text += ': ';
-
-        if (typeof e.error == 'string') {
-            result.push(text + e.error);
-            continue;
-        }
-
-        let offset = ''.padStart(text.length, ' ');
-        let lines = viewErrors(...e.error).map(l => offset + l);
-        lines[0] = text + lines[0].substring(offset.length);
-        result.push(...lines);
-    }
-    return result;
 }
 
 function logChange(action, msg, actionObj) {
