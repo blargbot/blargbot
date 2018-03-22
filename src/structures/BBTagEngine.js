@@ -56,7 +56,7 @@ class BBTag extends BaseTag {
 
         do {
             if (iterator.nextChar == '}') break;
-            if (iterator.nextChar == ';') break;
+            if (iterator.nextChar == ';' && typeof parent != 'string') break;
             if (iterator.nextChar == '{') {
                 result._protected.children.push(SubTag.parse(result, iterator));
                 iterator.moveBack();
