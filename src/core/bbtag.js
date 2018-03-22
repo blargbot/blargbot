@@ -13,7 +13,7 @@ const argFactory = require('../structures/ArgumentFactory'),
 
 var e = module.exports = {};
 
-e.executeTag = async function (msg, tagName, args) {
+e.executeTag = async function (msg, tagName, command) {
     let tag = await r.table('tag').get(tagName).run();
     if (!tag)
         bu.send(msg, `❌ That tag doesn't exist! ❌`);
@@ -31,7 +31,7 @@ Reason: ${tag.reason}`);
         let result = await bbEngine.runTag({
             msg,
             tagContent: tag.content,
-            input: args.map(c => '"' + c + '"').join(' '),
+            input: command.map(c => '"' + c + '"').join(' '),
             isCC: false,
             tagName: tagName,
             author: tag.author,
@@ -55,7 +55,7 @@ Reason: ${tag.reason}`);
     }
 };
 
-e.executeCC = async function (msg, ccName, args, debug = false) {
+e.executeCC = async function (msg, ccName, command) {
     let ccommand = (await bu.getGuild(msg.guild.id)).ccommands[ccName.toLowerCase()];
     if (!ccommand)
         bu.send(msg, `❌ That CCommand doesn't exist! ❌`);
@@ -63,11 +63,10 @@ e.executeCC = async function (msg, ccName, args, debug = false) {
         let result = await bbEngine.runTag({
             msg,
             tagContent: ccommand.content,
-            input: args.map(c => '"' + c + '"').join(' '),
+            input: command.map(c => '"' + c + '"').join(' '),
             isCC: false,
             tagName: ccName,
-            author: ccommand.author,
-            attach: debug ? this.generateDebug(ccommand.content) : null
+            author: ccommand.author
         });
         /** @type {string} */
         result.code = ccommand.content;

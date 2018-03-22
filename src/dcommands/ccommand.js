@@ -273,7 +273,9 @@ e.execute = async function (msg, words, text) {
                 }
                 break;
             case 'debug':
-                bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3), true);
+                let result = await bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3));
+                await bu.send(result.context.msg, null, bbtag.generateDebug(result.code, result.context, result.result));
+
                 break;
             default:
                 bu.send(msg, 'Improper usage. Do \`help ccommand\` for more details.');
