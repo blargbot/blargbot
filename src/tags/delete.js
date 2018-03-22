@@ -9,27 +9,6 @@
 
 const Builder = require('../structures/TagBuilder');
 
-async function deleteMessage(subtag, context, channelId, messageId) {
-    let msg = context.msg,
-        channel = Builder.util.parseChannel(context, channelId);
-
-    if (typeof channel === 'function') //One of the Builder.error values got returned
-        return channel(subtag, context);
-
-    if (msg.id !== messageId)
-        try {
-            msg = await bot.getMessage(channel.id, messageId);
-        } catch (err) {
-            return Builder.errors.noMessageFound(subtag, context);
-        }
-
-    try {
-        if (msg != null)
-            msg.delete();
-    } catch (e) {
-    }
-}
-
 module.exports =
     Builder.AutoTag('delete')
         .requireStaff()
@@ -41,8 +20,28 @@ module.exports =
             'The message that triggered this will be deleted. {delete}',
             '(the message got deleted idk how to do examples for this)'
         )
-        .whenArgs('0', async (subtag, context, args) => await deleteMessage(subtag, context, context.channel.id, context.msg.id))
-        .whenArgs('1', async (subtag, context, args) => await deleteMessage(subtag, context, context.channel.id, args[0]))
-        .whenArgs('2', async (subtag, context, args) => await deleteMessage(subtag, context, args[0], args[1]))
+        .whenArgs('0', async (subtag, context, args) => await this.deleteMessage(subtag, context, context.channel.id, context.msg.id))
+        .whenArgs('1', async (subtag, context, args) => await this.deleteMessage(subtag, context, context.channel.id, args[0]))
+        .whenArgs('2', async (subtag, context, args) => await this.deleteMessage(subtag, context, args[0], args[1]))
         .whenDefault(Builder.errors.tooManyArguments)
+        .withProp('deleteMessage', async function (subtag, context, channelId, messageId) {
+            let msg = context.msg,
+                channel = Builder.util.parseChannel(context, channelId);
+
+            if (typeof channel === 'function') //One of the Builder.error values got returned
+                return channel(subtag, context);
+
+            if (msg.id !== messageId)
+                try {
+                    msg = await bot.getMessage(channel.id, messageId);
+                } catch (err) {
+                    return Builder.errors.noMessageFound(subtag, context);
+                }
+
+            try {
+                if (msg != null)
+                    msg.delete();
+            } catch (e) {
+            }
+        })
         .build();
