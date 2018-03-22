@@ -304,7 +304,7 @@ function parse(content) {
  */
 async function execute(bbtag, context) {
     if (!(bbtag instanceof BBTag))
-        throw 'Execute can only accept BBTag as its first parameter';
+        throw new Error('Execute can only accept BBTag as its first parameter');
     let result = [],
         startOffset = (bbtag.content.match(/^\s+/) || [''])[0].length,
         endOffset = (bbtag.content.match(/\s+$/) || [''])[0].length,
