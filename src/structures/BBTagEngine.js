@@ -288,10 +288,10 @@ class StringIterator {
 function parse(content) {
     let bbtag = BBTag.parse(content);
     if (bbtag.content.length != bbtag.source.length)
-        return { success: false, error: 'Unexpected `}` at ' + bbtag.content.length - 1 };
+        return { success: false, error: 'Unexpected \'}\' at ' + (bbtag.content.length) };
     let error = bbtag.children.find(c => !c.content.endsWith('}'));
     if (error != null)
-        return { success: false, error: 'Unmatched `{` at ' + error.start };
+        return { success: false, error: 'Unmatched \'{\' at ' + error.start };
     return { success: true, bbtag };
 }
 
@@ -348,7 +348,7 @@ async function execute(bbtag, context) {
 async function execString(string, context) {
     let parsed = parse(string);
     if (!parsed.success)
-        return addError(context, parsed.error);
+        return addError({}, context, parsed.error);
     return await execute(parsed.bbtag, context);
 }
 
@@ -391,18 +391,18 @@ async function runTag(config) {
 
     await context.variables.persist();
 
-    if (context.state.embed == null && (result == null || result.trim() == '')) {
-        console.debug('End run tag - No output');
-        return { context, result, response: null };
-    }
-
-    if (context.state.replace != null)
+    if (result != null && context.state.replace != null)
         result.replace(context.state.replace.regex, context.state.replace.with);
 
     result = (config.modResult || (c => c))(result);
 
     if (typeof result == 'object')
         result = await result;
+
+    if (context.state.embed == null && (result == null || result.trim() == '')) {
+        console.debug('End run tag - No output');
+        return { context, result, response: null };
+    }
 
     let attachment = (config.attach || (c => null))(context, result);
 

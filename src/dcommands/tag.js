@@ -760,7 +760,13 @@ function generateDebug(code, context, result) {
 function viewErrors(...errors) {
     let result = [];
     for (const e of errors) {
-        let text = 'Position ' + e.tag.start + ' - ' + e.tag.end + ': ';
+        let text = '';
+        if (e.tag.start == null || e.tag.end == null)
+            text += 'General';
+        else
+            text += 'Position ' + e.tag.start + ' - ' + e.tag.end;
+        text += ': ';
+
         if (typeof e.error == 'string') {
             result.push(text + e.error);
             continue;
