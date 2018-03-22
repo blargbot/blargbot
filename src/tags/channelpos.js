@@ -16,6 +16,6 @@ module.exports =
             'This channel is in position {channelpos}',
             'This channel is in position 1'
         )
-        .whenArgs('0', async (_, context) => context.channel.position)
+        .whenArgs(0, async (_, context) => context.channel.position)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

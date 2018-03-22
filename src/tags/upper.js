@@ -17,8 +17,8 @@ module.exports =
             '{upper;this will become uppercase}',
             'THIS WILL BECOME UPPERCASE'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             return args[0].toUpperCase();
         })
         .whenDefault(Builder.errors.tooManyArguments)

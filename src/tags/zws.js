@@ -13,6 +13,6 @@ module.exports =
     Builder.AutoTag('zws')
         .withDesc('Will be replaced by a single zero width space (unicode 200B)')
         .withExample('{zws}', '\u200B')
-        .whenArgs('0', async _ => '\u200B')
+        .whenArgs(0, async _ => '\u200B')
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

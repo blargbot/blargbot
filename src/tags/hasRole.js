@@ -22,7 +22,7 @@ module.exports =
             'You are a moderator: {hasrole;moderator}',
             'You are a moderator: false'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[3],
                 result = await this.checkRoles(context, args[0], args[1], quiet);

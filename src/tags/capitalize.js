@@ -17,7 +17,7 @@ module.exports =
             '{capitalize;hello world!}',
             'Hello world!'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             if (args[1])
                 return args[0][0].toUpperCase() + args[0].substr(1).toLowerCase();

@@ -19,7 +19,7 @@ module.exports =
             '{sort;[3, 2, 5, 1, 4]}',
             '[1,2,3,4,5]'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let arr = await bu.getArray(context, args[0]),
                 descending = bu.parseBoolean(args[1]);

@@ -17,7 +17,7 @@ module.exports =
             '{split;Hello! This is a sentence.;{space}}',
             '["Hello!","This","is","a","sentence."]'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             return bu.serializeTagArray(args[0].split(args[1]));
         })

@@ -17,6 +17,6 @@ module.exports =
             'I am saying things.',
             'You said 4 words.'
         )
-        .whenArgs('0', async (_, context) => context.input.length.toString())
+        .whenArgs(0, async (_, context) => context.input.length.toString())
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

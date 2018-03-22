@@ -20,7 +20,7 @@ module.exports =
             'Hello world!',
             'Your second word was world!'
         )
-        .whenArgs('0', async (_, context) => context.input.join(' '))
+        .whenArgs(0, async (_, context) => context.input.join(' '))
         .whenArgs('1-2', async function (subtag, context, args) {
             let from = bu.parseInt(args[0]),
                 to = args[1];

@@ -17,7 +17,7 @@ module.exports =
             '{concat;["this", "is"];["an", "array"]}',
             '["this","is","an","array"]'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
             let result = Builder.util.flattenArgArrays(args);
             return JSON.stringify(result);

@@ -21,7 +21,7 @@ module.exports =
             '{get;var1}\n{get;~var2}\n{get;var3}',
             'This is local var1\nThis is temporary var2\n{"v":["this","is","an","array"],"n":"var3"}'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let result = await context.variables.get(args[0]),
                 index = bu.parseInt(args[1]);

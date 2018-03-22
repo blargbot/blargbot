@@ -19,7 +19,7 @@ module.exports =
             '000ABC'
         )
         .whenArgs('0-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (subtag, context, args) {
+        .whenArgs(3, async function (subtag, context, args) {
             let direction = args[0],
                 backing = args[1],
                 overlay = args[2];

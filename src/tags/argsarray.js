@@ -17,6 +17,6 @@ module.exports =
             'Hello world!',
             'Your input was ["Hello","world!"]'
         )
-        .whenArgs('0', async (_, context) => JSON.stringify(context.input))
+        .whenArgs(0, async (_, context) => JSON.stringify(context.input))
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

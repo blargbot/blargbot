@@ -16,8 +16,8 @@ module.exports =
             '{color;pink}',
             'ffc0cb'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let color = bu.parseColor(args[0]);
             if (color == null)
                 return Builder.util.error(subtag, context, 'Invalid color');

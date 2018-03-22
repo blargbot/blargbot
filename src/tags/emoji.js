@@ -17,7 +17,7 @@ module.exports =
             '{emoji;I am hungry;5}',
             '🍔 🍕 😩 🍴 😐'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let q = encodeURIComponent(args[0]);
             let amount = bu.parseInt(args[1]) || bu.parseInt(context.scope.fallback);

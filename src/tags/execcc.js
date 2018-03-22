@@ -17,7 +17,7 @@ module.exports =
             'Let me do a ccommand for you. {execcc;f}',
             'Let me do a ccommand for you. User#1111 has paid their respects. Total respects given: 5'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let storedGuild = await bu.getGuild(context.guild.id),
                 ccommand = storedGuild.ccommands[args[0].toLowerCase()];

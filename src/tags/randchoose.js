@@ -19,8 +19,8 @@ module.exports =
             'I feel like eating {randchoose;cake;pie;pudding} today',
             'I feel like eating pudding today.'
         ).resolveArgs(-1)
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let value = await bbEngine.execute(args[0], context);
             let options = await bu.getArray(context, value);
             if (options == null || !Array.isArray(options.v))

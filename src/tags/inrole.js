@@ -17,8 +17,8 @@ module.exports =
             'There are {inrole;11111111111111111} people in the role!',
             'There are 5 people in the role!'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let role = context.guild.roles.get(args[0]);
             if (role)
                 return context.guild.members.filter(m => m.roles.includes(role.id)).length;

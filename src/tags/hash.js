@@ -18,8 +18,8 @@ module.exports =
             'The hash of brown is {hash;brown}.',
             'The hash of brown is 94011702.'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             return args[0].split('').reduce(function (a, b) {
                 a = ((a << 5) - a) + b.charCodeAt(0);
                 return a & a;

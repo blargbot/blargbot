@@ -20,7 +20,7 @@ module.exports =
             '{react;:thinking:;:joy:}',
             '(On message) 🤔(1) 😂(1)'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, emotes) {
             let channel = null,
                 message = null;

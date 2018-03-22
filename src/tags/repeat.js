@@ -19,7 +19,7 @@ module.exports =
             'eeeeeeeeee'
         ).resolveArgs(1)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (subtag, context, args) {
+        .whenArgs(2, async function (subtag, context, args) {
             let fallback = bu.parseInt(context.scope.fallback),
                 amount = bu.parseInt(args[1]),
                 result = '';

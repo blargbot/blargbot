@@ -22,11 +22,11 @@ module.exports =
             '{get;var1}\n{get;~var2}\n{get;var3}',
             'This is local var1\nThis is temporary var2\n{"v":["this","is","an","array"],"n":"var3"}'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             await context.variables.set(args[0], '');
         })
-        .whenArgs('2', async function (subtag, context, args) {
+        .whenArgs(2, async function (subtag, context, args) {
             let deserialized = bu.deserializeTagArray(args[1]);
             if (deserialized != null && Array.isArray(deserialized.v))
                 await context.variables.set(args[0], deserialized.v.map(v => typeof v == 'string' ? v : JSON.stringify(v)));

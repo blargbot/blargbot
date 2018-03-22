@@ -17,7 +17,7 @@ module.exports =
             '{lower;THIS WILL BECOME LOWERCASE}',
             'this will become lowercase'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async (_, __, args) => (args[0] || '').toLowerCase())
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async (_, __, args) => (args[0] || '').toLowerCase())
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

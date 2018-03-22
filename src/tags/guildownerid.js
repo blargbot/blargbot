@@ -16,6 +16,6 @@ module.exports =
             'The owner\'s id is {guildownerid}.',
             'The owner\'s id is 1234567890123456.'
         )
-        .whenArgs('0', async (_, context) => context.guild.ownerID)
+        .whenArgs(0, async (_, context) => context.guild.ownerID)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

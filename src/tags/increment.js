@@ -19,7 +19,7 @@ module.exports =
             '{set;~counter;0} {repeat;{increment;~counter},;10}',
             '1,2,3,4,5,6,7,8,9,10'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
             return this.runIncrement(subtag, context, args, 1);
         }).whenDefault(Builder.errors.tooManyArguments)

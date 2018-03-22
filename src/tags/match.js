@@ -18,7 +18,7 @@ module.exports =
             '["1", "25"]'
         ).resolveArgs(0)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (subtag, context, args) {
+        .whenArgs(2, async function (subtag, context, args) {
             let text = args[0],
                 regex;
 

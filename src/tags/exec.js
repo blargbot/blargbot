@@ -18,7 +18,7 @@ module.exports =
             'Let me do a tag for you. {exec;f}',
             'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let tag = await r.table('tag').get(args[0]).run();
             if (tag == null)

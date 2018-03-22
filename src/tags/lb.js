@@ -16,6 +16,6 @@ module.exports =
             'This is a bracket! {lb}',
             'This is a bracket! {'
         )
-        .whenArgs('0', async _ => '{')
+        .whenArgs(0, async _ => '{')
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

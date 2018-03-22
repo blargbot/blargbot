@@ -18,7 +18,7 @@ module.exports =
             'this!is!an!array'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (subtag, context, args) {
+        .whenArgs(2, async function (subtag, context, args) {
             let arr = await bu.getArray(context, args[0]),
                 text = args[1];
 

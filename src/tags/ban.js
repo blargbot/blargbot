@@ -27,7 +27,7 @@ module.exports =
             '{ban;stupid cat;0;This is a test ban} @stupid cat was banned!',
             'Success @stupid cat was banned!'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-5', async function (subtag, context, args) {
             let user = await bu.getUser(context.msg, args[0], true);
 

@@ -20,7 +20,7 @@ module.exports =
             '{unban;@user;0;This is a test unban}@user was unbanned!',
             '@user was unbanned!'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
             let user = await bu.getUser(context.msg, args[0], false),
                 reason = args[1],

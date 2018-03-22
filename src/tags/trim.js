@@ -17,7 +17,7 @@ module.exports =
             'Hello {trim;{space;10}beautiful{space;10}} World',
             'Hello beautiful World'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) { return args[0].trim(); })
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) { return args[0].trim(); })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

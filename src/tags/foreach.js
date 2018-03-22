@@ -23,7 +23,7 @@ module.exports =
             'I like apples\nI like oranges\nI like c#'
         ).resolveArgs(0, 1)
         .whenArgs('0-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (subtag, context, args) {
+        .whenArgs(3, async function (subtag, context, args) {
             let varName = args[0],
                 arr = await bu.getArray(context, args[1]) || { v: args[1].split('') },
                 result = '';

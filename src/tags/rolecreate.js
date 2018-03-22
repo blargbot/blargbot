@@ -29,7 +29,7 @@ module.exports =
             '{rolecreate;Super Cool Role!;ff0000;0;false;true}',
             '11111111111111111'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-5', async function (subtag, context, args) {
             let errors = [],
                 options = {

@@ -17,8 +17,8 @@ module.exports =
             '{parsefloat;abcd} {parsefloat;12.34} {parsefloat;1.2cd}',
             'NaN 12.34 1.2'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let number = bu.parseFloat(args[0]);
             if (isNaN(number))
                 return 'NaN';

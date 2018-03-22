@@ -17,6 +17,6 @@ module.exports =
             'This channel\'s id is {channelid}',
             'This channel\'s id is 1234567890123456'
         )
-        .whenArgs('0', async (_, context) => context.channel.id)
+        .whenArgs(0, async (_, context) => context.channel.id)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

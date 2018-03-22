@@ -16,6 +16,6 @@ module.exports =
             'This is a semicolon! {semi}',
             'This is a semicolon! ;'
         )
-        .whenArgs('0', async _ => ';')
+        .whenArgs(0, async _ => ';')
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

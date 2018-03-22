@@ -18,7 +18,7 @@ module.exports =
             '{abs;-535}',
             '535'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
             let values = Builder.util.flattenArgArrays(args).map(bu.parseFloat);
             if (values.filter(isNaN).length > 0)

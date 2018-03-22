@@ -17,8 +17,8 @@ module.exports =
             '{parseint;abcd} {parseint;1234} {parseint;12cd}',
             'NaN 1234 12'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let number = bu.parseInt(args[0]);
             if (isNaN(number))
                 return 'NaN';

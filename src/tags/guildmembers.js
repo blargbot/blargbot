@@ -16,6 +16,6 @@ module.exports =
             'This guild has {guildmembers} members.',
             'This guild has 123 members.'
         )
-        .whenArgs('0', async (_, context) => context.guild.memberCount)
+        .whenArgs(0, async (_, context) => context.guild.memberCount)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

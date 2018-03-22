@@ -30,7 +30,7 @@ module.exports =
             'yes',
             'Correct!'
         ).resolveArgs(0)
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
             let value = args[0],
                 indexes = [...args.keys()].slice(1).reverse(),

@@ -18,7 +18,7 @@ module.exports =
             'You rolled a 5.'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (subtag, context, args) {
+        .whenArgs(2, async function (subtag, context, args) {
             let chars = args[0].split(''),
                 count = bu.parseInt(args[1]),
                 fallback = bu.parseInt(context.scope.fallback);

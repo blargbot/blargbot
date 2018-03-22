@@ -16,6 +16,6 @@ module.exports =
             'The guild\'s id is {guildid}',
             'The guild\'s id is 1234567890123456'
         )
-        .whenArgs('0', async (_, context) => context.guild.id)
+        .whenArgs(0, async (_, context) => context.guild.id)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

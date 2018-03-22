@@ -16,6 +16,6 @@ module.exports =
             'This channel\'s name is {channelname}',
             'This channel\'s name is test-channel'
         )
-        .whenArgs('0', async (_, context) => context.channel.name)
+        .whenArgs(0, async (_, context) => context.channel.name)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

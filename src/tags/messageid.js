@@ -16,6 +16,6 @@ module.exports =
             'The message id was {messageid}',
             'The message id was 111111111111111111'
         )
-        .whenArgs('0', async (_, context) => context.msg.id)
+        .whenArgs(0, async (_, context) => context.msg.id)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

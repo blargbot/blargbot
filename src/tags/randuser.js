@@ -16,7 +16,7 @@ module.exports =
             '{username;{randuser}} is a lovely person! {username;{randuser}} isn\'t as good.',
             'abalabahaha is a lovely person! stupid cat isn\'t as good.'
         )
-        .whenArgs('0', async function (subtag, context) {
+        .whenArgs(0, async function (subtag, context) {
             let members = context.guild.members.map(m => m);
             return members[bu.getRandomInt(0, members.length - 1)].user.id;
         })

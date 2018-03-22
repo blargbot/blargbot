@@ -18,7 +18,7 @@ module.exports =
             '{roledelete;Super Cool Role!}',
             '(rip no more super cool roles for anyone)'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
                 role = await bu.getRole(context.msg, args[0], quiet);

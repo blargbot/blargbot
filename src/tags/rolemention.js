@@ -18,7 +18,7 @@ module.exports =
             'The admin role ID is: {roleid;admin}.',
             'The admin role ID is: 123456789123456.'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
                 role = await bu.getRole(context.msg, args[0], quiet);

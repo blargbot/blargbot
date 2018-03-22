@@ -22,8 +22,8 @@ module.exports =
             '{embed;{lb}"title":"Hello!"{rb}}',
             '(an embed with "Hello!" as the title)'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             context.state.embed = bu.parseEmbed(args[0]);
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -18,7 +18,7 @@ module.exports =
             '{min;50;2;65}',
             '2'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
             args = Builder.util.flattenArgArrays(args);
             args = args.map(bu.parseFloat);

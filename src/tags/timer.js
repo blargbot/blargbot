@@ -19,7 +19,7 @@ module.exports =
             '(after 20 seconds:) Hello!'
         ).resolveArgs(1)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (subtag, context, args) {
+        .whenArgs(2, async function (subtag, context, args) {
             if (context.state.timerCount == -1)
                 return Builder.util.error(subtag, context, 'Nested timers are not allowed');
 

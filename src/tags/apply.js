@@ -18,7 +18,7 @@ module.exports =
             '{apply;randint;[1,4]}',
             '3'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
             if (!TagManager.list.hasOwnProperty(args[0]))
                 return Builder.util.error(subtag, context, 'No subtag found');

@@ -18,8 +18,8 @@ module.exports =
             '{reverse;palindrome}',
             'emordnilap'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let arr = bu.deserializeTagArray(args[0]);
             if (arr == null || !Array.isArray(arr.v))
                 return args[0].split('').reverse().join('');

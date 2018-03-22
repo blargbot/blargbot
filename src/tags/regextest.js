@@ -18,7 +18,7 @@ module.exports =
             'true false'
         ).resolveArgs(0)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (subtag, context, args) {
+        .whenArgs(2, async function (subtag, context, args) {
             let regex;
             try {
                 regex = bu.createRegExp(args[1].content);

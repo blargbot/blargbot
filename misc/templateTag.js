@@ -29,7 +29,7 @@ module.exports =
         // Conditions can be a function accepting (subtag, context, args), a number for the number of args,
         // or a string representing multiple values. Valid strings are:
         // ((\d+,)*\d+), (\d+-\d+), ((>|>=|<|<=|==|!=|=|!)\d+)
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         //Default case to be run if none of the conditional parameters are satisfied
         .whenDefault(async function (subtag, context, args) {
             let values = Builder.util.flattenArgArrays(args).map(bu.parseFloat);

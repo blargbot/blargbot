@@ -19,8 +19,8 @@ module.exports =
             'Hello',
             'What you said is 5 chars long.'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let deserialized = bu.deserializeTagArray(args[0]);
             if (deserialized && Array.isArray(deserialized.v))
                 return deserialized.v.length;

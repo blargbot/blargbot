@@ -18,7 +18,7 @@ module.exports =
             'The admins are: {rolemembers;Admin}.',
             'The admins are: ["11111111111111111","22222222222222222"].'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
                 role = await bu.getRole(context.msg, args[0], quiet);

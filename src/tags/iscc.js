@@ -16,6 +16,6 @@ module.exports =
             '{if;{iscc};{dm;{userid};You have mail!};Boo, this only works in cc\'s}',
             'Boo, this only works in cc\'s'
         )
-        .whenArgs('0', async (_, context) => context.isCC)
+        .whenArgs(0, async (_, context) => context.isCC)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

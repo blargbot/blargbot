@@ -18,8 +18,8 @@ module.exports =
             'You have {warnings} warning(s)!',
             'You have 0 warning(s)!'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let user = context.user;
 
             if (args[0])

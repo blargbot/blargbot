@@ -19,8 +19,8 @@ module.exports =
             'one two three',
             'three one two'
         )
-        .whenArgs('0', async function (subtag, context, args) { bu.shuffle(context.input); })
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, async function (subtag, context, args) { bu.shuffle(context.input); })
+        .whenArgs(1, async function (subtag, context, args) {
             let arr = bu.deserializeTagArray(args[0]);
 
             if (arr == null || !Array.isArray(arr.v))

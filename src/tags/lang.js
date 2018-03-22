@@ -17,7 +17,7 @@ module.exports =
             'This will be displayed with js! {lang;js}.',
             'This will be displayed with js!.'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async _ => '')
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async _ => '')
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

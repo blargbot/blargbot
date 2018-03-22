@@ -20,9 +20,9 @@ module.exports =
             'The message that triggered this will be deleted. {delete}',
             '(the message got deleted idk how to do examples for this)'
         )
-        .whenArgs('0', async (subtag, context, args) => await this.deleteMessage(subtag, context, context.channel.id, context.msg.id))
-        .whenArgs('1', async (subtag, context, args) => await this.deleteMessage(subtag, context, context.channel.id, args[0]))
-        .whenArgs('2', async (subtag, context, args) => await this.deleteMessage(subtag, context, args[0], args[1]))
+        .whenArgs(0, async (subtag, context, args) => await this.deleteMessage(subtag, context, context.channel.id, context.msg.id))
+        .whenArgs(1, async (subtag, context, args) => await this.deleteMessage(subtag, context, context.channel.id, args[0]))
+        .whenArgs(2, async (subtag, context, args) => await this.deleteMessage(subtag, context, args[0], args[1]))
         .whenDefault(Builder.errors.tooManyArguments)
         .withProp('deleteMessage', async function (subtag, context, channelId, messageId) {
             let msg = context.msg,

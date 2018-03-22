@@ -17,8 +17,8 @@ module.exports =
             '{floor;1.23}',
             '1'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let number = bu.parseFloat(args[0]);
             if (isNaN(number))
                 return Builder.errors.notANumber(subtag, context);

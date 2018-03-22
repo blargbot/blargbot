@@ -17,8 +17,8 @@ module.exports =
             '{shift;["this", "is", "an", "array"]}',
             'this'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let arr = await bu.getArray(context, args[0]), result;
 
             if (arr == null || !Array.isArray(arr.v))

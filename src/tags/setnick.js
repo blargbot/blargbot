@@ -18,7 +18,7 @@ module.exports =
             '{setnick;super cool nickname}',
             ''
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let nick = args[0],
                 user = context.user;

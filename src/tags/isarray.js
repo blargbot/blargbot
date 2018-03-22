@@ -17,8 +17,8 @@ module.exports =
             '{isarray;["array?"]} {isarray;array?}',
             'true false'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
-        .whenArgs('1', async function (subtag, context, args) {
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
             let input = await bu.deserializeTagArray(args[0]);
             return (input != null && Array.isArray(input.v)) === true;
         }).whenDefault(Builder.errors.tooManyArguments)

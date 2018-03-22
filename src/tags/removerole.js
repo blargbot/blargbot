@@ -21,7 +21,7 @@ module.exports =
             'No more role! {removerole;11111111111111111}',
             'No more role! true'
         )
-        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
                 result = await TagManager.list['hasrole'].checkRoles(context, args[0], args[1], quiet);

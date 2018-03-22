@@ -16,6 +16,6 @@ module.exports =
             'This command is {commandname}',
             'This command is test'
         )
-        .whenArgs('0', async (subtag, context) => context.tagName || Builder.util.error(subtag, context, 'Not a command'))
+        .whenArgs(0, async (subtag, context) => context.tagName || Builder.util.error(subtag, context, 'Not a command'))
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
