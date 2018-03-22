@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:33:45
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:34:15
+ * @Last Modified time: 2018-03-20 09:38:15
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,10 +15,11 @@ module.exports =
         .withArgs(a => [a.optional('channelId'), a.require('messageId'), a.require([a.optional('text'), a.optional('embed')])])
         .withDesc('Edits `messageId` in `channelId` to say `text` or `embed`. ' +
             'Atleast one of `text` and `embed` is required. ' +
-            'If `channelId` is not supplied, it defaults to the current channel. ' +
+            'If `channelId` is not supplied, it defaults to the current channel.\n' +
+            'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.\n' +
             'Only messages created by the bot may be edited')
         .withExample(
-            'A message got edited: {edit;111111111111111111;New content}',
+            'A message got edited: {edit;111111111111111111;New content;{buildembed;title:You\'re cool}}',
             '(the message got edited idk how to do examples for this)'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)

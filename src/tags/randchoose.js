@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+const Builder = require('../structures/TagBuilder'),
+    bbEngine = require('../structures/BBTagEngine');
 
 module.exports =
     Builder.AutoTag('randchoose')
@@ -19,11 +20,16 @@ module.exports =
             'I feel like eating pudding today.'
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1', async function (subtag, context, args) {
+            let value = await bbEngine.execute(args[0], context);
+            let options = await bu.getArray(context, value);
+            if (options == null || !Array.isArray(options.v))
+                return value;
+            let selection = bu.getRandomInt(0, options.v.length - 1);
+            return options.v[selection];
+        })
         .whenDefault(async function (subtag, context, args) {
-            let options = Builder.util.flattenArgArrays(params.args.splice(1)),
-                selection = bu.getRandomInt(0, options.length - 1);
-
-            params.content = options[selection];
-            return await bu.processTagInner(subtag, context, args);
+            let selection = bu.getRandomInt(0, args.length - 1);
+            return await bbEngine.execute(args[selection], context);
         })
         .build();

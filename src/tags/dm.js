@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 12:20:00
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 13:44:19
+ * @Last Modified time: 2018-03-20 09:37:33
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -13,22 +13,32 @@ const Builder = require('../structures/TagBuilder'),
 module.exports =
     Builder.CCommandTag('dm')
         .requireStaff()
-        .withArgs(a => [a.require('user'), a.require('message')])
-        .withDesc('DMs `user` the given `message`. You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.'
+        .withArgs(a => [a.require('user'), a.require([a.optional('message'), a.optional('embed')])])
+        .withDesc('DMs `user` the given `message` and `embed`. At least one of `message` and `embed` must be provided. ' +
+            'You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\n' +
+            'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.'
         ).withExample(
-            '{dm;stupid cat;Hello}',
-            'DM: Hello'
+            '{dm;stupid cat;Hello;{buildembed;title:You\'re cool}}',
+            'DM: Hello\nEmbed: You\'re cool'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (subtag, context, args) {
+        .whenArgs('2-3', async function (subtag, context, args) {
             if (context.state.dmCount > 0)
                 return Builder.util.error(subtag, context, 'Already have DMed');
 
-            let user = await bu.getUser(context.msg, args[0]);
+            let user = await bu.getUser(context.msg, args[0]),
+                content = args[1],
+                embed = bu.parseEmbed(args[1]);
+
             if (user == null)
                 return Builder.errors.noUserFound(subtag, context);
             if (!context.guild.members.get(user.id))
                 return Builder.errors.userNotInGuild(subtag, context);
+
+            if (embed != null && !embed.malformed)
+                content = undefined;
+            else
+                embed = bu.parseEmbed(args[2]);
 
             try {
                 const DMChannel = await user.getDMChannel();
@@ -45,8 +55,8 @@ module.exports =
                     DMCache[user.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
                 }
                 await bu.send(DMChannel.id, {
-                    content: args[1],
-                    embed: null,
+                    content,
+                    embed,
                     nsfw: context.state.nsfw
                 });
                 DMCache[user.id].count++;

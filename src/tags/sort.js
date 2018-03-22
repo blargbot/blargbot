@@ -30,7 +30,7 @@ module.exports =
             if (arr == null || !Array.isArray(arr.v))
                 return Builder.errors.notAnArray(subtag, context);
 
-            let sorter = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+            let sorter = TagManager.list['bool'];
 
             arr.v = arr.v.sort(sorter.compare);
             if (descending) arr.v.reverse();

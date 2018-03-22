@@ -63,6 +63,12 @@ function mdToHtml(text) {
         });
 }
 
+function addSubtagReferences(text) {
+    return text.replace(/\{([a-z]+)\}/ig, function (match, subtag) {
+        return `<a href='#${subtag}'>${match}</a>`;
+    })
+}
+
 e.init = () => {
     dep.hbs.registerPartials(dep.path.join(__dirname, 'views', 'partials'));
 
@@ -206,7 +212,7 @@ e.init = () => {
                 toReturn += `<p>Arguments: <code>${mdToHtml(argumentFactory.toString(subtag.args))}</code></p>`;
             }
             if (subtag.array) toReturn += `<p>Array compatible</p>`;
-            toReturn += `<p>${mdToHtml(subtag.desc)}</p>`;
+            toReturn += `<p>${addSubtagReferences(mdToHtml(subtag.desc))}</p>`;
 
             if (subtag.exampleCode)
                 toReturn += `<h5>Example Code:</h5><blockquote>${mdToHtml(subtag.exampleCode)}</blockquote>`;
