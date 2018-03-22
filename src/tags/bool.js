@@ -38,10 +38,10 @@ function fixedCompare(a, b) {
     let aNeg = ('' + a).match(/^\s*-\d/),
         bNeg = ('' + b).match(/^\s*-\d/);
 
-        if (aNeg && bNeg) return collator.compare(b, a);
-        if (aNeg) return -1;
-        if (bNeg) return 1;
-        return collator.compare(a, b);
+    if (aNeg && bNeg) return collator.compare(b, a);
+    if (aNeg) return -1;
+    if (bNeg) return 1;
+    return collator.compare(a, b);
 }
 
 module.exports =
@@ -58,7 +58,7 @@ module.exports =
             'true'
         )
         .whenArgs('0-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (subtag, context, args) {
+        .whenArgs(3, async function (subtag, context, args) {
             return this.runCondition(subtag, context, ...args);
         }).whenDefault(Builder.errors.tooManyArguments)
         .withProp("runCondition", function (subtag, context, val1, val2, val3) {

@@ -174,7 +174,7 @@ module.exports =
             '{"name":"Field 1","value":"This is the first field!"},' +
             '{"name":"Field 2","value":"This is the next field and is inline!","inline":true}]}'
         )
-        .whenArgs('0',
+        .whenArgs(0,
             Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
             let embed = {};
