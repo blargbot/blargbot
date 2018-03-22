@@ -100,7 +100,7 @@ class SubTag extends BaseTag {
     constructor(parent) {
         super(parent);
         /** @type {BaseTag|string} */
-        this.name = this.children[0]
+        this.name = this.children[0];
     }
 }
 /**
@@ -303,6 +303,8 @@ function parse(content) {
  * @returns {string}
  */
 async function execute(bbtag, context) {
+    if (!(bbtag instanceof BBTag))
+        throw 'Execute can only accept BBTag as its first parameter';
     let result = [],
         startOffset = (bbtag.content.match(/^\s+/) || [''])[0].length,
         endOffset = (bbtag.content.match(/\s+$/) || [''])[0].length,
