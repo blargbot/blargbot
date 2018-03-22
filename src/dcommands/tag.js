@@ -543,9 +543,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                 }
                 break;
             case 'debug':
-                let command = words.slice(3);
-
-                let result = await tags.executeTag(msg, filterTitle(words[2]), command);
+                let result = await tags.executeTag(msg, filterTitle(words[2]), words.slice(3));
                 let dmChannel = await result.context.user.getDMChannel();
 
                 if (dmChannel == null)
@@ -675,9 +673,7 @@ ${Object.keys(user.favourites).join(', ')}
                 tags.docs(msg, words[0], words.slice(2).join(' '));
                 break;
             default:
-                command = words.slice(2);
-
-                await tags.executeTag(msg, filterTitle(words[1]), command);
+                await tags.executeTag(msg, filterTitle(words[1]), words.slice(2));
                 break;
         }
     } else {
@@ -744,7 +740,7 @@ function generateDebug(code, context, result) {
     if (arguments.length == 1)
         return (context, result) => generateDebug(code, context, result);
 
-    let errors = context.errors.map(e => 'Position ' + e.tag.start + ' - ' + e.tag.end + ': ' + e.error);
+    let errors = viewErrors(...context.errors);
     let variables = Object.keys(context.variables.cache)
         .map(key => {
             let offset = ''.padStart(key.length + 2, ' ');
