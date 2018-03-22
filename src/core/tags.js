@@ -35,20 +35,18 @@ Reason: ${tag.reason}`);
             isCC: false,
             tagName: tagName,
             author: tag.author,
-            modResult: async function (text) {
-                while (/<@!?[0-9]{17,21}>/.test(text)) {
-                    let match = text.match(/<@!?([0-9]{17,21})>/)[1];
-                    //console.debug(match);
-                    let obtainedUser = await bu.getUser(msg, match, true);
-                    let name = '';
-                    if (obtainedUser) {
-                        name = `@${obtainedUser.username}#${obtainedUser.discriminator}`;
-                    } else {
-                        name = `@${match}`;
-                    }
-                    text = text.replace(new RegExp(`<@!?${match}>`, 'g'), name);
-                }
-                return text;
+            modResult: function (text) {
+                return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
+                    let user = msg.guild.members.get(id);
+                    if (user == null)
+                        return '@' + id;
+                    return '@' + user.username + '#' + user.discriminator;
+                }).replace(/<@&(\d{17,21})>/g, function (match, id) {
+                    let role = msg.guild.roles.get(id);
+                    if (role == null)
+                        return '@Unknown Role';
+                    return '@' + role.name;
+                }).replace(/@(everyone|here)/g, (match, type) => '@\u200b' + type);
             }
         });
         /** @type {string} */
