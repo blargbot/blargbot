@@ -546,7 +546,7 @@
             "raw": "Koden for {{name}} er:\n```{{code}}```",
             "alreadyexists": "[[emote.x]] Der findes allerede en brugerdefineret kommando med det navn!",
             "testoutput": "Test udbytte:\n\n{{output}}",
-            "subcommandnotfound": "",
+            "subcommandnotfound": "Kunne ikke finde en underkommando med navnet `{{subcommand}}`.",
             "transferprompt": "",
             "nobots": "[[emote.x][] Du kan ikke overføre ejerskab over en brugerdefineret kommando til en bot!",
             "transfercancelled": "[[emote.x]] Overførslen er blevet annulleret.",
