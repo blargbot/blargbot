@@ -11,7 +11,7 @@ class SubTagDefBuilder {
     constructor(init) {
         this.properties = {};
         this.execute = {
-            /** @type  */
+            /** @type {number[]} */
             resolveArgs: null,
             /** @type {{ contition: subtagCondition, action: subtagAction }} */
             conditional: [],
@@ -45,9 +45,12 @@ class SubTagDefBuilder {
                         return SubTagDefBuilder.util.error(subtag, context, 'Author must be staff');
 
                     let subtagArgs = subtag.children.slice(1);
-                    if (resolveArgs === null) resolveArgs = [...Array(subtagArgs.length).keys()];
 
-                    for (const index of new Set(resolveArgs))
+                    let execArgs = resolveArgs != null
+                        ? resolveArgs
+                        : [...new Array(subtagArgs.length).keys()];
+
+                    for (const index of new Set(execArgs))
                         if (subtagArgs[index] !== undefined)
                             subtagArgs[index] = await bbEngine.execute(subtagArgs[index], context);
 
@@ -66,8 +69,8 @@ class SubTagDefBuilder {
 
                     let result = callback.apply(definition, [subtag, context, subtagArgs]);
                     if (typeof result != 'string')
-                        return '' + ((await result) || '');
-                    return '' + (result || '');
+                        result = await result;
+                    return '' + (result == null ? '' : result);
                 }
                 catch (e) {
                     console.error(e);
