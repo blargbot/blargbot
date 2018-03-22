@@ -17,18 +17,18 @@ module.exports =
         .withExample(
             'You have {warnings} warning(s)!',
             'You have 0 warning(s)!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let user = params.msg.author;
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1', async function (subtag, context, args) {
+            let user = context.user;
 
-            if (params.args[1])
-                user = await bu.getUser(params.msg, params.args[1]);
+            if (args[0])
+                user = await bu.getUser(context.msg, args[0]);
 
             if (user == null)
-                return await Builder.errors.noUserFound(params);
+                return Builder.errors.noUserFound(subtag, context);
 
-            let storedGuild = await bu.getGuild(params.msg.guild.id);
+            let storedGuild = await bu.getGuild(context.guild.id);
             if (storedGuild.warnings && storedGuild.warnings.users && storedGuild.warnings.users[user.id])
                 return storedGuild.warnings.users[user.id];
             return 0;

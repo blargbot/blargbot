@@ -173,41 +173,41 @@ module.exports =
             '{"title":"hello!","description":"I am an example embed","fields":[' +
             '{"name":"Field 1","value":"This is the first field!"},' +
             '{"name":"Field 2","value":"This is the next field and is inline!","inline":true}]}'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1',
+        )
+        .whenArgs('0',
             Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
+        .whenDefault(async function (subtag, context, args) {
             let embed = {};
-            for (const entry of params.args.slice(1)) {
+            for (const entry of args) {
                 if (entry.trim() == '')
                     continue;
                 let splitAt = entry.indexOf(':');
 
-                if (splitAt == -1) return await Builder.errors.invalidEmbed(params, 'Missing \':\'');
+                if (splitAt == -1) return Builder.errors.invalidEmbed(subtag, context, 'Missing \':\'');
 
                 let key = entry.substring(0, splitAt),
                     value = entry.substring(splitAt + 1),
                     field = fields.filter(f => f.key == key.trim().toLowerCase())[0];
 
-                if (field == null) return await Builder.errors.invalidEmbed(params, 'Unknown key \'' + key + '\'');
+                if (field == null) return Builder.errors.invalidEmbed(subtag, context, 'Unknown key \'' + key + '\'');
 
                 value = field.parse(value.trim());
                 let error = field.error(embed, value);
                 if (error != false)
-                    return await Builder.errors.invalidEmbed(params, error);
+                    return Builder.errors.invalidEmbed(subtag, context, error);
                 field.setter(embed, value);
             }
 
             if (embed.fields) {
                 if (embed.fields.filter(f => !(f.value || '').trim()).length > 0)
-                    return await Builder.errors.invalidEmbed(params, 'Field missing value');
+                    return Builder.errors.invalidEmbed(subtag, context, 'Field missing value');
                 if (embed.fields.filter(f => !(f.name || '').trim()).length > 0)
-                    return await Builder.errors.invalidEmbed(params, 'Field missing name');
+                    return Builder.errors.invalidEmbed(subtag, context, 'Field missing name');
             }
 
             let embedText = JSON.stringify(embed);
             if (embedText.length > 6000)
-                return await Builder.errors.invalidEmbed(params, 'Embed too long');
+                return Builder.errors.invalidEmbed(subtag, context, 'Embed too long');
 
             return embedText;
         })

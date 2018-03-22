@@ -16,5 +16,5 @@ module.exports =
         .withExample(
             'This is a sentence. {//;This is a comment.}',
             'This is a sentence.'
-        ).whenDefault(async params => '')
+        ).whenDefault(async _ => '')
         .build();

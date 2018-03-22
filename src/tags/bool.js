@@ -46,12 +46,12 @@ module.exports =
         ).withExample(
             '{bool;<=;5;10}',
             'true'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-3', Builder.errors.notEnoughArguments)
-        .whenArgs('4', async function (params) {
-            return this.runCondition(params, ...params.args.splice(1));
+        )
+        .whenArgs('0-2', Builder.errors.notEnoughArguments)
+        .whenArgs('3', async function (subtag, context, args) {
+            return this.runCondition(subtag, context, ...args);
         }).whenDefault(Builder.errors.tooManyArguments)
-        .withProp("runCondition", async function (params, val1, val2, val3) {
+        .withProp("runCondition", function (subtag, context, val1, val2, val3) {
             let opKey, left, right;
 
             if (this.operators[val2]) {
@@ -67,7 +67,7 @@ module.exports =
                 right = val2;
                 opKey = val3;
             } else
-                return await Builder.errors.invalidOperator(params);
+                return Builder.errors.invalidOperator(subtag, context);
 
             let leftBool = bu.parseBoolean(left, null, false),
                 rightBool = bu.parseBoolean(right, null, false);

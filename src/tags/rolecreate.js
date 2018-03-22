@@ -28,29 +28,29 @@ module.exports =
         .withExample(
             '{rolecreate;Super Cool Role!;ff0000;0;false;true}',
             '11111111111111111'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-6', async function (params) {
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1-5', async function (subtag, context, args) {
             let errors = [],
                 options = {
-                    name: params.args[1],
-                    color: bu.parseColor(params.args[2]) || 0,
-                    permissions: bu.parseInt(params.args[3] || 0),
-                    mentionable: bu.parseBoolean(params.args[4], false),
-                    hoisted: bu.parseBoolean(params.args[5], false)
+                    name: args[0],
+                    color: bu.parseColor(args[1]) || 0,
+                    permissions: bu.parseInt(args[2] || 0),
+                    mentionable: bu.parseBoolean(args[3], false),
+                    hoisted: bu.parseBoolean(args[4], false)
                 };
 
             if (isNaN(options.permissions))
-                return await Builder.util.error(params, 'Permissions not a number');
+                return Builder.util.error(subtag, context, 'Permissions not a number');
 
             try {
-                let role = await params.msg.guild.createRole(options, `Created with a custom command command, executed by user: ${params.msg.author.id}`);
-                if (!params.msg.guild.roles.get(role.id))
-                    params.msg.guild.roles.add(role);
+                let role = await context.guild.createRole(options, `Created with a custom command command, executed by user: ${context.user.id}`);
+                if (!context.guild.roles.get(role.id))
+                    context.guild.roles.add(role);
                 return role.id;
             } catch (err) {
                 console.error(err.stack);
-                return await Builder.util.error(params, 'Failed to create role: no perms');
+                return Builder.util.error(subtag, context, 'Failed to create role: no perms');
             }
         })
         .whenDefault(Builder.errors.tooManyArguments)

@@ -16,8 +16,8 @@ module.exports =
         .withExample(
             'This will be displayed with js! {lang;js}.',
             'This will be displayed with js!.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) { })
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1', async _ => '')
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

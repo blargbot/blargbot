@@ -17,18 +17,18 @@ module.exports =
         .withExample(
             'Hello {substring;world;2;3}!',
             'Hello r!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async function (params) {
-            let fallback = bu.parseInt(params.fallback),
-                text = params.args[1],
-                start = bu.parseInt(params.args[2]),
-                end = bu.parseInt(params.args[3] || text.length);
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-3', async function (subtag, context, args) {
+            let fallback = bu.parseInt(context.scope.fallback),
+                text = args[0],
+                start = bu.parseInt(args[1]),
+                end = bu.parseInt(args[2] || text.length);
 
             if (isNaN(start)) start = fallback;
             if (isNaN(end)) end = fallback;
             if (isNaN(start) || isNaN(end))
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
 
             return text.substring(start, end);
         })

@@ -16,12 +16,12 @@ module.exports =
         .withExample(
             '{ceil;1.23}',
             '2'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let number = bu.parseFloat(params.args[1]);
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1', async function (subtag, context, args) {
+            let number = bu.parseFloat(args[0]);
             if (isNaN(number))
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
             return Math.ceil(number);
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

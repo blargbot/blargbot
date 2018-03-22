@@ -17,13 +17,13 @@ module.exports =
         .withExample(
             'I feel like eating {randchoose;cake;pie;pudding} today',
             'I feel like eating pudding today.'
-        )//.beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
             let options = Builder.util.flattenArgArrays(params.args.splice(1)),
                 selection = bu.getRandomInt(0, options.length - 1);
 
             params.content = options[selection];
-            return await bu.processTagInner(params);
+            return await bu.processTagInner(subtag, context, args);
         })
         .build();

@@ -15,9 +15,7 @@ module.exports =
         .withExample(
             'This is a bracket! {rb}',
             'This is a bracket! }'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) {
-            return bu.specialCharBegin + 'RB' + bu.specialCharEnd;
-        })
+        )
+        .whenArgs('0', async _ => '}')
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

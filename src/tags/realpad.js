@@ -19,18 +19,18 @@ module.exports =
         .withExample(
             '{realpad;ABC;6;0;left}',
             '000ABC'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-5', async function (params) {
-            let text = params.args[1],
-                length = bu.parseInt(params.args[2]),
-                filler = params.args[3] || ' ',
-                direction = params.args[4] || 'right';
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-4', async function (subtag, context, args) {
+            let text = args[0],
+                length = bu.parseInt(args[1]),
+                filler = args[2] || ' ',
+                direction = args[3] || 'right';
 
             if (isNaN(length))
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
             if (filler.length != 1)
-                return await Builder.util.error(params, 'Filler must be 1 character');
+                return Builder.util.error(subtag, context, 'Filler must be 1 character');
 
             let padAmount = Math.max(0, length - text.length);
 
@@ -39,7 +39,7 @@ module.exports =
             if (direction.toLowerCase() == 'left')
                 return filler.repeat(padAmount) + text;
 
-            return await Builder.util.error(params, 'Invalid direction');
+            return Builder.util.error(subtag, context, 'Invalid direction');
 
         })
         .whenDefault(Builder.errors.tooManyArguments)

@@ -15,9 +15,7 @@ module.exports =
         .withExample(
             'This is a semicolon! {semi}',
             'This is a semicolon! ;'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) {
-            return bu.specialCharBegin + 'SEMI' + bu.specialCharEnd;
-        })
+        )
+        .whenArgs('0', async _ => ';')
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

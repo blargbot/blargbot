@@ -18,25 +18,27 @@ module.exports =
         .withExample(
             '{send;#channel;Hello!}',
             '1111111111111111111\nIn #channel: Hello!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async function (params) {
-            let channel = bu.parseChannel(params.args[1], true),
-                message = params.args[2],
-                embed = bu.parseEmbed(params.args[2]);
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-3', async function (subtag, context, args) {
+            let channel = bu.parseChannel(args[0], true),
+                message = args[1],
+                embed = bu.parseEmbed(args[1]);
 
             if (!embed.malformed)
                 message = undefined;
             else
-                embed = bu.parseEmbed(params.args[3]);
+                embed = bu.parseEmbed(args[2]);
 
-            if (channel == null) return await Builder.errors.noChannelFound(params);
-            if (channel.guild.id != params.msg.guild.id) return await Builder.errors.channelNotInGuild(params);
+            if (channel == null)
+                return Builder.errors.noChannelFound(subtag, context);
+            if (channel.guild.id != context.guild.id)
+                return Builder.errors.channelNotInGuild(subtag, context);
 
             let sent = await bu.send(channel.id, {
-                content: bu.processSpecial(message, true),
+                content: message,
                 embed: embed,
-                nsfw: params.nsfw,
+                nsfw: context.state.nsfw,
                 disableEveryone: false
             });
 

@@ -16,13 +16,13 @@ module.exports =
         .withExample(
             '{if;{isnsfw};Spooky nsfw stuff;fluffy bunnies}',
             'fluffy bunnies'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', async function (params) {
-            let channel = params.msg.channel;
-            if (params.args[1])
-                channel = bu.parseChannel(params.args[1], true);
+        )
+        .whenArgs('0-1', async function (subtag, context, args) {
+            let channel = context.channel;
+            if (args[0])
+                channel = bu.parseChannel(args[0], true);
 
-            if (channel == null) return await Builder.errors.noChannelFound(params);
+            if (channel == null) return Builder.errors.noChannelFound(subtag, context);
 
             return await bu.isNsfwChannel(channel.id);
         })

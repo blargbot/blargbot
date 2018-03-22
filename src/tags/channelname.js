@@ -15,7 +15,7 @@ module.exports =
         .withExample(
             'This channel\'s name is {channelname}',
             'This channel\'s name is test-channel'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async params => params.msg.channel.name)
+        )
+        .whenArgs('0', async (_, context) => context.channel.name)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

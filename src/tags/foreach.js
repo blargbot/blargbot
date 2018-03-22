@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+const Builder = require('../structures/TagBuilder'),
+    bbEngine = require('../structures/BBTagEngine');
 
 module.exports =
     Builder.ArrayTag('foreach')
@@ -20,31 +21,25 @@ module.exports =
         .withExample(
             '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
             'I like apples\nI like oranges\nI like c#'
-        ).beforeExecute(params => Builder.util.processSubtags(params, [1, 2]))
-        .whenArgs('1-3', Builder.errors.notEnoughArguments)
-        .whenArgs('4', async function (params) {
-            let set = TagManager.list['set'],
-                varName = params.args[1],
-                deserialized = await bu.getArray(params, params.args[2]),
-                result = '',
-                arr;
+        ).resolveArgs(0, 1)
+        .whenArgs('0-2', Builder.errors.notEnoughArguments)
+        .whenArgs('3', async function (subtag, context, args) {
+            let varName = args[0],
+                arr = await bu.getArray(context, args[1]) || { v: args[1].split('') },
+                result = '';
 
-            if (deserialized == null || !Array.isArray(deserialized.v))
-                arr = params.args[2].split('');
-            else
-                arr = deserialized.v;
-
-            for (const item of arr) {
-                params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
-                if (params.msg.repeats > 1500) {
-                    result += await Builder.errors.tooManyLoops(params);
+            for (const item of arr.v) {
+                context.state.repeats += 1;
+                if (context.state.repeats > 1500) {
+                    result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }
-                await set.setVar(params, varName, item);
-                result += await bu.processTagInner(params, 3);
-                if (params.terminate)
+                await context.variables.set(varName, item);
+                result += await bbEngine.execute(args[2], context);
+                if (context.state.return)
                     break;
             }
+            context.variables.reset(varName);
             return result;
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

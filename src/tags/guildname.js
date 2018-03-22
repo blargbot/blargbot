@@ -15,9 +15,7 @@ module.exports =
         .withExample(
             'This guild\'s name is {guildname}.',
             'This guild\'s name is TestGuild.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) {
-            return params.msg.channel.guild.name;
-        })
+        )
+        .whenArgs('0', async (_, context) => context.guild.name)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

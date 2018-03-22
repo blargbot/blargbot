@@ -19,21 +19,20 @@ module.exports =
         .withExample(
             '{react;:thinking:;:joy:}',
             '(On message) 🤔(1) 😂(1)'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let emotes = params.args.slice(1),
-                channel = null,
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, emotes) {
+            let channel = null,
                 message = null;
 
             channel = bu.parseChannel(emotes[0], true);
             if (channel == null)
-                channel = params.msg.channel;
+                channel = context.channel;
             else
                 emotes.shift();
 
-            if (!channel.guild || !params.msg.guild || channel.guild.id != params.msg.guild.id)
-                return await Builder.errors.channelNotInGuild(params);
+            if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)
+                return Builder.errors.channelNotInGuild(subtag, context);
 
 
             if (/^\d{17,23}$/.test(emotes[0]))
@@ -50,15 +49,13 @@ module.exports =
                         await bot.addMessageReaction(channel.id, message.id, reaction.replace(/[<>]/g, ''));
                 } catch (e) {
                     if (e.response.message == 'Unknown Emoji')
-                        return await Builder.util.error(params, 'Unknown emoji');
+                        return Builder.util.error(subtag, context, 'Unknown emoji');
                     console.error(e);
                 }
                 return;
             }
 
-            return {
-                reactions: emotes
-            };
-
+            for (const emote of emotes)
+                context.state.reactions.add(emote);
         })
         .build();

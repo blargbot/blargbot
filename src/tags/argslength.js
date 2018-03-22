@@ -16,7 +16,7 @@ module.exports =
             'You said {argslength} words.',
             'I am saying things.',
             'You said 4 words.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async params => !params.words[0] ? '0' : params.words.length.toString())
+        )
+        .whenArgs('0', async (_, context) => context.input.length.toString())
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

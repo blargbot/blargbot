@@ -18,21 +18,21 @@ module.exports =
         .withExample(
             'Your nick is {usernick}!',
             'Your nick is Cool Dude 1337!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-3', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-                user = params.msg.author;
+        )
+        .whenArgs('0-2', async function (subtag, context, args) {
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
+                user = context.user;
 
-            if (params.args[1])
-                user = await bu.getUser(params.msg, params.args[1], quiet);
+            if (args[0])
+                user = await bu.getUser(context.msg, args[0], quiet);
 
             if (user != null) {
-                let member = params.msg.channel.guild.members.get(user.id);
-                return member.nick || user.username;
+                let member = context.guild.members.get(user.id);
+                return (member != null ? member.nick : '') || user.username;
             }
 
             if (quiet)
-                return params.args[1];
+                return args[0];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

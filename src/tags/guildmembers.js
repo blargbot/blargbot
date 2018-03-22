@@ -15,9 +15,7 @@ module.exports =
         .withExample(
             'This guild has {guildmembers} members.',
             'This guild has 123 members.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) {
-            return params.msg.channel.guild.memberCount;
-        })
+        )
+        .whenArgs('0', async (_, context) => context.guild.memberCount)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

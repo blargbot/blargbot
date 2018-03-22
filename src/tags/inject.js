@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+const Builder = require('../structures/TagBuilder'),
+    bbEngine = require('../structures/BBTagEngine');
 
 module.exports =
     Builder.ComplexTag('inject')
@@ -16,12 +17,8 @@ module.exports =
         .withExample(
             'Random Number: {inject;{lb}randint{semi}1{semi}4{lb}}',
             'Random Number: 3'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            params.content = bu.processSpecial(params.args[1], true);
-            let result = await bu.processTag(params);
-            if (result.terminate) result.terminate--;
-            return result;
-        }).whenDefault(Builder.errors.tooManyArguments)
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1', async (subtag, context, args) => await TagManager.list['exec'].execTag(subtag, context, args[0], undefined))
+        .whenDefault(Builder.errors.tooManyArguments)
         .build();

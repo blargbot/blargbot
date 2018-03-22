@@ -17,10 +17,10 @@ module.exports =
         .withExample(
             '{max;50;2;65}',
             '65'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let args = Builder.util.flattenArgArrays(params.args.slice(1));
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
+            args = Builder.util.flattenArgArrays(args);
             args = args.map(bu.parseFloat);
 
             if (args.filter(isNaN).length > 0)

@@ -16,10 +16,10 @@ module.exports =
         .withExample(
             '{split;Hello! This is a sentence.;{space}}',
             '["Hello!","This","is","a","sentence."]'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            return bu.serializeTagArray(params.args[1].split(params.args[2]));
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            return bu.serializeTagArray(args[0].split(args[1]));
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

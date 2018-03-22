@@ -18,43 +18,41 @@ module.exports =
         ).withExample(
             '{dm;stupid cat;Hello}',
             'DM: Hello'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
-            if (params.dmsent)
-                return await Builder.util.error(params, 'Already have DMed');
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs('2', async function (subtag, context, args) {
+            if (context.state.dmCount > 0)
+                return Builder.util.error(subtag, context, 'Already have DMed');
 
-            let user = await bu.getUser(params.msg, params.args[1]);
+            let user = await bu.getUser(context.msg, args[0]);
             if (user == null)
-                return await Builder.errors.noUserFound(params);
-            if (!params.msg.guild.members.get(user.id))
-                return await Builder.errors.userNotInGuild(params);
+                return Builder.errors.noUserFound(subtag, context);
+            if (!context.guild.members.get(user.id))
+                return Builder.errors.userNotInGuild(subtag, context);
 
             try {
                 const DMChannel = await user.getDMChannel();
                 if (!DMCache[user.id] ||
                     DMCache[user.id].count > 5 ||
-                    DMCache[user.id].user != params.msg.author.id ||
-                    DMCache[user.id].guild != params.msg.guild.id) {
+                    DMCache[user.id].user != context.user.id ||
+                    DMCache[user.id].guild != context.user.id) {
                     // Ew we're gonna send a message first? It was voted...
                     await bu.send(DMChannel.id, 'The following message was sent from ' +
-                        `**__${params.msg.guild.name}__** (${params.msg.guild.id}), ` +
+                        `**__${context.guild.name}__** (${context.guild.id}), ` +
                         'and was sent by ' +
-                        `**__${bu.getFullName(params.msg.author)}__** (${params.msg.author.id}):`
+                        `**__${bu.getFullName(context.user)}__** (${context.user.id}):`
                     );
-                    DMCache[user.id] = { user: params.msg.author.id, guild: params.msg.guild.id, count: 1 };
+                    DMCache[user.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
                 }
                 await bu.send(DMChannel.id, {
-                    content: params.args[2],
+                    content: args[1],
                     embed: null,
-                    nsfw: params.nsfw
+                    nsfw: context.state.nsfw
                 });
                 DMCache[user.id].count++;
-                return {
-                    dmsent: true
-                };
+                context.state.dmCount += 1;
             } catch (e) {
-                return await Builder.util.error(params, 'Could not send DM');
+                return Builder.util.error(subtag, context, 'Could not send DM');
             }
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

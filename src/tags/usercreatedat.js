@@ -19,19 +19,19 @@ module.exports =
         .withExample(
             'Your account was created on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
             'Your account was created on 2016/01/01 01:00:00.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-4', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
-                user = params.msg.author;
+        )
+        .whenArgs('0-3', async function (subtag, context, args) {
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
+                user = context.user;
 
-            if (params.args[2])
-                user = await bu.getUser(params.msg, params.args[2], quiet);
+            if (args[1])
+                user = await bu.getUser(context.msg, args[1], quiet);
 
             if (user != null)
-                return dep.moment(user.createdAt).utcOffset(0).format(params.args[1] || '');
+                return dep.moment(user.createdAt).utcOffset(0).format(args[0] || '');
 
             if (quiet)
-                return params.args[2];
+                return args[1];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

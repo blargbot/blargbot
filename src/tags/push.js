@@ -16,20 +16,20 @@ module.exports =
         .withExample(
             '{push;["this", "is", "an"];array}',
             '["this","is","an","array"]'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let arr = await bu.getArray(params, params.args[1]),
-                values = params.args.slice(2),
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
+            let arr = await bu.getArray(context, args[0]),
+                values = args.slice(1),
                 result;
 
             if (arr == null || !Array.isArray(arr.v))
-                return await Builder.errors.notAnArray(params);
+                return Builder.errors.notAnArray(subtag, context);
 
             arr.v.push(...values);
 
             if (arr.n != null)
-                await bu.setArray(arr, params);
+                await context.variables.set(arr.n, arr.v);
             else
                 return bu.serializeTagArray(arr.v);
         })

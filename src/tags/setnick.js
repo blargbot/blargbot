@@ -17,24 +17,24 @@ module.exports =
         .withExample(
             '{setnick;super cool nickname}',
             ''
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            let nick = params.args[1],
-                user = params.msg.member;
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let nick = args[0],
+                user = context.user;
 
-            if (params.args[2])
-                user = await bu.getUser(params.msg, params.args[2], false);
+            if (args[1])
+                user = await bu.getUser(context.msg, args[1], false);
 
-            if (user == null) return await Builder.errors.noUserFound(params);
-            else user = params.msg.guild.members.get(user.id);
+            if (user == null) return Builder.errors.noUserFound(subtag, context);
+            else user = context.guild.members.get(user.id);
 
             try {
                 await user.edit({
                     nick: nick
                 });
             } catch (err) {
-                return await Builder.util.error(params, 'Could not change nickname');
+                return Builder.util.error(subtag, context, 'Could not change nickname');
             }
         })
         .whenDefault(Builder.errors.tooManyArguments)

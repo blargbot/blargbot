@@ -17,17 +17,17 @@ module.exports =
         ).withExample(
             '{apply;randint;[1,4]}',
             '3'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            if (!TagManager.list.hasOwnProperty(params.args[1]))
-                return await Builder.util.error(params, 'No subtag found');
-            let tag = TagManager.list[params.args[1]];
-            let tagArgs = Builder.util.flattenArgArrays(params.args.slice(2));
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
+            if (!TagManager.list.hasOwnProperty(args[0]))
+                return Builder.util.error(subtag, context, 'No subtag found');
+            let tag = TagManager.list[args[0]];
+            let tagArgs = Builder.util.flattenArgArrays(args.slice(1));
 
-            params.args = [params.args[1], ...tagArgs];
+            args = [args[0], ...tagArgs];
 
-            params.args = params.args.map(v => {
+            args = args.map(v => {
                 if (typeof v === 'string')
                     return v;
                 try {
@@ -37,6 +37,6 @@ module.exports =
                 }
             });
 
-            return await tag.execute(params);
+            return await tag.execute(subtag, context, args);
         })
         .build();

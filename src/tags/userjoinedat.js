@@ -20,23 +20,23 @@ module.exports =
         .withExample(
             'Your account joined this guild on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
             'Your account joined this guild on 2016/01/01 01:00:00.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-4', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
-                user = params.msg.author;
+        )
+        .whenArgs('0-3', async function (subtag, context, args) {
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
+                user = context.user;
 
-            if (params.args[2])
-                user = await bu.getUser(params.msg, params.args[2], quiet);
+            if (args[1])
+                user = await bu.getUser(context.msg, args[1], quiet);
 
             if (user != null) {
-                let member = params.msg.channel.guild.members.get(user.id);
+                let member = context.guild.members.get(user.id);
                 if (member != null)
-                    return dep.moment(member.joinedAt).utcOffset(0).format(params.args[1] || '');
-                return await Builder.errors.userNotInGuild(params);
+                    return dep.moment(member.joinedAt).utcOffset(0).format(args[0] || '');
+                return Builder.errors.userNotInGuild(subtag, context);
             }
 
             if (quiet)
-                return params.args[2];
+                return args[1];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -11,18 +11,18 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('brainfuck')
-    .withArgs(a => [a.require('code'), a.optional('input')])
-    .withDesc('Interprets `code` as brainfuck, using `input` as the text for `,`.')
-    .withExample(
-        '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
-        'Hello World!'
-    ).beforeExecute(Builder.util.processAllSubtags)
-    .whenArgs('1', Builder.errors.notEnoughArguments)
-    .whenArgs('2-3', async function(params) {
-        try {
-            return await bu.filterMentions((dep.brainfuck.execute(params.args[1], params.args[2])).output);
-        } catch (e) {
-            return await Builder.util.error(params, e.message);
-        }
-    }).whenDefault(Builder.errors.tooManyArguments)
-    .build();
+        .withArgs(a => [a.require('code'), a.optional('input')])
+        .withDesc('Interprets `code` as brainfuck, using `input` as the text for `,`.')
+        .withExample(
+            '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
+            'Hello World!'
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            try {
+                return await bu.filterMentions((dep.brainfuck.execute(...args)).output);
+            } catch (e) {
+                return Builder.util.error(subtag, context, e.message);
+            }
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .build();

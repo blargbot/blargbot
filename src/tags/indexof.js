@@ -17,21 +17,21 @@ module.exports =
         .withExample(
             'The index of "o" in "hello world" is {indexof;hello world;o}',
             'The index of "o" in "hello world" is 4'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async function (params) {
-            let input = await bu.deserializeTagArray(params.args[1]),
-                search = params.args[2],
-                from = bu.parseInt(params.args[3] || '0'),
-                fallback = bu.parseInt(params.fallback);
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-3', async function (subtag, context, args) {
+            let input = await bu.deserializeTagArray(args[0]),
+                search = args[1],
+                from = bu.parseInt(args[2] || '0'),
+                fallback = bu.parseInt(context.scope.fallback);
 
             if (isNaN(from)) from = fallback;
-            if (isNaN(from)) return await Builder.errors.notANumber(params);
+            if (isNaN(from)) return Builder.errors.notANumber(subtag, context);
 
             if (input != null && Array.isArray(input.v))
                 input = input.v;
             else
-                input = params.args[1];
+                input = args[0];
 
             return input.indexOf(search, from);
         }).whenDefault(Builder.errors.tooManyArguments)

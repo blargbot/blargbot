@@ -16,12 +16,16 @@ module.exports =
         .withExample(
             'Let me do a ccommand for you. {execcc;f}',
             'Let me do a ccommand for you. User#1111 has paid their respects. Total respects given: 5'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            let storedGuild = await bu.getGuild(params.msg.guild.id);
-            let tag = storedGuild.ccommands[params.args[1].toLowerCase()];
-            return TagManager.list['exec'].execTag(params, tag, params.args[1], 'CCommand');
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let storedGuild = await bu.getGuild(context.guild.id),
+                tag = storedGuild.ccommands[args[0].toLowerCase()];
+
+            if (tag == null)
+                return Builder.util.error(subtag, context, 'CCommand not found: ' + args[0]);
+
+            return TagManager.list['exec'].execTag(subtag, context, tag.content, args[1] || '');
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

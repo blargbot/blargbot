@@ -21,34 +21,34 @@ module.exports =
         .withExample(
             'You are a moderator: {hasrole;moderator}',
             'You are a moderator: false'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-4', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
-                result = await this.checkRoles(params, params.args[1], params.args[2], quiet);
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1-3', async function (subtag, context, args) {
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[3],
+                result = await this.checkRoles(context, args[0], args[1], quiet);
 
             if (result.user == null)
-                return await Builder.errors.noUserFound(params);
+                return Builder.errors.noUserFound(subtag, context);
             if (result.roles.length == 0)
-                return await Builder.errors.noRoleFound(params);
+                return Builder.errors.noRoleFound(subtag, context);
 
             return result.hasRole.reduce((a, b) => a || b, false);
         })
         .whenDefault(Builder.errors.tooManyArguments)
-        .withProp('checkRoles', async function (params, roleText, userText, quiet) {
+        .withProp('checkRoles', async function (context, roleText, userText, quiet) {
             let roleExpr = /(\d{17,23})/,
                 deserialized = await bu.deserializeTagArray(roleText),
                 result = {
-                    user: params.msg.member,
+                    user: context.member,
                     roles: [],
                     hasRole: []
                 };
 
             roleText = [roleText];
             if (userText) {
-                result.user = await bu.getUser(params.msg, userText, quiet);
+                result.user = await bu.getUser(context.msg, userText, quiet);
                 if (result.user)
-                    result.user = params.msg.guild.members.get(result.user.id);
+                    result.user = context.guild.members.get(result.user.id);
             }
 
             if (deserialized && Array.isArray(deserialized.v))
@@ -56,7 +56,7 @@ module.exports =
 
             for (const entry of roleText) {
                 let match = entry.match(roleExpr) || [],
-                    role = params.msg.guild.roles.get(match[1]);
+                    role = context.guild.roles.get(match[1]);
                 if (role == null)
                     continue;
                 result.roles.push(role);

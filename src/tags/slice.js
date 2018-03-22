@@ -16,25 +16,25 @@ module.exports =
         .withExample(
             '{slice;["this", "is", "an", "array"];1}',
             '["is","an","array"]'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-4', async function (params) {
-            let arr = await bu.getArray(params, params.args[1]),
-                start = bu.parseInt(params.args[2]),
-                end = bu.parseInt(params.args[3]),
-                fallback = bu.parseInt(params.fallback);
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-3', async function (subtag, context, args) {
+            let arr = await bu.getArray(context, args[0]),
+                start = bu.parseInt(args[1]),
+                end = bu.parseInt(args[2]),
+                fallback = bu.parseInt(context.scope.fallback);
 
 
-            if (!params.args[3])
+            if (!args[2])
                 end = arr.v.length;
 
             if (arr == null || !Array.isArray(arr.v))
-                return await Builder.errors.notAnArray(params);
+                return Builder.errors.notAnArray(subtag, context);
 
             if (isNaN(start)) start = fallback;
             if (isNaN(end)) end = fallback;
             if (isNaN(start) || isNaN(end))
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
 
 
             return bu.serializeTagArray(arr.v.slice(start, end));

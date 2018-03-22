@@ -15,8 +15,7 @@ module.exports =
         .withExample(
             'Your prefix is {prefix}',
             'Your prefix is b!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) {
-            return await bu.guildSettings.get(params.msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
-        }).whenDefault(Builder.errors.tooManyArguments)
+        )
+        .whenArgs('0', async (_, context) => await bu.guildSettings.get(context.guild.id, 'prefix') || config.discord.defaultPrefix)
+        .whenDefault(Builder.errors.tooManyArguments)
         .build();

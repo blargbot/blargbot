@@ -16,10 +16,7 @@ module.exports =
         .withExample(
             '{throw;Custom Error}',
             '\u200B`Custom Error`\u200B'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', async function (params) {
-            let error = params.args[1];
-            return await Builder.util.error(params, error || 'A custom error occured');
-        })
+        )
+        .whenArgs('0-1', async (subtag, context, args) => Builder.util.error(args[0] || 'A custom error occurred'))
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -12,36 +12,36 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('args')
         .withArgs(a => [a.optional('index'), a.optional('range')])
-        .withDesc('Gets user input. Specifying `index` will only get the word at that location, specifying ' +
-            '`range` will get all the words between `index` and `range`. Specify `range` as `n` to get all ' +
+        .withDesc('Gets user input. Specifying `index` will only get the word at that location, specifying' +
+            '`range` will get all the words between `index` and `range`. Specify `range` as `n` to get all' +
             'the words from `index` to the end'
         ).withExample(
             'Your second word was {args;1}',
             'Hello world!',
             'Your second word was world!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async params => params.words.join(' '))
-        .whenArgs('2-3', async function (params) {
-            let from = bu.parseInt(params.args[1]),
-                to = params.args[2];
+        )
+        .whenArgs('0', async (_, context) => context.input.join(' '))
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let from = bu.parseInt(args[0]),
+                to = args[1];
 
             if (!to)
                 to = from + 1;
             else if (to === 'n')
-                to = params.words.length;
+                to = context.input.length;
             else
                 to = bu.parseInt(to);
 
             if (isNaN(from) || isNaN(to))
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
 
             if (from > to)
                 from = [to, to = from][0];
 
-            if (!params.words[from])
-                return await Builder.errors.notEnoughArguments(params);
+            if (!context.input[from])
+                return Builder.errors.notEnoughArguments(subtag, context);
 
-            return Builder.util.escapeInjection(params.words.slice(from, to).join(' '));
+            return context.input.slice(from, to).join(' ');
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -18,34 +18,9 @@ module.exports =
         .withExample(
             '{set;~counter;0} {repeat;{decrement;~counter},;10}',
             '-1,-2,-3,-4,-5,-6,-7,-8,-9,-10'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-4', async function (params) {
-            let argName = params.args[1],
-                decrement = 1,
-                floor = true;
-
-            if (params.args[2])
-                decrement = bu.parseFloat(params.args[2]);
-
-            if (params.args[3]) {
-                floor = bu.parseBoolean(params.args[3]);
-                if (!bu.isBoolean(floor))
-                    return await Builder.errors.notABoolean(params);
-            }
-
-            if (isNaN(decrement))
-                return await Builder.errors.notANumber(params);
-
-            let value = bu.parseFloat(await TagManager.list['get'].getVar(params, argName));
-            if (isNaN(value))
-                return await Builder.errors.notANumber(params);
-
-            if (floor) value = Math.floor(value), decrement = Math.floor(decrement);
-
-            value -= decrement;
-            await TagManager.list['set'].setVar(params, argName, value);
-
-            return value;
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1-3', async function (subtag, context, args) {
+            return await TagManager.list['increment'].runIncrement(subtag, context, args, -1);
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

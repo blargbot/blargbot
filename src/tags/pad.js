@@ -17,18 +17,18 @@ module.exports =
         .withExample(
             '{pad;left;000000;ABC}',
             '000ABC'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-3', Builder.errors.notEnoughArguments)
-        .whenArgs('4', async function (params) {
-            let direction = params.args[1],
-                backing = params.args[2],
-                overlay = params.args[3];
+        )
+        .whenArgs('0-2', Builder.errors.notEnoughArguments)
+        .whenArgs('3', async function (subtag, context, args) {
+            let direction = args[0],
+                backing = args[1],
+                overlay = args[2];
 
             if (direction.toLowerCase() == 'left')
                 return backing.substr(0, backing.length - overlay.length) + overlay;
             if (direction.toLowerCase() == 'right')
                 return overlay + backing.substr(overlay.length);
-            return await Builder.util.error(params, 'Invalid drection');
+            return Builder.util.error(subtag, context, 'Invalid drection');
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

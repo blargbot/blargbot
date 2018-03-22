@@ -19,18 +19,18 @@ module.exports =
         .withExample(
             '{unban;@user;0;This is a test unban}@user was unbanned!',
             '@user was unbanned!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-4', async function (params) {
-            let user = await bu.getUser(params.msg, params.args[1], false),
-                reason = params.args[2],
-                noPerms = params.args[3] != null;
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1-3', async function (subtag, context, args) {
+            let user = await bu.getUser(context.msg, args[0], false),
+                reason = args[1],
+                noPerms = args[2] != null;
 
-            if (user == null) return await Builder.errors.noUserFound(params);
-            let response = await CommandManager.list['unban'].unban(params.msg, user, reason, true, noPerms);
+            if (user == null) return Builder.errors.noUserFound(subtag, context);
+            let response = await CommandManager.list['unban'].unban(context.msg, user, reason, true, noPerms);
 
             if (typeof response[1] == 'string' && response[1].startsWith('`')) {
-                return await Builder.util.error(params, response[1]);
+                return Builder.util.error(subtag, context, response[1]);
             }
             return response[1];
         })

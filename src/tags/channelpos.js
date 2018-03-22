@@ -15,7 +15,7 @@ module.exports =
         .withExample(
             'This channel is in position {channelpos}',
             'This channel is in position 1'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async params => params.msg.channel.position)
+        )
+        .whenArgs('0', async (_, context) => context.channel.position)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

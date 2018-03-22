@@ -16,17 +16,17 @@ module.exports =
         .withExample(
             'Hello,{space;4}world!',
             'Hello,    world!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', async function (params) {
-            let count = bu.parseInt(params.args[1] || '1'),
-                fallback = bu.parseInt(params.fallback);
+        )
+        .whenArgs('0-1', async function (subtag, context, args) {
+            let count = bu.parseInt(args[0] || '1'),
+                fallback = bu.parseInt(context.scope.fallback);
 
             if (isNaN(count)) count = fallback;
-            if (isNaN(count)) return await Builder.errors.notANumber(params);
+            if (isNaN(count)) return Builder.errors.notANumber(subtag, context);
 
             if (count < 0) count = 0;
 
-            return new Array(count + 1).join(' ');
+            return ''.padStart(count, ' ');
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

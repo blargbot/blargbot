@@ -18,13 +18,13 @@ module.exports =
             'What you said is {length;{args}} chars long.',
             'Hello',
             'What you said is 5 chars long.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let deserialized = bu.deserializeTagArray(params.args[1]);
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1', async function (subtag, context, args) {
+            let deserialized = bu.deserializeTagArray(args[0]);
             if (deserialized && Array.isArray(deserialized.v))
                 return deserialized.v.length;
-            return params.args[1].length;
+            return args[0].length;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

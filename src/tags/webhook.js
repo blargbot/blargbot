@@ -26,15 +26,15 @@ module.exports =
         .withExample(
             '{webhook;1111111111111111;t.OK-en;Hello!}',
             'In the webhook channel: Hello!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-7', async function (params) {
-            let id = params.args[1],
-                token = params.args[2],
-                content = params.args[3],
-                embed = bu.parseEmbed(params.args[4]),
-                username = params.args[5],
-                avatar = params.args[6];
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-6', async function (subtag, context, args) {
+            let id = args[0],
+                token = args[1],
+                content = args[2],
+                embed = bu.parseEmbed(args[3]),
+                username = args[4],
+                avatar = args[5];
 
             try {
                 await bot.executeWebhook(id, token, {
@@ -45,7 +45,7 @@ module.exports =
                 });
             }
             catch (err) {
-                return await Builder.util.error(params, 'Error executing webhook: ' + err.message);
+                return Builder.util.error(subtag, context, 'Error executing webhook: ' + err.message);
             }
         })
         .whenDefault(Builder.errors.tooManyArguments)

@@ -9,18 +9,18 @@
 
 const Builder = require('../structures/TagBuilder');
 
-async function deleteMessage(params, channelId, messageId) {
-    let msg = params.msg,
-        channel = Builder.util.parseChannel(params, channelId);
+async function deleteMessage(subtag, context, channelId, messageId) {
+    let msg = context.msg,
+        channel = Builder.util.parseChannel(context, channelId);
 
-    if (typeof channel === 'function')
-        return await channel(params);
+    if (typeof channel === 'function') //One of the Builder.error values got returned
+        return channel(subtag, context);
 
     if (msg.id !== messageId)
         try {
             msg = await bot.getMessage(channel.id, messageId);
         } catch (err) {
-            return await Builder.errors.noMessageFound(params);
+            return Builder.errors.noMessageFound(subtag, context);
         }
 
     try {
@@ -40,9 +40,9 @@ module.exports =
         .withExample(
             'The message that triggered this will be deleted. {delete}',
             '(the message got deleted idk how to do examples for this)'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async params => await deleteMessage(params, params.msg.channel.id, params.msg.id))
-        .whenArgs('2', async params => await deleteMessage(params, params.msg.channel.id, params.args[1]))
-        .whenArgs('3', async params => await deleteMessage(params, params.args[1], params.args[2]))
+        )
+        .whenArgs('0', async (subtag, context, args) => await deleteMessage(subtag, context, context.channel.id, context.msg.id))
+        .whenArgs('1', async (subtag, context, args) => await deleteMessage(subtag, context, context.channel.id, args[0]))
+        .whenArgs('2', async (subtag, context, args) => await deleteMessage(subtag, context, args[0], args[1]))
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

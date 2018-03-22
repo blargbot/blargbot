@@ -15,13 +15,13 @@ module.exports =
         .withExample(
             '{color;pink}',
             'ffc0cb'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let color = bu.parseColor(params.args[1]);
+        )
+        .whenArgs('0', Builder.errors.notEnoughArguments)
+        .whenArgs('1', async function (subtag, context, args) {
+            let color = bu.parseColor(args[0]);
             if (color == null)
-                return await Builder.util.error(params, 'Invalid color');
-            return color.toString(16);
+                return Builder.util.error(subtag, context, 'Invalid color');
+            return color.toString(16).padStart(6, '0');
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
