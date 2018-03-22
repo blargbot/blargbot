@@ -18,7 +18,7 @@ module.exports =
         .withExample(
             'I feel like eating {randchoose;cake;pie;pudding} today',
             'I feel like eating pudding today.'
-        )
+        ).resolveArgs(-1)
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1', async function (subtag, context, args) {
             let value = await bbEngine.execute(args[0], context);

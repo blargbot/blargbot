@@ -1130,15 +1130,15 @@ bu.createRegExp = function (term) {
         let regexList = term.match(/^\/?(.*)\/(.*)/);
 
         if (regexList[1].match(/\(.*[*+].*\)[+*]/))
-            throw 'Unsafe Regex';
+            throw new Error('Unsafe Regex');
 
         let temp = new RegExp(regexList[1], regexList[2]);
         if (!dep.safe(temp)) {
-            throw 'Unsafe Regex';
+            throw new Error('Unsafe Regex');
         }
         return temp;
     }
-    throw 'Invalid Regex';
+    throw new Error('Invalid Regex');
 };
 
 bu.postStats = function () {
@@ -1363,7 +1363,7 @@ bu.range = function (from, to) {
     from = Math.floor(from || 0);
     to = Math.floor(to || 0);
 
-    if (isNaN(from) || isNaN(to)) throw 'Range bounds must be numbers';
+    if (isNaN(from) || isNaN(to)) throw new Error('Range bounds must be numbers');
 
     if (from > to)
         from = [to, to = from][0];
@@ -1420,7 +1420,6 @@ bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
         return now.add(magnitude, quantity);
     }
 
-    console.debug('using default moment parsing');
     return dep.moment.tz(text, format, timezone).utcOffset(0);
 };
 
