@@ -18,16 +18,15 @@ module.exports =
             'true false'
         ).resolveArgs(0)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (subtag, context, args) {
-            let text = await bu.processTagInner(params, 1), regex;
-
+        .whenArgs('2', async function (subtag, context, args) {
+            let regex;
             try {
-                regex = bu.createRegExp(args[1]);
+                regex = bu.createRegExp(args[1].content);
             } catch (e) {
                 return Builder.util.error(subtag, context, e);
             }
 
-            return regex.test(text);
+            return regex.test(args[0]);
 
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -20,17 +20,14 @@ module.exports =
         ).resolveArgs(1)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2', async function (subtag, context, args) {
-            if (params.disabletimer)
+            if (context.state.timerCount == -1)
                 return Builder.util.error(subtag, context, 'Nested timers are not allowed');
 
-            let code = args[0],
-                duration = await bu.processTagInner(params, 2);
-
-            duration = bu.parseDuration(duration);
+            let duration = bu.parseDuration(args[1]);
 
             if (duration.asMilliseconds() <= 0) return Builder.util.error(subtag, context, 'Invalid duration');
 
-            if (params.timers > 2) return Builder.util.error(subtag, context, 'Max 3 timers per tag');
+            if (context.state.timerCount > 2) return Builder.util.error(subtag, context, 'Max 3 timers per tag');
 
             let msg = params.msg;
             params.msg = msg.id;
@@ -43,9 +40,7 @@ module.exports =
                 endtime: r.epochTime(dep.moment().add(duration).unix())
             });
             params.msg = msg;
-            return {
-                timers: (params.timers || 0) + 1
-            };
+            context.state.timerCount += 1;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

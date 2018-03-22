@@ -761,6 +761,23 @@ function generateDebug(code, context, result) {
     };
 }
 
+function viewErrors(...errors) {
+    let result = [];
+    for (const e of errors) {
+        let text = 'Position ' + e.tag.start + ' - ' + e.tag.end + ': ';
+        if (typeof e.error == 'string') {
+            result.push(text + e.error);
+            continue;
+        }
+
+        let offset = ''.padStart(text.length, ' ');
+        let lines = viewErrors(...e.error).map(l => offset + l);
+        lines[0] = text + lines[0].substring(offset.length);
+        result.push(...lines);
+    }
+    return result;
+}
+
 function logChange(action, msg, actionObj) {
     let actionArray = [];
     let file = actionObj.content ? { name: actionObj.tag + '.bbtag', file: actionObj.content } : undefined;

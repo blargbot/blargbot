@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+const Builder = require('../structures/TagBuilder'),
+    bbEngine = require('../structures/BBTagEngine');
 
 module.exports =
     Builder.AutoTag('regexreplace')
@@ -21,24 +22,18 @@ module.exports =
         ).resolveArgs(-1)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
-            let regex;
+            let rWith = await bbEngine.execute(args[2]),
+                regex;
             try {
-                regex = bu.createRegExp(args[args.length - 2]);
+                regex = bu.createRegExp(args[args.length - 2].content);
             } catch (e) {
                 return Builder.util.error(subtag, context, e);
             }
 
-            if (args.length == 2)
-                return {
-                    replace: regex,
-                    replaceString: await bu.processTagInner(params, 2),
-                    replaceContent: true
-                };
+            if (args.length == 3)
+                return (await bbEngine.execute(args[0])).replace(regex, rWith);
 
-            let text = await bu.processTagInner(params, 1),
-                replace = await bu.processTagInner(params, 3);
-
-            return text.replace(regex, replace);
+            context.state.replace = { regex, with: rWith };
 
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();
