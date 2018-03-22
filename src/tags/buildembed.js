@@ -178,23 +178,24 @@ module.exports =
             Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
             let embed = {};
-            for (const entry of args) {
+            for (let i = 0; i < args.length; i++) {
+                const entry = args[i];
                 if (entry.trim() == '')
                     continue;
                 let splitAt = entry.indexOf(':');
 
-                if (splitAt == -1) return Builder.errors.invalidEmbed(subtag, context, 'Missing \':\'');
+                if (splitAt == -1) return Builder.errors.invalidEmbed(subtag.children[i], context, 'Missing \':\'');
 
                 let key = entry.substring(0, splitAt),
                     value = entry.substring(splitAt + 1),
                     field = fields.filter(f => f.key == key.trim().toLowerCase())[0];
 
-                if (field == null) return Builder.errors.invalidEmbed(subtag, context, 'Unknown key \'' + key + '\'');
+                if (field == null) return Builder.errors.invalidEmbed(subtag.children[i], context, 'Unknown key \'' + key + '\'');
 
                 value = field.parse(value.trim());
                 let error = field.error(embed, value);
                 if (error != false)
-                    return Builder.errors.invalidEmbed(subtag, context, error);
+                    return Builder.errors.invalidEmbed(subtag.children[i], context, error);
                 field.setter(embed, value);
             }
 
