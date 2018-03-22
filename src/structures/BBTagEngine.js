@@ -97,7 +97,11 @@ class SubTag extends BaseTag {
 
 
     /** @param {string|SubTag} parent */
-    constructor(parent) { super(parent); }
+    constructor(parent) {
+        super(parent);
+        /** @type {BaseTag|string} */
+        this.name = this.children[0]
+    }
 }
 /**
  * @typedef {Object} bbError An error that ocurred while executing BBTag
@@ -119,6 +123,8 @@ class Context {
     constructor(options) {
         this.message = this.msg = options.msg;
         this.input = bu.splitInput(options.input || '');
+        if (this.input.length == 1 && this.input[0] == '')
+            this.input = [];
         this.isCC = options.isCC;
         this.author = options.author;
         this.tagName = options.tagName;
@@ -130,12 +136,16 @@ class Context {
         this.state = {
             return: 0,
             stackSize: 0,
+            repeats: 0,
             embed: null,
             reactions: new Set(),
             nsfw: null,
             dmCount: 0,
             timerCount: 0,
-            replace: null
+            /** @type {{regex: RegExp|string, with: string}} */
+            replace: null,
+            break: 0,
+            continue: 0
         };
     }
 
@@ -156,10 +166,6 @@ class Context {
 
         return context;
     }
-}
-
-class SubTagHandler {
-
 }
 
 class StateScopes {
@@ -216,6 +222,12 @@ class VariableCache {
         if (this.cache[variable] == null)
             await this.get(variable);
         this.cache[variable].value = value;
+    }
+
+    async reset(variable) {
+        if (this.cache[variable] == null)
+            await this.get(variable);
+        this.cache[variable].value = this.cache[variable].original;
     }
 
     async persist() {
@@ -313,6 +325,8 @@ async function execute(bbtag, context) {
             continue;
         }
 
+        subtag.name = name;
+
         result.push(await definition.execute(subtag, context));
         if (context.state.return != 0)
             break;
@@ -346,8 +360,10 @@ async function execString(string, context) {
 function addError(tag, context, message) {
     if (typeof message == 'string')
         message = '`' + message + '`';
-    context.errors.push({ tag: tag, error: message });
-    return message;
+    context.errors.push({ tag: tag, error: tag.name + ': ' + message });
+    if (context.scope.fallback == null)
+        return message;
+    return context.scope.fallback;
 }
 
 /**
@@ -367,7 +383,9 @@ function addError(tag, context, message) {
  */
 async function runTag(config) {
     let context = new Context(config);
-    let result = await execString(config.tagContent.trim(), context);
+    let result;
+
+    result = await execString(config.tagContent.trim(), context);
 
     await context.variables.persist();
 
@@ -376,10 +394,8 @@ async function runTag(config) {
         return { context, result, response: null };
     }
 
-    if (context.state.replace != null) {
-        let regex = bu.createRegExp(context.state.replace);
-        result.replace(context.state.replace.replace);
-    }
+    if (context.state.replace != null)
+        result.replace(context.state.replace.regex, context.state.replace.with);
 
     result = (config.modResult || (c => c))(result);
 
