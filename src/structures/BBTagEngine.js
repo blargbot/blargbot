@@ -128,6 +128,8 @@ class Context {
         this.isCC = options.isCC;
         this.author = options.author;
         this.tagName = options.tagName;
+        /** @type {Promise<boolean>} */
+        this.isStaff = bu.isUserStaff(this.author, this.guild.id);
 
         /** @type {bbError[]} */
         this.errors = [];

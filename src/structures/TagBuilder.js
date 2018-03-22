@@ -41,7 +41,7 @@ class SubTagDefBuilder {
                     if (definition.category === bu.TagType.CCOMMAND && !context.isCC)
                         return SubTagDefBuilder.util.error(subtag, context, 'Can only use in CCommands');
 
-                    if (definition.staff && !context.isStaff)
+                    if (definition.staff && !await context.isStaff)
                         return SubTagDefBuilder.util.error(subtag, context, 'Author must be staff');
 
                     let subtagArgs = subtag.children.slice(1);
