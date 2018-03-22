@@ -34,7 +34,7 @@ module.exports =
 
             return await this.runEdit(subtag, context, context.channel, args[0], message, embed);
         })
-        .whenArgs('4', async function (subtag, context, args) { //args = [(<messageId>,<text>,<embed>)|(<channelid>,<messageId>,<text|embed>)]
+        .whenArgs('3', async function (subtag, context, args) { //args = [(<messageId>,<text>,<embed>)|(<channelid>,<messageId>,<text|embed>)]
 
             let channel = bu.parseChannel(args[0], true);
             if (channel == null) { //args = [<messageId>,<text>,<embed>]
@@ -52,7 +52,7 @@ module.exports =
                 embed = null; //args = [<channelId>,<messageId>,<text>]
             return await this.runEdit(subtag, context, channel, args[1], text, embed);
         })
-        .whenArgs('5', async function (subtag, context, args) { //args = [<channelId>,<messageId>,<text>,<embed>]
+        .whenArgs('4', async function (subtag, context, args) { //args = [<channelId>,<messageId>,<text>,<embed>]
             let channel = bu.parseChannel(args[0], true),
                 messageId = args[1],
                 text = args[2],
