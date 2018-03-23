@@ -81,7 +81,7 @@ const defaultOptions = {
         required: ' ',
         optional: ' ',
         literal: ' ',
-        selection: ' | '
+        selection: ' / '
     },
     multiple: '...',
     ifNone: ''
@@ -96,7 +96,7 @@ function toString(args, options) {
 
     function process(arg) {
         if (typeof arg === 'string')
-            return arg + (options.includeTypes);
+            return arg;
         if (typeof arg !== 'object' ||
             typeof arg.kind !== 'string' ||
             typeof arg.multiple !== 'boolean' ||
@@ -106,6 +106,13 @@ function toString(args, options) {
         let content = arg.content.map(process),
             separator = options.separator[arg.kind] || options.separator.default,
             brackets = options.brackets[arg.kind] || options.brackets.default;
+
+        if (content.length == 1) {
+            let types = arg.types[0] || 'none';
+            if (arg.types.length > 1)
+                types = '(' + arg.types.join('|') + ')';
+            content[0] += (options.includeTypes ? ':' + types : '');
+        }
 
         return brackets[0] +
             content.join(separator) +
