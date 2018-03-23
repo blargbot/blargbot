@@ -9,10 +9,42 @@
 
 const router = dep.express.Router();
 
+let tags;
+
+async function getTags() {
+    if (tags)
+        return tags;
+    let s = spawner.shards.get(0);
+    let t = await s.awaitMessage('tagList');
+    let list = JSON.parse(t.message);
+    return tags = Object.keys(list).map(k => list[k]);
+}
+
 router.get('/', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/tags' + req.path;
     res.render('tags');
+});
+
+router.get('/json', async (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = '/tags' + req.path;
+    res.json((await getTags()).map(t => {
+        return {
+            name: t.name,
+            category: t.category,
+            description: t.desc,
+            staffOnly: t.staff === true,
+            arguments: Array.isArray(t.args) ? t.args : [t.args],
+            returns: t.returns || [],
+            errors: t.errors || [],
+            usage: {
+                code: t.exampleCode,
+                input: t.exampleIn,
+                out: t.exampleOut
+            }
+        }
+    }));
 });
 
 router.get('/variables', (req, res) => {
