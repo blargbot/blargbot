@@ -93,6 +93,9 @@
         },
         "space": {
             "desc": "Returnerer det angivne antal mellemrum, standard er 1."
+        },
+        "json": {
+            "desc": ""
         }
     },
     "guild": {
