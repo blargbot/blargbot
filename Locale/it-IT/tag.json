@@ -93,6 +93,9 @@
         },
         "space": {
             "desc": "Restituisce un numero specifico di spazi, 1 di default."
+        },
+        "json": {
+            "desc": ""
         }
     },
     "guild": {
