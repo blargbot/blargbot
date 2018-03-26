@@ -90,7 +90,7 @@
                 },
                 "favorite": {
                     "usage": "[name]",
-                    "info": ""
+                    "info": "Favoriserer det angivne tag, eller får en liste over dine favoriserede tags."
                 },
                 "report": {
                     "usage": "<name><reason>",
@@ -457,7 +457,7 @@
             "muted": ":ok_hand: **{{user}}** er blevet dæmpet.",
             "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
             "norole": "En dæmpet rolle er ikke været sat! Brug kommandoen `setup mute` for at konfigurere den.",
-            "unmutein": ""
+            "unmutein": "De vil få fjernet dæmpningen om **{{seconds}}** sekunder."
         },
         "unmute": {
             "usage": "<bruger>",
