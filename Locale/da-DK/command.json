@@ -547,7 +547,7 @@
             "alreadyexists": "[[emote.x]] Der findes allerede en brugerdefineret kommando med det navn!",
             "testoutput": "Test udbytte:\n\n{{output}}",
             "subcommandnotfound": "Kunne ikke finde en underkommando med navnet `{{subcommand}}`.",
-            "transferprompt": "",
+            "transferprompt": "{{target}}, {{user}} ønsker at overføre ejerskabet over den brugerdefinered kommando `{{tag}}` til dig. Ønsker du at acceptere dette?\nVariabler medfølger ikke.",
             "nobots": "[[emote.x][] Du kan ikke overføre ejerskab over en brugerdefineret kommando til en bot!",
             "transfercancelled": "[[emote.x]] Overførslen er blevet annulleret.",
             "transfercomplete": "[[emote.check]] {{user}} ejer nu den brugerdefinerede kommando `{{tag}}`.",
