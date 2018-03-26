@@ -93,6 +93,9 @@
         },
         "space": {
             "desc": ""
+        },
+        "json": {
+            "desc": ""
         }
     },
     "guild": {
