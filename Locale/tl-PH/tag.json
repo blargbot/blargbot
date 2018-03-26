@@ -93,6 +93,9 @@
         },
         "space": {
             "desc": "Ibalik ang tinutukoy na numero ng bagong mga linya, i-default sa 1."
+        },
+        "json": {
+            "desc": ""
         }
     },
     "guild": {
