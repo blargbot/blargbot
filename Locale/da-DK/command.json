@@ -456,7 +456,7 @@
             },
             "muted": ":ok_hand: **{{user}}** er blevet dæmpet.",
             "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
-            "norole": "En dæmpet rolle er ikke været sat! Brug kommandoen `setup mute` for at konfigurere den.",
+            "norole": "En dæmpet rolle er ikke blevet sat! Brug kommandoen `setup mute` for at konfigurere den.",
             "unmutein": "De vil få fjernet dæmpningen om **{{seconds}}** sekunder."
         },
         "unmute": {
@@ -487,7 +487,7 @@
             "flags": {
                 "reason": "Årsagen til udelukkelsen."
             },
-            "banned": "",
+            "banned": ":ok_hand: udelukkelsen på **{{user}}** er blevet fjernet.",
             "invaliduser": "Den angivne bruger kunne ikke blive fundet.",
             "unbannedafter": "Automatisk fjernelse af udelukkelse efter {{seconds}} sekunder."
         },
