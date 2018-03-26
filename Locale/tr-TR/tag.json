@@ -93,6 +93,9 @@
         },
         "space": {
             "desc": "Belirtilen sayıda boşluk, 1'e varsaymak döndürür."
+        },
+        "json": {
+            "desc": ""
         }
     },
     "guild": {
