@@ -167,7 +167,10 @@ process.on('message', async msg => {
                                 exampleCode: t.exampleCode,
                                 exampleIn: t.exampleIn,
                                 exampleOut: t.exampleOut,
-                                deprecated: t.deprecated
+                                deprecated: t.deprecated,
+                                returns: t.returns,
+                                errors: t.errors,
+                                staff: t.staff
                             };
                         }
                     }
