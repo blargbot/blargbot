@@ -218,7 +218,7 @@ class Context {
             input: this.input,
             tagName: this.tagName,
             author: this.author
-        }
+        };
     }
 }
 
