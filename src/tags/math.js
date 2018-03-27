@@ -13,11 +13,16 @@ const operators = {
     '+': (a, b) => a + b,
     '-': (a, b) => a - b,
     '*': (a, b) => a * b,
-    'x': (a, b) => a * b,
     '/': (a, b) => a / b,
-    ':': (a, b) => a / b,
     '%': (a, b) => a % b,
     '^': (a, b) => Math.pow(a, b)
+};
+
+const aliases = {
+    'x': '*',
+    '×': '*',
+    ':': '/',
+    '÷': '/'
 };
 
 module.exports =
@@ -35,7 +40,7 @@ module.exports =
             if (!operators.hasOwnProperty(args[0]))
                 return Builder.errors.invalidOperator(subtag, context);
 
-            let operator = operators[args[0]];
+            let operator = operators[args[0]] || operators[aliases[args[0]]];
             let values = Builder.util.flattenArgArrays(args.slice(1));
             values = values.map(bu.parseFloat);
 
