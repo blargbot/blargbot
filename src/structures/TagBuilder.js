@@ -1,12 +1,12 @@
 const ArgFactory = require('./ArgumentFactory'),
     bbEngine = require('../structures/BBTagEngine');
 
-class SubTagDefBuilder {
-    static SimpleTag(name) { return new SubTagDefBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
-    static ComplexTag(name) { return new SubTagDefBuilder().withCategory(bu.TagType.COMPLEX).withName(name); }
-    static ArrayTag(name) { return new SubTagDefBuilder().withCategory(bu.TagType.ARRAY).withName(name).acceptsArrays(true); }
-    static CCommandTag(name) { return new SubTagDefBuilder().withCategory(bu.TagType.CCOMMAND).withName(name); }
-    static AutoTag(name) { return new SubTagDefBuilder().withCategory(0).withName(name); }
+class TagBuilder {
+    static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
+    static ComplexTag(name) { return new TagBuilder().withCategory(bu.TagType.COMPLEX).withName(name); }
+    static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name).acceptsArrays(true); }
+    static CCommandTag(name) { return new TagBuilder().withCategory(bu.TagType.CCOMMAND).withName(name); }
+    static AutoTag(name) { return new TagBuilder().withCategory(0).withName(name); }
 
     constructor(init) {
         this.properties = {};
@@ -39,10 +39,10 @@ class SubTagDefBuilder {
             return async function (subtag, context) {
                 try {
                     if (definition.category === bu.TagType.CCOMMAND && !context.isCC)
-                        return SubTagDefBuilder.util.error(subtag, context, 'Can only use in CCommands');
+                        return TagBuilder.util.error(subtag, context, 'Can only use in CCommands');
 
                     if (definition.staff && !await context.isStaff)
-                        return SubTagDefBuilder.util.error(subtag, context, 'Author must be staff');
+                        return TagBuilder.util.error(subtag, context, 'Author must be staff');
 
                     let subtagArgs = subtag.children.slice(1);
 
@@ -213,7 +213,7 @@ class SubTagDefBuilder {
     }
 }
 
-SubTagDefBuilder.util = {
+TagBuilder.util = {
     async processAllSubtags(subtag, context) {
         return await Promise.all(subtag.children.slice(1)
             .map(async bb => await bbEngine.execute(bb, context)));
@@ -248,38 +248,38 @@ SubTagDefBuilder.util = {
         let channel = context.channel;
         if (channel.id !== channelId) {
             if (!/([0-9]{17,23})/.test(channelId))
-                return SubTagDefBuilder.errors.noChannelFound;
+                return TagBuilder.errors.noChannelFound;
             channelId = channelId.match(/([0-9]{17,23})/)[0];
             channel = bot.getChannel(channelId);
 
             if (channel == null)
-                return SubTagDefBuilder.errors.noChannelFound;
+                return TagBuilder.errors.noChannelFound;
             if (channel.guild.id !== context.guild.id)
-                return SubTagDefBuilder.errors.channelNotInGuild;
+                return TagBuilder.errors.channelNotInGuild;
         }
         return channel;
     }
 };
 
-SubTagDefBuilder.errors = {
-    notEnoughArguments(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'Not enough arguments'); },
-    tooManyArguments(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'Too many arguments'); },
-    noUserFound(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'No user found'); },
-    noRoleFound(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'No role found'); },
-    noChannelFound(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'No channel found'); },
-    noMessageFound(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'No message found'); },
-    notANumber(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'Not a number'); },
-    notAnArray(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'Not an array'); },
-    notABoolean(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'Not a boolean'); },
-    invalidOperator(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'Invalid operator'); },
-    userNotInGuild(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'User not in guild'); },
-    channelNotInGuild(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'Channel not in guild'); },
-    tooManyLoops(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'Too many loops'); },
-    unsafeRegex(subtag, context) { return SubTagDefBuilder.util.error(subtag, context, 'Unsafe regex detected'); },
-    invalidEmbed(subtag, context, issue) { return SubTagDefBuilder.util.error(subtag, context, 'Inavlid embed: ' + issue); }
+TagBuilder.errors = {
+    notEnoughArguments(subtag, context) { return TagBuilder.util.error(subtag, context, 'Not enough arguments'); },
+    tooManyArguments(subtag, context) { return TagBuilder.util.error(subtag, context, 'Too many arguments'); },
+    noUserFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No user found'); },
+    noRoleFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No role found'); },
+    noChannelFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No channel found'); },
+    noMessageFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No message found'); },
+    notANumber(subtag, context) { return TagBuilder.util.error(subtag, context, 'Not a number'); },
+    notAnArray(subtag, context) { return TagBuilder.util.error(subtag, context, 'Not an array'); },
+    notABoolean(subtag, context) { return TagBuilder.util.error(subtag, context, 'Not a boolean'); },
+    invalidOperator(subtag, context) { return TagBuilder.util.error(subtag, context, 'Invalid operator'); },
+    userNotInGuild(subtag, context) { return TagBuilder.util.error(subtag, context, 'User not in guild'); },
+    channelNotInGuild(subtag, context) { return TagBuilder.util.error(subtag, context, 'Channel not in guild'); },
+    tooManyLoops(subtag, context) { return TagBuilder.util.error(subtag, context, 'Too many loops'); },
+    unsafeRegex(subtag, context) { return TagBuilder.util.error(subtag, context, 'Unsafe regex detected'); },
+    invalidEmbed(subtag, context, issue) { return TagBuilder.util.error(subtag, context, 'Inavlid embed: ' + issue); }
 };
 
-module.exports = SubTagDefBuilder;
+module.exports = TagBuilder;
 
 console.info('TagBuilder loaded');
 
