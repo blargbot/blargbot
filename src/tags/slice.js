@@ -24,12 +24,11 @@ module.exports =
                 end = bu.parseInt(args[2]),
                 fallback = bu.parseInt(context.scope.fallback);
 
+            if (arr == null || !Array.isArray(arr.v))
+                return Builder.errors.notAnArray(subtag, context);
 
             if (!args[2])
                 end = arr.v.length;
-
-            if (arr == null || !Array.isArray(arr.v))
-                return Builder.errors.notAnArray(subtag, context);
 
             if (isNaN(start)) start = fallback;
             if (isNaN(end)) end = fallback;
