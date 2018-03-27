@@ -56,6 +56,6 @@ module.exports =
             }
 
             for (const emote of emotes)
-                context.state.reactions.add(emote);
+                context.state.reactions.push(emote);
         })
         .build();

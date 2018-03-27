@@ -1,7 +1,6 @@
 var e = module.exports = {};
 
-var tags = require('../core/tags'),
-    bbEngine = require('../structures/BBTagEngine');
+var bbEngine = require('../structures/BBTagEngine');
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;

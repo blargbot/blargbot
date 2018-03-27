@@ -29,18 +29,13 @@ module.exports =
 
             if (context.state.timerCount > 2) return Builder.util.error(subtag, context, 'Max 3 timers per tag');
 
-            let msg = params.msg;
-            params.msg = msg.id;
-            params.disabletimer = true;
+            context.state.timerCount += 1;
             await r.table('events').insert({
                 type: 'tag',
-                params,
-                msg: JSON.stringify(msg),
-                channel: msg.channel.id,
-                endtime: r.epochTime(dep.moment().add(duration).unix())
+                endtime: r.epochTime(dep.moment().add(duration).unix()),
+                context: context.serialize(),
+                content: args[0].content
             });
-            params.msg = msg;
-            context.state.timerCount += 1;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -109,6 +109,38 @@ class SubTag extends BaseTag {
  * @property {string|bbError[]} bbError.error The error that happened
  */
 class Context {
+    static async deserialize(obj) {
+        let msg;
+        try {
+            msg = await bot.getMessage(obj.msg.channel.id, obj.msg.id);
+        } catch (err) {
+            let channel = (await bot.getChannel(obj.msg.channel.id));
+            let member;
+            if (channel == null) {
+                channel = JSON.parse(obj.msg.channel.serialized);
+                member = JSON.parse(obj.msg.member.serialized);
+            }
+            else
+                member = channel.guild.members.get(obj.msg.member.id) || JSON.parse(obj.msg.member.serialized);
+            msg = {
+                id: obj.msg.id,
+                timestamp: obj.msg.timestamp,
+                content: obj.msg.content,
+                channel,
+                member,
+                guild: channel.guild,
+                author: member.user,
+                attachments: obj.msg.attachments,
+                embeds: obj.msg.embeds
+            };
+        }
+        let result = new Context({ msg, isCC: obj.isCC, tagName: obj.tagName, author: obj.author });
+        result.scopes._scopes = [obj.scope];
+        result.state = obj.state;
+        result.input = obj.input;
+        return result;
+    }
+
     get channel() { return this.message.channel; }
     get member() { return this.message.member; }
     get guild() { return this.message.channel.guild; }
@@ -140,7 +172,7 @@ class Context {
             stackSize: 0,
             repeats: 0,
             embed: null,
-            reactions: new Set(),
+            reactions: [],
             nsfw: null,
             dmCount: 0,
             timerCount: 0,
@@ -168,6 +200,30 @@ class Context {
 
         return context;
     }
+
+    serialize() {
+        return {
+            msg: {
+                id: this.message.id,
+                timestamp: this.message.timestamp,
+                content: this.message.content,
+                channel: serializeEntity(this.channel),
+                member: serializeEntity(this.member),
+                attachments: this.message.attachments,
+                embeds: this.message.embeds
+            },
+            isCC: this.isCC,
+            state: Object.assign({}, this.state),
+            scope: Object.assign({}, this.scope),
+            input: this.input,
+            tagName: this.tagName,
+            author: this.author
+        }
+    }
+}
+
+function serializeEntity(entity) {
+    return { id: entity.id, serialized: JSON.stringify(entity) };
 }
 
 class StateScopes {
@@ -383,13 +439,24 @@ function addError(tag, context, message) {
  */
 
 /**
- * @param {runArgs} config
+ * Either provide a string and Context, or runArgs and Context is optional
+ * @param {runArgs|string} content
+ * @param {Context} [context]
  */
-async function runTag(config) {
-    let context = new Context(config);
-    let result;
+async function runTag(content, context) {
+    let config = {};
+    if (typeof content == 'string') {
+        if (!(context instanceof Context))
+            throw new Error('Unable to build a context with the given args');
+    }
+    else {
+        if (context == null)
+            context = new Context(content);
+        config = content;
+        content = content.tagContent;
+    }
 
-    result = await execString(config.tagContent.trim(), context);
+    let result = await execString(content.trim(), context);
 
     await context.variables.persist();
 
@@ -408,14 +475,14 @@ async function runTag(config) {
 
     let attachment = (config.attach || (c => null))(context, result);
 
-    let response = await bu.send(config.msg,
+    let response = await bu.send(context.msg,
         {
             content: result,
             embed: context.state.embed,
             nsfw: context.state.nsfw
         }, attachment);
     if (response != null && response.channel != null)
-        await bu.addReactions(response.channel.id, response.id, context.state.reactions);
+        await bu.addReactions(response.channel.id, response.id, [...new Set(context.state.reactions)]);
 
     return { context, result, response };
 };
