@@ -28,7 +28,8 @@ module.exports =
 
             if (user != null) {
                 let member = context.guild.members.get(user.id);
-                return (member != null ? member.nick : '') || user.username;
+                if (member == null) return user.username;
+                return member.nick || user.username;
             }
 
             if (quiet)
