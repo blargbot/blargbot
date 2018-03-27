@@ -66,7 +66,15 @@ module.exports =
             if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)
                 return Builder.errors.channelNotInGuild(subtag, context);
 
-            let message = await bot.getMessage(channel.id, messageId);
+            let message;
+            try {
+                message = await bot.getMessage(channel.id, messageId);
+            }
+            catch (err) {
+                if (err.code == 10008)
+                    return Builder.errors.noMessageFound(subtag, context);
+                return Builder.util.error(subtag, context, 'Unable to get message');
+            }
 
             if (message == null) return Builder.errors.noMessageFound(subtag, context);
             if (message.author.id != bot.user.id) return Builder.util.error(subtag, context, 'I must be the message author');
