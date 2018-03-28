@@ -61,7 +61,11 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
                 if (msg.author)
                     bu.insertChatlog(msg, 1);
             }
-        let oldMsg = oldmsg.content || 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';
+        let oldMsg;
+        if (storedGuild.settings.makelogs) 
+            oldMsg = msg.content || 'No content to display. This is either due to the message only containing an attachment, or existing before makelogs was set to true'
+        else
+            oldMsg = 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';
         let newMsg = msg.content || '""';
         if (oldMsg.length + newMsg.length > 1900) {
             if (oldMsg.length > 900) oldMsg = oldMsg.substring(0, 900) + '... (too long to display)';
