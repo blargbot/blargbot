@@ -142,7 +142,6 @@ class Context {
     }
 
     get channel() { return this.message.channel; }
-    get guild() { return this.channel.guild; }
     get member() { return this.message.member; }
     get guild() { return this.message.channel.guild; }
     get user() { return this.message.author; }
