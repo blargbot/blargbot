@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:46
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 14:43:27
+ * @Last Modified time: 2018-03-29 15:43:24
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -31,7 +31,7 @@ module.exports =
             }
 
             if (args.length == 3)
-                return (await bbEngine.execute(subtag, context, args[0])).replace(regex, rWith);
+                return (await bbEngine.execute(args[0], context)).replace(regex, rWith);
 
             context.state.replace = { regex, with: rWith };
 
