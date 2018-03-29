@@ -6,6 +6,7 @@
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+const bbEngine = require('../structures/BBTagEngine');
 
 bot.on('guildMemberAdd', async function (guild, member) {
     let val = await bu.guildSettings.get(guild.id, 'greeting');
@@ -19,20 +20,19 @@ bot.on('guildMemberAdd', async function (guild, member) {
         } else {
             ccommandContent = val;
         }
-        let output = await tags.processTag({
-            channel: bot.getChannel(chan),
-            author: member.user,
-            member: member,
-            guild: guild
-        }, ccommandContent, '', undefined, author, true);
-        let message = await bu.send(chan, {
-            content: output.contents,
-            embed: output.embed,
-            nsfw: output.nsfw,
-            disableEveryone: false
+        await bbEngine.runTag({
+            msg: {
+                channel: bot.getChannel(chan),
+                author: member.user,
+                member: member,
+                guild: guild
+            },
+            tagContent: ccommandContent,
+            input: '',
+            isCC: true,
+            tagName: 'greet',
+            author
         });
-        if (message && message.channel)
-            await bu.addReactions(message.channel.id, message.id, output.reactions);
     }
     bu.logEvent(guild.id, 'memberjoin', [{
         name: 'User',

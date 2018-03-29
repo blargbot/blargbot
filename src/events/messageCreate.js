@@ -7,6 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const bbEngine = require('../structures/BBTagEngine');
 
 const cleverbotIo = new dep.cleverbotIo({
     user: config.cleverbot.ioid,
@@ -233,18 +234,14 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             console.command(outputLog);
             let command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
-            let output = await tags.processTag(msg, ccommandContent, command, ccommandName, author, true);
-            if (/\S/.test(output.contents || '') || output.embed != null) {
-                let message = await bu.send(msg, {
-                    content: (output.contents || '').trim(),
-                    embed: output.embed,
-                    nsfw: output.nsfw,
-                    disableEveryone: false
-                });
-                if (message && message.channel)
-                    await bu.addReactions(message.channel.id, message.id, output.reactions);
-
-            }
+            await bbEngine.runTag({
+                msg,
+                tagContent: ccommandContent,
+                input: command,
+                isCC: true,
+                tagName: ccommandName,
+                author
+            });
             return true;
         }
     } else {
@@ -409,11 +406,13 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                             else content = CommandManager.list['censor'].defaultKickMessage;
                             break;
                     }
-                    let output = await tags.processTag(msg, content, msg.content, undefined, undefined, true);
-                    let message = await bu.send(msg, { content: output.contents, embed: output.embed });
-                    if (message && message.channel)
-                        await bu.addReactions(message.channel.id, message.id, output.reactions);
-                    return;
+                    await bbEngine.runTag({
+                        msg,
+                        tagContent: content,
+                        input: msg.content,
+                        isCC: true,
+                        tagName: 'censor'
+                    });
                 }
             }
         }
@@ -448,16 +447,13 @@ async function handleRoleme(msg, storedGuild) {
                             roles: roleList
                         });
                         console.verbose(roleme[i].output);
-                        let output = roleme[i].output ?
-                            await tags.processTag(msg, roleme[i].output, '', undefined, undefined, true) :
-                            { content: 'Your roles have been edited!' };
-                        let message = await bu.send(msg, {
-                            content: output.contents, 
-                            embed: output.embed,
-                            nsfw: output.nsfw
+                        await bbEngine.runTag({
+                            msg,
+                            tagContent: roleme[i].output || 'Your roles have been edited!',
+                            input: '',
+                            isCC: true,
+                            tagName: 'roleme'
                         });
-                        if (message && message.channel)
-                            await bu.addReactions(message.channel.id, message.id, output.reactions);
                     } catch (err) {
                         bu.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
                     }

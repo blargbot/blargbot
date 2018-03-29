@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+const Builder = require('../structures/TagBuilder'),
+    bbEngine = require('../structures/BBTagEngine');
 
 module.exports =
     Builder.AutoTag('exec')
@@ -16,29 +17,32 @@ module.exports =
         .withExample(
             'Let me do a tag for you. {exec;f}',
             'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            let tag = await r.table('tag').get(params.args[1]).run();
-            return await this.execTag(params, tag, params.args[1], 'Tag');
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let tag = await r.table('tag').get(args[0]).run();
+            if (tag == null)
+                return Builder.util.error(subtag, context, 'Tag not found: ' + args[0]);
+            return await this.execTag(subtag, context, tag.content, args[1] || '');
         })
         .whenDefault(Builder.errors.tooManyArguments)
-        .withProp('execTag', async function (params, tag, tagName, kind) {
-            if (params.msg.iterations >= 200) {
-                bu.send(params.msg, 'Terminated recursive tag after 200 execs.');
-                throw ('Too Much Exec');
+        .withProp('execTag', async function (subtag, context, tagContent, input) {
+            if (context.state.stackSize >= 200) {
+                context.state.return = -1;
+                return Builder.util.error(subtag, context, 'Terminated recursive tag after ' + context.state.stackSize + ' execs.');
             }
-            params.msg.iterations = (params.msg.iterations + 1) || 1;
 
-            if (tag == null)
-                return await Builder.util.error(params, kind + ' not found: ' + tagName);
+            let childContext = context.makeChild({ input });
 
-            if (typeof tag == 'string')
-                tag = { content: tag };
+            context.state.stackSize += 1;
+            let result = await bbEngine.execString(tagContent || '', childContext);
+            context.state.stackSize -= 1;
 
-            params.words = bu.splitInput(params.args[2] || '');
-            params.content = tag.content;
-            let result = await bu.processTag(params);
-            if (result.terminate) result.terminate--;
+            context.errors.push({
+                tag: subtag,
+                error: childContext.errors
+            });
+            if (context.state.return > 0) context.state.return--;
+
             return result;
         }).build();

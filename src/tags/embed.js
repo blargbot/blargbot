@@ -21,11 +21,9 @@ module.exports =
         .withExample(
             '{embed;{lb}"title":"Hello!"{rb}}',
             '(an embed with "Hello!" as the title)'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            return {
-                embed: bu.parseEmbed(params.args[1])
-            };
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            context.state.embed = bu.parseEmbed(args[0]);
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

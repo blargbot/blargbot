@@ -1,6 +1,6 @@
 var e = module.exports = {};
 
-var tags = require('../core/tags');
+var bbEngine = require('../structures/BBTagEngine');
 
 e.init = () => {
     e.category = bu.CommandType.ADMIN;
@@ -48,13 +48,12 @@ e.execute = async function (msg, words) {
             suffix = `This greeting will be outputted in <#${channel}>. `;
         }
     }
-    let output = await tags.processTag(msg, greeting, '', undefined, msg.author.id, true);
-    let message = await bu.send(msg, {
-        content: `Greeting set. ${suffix}Simulation:
-${output.contents}`,
-        embed: output.embed,
-        nsfw: output.nsfw
+    await bbEngine.runTag({
+        msg,
+        tagContent: greeting,
+        input: '',
+        isCC: true,
+        author: msg.author.id,
+        modResult(text) { return 'Greeting set. ' + suffix + 'Simulation:\n' + text; }
     });
-    if (message && message.channel)
-        await bu.addReactions(message.channel.id, message.id, output.reactions);
 };

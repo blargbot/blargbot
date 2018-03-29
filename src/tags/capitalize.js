@@ -16,11 +16,12 @@ module.exports =
         .withExample(
             '{capitalize;hello world!}',
             'Hello world!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            if (params.args[2])
-                return params.args[1][0].toUpperCase() + params.args[1].substr(1).toLowerCase();
-            return params.args[1][0].toUpperCase() + params.args[1].substr(1);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            if (args[0].length == 0) return '';
+            if (args[1])
+                return args[0][0].toUpperCase() + args[0].substr(1).toLowerCase();
+            return args[0][0].toUpperCase() + args[0].substr(1);
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

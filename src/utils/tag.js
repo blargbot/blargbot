@@ -7,10 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-function setCharAt(str, index, chr) {
-    if (index > str.length - 1) return str;
-    return str.substr(0, index) + chr + str.substr(index + 1);
-}
+const bbEngine = require('../structures/BBTagEngine');
 
 bu.serializeTagArray = function (array, varName) {
     if (!varName)
@@ -25,35 +22,26 @@ bu.serializeTagArray = function (array, varName) {
 
 bu.deserializeTagArray = function (value) {
     try {
-        let obj = JSON.parse(value
-            .replace(new RegExp(bu.specialCharBegin + 'LB' + bu.specialCharEnd, "g"), '{')
-            .replace(new RegExp(bu.specialCharBegin + 'RB' + bu.specialCharEnd, "g"), '}'));
+        let obj = JSON.parse(value);
         if (Array.isArray(obj)) obj = {
             v: obj
         };
-        return obj;
+        return { v: obj.v, n: obj.n }; //Done to prevent injection
     } catch (err) {
         return null;
     }
 };
 
-bu.getArray = async function (params, arrName) {
+bu.getArray = async function (context, arrName) {
     let obj = bu.deserializeTagArray(arrName);
-    if (!obj) {
-        try {
-            let arr = await TagManager.list['get'].getVar(params, arrName);
-            if (arr != undefined) {
-                obj = bu.deserializeTagArray(bu.serializeTagArray(arr, arrName));
-            }
-        } catch (err) {
-            return undefined;
-        }
+    if (obj != null) return obj;
+    try {
+        let arr = await context.variables.get(arrName);
+        if (arr != undefined)
+            return { v: arr, n: arrName };
+    } catch (err) {
+        return undefined;
     }
-    return obj;
-};
-
-bu.setArray = async function (deserialized, params) {
-    await TagManager.list['set'].setVar(params, deserialized.n, deserialized.v);
 };
 
 bu.setVariable = async function (name, key, value, type, guildId) {
@@ -159,27 +147,27 @@ bu.tagVariableScopes = [
         description: 'Server variables (also referred to as Guild variables) are commonly used if you wish to store data on a per server level. ' +
             'They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\n' +
             'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.',
-        setter: async (params, name, value) =>
-            await bu.setVariable(params.msg.guild.id, name, value,
-                params.ccommand ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
-        getter: async (params, name) =>
-            await bu.getVariable(params.msg.guild.id, name,
-                params.ccommand ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD)
+        setter: async (context, name, value) =>
+            await bu.setVariable(context.guild.id, name, value,
+                context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
+        getter: async (context, name) =>
+            await bu.getVariable(context.guild.id, name,
+                context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD)
     },
     {
         name: 'Author',
         prefix: '@',
         description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\n' +
             'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.',
-        setter: async (params, name, value) => {
-            if (params.author)
-                return await bu.setVariable(params.author, name, value, bu.TagVariableType.AUTHOR);
-            return await bu.tagProcessError(params, '`No author found`');
+        setter: async (context, name, value) => {
+            if (context.author)
+                return await bu.setVariable(context.author, name, value, bu.TagVariableType.AUTHOR);
+            return bbEngine.addError({}, context, '`No author found`');
         },
-        getter: async (params, name) => {
-            if (params.author)
-                return await bu.getVariable(params.author, name, bu.TagVariableType.AUTHOR);
-            return await bu.tagProcessError(params, '`No author found`');
+        getter: async (context, name) => {
+            if (context.author)
+                return await bu.getVariable(context.author, name, bu.TagVariableType.AUTHOR);
+            return bbEngine.addError({}, context, '`No author found`');
         }
     },
     {
@@ -187,9 +175,9 @@ bu.tagVariableScopes = [
         prefix: '*',
         description: 'Global variables are completely public, anyone can read **OR EDIT** your global variables.\n' +
             'These are very useful if you like pain.',
-        setter: async (params, name, value) =>
+        setter: async (context, name, value) =>
             await bu.setVariable(undefined, name, value, bu.TagVariableType.GLOBAL),
-        getter: async (params, name) =>
+        getter: async (context, name) =>
             await bu.getVariable(undefined, name, bu.TagVariableType.GLOBAL)
     },
     {
@@ -197,8 +185,8 @@ bu.tagVariableScopes = [
         prefix: '~',
         description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
             'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type',
-        setter: async (params, name, value) => { params.vars[name] = value; },
-        getter: async (params, name) => params.vars[name]
+        setter: async (context, name, value) => { return ''; }, //Temporary is never persisted to the database
+        getter: async (context, name) => { } //Temporary is never persisted to the database
     },
     {
         name: 'Local',
@@ -206,322 +194,15 @@ bu.tagVariableScopes = [
         description: 'Local variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
             'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
             'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
-        setter: async (params, name, value) => {
-            if (params.ccommand)
-                return await bu.setVariable(params.tagName, name, value, bu.TagVariableType.GUILDLOCAL, params.msg.guild.id);
-            return await bu.setVariable(params.tagName, name, value, bu.TagVariableType.LOCAL);
+        setter: async (context, name, value) => {
+            if (context.isCC)
+                return await bu.setVariable(context.tagName, name, value, bu.TagVariableType.GUILDLOCAL, context.guild.id);
+            return await bu.setVariable(context.tagName, name, value, bu.TagVariableType.LOCAL);
         },
-        getter: async (params, name) => {
-            if (params.ccommand)
-                return await bu.getVariable(params.tagName, name, bu.TagVariableType.GUILDLOCAL, params.msg.guild.id);
-            return await bu.getVariable(params.tagName, name, bu.TagVariableType.LOCAL);
+        getter: async (context, name) => {
+            if (context.isCC)
+                return await bu.getVariable(context.tagName, name, bu.TagVariableType.GUILDLOCAL, context.guild.id);
+            return await bu.getVariable(context.tagName, name, bu.TagVariableType.LOCAL);
         }
     }
 ];
-
-bu.processTagInner = async function (params, i) {
-    if (i)
-        params.content = params.args[i];
-    let result = await bu.processTag(params);
-
-    if (result.terminate !== undefined) params.terminate = result.terminate;
-    if (result.nsfw !== undefined) params.nsfw = result.nsfw;
-    if (result.reactions !== undefined) params.reactions = result.reactions;
-    if (result.embed !== undefined) params.embed = result.embed;
-    if (result.timers !== undefined) params.timers = result.timers;
-    if (result.dmsent !== undefined) params.dmsent = result.dmsent;
-
-    return result.contents;
-};
-
-bu.processTag = async function (params) {
-    let { msg, words, contents, fallback, author, tagName, terminate, isStaff, vars, reactions, quiet, embed, nsfw, timers, disabletimer, dmsent } = params;
-    if (params.content) contents = params.content;
-    if (!reactions) params.reactions = reactions = [];
-    if (!contents) contents = '';
-    if (isStaff === undefined)
-        isStaff = author == params.msg.guild.id || await bu.isUserStaff(author, msg.guild.id);
-    if (vars === undefined) vars = {};
-
-    if (terminate) return {
-        contents: contents,
-        terminate,
-        reactions,
-        embed,
-        nsfw,
-        dmsent,
-        timers,
-        disabletimer
-    };
-    //contents = contents.replace(/\/\/.*$/gm, '').replace(/\/\*[\w\W]*?\*\//g, '');
-    let openBraceCount = (contents.match(/\{/g) || []).length;
-    let closeBraceCount = (contents.match(/\}/g) || []).length;
-    if (openBraceCount !== closeBraceCount) return {
-        contents: `\`Unmatched Brace Error\``,
-        terminate: -1,
-        reactions,
-        embed,
-        nsfw,
-        dmsent,
-        timers,
-        disabletimer
-    };
-
-    let level = 0;
-    let lastIndex = 0;
-    let coords = [];
-    for (let i = 0; i < contents.length; i++) {
-        if (contents[i] == '{') {
-            if (level == 0) {
-                lastIndex = i;
-            }
-            level++;
-        } else if (contents[i] == '}') {
-            level--;
-            if (level == 0) {
-                coords.push([lastIndex, i + 1]);
-            }
-        } else if (contents[i] == ';') {
-            if (level == 1) {
-                contents = setCharAt(contents, i, bu.tagDiv);
-            }
-        }
-    }
-    let subtags = [];
-    for (let i = 0; i < coords.length; i++) {
-        let subtagindex = subtags.push(contents.substring(coords[i][0], coords[i][1]));
-    }
-    let result = {
-        contents,
-        reactions: [],
-        embed: undefined,
-        terminate,
-        nsfw,
-        dmsent,
-        timers,
-        disabletimer
-    };
-    for (let i = 0; i < subtags.length; i++) {
-        let tagBrackets = subtags[i],
-            tag = tagBrackets.substring(1, tagBrackets.length - 1),
-            args = tag.split(bu.tagDiv),
-            replaceString, replaceObj = {
-                replaceString: '',
-                replaceContent: false
-            };
-        for (let ii = 0; ii < args.length; ii++) {
-            args[ii] = args[ii].replace(/^[\s\n]+|[\s\n]+$/g, '');
-        }
-        let title = (await bu.processTag({
-            msg, words, contents: args[0], fallback, author, tagName, terminate, vars, reactions, quiet, embed, nsfw, dmsent, timers, disabletimer
-        })).contents.toLowerCase();
-
-        if (i === 0 || i === subtags.length - 1 && title === '//')
-            result.trim = true;
-
-        if (TagManager.list.hasOwnProperty(title)) {
-            let parameters = {
-                msg: msg,
-                args: args,
-                fallback: fallback,
-                words: words,
-                author: author,
-                tagName: tagName,
-                ccommand: params.ccommand,
-                subtag: title,
-                terminate,
-                isStaff, vars, reactions, quiet, embed, nsfw, dmsent, timers, disabletimer
-            };
-            if (TagManager.list[title].category == bu.TagType.CCOMMAND && !params.ccommand) {
-                replaceObj = {
-                    replaceString: await bu.tagProcessError(params, '`Can only use {' + title + '} in CCommands`'),
-                    terminate,
-                    replaceContent: false,
-                    reactions, embed, quiet, nsfw, dmsent, timers, disabletimer
-                };
-            } else
-                try {
-                    replaceObj = await TagManager.list[title].execute(parameters);
-                } catch (err) {
-                    if (err.stack) {
-                        replaceObj.replaceString = await bu.tagProcessError({
-                            msg: msg,
-                            contents: fallback,
-                            fallback: fallback,
-                            words: words,
-                            author: author,
-                            tagName: tagName,
-                            ccommand: params.ccommand,
-                            terminate,
-                            isStaff, vars, reactions, quiet, embed, nsfw, dmsent, timers, disabletimer
-                        }, `\`An internal error occurred. This has been reported.\``);
-                        bu.send('250859956989853696', {
-                            content: 'A tag error occurred.',
-                            embed: {
-                                title: err.message,
-                                description: err.stack,
-                                fields: [
-                                    { name: 'Tag Name', value: tagName, inline: true },
-                                    { name: 'Channel | Guild', value: `${msg.channel.id} | ${msg.guild.id}`, inline: true },
-                                    { name: 'CCommand', value: params.ccommand ? 'Yes' : 'No', inline: true }
-                                ]
-                            }
-                        });
-                    } else replaceObj = { terminate: true, replaceString: '', reactions, embed };
-                }
-        } else {
-            replaceObj.replaceString = await bu.tagProcessError({
-                msg: msg,
-                contents: fallback,
-                fallback: fallback,
-                words: words,
-                author: author,
-                tagName: tagName,
-                ccommand: params.ccommand,
-                terminate,
-                isStaff, vars, reactions, quiet, embed, nsfw, dmsent, timers, disabletimer
-            }, `\`Subtag "${title}" doesn\'t exist\``);
-        }
-        //To propogate laterally, set varname, to propogate vertically, set result.varname
-        if (replaceObj.fallback !== undefined) fallback = replaceObj.fallback; //lateral
-        if (replaceObj.quiet !== undefined) quiet = replaceObj.quiet; //lateral
-        if (replaceObj.embed !== undefined) embed = result.embed = replaceObj.embed; //lateral, vertical
-        if (replaceObj.nsfw !== undefined) nsfw = result.nsfw = replaceObj.nsfw; //lateral, vertical
-        if (replaceObj.dmsent !== undefined) dmsent = result.dmsent = replaceObj.dmsent; //lateral, vertical
-        if (replaceObj.timers !== undefined) timers = result.timers = replaceObj.timers; //lateral, vertical
-        if (replaceObj.disabletimer !== undefined) disabletimer = result.disabletimer = replaceObj.disabletimer; //lateral
-        if (replaceObj.reactions !== undefined) {
-            if (Array.isArray(replaceObj.reactions))
-                result.reactions.push(...replaceObj.reactions);
-            else
-                result.reactions.push(replaceObj.reactions);
-            reactions = result.reactions; //lateral, vertical
-        }
-        if (replaceObj.terminate) {
-            result.contents = result.contents.substring(0, result.contents.indexOf(tagBrackets) + tagBrackets.length);
-            result.terminate = replaceObj.terminate; //vertical
-        }
-        if (replaceObj == '') {
-            return bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
-        } else {
-            replaceString = replaceObj.replaceString;
-            if (replaceString == undefined) {
-                replaceString = '';
-            }
-            if (replaceString == bu.specialCharBegin + 'BREAK' + bu.specialCharEnd) {
-                result.contents = bu.specialCharBegin + 'BREAK' + bu.specialCharEnd;
-            } else {
-                replaceString = replaceString.toString();
-                replaceString = replaceString.replace(/\}/gi, `${bu.specialCharBegin}RB${bu.specialCharEnd}`)
-                    .replace(/\{/gi, `${bu.specialCharBegin}LB${bu.specialCharEnd}`)
-                    .replace(/\;/g, `${bu.specialCharBegin}SEMI${bu.specialCharEnd}`);
-                //console.debug('result.contents:', result.contents, '\ntagBrackets:', tagBrackets, '\nreplaceString:', replaceString);
-                result.contents = result.contents.replace(tagBrackets, replaceString);
-                if (replaceObj.replaceContent) {
-                    if (replaceObj.replace == undefined) {
-                        result.contents = replaceObj.replaceString;
-                    } else {
-                        result.contents.replace(tagBrackets, '');
-                        result.contents = result.contents.replace(replaceObj.replace, replaceObj.replaceString);
-                    }
-                }
-            }
-        }
-        if (result.terminate) break;
-    }
-    //console.debug('End of processTag', result);
-    return result;
-};
-
-bu.processSpecial = (contents, final) => {
-    //console.debug('Processing special tags');
-    contents += '';
-    if (final)
-        contents = contents
-            .replace(new RegExp(bu.specialCharBegin + 'rb' + bu.specialCharEnd, 'gi'), '}')
-            .replace(new RegExp(bu.specialCharBegin + 'lb' + bu.specialCharEnd, 'gi'), '{')
-            .replace(new RegExp(bu.specialCharBegin + 'semi' + bu.specialCharEnd, 'gi'), ';');
-
-    contents = contents
-        .replace(new RegExp(bu.specialCharBegin + 'break' + bu.specialCharEnd, 'gi'), '');
-
-    // while (contents.indexOf(bu.specialCharBegin) > -1 && contents.indexOf(bu.specialCharEnd) > -1 &&
-    //     contents.indexOf(bu.specialCharBegin) < contents.indexOf(bu.specialCharEnd)) {
-    //     var tagEnds = contents.indexOf(bu.specialCharEnd),
-    //         tagBegins = tagEnds == -1 ? -1 : contents.lastIndexOf(bu.specialCharBegin, tagEnds),
-    //         tagBrackets = contents.substring(tagBegins, tagEnds + 1),
-    //         tag = contents.substring(tagBegins + 1, tagEnds),
-    //         args = tag.split(bu.specialCharDiv),
-    //         replaceString = '',
-    //         replace = true;
-
-    //     switch (args[0].toLowerCase()) {
-    //         case 'rb':
-    //             if (final)
-    //                 replaceString = '}';
-    //             else
-    //                 replaceString = '\uE010rb\uE011';
-    //             break;
-    //         case 'lb':
-    //             if (final)
-    //                 replaceString = '{';
-    //             else
-    //                 replaceString = '\uE010lb\uE011';
-    //             break;
-    //         case 'semi':
-    //             if (final)
-    //                 replaceString = ';';
-    //             else
-    //                 replaceString = '\uE010semi\uE011';
-    //             break;
-    //         case 'break':
-    //             replaceString = '';
-    //             break;
-    //     }
-    //     console.debug(tagBrackets, replaceString);
-    //     if (replace)
-    //         contents = contents.replace(tagBrackets, replaceString);
-    // }
-    // return contents.replace(/\uE010/g, bu.specialCharBegin).replace(/\uE011/g, bu.specialCharEnd);
-    return contents;
-};
-
-bu.getTagRole = async function (msg, args, index) {
-    var obtainedRole;
-    if (!index) index = 1;
-    msg.content = bu.processSpecial(msg.content);
-    return await bu.getRole(msg, args[index], args[index + 1]);
-};
-
-bu.getTagUser = async function (msg, args, index) {
-    var obtainedUser;
-    if (!index) index = 1;
-
-    msg.content = bu.processSpecial(msg.content);
-    if (args.length <= index) {
-        obtainedUser = msg.author;
-    } else {
-        if (args[index + 1]) {
-            obtainedUser = await bu.getUser(msg, args[index], true);
-        } else {
-            obtainedUser = await bu.getUser(msg, args[index]);
-        }
-    }
-    return obtainedUser;
-};
-
-
-bu.tagGetFloat = (arg) => {
-    return parseFloat(arg) ? parseFloat(arg) : NaN;
-};
-
-bu.tagProcessError = async function (params, errormessage) {
-    let fallback = params.fallback;
-    let returnMessage = {};
-    params.content = fallback;
-
-    if (fallback === undefined) returnMessage.contents = errormessage;
-    else returnMessage = await bu.processTag(params);
-    if (returnMessage.terminate) params.terminate = true;
-    return returnMessage.contents;
-};

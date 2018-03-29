@@ -15,9 +15,9 @@ module.exports =
         .withExample(
             '{username;{randuser}} is a lovely person! {username;{randuser}} isn\'t as good.',
             'abalabahaha is a lovely person! stupid cat isn\'t as good.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) {
-            let members = params.msg.channel.guild.members.map(m => m);
+        )
+        .whenArgs(0, async function (subtag, context) {
+            let members = context.guild.members.map(m => m);
             return members[bu.getRandomInt(0, members.length - 1)].user.id;
         })
         .whenDefault(Builder.errors.tooManyArguments)

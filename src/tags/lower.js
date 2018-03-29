@@ -16,10 +16,8 @@ module.exports =
         .withExample(
             '{lower;THIS WILL BECOME LOWERCASE}',
             'this will become lowercase'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            return params.args[1].toLowerCase();
-        })
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async (_, __, args) => (args[0] || '').toLowerCase())
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

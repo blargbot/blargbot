@@ -17,17 +17,17 @@ module.exports =
         .withExample(
             'The admin role ID is: {roleid;admin}.',
             'The admin role ID is: 123456789123456.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-                role = await bu.getRole(params.msg, params.args[1], quiet);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
+                role = await bu.getRole(context.msg, args[0], quiet);
 
             if (role != null)
                 return role.mention;
 
             if (quiet)
-                return params.args[1];
+                return args[0];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

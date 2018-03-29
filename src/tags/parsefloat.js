@@ -16,10 +16,10 @@ module.exports =
         .withExample(
             '{parsefloat;abcd} {parsefloat;12.34} {parsefloat;1.2cd}',
             'NaN 12.34 1.2'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let number = bu.parseFloat(params.args[1]);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            let number = bu.parseFloat(args[0]);
             if (isNaN(number))
                 return 'NaN';
             return number;

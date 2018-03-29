@@ -25,15 +25,15 @@ module.exports =
         .withExample(
             'It\'s currently {time;YYYY/MM/DD HH:mm:ss}',
             'It\'s currently 2016/01/01 01:00:00'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-5', async function (params) {
-            let format = params.args[1],
-                time = params.args[2],
-                parse = params.args[3],
-                timezone = params.args[4],
+        )
+        .whenArgs('0-4', async function (subtag, context, args) {
+            let format = args[0],
+                time = args[1],
+                parse = args[2],
+                timezone = args[3],
                 date = bu.parseTime(time, parse, timezone);
 
-            if (!date.isValid()) return await Builder.util.error(params, 'Invalid date');
+            if (!date.isValid()) return Builder.util.error(subtag, context, 'Invalid date');
 
             return date.format(format || '');
         })

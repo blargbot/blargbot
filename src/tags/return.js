@@ -18,12 +18,9 @@ module.exports =
         .withExample(
             'This will display. {return} This will not.',
             'This will display.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', async function (params) {
-            let force = bu.parseBoolean(params.args[1], true);
-            return {
-                terminate: force ? -1 : 1
-            };
+        )
+        .whenArgs('0-1', async function (subtag, context, args) {
+            context.state.return = bu.parseBoolean(args[0], true) ? -1 : 1;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

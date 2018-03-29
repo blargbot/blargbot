@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+const Builder = require('../structures/TagBuilder'),
+    bbEngine = require('../structures/BBTagEngine');
 
 module.exports =
     Builder.AutoTag('randchoose')
@@ -17,18 +18,18 @@ module.exports =
         .withExample(
             'I feel like eating {randchoose;cake;pie;pudding} today',
             'I feel like eating pudding today.'
-        )
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let value = await bu.processTagInner(params, 1);
-            let options = await bu.getArray(params, value);
+        ).resolveArgs(-1)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            let value = await bbEngine.execute(args[0], context);
+            let options = await bu.getArray(context, value);
             if (options == null || !Array.isArray(options.v))
                 return value;
             let selection = bu.getRandomInt(0, options.v.length - 1);
             return options.v[selection];
         })
-        .whenDefault(async function (params) {
-            let selection = bu.getRandomInt(1, params.args.length - 1);
-            return await bu.processTagInner(params, selection);
+        .whenDefault(async function (subtag, context, args) {
+            let selection = bu.getRandomInt(0, args.length - 1);
+            return await bbEngine.execute(args[selection], context);
         })
         .build();

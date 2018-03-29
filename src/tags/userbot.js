@@ -15,21 +15,21 @@ module.exports =
         .withDesc('Returns whether a `user` is a bot. `user` defaults to the user who executed the containing tag. ' +
             'If `quiet` is specified, if `user` can\'t be found it will simply return `user`')
         .withExample(
-            'Are you a bot? {userid}',
-            'Are oyu a bot? false'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-3', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-                user = params.msg.author;
+            'Are you a bot? {userbot}',
+            'Are you a bot? false'
+        )
+        .whenArgs('0-2', async function (subtag, context, args) {
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
+                user = context.user;
 
-            if (params.args[1])
-                user = await bu.getUser(params.msg, params.args[1], quiet);
+            if (args[0])
+                user = await bu.getUser(context.msg, args[0], quiet);
 
             if (user != null)
                 return user.bot;
 
             if (quiet)
-                return params.args[1];
+                return args[0];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

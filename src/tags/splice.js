@@ -18,26 +18,26 @@ module.exports =
         .withExample(
             '{set;~array;["this", "is", "an", "array"]} {splice;{get;~array};1;1;was} {get;~array}',
             '["is"] {"v":["this","was","an","array"],"n":"~array"}'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let arr = await bu.getArray(params, params.args[1]),
-                start = bu.parseInt(params.args[2]),
-                delCount = bu.parseInt(params.args[3] || 0),
-                fallback = bu.parseInt(params.fallback),
-                insert = Builder.util.flattenArgArrays(params.args.slice(4));
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
+            let arr = await bu.getArray(context, args[0]),
+                start = bu.parseInt(args[1]),
+                delCount = bu.parseInt(args[2] || 0),
+                fallback = bu.parseInt(context.scope.fallback),
+                insert = Builder.util.flattenArgArrays(args.slice(3));
 
             if (arr == null || !Array.isArray(arr.v))
-                return await Builder.errors.notAnArray(params);
+                return Builder.errors.notAnArray(subtag, context);
 
             if (isNaN(start)) start = fallback;
             if (isNaN(delCount)) delCount = fallback;
             if (isNaN(start) || isNaN(delCount))
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
 
             let result = arr.v.splice(start, delCount, ...insert);
             if (arr.n)
-                await bu.setArray(arr, params);
+                await context.variables.set(arr.n, arr.v);
 
             return bu.serializeTagArray(result);
         })

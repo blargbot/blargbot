@@ -18,17 +18,17 @@ module.exports =
         .withExample(
             '{sort;[3, 2, 5, 1, 4]}',
             '[1,2,3,4,5]'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            let arr = await bu.getArray(params, params.args[1]),
-                descending = bu.parseBoolean(params.args[2]);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let arr = await bu.getArray(context, args[0]),
+                descending = bu.parseBoolean(args[1]);
 
             if (!bu.isBoolean(descending))
-                descending = !!params.args[2];
+                descending = !!args[1];
 
             if (arr == null || !Array.isArray(arr.v))
-                return await Builder.errors.notAnArray(params);
+                return Builder.errors.notAnArray(subtag, context);
 
             let sorter = TagManager.list['bool'];
 
@@ -37,7 +37,7 @@ module.exports =
 
             if (!arr.n)
                 return bu.serializeTagArray(arr.v);
-            await bu.setArray(arr, params);
+            await context.variables.set(arr.n, arr.v);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

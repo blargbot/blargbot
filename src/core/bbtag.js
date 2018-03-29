@@ -8,43 +8,10 @@
  */
 
 const argFactory = require('../structures/ArgumentFactory'),
-    af = argFactory;
+    af = argFactory,
+    bbEngine = require('../structures/BBTagEngine');
 
 var e = module.exports = {};
-
-e.processTag = async function (msg, contents, command, tagName, author, isCcommand) {
-    let result = { contents, reactions: [], embed: [] };
-    try {
-        author = author || msg.channel.guild.id;
-        var words = typeof command === 'string' ? bu.splitInput(command) : command;
-
-        // if (contents.toLowerCase().indexOf('{nsfw') > -1) {
-        //     let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
-        //     if (!nsfwChan) {
-        //         bu.send(msg, `❌ This tag contains NSFW content! Go to an NSFW channel. ❌`);
-        //         return;
-        //     }
-        // }
-
-        if (contents.split(' ')[0].indexOf('help') > -1) {
-            contents = '\u200B' + contents;
-        }
-        contents = contents.replace(new RegExp(bu.specialCharBegin, 'g'), '').replace(new RegExp(bu.specialCharDiv, 'g'), '').replace(new RegExp(bu.specialCharEnd, 'g'), '');
-
-        result = await bu.processTag({
-            msg,
-            words,
-            contents,
-            author,
-            tagName,
-            ccommand: isCcommand
-        });
-        result.contents = bu.processSpecial(result.contents, true);
-    } catch (err) {
-        console.error(err);
-    }
-    return result;
-};
 
 e.executeTag = async function (msg, tagName, command) {
     let tag = await r.table('tag').get(tagName).run();
@@ -57,39 +24,57 @@ e.executeTag = async function (msg, tagName, command) {
 Reason: ${tag.reason}`);
             return;
         }
-        // if (tag.content.toLowerCase().indexOf('{nsfw') > -1) {
-        //     let nsfwChan = await bu.isNsfwChannel(msg.channel.id);
-        //     if (!nsfwChan) {
-        //         bu.send(msg, `❌ This command contains NSFW content! Go to an NSFW channel. ❌`);
-        //         return;
-        //     }
-        // }
         r.table('tag').get(tagName).update({
             uses: tag.uses + 1,
             lastuse: r.now()
         }).run();
-        var output = await e.processTag(msg, tag.content, command, tagName, tag.author);
-        while (/<@!?[0-9]{17,21}>/.test(output.contents)) {
-            let match = output.contents.match(/<@!?([0-9]{17,21})>/)[1];
-            //console.debug(match);
-            let obtainedUser = await bu.getUser(msg, match, true);
-            let name = '';
-            if (obtainedUser) {
-                name = `@${obtainedUser.username}#${obtainedUser.discriminator}`;
-            } else {
-                name = `@${match}`;
+        let result = await bbEngine.runTag({
+            msg,
+            tagContent: tag.content,
+            input: command.map(c => '"' + c + '"').join(' '),
+            isCC: false,
+            tagName: tagName,
+            author: tag.author,
+            modResult: function (text) {
+                return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
+                    let user = msg.guild.members.get(id);
+                    if (user == null)
+                        return '@' + id;
+                    return '@' + user.username + '#' + user.discriminator;
+                }).replace(/<@&(\d{17,21})>/g, function (match, id) {
+                    let role = msg.guild.roles.get(id);
+                    if (role == null)
+                        return '@Unknown Role';
+                    return '@' + role.name;
+                }).replace(/@(everyone|here)/g, (match, type) => '@\u200b' + type);
             }
-            output.contents = output.contents.replace(new RegExp(`<@!?${match}>`, 'g'), name);
-        }
-        if (output.contents == '' && output.embed == null)
-            return;
-        let message = await bu.send(msg, { content: output.contents, embed: output.embed, nsfw: output.nsfw });
-        if (message && message.channel)
-            await bu.addReactions(message.channel.id, message.id, output.reactions);
+        });
+        /** @type {string} */
+        result.code = tag.content;
+        return result;
     }
 };
 
-e.docs = async function (msg, command, topic, ccommand = false) {
+e.executeCC = async function (msg, ccName, command) {
+    let ccommand = (await bu.getGuild(msg.guild.id)).ccommands[ccName.toLowerCase()];
+    if (!ccommand)
+        bu.send(msg, `❌ That CCommand doesn't exist! ❌`);
+    else {
+        let result = await bbEngine.runTag({
+            msg,
+            tagContent: ccommand.content,
+            input: command.map(c => '"' + c + '"').join(' '),
+            isCC: false,
+            tagName: ccName,
+            author: ccommand.author
+        });
+        /** @type {string} */
+        result.code = ccommand.content;
+        return result;
+    }
+};
+
+e.docs = async function (msg, command, topic) {
     let help = CommandManager.list['help'],
         argsOptions = { separator: { default: ';' } },
         tags = Object.keys(TagManager.list).map(k => TagManager.list[k]),
@@ -106,9 +91,6 @@ e.docs = async function (msg, command, topic, ccommand = false) {
         };
     if (msg.channel.guild)
         prefix = await bu.guildSettings.get(msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
-
-    if (!ccommand)
-        tags = tags.filter(t => t.category != bu.TagType.CCOMMAND);
 
     switch (words[0]) {
         case 'index':
@@ -230,11 +212,8 @@ e.docs = async function (msg, command, topic, ccommand = false) {
         default:
             topic = topic.replace(/[\{\}]/g, '');
             let tag = tags.filter(t => t.name == topic.toLowerCase())[0];
-            if (tag == null) {
-                if (TagManager.list[topic.toLowerCase()])
-                    return await bu.send(msg, 'Oops, that subtag seems to be a CCommand only subtag. Try using `' + prefix + 'cc docs` for CCommand subtags');
+            if (tag == null)
                 break;
-            }
             let category = bu.TagType.properties[tag.category];
             embed.title += ' - ' + tag.name[0].toUpperCase() + tag.name.substring(1);
 
@@ -277,3 +256,47 @@ e.docs = async function (msg, command, topic, ccommand = false) {
 
     return await bu.send(msg, 'Oops, I didnt recognise that topic! Try using `' + prefix + command + ' docs` for a list of all topics');
 };
+
+e.generateDebug = function (code, context, result) {
+    if (arguments.length == 1)
+        return (context, result) => this.generateDebug(code, context, result);
+
+    let errors = viewErrors(...context.errors);
+    let variables = Object.keys(context.variables.cache)
+        .map(key => {
+            let offset = ''.padStart(key.length + 2, ' ');
+            let json = JSON.stringify(context.variables.cache[key].value);
+            json.replace(/\n/, '\n' + offset);
+            return key + ': ' + json;
+        }).slice(0, 24);
+    return {
+        name: 'BBTag.debug.txt',
+        file: 'User input:\n' + JSON.stringify(context.input.length > 0 ? context.input : 'No input.') + '\n\n' +
+            'Code Executed:\n' + code + '\n\n' +
+            'Errors:\n' + (errors.length > 0 ? errors.join('\n') : 'No errors') + '\n\n' +
+            'Variables:\n' + (variables.length > 0 ? variables.join('\n') : 'No variables')
+    };
+};
+
+function viewErrors(...errors) {
+    let result = [];
+    for (const e of errors) {
+        let text = '';
+        if (e.tag.start == null || e.tag.end == null)
+            text += 'General';
+        else
+            text += 'Position ' + e.tag.start + ' - ' + e.tag.end;
+        text += ': ';
+
+        if (typeof e.error == 'string') {
+            result.push(text + e.error);
+            continue;
+        }
+
+        let offset = ''.padStart(text.length, ' ');
+        let lines = viewErrors(...e.error).map(l => offset + l);
+        lines[0] = text + lines[0].substring(offset.length);
+        result.push(...lines);
+    }
+    return result;
+}

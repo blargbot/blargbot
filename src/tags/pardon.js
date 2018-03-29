@@ -22,23 +22,23 @@ module.exports =
         .withExample(
             'Be pardoned! {pardon}',
             'Be pardoned! 0'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-4', async function (params) {
-            let user = params.msg.author,
-                count = bu.parseInt(params.args[2] || 1),
-                reason = params.args[3];
+        )
+        .whenArgs('0-3', async function (subtag, context, args) {
+            let user = context.author,
+                count = bu.parseInt(args[1] || 1),
+                reason = args[2];
 
-            if (params.args[1])
-                user = await bu.getUser(params.msg, params.args[1]);
+            if (args[0])
+                user = await bu.getUser(context.msg, args[0]);
 
             if (user == null)
-                return await Builder.errors.noUserFound(params);
+                return Builder.errors.noUserFound(subtag, context);
 
             if (isNaN(count))
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
 
-            let result = await bu.issuePardon(user, params.msg.guild, count);
-            await bu.logAction(params.msg.guild, user, undefined, 'Tag Pardon', reason, bu.ModLogColour.PARDON, [{
+            let result = await bu.issuePardon(user, context.guild, count);
+            await bu.logAction(context.guild, user, undefined, 'Tag Pardon', reason, bu.ModLogColour.PARDON, [{
                 name: 'Pardons',
                 value: `Assigned: ${count}\nNew Total: ${result || 0}`,
                 inline: true

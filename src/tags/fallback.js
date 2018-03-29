@@ -11,17 +11,14 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('fallback')
-        .withArgs(a => [a.require('message')])
+        .withArgs(a => [a.optional('message')])
         .withDesc('Should any tag fail to parse, it will be replaced with `message` instead of an error.')
         .withExample(
             '{fallback;This tag failed} {randint}',
             'This tag failed'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            return {
-                fallback: params.fallback = params.args[1]
-            };
+        )
+        .whenArgs('0-1', async function (_, context, args) {
+            context.scope.fallback = args[0];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

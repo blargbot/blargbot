@@ -16,10 +16,10 @@ module.exports =
         .withExample(
             '{upper;this will become uppercase}',
             'THIS WILL BECOME UPPERCASE'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            return params.args[1].toUpperCase();
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            return args[0].toUpperCase();
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

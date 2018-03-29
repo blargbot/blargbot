@@ -18,12 +18,11 @@ module.exports =
             '{abs;-535}',
             '535'
         )
-        .beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let values = Builder.util.flattenArgArrays(params.args.slice(1)).map(bu.parseFloat);
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
+            let values = Builder.util.flattenArgArrays(args).map(bu.parseFloat);
             if (values.filter(isNaN).length > 0)
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
             values = values.map(Math.abs);
             if (values.length == 1)
                 return values[0];

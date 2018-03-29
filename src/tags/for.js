@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
+    bbEngine = require('../structures/BBTagEngine'),
     operators = {
         '==': (a, b) => a === b,
         '!=': (a, b) => a !== b,
@@ -33,41 +34,47 @@ module.exports =
         .withExample(
             '{for;~index;0;<;10;{get;~index},}',
             '0,1,2,3,4,5,6,7,8,9,'
-        ).beforeExecute(params => Builder.util.processSubtags(params, [1, 2, 3, 4]))
-        .whenArgs('1-5', Builder.errors.notEnoughArguments)
-        .whenArgs('6-7', async function (params) {
+        ).resolveArgs(0, 1, 2, 3)
+        .whenArgs('0-4', Builder.errors.notEnoughArguments)
+        .whenArgs('5-6', async function (subtag, context, args) {
             let errors = [],
-                set = TagManager.list['set'],
-                varName = params.args[1],
-                initial = bu.parseFloat(params.args[2]),
-                operator = operators[params.args[3]],
-                limit = bu.parseFloat(params.args[4]),
-                code = params.args.length - 1,
+                varName = args[0],
+                initial = bu.parseFloat(args[1]),
+                operator = operators[args[2]],
+                limit = bu.parseFloat(args[3]),
+                code = args.length - 1,
                 result = '',
                 increment;
 
-            if (params.args.length == 6)
+            if (args.length == 5)
                 increment = 1;
             else
-                increment = bu.parseFloat(await bu.processTagInner(params, 5));
+                increment = bu.parseFloat(await bbEngine.execute(args[4], context));
 
             if (isNaN(initial)) errors.push('Initial must be a number');
             if (!operator) errors.push('Invalid operator');
             if (isNaN(limit)) errors.push('Limit must be a number');
             if (isNaN(increment)) errors.push('Increment must be a number');
-            if (errors.length > 0) return await Builder.util.error(params, errors.join(', '));
+            if (errors.length > 0) return Builder.util.error(subtag, context, errors.join(', '));
 
             for (let i = initial; operator(i, limit); i += increment) {
-                params.msg.repeats = params.msg.repeats ? params.msg.repeats + 1 : 1;
-                if (params.msg.repeats > 1500) {
-                    result += await Builder.errors.tooManyLoops(params);
+                context.state.repeats += 1;
+                if (context.state.repeats > 1500) {
+                    result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }
-                await set.setVar(params, varName, i);
-                result += await bu.processTagInner(params, code);
-                if (params.terminate)
+                await context.variables.set(varName, i);
+                result += await bbEngine.execute(code, context);
+                i = bu.parseFloat(await context.variables.get(varName));
+                if (isNaN(i)) {
+                    result += Builder.errors.notANumber(subtag, context);
+                    break;
+                }
+
+                if (context.state.return != 0)
                     break;
             }
+            await context.variables.reset(varName);
             return result;
         })
         .whenDefault(Builder.errors.tooManyArguments)

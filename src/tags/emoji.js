@@ -16,11 +16,11 @@ module.exports =
         .withExample(
             '{emoji;I am hungry;5}',
             '🍔 🍕 😩 🍴 😐'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            let q = encodeURIComponent(params.args[1]);
-            let amount = bu.parseInt(params.args[2]) || bu.parseInt(params.fallback);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let q = encodeURIComponent(args[0]);
+            let amount = bu.parseInt(args[1]) || bu.parseInt(context.scope.fallback);
             if (amount > 10) amount = 10;
             else if (amount < 1) amount = 1;
             let emojis = await new Promise((resolve, reject) => {

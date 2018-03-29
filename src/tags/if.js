@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+const Builder = require('../structures/TagBuilder'),
+    bbEngine = require('../structures/BBTagEngine');
 
 module.exports =
     Builder.AutoTag('if')
@@ -24,37 +25,33 @@ module.exports =
         .withExample(
             '{if;5;<=;10;5 is less than or equal to 10;5 is greater than 10}.',
             '5 is less than or equal to 10.'
-        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-6', async function (params) {
-            let val1 = await bu.processTagInner(params, 1),
-                otherwise = NaN,
-                opKey, operator, val2, then;
+        ).resolveArgs(-1)
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs('2-5', async function (subtag, context, args) {
+            let val1 = await bbEngine.execute(args[0], context),
+                otherwise = args.length % 4 == 1,
+                shouldRun;
 
-            switch (params.args.length) {
-                case 4:
-                    otherwise = 3;
+            switch (args.length) {
+                case 2:
                 case 3:
-                    let bool = bu.parseBoolean(val1);
-                    if (!bu.isBoolean(bool))
-                        return await Builder.errors.notABoolean(params);
-                    if (bool)
-                        return await bu.processTagInner(params, 2);
-                    else if (otherwise)
-                        return await bu.processTagInner(params, otherwise);
-                    return '';
-                case 6:
-                    otherwise = 5;
+                    shouldRun = bu.parseBoolean(val1);
+                    if (!bu.isBoolean(shouldRun))
+                        return Builder.errors.notABoolean(subtag, context);
+                    break;
+                case 4:
                 case 5:
-                    opKey = await bu.processTagInner(params, 2);
-                    val2 = await bu.processTagInner(params, 3);
-                    then = 4;
+                    let opKey = await bbEngine.execute(args[1], context);
+                    let val2 = await bbEngine.execute(args[2], context);
+                    shouldRun = await TagManager.list['bool'].runCondition(subtag, context, val1, opKey, val2);
                     break;
             }
 
-            if (await TagManager.list['bool'].runCondition(params, val1, opKey, val2))
-                return bu.processTagInner(params, then);
-            else if (!isNaN(otherwise))
-                return bu.processTagInner(params, otherwise);
+            if (shouldRun)
+                return await bbEngine.execute(args[args.length - 1 - otherwise], context);
+            else if (otherwise)
+                return await bbEngine.execute(args[args.length - 1], context);
+            return '';
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

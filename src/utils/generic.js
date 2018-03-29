@@ -164,9 +164,12 @@ bu.addReactions = async function (channelId, messageId, reactions) {
  */
 bu.send = async function (channel, message, file, embed) {
     let channelid = channel;
-    if (channel instanceof dep.Eris.Message) {
+    if (typeof channel == 'object' &&
+        'channel' in channel &&
+        channel.channel instanceof dep.Eris.Channel) {
         channelid = channel.channel.id;
     }
+
     if (!message) message = '';
 
     bu.messageStats++;
@@ -840,25 +843,6 @@ bu.canExecuteCommand = async function (msg, commandName, quiet) {
     }
 };
 
-bu.isUserStaff = async function (userId, guildId) {
-    let guild = bot.guilds.get(guildId);
-    if (!guild) return false;
-    let member = guild.members.get(userId);
-    if (!member) return false;
-
-    if (guild.ownerID == userId) return true;
-    if (member.permission.has('administrator')) return true;
-
-    let storedGuild = await bu.getGuild(guildId);
-    if (storedGuild && storedGuild.settings && storedGuild.settings.permoverride) {
-        let allow = storedGuild.settings.staffperms || bu.defaultStaff;
-        if (bu.comparePerms(bot.guilds.get(guildId).members.get(userId), allow)) {
-            return true;
-        }
-    }
-    return false;
-};
-
 bu.shuffle = (array) => {
     let i = 0,
         j = 0,
@@ -1127,15 +1111,15 @@ bu.createRegExp = function (term) {
         let regexList = term.match(/^\/?(.*)\/(.*)/);
 
         if (regexList[1].match(/\(.*[*+].*\)[+*]/))
-            throw 'Unsafe Regex';
+            throw new Error('Unsafe Regex');
 
         let temp = new RegExp(regexList[1], regexList[2]);
         if (!dep.safe(temp)) {
-            throw 'Unsafe Regex';
+            throw new Error('Unsafe Regex');
         }
         return temp;
     }
-    throw 'Invalid Regex';
+    throw new Error('Invalid Regex');
 };
 
 bu.postStats = function () {
@@ -1325,7 +1309,7 @@ bu.parseColor = function (text) {
         return parseInt(match[1].split('').map(v => v + v).join(''), 16);
 
     //Decimal number
-    match = text.match(/^d([0-9]{1,8})$/);
+    match = text.match(/^\.([0-9]{1,8})$/);
     if (match != null) {
         let value = parseInt(match[1]);
         if (bu.between(value, 0, 16777215, true))
@@ -1360,7 +1344,7 @@ bu.range = function (from, to) {
     from = Math.floor(from || 0);
     to = Math.floor(to || 0);
 
-    if (isNaN(from) || isNaN(to)) throw 'Range bounds must be numbers';
+    if (isNaN(from) || isNaN(to)) throw new Error('Range bounds must be numbers');
 
     if (from > to)
         from = [to, to = from][0];
@@ -1371,8 +1355,6 @@ bu.range = function (from, to) {
 bu.parseEmbed = function (embedText) {
     if (embedText == null)
         return undefined;
-
-    embedText = bu.processSpecial(embedText, true);
 
     if (!embedText || !embedText.trim())
         return undefined;
@@ -1419,7 +1401,6 @@ bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
         return now.add(magnitude, quantity);
     }
 
-    console.debug('using default moment parsing');
     return dep.moment.tz(text, format, timezone).utcOffset(0);
 };
 
@@ -1433,4 +1414,24 @@ bu.parseFloat = function (s) {
     if (typeof s != 'string') return parseFloat(s);
     //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
     return parseFloat(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'));
+};
+
+/**
+ * @template T
+ * @param {T[]} values The values to group
+ * @param {function(any):string} selector The key selector
+ * @returns {T[][]} The grouped values. Each element of the outer array has a `key` property.
+ */
+bu.groupBy = function (values, selector) {
+    let groups = {};
+    for (const value of values) {
+        const key = selector(value);
+        if (groups[key] == null) {
+            groups[key] = [];
+            groups[key].key = key;
+        }
+        groups[key].push(value);
+    }
+
+    return Object.keys(groups).map(k => groups[k]);
 };

@@ -16,11 +16,8 @@ module.exports =
         .withExample(
             '{subtagexists;ban} {subtagexists;AllenKey}',
             'true false'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let tagName = params.args[1];
-            return TagManager.list[tagName.toLowerCase()] != null;
-        })
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async (_, context, args) => TagManager.list[args[0].toLowerCase()] != null)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

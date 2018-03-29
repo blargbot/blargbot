@@ -19,19 +19,19 @@ module.exports =
         .withExample(
             'You are playing {usergame}',
             'You are playing with bbtag'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-3', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-                user = params.msg.author;
+        )
+        .whenArgs('0-2', async function (subtag, context, args) {
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
+                user = context.user;
 
-            if (params.args[1])
-                user = await bu.getUser(params.msg, params.args[1], quiet);
+            if (args[0])
+                user = await bu.getUser(context.msg, args[0], quiet);
 
             if (user != null)
                 return (user.game || { name: 'nothing' }).name;
 
             if (quiet)
-                return params.args[1];
+                return args[0];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

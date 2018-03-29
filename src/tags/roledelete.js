@@ -17,17 +17,17 @@ module.exports =
         .withExample(
             '{roledelete;Super Cool Role!}',
             '(rip no more super cool roles for anyone)'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[2],
-                role = await bu.getRole(params.msg, params.args[1], quiet);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
+                role = await bu.getRole(context.msg, args[0], quiet);
             if (role) {
                 try {
-                    await role.delete(`Deleted with the '${params.tagName}' command, executed by ${params.msg.author.username}#${params.msg.author.discrim} (${params.msg.author.id})`);
+                    await role.delete(`Deleted with the '${context.tagName}' command, executed by ${context.user.username}#${context.user.discrim} (${context.user.id})`);
                 } catch (err) {
                     console.error(err.stack);
-                    return await Builder.util.error(params, 'Failed to delete role: no perms');
+                    return Builder.util.error(subtag, context, 'Failed to delete role: no perms');
                 }
             }
         })

@@ -17,34 +17,25 @@ module.exports =
         .withExample(
             '{timer;Hello!;20s}',
             '(after 20 seconds:) Hello!'
-        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
-            if (params.disabletimer)
-                return await Builder.util.error(params, 'Nested timers are not allowed');
+        ).resolveArgs(1)
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs(2, async function (subtag, context, args) {
+            if (context.state.timerCount == -1)
+                return Builder.util.error(subtag, context, 'Nested timers are not allowed');
 
-            let code = params.args[1],
-                duration = await bu.processTagInner(params, 2);
+            let duration = bu.parseDuration(args[1]);
 
-            duration = bu.parseDuration(duration);
+            if (duration.asMilliseconds() <= 0) return Builder.util.error(subtag, context, 'Invalid duration');
 
-            if (duration.asMilliseconds() <= 0) return await Builder.util.error(params, 'Invalid duration');
+            if (context.state.timerCount > 2) return Builder.util.error(subtag, context, 'Max 3 timers per tag');
 
-            if (params.timers > 2) return await Builder.util.error(params, 'Max 3 timers per tag');
-
-            let msg = params.msg;
-            params.msg = msg.id;
-            params.disabletimer = true;
+            context.state.timerCount += 1;
             await r.table('events').insert({
                 type: 'tag',
-                params,
-                msg: JSON.stringify(msg),
-                channel: msg.channel.id,
-                endtime: r.epochTime(dep.moment().add(duration).unix())
+                endtime: r.epochTime(dep.moment().add(duration).unix()),
+                context: context.serialize(),
+                content: args[0].content
             });
-            params.msg = msg;
-            return {
-                timers: (params.timers || 0) + 1
-            };
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

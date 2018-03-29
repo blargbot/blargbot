@@ -15,9 +15,7 @@ module.exports =
         .withExample(
             'The guild\'s icon is {guildicon}',
             'The guild\'s icon is (icon url)'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) {
-            return `https://cdn.discordapp.com/icons/${params.msg.channel.guild.id}/${params.msg.channel.guild.icon}.jpg`;
-        })
+        )
+        .whenArgs(0, async (_, context) => `https://cdn.discordapp.com/icons/${context.guild.id}/${context.guild.icon}.jpg`)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -17,9 +17,7 @@ module.exports =
         .withExample(
             'This guild was created on {guildcreatedat;YYYY/MM/DD HH:mm:ss}',
             'This guild was created on 2016/01/01 01:00:00'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', async function (params) {
-            return dep.moment(params.msg.channel.guild.createdAt).utcOffset(0).format(params.args[1] || '');
-        })
+        )
+        .whenArgs('0-1', async (_, context, args) => dep.moment(context.guild.createdAt).utcOffset(0).format(args[0] || ''))
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

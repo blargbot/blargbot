@@ -14,7 +14,7 @@ new Logger(process.env.SHARD_ID, config.general.isbeta ? 'debug' : 'info').setGl
 global.dep = require('./dep.js');
 
 const https = dep.https;
-global.tags = require('./tags.js');
+global.bbtag = require('./bbtag.js');
 const Sender = require('../structures/Sender');
 
 process.on('unhandledRejection', (reason, p) => {

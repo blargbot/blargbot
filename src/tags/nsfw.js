@@ -17,11 +17,9 @@ module.exports =
         .withExample(
             'This command is not safe! {nsfw}',
             'This command is not safe!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', async function (params) {
-            return {
-                nsfw: params.args[1] || '❌ This contains NSFW content! Go to a NSFW channel. ❌'
-            };
+        )
+        .whenArgs('0-1', async function (_, context, args) {
+            context.state.nsfw = args[0] || '❌ This contains NSFW content! Go to a NSFW channel. ❌';
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

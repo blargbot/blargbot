@@ -26,32 +26,32 @@ module.exports =
         ).withExample(
             '{ban;stupid cat;0;This is a test ban} @stupid cat was banned!',
             'Success @stupid cat was banned!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-6', async function (params) {
-            let user = await bu.getUser(params.msg, params.args[1], true);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-5', async function (subtag, context, args) {
+            let user = await bu.getUser(context.msg, args[0], true);
 
             if (!user)
-                return await Builder.errors.noUserFound(params);
+                return Builder.errors.noUserFound(subtag, context);
 
-            let noPerms = params.args[5] ? true : false;
+            let noPerms = args[4] ? true : false;
             let duration;
 
-            if (params.args[4])
-                duration = bu.parseDuration(params.args[4]);
+            if (args[3])
+                duration = bu.parseDuration(args[3]);
 
             let response = await CommandManager.list['ban'].ban(
-                params.msg,
+                context.msg,
                 user,
-                params.args[2],
-                params.args[3],
+                args[1],
+                args[2],
                 duration,
                 true,
                 noPerms
             );
 
             if (typeof response[1] == 'string' && response[1].startsWith('`'))
-                return await Builder.util.error(params, response[1]);
+                return Builder.util.error(subtag, context, response[1]);
 
             return response[1];
         })

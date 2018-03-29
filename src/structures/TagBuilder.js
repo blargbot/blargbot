@@ -1,4 +1,5 @@
-const ArgFactory = require('./ArgumentFactory');
+const ArgFactory = require('./ArgumentFactory'),
+    bbEngine = require('../structures/BBTagEngine');
 
 class TagBuilder {
     static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
@@ -10,8 +11,11 @@ class TagBuilder {
     constructor(init) {
         this.properties = {};
         this.execute = {
-            preExec: [],
+            /** @type {number[]} */
+            resolveArgs: null,
+            /** @type {{ contition: subtagCondition, action: subtagAction }} */
             conditional: [],
+            /** @type {subtagAction} */
             default: null
         };
 
@@ -31,19 +35,29 @@ class TagBuilder {
                 tag.category = bu.TagType.SIMPLE;
         }
 
-        tag.execute = function (tag, beforeExec, execConditional, execDefault) {
-            return async function (params) {
+        tag.execute = function (definition, resolveArgs, execConditional, execDefault) {
+            return async function (subtag, context) {
                 try {
-                    if (tag.category === bu.TagType.CCOMMAND && !params.ccommand)
-                        return EnsureResponse(params, await TagBuilder.util.error(params, 'Can only use in CCommands'));
+                    if (definition.category === bu.TagType.CCOMMAND && !context.isCC)
+                        return TagBuilder.util.error(subtag, context, 'Can only use in CCommands');
 
-                    if (tag.staff && !params.isStaff)
-                        return EnsureResponse(params, await TagBuilder.util.error(params, 'Author must be staff'));
+                    if (definition.staff && !await context.isStaff)
+                        return TagBuilder.util.error(subtag, context, 'Author must be staff');
 
-                    let callback;
+                    let subtagArgs = subtag.children.slice(1);
+
+                    let execArgs = resolveArgs != null
+                        ? resolveArgs
+                        : [...new Array(subtagArgs.length).keys()];
+
+                    for (const index of new Set(execArgs))
+                        if (subtagArgs[index] !== undefined)
+                            subtagArgs[index] = await bbEngine.execute(subtagArgs[index], context);
+
+                    let callback = execConditional.find(c => c.condition.apply(definition, [subtag, context, subtagArgs]));
 
                     for (const c of execConditional) {
-                        if (c.condition.apply(tag, [params.args])) {
+                        if (c.condition.apply(definition, [subtag, context, subtagArgs])) {
                             callback = c.action;
                             break;
                         }
@@ -51,52 +65,22 @@ class TagBuilder {
                     callback = callback || execDefault;
 
                     if (callback == null)
-                        throw new Error('Missing default execution on subtag ' + tag.name + '\nParams:' + JSON.stringify(params));
+                        throw new Error('Missing default execution on subtag ' + definition.name + '\nParams:' + JSON.stringify(context));
 
-                    for (const preExec of beforeExec) {
-                        if (typeof preExec != 'function') {
-                            console.error('Invalid preExec on ' + tag.name, preExec);
-                            console.error(...beforeExec);
-                        }
-                        await preExec.apply(tag, [params]);
-                    }
-
-                    return EnsureResponse(params, await callback.apply(tag, [params]));
+                    let result = callback.apply(definition, [subtag, context, subtagArgs]);
+                    if (typeof result != 'string')
+                        result = await result;
+                    return '' + (result == null ? '' : result);
                 }
                 catch (e) {
                     console.error(e);
                     throw e;
                 }
             };
-
-            function EnsureResponse(params, result) {
-                if (result == null)
-                    result = '';
-                if (typeof result !== 'object')
-                    result = {
-                        replaceString: result
-                    };
-
-                if (result.terminate === undefined) result.terminate = params.terminate;
-                if (result.nsfw === undefined) result.nsfw = params.nsfw;
-                if (result.replaceContent === undefined) result.replaceContent = false;
-                if (result.replaceString === undefined) result.replaceString = result.contents || '';
-                if (result.reactions === undefined) result.reactions = params.reactions;
-                if (result.embed === undefined) result.embed = params.embed;
-                if (result.timers === undefined) result.timers = params.timers;
-                if (result.dmsent === undefined) result.dmsent = params.dmsent;
-
-                //console.debug('Exit ' + tag.name + ' execute', result);
-                return result;
-            }
         }(tag,
-            this.execute.preExec.slice(0),
+            this.execute.resolveArgs,
             this.execute.conditional.slice(0),
             this.execute.default);
-
-        //console.debug(tag.category, 'Tag built:', tag.name, ArgFactory.toString(tag.args));
-        if (this.execute.preExec.length == 0)
-            console.warn(`Tag ${this.properties.name} has no BeforeExecute set`);
         return tag;
     }
 
@@ -151,27 +135,36 @@ class TagBuilder {
         return this;
     }
 
-    beforeExecute(...actions) {
-        this.execute.preExec.push(...actions);
+    /**
+     * @param {...number[]} indexes The indexes to auto-resolve. -1 = none, `null` = all
+     */
+    resolveArgs(...indexes) {
+        this.execute.resolveArgs = indexes;
         return this;
     }
 
+    /**
+     * @param {(string|number|subtagCondition)} condition Used to determine if this is the correct action to use.
+     * Numbers and strings will be parsed to a function that checks args.length
+     * @param {subtagAction} action The action to be run if `condition` is successful
+     */
     whenArgs(condition, action) {
+
         if (typeof condition === 'number')
-            this.whenArgs((args) => args.length === condition, action);
+            this.whenArgs((_, __, args) => args.length === condition, action);
         else if (typeof condition === 'string') {
             condition = condition.replace(/\s*/g, '');
             if (/^[><=!]\d+$/.test(condition)) { //<, >, = or ! a single count
                 let value = parseInt(condition.substr(1));
                 switch (condition[0]) {
                     case '<':
-                        this.whenArgs(args => args.length < value, action);
+                        this.whenArgs((_, __, args) => args.length < value, action);
                         break;
                     case '>':
-                        this.whenArgs(args => args.length > value, action);
+                        this.whenArgs((_, __, args) => args.length > value, action);
                         break;
                     case '!':
-                        this.whenArgs(args => args.length !== value, action);
+                        this.whenArgs((_, __, args) => args.length !== value, action);
                         break;
                     case '=':
                         this.whenArgs(value, action);
@@ -181,10 +174,10 @@ class TagBuilder {
                 let value = parseInt(condition.substr(2));
                 switch (condition.substr(0, 2)) {
                     case '>=':
-                        this.whenArgs(args => args.length >= value, action);
+                        this.whenArgs((_, __, args) => args.length >= value, action);
                         break;
                     case '<=':
-                        this.whenArgs(args => args.length <= value, action);
+                        this.whenArgs((_, __, args) => args.length <= value, action);
                         break;
                 }
             } else if (/^\d+-\d+$/.test(condition)) { //inclusive range of values ex 2-5
@@ -194,10 +187,10 @@ class TagBuilder {
 
                 if (from > to)
                     from = (to, to = from)[0];
-                this.whenArgs(args => args.length >= from && args.length <= to, action);
+                this.whenArgs((_, __, args) => args.length >= from && args.length <= to, action);
             } else if (/^\d+(,\d+)+$/.test(condition)) { //list of values ex 1, 2, 6
                 let values = condition.split(',').map(v => parseInt(v));
-                this.whenArgs(args => values.indexOf(args.length) != -1, action);
+                this.whenArgs((_, __, args) => values.indexOf(args.length) != -1, action);
             } else if (/^\d+$/.test(condition)) {//single value, no operator
                 this.whenArgs(parseInt(condition), action);
             } else
@@ -211,6 +204,9 @@ class TagBuilder {
         return this;
     }
 
+    /**
+     * @param {subtagAction} execute
+     */
     whenDefault(execute) {
         this.execute.default = execute;
         return this;
@@ -218,23 +214,21 @@ class TagBuilder {
 }
 
 TagBuilder.util = {
-    async processAllSubtags(params) {
-        for (let i = 0; i < params.args.length; i++)
-            params.args[i] = await bu.processTagInner(params, i);
+    async processAllSubtags(subtag, context) {
+        return await Promise.all(subtag.children.slice(1)
+            .map(async bb => await bbEngine.execute(bb, context)));
     },
     /**
      * If params is an array rather than actually a params object then it will be used as an indexes array and this function will return another function.
      * Basically TagBuilder.util.processSubTags([1])(params) === TagBuilder.util.processSubTags(params, [1])
      */
-    async processSubtags(params, indexes) {
-        for (const index of indexes)
-            params.args[index] = await bu.processTagInner(params, index);
-    },
-    escapeInjection(text) {
-        return bu.fixContent(text)
-            .replace(new RegExp(bu.specialCharBegin, 'g'), '')
-            .replace(new RegExp(bu.specialCharDiv, 'g'), '')
-            .replace(new RegExp(bu.specialCharEnd, 'g'), '');
+    async processSubtags(subtag, context, indexes) {
+        return await Promise.all(subtag.children.slice(1)
+            .map(async (bb, i) => {
+                if (indexes.indexOf(i) != -1)
+                    return await bbEngine.execute(bb, context);
+                return new Promise(resolve => resolve());
+            }));
     },
     flattenArgArrays(args) {
         let result = [];
@@ -247,12 +241,11 @@ TagBuilder.util = {
         }
         return result;
     },
-    async error(params, message) {
-        console.error('Subtag error', message, 'Subtag:', params.subtag);
-        return await bu.tagProcessError(params, '`' + message + '`');
+    error(subtag, context, message) {
+        return bbEngine.addError(subtag, context, message);
     },
-    parseChannel(params, channelId) {
-        let channel = params.msg.channel;
+    parseChannel(context, channelId) {
+        let channel = context.channel;
         if (channel.id !== channelId) {
             if (!/([0-9]{17,23})/.test(channelId))
                 return TagBuilder.errors.noChannelFound;
@@ -261,7 +254,7 @@ TagBuilder.util = {
 
             if (channel == null)
                 return TagBuilder.errors.noChannelFound;
-            if (channel.guild.id !== params.msg.guild.id)
+            if (channel.guild.id !== context.guild.id)
                 return TagBuilder.errors.channelNotInGuild;
         }
         return channel;
@@ -269,23 +262,43 @@ TagBuilder.util = {
 };
 
 TagBuilder.errors = {
-    notEnoughArguments(params) { return TagBuilder.util.error(params, 'Not enough arguments'); },
-    tooManyArguments(params) { return TagBuilder.util.error(params, 'Too many arguments'); },
-    noUserFound(params) { return TagBuilder.util.error(params, 'No user found'); },
-    noRoleFound(params) { return TagBuilder.util.error(params, 'No role found'); },
-    noChannelFound(params) { return TagBuilder.util.error(params, 'No channel found'); },
-    noMessageFound(params) { return TagBuilder.util.error(params, 'No message found'); },
-    notANumber(params) { return TagBuilder.util.error(params, 'Not a number'); },
-    notAnArray(params) { return TagBuilder.util.error(params, 'Not an array'); },
-    notABoolean(params) { return TagBuilder.util.error(params, 'Not a boolean'); },
-    invalidOperator(params) { return TagBuilder.util.error(params, 'Invalid operator'); },
-    userNotInGuild(params) { return TagBuilder.util.error(params, 'User not in guild'); },
-    channelNotInGuild(params) { return TagBuilder.util.error(params, 'Channel not in guild'); },
-    tooManyLoops(params) { return TagBuilder.util.error(params, 'Too many loops'); },
-    unsafeRegex(params) { return TagBuilder.util.error(params, 'Unsafe regex detected'); },
-    invalidEmbed(params, issue) { return TagBuilder.util.error(params, 'Inavlid embed: ' + issue); }
+    notEnoughArguments(subtag, context) { return TagBuilder.util.error(subtag, context, 'Not enough arguments'); },
+    tooManyArguments(subtag, context) { return TagBuilder.util.error(subtag, context, 'Too many arguments'); },
+    noUserFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No user found'); },
+    noRoleFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No role found'); },
+    noChannelFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No channel found'); },
+    noMessageFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No message found'); },
+    notANumber(subtag, context) { return TagBuilder.util.error(subtag, context, 'Not a number'); },
+    notAnArray(subtag, context) { return TagBuilder.util.error(subtag, context, 'Not an array'); },
+    notABoolean(subtag, context) { return TagBuilder.util.error(subtag, context, 'Not a boolean'); },
+    invalidOperator(subtag, context) { return TagBuilder.util.error(subtag, context, 'Invalid operator'); },
+    userNotInGuild(subtag, context) { return TagBuilder.util.error(subtag, context, 'User not in guild'); },
+    channelNotInGuild(subtag, context) { return TagBuilder.util.error(subtag, context, 'Channel not in guild'); },
+    tooManyLoops(subtag, context) { return TagBuilder.util.error(subtag, context, 'Too many loops'); },
+    unsafeRegex(subtag, context) { return TagBuilder.util.error(subtag, context, 'Unsafe regex detected'); },
+    invalidEmbed(subtag, context, issue) { return TagBuilder.util.error(subtag, context, 'Inavlid embed: ' + issue); }
 };
 
 module.exports = TagBuilder;
 
 console.info('TagBuilder loaded');
+
+/**
+ * @param {SubTag} subtag The subtag content to be executed
+ * @param {Context} context The context within which execution will take place
+ * @param {(string|BBTag)[]} args The arguments given to the subtag. If `resolveArgs` is null, this will all be string
+ */
+function subtagAction(subtag, context, args) {
+    //Dummy function, purely for JSDoc
+    return '';
+}
+
+/**
+ * @param {SubTag} subtag The subtag content to be executed
+ * @param {Context} context The context within which execution will take place
+ * @param {(string|BBTag)[]} args The arguments given to the subtag. If `resolveArgs` is null, this will all be string
+ */
+function subtagCondition(subtag, context, args) {
+    //Dummy function, purely for JSDoc
+    return false;
+}

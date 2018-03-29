@@ -16,17 +16,17 @@ module.exports =
         .withExample(
             '{pop;["this", "is", "an", "array"]}',
             'array'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let arr = await bu.getArray(params, params.args[1]), result;
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            let arr = await bu.getArray(context, args[0]), result;
 
             if (arr == null || !Array.isArray(arr.v))
-                return await Builder.errors.notAnArray(params);
+                return Builder.errors.notAnArray(subtag, context);
 
             result = arr.v.pop();
             if (arr.n != null)
-                await bu.setArray(arr, params);
+                await context.variables.set(arr.n, arr.v);
 
             return result;
         }).whenDefault(Builder.errors.tooManyArguments)

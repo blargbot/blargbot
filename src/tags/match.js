@@ -16,17 +16,17 @@ module.exports =
         .withExample(
             '{match;I have $1 and 25 cents;/\\d+/g}',
             '["1", "25"]'
-        ).beforeExecute(params => Builder.util.processSubtags(params, [1]))
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
-            let text = params.args[1],
+        ).resolveArgs(0)
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs(2, async function (subtag, context, args) {
+            let text = args[0],
                 regex;
 
             try {
-                regex = bu.createRegExp(params.args[2]);
+                regex = bu.createRegExp(args[1].content);
             }
             catch (e) {
-                return await Builder.errors.unsafeRegex(params);
+                return Builder.errors.unsafeRegex(subtag, context);
             }
 
             return bu.serializeTagArray(text.match(regex) || []);

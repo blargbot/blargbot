@@ -9,10 +9,8 @@ module.exports =
         .withExample(
             '{quiet} {usermention;cat}',
             'cat'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', async function (params) {
-            return {
-                quiet: bu.parseBoolean(params.args[1] || true)
-            };
-        })
+        )
+        .whenArgs('0-1', async function (subtag, context, args) {
+            context.scope.quiet = bu.parseBoolean(args[0] || true);
+        }).whenDefault(Builder.errors.tooManyArguments)
         .build();

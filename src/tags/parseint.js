@@ -16,10 +16,10 @@ module.exports =
         .withExample(
             '{parseint;abcd} {parseint;1234} {parseint;12cd}',
             'NaN 1234 12'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let number = bu.parseInt(params.args[1]);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            let number = bu.parseInt(args[0]);
             if (isNaN(number))
                 return 'NaN';
             return number;

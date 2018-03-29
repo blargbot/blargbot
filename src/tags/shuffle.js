@@ -18,19 +18,19 @@ module.exports =
             '{shuffle} {args;0} {args;1} {args;2}',
             'one two three',
             'three one two'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) { bu.shuffle(params.words); })
-        .whenArgs('2', async function (params) {
-            let arr = bu.deserializeTagArray(params.args[1]);
+        )
+        .whenArgs(0, async function (subtag, context, args) { bu.shuffle(context.input); })
+        .whenArgs(1, async function (subtag, context, args) {
+            let arr = bu.deserializeTagArray(args[0]);
 
             if (arr == null || !Array.isArray(arr.v))
-                return await Builder.errors.notAnArray(params);
+                return Builder.errors.notAnArray(subtag, context);
 
             bu.shuffle(arr.v);
             if (!arr.n)
                 return bu.serializeTagArray(arr.v);
 
-            await bu.setArray(arr, params);
+            await context.variables.set(arr.n, arr.v);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

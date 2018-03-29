@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+const Builder = require('../structures/TagBuilder'),
+    bbEngine = require('../structures/BBTagEngine');
 
 module.exports =
     Builder.AutoTag('switch')
@@ -28,21 +29,23 @@ module.exports =
             '{switch;{args;0};\n  ["yes","definitely"]; {//;Match "yes" OR "definitely"}\n    Correct!;\n  no;\n    Incorrect!;\n  That is not yes or no\n}',
             'yes',
             'Correct!'
-        ).whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let value = await bu.processTagInner(params, 1),
-                indexes = [...params.args.keys()].splice(2).reverse(),
-                cases = {}, elseDo = -1;
+        ).resolveArgs(0)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
+            let value = args[0],
+                indexes = [...args.keys()].slice(1).reverse(),
+                cases = {},
+                elseDo = -1;
 
             if (indexes.length % 2 == 1) elseDo = indexes.shift();
 
             for (let i = 0; i < indexes.length; i += 2) {
-                let caseValue = await bu.processTagInner(params, indexes[i + 1]);
+                let caseValue = await bbEngine.execute(args[indexes[i + 1]], context);
                 for (const key of Builder.util.flattenArgArrays([caseValue]))
                     cases[key] = indexes[i];
             }
 
             let result = cases[value] || elseDo;
             if (result != -1)
-                return await bu.processTagInner(params, result);
+                return await bbEngine.execute(args[result], context);
         }).build();

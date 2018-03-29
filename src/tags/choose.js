@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+const Builder = require('../structures/TagBuilder'),
+    bbEngine = require('../structures/BBTagEngine');
 
 module.exports =
     Builder.AutoTag('choose')
@@ -16,18 +17,17 @@ module.exports =
         .withExample(
             'I feel like eating {choose;1;cake;pie;pudding} today.',
             'I feel like eating pie today.'
-        ).beforeExecute(params => Builder.util.processSubtags(params, [1]))
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            params.args[1] = await bu.processTagInner(params, 1);
-            let index = bu.parseInt(params.args[1]);
+        ).resolveArgs(0)
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
+            let index = bu.parseInt(args[0]);
 
             if (isNaN(index))
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
 
             if (index < 0)
-                return await Builder.util.error(params, 'Choice cannot be negative');
+                return Builder.util.error(subtag, context, 'Choice cannot be negative');
 
-            return await bu.processTagInner(params, index + 2);
+            return await bbEngine.execute(args[index], context);
         })
         .build();

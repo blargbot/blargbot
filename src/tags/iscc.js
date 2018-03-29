@@ -15,9 +15,7 @@ module.exports =
         .withExample(
             '{if;{iscc};{dm;{userid};You have mail!};Boo, this only works in cc\'s}',
             'Boo, this only works in cc\'s'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async function (params) {
-            return !!params.ccommand;
-        })
+        )
+        .whenArgs(0, async (_, context) => context.isCC)
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

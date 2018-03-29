@@ -24,21 +24,21 @@ module.exports =
         .withExample(
             'You did a bad! {modlog;Bad;{userid};;They did a bad;#ffffff}',
             'You did a bad! (modlog entry)'
-        ).beforeExecute(Builder.util.processAllSubtags)
+        )
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3-6', async function (params) {
-            let action = params.args[1],
-                user = await bu.getUser(params.msg, params.args[2]),
-                mod = params.args[3] || undefined,
-                reason = params.args[4] || undefined,
-                color = bu.parseColor(params.args[5]) || undefined;
+        .whenArgs('3-6', async function (subtag, context, args) {
+            let action = args[0],
+                user = await bu.getUser(context.msg, args[1]),
+                mod = args[2] || undefined,
+                reason = args[3] || undefined,
+                color = bu.parseColor(args[4]) || undefined;
 
             if (mod != null)
-                mod = await bu.getUser(params.msg, mod);
+                mod = await bu.getUser(context.msg, mod);
 
             if (user == null)
-                return await Builder.errors.noUserFound(params);
-            await bu.logAction(params.msg.guild, user, mod, action, reason, color);
+                return Builder.errors.noUserFound(subtag, context);
+            await bu.logAction(context.guild, user, mod, action, reason, color);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

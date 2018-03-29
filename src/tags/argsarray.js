@@ -16,7 +16,7 @@ module.exports =
             'Your input was {argsarray}',
             'Hello world!',
             'Your input was ["Hello","world!"]'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', async params => Builder.util.escapeInjection(JSON.stringify(params.words)))
+        )
+        .whenArgs(0, async (_, context) => JSON.stringify(context.input))
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

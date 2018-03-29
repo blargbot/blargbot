@@ -17,18 +17,19 @@ module.exports =
         .withExample(
             '{reverse;palindrome}',
             'emordnilap'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let arr = bu.deserializeTagArray(params.args[1]);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            let arr = bu.deserializeTagArray(args[0]);
             if (arr == null || !Array.isArray(arr.v))
-                return params.args[1].split('').reverse().join('');
+                return args[0].split('').reverse().join('');
 
             arr.v = arr.v.reverse();
+
             if (!arr.n)
                 return bu.serializeTagArray(arr.v);
 
-            await bu.setArray(arr, params);
+            await context.variables.set(arr.n, arr.v);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

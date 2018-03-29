@@ -16,17 +16,17 @@ module.exports =
         .withExample(
             'You rolled a {randint;1;6}.',
             'You rolled a 5.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
-            let chars = params.args[1].split(''),
-                count = bu.parseInt(params.args[2]),
-                fallback = bu.parseInt(params.fallback);
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs(2, async function (subtag, context, args) {
+            let chars = args[0].split(''),
+                count = bu.parseInt(args[1]),
+                fallback = bu.parseInt(context.scope.fallback);
 
             if (isNaN(count)) count = fallback;
-            if (isNaN(count)) return await Builder.errors.notANumber(params);
+            if (isNaN(count)) return Builder.errors.notANumber(subtag, context);
 
-            if (chars.length == 0) return await Builder.util.error(params, 'Not enough characters');
+            if (chars.length == 0) return Builder.util.error(subtag, context, 'Not enough characters');
 
             return bu.range(count).map(k => chars[bu.getRandomInt(0, chars.length - 1)]).join('');
         })

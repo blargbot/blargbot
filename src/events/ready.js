@@ -195,7 +195,7 @@ async function switchGame(forced) {
                         break;
                     case 11:
                         type = 2;
-                        name = 'the pitter-patter of tiny feet.'
+                        name = 'the pitter-patter of tiny feet.';
                 }
         }
 

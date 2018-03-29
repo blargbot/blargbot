@@ -16,6 +16,6 @@ module.exports =
         .withExample(
             '{void;This won\'t be output!}',
             ''
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenDefault(async params => '')
+        )
+        .whenDefault(async _ => '')
         .build();

@@ -24,27 +24,26 @@ module.exports =
         .withExample(
             '{logic;&&;true;false}',
             'false'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let values = params.args.slice(1),
-                operator;
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
+            let operator;
 
-            for (let i = 0; i < values.length; i++) {
-                if (this.operators[values[i].toLowerCase()]) {
-                    operator = this.operators[values[i].toLowerCase()];
-                    values.splice(i, 1);
+            for (let i = 0; i < args.length; i++) {
+                if (this.operators[args[i].toLowerCase()]) {
+                    operator = this.operators[args[i].toLowerCase()];
+                    args.splice(i, 1);
                 }
             }
 
             if (operator == null)
-                return await Builder.errors.invalidOperator(params);
+                return Builder.errors.invalidOperator(subtag, context);
 
-            values = values.map(bu.parseBoolean);
-            if (values.filter(v => !bu.isBoolean(v)).length > 0)
-                return await Builder.errors.notABoolean(params);
+            args = args.map(bu.parseBoolean);
+            if (args.filter(v => !bu.isBoolean(v)).length > 0)
+                return Builder.errors.notABoolean(subtag, context);
 
-            return operator(values);
+            return operator(args);
         })
         .withProp('operators', operators)
         .build();

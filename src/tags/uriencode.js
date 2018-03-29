@@ -16,10 +16,10 @@ module.exports =
         .withExample(
             '{uriencode;Hello world!}',
             'Hello%20world!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            return encodeURIComponent(bu.processSpecial(params.args[1], true));
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            return encodeURIComponent(args[0]);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

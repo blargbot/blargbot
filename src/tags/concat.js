@@ -16,10 +16,10 @@ module.exports =
         .withExample(
             '{concat;["this", "is"];["an", "array"]}',
             '["this","is","an","array"]'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let result = Builder.util.flattenArgArrays(params.args.slice(1));
-            return bu.serializeTagArray(result);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
+            let result = Builder.util.flattenArgArrays(args);
+            return JSON.stringify(result);
         })
         .build();

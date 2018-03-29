@@ -20,19 +20,19 @@ module.exports =
         ).withExample(
             'Have a role! {addrole;11111111111111111}',
             'Have a role! true'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-4', async function (params) {
-            let quiet = bu.isBoolean(params.quiet) ? params.quiet : !!params.args[3],
-                result = await TagManager.list['hasrole'].checkRoles(params, ...params.args.slice(1, 3), quiet);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-3', async function (subtag, context, args) {
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
+                result = await TagManager.list['hasrole'].checkRoles(context, args[0], args[1], quiet);
 
             if (result.user == null) {
                 if (quiet)
                     return false;
-                return await Builder.errors.noUserFound(params);
+                return Builder.errors.noUserFound(subtag, context);
             }
             if (result.roles.length == 0)
-                return await Builder.errors.noRoleFound(params);
+                return Builder.errors.noRoleFound(subtag, context);
 
             let roles = result.roles.filter((e, i) => !result.hasRole[i]);
             if (roles.length == 0)

@@ -8,7 +8,9 @@
  */
 
 var e = module.exports = {};
-var tags = require('../core/tags');
+var bbtag = require('../core/bbtag'),
+    bbEngine = require('../structures/BBTagEngine'),
+    { Message } = require('eris');
 
 const results = 100;
 e.init = () => {
@@ -90,8 +92,13 @@ const subcommands = [
     },
     {
         name: 'test',
-        args: '<code>',
-        desc: 'Executes code in a tag sandbox'
+        args: '[debug] <code>',
+        desc: 'Executes code in a tag sandbox. If debug is included, the result will have a debug file attached'
+    },
+    {
+        name: 'debug',
+        args: '<name> <args>',
+        desc: 'Executes the specified tag and will DM you a file containg all the debug information. Debug information wont be sent if you dont own the tag.'
     },
     {
         name: 'help',
@@ -355,9 +362,9 @@ e.execute = async function (msg, words, text) {
                     content = (await bu.awaitMessage(msg, tagContentsMsg)).content;
 
                 //    content = content.replace(/(?:^)(\s+)|(?:\n)(\s+)/g, '');
-                console.debug('First:', content, words);
+                //console.debug('First:', content, words);
                 //  content = bu.fixContent(content);
-                console.debug('Second:', content);
+                //console.debug('Second:', content);
                 await r.table('tag').get(title).replace({
                     name: title,
                     author: msg.author.id,
@@ -516,16 +523,37 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                 break;
             case 'eval':
             case 'test':
-                if (words.length > 2) {
-                    let output = await tags.processTag(msg, words.slice(2).join(' '), '', 'test', msg.author.id);
-                    let message = await bu.send(msg, {
-                        content: `Output:\n${output.contents.trim()}`,
-                        embed: output.embed,
-                        nsfw: output.nsfw
-                    });
-                    if (message && message.channel)
-                        await bu.addReactions(message.channel.id, message.id, output.reactions);
+                let args = words.slice(2), debug = false;
+                if (args.length == 0) break;
+                if (args[0].toLowerCase() == 'debug') {
+                    debug = true;
+                    args.shift();
                 }
+                if (args.length > 0) {
+                    if (await r.table('tag').get('test').run() == null)
+                        await r.table('tag').get('test').replace(systemTag('test')).run();
+                    await bbEngine.runTag({
+                        msg,
+                        tagContent: args.join(' '),
+                        input: '',
+                        tagName: 'test',
+                        author: msg.author.id,
+                        modResult(text) { return 'Output:\n' + text; },
+                        attach: debug ? bbtag.generateDebug(args.join(' ')) : null
+                    });
+                }
+                break;
+            case 'debug':
+                let result = await bbtag.executeTag(msg, filterTitle(words[2]), words.slice(3));
+                let dmChannel = await result.context.user.getDMChannel();
+
+                if (dmChannel == null)
+                    break;
+                if (result.context.author != result.context.user.id)
+                    await bu.send(dmChannel.id, "Oops! I cant send a debug output for someone elses tag!");
+                else
+                    await bu.send(dmChannel.id, null, bbtag.generateDebug(result.code, result.context, result.result));
+
                 break;
             case 'favourite':
             case 'favorite':
@@ -643,60 +671,45 @@ ${Object.keys(user.favourites).join(', ')}
                     }
                 break;
             case 'docs':
-                tags.docs(msg, words[0], words.slice(2).join(' '));
+                bbtag.docs(msg, words[0], words.slice(2).join(' '));
                 break;
             default:
-                var command = words.slice(2);
-
-                tags.executeTag(msg, filterTitle(words[1]), command);
+                await bbtag.executeTag(msg, filterTitle(words[1]), words.slice(2));
                 break;
         }
     } else {
         bu.send(msg, e.info);
     }
 };
-const Message = require('eris/lib/structures/Message')
 
 e.event = async function (args) {
-    let msg;
-    if (args.params.msg) {
-        try {
-            msg = await bot.getMessage(args.channel, args.params.msg);
-        } catch (err) {
-            msg = JSON.parse(args.msg);
-            msg.channel_id = args.channel;
-            msg.mentions_everyone = msg.mentionEveryone;
-            msg.role_mentions = msg.roleMentions;
-            msg.reactions = [];
-            msg = new Message(msg, bot);
-        }
-    } else {
-        let channel = bot.getChannel(args.channel);
-        if (!channel) return;
-        let tmsg = JSON.parse(args.msg);
-        msg = {
-            channel,
-            author: bot.users.get(tmsg.author.id),
-            member: channel.guild.members.get(tmsg.author.id),
-            guild: channel.guild
-        };
+    let context = await bbEngine.Context.deserialize(args.context),
+        content = args.content;
+
+    context.state.timerCount = -1;
+    context.state.embed = null;
+    context.state.reactions = [];
+    try {
+        await bbEngine.runTag(content, context);
+    } catch (err) {
+        console.error(err);
+        throw err;
     }
-    let params = args.params;
-    params.msg = msg;
-    params.content = params.args[1];
-    let output = await bu.processTag(params);
-    let message = await bu.send(params.msg.channel.id, {
-        content: output.contents,
-        embed: output.embed,
-        nsfw: output.nsfw,
-        disableEveryone: false
-    });
-    if (message && message.channel)
-        await bu.addReactions(message.channel.id, message.id, output.reactions);
 };
 
 function escapeRegex(str) {
     return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+}
+
+function systemTag(name) {
+    return {
+        name,
+        content: 'System Generated Tag',
+        author: '1',
+        lastmodified: r.epochTime(0),
+        uses: 0,
+        systemOwned: true
+    };
 }
 
 function logChange(action, msg, actionObj) {

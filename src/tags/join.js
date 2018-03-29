@@ -16,14 +16,14 @@ module.exports =
         .withExample(
             '{join;["this", "is", "an", "array"];!}',
             'this!is!an!array'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
-            let arr = await bu.getArray(params, params.args[1]),
-                text = params.args[2];
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs(2, async function (subtag, context, args) {
+            let arr = await bu.getArray(context, args[0]),
+                text = args[1];
 
             if (!arr || !Array.isArray(arr.v))
-                return await Builder.errors.notAnArray(params);
+                return Builder.errors.notAnArray(subtag, context);
 
             return arr.v.join(text);
         }).whenDefault(Builder.errors.tooManyArguments)

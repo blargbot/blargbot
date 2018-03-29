@@ -7,55 +7,38 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-// START: Do not touch
-var e = module.exports = {};
+//Import the builder. You dont need this, but it has a lot of built in functionality
+const Builder = require('../src/structures/TagBuilder');
 
-e.init = () => {
-    e.category = bu.TagType.COMPLEX;
-};
-e.requireCtx = require;
-e.isTag = true;
-// END: Do not touch
-
-// name of the tag (used to execute it)
-e.name = '';
-// Note: the following information will be parsed with HTML. Keep this in mind (ex. &lt;&gt; instead of <>)
-// the arguments it takes. <> for required, [] for optional
-e.args = '';
-// an example of usage (for docs). ex: {template;arg 1[;optional arg]}
-e.usage = '';
-// A brief description of the tag
-e.desc = '';
-// An example of tag input
-e.exampleIn = '';
-// An example of the previous tag's output
-e.exampleOut = '';
-
-/**
- * The execution function of the tag.
- * @params - the parameter object
- * @params.msg - the message object that executed the tag
- * @params.args - an array of the arguments that were provided by the tag
- * @params.fallback - the fallback message to output if a tag fails
- * @params.words - an array of the arguments that the tag executor provided
- * @params.author - the creator of the tag
- * @params.tagName - the name of the tag
- * 
- * Returns an object
- * @return.replaceString String - the string that will be used to replace the tag
- * @return.replaceContent Boolean - if true, will replace the entire content rather than just the tag (within scope)
- * @return.fallback? String - if provided, will change the fallback
- */
-e.execute = async function (params) {
-    // processes any nested tags in the `args` array. if your tag uses advanced logic, you may wish to reimplement this
-    for (let i = 1; i < params.args.length; i++) {
-        params.args[i] = await bu.processTagInner(params, i);
-    }
-    var replaceString = '';
-    var replaceContent = false;
-
-    return {
-        replaceString: replaceString,
-        replaceContent: replaceContent
-    };
-};
+module.exports =
+    //Begin a new tag. Auto tags will be complex or simple based on if they have args or not.
+    Builder.AutoTag('abs')
+        //Does this accept arrays? Will already be set to true if the type is ArrayTag
+        .acceptsArrays()
+        //Specifies what arguments the tag accepts, purely for documentation. Return either an array or a single object
+        //Uses '../src/structures/ArgumentFactory' for the builder
+        .withArgs(a => a.require('number', true))
+        //Set the description of the tag. MarkDown Compatible
+        .withDesc('Gets the absolute value of `number`. If multiple are supplied, then an array will be returned')
+        //Provide examples on how to use this tag
+        .withExample(
+            '{abs;-535}',
+            '535'
+        )
+        //When arguments are <condition>, do this...
+        // Conditions can be a function accepting (subtag, context, args), a number for the number of args,
+        // or a string representing multiple values. Valid strings are:
+        // ((\d+,)*\d+), (\d+-\d+), ((>|>=|<|<=|==|!=|=|!)\d+)
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        //Default case to be run if none of the conditional parameters are satisfied
+        .whenDefault(async function (subtag, context, args) {
+            let values = Builder.util.flattenArgArrays(args).map(bu.parseFloat);
+            if (values.filter(isNaN).length > 0)
+                return Builder.errors.notANumber(subtag, context);
+            values = values.map(Math.abs);
+            if (values.length == 1)
+                return values[0];
+            return bu.serializeTagArray(values);
+        })
+        //Build into an actual tag object
+        .build();

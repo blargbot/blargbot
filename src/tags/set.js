@@ -21,27 +21,19 @@ module.exports =
             '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{set;var3;this;is;an;array}\n' +
             '{get;var1}\n{get;~var2}\n{get;var3}',
             'This is local var1\nThis is temporary var2\n{"v":["this","is","an","array"],"n":"var3"}'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            let value;
-
-            if (params.args.length == 3) {
-                let deserialized = bu.deserializeTagArray(params.args[2]);
-                if (deserialized && deserialized.v) {
-                    value = deserialized.v;
-                } else value = params.args[2];
-            } else if (params.args.length > 3)
-                value = params.args.slice(2);
-            else
-                value = null;
-
-            return this.setVar(params, params.args[1], value);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            await context.variables.set(args[0], '');
         })
-        .withProp('setVar', async function (params, varName, value) {
-            for (const scope of bu.tagVariableScopes) {
-                if (varName.startsWith(scope.prefix))
-                    return await scope.setter(params, varName.substring(scope.prefix.length), value);
-            }
-            throw new Error('Missing default variable scope!');
-        }).build();
+        .whenArgs(2, async function (subtag, context, args) {
+            let deserialized = bu.deserializeTagArray(args[1]);
+            if (deserialized != null && Array.isArray(deserialized.v))
+                await context.variables.set(args[0], deserialized.v.map(v => typeof v == 'string' ? v : JSON.stringify(v)));
+            else
+                await context.variables.set(args[0], args[1]);
+        })
+        .whenDefault(async function (subtag, context, args) {
+            context.variables.set(args[0], args.slice(1));
+        })
+        .build();

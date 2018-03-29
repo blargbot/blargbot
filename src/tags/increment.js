@@ -18,34 +18,34 @@ module.exports =
         .withExample(
             '{set;~counter;0} {repeat;{increment;~counter},;10}',
             '1,2,3,4,5,6,7,8,9,10'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-4', async function (params) {
-            let argName = params.args[1],
-                increment = 1,
-                floor = true;
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-3', async function (subtag, context, args) {
+            return this.runIncrement(subtag, context, args, 1);
+        }).whenDefault(Builder.errors.tooManyArguments)
+        .withProp('runIncrement', async function (subtag, context, args, modifier) {
+            let amount = 1, floor = true;
 
-            if (params.args[2])
-                increment = bu.parseFloat(params.args[2]);
+            if (args[1]) amount = bu.parseFloat(args[1]);
 
-            if (params.args[3]) {
-                floor = bu.parseBoolean(params.args[3]);
+            if (args[2]) {
+                floor = bu.parseBoolean(args[2]);
                 if (!bu.isBoolean(floor))
-                    return await Builder.errors.notABoolean(params);
+                    return Builder.errors.notABoolean(subtag, context);
             }
 
-            if (isNaN(increment))
-                return await Builder.errors.notANumber(params);
+            if (isNaN(amount))
+                return Builder.errors.notANumber(subtag, context);
 
-            let value = bu.parseFloat(await TagManager.list['get'].getVar(params, argName));
+            let value = bu.parseFloat(await context.variables.get(args[0]));
             if (isNaN(value))
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
 
-            if (floor) value = Math.floor(value), increment = Math.floor(increment);
+            if (floor) value = Math.floor(value), amount = Math.floor(amount);
 
-            value += increment;
-            await TagManager.list['set'].setVar(params, argName, value);
+            value += amount * modifier;
+            await context.variables.set(args[0], value.toString());
 
             return value;
-        }).whenDefault(Builder.errors.tooManyArguments)
+        })
         .build();

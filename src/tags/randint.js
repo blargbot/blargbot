@@ -16,16 +16,16 @@ module.exports =
         .withExample(
             'You rolled a {randint;1;6}.',
             'You rolled a 5.'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2-3', async function (params) {
-            let min = bu.parseInt(params.args[1]),
-                max = bu.parseInt(params.args[2] || 0),
-                fallback = bu.parseInt(params.fallback);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let min = bu.parseInt(args[0]),
+                max = bu.parseInt(args[1] || 0),
+                fallback = bu.parseInt(context.scope.fallback);
 
             if (isNaN(min)) min = fallback;
             if (isNaN(max)) max = fallback;
-            if (isNaN(min) || isNaN(max)) return await Builder.errors.notANumber(params);
+            if (isNaN(min) || isNaN(max)) return Builder.errors.notANumber(subtag, context);
 
             if (min > max)
                 min = [max, max = min][0];

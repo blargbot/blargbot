@@ -16,13 +16,13 @@ module.exports =
         .withExample(
             'There are {inrole;11111111111111111} people in the role!',
             'There are 5 people in the role!'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1', Builder.errors.notEnoughArguments)
-        .whenArgs('2', async function (params) {
-            let role = params.msg.guild.roles.get(params.args[1]);
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            let role = context.guild.roles.get(args[0]);
             if (role)
-                return params.msg.guild.members.filter(m => m.roles.includes(role.id)).length;
-            return await Builder.errors.noRoleFound(params);
+                return context.guild.members.filter(m => m.roles.includes(role.id)).length;
+            return Builder.errors.noRoleFound(subtag, context);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -16,17 +16,17 @@ module.exports =
         .withExample(
             '{regextest;apple;/p+/i} {regextest;banana;/p+/i}',
             'true false'
-        ).whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenArgs('3', async function (params) {
-            let text = await bu.processTagInner(params, 1), regex;
-
+        ).resolveArgs(0)
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenArgs(2, async function (subtag, context, args) {
+            let regex;
             try {
-                regex = bu.createRegExp(params.args[2]);
+                regex = bu.createRegExp(args[1].content);
             } catch (e) {
-                return await Builder.util.error(params, e);
+                return Builder.util.error(subtag, context, e);
             }
 
-            return regex.test(text);
+            return regex.test(args[0]);
 
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

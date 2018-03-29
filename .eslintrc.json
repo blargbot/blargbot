@@ -51,7 +51,7 @@
         "bot": false,
         "config": false,
         "dep": false,
-        "tags": false,
+        "bbtag": false,
         "bu": false,
         "r": false,
         "TagManager": false,

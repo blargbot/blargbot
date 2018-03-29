@@ -13,11 +13,16 @@ const operators = {
     '+': (a, b) => a + b,
     '-': (a, b) => a - b,
     '*': (a, b) => a * b,
-    'x': (a, b) => a * b,
     '/': (a, b) => a / b,
-    ':': (a, b) => a / b,
     '%': (a, b) => a % b,
     '^': (a, b) => Math.pow(a, b)
+};
+
+const aliases = {
+    'x': '*',
+    '×': '*',
+    ':': '/',
+    '÷': '/'
 };
 
 module.exports =
@@ -29,18 +34,18 @@ module.exports =
         .withExample(
             '2 + 3 + 6 - 2 = {math;-;{math;+;2;3;6};2}',
             '2 + 3 + 6 - 2 = 9'
-        ).beforeExecute(Builder.util.processAllSubtags)
-        .whenArgs('1-2', Builder.errors.notEnoughArguments)
-        .whenDefault(async function (params) {
-            if (!operators.hasOwnProperty(params.args[1]))
-                return await Builder.errors.invalidOperator(params);
+        )
+        .whenArgs('0-1', Builder.errors.notEnoughArguments)
+        .whenDefault(async function (subtag, context, args) {
+            if (!operators.hasOwnProperty(args[0]))
+                return Builder.errors.invalidOperator(subtag, context);
 
-            let operator = operators[params.args[1]];
-            let values = Builder.util.flattenArgArrays(params.args.slice(2));
+            let operator = operators[args[0]] || operators[aliases[args[0]]];
+            let values = Builder.util.flattenArgArrays(args.slice(1));
             values = values.map(bu.parseFloat);
 
             if (values.filter(isNaN).length > 0)
-                return await Builder.errors.notANumber(params);
+                return Builder.errors.notANumber(subtag, context);
 
             return values.reduce(operator);
         })
