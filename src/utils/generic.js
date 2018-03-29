@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 14:37:35
+ * @Last Modified time: 2018-03-29 14:37:59
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -204,7 +204,8 @@ bu.send = async function (channel, message, file, embed) {
         console.debug('Sending content: ', JSON.stringify(toSend));
         return await bot.createMessage(channelid, toSend, file);
     } catch (err) {
-        console.warn(err.message, channelid, toSend, file);
+        if (channelid !== '391965171045892116')
+            console.warn(err.message, channelid, toSend, file);
 
         try {
             let response;
