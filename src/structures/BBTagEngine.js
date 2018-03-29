@@ -265,9 +265,12 @@ class VariableCache {
         if (this.cache[variable] == null) {
             let scope = bu.tagVariableScopes.find(s => variable.startsWith(s.prefix));
             if (scope == null) throw ('Missing default variable scope!');
-
-            this.cache[variable] = new CacheEntry(
-                await scope.getter(this.parent, variable.substring(scope.prefix.length)) || '');
+            try {
+                this.cache[variable] = new CacheEntry(
+                    await scope.getter(this.parent, variable.substring(scope.prefix.length)) || '');
+            } catch (err) {
+                console.error(err, this.parent.isCC, this.parent.tagName);
+            }
         }
         return this.cache[variable].value;
     }
@@ -475,7 +478,7 @@ async function runTag(content, context) {
 
     let attachment = (config.attach || (c => null))(context, result);
 
-    let response = await bu.send(typeof context.msg === 'string' ? context.msg : context.msg.id,
+    let response = await bu.send(context.msg,
         {
             content: result,
             embed: context.state.embed,
@@ -483,7 +486,6 @@ async function runTag(content, context) {
         }, attachment);
     if (response != null && response.channel != null)
         await bu.addReactions(response.channel.id, response.id, [...new Set(context.state.reactions)]);
-
     return { context, result, response };
 };
 
