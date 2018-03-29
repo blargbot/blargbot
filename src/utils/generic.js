@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 14:37:59
+ * @Last Modified time: 2018-03-29 14:41:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -165,8 +165,7 @@ bu.addReactions = async function (channelId, messageId, reactions) {
 bu.send = async function (channel, message, file, embed) {
     let channelid = channel;
     if (typeof channel == 'object' &&
-        'channel' in channel &&
-        channel.channel instanceof dep.Eris.Channel) {
+        'channel' in channel) {
         channelid = channel.channel.id;
     }
 
@@ -204,9 +203,6 @@ bu.send = async function (channel, message, file, embed) {
         console.debug('Sending content: ', JSON.stringify(toSend));
         return await bot.createMessage(channelid, toSend, file);
     } catch (err) {
-        if (channelid !== '391965171045892116')
-            console.warn(err.message, channelid, toSend, file);
-
         try {
             let response;
             if (err.response)
