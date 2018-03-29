@@ -64,7 +64,7 @@ module.exports =
                     break;
                 }
                 await context.variables.set(varName, i);
-                result += await bbEngine.execute(code, context);
+                result += await bbEngine.execute(args[code], context);
                 i = bu.parseFloat(await context.variables.get(varName));
                 if (isNaN(i)) {
                     result += Builder.errors.notANumber(subtag, context);
