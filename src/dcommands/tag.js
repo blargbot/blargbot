@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 14:05:37
+ * @Last Modified time: 2018-03-29 14:18:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -684,7 +684,7 @@ ${Object.keys(user.favourites).join(', ')}
 
 e.event = async function (args) {
     // Migrate from the old version of timer structure
-    if (args.version === undefined) {
+    if (args.version !== 2) {
         args.context = {
             msg: JSON.parse(args.msg),
             isCC: args.params.ccommand,
