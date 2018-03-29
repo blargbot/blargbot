@@ -475,7 +475,7 @@ async function runTag(content, context) {
 
     let attachment = (config.attach || (c => null))(context, result);
 
-    let response = await bu.send(context.msg,
+    let response = await bu.send(typeof context.msg === 'string' ? context.msg : context.msg.id,
         {
             content: result,
             embed: context.state.embed,
