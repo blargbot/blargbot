@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:31:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 15:02:26
+ * @Last Modified time: 2018-03-29 17:29:16
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -20,9 +20,9 @@ module.exports =
             'The message that triggered this will be deleted. {delete}',
             '(the message got deleted idk how to do examples for this)'
         )
-        .whenArgs(0, async function (subtag, context, args) { await this.deleteMessage(subtag, context, context.channel.id, context.msg.id) })
-        .whenArgs(1, async function (subtag, context, args) { await this.deleteMessage(subtag, context, context.channel.id, args[0]) })
-        .whenArgs(2, async function (subtag, context, args) { await this.deleteMessage(subtag, context, args[0], args[1]) })
+        .whenArgs(0, async function (subtag, context, args) { return await this.deleteMessage(subtag, context, context.channel.id, context.msg.id) })
+        .whenArgs(1, async function (subtag, context, args) { return await this.deleteMessage(subtag, context, context.channel.id, args[0]) })
+        .whenArgs(2, async function (subtag, context, args) { return await this.deleteMessage(subtag, context, args[0], args[1]) })
         .whenDefault(Builder.errors.tooManyArguments)
         .withProp('deleteMessage', async function (subtag, context, channelId, messageId) {
             let msg = context.msg,
