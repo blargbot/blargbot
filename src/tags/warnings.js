@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 19:22:10
+ * @Last Modified time: 2018-03-29 14:32:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -18,8 +18,7 @@ module.exports =
             'You have {warnings} warning(s)!',
             'You have 0 warning(s)!'
         )
-        .whenArgs(0, Builder.errors.notEnoughArguments)
-        .whenArgs(1, async function (subtag, context, args) {
+        .whenArgs("0-1", async function (subtag, context, args) {
             let user = context.user;
 
             if (args[0])
