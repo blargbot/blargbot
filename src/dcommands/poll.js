@@ -52,16 +52,9 @@ e.execute = async function(msg, words) {
             bu.send(msg, `The length of a poll can't be less than 0 seconds!`);
             return;
         }
-        let color;
-        if (input.c) {
-            try {
-                color = color.replace(/[^0-9a-f]/g, '');
-                color = new Number('0x' + input.c[0]);
-            } catch (err) {
-
-            }
-        }
-        if (!color) color = bu.getRandomInt(0, 0xffffff);
+        let color = bu.parseColor(input.c);
+        if (color === null)
+            color = bu.getRandomInt(0, 0xffffff);
         let endTime = dep.moment(msg.timestamp).add(time);
         let title = input.undefined.join(' ');
         let message = {

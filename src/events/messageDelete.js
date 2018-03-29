@@ -66,7 +66,11 @@ async function handleDelete(msg, quiet) {
                 console.error(err);
             }
         }
-    let newMsg = msg.content || 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';
+    let newMsg;
+    if (storedGuild.settings.makelogs) 
+        newMsg = msg.content || 'No content to display. This is either due to the message only containing an attachment, or existing before makelogs was set to true'
+    else
+        newMsg = 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';
     if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
     if (!quiet)
         bu.logEvent(msg.channel.guild.id, 'messagedelete', [{
