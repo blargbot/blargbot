@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-01 16:39:53
+ * @Last Modified time: 2018-03-29 13:10:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -32,6 +32,7 @@ module.exports =
             context.state.timerCount += 1;
             await r.table('events').insert({
                 type: 'tag',
+                version: 2,
                 endtime: r.epochTime(dep.moment().add(duration).unix()),
                 context: context.serialize(),
                 content: args[0].content

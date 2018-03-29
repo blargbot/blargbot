@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-08 13:22:33
+ * @Last Modified time: 2018-03-29 14:05:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -683,6 +683,44 @@ ${Object.keys(user.favourites).join(', ')}
 };
 
 e.event = async function (args) {
+    // Migrate from the old version of timer structure
+    if (args.version === undefined) {
+        args.context = {
+            msg: JSON.parse(args.msg),
+            isCC: args.params.ccommand,
+            state: {
+                return: 0,
+                stackSize: 0,
+                repeats: 0,
+                embed: null,
+                reactions: args.params.reactions,
+                nsfw: null,
+                dmCount: 0,
+                timerCount: 0,
+                replace: null,
+                break: 0,
+                continue: 0
+            },
+            scope: {},
+            input: args.params.words,
+            tagName: args.params.tagName,
+            author: args.params.author
+        };
+        let channel = bot.getChannel(args.channel);
+        args.context.msg.channel = {
+            id: args.channel,
+            serialized: JSON.stringify(channel)
+        }
+        args.context.msg.member = {
+            id: args.context.msg.author.id,
+            serialized: JSON.stringify(channel.guild.members.get(args.context.msg.author.id))
+        }
+
+        args.content = args.params.args[1];
+
+
+    }
+
     let context = await bbEngine.Context.deserialize(args.context),
         content = args.content;
 
