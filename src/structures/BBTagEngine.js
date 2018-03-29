@@ -247,9 +247,20 @@ class StateScopes {
 class CacheEntry {
     get updated() { return JSON.stringify(this.original) != JSON.stringify(this.value); }
 
-    constructor(original) {
+    constructor(context, key, original) {
+        this.context = context;
+        this.key = key;
         this.original = original;
         this.value = original;
+    }
+
+    async persist() {
+        if (this.original != this.value) {
+            let scope = bu.tagVariableScopes.find(s => this.key.startsWith(s.prefix));
+            if (scope == null) throw new Error('Missing default variable scope!');
+            await scope.setter(this.context, this.key.substring(scope.prefix.length), this.value || undefined);
+            this.original = this.value;
+        }
     }
 }
 
@@ -264,9 +275,9 @@ class VariableCache {
     async get(variable) {
         if (this.cache[variable] == null) {
             let scope = bu.tagVariableScopes.find(s => variable.startsWith(s.prefix));
-            if (scope == null) throw ('Missing default variable scope!');
+            if (scope == null) throw new Error('Missing default variable scope!');
             try {
-                this.cache[variable] = new CacheEntry(
+                this.cache[variable] = new CacheEntry(this.parent, variable,
                     await scope.getter(this.parent, variable.substring(scope.prefix.length)) || '');
             } catch (err) {
                 console.error(err, this.parent.isCC, this.parent.tagName);
@@ -291,18 +302,11 @@ class VariableCache {
         this.cache[variable].value = this.cache[variable].original;
     }
 
-    async persist() {
-        let scopes = bu.tagVariableScopes.map(s => s.prefix);
-        let stored = Object.keys(this.cache).filter(k => this.cache[k].updated);
-        let grouped = bu.groupBy(stored, k => scopes.find(s => k.startsWith(s)) || '');
-
-        for (const group of grouped) {
-            let scope = bu.tagVariableScopes.find(s => s.prefix == group.key);
-            if (scope == null)
-                throw ('Missing scope `' + group.key + '`');
-            for (const entry of group)
-                scope.setter(this.parent, entry.substring(group.key.length), this.cache[entry].value || undefined);
-        }
+    async persist(variables = null) {
+        await Promise.all((variables || Object.keys(this.cache))
+            .map(async key => this.cache[key]
+                ? await this.cache[key].persist()
+                : null));
     }
 }
 
