@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:47:48
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-17 19:36:04
+ * @Last Modified time: 2018-03-29 16:18:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -29,7 +29,7 @@ module.exports =
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-5', async function (subtag, context, args) {
             let val1 = await bbEngine.execute(args[0], context),
-                otherwise = args.length % 4 == 1,
+                otherwise = args.length % 2 == 1,
                 shouldRun;
 
             switch (args.length) {
