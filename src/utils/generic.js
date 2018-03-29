@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 14:30:26
+ * @Last Modified time: 2018-03-29 14:35:07
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -204,7 +204,7 @@ bu.send = async function (channel, message, file, embed) {
         console.debug('Sending content: ', JSON.stringify(toSend));
         return await bot.createMessage(channelid, toSend, file);
     } catch (err) {
-        if (err.message === 'TypeError: Request path contains unescaped characters') console.warn(channelid, toSend, file);
+        console.warn(channelid, toSend, file);
         try {
             let response;
             if (err.response)
