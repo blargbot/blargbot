@@ -298,9 +298,13 @@ class VariableCache {
      * @param {string} value The value to set the variable to
      */
     async set(variable, value) {
+        let forced = variable.startsWith('!');
+        if (forced) variable = variable.substr(1);
         if (this.cache[variable] == null)
             await this.get(variable);
         this.cache[variable].value = value;
+        if (forced)
+            await this.cache[variable].persist();
     }
 
     async reset(variable) {
