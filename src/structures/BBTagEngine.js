@@ -147,6 +147,7 @@ class Context {
     get scope() { return this.scopes.local; }
     /** @type {Promise<boolean>} */
     get isStaff() { return this['_isStaff'] || (this['_isStaff'] = bu.isUserStaff(this.author, this.guild.id)); }
+    get author() { return this._author || this.guild.id; }
 
     /**
      * Creates a new BBTagExecContext instance
@@ -159,7 +160,7 @@ class Context {
         if (this.input.length == 1 && this.input[0] == '')
             this.input = [];
         this.isCC = options.isCC;
-        this.author = options.author || this.guild.id;
+        this._author = options.author;
         this.tagName = options.tagName;
 
         /** @type {bbError[]} */
