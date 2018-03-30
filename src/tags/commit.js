@@ -12,11 +12,14 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('commit')
         .withArgs(a => a.optional('variables', true))
-        .withDesc('This will force the given `variables` to be stored in the database. `variables` defaults to all cached values.\n' +
-            'This operation can be quite slow, so ensure that you use it sparingly for maximum performance!')
+        .withDesc('For optimization reasons, variables are not stored in the database immediately when you use `{set}`. ' +
+            'Instead they are cached, and will be saved to the database when the tag finishes. If you have some `variables` that ' +
+            'you need to be saved to the database immediately, use this to force an update right now.\nThis comes at a slight ' +
+            'performance cost, so use only when needed.\n`variables` defaults to all values accessed up to this point.\n' +
+            '`{rollback}` is the counterpart to this.')
         .withExample(
-            '{set;_var;Hello} {commit}',
-            '(Idk how to show this, _var will be in the database rather than in the cache'
+            '{set;var;Hello!}\n{commit}\n{set;var;GoodBye!}\n{rollback}\n{get;var}',
+            'Hello!'
         )
         .whenDefault(async function (subtag, context, args) {
             let values = args.length == 0
