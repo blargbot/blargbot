@@ -163,7 +163,7 @@ class Context {
         if (this.input.length == 1 && this.input[0] == '')
             this.input = [];
         this.isCC = options.isCC;
-        this.author = options.author;
+        this.author = options.author || this.guild.id;
         this.tagName = options.tagName;
 
         /** @type {bbError[]} */
