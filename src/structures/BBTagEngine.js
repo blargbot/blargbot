@@ -401,8 +401,24 @@ async function execute(bbtag, context) {
         }
 
         subtag.name = name;
-
-        result.push(await definition.execute(subtag, context));
+        try {
+            result.push(await definition.execute(subtag, context));
+        } catch (err) {
+            result.push(addError(subtag, context, 'An internal server error has occurred'));
+            bu.send('250859956989853696', {
+                content: 'A tag error occurred.',
+                embed: {
+                    title: err.message,
+                    description: err.stack,
+                    fields: [
+                        { name: 'Tag Name', value: context.tagName, inline: true },
+                        { name: 'Location', value: `${subtag.start} - ${subtag.end}`, inline: true },
+                        { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
+                        { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
+                    ]
+                }
+            });
+        }
         if (context.state.return != 0)
             break;
     }
