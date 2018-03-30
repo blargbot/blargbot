@@ -127,6 +127,17 @@ e.docs = async function (msg, command, topic) {
                     value: t.description + '\n\u200B'
                 };
             });
+            embed.fields.push({
+                name: '{commit} and {rollback}',
+                value: 'For performance reasons, when a value is `{set}` it wont be immediately populated to the database. ' +
+                    '`{commit}` and `{rollback}` can be used to manipulate when variables are sent to the database, if at all. ' +
+                    '`{commit}` will force the given variables to be sent to the database immediately. `{rollback}` will ' +
+                    'revert the given variables to their original value (start of tag or most recent `{commit}`).\n' +
+                    'There is also an additional prefix for {set} and {get} which is `!`. ' +
+                    'This prefix can be combined with other prefixes and will act the ' +
+                    'same as if you have called `{set}` and then `{commit}` immediately after. e.g. ' +
+                    '```{set;!@varname;value}``` is identical to ```{set;@varname;value}{commit;@varname}```'
+            })
             return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);
         case 'argtypes':
         case 'arguments':

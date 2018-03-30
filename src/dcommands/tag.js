@@ -710,15 +710,14 @@ e.event = async function (args) {
         args.context.msg.channel = {
             id: args.channel,
             serialized: JSON.stringify(channel)
-        }
+        };
         args.context.msg.member = {
             id: args.context.msg.author.id,
             serialized: JSON.stringify(channel.guild.members.get(args.context.msg.author.id))
-        }
+        };
 
         args.content = args.params.args[1];
-
-
+        args.tempVars = args.params.vars;
     }
 
     let context = await bbEngine.Context.deserialize(args.context),

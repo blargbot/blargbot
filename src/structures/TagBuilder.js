@@ -39,7 +39,7 @@ class TagBuilder {
             return async function (subtag, context) {
                 try {
                     if (definition.category === bu.TagType.CCOMMAND && !context.isCC)
-                        return TagBuilder.util.error(subtag, context, 'Can only use in CCommands');
+                        return TagBuilder.util.error(subtag, context, 'Can only use {' + definition.name + '} in CCommands');
 
                     if (definition.staff && !await context.isStaff)
                         return TagBuilder.util.error(subtag, context, 'Author must be staff');

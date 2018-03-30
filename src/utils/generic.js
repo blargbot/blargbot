@@ -1079,6 +1079,7 @@ bu.getAuthor = function (user) {
 };
 
 bu.isUserStaff = async function (userId, guildId) {
+    if (userId == guildId) return true;
     let guild = bot.guilds.get(guildId);
     if (!guild) return false;
     let member = guild.members.get(userId);

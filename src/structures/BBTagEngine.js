@@ -103,11 +103,7 @@ class SubTag extends BaseTag {
         this.name = this.children[0];
     }
 }
-/**
- * @typedef {Object} bbError An error that ocurred while executing BBTag
- * @property {BaseTag} bbError.tag The loacation that the error ocurred
- * @property {string|bbError[]} bbError.error The error that happened
- */
+
 class Context {
     static async deserialize(obj) {
         let msg;
@@ -138,6 +134,9 @@ class Context {
         result.scopes._scopes = [obj.scope];
         result.state = obj.state;
         result.input = obj.input;
+
+        for (const key of Object.keys(obj.tempVars || {}))
+            result.variables.cache[key] = new CacheEntry(result, key, obj.tempVars[key]);
         return result;
     }
 
@@ -160,7 +159,7 @@ class Context {
         if (this.input.length == 1 && this.input[0] == '')
             this.input = [];
         this.isCC = options.isCC;
-        this.author = options.author;
+        this.author = options.author || this.guild.id;
         this.tagName = options.tagName;
 
         /** @type {bbError[]} */
@@ -217,7 +216,13 @@ class Context {
             scope: Object.assign({}, this.scope),
             input: this.input,
             tagName: this.tagName,
-            author: this.author
+            author: this.author,
+            tempVars: this.variables.list
+                .filter(v => v.key.startsWith('~'))
+                .reduce((p, v) => {
+                    p[v.key] = v.value;
+                    return p;
+                }, {})
         };
     }
 }
@@ -265,6 +270,8 @@ class CacheEntry {
 }
 
 class VariableCache {
+    get list() { return Object.keys(this.cache).map(k => this.cache[k]); }
+
     constructor(parent) {
         this.parent = parent;
         /** @type {Object.<string, CacheEntry>} */
@@ -273,6 +280,8 @@ class VariableCache {
 
     /** @param {string} variable The name of the variable to retrieve @returns {string}*/
     async get(variable) {
+        let forced = variable.startsWith('!');
+        if (forced) variable = variable.substr(1);
         if (this.cache[variable] == null) {
             let scope = bu.tagVariableScopes.find(s => variable.startsWith(s.prefix));
             if (scope == null) throw new Error('Missing default variable scope!');
@@ -291,9 +300,13 @@ class VariableCache {
      * @param {string} value The value to set the variable to
      */
     async set(variable, value) {
+        let forced = variable.startsWith('!');
+        if (forced) variable = variable.substr(1);
         if (this.cache[variable] == null)
             await this.get(variable);
         this.cache[variable].value = value;
+        if (forced)
+            await this.cache[variable].persist();
     }
 
     async reset(variable) {
@@ -372,8 +385,8 @@ async function execute(bbtag, context) {
     if (!(bbtag instanceof BBTag))
         throw new Error('Execute can only accept BBTag as its first parameter');
     let result = [],
-        startOffset = (bbtag.content.match(/^\s+/) || [''])[0].length,
-        endOffset = (bbtag.content.match(/\s+$/) || [''])[0].length,
+        startOffset = (bbtag.content.match(/^[\s\n\r]*/) || [''])[0].length,
+        endOffset = (bbtag.content.match(/[\s\n\r]*$/) || [''])[0].length,
         prevIndex = bbtag.start + startOffset,
         content = bbtag.source;
 
@@ -387,15 +400,31 @@ async function execute(bbtag, context) {
             continue;
         }
         let name = await execute(subtag.children[0], context);
-        let definition = TagManager.list[name];
+        let definition = TagManager.list[name.toLowerCase()];
         if (definition == null) {
             result.push(addError(subtag, context, 'Unknown subtag ' + name));
             continue;
         }
 
         subtag.name = name;
-
-        result.push(await definition.execute(subtag, context));
+        try {
+            result.push(await definition.execute(subtag, context));
+        } catch (err) {
+            result.push(addError(subtag, context, 'An internal server error has occurred'));
+            bu.send('250859956989853696', {
+                content: 'A tag error occurred.',
+                embed: {
+                    title: err.message,
+                    description: err.stack,
+                    fields: [
+                        { name: 'Tag Name', value: context.tagName, inline: true },
+                        { name: 'Location', value: `${subtag.start} - ${subtag.end}`, inline: true },
+                        { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
+                        { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
+                    ]
+                }
+            });
+        }
         if (context.state.return != 0)
             break;
     }
@@ -465,6 +494,7 @@ async function runTag(content, context) {
     }
 
     let result = await execString(content.trim(), context);
+    result = result.trim();
 
     await context.variables.persist();
 
@@ -518,4 +548,10 @@ module.exports = {
  * @typedef {Object} StateScope
  * @property {boolean} StateScope.quiet
  * @property {string} StateScope.fallback
+ */
+
+ /**
+ * @typedef {Object} bbError An error that ocurred while executing BBTag
+ * @property {BaseTag} bbError.tag The loacation that the error ocurred
+ * @property {string|bbError[]} bbError.error The error that happened
  */

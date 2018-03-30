@@ -37,7 +37,7 @@ e.flags = [{
     desc: 'If specified, only accept reactions that were in the initial list.'
 }];
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let choices = ['👍', '👎'];
     let input = bu.parseInput(e.flags, words, true);
     if (input.undefined.length >= 1) {
@@ -52,7 +52,8 @@ e.execute = async function(msg, words) {
             bu.send(msg, `The length of a poll can't be less than 0 seconds!`);
             return;
         }
-        let color = bu.parseColor(input.c);
+        if (!input.c) input.c = [];
+        let color = bu.parseColor(input.c[0]);
         if (color === null)
             color = bu.getRandomInt(0, 0xffffff);
         let endTime = dep.moment(msg.timestamp).add(time);
@@ -140,7 +141,7 @@ e.execute = async function(msg, words) {
     }
 };
 
-e.event = async function(args) {
+e.event = async function (args) {
     console.debug('poll has been triggered');
     let msg3 = await bot.getMessage(args.channel, args.msg);
     let reactions = [];
@@ -150,9 +151,9 @@ e.event = async function(args) {
             msg3.reactions[key].count--;
         }
         if (args.strict == undefined || (args.strict.includes(key) ||
-                (/[0-9]{17,23}/.test(key) ?
-                    args.strict.includes(key.match(/([0-9]{17,23})/)[0]) :
-                    false)))
+            (/[0-9]{17,23}/.test(key) ?
+                args.strict.includes(key.match(/([0-9]{17,23})/)[0]) :
+                false)))
             reactions.push(msg3.reactions[key]);
     }
     if (reactions.length == 0) {

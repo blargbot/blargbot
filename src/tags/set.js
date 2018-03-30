@@ -16,7 +16,8 @@ module.exports =
         .withDesc('Stores `value` under `name`. These variables are saved between sessions. ' +
             'You can use a character prefix to determine the scope of your variable.\n' +
             'Valid scopes are: ' + bu.tagVariableScopes.map(s => '`' + (s.prefix || 'none') + '` (' + s.name + ')').join(', ') +
-            '. For more information, use `b!t docs variable` or `b!cc docs variable`'
+            '.\nFor performance reasons, variables are not immediately stored to the database. See `{commit}` and `{rollback}`' +
+            'for more information, or use `b!t docs variable` or `b!cc docs variable`'
         ).withExample(
             '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{set;var3;this;is;an;array}\n' +
             '{get;var1}\n{get;~var2}\n{get;var3}',
