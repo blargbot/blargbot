@@ -196,7 +196,7 @@ class Context {
         if (options.input === undefined) context.input = this.input;
         if (options.isCC === undefined) context.isCC = this.isCC;
         if (options.tagName === undefined) context.tagName = this.tagName;
-        if (options.author === undefined) context.author = this.author;
+        if (options.author === undefined) context._author = this.author;
 
         return context;
     }
