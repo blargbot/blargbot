@@ -291,6 +291,7 @@ class VariableCache {
                     await scope.getter(this.parent, variable.substring(scope.prefix.length)) || '');
             } catch (err) {
                 console.error(err, this.parent.isCC, this.parent.tagName);
+                throw err;
             }
         }
         return this.cache[variable].value;

@@ -108,7 +108,7 @@ bu.getVariable = async function (name, key, type, guildId) {
             break;
         case bu.TagVariableType.GUILDLOCAL:
             storedThing = await bu.getGuild(guildId);
-
+            if (!storedThing.ccommands[name]) storedThing.ccommands[name] = {};
             if (!storedThing.ccommands[name].vars) storedThing.ccommands[name].vars = {};
             returnVar = storedThing.ccommands[name].vars[key];
             break;
