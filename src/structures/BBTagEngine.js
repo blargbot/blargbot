@@ -372,8 +372,8 @@ async function execute(bbtag, context) {
     if (!(bbtag instanceof BBTag))
         throw new Error('Execute can only accept BBTag as its first parameter');
     let result = [],
-        startOffset = (bbtag.content.match(/^\s+/) || [''])[0].length,
-        endOffset = (bbtag.content.match(/\s+$/) || [''])[0].length,
+        startOffset = (bbtag.content.match(/^[\s\n\r]*/) || [''])[0].length,
+        endOffset = (bbtag.content.match(/[\s\n\r]*$/) || [''])[0].length,
         prevIndex = bbtag.start + startOffset,
         content = bbtag.source;
 
@@ -465,6 +465,7 @@ async function runTag(content, context) {
     }
 
     let result = await execString(content.trim(), context);
+    result = result.trim();
 
     await context.variables.persist();
 
