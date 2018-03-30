@@ -138,6 +138,9 @@ class Context {
         result.scopes._scopes = [obj.scope];
         result.state = obj.state;
         result.input = obj.input;
+
+        for (const key of Object.keys(obj.tempVars || {}))
+            result.variables.cache[key] = new CacheEntry(result, key, obj.tempVars[key]);
         return result;
     }
 
@@ -217,7 +220,13 @@ class Context {
             scope: Object.assign({}, this.scope),
             input: this.input,
             tagName: this.tagName,
-            author: this.author
+            author: this.author,
+            tempVars: this.variables.list
+                .filter(v => v.key.startsWith('~'))
+                .reduce((p, v) => {
+                    p[v.key] = v.value;
+                    return p;
+                }, {})
         };
     }
 }
@@ -265,6 +274,8 @@ class CacheEntry {
 }
 
 class VariableCache {
+    get list() { return Object.keys(this.cache).map(k => this.cache[k]); }
+
     constructor(parent) {
         this.parent = parent;
         /** @type {Object.<string, CacheEntry>} */
