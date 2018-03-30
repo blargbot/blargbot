@@ -387,7 +387,7 @@ async function execute(bbtag, context) {
             continue;
         }
         let name = await execute(subtag.children[0], context);
-        let definition = TagManager.list[name];
+        let definition = TagManager.list[name.toLowerCase()];
         if (definition == null) {
             result.push(addError(subtag, context, 'Unknown subtag ' + name));
             continue;
