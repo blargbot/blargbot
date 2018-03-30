@@ -717,8 +717,7 @@ e.event = async function (args) {
         }
 
         args.content = args.params.args[1];
-
-
+        args.tempVars = args.params.vars;
     }
 
     let context = await bbEngine.Context.deserialize(args.context),

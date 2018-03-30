@@ -103,11 +103,7 @@ class SubTag extends BaseTag {
         this.name = this.children[0];
     }
 }
-/**
- * @typedef {Object} bbError An error that ocurred while executing BBTag
- * @property {BaseTag} bbError.tag The loacation that the error ocurred
- * @property {string|bbError[]} bbError.error The error that happened
- */
+
 class Context {
     static async deserialize(obj) {
         let msg;
@@ -530,4 +526,10 @@ module.exports = {
  * @typedef {Object} StateScope
  * @property {boolean} StateScope.quiet
  * @property {string} StateScope.fallback
+ */
+
+ /**
+ * @typedef {Object} bbError An error that ocurred while executing BBTag
+ * @property {BaseTag} bbError.tag The loacation that the error ocurred
+ * @property {string|bbError[]} bbError.error The error that happened
  */
