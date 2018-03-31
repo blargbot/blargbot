@@ -64,7 +64,7 @@ e.executeCC = async function (msg, ccName, command) {
             msg,
             tagContent: ccommand.content,
             input: command.map(c => '"' + c + '"').join(' '),
-            isCC: false,
+            isCC: true,
             tagName: ccName,
             author: ccommand.author
         });
