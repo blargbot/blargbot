@@ -71,8 +71,7 @@ e.execute = async function (msg, words) {
         return;
     }
     let input = bu.parseInput(e.flags, words);
-    let numberOfMessages = NaN,
-        current, order, channel = msg.channel.id;
+    let numberOfMessages = NaN, channel = msg.channel.id;
     if (input.undefined.length > 0) {
         numberOfMessages = parseInt(input.undefined[0]);
     }
@@ -161,8 +160,7 @@ e.execute = async function (msg, words) {
         const key = Date.now();
         await r.table('logs').insert({
             channel, users, types,
-            last: parseInt(results[0].id),
-            first: parseInt(results[results.length - 1].id),
+            ids: results.map(r => r.msgid),
             limit: numberOfMessages, keycode: key
         });
         let toSend = 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key;

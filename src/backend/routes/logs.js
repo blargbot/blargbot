@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-07 17:42:56
+ * @Last Modified time: 2018-03-31 14:44:51
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -31,7 +31,6 @@ router.post('/', async (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/logs' + req.path;
 
-    console.debug(req.body);
     let hash = req.body.hash;
     let db = 'blargdb';
     if (hash.startsWith('beta')) {
@@ -41,25 +40,17 @@ router.post('/', async (req, res) => {
     }
     res.locals.hash = hash;
     let logsSpecs = await r.db(db).table('logs').get(parseInt(hash)).run();
-    console.debug(logsSpecs);
     if (!logsSpecs) {
         res.locals.continue = false;
     } else {
         let messages = await r.db(db).table('chatlogs')
-            .between([logsSpecs.channel, logsSpecs.first], [logsSpecs.channel, logsSpecs.last], {
-                index: 'channel_id',
-                rightBound: 'closed'
-            })
-            .orderBy({
-                index: 'channel_id'
-            })
-            .filter(function (q) {
-                return r.expr(logsSpecs.users).count().eq(0).or(r.expr(logsSpecs.users).contains(q('userid')))
-                    .and(r.expr(logsSpecs.types).count().eq(0).or(r.expr(logsSpecs.types).contains(q('type'))));
-            }).eqJoin('userid', r.table('user'), {
+            .getAll(r.args(logsSpecs.ids), { index: 'msgid' })
+            .orderBy('msgtime')
+            .eqJoin('userid', r.table('user'), {
                 index: 'userid'
             }).zip().orderBy('id').run();
         if (messages.length > 0) {
+            messages = messages.filter(m => logsSpecs.types.includes(m.type));
             let messages2 = [];
             for (let m of messages) {
                 let user = bot.users.get(m.userid);
