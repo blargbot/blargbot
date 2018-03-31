@@ -264,7 +264,7 @@ class CacheEntry {
         if (this.original != this.value) {
             let scope = bu.tagVariableScopes.find(s => this.key.startsWith(s.prefix));
             if (scope == null) throw new Error('Missing default variable scope!');
-            await scope.setter(this.context, this.key.substring(scope.prefix.length), this.value || undefined);
+            await scope.setter(this.context, this.key.substring(scope.prefix.length), this.value || null);
             this.original = this.value;
         }
     }
@@ -283,7 +283,7 @@ class VariableCache {
     async get(variable) {
         let forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
-        if (this.cache[variable] == null) {
+        if (forced || this.cache[variable] == null) {
             let scope = bu.tagVariableScopes.find(s => variable.startsWith(s.prefix));
             if (scope == null) throw new Error('Missing default variable scope!');
             try {
@@ -291,6 +291,7 @@ class VariableCache {
                     await scope.getter(this.parent, variable.substring(scope.prefix.length)) || '');
             } catch (err) {
                 console.error(err, this.parent.isCC, this.parent.tagName);
+                throw err;
             }
         }
         return this.cache[variable].value;
