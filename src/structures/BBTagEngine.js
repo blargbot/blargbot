@@ -264,7 +264,7 @@ class CacheEntry {
         if (this.original != this.value) {
             let scope = bu.tagVariableScopes.find(s => this.key.startsWith(s.prefix));
             if (scope == null) throw new Error('Missing default variable scope!');
-            await scope.setter(this.context, this.key.substring(scope.prefix.length), this.value || undefined);
+            await scope.setter(this.context, this.key.substring(scope.prefix.length), this.value || null);
             this.original = this.value;
         }
     }
