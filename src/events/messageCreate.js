@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-07 16:51:22
+ * @Last Modified time: 2018-04-01 12:56:32
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -63,21 +63,20 @@ bot.on('messageCreate', async function (msg) {
 });
 
 async function handleUserMessage(msg, storedGuild) {
-    let prefix;
+    let prefix, prefixes = ['blargbot', config.discord.defaultPrefix];
     if (msg.guild && storedGuild != null) {
         handleAntiMention(msg, storedGuild);
         bu.handleCensor(msg, storedGuild);
         handleRoleme(msg, storedGuild);
         handleTableflip(msg);
-        prefix = storedGuild.settings.prefix;
-    } else prefix = '';
-
-    if (msg.content.toLowerCase().startsWith('blargbot')) {
-        var index = msg.content.toLowerCase().indexOf('t');
-        prefix = msg.content.substring(0, index + 1);
-    } else if (msg.content.toLowerCase().startsWith(config.discord.defaultPrefix)) {
-        prefix = config.discord.defaultPrefix;
-    }
+        if (Array.isArray(storedGuild.settings.prefix)) {
+            prefixes.push(...storedGuild.settings.prefix)
+        } else if (storedGuild.settings.prefix != undefined)
+            prefixes.push(storedGuild.settings.prefix);
+    };
+    let storedUser = await r.table('user').get(msg.author.id);
+    if (storedUser && storedUser.prefixes)
+        prefixes.push(...storedUser.prefixes);
 
     if (await handleBlacklist(msg, storedGuild)) return;
 
@@ -86,9 +85,15 @@ async function handleUserMessage(msg, storedGuild) {
         prefix = msg.content.match(/<@!?[0-9]{17,21}>/)[0];
         console.debug('Was a mention');
         doCleverbot = true;
+    } else {
+        for (const p of prefixes) {
+            if (msg.content.toLowerCase().startsWith(p.toLowerCase())) {
+                prefix = p; break;
+            }
+        }
     }
-    if (prefix != undefined && msg.content.startsWith(prefix)) {
-        var command = msg.content.replace(prefix, '').trim();
+    if (prefix != undefined && msg.content.toLowerCase().startsWith(prefix.toLowerCase())) {
+        var command = msg.content.substring(prefix.length).trim();
         try {
             let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
             if (wasCommand) {
