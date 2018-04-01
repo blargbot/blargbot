@@ -28,6 +28,7 @@ e.execute = async function (msg, words) {
         }
         var prefix = settings.prefix ?
             settings.prefix : 'Not Set';
+        if (Array.isArray(prefix)) prefix = prefix[0];
         var nsfwMessage = 'None Set';
         if (nsfw.length > 0) {
             nsfwMessage = '';
@@ -219,11 +220,6 @@ bu.settings = {
     farewell: {
         name: 'Farewell Message',
         desc: `What to say when a user leaves. You can also use the <code>farewell</code> command`,
-        type: 'string'
-    },
-    prefix: {
-        name: 'Custom Prefix',
-        desc: `The custom command prefix. You can also use the <code>setprefix</code> command`,
         type: 'string'
     },
     modlog: {
