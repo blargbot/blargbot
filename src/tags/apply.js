@@ -22,21 +22,10 @@ module.exports =
         .whenDefault(async function (subtag, context, args) {
             if (!TagManager.list.hasOwnProperty(args[0]))
                 return Builder.util.error(subtag, context, 'No subtag found');
-            let tag = TagManager.list[args[0]];
+
             let tagArgs = Builder.util.flattenArgArrays(args.slice(1));
+            let code = '{' + [args[0], ...tagArgs].join(';') + '}';
 
-            args = [args[0], ...tagArgs];
-
-            args = args.map(v => {
-                if (typeof v === 'string')
-                    return v;
-                try {
-                    return JSON.stringify(v);
-                } catch (e) {
-                    return '';
-                }
-            });
-
-            return await tag.execute(subtag, context, args);
+            return TagManager.list['exec'].execTag(subtag, context, code, undefined);
         })
         .build();
