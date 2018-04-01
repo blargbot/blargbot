@@ -17,27 +17,25 @@ e.execute = async (msg, words, text) => {
     if (!storedUser.prefixes) storedUser.prefixes = [];
     console.log(words);
     if (words.length > 2) {
-        let prefixes = words.splice(2).map(p => p.toLowerCase());
+        let prefix = words.splice(2).join(' ').toLowerCase();
         switch (words[1].toLowerCase()) {
             case 'add':
             case 'set':
             case 'create':
-                for (const prefix of prefixes) {
-                    if (!storedUser.prefixes.includes(prefix))
-                        storedUser.prefixes.push(prefix);
-                }
+                if (!storedUser.prefixes.includes(prefix))
+                    storedUser.prefixes.push(prefix);
                 await r.table('user').get(msg.author.id).update({
                     prefixes: r.literal(storedUser.prefixes)
                 });
-                await bu.send(msg, 'Your prefix(es) have been added.');
+                await bu.send(msg, 'Your prefix has been added.');
                 break;
             case 'remove':
             case 'delete':
-                storedUser.prefixes = storedUser.prefixes.filter(p => !prefixes.includes(p));
+                storedUser.prefixes = storedUser.prefixes.filter(p => p !== prefix);
                 await r.table('user').get(msg.author.id).update({
                     prefixes: r.literal(storedUser.prefixes)
                 });
-                await bu.send(msg, 'Your prefix(es) have been removed.');
+                await bu.send(msg, 'Your prefix has been removed.');
                 break;
         }
     } else {
