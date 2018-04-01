@@ -52,7 +52,7 @@ e.execute = async function (msg, words) {
         let allcommands = Object.keys(CommandManager.list);
         for (const key in commandperms) {
             if (!allcommands.includes(key))
-                commandperms[key] = undefined;
+                delete commandperms[key];
         }
         if (!commandperms) commandperms = {};
         let commands, toSend, changedCommands = [];

@@ -56,6 +56,7 @@ ${flags}`;
             let customizedCommands = storedGuild.commandperms;
             //    console.debug(customizedCommands);
             for (let key in customizedCommands) {
+                if (!CommandManager.commandList.hasOwnProperty(key)) continue;
                 if (customizedCommands[key].rolename != null)
                     for (let i = 0; i < customizedCommands[key].rolename.length; i++) {
                         if (!otherCommands[customizedCommands[key].rolename[i].toLowerCase()]) {
