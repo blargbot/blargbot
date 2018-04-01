@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:46
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 15:43:24
+ * @Last Modified time: 2018-04-01 14:46:51
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -22,7 +22,7 @@ module.exports =
         ).resolveArgs(-1)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
-            let rWith = await bbEngine.execute(args[2], context),
+            let rWith = await bbEngine.execute(args[args.length - 1], context),
                 regex;
             try {
                 regex = bu.createRegExp(args[args.length - 2].content);
