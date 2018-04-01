@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-01 12:56:32
+ * @Last Modified time: 2018-04-01 17:30:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -63,7 +63,11 @@ bot.on('messageCreate', async function (msg) {
 });
 
 async function handleUserMessage(msg, storedGuild) {
-    let prefix, prefixes = ['blargbot', config.discord.defaultPrefix];
+    let prefix, prefixes = [];
+    let storedUser = await r.table('user').get(msg.author.id);
+    if (storedUser && storedUser.prefixes)
+        prefixes.push(...storedUser.prefixes);
+
     if (msg.guild && storedGuild != null) {
         handleAntiMention(msg, storedGuild);
         bu.handleCensor(msg, storedGuild);
@@ -74,9 +78,7 @@ async function handleUserMessage(msg, storedGuild) {
         } else if (storedGuild.settings.prefix != undefined)
             prefixes.push(storedGuild.settings.prefix);
     };
-    let storedUser = await r.table('user').get(msg.author.id);
-    if (storedUser && storedUser.prefixes)
-        prefixes.push(...storedUser.prefixes);
+    prefixes.push(config.discord.defaultPrefix, 'blargbot');
 
     if (await handleBlacklist(msg, storedGuild)) return;
 
