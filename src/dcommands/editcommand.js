@@ -49,6 +49,11 @@ e.execute = async function (msg, words) {
         let storedGuild;
         storedGuild = await bu.getGuild(msg.guild.id);
         let commandperms = storedGuild.commandperms;
+        let allcommands = Object.keys(CommandManager.list);
+        for (const key in commandperms) {
+            if (!allcommands.includes(key))
+                commandperms[key] = undefined;
+        }
         if (!commandperms) commandperms = {};
         let commands, toSend, changedCommands = [];
         switch (words[1].toLowerCase()) {
