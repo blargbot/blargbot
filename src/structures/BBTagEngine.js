@@ -501,7 +501,7 @@ async function runTag(content, context) {
     await context.variables.persist();
 
     if (result != null && context.state.replace != null)
-        result.replace(context.state.replace.regex, context.state.replace.with);
+        result = result.replace(context.state.replace.regex, context.state.replace.with);
 
     result = (config.modResult || (c => c))(result);
 
