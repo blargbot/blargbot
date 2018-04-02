@@ -1,6 +1,6 @@
 'use strict';
 
-const Timer = require('./timer');
+const Timer = require('./Timer');
 
 /**
  * This represents a block of text within the BBTag language.
