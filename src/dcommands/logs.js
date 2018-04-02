@@ -120,6 +120,8 @@ e.execute = async function (msg, words) {
     if (input.C && !types.includes(0)) types.push(0);
     if (input.U && !types.includes(1)) types.push(1);
     if (input.D && !types.includes(2)) types.push(2);
+    if (types.length === 0)
+        types.push(0, 1, 2);
 
     let msg2 = await bu.send(msg, 'Generating your logs...');
     let pingUser = false;
