@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 12:20:00
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-20 09:37:33
+ * @Last Modified time: 2018-04-02 09:57:59
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -45,7 +45,7 @@ module.exports =
                 if (!DMCache[user.id] ||
                     DMCache[user.id].count > 5 ||
                     DMCache[user.id].user != context.user.id ||
-                    DMCache[user.id].guild != context.user.id) {
+                    DMCache[user.id].guild != context.guild.id) {
                     // Ew we're gonna send a message first? It was voted...
                     await bu.send(DMChannel.id, 'The following message was sent from ' +
                         `**__${context.guild.name}__** (${context.guild.id}), ` +
