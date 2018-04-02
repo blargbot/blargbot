@@ -259,17 +259,6 @@ class CacheEntry {
         this.original = original;
         this.value = original;
     }
-
-    async persist() {
-        if (this.original != this.value) {
-            console.log(this.context, this.key, this.original, this.value);
-            let scope = bu.tagVariableScopes.find(s => this.key.startsWith(s.prefix));
-            if (scope == null) throw new Error('Missing default variable scope!');
-            console.log(this.value);
-            await scope.setter(this.context, this.key.substring(scope.prefix.length), this.value || null);
-            this.original = this.value;
-        }
-    }
 }
 
 class VariableCache {
@@ -310,7 +299,7 @@ class VariableCache {
             await this.get(variable);
         this.cache[variable].value = value;
         if (forced)
-            await this.cache[variable].persist();
+            await this.persist([variable]);
     }
 
     async reset(variable) {
@@ -320,8 +309,9 @@ class VariableCache {
     }
 
     async persist(variables = null) {
-        let vars = await Promise.all((variables || Object.keys(this.cache))
-            .map(key => this.cache[key]));
+        let vars = (variables || Object.keys(this.cache))
+            .map(key => this.cache[key])
+            .filter(c => c != undefined);
         let pools = {};
         for (const v of vars) {
             if (v.original != v.value) {
