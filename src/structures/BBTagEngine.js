@@ -329,7 +329,7 @@ class VariableCache {
                 if (scope == null) throw new Error('Missing default variable scope!');
                 if (!pools[scope.prefix])
                     pools[scope.prefix] = {};
-                pools[scope.prefix][v.key.substring(scope.prefix.length)] = r.literal(v.value || undefined);
+                pools[scope.prefix][v.key.substring(scope.prefix.length)] = v.value || null;
                 v.original = v.value;
             }
         }
