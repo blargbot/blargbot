@@ -186,6 +186,7 @@ function updateShard(s) {
         setProperty(container, shards[s.id], 'Guilds: ', 'guilds');
         setProperty(container, shards[s.id], 'Latency: ', 'latency');
         setProperty(container, shards[s.id], 'Memory: ', 'memory');
+        setProperty(container, shards[s.id], 'CPU: ', 'cpu');
         setProperty(container, shards[s.id], 'Uptime: ', 'uptime');
         setProperty(container, shards[s.id], 'Last Update: ', 'lastResponse');
         refreshContainer();
@@ -198,6 +199,7 @@ function updateShard(s) {
     c.latency.innerText = shards[s.id].latency + 'ms';
     c.uptime.innerText = shards[s.id].readyTime === 0 ? 'Starting...' : moment.duration(moment() - shards[s.id].readyTime).toISOString();
     c.memory.innerText = shards[s.id].rss ? formatBytes(shards[s.id].rss) : 'NaN';
+    c.cpu.innerText = (shards[s.id].cpu || 'NaN') + '%';
     c.lastResponse.innerText = moment(shards[s.id].time).format('LTS')
 }
 

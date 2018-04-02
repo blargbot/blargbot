@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-02 15:26:25
+ * @Last Modified time: 2018-04-01 19:09:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -215,8 +215,18 @@ process.on('message', async msg => {
     }
 });
 
+const usage = require('usage');
+function getCPU() {
+    return new Promise((res, rej) => {
+        let pid = process.pid;
+        usage.lookup(pid, { keepHistory: true }, function (err, result) {
+            if (err) res('NaN')
+            else res(result.cpu);
+        })
+    });
+}
 // shard status posting
-let shardStatusInterval = setInterval(() => {
+let shardStatusInterval = setInterval(async () => {
     let shard = bot.shards.get(parseInt(process.env.SHARD_ID));
     let mem = process.memoryUsage();
     bot.sender.send('shardStats', {
@@ -225,6 +235,7 @@ let shardStatusInterval = setInterval(() => {
         readyTime: bot.startTime,
         guilds: bot.guilds.size,
         rss: mem.rss,
+        cpu: await getCPU(),
         status: shard.status,
         latency: shard.latency
     });
