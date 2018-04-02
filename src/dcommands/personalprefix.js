@@ -15,7 +15,6 @@ e.longinfo = `<p>Adds or removes a personal prefix. Personal prefixes can be use
 e.execute = async (msg, words, text) => {
     let storedUser = await r.table('user').get(msg.author.id);
     if (!storedUser.prefixes) storedUser.prefixes = [];
-    console.log(words);
     if (words.length > 2) {
         let prefix = words.splice(2).join(' ').toLowerCase();
         switch (words[1].toLowerCase()) {

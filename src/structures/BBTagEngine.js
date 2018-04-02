@@ -1,5 +1,7 @@
 'use strict';
 
+const Timer = require('./timer');
+
 /**
  * This represents a block of text within the BBTag language.
  */
@@ -167,6 +169,8 @@ class Context {
         this.errors = [];
         this.scopes = new StateScopes();
         this.variables = new VariableCache(this);
+        this.execTimer = new Timer();
+        this.dbTimer = new Timer();
         this.state = {
             return: 0,
             stackSize: 0,
@@ -505,15 +509,19 @@ async function runTag(content, context) {
         content = content.tagContent;
     }
 
+    context.execTimer.start();
     let result = await execString(content.trim(), context);
+    context.execTimer.end();
     result = result.trim();
 
+    context.dbTimer.start();
     await context.variables.persist();
+    context.dbTimer.end();
 
     if (result != null && context.state.replace != null)
         result = result.replace(context.state.replace.regex, context.state.replace.with);
 
-    result = (config.modResult || (c => c))(result);
+    result = (config.modResult || ((c, r) => r))(context, result);
 
     if (typeof result == 'object')
         result = await result;

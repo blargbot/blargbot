@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:04
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-07 14:37:52
+ * @Last Modified time: 2018-04-02 12:39:42
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -75,7 +75,6 @@ router.get('/editor', (req, res) => {
 });
 
 router.post('/editor', (req, res) => {
-    console.log(req);
     res.locals.user = req.user;
     req.session.returnTo = '/tags' + req.path;
     res.locals.startText = ``;
@@ -98,7 +97,6 @@ async function renderEditor(req, res) {
 
     if (req.body && req.body.action) {
         let destination = req.body.destination || false;
-        console.log(destination);
         res.locals.destination = req.body.destination;
         let title, storedTag, storedGuild;
         title = filterTitle((req.body.tagName || ''));

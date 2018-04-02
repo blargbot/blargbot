@@ -252,6 +252,7 @@ e.execute = async function (msg, words, text) {
                 bbtag.docs(msg, words[0], words.slice(2).join(' '));
                 break;
             case 'exec':
+            case 'eval':
             case 'test':
                 let args = words.slice(2), debug = false;
                 if (args.length == 0) break;
@@ -267,7 +268,7 @@ e.execute = async function (msg, words, text) {
                         tagName: 'test',
                         isCC: true,
                         author: msg.author.id,
-                        modResult(text) { return 'Output:\n' + text; },
+                        modResult(context, text) { return 'Output:\n' + text; },
                         attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                     });
                 }
