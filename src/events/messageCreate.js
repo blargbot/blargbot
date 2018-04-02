@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-01 19:36:37
+ * @Last Modified time: 2018-04-01 22:35:55
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -95,6 +95,9 @@ async function handleUserMessage(msg, storedGuild) {
         }
     }
     if (prefix != undefined && msg.content.toLowerCase().startsWith(prefix.toLowerCase())) {
+        if (storedUser.blacklisted) {
+            await bu.send(msg, 'You have been blacklisted from the bot for the following reason: ' + storedUser.blacklisted);
+        }
         var command = msg.content.substring(prefix.length).trim();
         try {
             let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
