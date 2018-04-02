@@ -268,7 +268,22 @@ e.execute = async function (msg, words, text) {
                         tagName: 'test',
                         isCC: true,
                         author: msg.author.id,
-                        modResult(context, text) { return 'Output:\n' + text; },
+                        modResult(context, text) {
+                            function formatDuration(duration) {
+                                return duration.asSeconds() >= 5 ?
+                                    duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
+                            }
+                            let lines = [
+                                '```js',
+                                `         Execution Time: ${formatDuration(context.execTimer.duration)}`,
+                                `    Variables Committed: ${context.dbObjectsCommitted}`,
+                                `Database Execution Time: ${formatDuration(context.dbTimer.duration)}`,
+                                `   Total Execution Time: ${formatDuration(context.totalDuration)}`,
+                                '```',
+                                `${text}`
+                            ];
+                            return lines.join('\n');
+                        },
                         attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                     });
                 }

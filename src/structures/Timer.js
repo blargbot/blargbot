@@ -36,8 +36,10 @@ class Timer {
     }
 
     end() {
-        this._elapsed += Date.now() - this._start;
-        this._start = null;
+        if (this._start !== null) {
+            this._elapsed += Date.now() - this._start;
+            this._start = null;
+        }
         return this;
     }
 }

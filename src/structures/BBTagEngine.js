@@ -142,6 +142,7 @@ class Context {
         return result;
     }
 
+    get totalDuration() { return this.execTimer.duration.add(this.dbTimer.duration); }
     get channel() { return this.message.channel; }
     get member() { return this.message.member; }
     get guild() { return this.message.channel.guild; }
@@ -171,6 +172,7 @@ class Context {
         this.variables = new VariableCache(this);
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
+        this.dbObjectsCommitted = 0;
         this.state = {
             return: 0,
             stackSize: 0,
@@ -313,6 +315,10 @@ class VariableCache {
     }
 
     async persist(variables = null) {
+        let execOngoing = this.parent.execTimer._start !== null
+        if (execOngoing)
+            this.parent.execTimer.end();
+        this.parent.dbTimer.resume();
         let vars = (variables || Object.keys(this.cache))
             .map(key => this.cache[key])
             .filter(c => c != undefined);
@@ -330,12 +336,16 @@ class VariableCache {
         for (const key in pools) {
             let scope = bu.tagVariableScopes.find(s => key === s.prefix);
             let start = Date.now();
-            console.log('Committing', Object.keys(pools[key]).length, 'objects to the', key, 'pool.');
+            let objectCount = Object.keys(pools[key]).length;
+            console.log('Committing', objectCount, 'objects to the', key, 'pool.');
             await scope.setter(this.parent, pools[key]);
             let diff = Date.now() - start;
-            console[diff > 3000 ? 'info' : 'log']('Commited', Object.keys(pools[key]).length, 'objects to the', key, 'pool in', Date.now() - start, 'ms.');
+            console[diff > 3000 ? 'info' : 'log']('Commited', objectCount, 'objects to the', key, 'pool in', Date.now() - start, 'ms.');
+            this.parent.dbObjectsCommitted += objectCount;
         }
-        // split into four pools, commit as groups
+        this.parent.dbTimer.end();
+        if (execOngoing)
+            this.parent.execTimer.resume();
     }
 }
 
@@ -514,9 +524,7 @@ async function runTag(content, context) {
     context.execTimer.end();
     result = result.trim();
 
-    context.dbTimer.start();
     await context.variables.persist();
-    context.dbTimer.end();
 
     if (result != null && context.state.replace != null)
         result = result.replace(context.state.replace.regex, context.state.replace.with);

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:17:56
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-02 12:57:19
+ * @Last Modified time: 2018-04-02 13:37:13
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -539,8 +539,22 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                         input: '',
                         tagName: 'test',
                         author: msg.author.id,
-                        modResult(context, text) { return 'Output:\n' + text; },
-                        attach: debug ? bbtag.generateDebug(args.join(' ')) : null
+                        modResult(context, text) {
+                            function formatDuration(duration) {
+                                return duration.asSeconds() >= 5 ?
+                                    duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
+                            }
+                            let lines = [
+                                '```js',
+                                `         Execution Time: ${formatDuration(context.execTimer.duration)}`,
+                                `    Variables Committed: ${context.dbObjectsCommitted}`,
+                                `Database Execution Time: ${formatDuration(context.dbTimer.duration)}`,
+                                `   Total Execution Time: ${formatDuration(context.totalDuration)}`,
+                                '```',
+                                `${text}`
+                            ];
+                            return lines.join('\n');
+                        }, attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                     });
                 }
                 break;
