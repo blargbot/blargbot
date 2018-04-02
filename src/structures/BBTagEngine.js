@@ -338,7 +338,8 @@ class VariableCache {
             let start = Date.now();
             console.log('Committing', Object.keys(pools[key]).length, 'objects to the', key, 'pool.');
             await scope.setter(this.parent, pools[key]);
-            console.log('Commited to the database in', Date.now() - start, 'ms.');
+            let diff = Date.now() - start;
+            console[diff > 3000 ? 'info' : 'log']('Commited', Object.keys(pools[key]).length, 'objects to the', key, 'pool in', Date.now() - start, 'ms.');
         }
         // split into four pools, commit as groups
     }
