@@ -199,6 +199,8 @@ function updateShard(s) {
     c.latency.innerText = shards[s.id].latency + 'ms';
     c.uptime.innerText = shards[s.id].readyTime === 0 ? 'Starting...' : moment.duration(moment() - shards[s.id].readyTime).toISOString();
     c.memory.innerText = shards[s.id].rss ? formatBytes(shards[s.id].rss) : 'NaN';
+    if (typeof shards[s.id].cpu === 'number')
+     shards[s.id].cpu = Math.round(shards[s.id].cpu * 10) / 10;
     c.cpu.innerText = (shards[s.id].cpu || 'NaN') + '%';
     c.lastResponse.innerText = moment(shards[s.id].time).format('LTS')
 }
