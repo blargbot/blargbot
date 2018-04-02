@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-22 09:43:58
+ * @Last Modified time: 2018-04-01 22:30:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -44,10 +44,9 @@ bu.getArray = async function (context, arrName) {
     }
 };
 
-bu.setVariable = async function (name, key, value, type, guildId) {
-    let vars = {};
+bu.setVariable = async function (name, values, type, guildId) {
+    let vars = values;
     let updateObj = {};
-    vars[key] = value;
     let storedThing;
 
     switch (type) {
@@ -60,26 +59,32 @@ bu.setVariable = async function (name, key, value, type, guildId) {
             if (!storedThing.ccommands) storedThing.ccommands = {};
             if (!storedThing.ccommands[name]) storedThing.ccommands[name] = {};
             if (!storedThing.ccommands[name].vars) storedThing.ccommands[name].vars = {};
-            storedThing.ccommands[name].vars[key] = value;
+            for (const key in vars) {
+                storedThing.ccommands[name].vars[key] = vars[key];
+            }
             break;
         case bu.TagVariableType.TAGGUILD:
             updateObj.tagVars = vars;
             await r.table('guild').get(name).update(updateObj);
             storedThing = await bu.getGuild(name);
             if (!storedThing.tagVars) storedThing.tagVars = {};
-            storedThing.tagVars[key] = value;
+            for (const key in vars) {
+                storedThing.tagVars[key] = vars[key];
+            }
             break;
         case bu.TagVariableType.GLOBAL:
-            let values = vars;
             await r.table('vars').update({
                 varname: 'tagVars',
                 values
             });
-            bu.globalVars[key] = value;
+            for (const key in vars) {
+                bu.globalVars[key] = vars[key];
+
+            }
             break;
         default:
             updateObj.vars = vars;
-            await r.table(bu.TagVariableType.properties[type].table).get(name).update(updateObj).run();
+            await r.table(bu.TagVariableType.properties[type].table).get(name).update(updateObj);
             switch (type) {
                 case bu.TagVariableType.GUILD:
                     storedThing = await bu.getGuild(name);
@@ -92,7 +97,9 @@ bu.setVariable = async function (name, key, value, type, guildId) {
                     break;
             }
             if (!storedThing.vars) storedThing.vars = {};
-            storedThing.vars[key] = value;
+            for (const key in vars) {
+                storedThing.vars[key] = vars[key];
+            }
             break;
     }
 };
@@ -147,8 +154,8 @@ bu.tagVariableScopes = [
         description: 'Server variables (also referred to as Guild variables) are commonly used if you wish to store data on a per server level. ' +
             'They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\n' +
             'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.',
-        setter: async (context, name, value) =>
-            await bu.setVariable(context.guild.id, name, value,
+        setter: async (context, values) =>
+            await bu.setVariable(context.guild.id, values,
                 context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
         getter: async (context, name) =>
             await bu.getVariable(context.guild.id, name,
@@ -159,9 +166,9 @@ bu.tagVariableScopes = [
         prefix: '@',
         description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\n' +
             'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.',
-        setter: async (context, name, value) => {
+        setter: async (context, values) => {
             if (context.author)
-                return await bu.setVariable(context.author, name, value, bu.TagVariableType.AUTHOR);
+                return await bu.setVariable(context.author, values, bu.TagVariableType.AUTHOR);
             return bbEngine.addError({}, context, '`No author found`');
         },
         getter: async (context, name) => {
@@ -175,8 +182,8 @@ bu.tagVariableScopes = [
         prefix: '*',
         description: 'Global variables are completely public, anyone can read **OR EDIT** your global variables.\n' +
             'These are very useful if you like pain.',
-        setter: async (context, name, value) =>
-            await bu.setVariable(undefined, name, value, bu.TagVariableType.GLOBAL),
+        setter: async (context, values) =>
+            await bu.setVariable(undefined, values, bu.TagVariableType.GLOBAL),
         getter: async (context, name) =>
             await bu.getVariable(undefined, name, bu.TagVariableType.GLOBAL)
     },
@@ -185,7 +192,7 @@ bu.tagVariableScopes = [
         prefix: '~',
         description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
             'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type',
-        setter: async (context, name, value) => { return ''; }, //Temporary is never persisted to the database
+        setter: async (context, values) => { return ''; }, //Temporary is never persisted to the database
         getter: async (context, name) => { } //Temporary is never persisted to the database
     },
     {
@@ -194,10 +201,10 @@ bu.tagVariableScopes = [
         description: 'Local variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
             'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
             'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
-        setter: async (context, name, value) => {
+        setter: async (context, values) => {
             if (context.isCC)
-                return await bu.setVariable(context.tagName, name, value, bu.TagVariableType.GUILDLOCAL, context.guild.id);
-            return await bu.setVariable(context.tagName, name, value, bu.TagVariableType.LOCAL);
+                return await bu.setVariable(context.tagName, values, bu.TagVariableType.GUILDLOCAL, context.guild.id);
+            return await bu.setVariable(context.tagName, values, bu.TagVariableType.LOCAL);
         },
         getter: async (context, name) => {
             if (context.isCC)

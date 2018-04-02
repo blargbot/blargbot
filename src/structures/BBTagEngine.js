@@ -262,8 +262,10 @@ class CacheEntry {
 
     async persist() {
         if (this.original != this.value) {
+            console.log(this.context, this.key, this.original, this.value);
             let scope = bu.tagVariableScopes.find(s => this.key.startsWith(s.prefix));
             if (scope == null) throw new Error('Missing default variable scope!');
+            console.log(this.value);
             await scope.setter(this.context, this.key.substring(scope.prefix.length), this.value || null);
             this.original = this.value;
         }
@@ -318,10 +320,27 @@ class VariableCache {
     }
 
     async persist(variables = null) {
-        await Promise.all((variables || Object.keys(this.cache))
-            .map(async key => this.cache[key]
-                ? await this.cache[key].persist()
-                : null));
+        let vars = await Promise.all((variables || Object.keys(this.cache))
+            .map(key => this.cache[key]));
+        let pools = {};
+        for (const v of vars) {
+            if (v.original != v.value) {
+                let scope = bu.tagVariableScopes.find(s => v.key.startsWith(s.prefix));
+                if (scope == null) throw new Error('Missing default variable scope!');
+                if (!pools[scope.prefix])
+                    pools[scope.prefix] = {};
+                pools[scope.prefix][v.key.substring(scope.prefix.length)] = r.literal(v.value || undefined);
+                v.original = v.value;
+            }
+        }
+        for (const key in pools) {
+            let scope = bu.tagVariableScopes.find(s => key === s.prefix);
+            let start = Date.now();
+            console.log('Committing', Object.keys(pools[key]).length, 'objects to the', key, 'pool.');
+            await scope.setter(this.parent, pools[key]);
+            console.log('Commited to the database in', Date.now() - start, 'ms.');
+        }
+        // split into four pools, commit as groups
     }
 }
 
