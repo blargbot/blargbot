@@ -93,6 +93,7 @@ e.execute = async function (msg, words) {
         let farewellChan = settings.farewellchan ? bot.getChannel(settings.farewellchan) : 'Default';
         if (farewellChan && farewellChan != 'Default') farewellChan = farewellChan.name;
         else farewellChan = 'Default Channel';
+        let cleverbot = settings.nocleverbot || false;
         let kickAt = settings.kickat || 'Disabled';
         let banAt = settings.banat || 'Disabled';
         let adminRoleName = settings.adminrole || 'Admin';
@@ -113,6 +114,7 @@ CAH is NSFW : ${cahNsfw}
   Greeting : ${greeting}
   Farewell : ${farewell}
 Tableflips : ${tableFlip}
+ Cleverbot : ${!cleverbot}
 \`\`\``,
                     inline: true
                 },
@@ -281,5 +283,10 @@ bu.settings = {
         name: 'Admin Role Name',
         desc: 'The name of the Admin role.',
         type: 'string'
+    },
+    nocleverbot: {
+        name: 'No Cleverbot',
+        desc: 'Disables cleverbot functionality',
+        type: 'bool'
     }
 };

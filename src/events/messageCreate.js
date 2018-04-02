@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-01 22:36:17
+ * @Last Modified time: 2018-04-02 10:25:15
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -109,7 +109,7 @@ async function handleUserMessage(msg, storedGuild) {
                     handleDeleteNotif(msg, storedGuild);
                 }
             } else {
-                if (doCleverbot && !msg.author.bot) {
+                if (doCleverbot && !msg.author.bot && !storedGuild.settings.nocleverbot) {
                     handleCleverbot(msg);
                 } else {
                     handleAwaitMessage(msg);

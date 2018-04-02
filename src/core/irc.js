@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:54
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-08 11:18:05
+ * @Last Modified time: 2018-04-02 10:20:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -387,7 +387,8 @@ function sendIrcCommandMessage(channel, message) {
 }
 
 function sendMessageToIrc(channel, message) {
-    console.irc(`[IRC] blargbot> ${channel}> ${message}`);
+    if (channel === config.irc.channel)
+        console.irc(`[IRC] blargbot> ${channel}> ${message}`);
     botIrc.say(channel, message);
 }
 
