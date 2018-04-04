@@ -135,6 +135,42 @@ class Spawner extends EventEmitter {
                         let statuses = await this.awaitBroadcast('shardStatus');
                         await shard.send(eventKey, { message: statuses });
                         break;
+                    case 'seval': {
+                        let evals = await this.awaitBroadcast({ message: 'eval', code: data.code });
+                        let sum = 0;
+                        console.log(evals);
+                        for (const val of evals)
+                            if (typeof val.result === 'number')
+                                sum += val.result;
+                        await shard.send(eventKey, { result: sum });
+                        break;
+                    }
+                    case 'geval': {
+                        let evals = await this.awaitBroadcast({ message: 'eval', code: data.code });
+                        await shard.send(eventKey, { result: evals });
+                        break;
+                    }
+                    case 'meval': {
+                        let commandToProcess = data.code;
+                        if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
+                            commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
+                        else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
+                            commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
+                        try {
+                            let func;
+                            if (commandToProcess.split('\n').length === 1) {
+                                func = eval(`async () => ${commandToProcess}`);
+                            } else {
+                                func = eval(`async () => { ${commandToProcess} }`);
+                            }
+                            func.bind(this);
+                            let res = await func();
+                            await shard.send(eventKey, { result: res });
+                        } catch (err) {
+                            await shard.send(eventKey, { result: err.stack });
+                        }
+                        break;
+                    }
                     case 'tagList': {
                         let shard0 = this.client.spawner.shards.get(0);
                         let res = await shard0.awaitMessage('tagList');
