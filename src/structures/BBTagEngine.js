@@ -440,8 +440,8 @@ async function execute(bbtag, context) {
             bu.send('250859956989853696', {
                 content: 'A tag error occurred.',
                 embed: {
-                    title: err.message,
-                    description: err.stack,
+                    title: err.message || err,
+                    description: err.stack || 'No error stack!',
                     fields: [
                         { name: 'Tag Name', value: context.tagName, inline: true },
                         { name: 'Location', value: `${subtag.start} - ${subtag.end}`, inline: true },
