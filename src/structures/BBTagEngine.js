@@ -443,6 +443,8 @@ async function execute(bbtag, context) {
                     title: err.message || (typeof err == 'string' ? err : JSON.stringify(err)),
                     description: err.stack || 'No error stack!',
                     fields: [
+                        { name: 'SubTag', value: definition.name, inline: true },
+                        { name: 'Arguments', value: JSON.stringify(subtag.children.map(c => c.length < 100 ? c : c.substr(0, 97) + '...')) },
                         { name: 'Tag Name', value: context.tagName, inline: true },
                         { name: 'Location', value: `${subtag.start} - ${subtag.end}`, inline: true },
                         { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
