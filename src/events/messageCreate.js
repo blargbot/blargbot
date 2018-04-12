@@ -2,11 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
-<<<<<<< HEAD
- * @Last Modified time: 2018-04-12 12:21:31
-=======
- * @Last Modified time: 2018-04-04 16:17:35
->>>>>>> 62e3be6eac5ccca65a5c3de73034f0440f6db866
+ * @Last Modified time: 2018-04-12 12:25:25
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
