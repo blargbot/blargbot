@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-01 19:09:00
+ * @Last Modified time: 2018-04-04 15:03:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -78,15 +78,15 @@ class DiscordClient extends dep.Eris.Client {
         this.connect();
     }
 
-    async eval(msg, text) {
+    async eval(msg, text, send = true) {
         if (msg.author.id === bu.CAT_ID) {
+            let resultString, result;
             var commandToProcess = text.replace('eval ', '');
             if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
                 commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
             else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
                 commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
             try {
-
                 let func;
                 if (commandToProcess.split('\n').length === 1) {
                     func = eval(`async () => ${commandToProcess}`);
@@ -95,20 +95,25 @@ class DiscordClient extends dep.Eris.Client {
                 }
                 func.bind(this);
                 let res = await func();
-                await bu.send(msg, `Input:
+                result = res;
+                resultString = `Input:
 \`\`\`js
 ${commandToProcess}
 \`\`\`
 Output:
 \`\`\`js
 ${res}
-\`\`\``);
+\`\`\``;
             } catch (err) {
-                await bu.send(msg, `An error occured!
+                result = res;
+                resultString = `An error occured!
 \`\`\`js
 ${err}
-\`\`\``);
+\`\`\``;
             }
+            if (send)
+                bu.send(msg, resultString);
+            else return { resultString, result };
         }
     }
 }
@@ -138,6 +143,11 @@ process.on('message', async msg => {
                     if (chan) {
                         bot.sender.send(eventKey, JSON.stringify({ channel: chan.name, guild: chan.guild.name }));
                     } else bot.sender.send(eventKey, "null");
+                    break;
+                }
+                case 'eval': {
+                    let result = await discord.eval({ author: { id: bu.CAT_ID } }, data.code, false);
+                    bot.sender.send(eventKey, { result: result.result, shard: parseInt(process.env.SHARD_ID) });
                     break;
                 }
                 case 'getStaffGuilds': {
