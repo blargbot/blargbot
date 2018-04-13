@@ -321,15 +321,15 @@ class VariableCache {
         this.parent.dbTimer.resume();
         let vars = (variables || Object.keys(this.cache))
             .map(key => this.cache[key])
-            .filter(c => c != undefined);
+            .filter(c => c !== undefined);
         let pools = {};
         for (const v of vars) {
-            if (v.original != v.value) {
+            if (v.original !== v.value) {
                 let scope = bu.tagVariableScopes.find(s => v.key.startsWith(s.prefix));
                 if (scope == null) throw new Error('Missing default variable scope!');
                 if (!pools[scope.prefix])
                     pools[scope.prefix] = {};
-                pools[scope.prefix][v.key.substring(scope.prefix.length)] = v.value || null;
+                pools[scope.prefix][v.key.substring(scope.prefix.length)] = v.value === undefined ? null : v.value;
                 v.original = v.value;
             }
         }
