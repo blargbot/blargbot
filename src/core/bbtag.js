@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-02 13:54:10
+ * @Last Modified time: 2018-04-14 10:44:08
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -91,6 +91,7 @@ e.docs = async function (msg, command, topic) {
         };
     if (msg.channel.guild)
         prefix = await bu.guildSettings.get(msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
+    if (Array.isArray(prefix)) prefix = prefix[0];
 
     switch (words[0]) {
         case 'index':
