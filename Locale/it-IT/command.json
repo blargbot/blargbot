@@ -85,15 +85,15 @@
                     "info": "Cerca una tag con un nome che contiene la tua query."
                 },
                 "list": {
-                    "usage": "",
+                    "usage": "[utente]",
                     "info": "Mostra la lista di tutte le tag, o solo quelle di un utente specifico."
                 },
                 "favorite": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[nome]",
+                    "info": "Imposta nei preferiti la tag specificata, o ottieni la lista delle tue tag preferite."
                 },
                 "report": {
-                    "usage": "",
+                    "usage": "<nome> <motivo>",
                     "info": "Segnala una tag che viola i ToS. Usa con responsabilità."
                 },
                 "test": {
@@ -109,12 +109,12 @@
                     "info": "Restituisce il link alla documentazione BBTag, o restituisce informazioni su una tag specifica."
                 },
                 "setdesc": {
-                    "info": "",
-                    "usage": ""
+                    "info": "Imposta le informazioni per la tag specificata.",
+                    "usage": "<nome> <descrizione>"
                 },
                 "setusage": {
-                    "info": "",
-                    "usage": ""
+                    "info": "Imposta le informazioni sull'utilizzo della tag specificata.",
+                    "usage": "<nome> <utilizzo>"
                 }
             },
             "subcommandnotfound": "Non ho trovato alcun sottocomando con il nome `{{subcommand}}`.",
@@ -122,7 +122,7 @@
             "nobots": "[[emote.x]] Non puoi trasferire la proprietà ad un bot!",
             "transfercancelled": "[[emote.x]] Il trasferimento è stato annullato.",
             "transfercomplete": "[[emote.check]] {{user}} ora possiede la tag `{{tag}}`.",
-            "taginfo": "",
+            "taginfo": "__**Tag | {{name}}**__\nAutore: **{{author}}**\nUltima modifica: **{{lastModified}}**\nUsi: **{{uses}}**\nPreferiti: **{{favourites}}**\n\nUtilizzo: ` {{usage}}`\n\n{{desc}}",
             "descupdate": "La descrizione per `{{tag}}` è stata aggiornata.",
             "descreset": "La descrizione per `{{tag}}` è stata resettata.",
             "subcommandconflict": "Non puoi usare il nome `{{name}}` perchè esiste già un sottocomando con quel nome!",
@@ -356,7 +356,7 @@
             },
             "mute": {
                 "setrole": "Il ruolo muto è stato aggiornato.",
-                "rolequery": ""
+                "rolequery": "Seleziona il ruolo muto. Il ruolo attuale è {{current}}"
             },
             "announce": {
                 "set": "Gli annunci sono stati impostati.",
@@ -385,7 +385,7 @@
                         "mute": "Specifica che la punizione è il mutare. Non può essere usato con il cacciare o il bandire.",
                         "time": "Specifica quanto tempo dovrebbe durare un ban o la disattivazione del microfono.",
                         "list": "Elenca le punizioni attive.",
-                        "days": ""
+                        "days": "Il numero di giorni passati in cui verranno eliminati i messaggi dell'utente bandito. Default 1."
                     }
                 }
             },
@@ -400,7 +400,7 @@
                 "doesntexist": "Una punizione con un peso di **{{weight}}** non esiste.",
                 "list": "Queste sono le punizioni attive nella tua gilda:\n\n{{list}}"
             },
-            "default": ""
+            "default": "Questi sono i sottocomandi disponibili:\n\n{{subcommands}}"
         },
         "reason": {
             "info": "",
@@ -423,7 +423,7 @@
             "warningassigned": "**{{user}}** ha ricevuto **{{count}}** avvertimenti.",
             "negativecount": "Deve essere assegnato almeno un avvertimento!",
             "usage": "<utente>",
-            "limitexceeded": ""
+            "limitexceeded": "Superato il limite di avvertimenti ({{warnings}}/{{weight}})"
         },
         "pardon": {
             "usage": "<utente>",
@@ -435,20 +435,20 @@
             "invalidcount": "Il conteggio specificato non è un numero!",
             "negativecount": "Deve essere assegnato almeno un perdono!",
             "warningassigned": "**{{user}}** ha ricevuto **{{count}}** perdoni.",
-            "invaliduser": ""
+            "invaliduser": "Non è stato possibile trovare l'utente."
         },
         "kick": {
-            "usage": "",
-            "info": "",
+            "usage": "<utente>",
+            "info": "Caccia un utente.",
             "flags": {
-                "reason": ""
+                "reason": "Il motivo dell'espulsione."
             },
-            "kicked": "",
-            "invaliduser": ""
+            "kicked": ":ok_hand: **{{user}}** è stato cacciato.",
+            "invaliduser": "Non è stato possibile trovare l'utente."
         },
         "mute": {
-            "usage": "",
-            "info": "",
+            "usage": "<utente>",
+            "info": "Muta un utente.",
             "flags": {
                 "reason": "",
                 "duration": "",
