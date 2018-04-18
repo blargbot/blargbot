@@ -80,11 +80,7 @@ e.execute = (msg, words) => {
                         for (i = 0; i < doc.length; i++) {
                             var imgUrl;
                             if (doc[i].file_url) {
-                                if ((doc[i].file_url).startsWith('https//')) {
-                                    imgUrl = `https://${(doc[i].file_url).substring(7)}`;
-                                } else if ((doc[i].file_url).startsWith('http//')) {
-                                    imgUrl = `http://${(doc[i].file_url).substring(6)}`;
-                                }
+                                imgUrl = doc[i].file_url;
                                 if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg')) {
                                     urlList[ii] = imgUrl;
                                     ii++;
