@@ -273,8 +273,8 @@ e.execute = async function (msg, words) {
             }
             if (input.c && input.c.length > 0) {
                 for (const name of input.c) {
-                    if (/(\d+)/.test(input.c[0])) { }
-                    let channel = input.c[0].match(/(\d+)/)[1];
+                    if (/(\d+)/.test(name)) { }
+                    let channel = name.match(/(\d+)/)[1];
                     let guild = bot.channelGuildMap[channel];
                     if (guild == msg.guild.id) channelList.push(channel);
                 }
