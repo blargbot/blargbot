@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:08
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:18:30
+ * @Last Modified time: 2018-04-22 17:47:25
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -273,10 +273,11 @@ e.execute = async function (msg, words) {
             }
             if (input.c && input.c.length > 0) {
                 for (const name of input.c) {
-                    if (/(\d+)/.test(input.c[0])) { }
-                    let channel = input.c[0].match(/(\d+)/)[1];
-                    let guild = bot.channelGuildMap[channel];
-                    if (guild == msg.guild.id) channelList.push(channel);
+                    if (/(\d+)/.test(name)) {
+                        let channel = name.match(/(\d+)/)[1];
+                        let guild = bot.channelGuildMap[channel];
+                        if (guild == msg.guild.id) channelList.push(channel);
+                    }
                 }
             }
             console.debug(userList, roleList, channelList);
