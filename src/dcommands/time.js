@@ -24,7 +24,7 @@ e.execute = async (msg, words) => {
     if (location.zoneAbbr() !== '') {
         if (words.length == 2) {
             if (location.zoneAbbr() !== '')
-                message = `In ${location.zoneAbbr()}, it is currently ${location.format('LT')}`;
+                message = `In **${location.zoneAbbr()}**, it is currently **${location.format('LT')}**`;
             else {
                 message = 'Invalid parameters! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.';
             }
@@ -33,7 +33,7 @@ e.execute = async (msg, words) => {
             if (location.zoneAbbr() !== '' && location2.zoneAbbr() !== '') {
                 var time = dep.moment.tz(words[3], 'hh:mma', words[1]).tz(words[2]).format('LT');
                 if (time != 'Invalid date')
-                    message = `When it's ${dep.moment.tz(words[3], 'hh:mma', words[1]).format('LT')} in ${location.zoneAbbr()}, it's ${time} in ${location2.zoneAbbr()}.`;
+                    message = `When it's **${dep.moment.tz(words[3], 'hh:mma', words[1]).format('LT')}** in **${location.zoneAbbr()}**, it's **${time}** in **${location2.zoneAbbr()}**.`;
                 else
                     message = `Please use the format 'hh:mma' in your time.`;
             } else
@@ -44,7 +44,7 @@ e.execute = async (msg, words) => {
         if (user) {
             let storedUser = await r.table('user').get(user.id);
             if (storedUser.timezone) {
-                message = `It is currently ${dep.moment().tz(storedUser.timezone).format('LT')} for ${bu.getFullName(user)}.`;
+                message = `It is currently **${dep.moment().tz(storedUser.timezone).format('LT')}** for **${bu.getFullName(user)}**.`;
             } else message = `${bu.getFullName(user)} has not set their timezone in the \`timezone\` command yet.`;
         } else {
             message = 'You either provided an invalid user or an invalid timezone code. See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.';
