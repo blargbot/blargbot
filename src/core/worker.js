@@ -2,12 +2,16 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:38:19
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-25 19:20:55
+ * @Last Modified time: 2018-04-24 15:10:45
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 if (process.execArgv[0])
     process.execArgv[0] = process.execArgv[0].replace('-brk', '');
+
+process.on('unhandledRejection', (reason, p) => {
+    console.error('Unhandled Promise Rejection: ' + reason.stack);
+});
 
 const cluster = require('cluster');
 const gm = require('gm');
@@ -20,6 +24,7 @@ const GIFEncoder = require('gifencoder');
 const util = require('util');
 const request = require('request');
 const fs = require('fs');
+const phantom = require('phantom');
 
 const colorThief = require('color-thief-jimp');
 
@@ -545,6 +550,61 @@ const functions = {
         let buffer = await getBufferFromIM(bgImg);
 
         submitBuffer(msg.code, buffer);
+    },
+    pccheck: async function (msg) {
+        let container = [];
+        let italic = false;
+        let temp = '';
+        let m = msg.text;
+        for (var i = 0; i < m.length; i++) {
+            if (m[i] === '*') {
+                container.push({ italic, text: temp });
+                temp = '';
+                italic = !italic;
+            } else
+                temp += m[i];
+        }
+        container.push({ italic, text: temp });
+        console.debug(container);
+
+        let res = await renderPhantom('pccheck.html', {}, undefined, undefined, function (m) {
+            var thing = document.getElementById('replace1');
+            for (var i = 0; i < m.length; i++) {
+                var el = document.createElement(m[i].italic ? 'em' : 'span');
+                el.innerText = m[i].text;
+                thing.appendChild(el);
+            }
+
+            var el, elements, _i, _len, _results;
+            elements = document.getElementsByClassName('resize');
+            wrapper = document.getElementById('wrapper');
+            if (elements.length < 0) {
+                return;
+            }
+            _results = [];
+            for (_i = 0, _len = elements.length; _i < _len; _i++) {
+                el = elements[_i];
+                _results.push((function (el) {
+                    var resizeText, _results1;
+                    if (el.style['font-size'] === '') el.style['font-size'] = '65px';
+                    resizeText = function () {
+                        var elNewFontSize;
+                        elNewFontSize = (parseInt(el.style.fontSize.slice(0, -2)) - 1) + 'px';
+                        console.log(elNewFontSize);
+                        el.style.fontSize = elNewFontSize;
+                        return el;
+                    };
+                    _results1 = null;
+                    var ii = 0;
+                    while (el.scrollHeight > wrapper.clientHeight) {
+                        _results1 = resizeText();
+                        if (++ii == 1000) break;
+                    }
+                    return _results1;
+                })(el));
+            }
+        }, container);
+        submitBuffer(msg.code, res);
     }
 };
 
@@ -565,12 +625,63 @@ process.on('message', async function (msg, handle) {
     }
 });
 
+async function renderPhantom(file, replaces, scale = 1, format = 'PNG', extraFunction, extraFunctionArgs) {
+    const instance = await phantom.create(['--ignore-ssl-errors=true', '--ssl-protocol=TLSv1']);
+    const page = await instance.createPage();
+
+    page.on('onConsoleMessage', function (msg) {
+        console.debug('[IM]', msg);
+    });
+    page.on('onResourceError', function (resourceError) {
+        console.error(resourceError.url + ': ' + resourceError.errorString);
+    });
+
+    let dPath = path.join(__dirname, '..', '..', 'res', 'img', file).replace(/\\/g, '/').replace(/^\w:/, '');;
+    console.debug(dPath);
+    const status = await page.open(dPath);
+    console.debug(status);
+
+    await page.on('viewportSize', { width: 1440, height: 900 });
+    await page.on('zoomFactor', scale);
+
+
+
+    let rect = await page.evaluate(function (message) {
+        var keys = Object.keys(message);
+        for (var i = 0; i < keys.length; i++) {
+            var thing = document.getElementById(keys[i]);
+            thing.innerText = message[keys[i]];
+        }
+        try {
+            var workspace = document.getElementById("workspace");
+            return workspace.getBoundingClientRect();
+        } catch (err) {
+            console.error(err);
+            return { top: 0, left: 0, width: 300, height: 300 };
+        }
+    }, replaces);
+
+    await page.on('clipRect', {
+        top: rect.top,
+        left: rect.left,
+        width: rect.width * scale,
+        height: rect.height * scale
+    });
+    if (typeof extraFunction === 'function') {
+        await page.evaluate(extraFunction, extraFunctionArgs);
+    }
+
+    let base64 = await page.renderBase64(format);
+    await instance.exit();
+    return base64;
+}
+
 async function submitBuffer(code, buffer) {
     console.worker('Finished, submitting as base64');
     process.send({
         cmd: 'img',
         code: code,
-        buffer: buffer.toString('base64')
+        buffer: typeof buffer === 'string' ? buffer : buffer.toString('base64')
     });
 }
 
