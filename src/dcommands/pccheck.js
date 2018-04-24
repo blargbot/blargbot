@@ -14,7 +14,7 @@ e.isCommand = true;
 e.hidden = false;
 e.usage = 'pccheck <text>';
 e.info = `Tells everyone a reason why they should get their PC checked. Template credits go to Ghosty#8204.`;
-e.longinfo = `<p>Tells everyone a reason why they should get their PC checked.</p>`;
+e.longinfo = `<p>Tells everyone a reason why they should get their PC checked. Template credits go to Ghosty#8204.</p>`;
 
 
 
