@@ -19,6 +19,9 @@ e.longinfo = `<p>Tells everyone a reason why they should get their PC checked.</
 
 
 e.execute = async function (msg, words) {
+    if (words.length === 1) {
+        return bu.send(msg, 'You didn\'t provide any text!');
+    }
 
     bot.sendChannelTyping(msg.channel.id);
 
