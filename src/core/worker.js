@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:38:19
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-24 15:10:45
+ * @Last Modified time: 2018-04-25 00:45:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -551,6 +551,10 @@ const functions = {
 
         submitBuffer(msg.code, buffer);
     },
+    sonicsays: async function (msg) {
+        let res = await renderPhantom('pccheck.html', {}, undefined, undefined, function (m) {
+        });
+    },
     pccheck: async function (msg) {
         let container = [];
         let italic = false;
@@ -565,9 +569,8 @@ const functions = {
                 temp += m[i];
         }
         container.push({ italic, text: temp });
-        console.debug(container);
 
-        let res = await renderPhantom('pccheck.html', {}, undefined, undefined, function (m) {
+        let res = await renderPhantom('pccheck.html', {}, undefined, undefined, [function (m) {
             var thing = document.getElementById('replace1');
             for (var i = 0; i < m.length; i++) {
                 var el = document.createElement(m[i].italic ? 'em' : 'span');
@@ -575,38 +578,42 @@ const functions = {
                 thing.appendChild(el);
             }
 
-            var el, elements, _i, _len, _results;
-            elements = document.getElementsByClassName('resize');
-            wrapper = document.getElementById('wrapper');
-            if (elements.length < 0) {
-                return;
-            }
-            _results = [];
-            for (_i = 0, _len = elements.length; _i < _len; _i++) {
-                el = elements[_i];
-                _results.push((function (el) {
-                    var resizeText, _results1;
-                    if (el.style['font-size'] === '') el.style['font-size'] = '65px';
-                    resizeText = function () {
-                        var elNewFontSize;
-                        elNewFontSize = (parseInt(el.style.fontSize.slice(0, -2)) - 1) + 'px';
-                        console.log(elNewFontSize);
-                        el.style.fontSize = elNewFontSize;
-                        return el;
-                    };
-                    _results1 = null;
-                    var ii = 0;
-                    while (el.scrollHeight > wrapper.clientHeight) {
-                        _results1 = resizeText();
-                        if (++ii == 1000) break;
-                    }
-                    return _results1;
-                })(el));
-            }
-        }, container);
+
+        }, resize], container);
         submitBuffer(msg.code, res);
     }
 };
+
+function resize() {
+    var el, elements, _i, _len, _results;
+    elements = document.getElementsByClassName('resize');
+    wrapper = document.getElementById('wrapper');
+    if (elements.length < 0) {
+        return;
+    }
+    _results = [];
+    for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        el = elements[_i];
+        _results.push((function (el) {
+            var resizeText, _results1;
+            if (el.style['font-size'] === '') el.style['font-size'] = '65px';
+            resizeText = function () {
+                var elNewFontSize;
+                elNewFontSize = (parseInt(el.style.fontSize.slice(0, -2)) - 1) + 'px';
+                console.log(elNewFontSize);
+                el.style.fontSize = elNewFontSize;
+                return el;
+            };
+            _results1 = null;
+            var ii = 0;
+            while (el.scrollHeight > wrapper.clientHeight) {
+                _results1 = resizeText();
+                if (++ii == 1000) break;
+            }
+            return _results1;
+        })(el));
+    }
+}
 
 process.on('message', async function (msg, handle) {
     switch (msg.cmd) {
@@ -625,7 +632,7 @@ process.on('message', async function (msg, handle) {
     }
 });
 
-async function renderPhantom(file, replaces, scale = 1, format = 'PNG', extraFunction, extraFunctionArgs) {
+async function renderPhantom(file, replaces, scale = 1, format = 'PNG', extraFunctions, extraFunctionArgs) {
     const instance = await phantom.create(['--ignore-ssl-errors=true', '--ssl-protocol=TLSv1']);
     const page = await instance.createPage();
 
@@ -667,8 +674,14 @@ async function renderPhantom(file, replaces, scale = 1, format = 'PNG', extraFun
         width: rect.width * scale,
         height: rect.height * scale
     });
-    if (typeof extraFunction === 'function') {
-        await page.evaluate(extraFunction, extraFunctionArgs);
+    if (typeof extraFunctions === 'function') {
+        extraFunctions = [extraFunctions];
+    }
+    if (Array.isArray(extraFunctions)) {
+        for (const extraFunction of extraFunctions) {
+            if (typeof extraFunction === 'function')
+                await page.evaluate(extraFunction, extraFunctionArgs);
+        }
     }
 
     let base64 = await page.renderBase64(format);
