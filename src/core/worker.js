@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:38:19
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-25 00:45:57
+ * @Last Modified time: 2018-04-25 00:58:49
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -552,8 +552,8 @@ const functions = {
         submitBuffer(msg.code, buffer);
     },
     sonicsays: async function (msg) {
-        let res = await renderPhantom('pccheck.html', {}, undefined, undefined, function (m) {
-        });
+        let res = await renderPhantom('sonicsays.html', { replace1: msg.text }, 2, undefined, [resize], undefined);
+        submitBuffer(msg.code, res);
     },
     pccheck: async function (msg) {
         let container = [];
@@ -570,15 +570,13 @@ const functions = {
         }
         container.push({ italic, text: temp });
 
-        let res = await renderPhantom('pccheck.html', {}, undefined, undefined, [function (m) {
+        let res = await renderPhantom('pccheck.html', {}, 2, undefined, [function (m) {
             var thing = document.getElementById('replace1');
             for (var i = 0; i < m.length; i++) {
                 var el = document.createElement(m[i].italic ? 'em' : 'span');
                 el.innerText = m[i].text;
                 thing.appendChild(el);
             }
-
-
         }, resize], container);
         submitBuffer(msg.code, res);
     }
