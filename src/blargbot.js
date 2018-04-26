@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-07 17:40:52
+ * @Last Modified time: 2018-04-26 00:21:49
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -33,7 +33,7 @@ bu.init();
 
 var VERSION = config.version;
 
-global.bot = new dep.Eris(config.discord.token, { restMode: true });
+global.bot = new dep.Eris(config.discord.token, { restMode: true, defaultImageFormat: 'png' });
 var spawner = new Spawner({
     discord: bot,
     irc
