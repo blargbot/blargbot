@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-24 22:11:38
+ * @Last Modified time: 2018-04-25 23:30:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -104,6 +104,17 @@ e.init = () => {
         res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
         res.render('messages');
     });
+
+    app.get('/avatar/:id', async function (req, res) {
+        let id = req.params.id;
+        try {
+            let u = await bot.getRESTUser(id);
+            res.redirect(u.dynamicAvatarURL(undefined, 1024));
+        } catch (err) {
+            console.error(err);
+            res.send('heck off');
+        }
+    })
 
     app.use('/', require('./routes/index'));
     app.use('/commands', require('./routes/commands'));
