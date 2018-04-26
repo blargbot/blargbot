@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-25 23:30:10
+ * @Last Modified time: 2018-04-25 23:35:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -106,7 +106,7 @@ e.init = () => {
     });
 
     app.get('/avatar/:id', async function (req, res) {
-        let id = req.params.id;
+        let id = req.params.id.split('.')[0];
         try {
             let u = await bot.getRESTUser(id);
             res.redirect(u.dynamicAvatarURL(undefined, 1024));
