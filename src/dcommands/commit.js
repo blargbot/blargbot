@@ -16,7 +16,10 @@ e.longinfo = '<p>Gets a random or specified blargbot commit.</p>';
 let total = 0;
 e.execute = async function (msg, words) {
     if (total === 0) {
-        let c = await sf.get('https://api.github.com/repos/ratismal/blargbot/contributors');
+        let c = await sf.get('https://api.github.com/repos/ratismal/blargbot/contributors')
+            .query({
+                sha: '99c8220734c1b6ce391d828a5b5a8425ab7e766e'
+            });
         for (const contrib of c.body) {
             total += contrib.contributions;
         }
