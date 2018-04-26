@@ -27,7 +27,6 @@ e.execute = async function (msg, words) {
         if (isNaN(page))
             return await bu.send(msg, 'Invalid number!');
 
-        if (page > total) page = total - 1;
         if (page < 0) page = 0;
         page -= 1;
     } else page = bu.getRandomInt(0, total - 1);
