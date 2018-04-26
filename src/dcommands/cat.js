@@ -12,7 +12,7 @@ e.requireCtx = require;
 e.hidden = false;
 e.usage = 'cat';
 e.info = 'Gets a picture of a cat.';
-e.longinfo = '<p>Displays a picture of a dear sweet precious kitten.';
+e.longinfo = '<p>Displays a picture of a dear sweet precious kitten.</p>';
 
 
 e.execute = async function (msg) {
