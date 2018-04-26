@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:35
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:51:35
+ * @Last Modified time: 2018-04-26 12:06:24
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,7 +17,7 @@ module.exports =
             'Please note that to be able to add a reaction, I must be on the server that you got that reaction from. ' +
             'If I am not, then I will return an error if you are trying to apply the reaction to another message.')
         .withExample(
-            '{react;:thinking:;:joy:}',
+            '{addreact;:thinking:;:joy:}',
             '(On message) 🤔(1) 😂(1)'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
