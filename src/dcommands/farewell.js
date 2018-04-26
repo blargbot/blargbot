@@ -55,6 +55,6 @@ e.execute = async function (msg, words) {
         input: '',
         isCC: true,
         author: msg.author,
-        modResult(text) { return 'Farewell set. ' + suffix + 'Simulation:\n' + text; }
+        modResult(context, result) { return 'Farewell set. ' + suffix + 'Simulation:\n' + result; }
     });
 };

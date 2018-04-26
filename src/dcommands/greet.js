@@ -54,6 +54,6 @@ e.execute = async function (msg, words) {
         input: '',
         isCC: true,
         author: msg.author.id,
-        modResult(text) { return 'Greeting set. ' + suffix + 'Simulation:\n' + text; }
+        modResult(context, result) { return 'Greeting set. ' + suffix + 'Simulation:\n' + result; }
     });
 };
