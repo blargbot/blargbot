@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:25:36
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-18 13:08:52
+ * @Last Modified time: 2018-04-26 11:15:22
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -30,9 +30,12 @@ module.exports =
             else user = context.guild.members.get(user.id);
 
             try {
-                await user.edit({
-                    nick: nick
-                });
+                if (user.id === bot.user.id)
+                    await bot.editNickname(context.msg.guild.id, nick);
+                else
+                    await user.edit({
+                        nick: nick
+                    });
             } catch (err) {
                 return Builder.util.error(subtag, context, 'Could not change nickname');
             }
