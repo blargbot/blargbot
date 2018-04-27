@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:38:19
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-25 00:58:49
+ * @Last Modified time: 2018-04-26 20:09:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -642,9 +642,7 @@ async function renderPhantom(file, replaces, scale = 1, format = 'PNG', extraFun
     });
 
     let dPath = path.join(__dirname, '..', '..', 'res', 'img', file).replace(/\\/g, '/').replace(/^\w:/, '');;
-    console.debug(dPath);
     const status = await page.open(dPath);
-    console.debug(status);
 
     await page.on('viewportSize', { width: 1440, height: 900 });
     await page.on('zoomFactor', scale);
