@@ -11,10 +11,10 @@ blargbot has a comprehensive [tag system](https://blargbot.xyz/tags/) for making
 blargbot has a built-in modlogging system, as well as commands to ban, unban, kick, mute, and unmute rowdy users. It also keeps extensive logs about user messages, which are available to you upon command.
 
 ### Open-Sourced
-blargbot is completely open-source under the [GNU AGPLv3 License](https://github.com/Ratismal/blargbot/blob/master/LICENSE.MD). Feel free to take a look and learn how everything works. If you use any of my code in your own project, you are required to credit me. See the license for more details.
+blargbot is completely open-source under the [GNU AGPLv3 License](https://github.com/blargbot/blargbot/blob/master/LICENSE.MD). Feel free to take a look and learn how everything works. If you use any of my code in your own project, you are required to credit me. See the license for more details.
 
 ### Open To Suggestions
-Have a suggestion for the bot? I would be glad to hear it! Found a bug? I'd like to hear that too! You can suggest anything to me using the `suggest` command, by [joining my guild](https://discord.gg/015GVxZxI8rtlJgXF), or by [submitting a ticket](https://github.com/Ratismal/blargbot/issues).
+Have a suggestion for the bot? I would be glad to hear it! Found a bug? I'd like to hear that too! You can suggest anything to me using the `suggest` command, by [joining my guild](https://discord.gg/015GVxZxI8rtlJgXF), or by [submitting a ticket](https://github.com/blargbot/blargbot/issues).
 
 ## Note
 Open-source does not mean portable. blargbot was not built with portability in mind, and a lot of it is dependant on configs, files, and data structures that aren't available on github. The reason it's open-source is so people can look at it's internals and learn how it works; for educational purposes. Hosting it yourself is not supported.
