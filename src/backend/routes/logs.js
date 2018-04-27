@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-17 14:39:06
+ * @Last Modified time: 2018-04-27 17:13:14
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -48,8 +48,7 @@ router.post('/', async (req, res) => {
             .eqJoin('userid', r.db(db).table('user'), {
                 index: 'userid'
             }).zip().run();
-        messages = messages.sort((a, b) => a.msgtime - b.msgtime);
-        console.log(messages);
+
         let userCache = {};
         async function getUser(id) {
             let temp = await r.db(db).table('user').get(id);
@@ -122,6 +121,8 @@ router.post('/', async (req, res) => {
                 m.type = types[m.type];
                 messages2.push(m);
             }
+            messages = messages.sort((a, b) => a.msgtime - b.msgtime);
+
             res.locals.messages = messages;
             res.locals.channel = logsSpecs.channel;
             let lookedUp = await spawner.lookupChannel(logsSpecs.channel);
