@@ -159,10 +159,16 @@ e.execute = async function (msg, words) {
             });
             return;
         }
+        let res = [];
+        for (const m of results) {
+            if (!res.includes(m.msgid))
+                res.push(m.msgid);
+        }
+        console.log(res);
         const key = Date.now();
         await r.table('logs').insert({
             channel, users, types,
-            ids: results.map(r => r.msgid),
+            ids: res,
             limit: numberOfMessages, keycode: key
         });
         let toSend = 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key;
