@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:54:06
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-06 17:20:15
+ * @Last Modified time: 2018-04-30 10:47:31
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -27,13 +27,13 @@ module.exports =
             let varName = args[0],
                 arr = await bu.getArray(context, args[1]) || { v: args[1].split('') },
                 result = '';
-
-            for (const item of arr.v) {
-                context.state.repeats += 1;
-                if (context.state.repeats > 1500) {
-                    result += Builder.errors.tooManyLoops(subtag, context);
-                    break;
-                }
+            let array = Array.from(arr.v);
+            for (const item of array) {
+                // context.state.repeats += 1;
+                // // if (context.state.repeats > 1500) {
+                // //     result += Builder.errors.tooManyLoops(subtag, context);
+                // //     break;
+                // // }
                 await context.variables.set(varName, item);
                 result += await bbEngine.execute(args[2], context);
                 if (context.state.return)
