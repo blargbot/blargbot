@@ -436,6 +436,11 @@ async function execute(bbtag, context) {
         try {
             result.push(await definition.execute(subtag, context));
         } catch (err) {
+            if (err instanceof RangeError) {
+                bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);
+                throw err;
+
+            }
             result.push(addError(subtag, context, 'An internal server error has occurred'));
             bu.send('250859956989853696', {
                 content: 'A tag error occurred.',
