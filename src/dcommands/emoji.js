@@ -21,19 +21,26 @@ e.flags = [{
 }];
 
 
-e.execute = async function(msg, words) {
+e.execute = async function (msg, words) {
     let input = bu.parseInput(e.flags, words);
     if (input.undefined[0]) {
         if (/\<\:.+\:\d+\>/.test(input.undefined[0])) {
-            let url = `https://cdn.discordapp.com/emojis/${words[1].match(/(\d+)/)[1]}.png`;
-            dep.request({
-                uri: url,
-                encoding: null
-            }, async function(err, res, body) {
-                bu.send(msg, '', {
-                    name: 'emoji.png',
-                    file: body
-                });
+            let url = `https://cdn.discordapp.com/emojis/${input.undefined[0].match(/\<\:.+\:(\d+)\>/)[1]}.png`;
+            await bu.send(msg, {
+                embed: {
+                    image: {
+                        url
+                    }
+                }
+            });
+        } else if (/\<a\:.+\:\d+\>/.test(input.undefined[0])) {
+            let url = `https://cdn.discordapp.com/emojis/${input.undefined[0].match(/\<a\:.+\:(\d+)\>/)[1]}.gif`;
+            await bu.send(msg, {
+                embed: {
+                    image: {
+                        url
+                    }
+                }
             });
         } else {
             let codePoint = dep.twemoji.convert.toCodePoint(input.undefined[0]);
@@ -41,7 +48,7 @@ e.execute = async function(msg, words) {
             dep.request({
                 uri: url,
                 encoding: null
-            }, async function(err, res, body) {
+            }, async function (err, res, body) {
                 if (input.s) {
                     bu.send(msg, '', {
                         name: 'emoji.svg',
