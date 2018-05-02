@@ -47,7 +47,8 @@ async function process() {
     let count = msgs.length;
     console.log(count, 'messages.');
 
-    for (const m of msgs) {
+    let m;
+    while (m = msgs.shift()) {
         m.embeds = JSON.stringify(m.embeds);
         m.attachment = m.attachment || null;
         cclient.execute(insertQuery, m, { prepare: true });
@@ -57,6 +58,12 @@ async function process() {
             console.log('Completed', Math.floor(i / 10000), '/', count / 10000);
             // i = 0;
             // await send();
+        }
+        if (i % 100000 === 0) {
+            if (global.gc()) {
+                console.log('Doing a garbage collection.');
+                global.gc();
+            }
         }
     }
     console.log('Done!');
