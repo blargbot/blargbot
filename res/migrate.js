@@ -44,6 +44,7 @@ async function process() {
             index: 'id'
         });
     let count = msgs.length;
+    console.log(count, 'messages.');
 
     for (const m of msgs) {
         m.embeds = JSON.stringify(m.embeds);
