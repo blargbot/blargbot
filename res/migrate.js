@@ -11,6 +11,10 @@ const r = require('rethinkdbdash')({
     timeoutError: 10000
 });
 
+if (!global.gc) {
+    throw new Error('.gc() is not exposed.');
+}
+
 const cassandra = require('cassandra-driver');
 const cclient = new cassandra.Client({
     contactPoints: config.cassandra.contactPoints, keyspace: config.cassandra.keyspace,
@@ -63,6 +67,8 @@ async function process() {
             if (global.gc()) {
                 console.log('Doing a garbage collection.');
                 global.gc();
+            } else {
+                console.log('Wanted to do a garbage collection, but .gc() was unavailable.');
             }
         }
     }
