@@ -552,7 +552,8 @@ async function runTag(content, context) {
         {
             content: result,
             embed: context.state.embed,
-            nsfw: context.state.nsfw
+            nsfw: context.state.nsfw,
+            disableEveryone: !context.isCC
         }, attachment);
     if (response != null && response.channel != null)
         await bu.addReactions(response.channel.id, response.id, [...new Set(context.state.reactions)]);
