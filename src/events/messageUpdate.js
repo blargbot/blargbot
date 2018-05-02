@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:57
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-23 17:42:43
+ * @Last Modified time: 2018-05-01 21:55:48
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -22,11 +22,8 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
 
     if (msg.author) {
         if (!oldmsg) {
-            let storedMsg = await r.table('chatlogs')
-                .getAll(msg.id, {
-                    index: 'msgid'
-                })
-                .orderBy(r.desc('msgtime')).run();
+
+            let storedMsg = await bu.getChatlog(msg.id);
             if (storedMsg.length > 0) {
 
                 // console.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
@@ -62,7 +59,7 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
                     bu.insertChatlog(msg, 1);
             }
         let oldMsg;
-        if (storedGuild.settings.makelogs) 
+        if (storedGuild.settings.makelogs)
             oldMsg = oldmsg.content || 'No content to display. This is either due to the message only containing an attachment, or existing before makelogs was set to true'
         else
             oldMsg = 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';

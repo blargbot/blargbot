@@ -130,21 +130,40 @@ e.execute = async function (msg, words) {
         pingUser = true;
     }, 10000);
     let msgids = [msg.id, msg2.id];
-    let results = await r.table('chatlogs')
-        .between([channel, r.minval], [channel, msg.id], {
-            index: 'channel_id',
-            rightBound: 'open'
-        })
-        .orderBy({
-            index: r.desc('channel_id')
-        })
-        .filter(function (q) {
-            return r.expr(users).count().eq(0).or(r.expr(users).contains(q('userid')))
-                .and(r.expr(types).count().eq(0).or(r.expr(types).contains(q('type')))
-                    .and(r.expr(msgids).contains(q('msgid')).not())
-                );
-        })
-        .limit(numberOfMessages).run();
+
+    let query = `SELECT * FROM chatlogs WHERE
+        channelid = :channel
+    `;
+    console.log(query);
+    let results = [];
+    try {
+        let qresults = await bu.cclient.execute(query, { channel: channel }, { prepare: true });
+        for (const r of qresults.rows) {
+            if (msgids.includes(r.msgid.toJSON())) continue;
+            if (types.includes(r.type) && (users.length === 0 || users.includes(r.userid.toJSON())))
+                results.push(bu.normalize(r));
+        }
+        results.sort((a, b) => b.msgtime - a.msgtime);
+        results = results.slice(0, numberOfMessages);
+    } catch (err) {
+        console.error(err, err.message);
+    }
+
+    // let results = await r.table('chatlogs')
+    //     .between([channel, r.minval], [channel, msg.id], {
+    //         index: 'channel_id',
+    //         rightBound: 'open'
+    //     })
+    //     .orderBy({
+    //         index: r.desc('channel_id')
+    //     })
+    //     .filter(function (q) {
+    //         return r.expr(users).count().eq(0).or(r.expr(users).contains(q('userid')))
+    //             .and(r.expr(types).count().eq(0).or(r.expr(types).contains(q('type')))
+    //                 .and(r.expr(msgids).contains(q('msgid')).not())
+    //             );
+    //     })
+    //     .limit(numberOfMessages).run();
 
     if (results.length == 0) {
         clearTimeout(timer);
@@ -153,6 +172,7 @@ e.execute = async function (msg, words) {
         clearTimeout(timer);
         if (input.j) {
             let toSend = `${pingUser ? 'Sorry that took so long, ' + msg.author.mention : ''}Here are your logs, in a JSON file!`;
+            results.forEach(m => delete m.id)
             await bu.send(msg, toSend, {
                 file: JSON.stringify(results, null, 2),
                 name: `${msg.channel.id}-logs.json`
@@ -161,8 +181,8 @@ e.execute = async function (msg, words) {
         }
         let res = [];
         for (const m of results) {
-            if (!res.includes(m.msgid))
-                res.push(m.msgid);
+            if (!res.includes(m.id))
+                res.push(m.id);
         }
         console.log(res);
         const key = Date.now();

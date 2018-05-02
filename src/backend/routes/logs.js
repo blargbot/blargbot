@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-27 17:13:14
+ * @Last Modified time: 2018-05-01 23:07:25
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -43,20 +43,25 @@ router.post('/', async (req, res) => {
     if (!logsSpecs) {
         res.locals.continue = false;
     } else {
-        let messages = await r.db(db).table('chatlogs')
-            .getAll(r.args(logsSpecs.ids), { index: 'msgid' })
-            .eqJoin('userid', r.db(db).table('user'), {
-                index: 'userid'
-            }).zip().run();
+        let messages = [];
+        for (const id of logsSpecs.ids) {
+            let r = await bu.cclient.execute(`SELECT * FROM chatlogs WHERE id = ?`, [id], { prepare: true });
+            messages.push(bu.normalize(r.rows[0]));
+        }
+        console.log(messages);
+        // let messages = await r.db(db).table('chatlogs')
+        //     .getAll(r.args(logsSpecs.ids), { index: 'msgid' })
+        //     .eqJoin('userid', r.db(db).table('user'), {
+        //         index: 'userid'
+        //     }).zip().run();
 
         let userCache = {};
         async function getUser(id) {
             let temp = await r.db(db).table('user').get(id);
             if (temp) {
-                userCache[id] = { username: temp.username, discriminator: temp.discriminator, bot: temp.isbot };
+                userCache[id] = { username: temp.username, discriminator: temp.discriminator, bot: temp.isbot, avatarURL: temp.avatarURL };
             } else if (!userCache[id])
                 userCache[id] = await bot.getRESTUser(id);
-
             return userCache[id];
         }
         if (messages.length > 0) {
@@ -65,15 +70,16 @@ router.post('/', async (req, res) => {
             for (let m of messages) {
                 let user = bot.users.get(m.userid);
                 if (!user) {
+                    user = await getUser(m.userid);
                     //try {
                     //   user = await bot.getRESTUser(m.userid);
                     // catch (err) {
-                    user = {
-                        username: m.username,
-                        discriminator: m.discriminator,
-                        bot: m.bot === 1,
-                        avatarURL: m.avatarURL
-                    };
+                    // user = {
+                    //     username: m.username,
+                    //     discriminator: m.discriminator,
+                    //     bot: m.bot === 1,
+                    //     avatarURL: m.avatarURL
+                    // };
                     //}
                 }
                 m.username = user.username;

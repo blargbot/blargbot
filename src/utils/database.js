@@ -2,10 +2,17 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-31 13:07:01
+ * @Last Modified time: 2018-05-01 22:49:28
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+
+const cassandra = require('cassandra-driver');
+const cclient = new cassandra.Client({
+    contactPoints: config.cassandra.contactPoints, keyspace: config.cassandra.keyspace,
+    authProvider: new cassandra.auth.PlainTextAuthProvider(config.cassandra.username, config.cassandra.password)
+})
+bu.cclient = cclient;
 
 bu.guildSettings = {
     set: async function (guildid, key, value, type) {
@@ -206,9 +213,37 @@ bu.getGuild = async function (guildid) {
     return storedGuild;
 };
 
-bu.insertChatlog = function (msg, type) {
+const insertQuery = `
+    INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)
+        VALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)
+`;
+
+bu.normalize = function (r) {
+    let n = {};
+    for (const key in r) {
+        if (r[key] !== null && typeof r[key] === 'object' && r[key].toJSON)
+            n[key] = r[key].toJSON();
+        else if (typeof r[key] !== 'function') n[key] = r[key];
+    }
+    n.msgtime = new Date(n.msgtime);
+    n.embeds = JSON.parse(n.embeds);
+    return n;
+}
+bu.getChatlog = async function (id) {
+    let res = await cclient.execute(`SELECT * FROM chatlogs WHERE msgid = ?`, [id], { prepare: true });
+    let msgs = [];
+    for (const row of res.rows) {
+        msgs.push(bu.normalize(row));
+    }
+    if (msgs.length > 1)
+        msgs.sort((a, b) => b.msgtime - a.msgtime);
+    return msgs;
+}
+
+bu.insertChatlog = async function (msg, type) {
     if (msg.channel.id != '204404225914961920') {
-        r.table('chatlogs').insert({
+        console.log(type, msg.content);
+        let data = {
             id: bu.makeSnowflake(),
             content: msg.content,
             attachment: msg.attachments[0] ? msg.attachments[0].url : undefined,
@@ -216,10 +251,25 @@ bu.insertChatlog = function (msg, type) {
             msgid: msg.id,
             channelid: msg.channel.id,
             guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
-            msgtime: r.epochTime(dep.moment(msg.timestamp) / 1000),
+            msgtime: Date.now(),
             type: type,
-            embeds: msg.embeds
-        }).run();
+            embeds: JSON.stringify(msg.embeds)
+        }
+
+        await cclient.execute(insertQuery, data, { prepare: true });
+
+        // r.table('chatlogs').insert({
+        //     id: bu.makeSnowflake(),
+        //     content: msg.content,
+        //     attachment: msg.attachments[0] ? msg.attachments[0].url : undefined,
+        //     userid: msg.author.id,
+        //     msgid: msg.id,
+        //     channelid: msg.channel.id,
+        //     guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
+        //     msgtime: r.epochTime(dep.moment(msg.timestamp) / 1000),
+        //     type: type,
+        //     embeds: msg.embeds
+        // }).run();
     }
 };
 

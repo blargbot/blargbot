@@ -14,6 +14,7 @@
     "big-number": "^0.4.0",
     "body-parser": "^1.15.2",
     "brainfuck-node": "^1.0.1",
+    "cassandra-driver": "^3.5.0",
     "chevrotain": "^0.27.1",
     "cleverbot": "^1.0.1",
     "cleverbot-node": "^0.2.4",
