@@ -64,7 +64,7 @@ async function process() {
             // await send();
         }
         if (i % 100000 === 0) {
-            if (global.gc()) {
+            if (global.gc) {
                 console.log('Doing a garbage collection.');
                 global.gc();
             } else {
