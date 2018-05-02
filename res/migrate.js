@@ -26,6 +26,7 @@ const date = makeSnowflake(Date.now() - (1 * 24 * 60 * 60 * 1000));
 const insertQuery = `
     INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)
         VALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)
+        IF NOT EXISTS
 `;
 const queries = [];
 const queryOptions = { prepare: true, consistency: cassandra.types.consistencies.quorum };
@@ -53,7 +54,7 @@ async function process() {
         // console.log(m);
         // queries.push({ query: insertQuery, params: m });
         if (++i % 10000 === 0) {
-            console.log('Completed', Math.floor(i / 10000), '/', count);
+            console.log('Completed', Math.floor(i / 10000), '/', count / 10000);
             // i = 0;
             // await send();
         }
