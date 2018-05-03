@@ -17,7 +17,7 @@ module.exports =
             'At least one out of `message` and `embed` must be supplied.\n' +
             'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show')
         .withExample(
-            '{send;#channel;Hello!;{buildembed;title:You\'re cool}}',
+            '{send;#channel;Hello!;{embedbuild;title:You\'re cool}}',
             '1111111111111111111\nIn #channel: Hello!\nEmbed: You\'re cool'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)

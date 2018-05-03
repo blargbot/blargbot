@@ -158,7 +158,8 @@ function lastElem(array, addNew = false) {
 }
 
 module.exports =
-    Builder.AutoTag('buildembed')
+    Builder.AutoTag('embedbuild')
+        .withAlias('buildembed')
         .withArgs(a => a.require('values',
             true))
         .withDesc('This tag is designed to allow you to generate embed code for `{webhook}` and `{embed}` with much less effort.\n' +
@@ -168,7 +169,7 @@ module.exports =
             'and [here (embed limits)](https://discordapp.com/developers/docs/resources/channel#embed-limits) as well as a useful tool for testing embeds ' +
             '[here](https://leovoel.github.io/embed-visualizer/)')
         .withExample(
-            '{buildembed;\n  title:hello!;\n  description:I am an example embed;\n  fields.name:Field 1;\n  fields.value:This is the first field!;\n  ' +
+            '{embedbuild;\n  title:hello!;\n  description:I am an example embed;\n  fields.name:Field 1;\n  fields.value:This is the first field!;\n  ' +
             'fields.name:Field 2;\n  fields.value:This is the next field and is inline!;\n  fields.inline:true\n}',
             '{"title":"hello!","description":"I am an example embed","fields":[' +
             '{"name":"Field 1","value":"This is the first field!"},' +

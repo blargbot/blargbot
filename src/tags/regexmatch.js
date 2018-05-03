@@ -10,11 +10,11 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ArrayTag('match')
+    Builder.ArrayTag('regexmatch')
         .withArgs(a => [a.require('text'), a.require('regex')])
         .withDesc('Returns an array of everything in `text` that matches `regex`.')
         .withExample(
-            '{match;I have $1 and 25 cents;/\\d+/g}',
+            '{regexmatch;I have $1 and 25 cents;/\\d+/g}',
             '["1", "25"]'
         ).resolveArgs(0)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)

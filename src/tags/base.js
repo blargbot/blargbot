@@ -11,6 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('base')
+        .withAlias('radix')
         .withArgs(a => [
             a.require('integer'),
             a.optional('origin'),

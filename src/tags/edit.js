@@ -19,7 +19,7 @@ module.exports =
             'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.\n' +
             'Only messages created by the bot may be edited')
         .withExample(
-            'A message got edited: {edit;111111111111111111;New content;{buildembed;title:You\'re cool}}',
+            'A message got edited: {edit;111111111111111111;New content;{embedbuild;title:You\'re cool}}',
             '(the message got edited idk how to do examples for this)'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)

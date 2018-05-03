@@ -10,7 +10,8 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('hasrole')
+    Builder.AutoTag('userhasrole')
+        .withAlias('hasrole')
         .acceptsArrays()
         .withArgs(a => [a.require('roleids'), a.optional('user'), a.optional('quiet')])
         .withDesc('Checks if a user has any of the provided `roleids`, and returns either `true` or `false`. ' +
@@ -19,7 +20,7 @@ module.exports =
             'If `user` is provided, check that `user`, otherwise use the person who called this tag.' +
             'If `quiet` is specified, if a user can\'t be found it will simply return `false`')
         .withExample(
-            'You are a moderator: {hasrole;moderator}',
+            'You are a moderator: {userhasrole;moderator}',
             'You are a moderator: false'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)

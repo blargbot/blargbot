@@ -18,7 +18,7 @@ module.exports =
             'You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\n' +
             'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.'
         ).withExample(
-            '{dm;stupid cat;Hello;{buildembed;title:You\'re cool}}',
+            '{dm;stupid cat;Hello;{embedbuild;title:You\'re cool}}',
             'DM: Hello\nEmbed: You\'re cool'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)

@@ -11,6 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('color')
+        .withAlias('colour')
         .withDesc('Attempts to convert `color` to a hex code. `color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number.')
         .withExample(
             '{color;pink}',
