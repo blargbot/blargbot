@@ -174,6 +174,7 @@ class Context {
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
         this.state = {
+            ownedMsgs: [],
             return: 0,
             stackSize: 0,
             repeats: 0,
@@ -187,6 +188,10 @@ class Context {
             break: 0,
             continue: 0
         };
+    }
+
+    ownsMessage(messageId) {
+        return messageId == this.msg.id || this.state.ownedMsgs.indexOf(messageId) != -1;
     }
 
     /**

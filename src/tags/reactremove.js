@@ -51,12 +51,16 @@ module.exports =
             // Loop through the "emotes" and check if each is a user. If it is not, then break
             let emote;
             while (emote = emotes.shift()) {
-                let user = await bu.getUser(context.msg, emote, true);
-                if (user === null) {
+                let deserialized = await bu.deserializeTagArray(emote);
+                let entries = deserialized && Array.isArray(deserialized.v)
+                    ? deserialized.v
+                    : emote;
+                entries = await Promise.all(entries.map(entry => bu.getUser(context.msg, entry, true)));
+                if (entries.reduce((c, entry) => c && entry == null, true)) {
                     emotes.splice(0, 0, emote);
                     break;
                 }
-                users.push(user);
+                users.push(...entries);
             }
 
             // Find all actual emotes in remaining emotes
