@@ -44,6 +44,8 @@ module.exports =
                     disableEveryone: false
                 });
 
+                context.state.ownedMsgs.push(sent.id);
+
                 return sent.id;
             } catch (err) {
                 return Builder.util.error(subtag, context, 'Failed to send');

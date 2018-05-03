@@ -11,7 +11,6 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.CCommandTag('edit')
-        .requireStaff()
         .withArgs(a => [a.optional('channelId'), a.require('messageId'), a.require([a.optional('text'), a.optional('embed')])])
         .withDesc('Edits `messageId` in `channelId` to say `text` or `embed`. ' +
             'Atleast one of `text` and `embed` is required. ' +
@@ -35,6 +34,8 @@ module.exports =
             return await this.runEdit(subtag, context, context.channel, args[0], message, embed);
         })
         .whenArgs(3, async function (subtag, context, args) { //args = [(<messageId>,<text>,<embed>)|(<channelid>,<messageId>,<text|embed>)]
+            if (!await context.isStaff && context.state.ownedMsgs.indexOf(messageId) == -1)
+                return Builder.util.error(subtag, context, 'Author must be staff to edit unrelated messages');
 
             let channel = bu.parseChannel(args[0], true);
             if (channel == null) { //args = [<messageId>,<text>,<embed>]
