@@ -223,7 +223,7 @@ e.docs = async function (msg, command, topic) {
             return await help.sendHelp(msg, { embed }, 'BBTag documentation');
         default:
             topic = topic.replace(/[\{\}]/g, '');
-            let tag = tags.filter(t => t.name == topic.toLowerCase())[0];
+            let tag = TagManager.get(topic.toLowerCase());
             if (tag == null)
                 break;
             let category = bu.TagType.properties[tag.category];
@@ -243,6 +243,11 @@ e.docs = async function (msg, command, topic) {
 
             embed.url += '/#' + encodeURIComponent(tag.name);
             embed.fields = [];
+            if (tag.aliases)
+                embed.fields.push({
+                    name: 'Aliases',
+                    value: tag.aliases.join(', ') + '\n\u200B'
+                });
             if (tag.exampleCode)
                 embed.fields.push({
                     name: 'Example code',

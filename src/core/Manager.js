@@ -11,6 +11,7 @@ class Manager {
 
     constructor(type, removeListeners, init = true) {
         this.list = {};
+        this.aliases = {};
         this.type = type;
         this.removeListeners = removeListeners;
         if (init)
@@ -31,6 +32,14 @@ class Manager {
         }
     }
 
+    get(name) {
+        if (!this.list.hasOwnProperty(name))
+            name = this.aliases[name] || name;
+        if (this.list.hasOwnProperty(name))
+            return this.list[name];
+        return undefined;
+    }
+
     load(name) {
         try {
             if (this.removeListeners)
@@ -39,6 +48,8 @@ class Manager {
             if (typeof mod.init == 'function') mod.init();
             if (mod.name !== undefined) name = mod.name;
             this.list[name] = mod;
+            for (const alias of mod.aliases || [])
+                this.aliases[alias] = name;
             return true;
         } catch (err) {
             console.error(err.stack);
@@ -48,10 +59,15 @@ class Manager {
     }
 
     unload(name) {
+        if (!this.list.hasOwnProperty(name))
+            name = this.aliases[name] || name;
         if (this.list.hasOwnProperty(name)) {
+            let mod = this.list[name];
             if (this.removeListeners)
                 bot.removeAllListeners(name);
             delete this.list[name];
+            for (const alias of mod.aliases || [])
+                delete this.aliases[alias];
             console.module('Unloaded ' + this.type + ' ' + name);
             return true;
         }

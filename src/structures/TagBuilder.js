@@ -109,6 +109,10 @@ class TagBuilder {
         return this.withProp('name', name);
     }
 
+    withAlias(...aliases) {
+        return this.withProp('alias', aliases);
+    }
+
     withArgs(args) {
         if (typeof args === 'function')
             args = args(ArgFactory);
