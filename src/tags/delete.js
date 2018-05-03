@@ -19,12 +19,12 @@ module.exports =
             'The message that triggered this will be deleted. {delete}',
             '(the message got deleted idk how to do examples for this)'
         )
-        .whenArgs(0, async function (subtag, context, args) { return await this.deleteMessage(subtag, context, context.channel.id, context.msg.id) })
-        .whenArgs(1, async function (subtag, context, args) { return await this.deleteMessage(subtag, context, context.channel.id, args[0]) })
-        .whenArgs(2, async function (subtag, context, args) { return await this.deleteMessage(subtag, context, args[0], args[1]) })
+        .whenArgs(0, async function (subtag, context, args) { return await this.deleteMessage(subtag, context, context.channel.id, context.msg.id); })
+        .whenArgs(1, async function (subtag, context, args) { return await this.deleteMessage(subtag, context, context.channel.id, args[0]); })
+        .whenArgs(2, async function (subtag, context, args) { return await this.deleteMessage(subtag, context, args[0], args[1]); })
         .whenDefault(Builder.errors.tooManyArguments)
         .withProp('deleteMessage', async function (subtag, context, channelId, messageId) {
-            if (!await context.isStaff && context.state.ownedMsgs.indexOf(messageId) == -1)
+            if (!await context.isStaff && context.ownsMessage(messageId) == -1)
                 return Builder.util.error(subtag, context, 'Author must be staff to delete unrelated messages');
 
             let msg = context.msg,

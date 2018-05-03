@@ -34,9 +34,6 @@ module.exports =
             return await this.runEdit(subtag, context, context.channel, args[0], message, embed);
         })
         .whenArgs(3, async function (subtag, context, args) { //args = [(<messageId>,<text>,<embed>)|(<channelid>,<messageId>,<text|embed>)]
-            if (!await context.isStaff && context.state.ownedMsgs.indexOf(messageId) == -1)
-                return Builder.util.error(subtag, context, 'Author must be staff to edit unrelated messages');
-
             let channel = bu.parseChannel(args[0], true);
             if (channel == null) { //args = [<messageId>,<text>,<embed>]
                 let text = args[1],
@@ -62,6 +59,9 @@ module.exports =
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .withProp('runEdit', async function (subtag, context, channel, messageId, text, embed) {
+            if (!(await context.isStaff || context.ownsMessage(messageId)))
+                return Builder.util.error(subtag, context, 'Author must be staff to edit unrelated messages');
+
             if (channel == null)
                 return Builder.errors.noChannelFound(subtag, context);
             if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)
