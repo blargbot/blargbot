@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const colors = require('../../res/colors') || {};
+const colors = require('../../res/colors') || {},
+    emojiRegex = require('emoji-regex');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -145,14 +146,21 @@ bu.hasRole = (msg, roles, override = true) => {
     return false;
 };
 
-bu.addReactions = async function (channelId, messageId, reactions) {
-    for (const reaction of new Set(reactions || []))
+bu.addReactions = async function addReactions(channelId, messageId, reactions) {
+    let errored = [];
+    for (const reaction of new Set(reactions || [])) {
         try {
-            await bot.addMessageReaction(channelId, messageId, reaction.replace(/[<>]/g, ''));
+            await bot.addMessageReaction(channelId, messageId, reaction);
         } catch (e) {
-            console.error(e);
+            if (e.message == 'Unknown Emoji')
+                errored.push(reaction);
+            else
+                throw e;
         }
-};
+    }
+
+    return errored;
+}
 
 /**
  * Sends a message to discord.
@@ -1414,6 +1422,21 @@ bu.parseFloat = function (s) {
     if (typeof s != 'string') return parseFloat(s);
     //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
     return parseFloat(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'));
+};
+
+bu.findEmoji = function (text, distinct) {
+    if (typeof text != 'string') return [];
+    let match;
+    let result = [];
+
+    let regex = new RegExp(`${emojiRegex().source}|<a?:\\w+:\\d{17,23}>`, "gi");
+    while (match = regex.exec(text))
+        result.push(match[0].replace(/[<>]/g, ''));
+
+    if (distinct)
+        result = [...new Set(result)];
+
+    return result;
 };
 
 /**
