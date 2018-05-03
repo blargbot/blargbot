@@ -239,7 +239,7 @@ e.docs = async function (msg, command, topic) {
             if (tag.staff) embed.description += '**This subtag may only be used by staff members**\n';
             if (tag.category == bu.TagType.CCOMMAND) embed.description += '**This subtag may only be used within custom commands**\n';
             embed.description += '```\n{' + [tag.name, argFactory.toString(tag.args, argsOptions)].filter(t => t.length > 0).join(';') + '}```';
-            embed.description += tag.desc + '\n\u200B';
+            embed.description += tag.desc + '\n';
 
             embed.url += '/#' + encodeURIComponent(tag.name);
             embed.fields = [];
@@ -248,6 +248,8 @@ e.docs = async function (msg, command, topic) {
                     name: 'Aliases',
                     value: tag.aliases.join(', ') + '\n\u200B'
                 });
+            else
+                embed.description += '\u200B';
             if (tag.exampleCode)
                 embed.fields.push({
                     name: 'Example code',

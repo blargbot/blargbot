@@ -110,7 +110,7 @@ class TagBuilder {
     }
 
     withAlias(...aliases) {
-        return this.withProp('alias', aliases);
+        return this.withProp('aliases', aliases);
     }
 
     withArgs(args) {
