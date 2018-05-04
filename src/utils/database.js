@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-01 22:49:28
+ * @Last Modified time: 2018-05-03 21:53:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -219,6 +219,7 @@ const insertQuery = `
 `;
 
 bu.normalize = function (r) {
+    if (!r) throw new Error('No valid message was provided.');
     let n = {};
     for (const key in r) {
         if (r[key] !== null && typeof r[key] === 'object' && r[key].toJSON)
@@ -226,7 +227,12 @@ bu.normalize = function (r) {
         else if (typeof r[key] !== 'function') n[key] = r[key];
     }
     n.msgtime = new Date(n.msgtime);
-    n.embeds = JSON.parse(n.embeds);
+    try {
+        n.embeds = JSON.parse(n.embeds);
+    } catch (err) {
+        console.log(r, n);
+        console.error(err);
+    }
     return n;
 }
 bu.getChatlog = async function (id) {
@@ -242,7 +248,6 @@ bu.getChatlog = async function (id) {
 
 bu.insertChatlog = async function (msg, type) {
     if (msg.channel.id != '204404225914961920') {
-        console.log(type, msg.content);
         let data = {
             id: bu.makeSnowflake(),
             content: msg.content,

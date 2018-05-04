@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-01 23:07:25
+ * @Last Modified time: 2018-05-03 21:56:39
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -45,10 +45,9 @@ router.post('/', async (req, res) => {
     } else {
         let messages = [];
         for (const id of logsSpecs.ids) {
-            let r = await bu.cclient.execute(`SELECT * FROM chatlogs WHERE id = ?`, [id], { prepare: true });
+            let r = await bu.cclient.execute(`SELECT * FROM ${hash.startsWith('beta') ? 'blargbot_beta' : 'blargbot'}.chatlogs WHERE id = ?`, [id], { prepare: true });
             messages.push(bu.normalize(r.rows[0]));
         }
-        console.log(messages);
         // let messages = await r.db(db).table('chatlogs')
         //     .getAll(r.args(logsSpecs.ids), { index: 'msgid' })
         //     .eqJoin('userid', r.db(db).table('user'), {
@@ -56,7 +55,8 @@ router.post('/', async (req, res) => {
         //     }).zip().run();
 
         let userCache = {};
-        async function getUser(id) {
+        async function getUser(id = '1') {
+            if (!id) id = '1';
             let temp = await r.db(db).table('user').get(id);
             if (temp) {
                 userCache[id] = { username: temp.username, discriminator: temp.discriminator, bot: temp.isbot, avatarURL: temp.avatarURL };

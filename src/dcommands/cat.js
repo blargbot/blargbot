@@ -1,6 +1,6 @@
 var e = module.exports = {};
 const Wolken = require('wolken');
-const wolken = new Wolken(config.wolke, 'Wolke');
+const wolken = new Wolken(config.wolke, 'Wolke', 'blargbot/6.0.0');
 
 e.init = () => {
     e.category = bu.CommandType.IMAGE;
