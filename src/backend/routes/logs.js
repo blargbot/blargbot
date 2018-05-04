@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-01 23:07:25
+ * @Last Modified time: 2018-05-03 21:40:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
         //     }).zip().run();
 
         let userCache = {};
-        async function getUser(id) {
+        async function getUser(id = '') {
             let temp = await r.db(db).table('user').get(id);
             if (temp) {
                 userCache[id] = { username: temp.username, discriminator: temp.discriminator, bot: temp.isbot, avatarURL: temp.avatarURL };
