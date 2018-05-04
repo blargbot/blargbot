@@ -24,7 +24,7 @@ module.exports =
         .whenArgs(2, async function (subtag, context, args) { return await this.deleteMessage(subtag, context, args[0], args[1]); })
         .whenDefault(Builder.errors.tooManyArguments)
         .withProp('deleteMessage', async function (subtag, context, channelId, messageId) {
-            if (!await context.isStaff && context.ownsMessage(messageId) == -1)
+            if (!(await context.isStaff || context.ownsMessage(messageId)))
                 return Builder.util.error(subtag, context, 'Author must be staff to delete unrelated messages');
 
             let msg = context.msg,
