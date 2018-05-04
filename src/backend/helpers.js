@@ -151,7 +151,6 @@ e.init = () => {
         for (let i = 0; i < keys.length; i++) {
             let subtag = tags[keys[i]];
             if (subtag.category != lastType) {
-                console.debug(subtag);
                 lastType = subtag.category;
                 if (lastType == 1) {
                     toReturn += `
@@ -160,7 +159,7 @@ e.init = () => {
         <h2 id='${lastType}' class='white-text'>${tagType[lastType]}</h2>
     </div>
         <div class="col s10 offset-s1 m10 offset-m1 l10 offset-l1">
-            <p class="centre">These tags are just simple replaces, and don't take any arguments.</p>
+            <p class="centre">These subtags are just simple replaces, and don't take any arguments.</p>
         </div>
     </div><div class="row">
         <div class="col s12 m10 offset-m1 l10 offset-l1">
@@ -175,7 +174,7 @@ e.init = () => {
             <h2 class='white-text'>Complex</h2>
         </div>
     <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
-        <p class="centre">These tags are more powerful.<br>
+        <p class="centre">These subtags are more powerful.<br>
             &lt;&gt; - denotes required arguments<br>
             [] - denotes optional arguments<br>
             ... - denotes one or more arguments </p>
@@ -202,7 +201,8 @@ e.init = () => {
             let colour = 'blue-grey darken-2';
             if (subtag.deprecated) colour = 'red darken-4';
             toReturn += `<div class="card ${colour}"><div class="card-content">`;
-            toReturn += `<h4 id='${keys[i]}'>${keys[i]}</h4>`;
+            let aliasBlock = subtag.aliases ? ` <small>(${subtag.aliases.join(', ')})</small>` : '';
+            toReturn += `<h4 id='${keys[i]}'>${keys[i]}${aliasBlock}</h4>`;
             if (subtag.deprecated) {
                 toReturn += `<p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${
                     typeof subtag.deprecated === 'string' ? 'Please use ' + subtag.deprecated + ' instead' : ''
