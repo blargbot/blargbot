@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 14:41:10
+ * @Last Modified time: 2018-05-06 14:08:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1497,7 +1497,7 @@ bu.compare = function (a, b) {
 
 bu.toBlocks = function (text) {
     let regex = /[-+]?\d+(?:\.\d*)?(?:e\+?\d+)?/g;
-    let numbers = text.match(regex);
+    let numbers = text.match(regex) || [];
     let words = text.split(regex);
 
     let result = [];
