@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 14:41:10
+ * @Last Modified time: 2018-05-06 14:08:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1473,11 +1473,11 @@ bu.compare = function (a, b) {
     for (const pair of pairs) {
         //If they are already identical, no need to keep checking.
         if (pair[0] == pair[1]) continue;
-        if (typeof pair[0] == 'number') result += 1;
-        if (typeof pair[1] == 'number') result -= 1;
+        if (typeof pair[0] == 'number') result -= 1;
+        if (typeof pair[1] == 'number') result += 1;
         if (result) return result; //Only one of them is a number
 
-        if (pair[0] > pair[0]) return 1;
+        if (pair[0] > pair[1]) return 1;
         if (pair[0] < pair[1]) return -1;
 
         //They are not equal, they are not bigger or smaller than eachother.
@@ -1495,7 +1495,7 @@ bu.compare = function (a, b) {
 
 bu.toBlocks = function (text) {
     let regex = /[-+]?\d+(?:\.\d*)?(?:e\+?\d+)?/g;
-    let numbers = text.match(regex);
+    let numbers = text.match(regex) || [];
     let words = text.split(regex);
 
     let result = [];
