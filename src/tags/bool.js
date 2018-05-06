@@ -2,19 +2,19 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:27:16
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-12 18:53:46
+ * @Last Modified time: 2018-05-06 14:03:50
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const Builder = require('../structures/TagBuilder'),
     operators = {
-        '==': (a, b) => bu.customCompare(a, b) == 0,
-        '!=': (a, b) => bu.customCompare(a, b) != 0,
-        '>=': (a, b) => bu.customCompare(a, b) >= 0,
-        '>': (a, b) => bu.customCompare(a, b) > 0,
-        '<=': (a, b) => bu.customCompare(a, b) <= 0,
-        '<': (a, b) => bu.customCompare(a, b) < 0,
+        '==': (a, b) => bu.compare(a, b) == 0,
+        '!=': (a, b) => bu.compare(a, b) != 0,
+        '>=': (a, b) => bu.compare(a, b) >= 0,
+        '>': (a, b) => bu.compare(a, b) > 0,
+        '<=': (a, b) => bu.compare(a, b) <= 0,
+        '<': (a, b) => bu.compare(a, b) < 0,
         'startswith': (a, b) => tryArray(a).startsWith(b),
         'endswith': (a, b) => tryArray(a).endsWith(b),
         'includes': (a, b) => tryArray(a).includes(b)
