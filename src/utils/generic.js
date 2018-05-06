@@ -1471,24 +1471,22 @@ bu.compare = function (a, b) {
     let result = null;
 
     for (const pair of pairs) {
-        if (typeof pair[0] == 'number') result += 1;
-        if (typeof pair[1] == 'number') result -= 1;
-        if (result) return result; //One of them is a number
+        //If they are already identical, no need to keep checking.
+        if (pair[0] == pair[1]) continue;
+        if (typeof pair[0] == 'number') result -= 1;
+        if (typeof pair[1] == 'number') result += 1;
+        if (result) return result; //Only one of them is a number
 
-        if (result !== null) { //They are both numbers
-            if (pair[0] == pair[1]) continue;
-            if (pair[0] > pair[1]) return 1;
-            if (pair[0] < pair[1]) return -1;
-            //One or both is NaN
-            if (isNaN(pair[0])) result -= 1;
-            if (isNaN(pair[1])) result += 1;
-            if (result) return result;
-            continue;
-        }
-
-        //Neither are numbers, do a normal string compare
+        if (pair[0] > pair[1]) return 1;
         if (pair[0] < pair[1]) return -1;
-        if (pair[0] > pair[0]) return 1;
+
+        //They are not equal, they are not bigger or smaller than eachother.
+        //They are strings or numbers. Only NaN satisfies this condition
+        if (isNaN(pair[0])) result -= 1;
+        if (isNaN(pair[1])) result += 1;
+        if (result) return result;
+
+        //They are both NaN, so continue checking
     }
 
     //All pairs are identical
