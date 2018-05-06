@@ -42,12 +42,14 @@ module.exports =
                 return Builder.errors.channelNotInGuild(subtag, context);
 
             // Check that the current first "emote" is a message id
-            try {
-                message = await bot.getMessage(channel.id, emotes[0]);
-            } catch (e) { }
-            if (message == null)
-                return Builder.errors.noMessageFound(subtag, context);
-            emotes.shift();
+            if (/^\d{17,23}$/.test(emotes[0])) {
+                try {
+                    message = await bot.getMessage(channel.id, emotes[0]);
+                } catch (e) { }
+                if (message == null)
+                    return Builder.errors.noMessageFound(subtag, context);
+                emotes.shift();
+            }
 
             // Find all actual emotes in remaining emotes
             let parsed = bu.findEmoji(emotes.join('|'), true);
