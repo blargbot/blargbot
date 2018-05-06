@@ -8,14 +8,13 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' }),
     operators = {
-        '==': (a, b) => fixedCompare(a, b) == 0,
-        '!=': (a, b) => fixedCompare(a, b) != 0,
-        '>=': (a, b) => fixedCompare(a, b) >= 0,
-        '>': (a, b) => fixedCompare(a, b) > 0,
-        '<=': (a, b) => fixedCompare(a, b) <= 0,
-        '<': (a, b) => fixedCompare(a, b) < 0,
+        '==': (a, b) => bu.customCompare(a, b) == 0,
+        '!=': (a, b) => bu.customCompare(a, b) != 0,
+        '>=': (a, b) => bu.customCompare(a, b) >= 0,
+        '>': (a, b) => bu.customCompare(a, b) > 0,
+        '<=': (a, b) => bu.customCompare(a, b) <= 0,
+        '<': (a, b) => bu.customCompare(a, b) < 0,
         'startswith': (a, b) => tryArray(a).startsWith(b),
         'endswith': (a, b) => tryArray(a).endsWith(b),
         'includes': (a, b) => tryArray(a).includes(b)
@@ -32,16 +31,6 @@ function tryArray(text) {
             includes(value) { return this.value.find(v => v == value) != null; }
         };
     return text;
-}
-
-function fixedCompare(a, b) {
-    let aNeg = ('' + a).match(/^\s*-\d/),
-        bNeg = ('' + b).match(/^\s*-\d/);
-
-    if (aNeg && bNeg) return collator.compare(b, a);
-    if (aNeg) return -1;
-    if (bNeg) return 1;
-    return collator.compare(a, b);
 }
 
 module.exports =
@@ -88,5 +77,4 @@ module.exports =
             return this.operators[opKey](left, right);
         })
         .withProp("operators", operators)
-        .withProp("compare", fixedCompare)
         .build();

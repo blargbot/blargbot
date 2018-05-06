@@ -30,9 +30,7 @@ module.exports =
             if (arr == null || !Array.isArray(arr.v))
                 return Builder.errors.notAnArray(subtag, context);
 
-            let sorter = TagManager.list['bool'];
-
-            arr.v = arr.v.sort(sorter.compare);
+            arr.v = arr.v.sort(bu.compare);
             if (descending) arr.v.reverse();
 
             if (!arr.n)
