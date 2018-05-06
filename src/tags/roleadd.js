@@ -12,6 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.CCommandTag('roleadd')
         .requireStaff()
+        .withAlias('addrole')
         .withArgs(a => [a.require('role'), a.optional('user'), a.optional('quiet')])
         .withDesc('Gives `user` the chosen `role`, where `role` is a role ID or mention. ' +
             'You can find a list of roles and their ids by doing `b!roles`. ' +
