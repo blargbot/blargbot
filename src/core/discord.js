@@ -180,7 +180,8 @@ process.on('message', async msg => {
                                 deprecated: t.deprecated,
                                 returns: t.returns,
                                 errors: t.errors,
-                                staff: t.staff
+                                staff: t.staff,
+                                aliases: t.aliases
                             };
                         }
                     }

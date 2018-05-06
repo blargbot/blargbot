@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const colors = require('../../res/colors') || {};
+const colors = require('../../res/colors') || {},
+    emojiRegex = require('emoji-regex');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -145,14 +146,21 @@ bu.hasRole = (msg, roles, override = true) => {
     return false;
 };
 
-bu.addReactions = async function (channelId, messageId, reactions) {
-    for (const reaction of new Set(reactions || []))
+bu.addReactions = async function addReactions(channelId, messageId, reactions) {
+    let errored = [];
+    for (const reaction of new Set(reactions || [])) {
         try {
-            await bot.addMessageReaction(channelId, messageId, reaction.replace(/[<>]/g, ''));
+            await bot.addMessageReaction(channelId, messageId, reaction);
         } catch (e) {
-            console.error(e);
+            if (e.message == 'Unknown Emoji')
+                errored.push(reaction);
+            else
+                throw e;
         }
-};
+    }
+
+    return errored;
+}
 
 /**
  * Sends a message to discord.
@@ -1416,6 +1424,21 @@ bu.parseFloat = function (s) {
     return parseFloat(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'));
 };
 
+bu.findEmoji = function (text, distinct) {
+    if (typeof text != 'string') return [];
+    let match;
+    let result = [];
+
+    let regex = new RegExp(`${emojiRegex().source}|<a?:\\w+:\\d{17,23}>`, "gi");
+    while (match = regex.exec(text))
+        result.push(match[0].replace(/[<>]/g, ''));
+
+    if (distinct)
+        result = [...new Set(result)];
+
+    return result;
+};
+
 /**
  * @template T
  * @param {T[]} values The values to group
@@ -1435,3 +1458,53 @@ bu.groupBy = function (values, selector) {
 
     return Object.keys(groups).map(k => groups[k]);
 };
+
+bu.compare = function (a, b) {
+    a = bu.toBlocks('' + a);
+    b = bu.toBlocks('' + b);
+
+    let pairs = [];
+    let max = Math.max(a.length, b.length);
+    for (let i = 0; i < max; i++)
+        pairs.push([a[i], b[i]]);
+
+    let result = null;
+
+    for (const pair of pairs) {
+        if (typeof pair[0] == 'number') result += 1;
+        if (typeof pair[1] == 'number') result -= 1;
+        if (result) return result; //One of them is a number
+
+        if (result !== null) { //They are both numbers
+            if (pair[0] == pair[1]) continue;
+            if (pair[0] > pair[1]) return 1;
+            if (pair[0] < pair[1]) return -1;
+            //One or both is NaN
+            if (isNaN(pair[0])) result -= 1;
+            if (isNaN(pair[1])) result += 1;
+            if (result) return result;
+            continue;
+        }
+
+        //Neither are numbers, do a normal string compare
+        if (pair[0] < pair[1]) return -1;
+        if (pair[0] > pair[0]) return 1;
+    }
+
+    //All pairs are identical
+    return 0;
+}
+
+bu.toBlocks = function (text) {
+    let regex = /[-+]?\d+(?:\.\d*)?(?:e\+?\d+)?/g;
+    let numbers = text.match(regex);
+    let words = text.split(regex);
+
+    let result = [];
+    let max = Math.max(numbers.length, words.length);
+    for (let i = 0; i < max; i++) {
+        if (words[i] !== undefined) result.push(words[i]);
+        if (numbers[i] !== undefined) result.push(parseFloat(numbers[i]));
+    }
+    return result;
+}

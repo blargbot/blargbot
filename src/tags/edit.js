@@ -11,7 +11,6 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.CCommandTag('edit')
-        .requireStaff()
         .withArgs(a => [a.optional('channelId'), a.require('messageId'), a.require([a.optional('text'), a.optional('embed')])])
         .withDesc('Edits `messageId` in `channelId` to say `text` or `embed`. ' +
             'Atleast one of `text` and `embed` is required. ' +
@@ -19,7 +18,7 @@ module.exports =
             'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.\n' +
             'Only messages created by the bot may be edited')
         .withExample(
-            'A message got edited: {edit;111111111111111111;New content;{buildembed;title:You\'re cool}}',
+            'A message got edited: {edit;111111111111111111;New content;{embedbuild;title:You\'re cool}}',
             '(the message got edited idk how to do examples for this)'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
@@ -35,7 +34,6 @@ module.exports =
             return await this.runEdit(subtag, context, context.channel, args[0], message, embed);
         })
         .whenArgs(3, async function (subtag, context, args) { //args = [(<messageId>,<text>,<embed>)|(<channelid>,<messageId>,<text|embed>)]
-
             let channel = bu.parseChannel(args[0], true);
             if (channel == null) { //args = [<messageId>,<text>,<embed>]
                 let text = args[1],
@@ -61,6 +59,9 @@ module.exports =
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .withProp('runEdit', async function (subtag, context, channel, messageId, text, embed) {
+            if (!(await context.isStaff || context.ownsMessage(messageId)))
+                return Builder.util.error(subtag, context, 'Author must be staff to edit unrelated messages');
+
             if (channel == null)
                 return Builder.errors.noChannelFound(subtag, context);
             if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)

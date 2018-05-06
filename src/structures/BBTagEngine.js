@@ -174,6 +174,7 @@ class Context {
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
         this.state = {
+            ownedMsgs: [],
             return: 0,
             stackSize: 0,
             repeats: 0,
@@ -187,6 +188,10 @@ class Context {
             break: 0,
             continue: 0
         };
+    }
+
+    ownsMessage(messageId) {
+        return messageId == this.msg.id || this.state.ownedMsgs.indexOf(messageId) != -1;
     }
 
     /**
@@ -426,7 +431,7 @@ async function execute(bbtag, context) {
             continue;
         }
         let name = await execute(subtag.children[0], context);
-        let definition = TagManager.list[name.toLowerCase()];
+        let definition = TagManager.get(name.toLowerCase());
         if (definition == null) {
             result.push(addError(subtag, context, 'Unknown subtag ' + name));
             continue;
@@ -439,7 +444,6 @@ async function execute(bbtag, context) {
             if (err instanceof RangeError) {
                 bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);
                 throw err;
-
             }
             result.push(addError(subtag, context, 'An internal server error has occurred'));
             bu.send('250859956989853696', {

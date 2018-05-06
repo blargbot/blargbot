@@ -10,11 +10,12 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('floor')
+    Builder.AutoTag('rounddown')
+        .withAlias('floor')
         .withArgs(a => a.require('number'))
         .withDesc('Rounds `number` down.')
         .withExample(
-            '{floor;1.23}',
+            '{rounddown;1.23}',
             '1'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)

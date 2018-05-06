@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
- * @Date: 2017-05-07 18:49:46
+ * @Date: 2017-05-07 18:51:46
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:49:46
+ * @Last Modified time: 2017-10-17 11:59:38
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,25 +10,22 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.ArrayTag('match')
+    Builder.AutoTag('regexsplit')
         .withArgs(a => [a.require('text'), a.require('regex')])
-        .withDesc('Returns an array of everything in `text` that matches `regex`.')
+        .withDesc('Splits the given text using the given `regex` as the split rule')
         .withExample(
-            '{match;I have $1 and 25 cents;/\\d+/g}',
-            '["1", "25"]'
+            '{regexsplit;Hello      there, I       am hungry;/[\\s,]+/}',
+            '["Hello","there","I","am","hungry"]'
         ).resolveArgs(0)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs(2, async function (subtag, context, args) {
-            let text = args[0],
-                regex;
-
+            let regex;
             try {
                 regex = bu.createRegExp(args[1].content);
-            }
-            catch (e) {
-                return Builder.errors.unsafeRegex(subtag, context);
+            } catch (e) {
+                return Builder.util.error(subtag, context, e);
             }
 
-            return bu.serializeTagArray(text.match(regex) || []);
+            return JSON.stringify(args[0].split(regex));
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

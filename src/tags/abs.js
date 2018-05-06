@@ -11,6 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('abs')
+        .withAlias('absolute')
         .acceptsArrays()
         .withArgs(a => a.require('number', true))
         .withDesc('Gets the absolute value of `number`. If multiple are supplied, then an array will be returned')
