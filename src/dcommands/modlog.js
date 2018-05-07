@@ -11,44 +11,44 @@ class ModlogCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-    if (words[1]) {
-        switch (words[1].toLowerCase()) {
-            case 'disable':
-                await bu.guildSettings.remove(msg.channel.guild.id, 'modlog');
-                bu.send(msg, 'Modlog disabled!');
-                break;
-            case 'clear':
-                var limit = 0;
-                if (words[2]) {
-                    limit = parseInt(words[2]);
-                    if (isNaN(limit)) {
-                        bu.send(msg, 'Invalid number of cases to clear');
-                        return;
+        if (words[1]) {
+            switch (words[1].toLowerCase()) {
+                case 'disable':
+                    await bu.guildSettings.remove(msg.channel.guild.id, 'modlog');
+                    bu.send(msg, 'Modlog disabled!');
+                    break;
+                case 'clear':
+                    var limit = 0;
+                    if (words[2]) {
+                        limit = parseInt(words[2]);
+                        if (isNaN(limit)) {
+                            bu.send(msg, 'Invalid number of cases to clear');
+                            return;
+                        }
                     }
-                }
 
 
-                let storedGuild = await bu.getGuild(msg.guild.id);
-                if (storedGuild && storedGuild.modlog.length > 0) {
-                    let index = storedGuild.modlog.length - limit;
-                    if (index < 0) {
-                        index = 0;
+                    let storedGuild = await bu.getGuild(msg.guild.id);
+                    if (storedGuild && storedGuild.modlog.length > 0) {
+                        let index = storedGuild.modlog.length - limit;
+                        if (index < 0) {
+                            index = 0;
+                        }
+                        let cases = storedGuild.modlog.splice(index);
+                        let messages = cases.map(m => m.msgid);
+                        let modlogChannel = await bu.guildSettings.get(msg.channel.guild.id, 'modlog');
+                        bot.deleteMessages(modlogChannel, messages);
+                        await r.table('guild').get(msg.channel.guild.id).update({
+                            modlog: storedGuild.modlog
+                        }).run();
+                        bu.send(msg, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
                     }
-                    let cases = storedGuild.modlog.splice(index);
-                    let messages = cases.map(m => m.msgid);
-                    let modlogChannel = await bu.guildSettings.get(msg.channel.guild.id, 'modlog');
-                    bot.deleteMessages(modlogChannel, messages);
-                    await r.table('guild').get(msg.channel.guild.id).update({
-                        modlog: storedGuild.modlog
-                    }).run();
-                    bu.send(msg, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
-                }
-                break;
+                    break;
+            }
+        } else {
+            await bu.guildSettings.set(msg.channel.guild.id, 'modlog', msg.channel.id);
+            bu.send(msg, 'Modlog channel set!');
         }
-    } else {
-        await bu.guildSettings.set(msg.channel.guild.id, 'modlog', msg.channel.id);
-        bu.send(msg, 'Modlog channel set!');
-    }
     }
 }
 

@@ -10,10 +10,10 @@ class ListCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-    if (msg.channel.id === config.discord.channel) {
-        reloadUserList();
-        bu.send(msg, 'Reloaded the user list! Check the channel topic.');
-    }
+        if (msg.channel.id === config.discord.channel) {
+            reloadUserList();
+            bu.send(msg, 'Reloaded the user list! Check the channel topic.');
+        }
     }
 }
 

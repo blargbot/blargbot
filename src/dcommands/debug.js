@@ -9,11 +9,11 @@ class DebugCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-    if (msg.author.id == bu.CAT_ID) {
-        let debug = console.toggleDebug();
-        if (debug) bu.send(msg, 'Debug logging is now enabled.');
-        else bu.send(msg, 'Debug logging is now disabled.');
-    }
+        if (msg.author.id == bu.CAT_ID) {
+            let debug = console.toggleDebug();
+            if (debug) bu.send(msg, 'Debug logging is now enabled.');
+            else bu.send(msg, 'Debug logging is now disabled.');
+        }
     }
 }
 

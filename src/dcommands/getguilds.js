@@ -24,21 +24,21 @@ class GetguildsCommand extends BaseCommand {
             var messages = [];
             var i = 0;
             messages.push(`Guilds (page ${i}):\n`);
-            gArray.forEach(function(guild) {
-                        var addTo = ` - ${guild.name} (${guild.id})${botRatio
-                ? ` ${Math.round(guild.members.filter(m2 => m2.user.bot).length / guild.memberCount * 100)}% Bots`
-                : ''}\n`;
-            if (messages[i].length + addTo.length > 2000) {
-                i++;
-                messages.push(`Guilds (page ${i}):\n`);
+            gArray.forEach(function (guild) {
+                var addTo = ` - ${guild.name} (${guild.id})${botRatio
+                    ? ` ${Math.round(guild.members.filter(m2 => m2.user.bot).length / guild.memberCount * 100)}% Bots`
+                    : ''}\n`;
+                if (messages[i].length + addTo.length > 2000) {
+                    i++;
+                    messages.push(`Guilds (page ${i}):\n`);
+                }
+                messages[i] += addTo;
+            });
+            for (i = 0; i < messages.length; i++) {
+                bu.send(msg, messages[i]);
             }
-            messages[i] += addTo;
-        });
-        for (i = 0; i < messages.length; i++) {
-            bu.send(msg, messages[i]);
-        }   
-        bu.send(msg, `${gArray.length} guilds total.`);
-    }
+            bu.send(msg, `${gArray.length} guilds total.`);
+        }
     }
 }
 

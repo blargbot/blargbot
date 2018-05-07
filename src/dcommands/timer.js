@@ -11,21 +11,21 @@ class TimerCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-    let duration = dep.moment.duration();
-    if (words.length > 0) duration = bu.parseDuration(words.join(' '));
-    if (duration.asMilliseconds() == 0) {
-        await bu.send(msg, `Hey, you didn't give me a period of time to set the timer to!
+        let duration = dep.moment.duration();
+        if (words.length > 0) duration = bu.parseDuration(words.join(' '));
+        if (duration.asMilliseconds() == 0) {
+            await bu.send(msg, `Hey, you didn't give me a period of time to set the timer to!
 Example: \`timer 1 day, two hours\``);
-    } else {
-        await r.table('events').insert({
-            type: 'timer',
-            user: msg.author.id,
-            channel: msg.channel.id,
-            starttime: r.epochTime(dep.moment().unix()),
-            endtime: r.epochTime(dep.moment().add(duration).unix())
-        });
-        await bu.send(msg, `:alarm_clock: Ok! The timer will go off ${duration.humanize(true)}! :alarm_clock: `);
-    }
+        } else {
+            await r.table('events').insert({
+                type: 'timer',
+                user: msg.author.id,
+                channel: msg.channel.id,
+                starttime: r.epochTime(dep.moment().unix()),
+                endtime: r.epochTime(dep.moment().add(duration).unix())
+            });
+            await bu.send(msg, `:alarm_clock: Ok! The timer will go off ${duration.humanize(true)}! :alarm_clock: `);
+        }
     }
 }
 

@@ -66,55 +66,55 @@ class RollCommand extends BaseCommand {
                     }
                     var newtotal = total - rolls[0];
                     message = `${message.substring(0, message.length - 2)}] > ${total < 10 && total > -10 ? ` ${total}` : total} - ${rolls[0]} > ${newtotal < 10 && newtotal > -10 ? ` ${newtotal}` : newtotal}\n`;
-            }
-            bu.send(msg, `${message}\n\`\`\``);
+                }
+                bu.send(msg, `${message}\n\`\`\``);
 
-            return;
-        }
-        if (words[1].indexOf('d') > -1) {
-            var dice = words[1].split('d');
-            max = dice[1];
-            message += `${dice[0]}d${max}`;
-            for (i = 0; i < dice[0]; i++) {
-                rollList[i] = bu.getRandomInt(1, max);
+                return;
+            }
+            if (words[1].indexOf('d') > -1) {
+                var dice = words[1].split('d');
+                max = dice[1];
+                message += `${dice[0]}d${max}`;
+                for (i = 0; i < dice[0]; i++) {
+                    rollList[i] = bu.getRandomInt(1, max);
+                }
+            } else {
+                max = words[1];
+                message += `1d${max}`;
+                rollList[0] = bu.getRandomInt(1, max);
             }
         } else {
-            max = words[1];
+            max = 20;
             message += `1d${max}`;
             rollList[0] = bu.getRandomInt(1, max);
         }
-    } else {
-        max = 20;
-        message += `1d${max}`;
-        rollList[0] = bu.getRandomInt(1, max);
-    }
-    message += ` - [`;
-    total = 0;
-    for (i = 0; i < rollList.length; i++) {
-        total += rollList[i];
-        message += `${rollList[i]}, `;
-    }
+        message += ` - [`;
+        total = 0;
+        for (i = 0; i < rollList.length; i++) {
+            total += rollList[i];
+            message += `${rollList[i]}, `;
+        }
 
-    message = message.substring(0, message.length - 2);
-    message += `] > ${total}`;
+        message = message.substring(0, message.length - 2);
+        message += `] > ${total}`;
 
-    if (words.length > 2) {
-        var newTotal = total + parseInt(words[2]);
-        message += ` + ${parseInt(words[2])} > ${newTotal}`;
-    }
+        if (words.length > 2) {
+            var newTotal = total + parseInt(words[2]);
+            message += ` + ${parseInt(words[2])} > ${newTotal}`;
+        }
 
-    if (msg.channel.id !== config.discord.channel) {
-        if (rollList.length == 1 && max == 20 && rollList[0] == 20) {
-            message += `\`\`\`diff
+        if (msg.channel.id !== config.discord.channel) {
+            if (rollList.length == 1 && max == 20 && rollList[0] == 20) {
+                message += `\`\`\`diff
 + NATURAL 20
 \`\`\``;
-        } else if (rollList.length == 1 && max > 1 && rollList[0] == 1) {
-            message += `\`\`\`diff
+            } else if (rollList.length == 1 && max > 1 && rollList[0] == 1) {
+                message += `\`\`\`diff
 - Natural 1...
 \`\`\``;
+            }
         }
-    }
-    bu.send(msg, message);
+        bu.send(msg, message);
     }
 }
 

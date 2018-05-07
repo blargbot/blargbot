@@ -11,24 +11,24 @@ class TimezoneCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-    let message;
-    if (words.length > 1) {
-        let code = words.slice(1).join(' ').toUpperCase();
-        let tz = dep.moment().tz(code);
-        if (tz.zoneAbbr() === '') {
-            message = 'Invalid parameters! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.';
+        let message;
+        if (words.length > 1) {
+            let code = words.slice(1).join(' ').toUpperCase();
+            let tz = dep.moment().tz(code);
+            if (tz.zoneAbbr() === '') {
+                message = 'Invalid parameters! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.';
+            } else {
+                message = `Ok, your timezone code is now set to \`${code}\`, which is equivalent to ${tz.format('z (Z)')}.`;
+                await r.table('user').get(msg.author.id).update({ timezone: code });
+            }
         } else {
-            message = `Ok, your timezone code is now set to \`${code}\`, which is equivalent to ${tz.format('z (Z)')}.`;
-            await r.table('user').get(msg.author.id).update({ timezone: code });
+            let storedUser = await r.table('user').get(msg.author.id);
+            if (!storedUser.timezone)
+                message = 'You haven\'t set a timezone yet.';
+            else
+                message = `Your stored timezone code is \`${storedUser.timezone}\`, which is equivalent to ${dep.moment().tz(storedUser.timezone).format('z (Z)')}.`
         }
-    } else {
-        let storedUser = await r.table('user').get(msg.author.id);
-        if (!storedUser.timezone)
-            message = 'You haven\'t set a timezone yet.';
-        else
-            message = `Your stored timezone code is \`${storedUser.timezone}\`, which is equivalent to ${dep.moment().tz(storedUser.timezone).format('z (Z)')}.`
-    }
-    await bu.send(msg, message);
+        await bu.send(msg, message);
     }
 }
 

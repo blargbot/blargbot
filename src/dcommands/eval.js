@@ -9,7 +9,7 @@ class EvalCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-    bot.eval(msg, text);
+        bot.eval(msg, text);
     }
 }
 

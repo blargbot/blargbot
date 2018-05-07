@@ -9,10 +9,10 @@ class ReloadCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-    if (msg.author.id === bu.CAT_ID) {
-        bu.emitter.emit('reloadConfig');
-        bu.send(msg, ':ok_hand:');
-    }
+        if (msg.author.id === bu.CAT_ID) {
+            bu.emitter.emit('reloadConfig');
+            bu.send(msg, ':ok_hand:');
+        }
     }
 }
 

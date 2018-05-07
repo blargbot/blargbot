@@ -11,29 +11,29 @@ class ChangelogCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-    let channelid = msg.channel.id;
-    if (msg.channelMentions.length > 0) channelid = msg.channelMentions[0];
+        let channelid = msg.channel.id;
+        if (msg.channelMentions.length > 0) channelid = msg.channelMentions[0];
 
-    let changelogs = await r.table('vars').get('changelog');
-    if (!changelogs) {
-        await r.table('vars').insert({
-            varname: 'changelog',
-            guilds: {}
-        });
-        changelogs = {
-            guilds: {}
-        };
-    }
+        let changelogs = await r.table('vars').get('changelog');
+        if (!changelogs) {
+            await r.table('vars').insert({
+                varname: 'changelog',
+                guilds: {}
+            });
+            changelogs = {
+                guilds: {}
+            };
+        }
 
-    if (changelogs.guilds[msg.guild.id] == msg.channel.id) {
-        changelogs.guilds[msg.guild.id] = undefined;
-        await bu.send(msg, `You will no longer receive changelog notifications.`);
-    } else {
-        changelogs.guilds[msg.guild.id] = msg.channel.id;
-        await bu.send(msg, `You will now receive changelog notifications in this channel.`);
-    }
+        if (changelogs.guilds[msg.guild.id] == msg.channel.id) {
+            changelogs.guilds[msg.guild.id] = undefined;
+            await bu.send(msg, `You will no longer receive changelog notifications.`);
+        } else {
+            changelogs.guilds[msg.guild.id] = msg.channel.id;
+            await bu.send(msg, `You will now receive changelog notifications in this channel.`);
+        }
 
-    await r.table('vars').get('changelog').replace(changelogs).run();
+        await r.table('vars').get('changelog').replace(changelogs).run();
     }
 }
 

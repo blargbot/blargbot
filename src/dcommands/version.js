@@ -11,7 +11,7 @@ class VersionCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-    bu.send(msg, `I am running blargbot version ${await bu.getVersion()}!`);
+        bu.send(msg, `I am running blargbot version ${await bu.getVersion()}!`);
     }
 }
 
