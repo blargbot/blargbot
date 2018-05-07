@@ -20,6 +20,10 @@ let titan;
 setInterval(reload, 60 * 60 * 1000);
 reload();
 
+function pad(value, length) {
+    return (value.toString().length < length) ? pad(' ' + value, length) : value;
+}
+
 class InfoCommand extends BaseCommand {
     constructor() {
         super({

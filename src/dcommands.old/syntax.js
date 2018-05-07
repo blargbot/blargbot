@@ -28,7 +28,7 @@ const separators = [
     ' '
 ];
 
-e.execute = async function(msg, words, text) {
+e.execute = async function (msg, words, text) {
     let command = 'syntax';
     if (words[1]) {
         command = words.slice(1).join(' ').replace(/\n/g, ' ').replace(/\s+/g, ' ');

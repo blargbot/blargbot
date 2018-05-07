@@ -1,5 +1,16 @@
 const BaseCommand = require('../structures/BaseCommand');
 
+const logLogChannel = '254034744134598676';
+
+async function deleteLogs() {
+    const date = bu.makeSnowflake(Date.now() - (7 * 24 * 60 * 60 * 1000));
+    return await r.table('chatlogs')
+        .between(r.minval, date, {
+            index: 'id'
+        }).delete().run();
+}
+
+
 class PurgelogsCommand extends BaseCommand {
     constructor() {
         super({

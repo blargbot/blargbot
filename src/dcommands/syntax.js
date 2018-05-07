@@ -16,6 +16,32 @@ const separators = [
     ' '
 ];
 
+
+function getToken(iteration) {
+    iteration = iteration || 0;
+    iteration++;
+    let type = bu.getRandomInt(0, 7);
+    let token;
+    let bracket = getElement(brackets);
+    if (type == 0 && iteration < 4) {
+        while (bracket[0] == '') bracket = getElement(brackets);
+        let mTokens = [];
+        for (let i = 0; i < bu.getRandomInt(2, 4); i++) {
+            mTokens.push(getToken(iteration));
+        }
+        token = `${bracket[0]}${mTokens.join(getElement(separators))}${bracket[1]}`;
+    } else {
+        if (bracket[0] == '') token = getElement(keywords);
+        else token = getElement(tokens);
+        token = `${bracket[0]}${token}${bracket[1]}`;
+    }
+    return token;
+}
+
+function getElement(array) {
+    return array[bu.getRandomInt(0, array.length - 1)];
+}
+
 class SyntaxCommand extends BaseCommand {
     constructor() {
         super({

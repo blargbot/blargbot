@@ -115,4 +115,15 @@ ${message}`;
     }
 }
 
+function getTopRole(member) {
+    let role = member.guild.roles.get(member.roles.sort((a, b) => {
+        let thing = 0;
+        if (member.guild.roles.get(a).color > 0) thing -= 9999999;
+        if (member.guild.roles.get(b).color > 0) thing += 9999999;
+        thing += member.guild.roles.get(b).position - member.guild.roles.get(a).position;
+        return thing;
+    })[0]);
+    return role;
+};
+
 module.exports = AnnounceCommand;

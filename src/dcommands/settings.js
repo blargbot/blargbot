@@ -1,5 +1,99 @@
 const BaseCommand = require('../structures/BaseCommand');
 
+bu.settings = {
+    makelogs: {
+        name: 'Make Chatlogs',
+        desc: `Whether to record chat logs or not.`,
+        type: 'bool'
+    },
+    cahnsfw: {
+        name: 'Is CAH NSFW',
+        desc: `Whether 'cah' can only be done in nsfw channels or not.`,
+        type: 'bool'
+    },
+    deletenotif: {
+        name: 'Delete Notifications',
+        desc: `If enabled, notifies you if a user deleted their command.`,
+        type: 'bool'
+    },
+    greeting: {
+        name: 'Greeting Message',
+        desc: `What to say to new users when they join. You can also use the <code>greet</code> command`,
+        type: 'string'
+    },
+    farewell: {
+        name: 'Farewell Message',
+        desc: `What to say when a user leaves. You can also use the <code>farewell</code> command`,
+        type: 'string'
+    },
+    modlog: {
+        name: 'Modlog Channel',
+        desc: `The id of the modlog channel. You can also use the <code>modlog</code> command`,
+        type: 'string'
+    },
+    mutedrole: {
+        name: 'Muted Role',
+        desc: `The id of the muted role.`,
+        type: 'string'
+    },
+    tableflip: {
+        name: 'Tableflips',
+        desc: `Whether the bot should respond to tableflips/unflips.`,
+        type: 'bool'
+    },
+    antimention: {
+        name: 'Anti-Mention',
+        desc: `The number of unique mentions required to warrant a ban (for anti-mention spam). Set to '0' to disable. Recommended: 25`,
+        type: 'int'
+    },
+    dmhelp: {
+        name: 'DM Help',
+        desc: `Whether or not to dm help messages or output them in channels`,
+        type: 'bool'
+    },
+    permoverride: {
+        name: 'Permission Override',
+        desc: `Whether or not specific permissions override role requirement`,
+        type: 'bool'
+    },
+    staffperms: {
+        name: 'Staff Permissions',
+        desc: `The numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <a href=https://discordapi.com/permissions.html>here</a> for a permission calculator.`,
+        type: 'int'
+    },
+    kickoverride: {
+        name: 'Kick Override',
+        desc: `Same as staffperms, but allows users to use the kick command regardless of permissions`,
+        type: 'int'
+    },
+    banoverride: {
+        name: 'Ban Override',
+        desc: `Same as staffperms, but allows users to use the ban/hackban/unban commands regardless of permissions`,
+        type: 'int'
+    },
+    banat: {
+        name: 'Ban At',
+        desc: 'The number of warnings before a ban. Set to 0 or below to disable.',
+        type: 'int'
+    },
+    kickat: {
+        name: 'Kick At',
+        desc: 'The number of warnings before a kick. Set to 0 or below to disable.',
+        type: 'int'
+    },
+    adminrole: {
+        name: 'Admin Role Name',
+        desc: 'The name of the Admin role.',
+        type: 'string'
+    },
+    nocleverbot: {
+        name: 'No Cleverbot',
+        desc: 'Disables cleverbot functionality',
+        type: 'bool'
+    }
+};
+
+
 class SettingsCommand extends BaseCommand {
     constructor() {
         super({

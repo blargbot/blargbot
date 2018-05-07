@@ -1,5 +1,17 @@
 const BaseCommand = require('../structures/BaseCommand');
 
+function pad(value, length) {
+    return (value.toString().length < length) ? pad(' ' + value, length) : value;
+}
+
+function compareStats(a, b) {
+    if (a[1] < b[1])
+        return 1;
+    if (a[1] > b[1])
+        return -1;
+    return 0;
+}
+
 class StatsCommand extends BaseCommand {
     constructor() {
         super({

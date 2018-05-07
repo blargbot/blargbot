@@ -1,5 +1,13 @@
 const BaseCommand = require('../structures/BaseCommand');
 
+function getName(member) {
+    return member.user.username + '#' + member.user.discriminator;
+}
+
+function pad(value, length) {
+    return (value.toString().length < length) ? pad(value + ' ', length) : value;
+}
+
 class ModsCommand extends BaseCommand {
     constructor() {
         super({

@@ -1,5 +1,18 @@
 const BaseCommand = require('../structures/BaseCommand');
 
+var defaultOption = async function (msg, storedUser) {
+    let todo = storedUser.todo.filter(m => m.active == 1);
+    if (todo.length > 0) {
+        var list = 'Here\'s your to-do list!\n';
+        for (let i = 0; i < todo.length; i++) {
+            list += `**${i}**. ${todo[i].content}\n`;
+        }
+        bu.send(msg, await bu.filterMentions(list));
+    } else {
+        bu.send(msg, 'You have nothing on your list!');
+    }
+};
+
 class TodoCommand extends BaseCommand {
     constructor() {
         super({

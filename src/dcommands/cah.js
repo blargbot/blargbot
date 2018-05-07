@@ -11,6 +11,24 @@ class CahCommand extends BaseCommand {
             usage: 'cah',
             info: 'Generates a set of CAH cards.'
         });
+
+        if (dep.fs.existsSync(dep.path.join(__dirname, '..', '..', 'res', 'cah.json'))) {
+            cah = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, '..', '..', 'res', 'cah.json'), 'utf8'));
+        }
+
+        dep.request('https://api.cardcastgame.com/v1/decks/JJDFG/cards', (err, res, body) => {
+            try {
+                let tempCad = JSON.parse(body);
+                cad.black = tempCad.calls.map(m => {
+                    return m.text.join('______');
+                });
+                cad.white = tempCad.responses.map(m => {
+                    return m.text.join('______');
+                });
+            } catch (err) {
+                console.log(err.stack);
+            }
+        });
     }
 
     async execute(msg, words, text) {
