@@ -12,7 +12,7 @@ class BlacklistCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         let channelids = [];
-        if (msg.channelMentions.length <= 0) channelids.push(msg.channel.id);
+        if (msg.channelMentions.length === 0) channelids.push(msg.channel.id);
         else channelids = msg.channelMentions;
 
         let storedGuild = await bu.getGuild(msg.guild.id);
