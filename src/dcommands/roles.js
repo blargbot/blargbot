@@ -10,7 +10,7 @@ e.requireCtx = require;
 e.hidden = false;
 e.usage = 'roles';
 e.info = 'Displays a list of roles and their IDs.';
-e.info = '<p>Displays a list of roles and their IDs.</p>';
+e.longinfo = '<p>Displays a list of roles and their IDs.</p>';
 
 
 e.execute = async function(msg) {
