@@ -86,7 +86,7 @@ ${flags}`;
             generalCommands.sort();
             commandsString += generalCommands.join(', ');
 
-            var onComplete = async function () {
+            var onComplete = async () => {
                 if (msg.channel.guild) {
                     let ccommands = storedGuild.ccommands;
                     //      console.debug(ccommands);
