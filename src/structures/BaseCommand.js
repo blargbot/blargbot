@@ -7,7 +7,7 @@ class BaseCommand {
         this.info = params.info || '';
         this.aliases = params.aliases || [];
         this.onlyOn = params.onlyOn || undefined;
-        this.flags = params.flags || {};
+        this.flags = params.flags || [];
     }
 
     get isCommand() {

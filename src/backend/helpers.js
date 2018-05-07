@@ -2,10 +2,13 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:35
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-02 15:26:11
+ * @Last Modified time: 2018-05-07 11:44:47
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+
+const showdown = require('showdown');
+const converter = new showdown.Converter();
 
 const argumentFactory = require('../structures/ArgumentFactory')
 let e = module.exports = {};
@@ -50,17 +53,7 @@ const tagType = {
 };
 
 function mdToHtml(text) {
-    return text
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/\n/g, '<br />')
-        .replace(/\r/g, '')
-        .replace(/`(.*?)`/g, function (match, content) {
-            return `<code>${content}</code>`;
-        })
-        .replace(/\[(.+?)\]\((.+?)\)/g, function (match, text, link) {
-            return `<a href='${link}'>${text}</a>`;
-        });
+    return converter.makeHtml(text).replace(/\n/g, '<br>');
 }
 
 function addSubtagReferences(text) {
@@ -264,9 +257,9 @@ e.init = () => {
                 toReturn += `<span class='card-title'>${keys[i]}</span>`;
                 toReturn += `<p>Usage: <pre style="margin: 0" class="wrap"><code>${commands[keys[i]].usage.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></p>`;
                 toReturn += `<p>Role Needed: ${commandType.perms[commands[keys[i]].category]}</p>`;
-                toReturn += commands[keys[i]].longinfo;
+                toReturn += mdToHtml(commands[keys[i]].longinfo);
                 let flags = commands[keys[i]].flags;
-                if (flags) {
+                if (flags && flags.length > 0) {
                     toReturn += `<p>Flags:</p><ul>`;
                     for (let flag of flags) {
                         toReturn += `<li><code>-${flag.flag}</code>/<code>--${flag.word}</code> - ${flag.desc}</li>`;
