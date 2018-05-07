@@ -1,20 +1,20 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
+class DebugCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'debug',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
-
-e.execute = (msg, words, text) => {
+    async execute(msg, words, text) {
     if (msg.author.id == bu.CAT_ID) {
         let debug = console.toggleDebug();
         if (debug) bu.send(msg, 'Debug logging is now enabled.');
         else bu.send(msg, 'Debug logging is now disabled.');
     }
-};
+    }
+}
+
+module.exports = DebugCommand;

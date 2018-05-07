@@ -1,26 +1,20 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-
-
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
-
-e.requireCtx = require;
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'announce < <text> | flags >';
-e.info = 'Makes an annoucement to a configured role, or resets the announcement configuration.';
-e.longinfo = '<p>Makes an annoucement to a configured role, or resets the announcement configuration.</p>';
-e.flags = [
-    {
-        flag: 'r',
-        word: 'reset',
-        desc: 'Resets the announcement settings'
+class AnnounceCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'announce',
+            category: bu.CommandType.ADMIN,
+            usage: 'announce < <text> | flags >',
+            info: 'Makes an annoucement to a configured role, or resets the announcement configuration.',
+            flags: [ { flag: 'r',
+    word: 'reset',
+    desc: 'Resets the announcement settings' } ]
+        });
     }
-];
-e.execute = async function (msg, words) {
-    let input = bu.parseInput(e.flags, words);
+
+    async execute(msg, words, text) {
+    let input = bu.parseInput(this.flags, words);
     var changeChannel, roleId;
     let storedGuild = await bu.getGuild(msg.guild.id);
     if (input.r) {
@@ -116,17 +110,7 @@ ${message}`;
     } else {
         bu.send(msg, 'You have to tell me what to announce!');
     }
-};
+    }
+}
 
-
-function getTopRole(member) {
-    ;
-    let role = member.guild.roles.get(member.roles.sort((a, b) => {
-        let thing = 0;
-        if (member.guild.roles.get(a).color > 0) thing -= 9999999;
-        if (member.guild.roles.get(b).color > 0) thing += 9999999;
-        thing += member.guild.roles.get(b).position - member.guild.roles.get(a).position;
-        return thing;
-    })[0]);
-    return role;
-};
+module.exports = AnnounceCommand;

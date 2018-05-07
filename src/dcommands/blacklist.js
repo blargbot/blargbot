@@ -1,16 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
+class BlacklistCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'blacklist',
+            category: bu.CommandType.ADMIN,
+            usage: 'blacklist [channel]',
+            info: 'Blacklists the current channel, or the first channel that you mention. The bot will not respond until you do `blacklist` again.'
+        });
+    }
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'blacklist [channel]';
-e.info = 'Blacklists the current channel, or the first channel that you mention. The bot will not respond until you do `blacklist` again.';
-e.longinfo = `<p>Blacklists the current channel. The bot will not respond until you do the command again.</p>`;
-
-e.execute = async function(msg) {
+    async execute(msg, words, text) {
     let channelid = msg.channel.id;
     if (msg.channelMentions.length > 0) channelid = msg.channelMentions[0];
 
@@ -32,4 +32,7 @@ e.execute = async function(msg) {
     r.table('guild').get(msg.guild.id).update({
         channels: storedGuild.channels
     }).run();
-};
+    }
+}
+
+module.exports = BlacklistCommand;

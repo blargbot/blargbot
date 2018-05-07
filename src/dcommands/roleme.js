@@ -1,58 +1,35 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'roleme <list | add | remove | edit>';
-e.info = 'A roleme is a system to automatically give/remove roles to a user when they say a specific catchphrase. You can make these catchphrases anything you want, case sensitive/insensitive, and only activate in specific channels. The roleme command has three subcommands:\n\n**list**: lists all the rolemes active on the guild.\n**add**: adds a roleme to the guild. Just follow the instructions, or use flags.\n**remove**: returns a list of rolemes so you can choose one to remove.\n**edit**: modifies a roleme using the provided flags';
-e.long = `<p>A roleme is a system to automatically give/remove roles to a 
-user when they say a specific catchphrase. You can make these catchphrases 
-anything you want, case sensitive/insensitive, and only activate in 
-specific channels. The roleme command has three subcommands:</p>
-<ul><li>list: lists all the rolemes active on the guild.</li>
-<li>add: adds a roleme to the guild. Just follow the instructions.</li>
-<li>remove: returns a list of rolemes so you can choose one to remove.<\li>
-<li>edit: modifies a roleme using the provided flags</li></ul>`;
-
-e.flags = [{
-    flag: 'a',
+class RolemeCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'roleme',
+            category: bu.CommandType.ADMIN,
+            usage: 'roleme <list | add | remove | edit>',
+            info: 'A roleme is a system to automatically give/remove roles to a user when they say a specific catchphrase. You can make these catchphrases anything you want, case sensitive/insensitive, and only activate in specific channels. The roleme command has three subcommands:\n\n**list**: lists all the rolemes active on the guild.\n**add**: adds a roleme to the guild. Just follow the instructions, or use flags.\n**remove**: returns a list of rolemes so you can choose one to remove.\n**edit**: modifies a roleme using the provided flags',
+            flags: [ { flag: 'a',
     word: 'add',
-    desc: 'Add: A list of roles to add in the roleme'
-},
-{
-    flag: 'r',
+    desc: 'Add: A list of roles to add in the roleme' },
+  { flag: 'r',
     word: 'remove',
-    desc: 'Add: A list of roles to remove in the roleme'
-},
-{
-    flag: 'p',
+    desc: 'Add: A list of roles to remove in the roleme' },
+  { flag: 'p',
     word: 'phrase',
-    desc: 'Add: The phrase to respond to'
-},
-{
-    flag: 'C',
+    desc: 'Add: The phrase to respond to' },
+  { flag: 'C',
     word: 'case',
-    desc: 'Add: Whether the phrase is case sensitive'
-},
-{
-    flag: 'c',
+    desc: 'Add: Whether the phrase is case sensitive' },
+  { flag: 'c',
     word: 'channel',
-    desc: 'Add: The channels the roleme should be in'
-},
-{
-    flag: 'm',
+    desc: 'Add: The channels the roleme should be in' },
+  { flag: 'm',
     word: 'message',
-    desc: 'Add: The BBTag-compatible message to output on activation'
-}
-];
+    desc: 'Add: The BBTag-compatible message to output on activation' } ]
+        });
+    }
 
-e.execute = async function (msg, words) {
-    let input = bu.parseInput(e.flags, words);
+    async execute(msg, words, text) {
+    let input = bu.parseInput(this.flags, words);
     if (input.undefined[0]) {
         let storedGuild = await bu.getGuild(msg.guild.id);
         let roleme = storedGuild.roleme;
@@ -274,4 +251,7 @@ e.execute = async function (msg, words) {
     } else {
         bu.send(msg, e.info);
     }
-};
+    }
+}
+
+module.exports = RolemeCommand;

@@ -1,19 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
+class DmerrorsCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'dmerrors',
+            category: bu.CommandType.GENERAL,
+            usage: 'dmerrors',
+            info: 'Toggles whether to DM you errors.'
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'dmerrors';
-e.info = 'Toggles whether to DM you errors.';
-e.longinfo = `<p>Toggles whether to DM you errors.</p>`;
-
-
-e.execute = async function(msg) {
+    async execute(msg, words, text) {
     let storedUser = await r.table('user').get(msg.author.id);
 
     await r.table('user').get(msg.author.id).update({
@@ -24,4 +21,7 @@ e.execute = async function(msg) {
     } else {
         bu.send(msg, 'I won\'t DM you if I have an issue running a command.');
     }
-};
+    }
+}
+
+module.exports = DmerrorsCommand;

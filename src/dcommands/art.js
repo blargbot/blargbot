@@ -1,29 +1,18 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class ArtCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'art',
+            category: bu.CommandType.IMAGE,
+            usage: 'art [user]',
+            info: 'Shows everyone a work of art.',
+            flags: [ { flag: 'I', word: 'image', desc: 'A custom image.' } ]
+        });
+    }
 
-
-
-
-e.init = () => {
-    e.category = bu.CommandType.IMAGE;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'art [user]';
-e.info = `Shows everyone a work of art.`;
-e.longinfo = `<p>Shows everyone a work of art.</p>`;
-
-e.flags = [{
-    flag: 'I',
-    word: 'image',
-    desc: 'A custom image.'
-}];
-
-e.execute = async function (msg, words) {
-    let input = bu.parseInput(e.flags, words);
+    async execute(msg, words, text) {
+    let input = bu.parseInput(this.flags, words);
     let user = msg.author;
     let url;
     if (msg.attachments.length > 0) {
@@ -51,4 +40,7 @@ e.execute = async function (msg, words) {
         file: buffer,
         name: 'sobeautifulstan.png'
     });
-};
+    }
+}
+
+module.exports = ArtCommand;

@@ -1,18 +1,16 @@
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.requireCtx = require;
+class VotebanCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'voteban',
+            category: bu.CommandType.GENERAL,
+            usage: 'voteban [info <user> | <user> [reason]]',
+            info: 'Sign a petition to ban somebody, or check the status of a petition. If no arguments are provided, get the most signed petitions.'
+        });
+    }
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'voteban [info <user> | <user> [reason]]';
-e.info = 'Sign a petition to ban somebody, or check the status of a petition. If no arguments are provided, get the most signed petitions.';
-e.longinfo = '<p>Sign a petition to ban somebody, or check the status of a petition.</p>';
-e.alias = ['pollban', 'vb', 'pb'];
-
-e.execute = async function (msg, words, text) {
+    async execute(msg, words, text) {
     let storedGuild = await bu.getGuild(msg.guild.id);
     let votebans = storedGuild.votebans || {};
     if (words.length > 1) {
@@ -93,4 +91,7 @@ ${reason ? '**Reason:** ' + reason : ''}`);
         }
         bu.send(msg, returnMsg);
     }
-};
+    }
+}
+
+module.exports = VotebanCommand;

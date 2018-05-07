@@ -1,17 +1,14 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
+class RespondCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'respond',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
-
-e.execute = async function(msg, words) {
+    async execute(msg, words, text) {
     if (msg.author.id == bu.CAT_ID) {
         if (words.length >= 3) {
             let suggestion;
@@ -56,4 +53,7 @@ Your card has been updated here: <${suggestion.cardUrl}>`;
             }
         }
     }
-};
+    }
+}
+
+module.exports = RespondCommand;

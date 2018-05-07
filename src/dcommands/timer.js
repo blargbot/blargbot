@@ -1,21 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class TimerCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'timer',
+            category: bu.CommandType.GENERAL,
+            usage: 'timer <time>',
+            info: 'Sets a timer for the provided amount of time, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.'
+        });
+    }
 
-
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'timer <time>';
-e.info = 'Sets a timer for the provided amount of time, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.';
-e.longinfo = '<p>Sets a timer for the provided amount of time, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.</p>';
-e.alias = ['stopwatch'];
-
-e.execute = async function(msg, words, text) {
+    async execute(msg, words, text) {
     let duration = dep.moment.duration();
     if (words.length > 0) duration = bu.parseDuration(words.join(' '));
     if (duration.asMilliseconds() == 0) {
@@ -31,10 +26,7 @@ Example: \`timer 1 day, two hours\``);
         });
         await bu.send(msg, `:alarm_clock: Ok! The timer will go off ${duration.humanize(true)}! :alarm_clock: `);
     }
-};
+    }
+}
 
-e.event = async function(args) {
-    let duration = dep.moment.duration(dep.moment() - dep.moment(args.starttime));
-    duration.subtract(duration * 2);
-    bu.send(args.channel, `:alarm_clock: *Bzzt!* <@${args.user}>, the timer you set ${duration.humanize(true)} has gone off! *Bzzt!* :alarm_clock:`);
-};
+module.exports = TimerCommand;

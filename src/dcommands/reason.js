@@ -1,20 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class ReasonCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'reason',
+            category: bu.CommandType.ADMIN,
+            usage: 'reason <caseid | latest> <reason>',
+            info: 'Sets the reason for an action on the modlog.'
+        });
+    }
 
-
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'reason <caseid | latest> <reason>';
-e.info = 'Sets the reason for an action on the modlog.';
-e.longinfo = `<p>Sets the reason for an action on the modlog.</p>`;
-
-e.execute = async function (msg, words) {
+    async execute(msg, words, text) {
     let val = await bu.guildSettings.get(msg.channel.guild.id, 'modlog');
     if (val) {
         if (words.length >= 3) {
@@ -62,4 +58,7 @@ e.execute = async function (msg, words) {
             }
         }
     }
-};
+    }
+}
+
+module.exports = ReasonCommand;

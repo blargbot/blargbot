@@ -1,19 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class UpdateCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'update',
+            category: bu.CommandType.CAT,
+            usage: 'Yo shit waddup we\'re updating',
+            info: 'Does a git pull'
+        });
+    }
 
-
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'Yo shit waddup we\'re updating';
-e.info = 'Does a git pull';
-
-e.execute = (msg, words) => {
+    async execute(msg, words, text) {
     if (msg.author.id === bu.CAT_ID) {
 
         if (!config.general.isbeta) {
@@ -58,4 +55,7 @@ e.execute = (msg, words) => {
             bu.send(msg, `Whoa, you can't do that! This is the beta build!`);
         }
     }
-};
+    }
+}
+
+module.exports = UpdateCommand;

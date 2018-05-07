@@ -1,15 +1,14 @@
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
-e.requireCtx = require;
+const BaseCommand = require('../structures/BaseCommand');
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
+class GevalCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'geval',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.execute = async (msg, words, text) => {
+    async execute(msg, words, text) {
     if (msg.author.id === bu.CAT_ID) {
         let code = text.substring(words[0].length).trim();
         let res = await bot.sender.awaitMessage({
@@ -21,4 +20,7 @@ e.execute = async (msg, words, text) => {
         res.result = res.result.map(shard => `====[ ${shard.shard} ]====\n\n${shard.result}`);
         await bu.send(msg, 'Global eval result of input:\n```js\n' + code + '\n```', { name: 'eval.txt', file: res.result.join('\n\n') });
     }
-};
+    }
+}
+
+module.exports = GevalCommand;

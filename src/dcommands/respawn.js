@@ -1,15 +1,17 @@
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-e.requireCtx = require;
+const BaseCommand = require('../structures/BaseCommand');
 
-e.isCommand = true;
-e.hidden = true;
-e.usage = 'respawn <id> | all';
-e.info = 'Shard respawning only for staff.';
+class RespawnCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'respawn',
+            category: bu.CommandType.GENERAL,
+            hidden: true,
+            usage: 'respawn <id> | all',
+            info: 'Shard respawning only for staff.'
+        });
+    }
 
-e.execute = async (msg, words) => {
+    async execute(msg, words, text) {
     let police = (await r.table('vars').get('police')).value;
     if (police.includes(msg.author.id)) {
         console.log('aaa');
@@ -21,4 +23,7 @@ e.execute = async (msg, words) => {
         bot.sender.send('respawn', { id, channel: msg.channel.id });
         await bu.send(msg, 'ok shard ' + id + ' is being respawned and stuff now');
     }
-};
+    }
+}
+
+module.exports = RespawnCommand;

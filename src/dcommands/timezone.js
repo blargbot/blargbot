@@ -1,22 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class TimezoneCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'timezone',
+            category: bu.CommandType.GENERAL,
+            usage: 'time [timezone]',
+            info: 'Sets or retrieves your timezone. Timezones must use  the timezone codes listed here: <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>'
+        });
+    }
 
-
-
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'time [timezone]';
-e.info = 'Sets or retrieves your timezone. Timezones must use ' +
-    ' the timezone codes listed here: <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>';
-e.longinfo = `Sets or retrieves your timezone. Timezones must use
-        <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">these</a> timezone codes.</p>`;
-
-e.execute = async (msg, words) => {
+    async execute(msg, words, text) {
     let message;
     if (words.length > 1) {
         let code = words.slice(1).join(' ').toUpperCase();
@@ -35,4 +29,7 @@ e.execute = async (msg, words) => {
             message = `Your stored timezone code is \`${storedUser.timezone}\`, which is equivalent to ${dep.moment().tz(storedUser.timezone).format('z (Z)')}.`
     }
     await bu.send(msg, message);
-};
+    }
+}
+
+module.exports = TimezoneCommand;

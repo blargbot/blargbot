@@ -1,53 +1,39 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'tidy [amount] [flags]';
-e.info = 'Clears messages from chat. Defaults to 100.';
-e.longinfo = `<p>Cleans a number of messages, defaulting to 100.</p>`;
-
-e.flags = [{
-    flag: 'b',
-    word: 'bots',
-    desc: 'Remove messages from bots.'
-}, {
-    flag: 'i',
+class TidyCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'tidy',
+            category: bu.CommandType.ADMIN,
+            usage: 'tidy [amount] [flags]',
+            info: 'Clears messages from chat. Defaults to 100.',
+            flags: [ { flag: 'b', word: 'bots', desc: 'Remove messages from bots.' },
+  { flag: 'i',
     word: 'invites',
-    desc: 'Remove messages containing invites.'
-}, {
-    flag: 'l',
+    desc: 'Remove messages containing invites.' },
+  { flag: 'l',
     word: 'links',
-    desc: 'Remove messages containing links.'
-}, {
-    flag: 'e',
+    desc: 'Remove messages containing links.' },
+  { flag: 'e',
     word: 'embeds',
-    desc: 'Remove messages containing embeds.'
-}, {
-    flag: 'a',
+    desc: 'Remove messages containing embeds.' },
+  { flag: 'a',
     word: 'attachments',
-    desc: 'Remove messages containing attachments.'
-}, {
-    flag: 'u',
+    desc: 'Remove messages containing attachments.' },
+  { flag: 'u',
     word: 'user',
-    desc: 'Removes messages from the users specified, separated by commas.'
-}, {
-    flag: 'q',
+    desc: 'Removes messages from the users specified, separated by commas.' },
+  { flag: 'q',
     word: 'query',
-    desc: 'Removes messages that match the provided query. You can also use /regex/.'
-}, {
-    flag: 'I',
+    desc: 'Removes messages that match the provided query. You can also use /regex/.' },
+  { flag: 'I',
     word: 'invert',
-    desc: 'Reverses the effects of all the flag filters.'
-}];
+    desc: 'Reverses the effects of all the flag filters.' } ]
+        });
+    }
 
-e.execute = async function (msg, words) {
-    let input = bu.parseInput(e.flags, words);
+    async execute(msg, words, text) {
+    let input = bu.parseInput(this.flags, words);
     let userList;
     let query;
     if (input.q) {
@@ -141,4 +127,7 @@ e.execute = async function (msg, words) {
         bu.send(msg, 'I need to be able to Manage Messages to do that!');
         console.error(err);
     }
-};
+    }
+}
+
+module.exports = TidyCommand;

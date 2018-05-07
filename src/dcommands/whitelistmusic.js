@@ -1,17 +1,14 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
+class WhitelistmusicCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'whitelistmusic',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
-
-e.execute = (msg) => {
+    async execute(msg, words, text) {
     if (msg.author.id == bu.CAT_ID) {
         if (config.discord.musicGuilds[msg.channel.guild.id]) {
             config.discord.musicGuilds[msg.channel.guild.id] = false;
@@ -22,4 +19,7 @@ e.execute = (msg) => {
         }
     }
     bu.saveConfig();
-};
+    }
+}
+
+module.exports = WhitelistmusicCommand;

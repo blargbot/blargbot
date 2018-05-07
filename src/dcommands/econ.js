@@ -1,25 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class EconCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'econ',
+            category: bu.CommandType.GENERAL,
+            usage: 'econ <from> <to> <amount>',
+            info: 'Converts currency using recent rates.'
+        });
+    }
 
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'econ <from> <to> <amount>';
-e.info = 'Converts currency using recent rates.';
-e.longinfo = `<p>Converts currency using recent rates.
-        Example:</p>
-
-<pre><code>User&gt; blargbot econ USD CAD 1
-blargbot&gt; @User, 1.0 USD is equivalent to X.X CAD
-</code></pre>
-
-    <p>Currency codes are not case sensitive.</p>`;
-
-e.execute = async function(msg, words) {
+    async execute(msg, words, text) {
     if (words.length < 4) {
         bu.send(msg, 'Incorrect usage!\n`econ \<from> \<to> \<amount>`');
         return;
@@ -43,5 +34,7 @@ e.execute = async function(msg, words) {
     var converted = Math.round((convert * rates.rates[to]) * 100.0) / 100;
     var message = `${convert} ${from} is equivalent to ${converted} ${to}`;
     bu.send(msg, message);
+    }
+}
 
-};
+module.exports = EconCommand;

@@ -1,19 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
+class InsultCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'insult',
+            category: bu.CommandType.GENERAL,
+            usage: 'insult [name]',
+            info: 'Generates a random insult directed at the name supplied.'
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-
-e.hidden = false;
-e.usage = 'insult [name]';
-e.info = 'Generates a random insult directed at the name supplied.';
-e.longinfo = `<p>Generates an insult, directed at whatever name is supplied. If a name isn't supplied, defaults to 'Your'</p>`;
-
-e.execute = (msg, words) => {
+    async execute(msg, words, text) {
         var target = '';
         if (words.length === 1) {
             target = 'Your';
@@ -28,4 +25,7 @@ e.execute = (msg, words) => {
         var chosenAdje = config.insult.adjectives[(bu.getRandomInt(0, config.insult.adjectives.length - 1))];
         var message = `${target}${target == 'Your' ? `` : `'s`} ${chosenNoun} ${chosenVerb} ${chosenAdje}!`;
     bu.send(msg, message);
-};
+    }
+}
+
+module.exports = InsultCommand;

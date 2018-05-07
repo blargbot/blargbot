@@ -1,20 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
+class RollCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'roll',
+            category: bu.CommandType.GENERAL,
+            usage: 'roll [dice] [modifier]',
+            info: 'Rolls an amount of dice (ex. 1d20) and adds the modifier.'
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'roll [dice] [modifier]';
-e.info = 'Rolls an amount of dice (ex. 1d20) and adds the modifier.';
-e.longinfo = `<p>Rolls dice and adds a modifier. You can specify the number of dice and how many sides they have with the notation
-        <code>XdY</code>, where X is number of dice and Y is number of sides. If no dice are specified, it defaults to
-        <code>1d20</code>.</p>`;
-
-e.execute = (msg, words) => {
+    async execute(msg, words, text) {
         var message = ``;
         // if (bot === BotEnum.DISCORD) {
         message += `**${msg.author.username}**, `;
@@ -119,4 +115,7 @@ e.execute = (msg, words) => {
         }
     }
     bu.send(msg, message);
-};
+    }
+}
+
+module.exports = RollCommand;

@@ -1,18 +1,14 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class ExecCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'exec',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-
-e.hidden = false;
-e.usage = '';
-e.info = '';
-
-e.execute = (msg, words, text) => {
+    async execute(msg, words, text) {
     if (msg.author.id === bu.CAT_ID) {
         var commandToProcess = words.slice(1).join(' ');
         console.debug(commandToProcess);
@@ -39,4 +35,7 @@ ${err.stack}
             bu.send(msg, message);
         });
     }
-};
+    }
+}
+
+module.exports = ExecCommand;

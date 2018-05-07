@@ -1,49 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class EditcommandCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'editcommand',
+            category: bu.CommandType.ADMIN,
+            usage: 'editcommand < list \n    | setrole <commandname | "commandname,..."> [role name]... \n    | setperm <commandname | "commandname,..."> [perm number] \n    | toggle <commandname | "commandname,...">',
+            info: 'Changes command-specific usage permissions.\n\n**list** \nShows a list of modified commands (role required/perms required)\n\n**setrole**\nSets the role(s) required in order to use the command(s). Set to blank to disable the custom role requirement.\n\n**setperm** \nSets the permissions required in order to bypass the role requirement (requires `permoverride` in the settings command to be enabled). This has to be a permission number, which can be calculated at <https://discordapi.com/permissions.html>. Set to blank to disable the custom permission options.\n\n**toggle** \nEnables/disables the listed commands'
+        });
+    }
 
-
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.cannotDisable = true;
-e.usage = 'editcommand < list \n    | setrole <commandname | "commandname,..."> [role name]... \n    | setperm <commandname | "commandname,..."> [perm number] \n    | toggle <commandname | "commandname,...">';
-e.info = `Changes command-specific usage permissions.
-
-**list** 
-Shows a list of modified commands (role required/perms required)
-
-**setrole**
-Sets the role(s) required in order to use the command(s). Set to blank to disable the custom role requirement.
-
-**setperm** 
-Sets the permissions required in order to bypass the role requirement (requires \`permoverride\` in the settings command to be enabled). This has to be a permission number, which can be calculated at <https://discordapi.com/permissions.html>. Set to blank to disable the custom permission options.
-
-**toggle** 
-Enables/disables the listed commands`;
-e.longinfo = `<p>Changes command-specific usage permissions.</p>
-<table>
-<thead>
-<tr><th>argument</th>
-<th>description</th></tr>
-</thead>
-<tbody>
-<tr><th>list</th>
-<th>Shows a list of modified commands (role required/perms required)</th></tr>
-<tr><th>setrole</th>
-<th>Sets the role(s) required in order to use the command(s)</th></tr>
-<tr><th>setperm</th>
-<th>Sets the permissions required in order to bypass the role requirement (requires \`permoverride\` in the settings command to be enabled). This has to be a permission number, which can be calculated <a href="https://discordapi.com/permissions.html">here</a></th></tr>
-<tr><th>toggle</th>
-<th>Enables/disables the listed commands</th></tr>
-</tbody>
-</table>`;
-
-e.execute = async function (msg, words) {
+    async execute(msg, words, text) {
     if (words.length >= 2) {
         let commandName;
         let storedGuild;
@@ -209,5 +176,7 @@ e.execute = async function (msg, words) {
     } else {
         bu.send(msg, 'Not enough arguments provided!');
     }
+    }
+}
 
-};
+module.exports = EditcommandCommand;

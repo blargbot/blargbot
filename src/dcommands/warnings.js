@@ -1,19 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
+class WarningsCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'warnings',
+            category: bu.CommandType.GENERAL,
+            usage: 'warnings [user]',
+            info: 'Gets how many warnings you or a specified user has.'
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'warnings [user]';
-e.info = 'Gets how many warnings you or a specified user has.';
-e.longinfo = `<p>Gets how many warnings you or a specified user has.</p>`;
-
-
-e.execute = async function(msg, words) {
+    async execute(msg, words, text) {
     let user = msg.author;
     if (words.length > 1) {
         user = await bu.getUser(msg, words.slice(1).join(' '));
@@ -35,4 +32,7 @@ e.execute = async function(msg, words) {
         message += `\n - ${storedGuild.settings.banat - warnings} more warnings before being banned.`;
     }
     bu.send(msg, message);
-};
+    }
+}
+
+module.exports = WarningsCommand;

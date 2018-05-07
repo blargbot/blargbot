@@ -1,16 +1,14 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
+class GetguildsCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'getguilds',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.requireCtx = require;
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
-
-e.execute = (msg, words) => {
+    async execute(msg, words, text) {
         if (msg.author.id === bu.CAT_ID) {
             var gArray;
             var botRatio = false;
@@ -41,4 +39,7 @@ e.execute = (msg, words) => {
         }   
         bu.send(msg, `${gArray.length} guilds total.`);
     }
-};
+    }
+}
+
+module.exports = GetguildsCommand;

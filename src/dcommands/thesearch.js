@@ -1,18 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.IMAGE;
-};
+class ThesearchCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'thesearch',
+            category: bu.CommandType.IMAGE,
+            usage: 'thesearch [text]',
+            info: 'Tells everyone about the progress of the search for intelligent life.'
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'thesearch [text]';
-e.info = `Tells everyone about the progress of the search for intelligent life.`;
-e.longinfo = `<p>Tells everyone about the progress of the search for intelligent life.</p>`;
-
-e.execute = async function(msg, words) {
+    async execute(msg, words, text) {
     var shitText = 'I use betterdiscord';
     if (words[1]) shitText = words.slice(1).join(' ');
     shitText = await bu.filterMentions(shitText);
@@ -29,4 +27,7 @@ e.execute = async function(msg, words) {
         file: buffer,
         name: 'TheSearch.png'
     });
-};
+    }
+}
+
+module.exports = ThesearchCommand;

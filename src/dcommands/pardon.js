@@ -1,31 +1,21 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'pardon <user> [flags]';
-e.info = 'Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.';
-e.longinfo = `<p>Pardons a user.</p>
-    <p>If mod-logging is enabled, the pardon will be logged.</p>
-    <p>This will not unban users.</p>`;
-
-e.flags = [{
-    flag: 'r',
-    word: 'reason',
-    desc: 'The reason for the pardon.'
-}, {
-    flag: 'c',
+class PardonCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'pardon',
+            category: bu.CommandType.ADMIN,
+            usage: 'pardon <user> [flags]',
+            info: 'Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.',
+            flags: [ { flag: 'r', word: 'reason', desc: 'The reason for the pardon.' },
+  { flag: 'c',
     word: 'count',
-    desc: 'The number of warnings that will be removed.'
-}];
+    desc: 'The number of warnings that will be removed.' } ]
+        });
+    }
 
-e.execute = async function (msg, words) {
-    let input = bu.parseInput(e.flags, words);
+    async execute(msg, words, text) {
+    let input = bu.parseInput(this.flags, words);
     if (input.undefined.length == 0) {
         bu.send(msg, 'Not enough input. Do `b!help pardon` for usage instructions.');
         return;
@@ -44,4 +34,7 @@ e.execute = async function (msg, words) {
         inline: true
     }]);
     bu.send(msg, `:ok_hand: **${bu.getFullName(user)}** has been given ${count == 1 ? 'a pardon' : count + ' pardons'}. They now have ${res} warnings.`);
-};
+    }
+}
+
+module.exports = PardonCommand;

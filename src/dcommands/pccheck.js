@@ -1,24 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class PccheckCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'pccheck',
+            category: bu.CommandType.IMAGE,
+            usage: 'pccheck <text>',
+            info: 'Tells everyone a reason why they should get their PC checked. Template credits go to Ghosty#8204.'
+        });
+    }
 
-
-
-
-e.init = () => {
-    e.category = bu.CommandType.IMAGE;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'pccheck <text>';
-e.info = `Tells everyone a reason why they should get their PC checked. Template credits go to Ghosty#8204.`;
-e.longinfo = `<p>Tells everyone a reason why they should get their PC checked. Template credits go to Ghosty#8204.</p>`;
-
-
-
-e.execute = async function (msg, words) {
+    async execute(msg, words, text) {
     if (words.length === 1) {
         return bu.send(msg, 'You didn\'t provide any text!');
     }
@@ -38,4 +30,7 @@ e.execute = async function (msg, words) {
         file: buffer,
         name: 'didyouknow.png'
     });
-};
+    }
+}
+
+module.exports = PccheckCommand;

@@ -1,15 +1,4 @@
-var e = module.exports = {};
-
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'ping';
-e.info = 'Pong!\nFind the command latency.';
-e.longinfo = '<p>Pong!</p><p>Find the command latency.</p>';
+const BaseCommand = require('../structures/BaseCommand');
 
 var messages = [
     `Existance is a lie.`,
@@ -24,10 +13,23 @@ var messages = [
     `We are all already dead.`
 ];
 
-e.execute = (msg) => {
-    var message = messages[bu.getRandomInt(0, messages.length - 1)];
-    bu.send(msg, message).then((msg2) => {
-        msg2.edit(`Pong! (${msg2.timestamp - msg.timestamp}ms)\u202e`);
-        return msg2;
-    }).catch(err => console.error(err.stack));
-};
+class PingCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'ping',
+            category: bu.CommandType.GENERAL,
+            usage: 'ping',
+            info: 'Pong!\nFind the command latency.'
+        });
+    }
+
+    async execute(msg, words, text) {
+        var message = messages[bu.getRandomInt(0, messages.length - 1)];
+        bu.send(msg, message).then((msg2) => {
+            msg2.edit(`Pong! (${msg2.timestamp - msg.timestamp}ms)\u202e`);
+            return msg2;
+        }).catch(err => console.error(err.stack));
+    }
+}
+
+module.exports = PingCommand;

@@ -1,24 +1,18 @@
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.CommandType.IMAGE;
-};
-e.requireCtx = require;
+const BaseCommand = require('../structures/BaseCommand');
 
-e.isCommand = true;
+class FreeCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'free',
+            category: bu.CommandType.IMAGE,
+            usage: 'free <caption> [flags]',
+            info: 'Tells everyone what you got for free',
+            flags: [ { flag: 'b', word: 'bottom', desc: 'The bottom caption.' } ]
+        });
+    }
 
-e.hidden = false;
-e.usage = 'free <caption> [flags]';
-e.info = 'Tells everyone what you got for free';
-e.longinfo = `<p>Tells everyone what you got for free.</p>`;
-
-e.flags = [{
-    flag: 'b',
-    word: 'bottom',
-    desc: 'The bottom caption.'
-}];
-
-e.execute = async function(msg, words, text) {
-    let input = bu.parseInput(e.flags, words);
+    async execute(msg, words, text) {
+    let input = bu.parseInput(this.flags, words);
     if (input.undefined.length == 0) {
         bu.send(msg, `Usage: \`${e.usage}\``);
         return;
@@ -36,4 +30,7 @@ e.execute = async function(msg, words, text) {
         file: buffer,
         name: 'FREEFREEFREE.gif'
     });
-};
+    }
+}
+
+module.exports = FreeCommand;

@@ -1,34 +1,23 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-
-
-
-
-e.init = () => {
-    e.category = bu.CommandType.IMAGE;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'pixelate [url] [flags]';
-e.info = `Pixelates an image. If url isn't provided, you must give an attachment.`;
-e.longinfo = `<p>Captions an image. If url isn't provided, you must give an attachment.</p>`;
-
-e.flags = [{
-    flag: 'u',
+class PixelateCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'pixelate',
+            category: bu.CommandType.IMAGE,
+            usage: 'pixelate [url] [flags]',
+            info: 'Pixelates an image. If url isn\'t provided, you must give an attachment.',
+            flags: [ { flag: 'u',
     word: 'user',
-    desc: 'A user avatar instead of a url'
-}, {
-    flag: 's',
+    desc: 'A user avatar instead of a url' },
+  { flag: 's',
     word: 'scale',
-    desc: 'The amount to pixelate by (defaults to 64)'
-}];
+    desc: 'The amount to pixelate by (defaults to 64)' } ]
+        });
+    }
 
-
-e.execute = async function(msg, words) {
-    let input = bu.parseInput(e.flags, words);
+    async execute(msg, words, text) {
+    let input = bu.parseInput(this.flags, words);
 
     bot.sendChannelTyping(msg.channel.id);
     let url;
@@ -63,5 +52,7 @@ e.execute = async function(msg, words) {
         file: buffer,
         name: 'pixld.png'
     });
+    }
+}
 
-};
+module.exports = PixelateCommand;

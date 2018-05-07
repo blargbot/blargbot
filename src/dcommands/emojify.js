@@ -1,22 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class EmojifyCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'emojify',
+            category: bu.CommandType.GENERAL,
+            usage: 'emojify <text>',
+            info: 'Gets emojis based on input.'
+        });
+    }
 
-
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'emojify <text>';
-e.alias = ['💬'];
-e.info = 'Gets emojis based on input.';
-e.longinfo = '<p>Gets emojis based on input.</p>';
-
-
-e.execute = (msg, words) => {
+    async execute(msg, words, text) {
     var options = {
         uri: 'https://emoji.getdango.com/api/emoji?q=' + encodeURIComponent(words.splice(1, words.length).join(' ')),
         headers: {
@@ -33,4 +27,7 @@ e.execute = (msg, words) => {
             bu.send(msg, toSend);
         }
     });
-};
+    }
+}
+
+module.exports = EmojifyCommand;

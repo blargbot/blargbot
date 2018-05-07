@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:33:36
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-06 09:47:10
+ * @Last Modified time: 2018-05-07 11:15:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,7 +25,7 @@ class Manager {
             if (/.+\.js$/.test(file)) {
                 var name = file.match(/(.+)\.js$/)[1];
                 this.load(name);
-                console.module(`${i < 10 ? ' ' : ''}${i}.`, 'Loading ' + this.type + ' module ', name);
+                console.module(`${i < 10 ? ' ' : ''}${i}.`, 'Loading', this.type, ' module ', name);
             } else {
                 console.module('     Skipping non-script ', file);
             }
@@ -46,14 +46,14 @@ class Manager {
                 bot.removeAllListeners(name);
             const mod = require(this.constructPath(name));
             if (typeof mod.init == 'function') mod.init();
-            if (mod.name !== undefined) name = mod.name;
+            else if (!mod.prototype && mod.name !== undefined) name = mod.name;
             this.list[name] = mod;
             for (const alias of mod.aliases || [])
                 this.aliases[alias] = name;
             return true;
         } catch (err) {
             console.error(err.stack);
-            console.module('Failed to load ' + this.type + ' ' + name);
+            console.module('Failed to load' + this.type, name);
         }
         return false;
     }
@@ -68,7 +68,7 @@ class Manager {
             delete this.list[name];
             for (const alias of mod.aliases || [])
                 delete this.aliases[alias];
-            console.module('Unloaded ' + this.type + ' ' + name);
+            console.module('Unloaded', this.type, name);
             return true;
         }
         return false;

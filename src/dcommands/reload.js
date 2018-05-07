@@ -1,17 +1,19 @@
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
-e.requireCtx = require;
+const BaseCommand = require('../structures/BaseCommand');
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
+class ReloadCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'reload',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.execute = (msg) => {
+    async execute(msg, words, text) {
     if (msg.author.id === bu.CAT_ID) {
         bu.emitter.emit('reloadConfig');
         bu.send(msg, ':ok_hand:');
     }
-};
+    }
+}
+
+module.exports = ReloadCommand;

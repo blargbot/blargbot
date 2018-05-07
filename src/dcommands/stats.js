@@ -1,19 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class StatsCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'stats',
+            category: bu.CommandType.GENERAL,
+            usage: 'stats [c]',
+            info: 'Gives you some information about me'
+        });
+    }
 
-
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'stats [c]';
-e.info = 'Gives you some information about me';
-e.longinfo = `<p>Gives you information about the bot.</p>`;
-
-e.execute = async function (msg, words) {
+    async execute(msg, words, text) {
     let full = words[1] && words[1].toLowerCase().startsWith('c');
     let sum = await r.table('stats').sum('uses').run();
     let stats = await r.table('stats').orderBy({
@@ -123,17 +120,7 @@ e.execute = async function (msg, words) {
     bu.send(msg, {
         embed: embeds
     });
-};
-
-
-function pad(value, length) {
-    return (value.toString().length < length) ? pad(' ' + value, length) : value;
+    }
 }
 
-function compareStats(a, b) {
-    if (a[1] < b[1])
-        return 1;
-    if (a[1] > b[1])
-        return -1;
-    return 0;
-}
+module.exports = StatsCommand;

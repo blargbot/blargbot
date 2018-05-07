@@ -1,17 +1,14 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
+class DeletemsgCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'deletemsg',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
-
-e.execute = (msg, words) => {
+    async execute(msg, words, text) {
     if (msg.author.id == bu.CAT_ID) {
         let channel = '';
         let messages = [];
@@ -30,4 +27,7 @@ e.execute = (msg, words) => {
             });
         }
     }
-};
+    }
+}
+
+module.exports = DeletemsgCommand;

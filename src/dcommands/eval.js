@@ -1,14 +1,16 @@
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
-e.requireCtx = require;
+const BaseCommand = require('../structures/BaseCommand');
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
+class EvalCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'eval',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.execute = (msg, words, text) => {
+    async execute(msg, words, text) {
     bot.eval(msg, text);
-};
+    }
+}
+
+module.exports = EvalCommand;

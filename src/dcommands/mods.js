@@ -1,19 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
+class ModsCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'mods',
+            category: bu.CommandType.GENERAL,
+            usage: 'mods [online | o | away | a | dnd | d | offline]',
+            info: 'Gets a list of mods.'
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-
-e.hidden = false;
-e.usage = 'mods [online | o | away | a | dnd | d | offline]';
-e.info = `Gets a list of mods.`;
-e.longinfo = `<p>Gets a list of mods on the guild.</p>`;
-
-e.execute = (msg, words) => {
+    async execute(msg, words, text) {
     console.debug('a');
     try {
         bu.guildSettings.get(msg.channel.guild.id, 'staffperms').then(val => {
@@ -88,12 +85,7 @@ e.execute = (msg, words) => {
     } catch (err) {
         console.error(err);
     }
-};
-
-function getName(member) {
-    return member.user.username + '#' + member.user.discriminator;
+    }
 }
 
-function pad(value, length) {
-    return (value.toString().length < length) ? pad(value + ' ', length) : value;
-}
+module.exports = ModsCommand;

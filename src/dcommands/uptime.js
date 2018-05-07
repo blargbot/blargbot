@@ -1,18 +1,18 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class UptimeCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'uptime',
+            category: bu.CommandType.GENERAL,
+            usage: 'uptime',
+            info: 'Tells you how long I have been online.'
+        });
+    }
 
-
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'uptime';
-e.info = 'Tells you how long I have been online.';
-e.longinfo = `<p>Tells you how long the bot has been up for.</p>`;
-
-e.execute = (msg) => {
+    async execute(msg, words, text) {
     bu.send(msg, `Bot Uptime: ${bu.createTimeDiffString(dep.moment(), bu.startTime)}`);
-};
+    }
+}
+
+module.exports = UptimeCommand;

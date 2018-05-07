@@ -1,38 +1,20 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'mute <user> [flags]';
-e.info = 'Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to ' +
-    '`manage roles` to create and assign the role, and `manage channels` to configure ' +
-    'the role. You are able to manually configure the role without the bot, but the bot has to make it. ' +
-    'Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\n' +
-    'If mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as `1 hour 2 minutes` or `1h2m`.';
-e.longinfo = `<p>Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to
-        <code>manage roles</code> to create and assign the role, and <code>manage channels</code> to configure
-        the role. You are able to manually configure the role without the bot, but the bot has to make it.
-        Deleting the muted role causes it to be regenerated.</p>
-        <p>If the bot has permissions for it, this command will also voice-mute the user.</p>
-    <p>If mod-logging is enabled, the mute will be logged.</p>
-    You can also specify a length of time the user should be muted for, using formats such as <code>1 hour 2 minutes</code> or <code>1h2m</code></p>`;
-
-e.flags = [{
-    flag: 'r',
-    word: 'reason',
-    desc: 'The reason for the mute.'
-}, {
-    flag: 't',
+class MuteCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'mute',
+            category: bu.CommandType.ADMIN,
+            usage: 'mute <user> [flags]',
+            info: 'Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to `manage roles` to create and assign the role, and `manage channels` to configure the role. You are able to manually configure the role without the bot, but the bot has to make it. Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\nIf mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as `1 hour 2 minutes` or `1h2m`.',
+            flags: [ { flag: 'r', word: 'reason', desc: 'The reason for the mute.' },
+  { flag: 't',
     word: 'time',
-    desc: `The amount of time to mute for, formatted as '1 day 2 hours 3 minutes and 4 seconds', '1d2h3m4s', or some other combination.`
-}];
+    desc: 'The amount of time to mute for, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.' } ]
+        });
+    }
 
-e.execute = async function (msg, words, text) {
+    async execute(msg, words, text) {
     let mutedrole = await bu.guildSettings.get(msg.channel.guild.id, 'mutedrole');
 
     if (!mutedrole) {
@@ -110,7 +92,7 @@ e.execute = async function (msg, words, text) {
                             roles: roles,
                             mute: voiceMute ? true : undefined
                         });
-                        let input = bu.parseInput(e.flags, words);
+                        let input = bu.parseInput(this.flags, words);
                         let reason;
                         if (input.r) reason = input.r.join(' ');
                         bu.logAction(msg.channel.guild, user, msg.author, 'Mute', reason, bu.ModLogColour.MUTE);
@@ -142,8 +124,7 @@ e.execute = async function (msg, words, text) {
             bu.send(msg, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
         }
     }
-};
-
-function logError(err) {
-    console.error(err);
+    }
 }
+
+module.exports = MuteCommand;

@@ -1,27 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
+class ModlogCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'modlog',
+            category: bu.CommandType.ADMIN,
+            usage: 'modlog [disable | clear [number to clear]]',
+            info: 'Enables the modlog and sets it to the current channel. Doing `modlog disable` will disable it. Doing `modlog clear [number]` will clear the specified number of cases from the modlog. Leaving `number` blank will clear all cases.When an admin does a moderation command (ban, unban, mute, unmute, and kick), the incident will be logged. The admin will then be encouraged to do `reason <case number> <reason>` to specify why the action took place.\nBans and unbans are logged regardless of whether the `ban` or `unban` commands are used.'
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'modlog [disable | clear [number to clear]]';
-e.info = 'Enables the modlog and sets it to the current channel. Doing \`modlog disable\` will disable it. Doing \`modlog clear [number]\` will clear the specified number of cases from the modlog. Leaving \`number\` blank will clear all cases.' +
-    'When an admin does a moderation command (ban, unban, mute, unmute, and kick), the incident will be logged. ' +
-    'The admin will then be encouraged to do \`reason <case number> <reason>\` to specify why ' +
-    'the action took place.' +
-    '\nBans and unbans are logged regardless of whether the \`ban\` or \`unban\` commands are used.';
-e.longinfo = `<p>Enables the modlog and sets it to the current channel. Doing <code>modlog disable</code> will disable it. Doing <code>modlog clear [number]</code> will clear the specified number of cases from the modlog. Leaving <code>number</code> blank will clear all cases.
-        When an admin does a moderation command (ban, unban, mute, unmute, and kick), the incident will be logged.
-        The admin will then be encouraged to do <code>reason &lt;case number&gt; &lt;reason&gt;</code> to specify why
-        the action took place.</p>
-    <p>Bans and unbans are logged regardless of whether the <code>ban</code> or <code>unban</code> commands are used.
-    </p>`;
-
-e.execute = async function(msg, words) {
+    async execute(msg, words, text) {
     if (words[1]) {
         switch (words[1].toLowerCase()) {
             case 'disable':
@@ -60,4 +49,7 @@ e.execute = async function(msg, words) {
         await bu.guildSettings.set(msg.channel.guild.id, 'modlog', msg.channel.id);
         bu.send(msg, 'Modlog channel set!');
     }
-};
+    }
+}
+
+module.exports = ModlogCommand;

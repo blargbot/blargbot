@@ -1,17 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
-e.requireCtx = require;
+class PurgeCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'purge',
+            category: bu.CommandType.ADMIN,
+            usage: 'purge',
+            info: 'Purges messages made by me.'
+        });
+    }
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'purge';
-e.info = 'Purges messages made by me.';
-e.longinfo = `<p>Deletes all the messages in the current channel made by the bot, within 100 messages.</p>`;
-
-e.execute = (msg) => {
+    async execute(msg, words, text) {
     //  if (bu.hasPerm(msg, 'Bot Commander')) {
     bot.getMessages(msg.channel.id, 100)
         .then(function(messageArray) {
@@ -46,4 +45,7 @@ e.execute = (msg) => {
             }, 5000);
         });
     //    }
-};
+    }
+}
+
+module.exports = PurgeCommand;

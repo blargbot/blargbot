@@ -1,18 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
+class ShipCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'ship',
+            category: bu.CommandType.GENERAL,
+            usage: 'ship <user1> <user2>',
+            info: 'Gives you the ship name for two users.'
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'ship <user1> <user2>';
-e.info = 'Gives you the ship name for two users.';
-e.longinfo = '<p>Gives you the ship name for two users.</p>';
-
-e.execute = async function(msg, words, text) {
+    async execute(msg, words, text) {
     if (words.length > 2) {
         let users = [await bu.getUser(msg, words[1]), await bu.getUser(msg, words[2])];
         if (!users[0] || !users[1]) {
@@ -25,4 +23,7 @@ e.execute = async function(msg, words, text) {
     } else {
         bu.send(msg, 'You have to tell me who you want to ship!');
     }
-};
+    }
+}
+
+module.exports = ShipCommand;

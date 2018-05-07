@@ -1,24 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class SonicsaysCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'sonicsays',
+            category: bu.CommandType.IMAGE,
+            usage: 'sonicsays <text>',
+            info: 'Sonic wants to share some words of wisdom.'
+        });
+    }
 
-
-
-
-e.init = () => {
-    e.category = bu.CommandType.IMAGE;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'sonicsays <text>';
-e.info = `Sonic wants to share some words of wisdom.`;
-e.longinfo = `<p>Sonic wants to share some words of wisdom.</p>`;
-
-
-
-e.execute = async function (msg, words) {
+    async execute(msg, words, text) {
     if (words.length === 1) {
         return bu.send(msg, 'You didn\'t provide any text!');
     }
@@ -38,4 +30,7 @@ e.execute = async function (msg, words) {
         file: buffer,
         name: 'sonicsays.png'
     });
-};
+    }
+}
+
+module.exports = SonicsaysCommand;

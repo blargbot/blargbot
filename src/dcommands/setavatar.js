@@ -1,16 +1,14 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
-e.requireCtx = require;
+class SetavatarCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'setavatar',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
-
-e.execute = (msg, words) => {
+    async execute(msg, words, text) {
     if (msg.author.id === bu.CAT_ID) {
 
         var avatarUrl = '';
@@ -34,4 +32,7 @@ e.execute = (msg, words) => {
             }
         });
     }
-};
+    }
+}
+
+module.exports = SetavatarCommand;

@@ -1,17 +1,14 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
+class SayCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'say',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
-
-e.execute = (msg, words) => {
+    async execute(msg, words, text) {
     if (msg.author.id == bu.CAT_ID) {
         let channel = '';
         if (bot.channelGuildMap.hasOwnProperty(words[1])) {
@@ -22,4 +19,7 @@ e.execute = (msg, words) => {
             bu.send(channel, words.slice(1).join(' '));
         }
     }
-};
+    }
+}
+
+module.exports = SayCommand;

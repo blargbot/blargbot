@@ -1,32 +1,24 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
+class KickCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'kick',
+            category: bu.CommandType.ADMIN,
+            usage: 'kick <user> [flags]',
+            info: 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.',
+            flags: [ { flag: 'r', word: 'reason', desc: 'The reason for the kick.' } ]
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'kick <user> [flags]';
-e.info = 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.';
-e.longinfo = `<p>Kicks a user from the guild.</p>
-    <p>If mod-logging is enabled, the kick will be logged.</p>`;
-
-e.flags = [{
-    flag: 'r',
-    word: 'reason',
-    desc: 'The reason for the kick.'
-}];
-
-e.execute = async function (msg, words) {
+    async execute(msg, words, text) {
     if (!words[1]) {
         bu.send(msg, `You didn't tell me who to kick!`);
         return;
     }
 
     let target = await bu.getUser(msg, words[1]);
-    let reason = bu.parseInput(e.flags, words).r;
+    let reason = bu.parseInput(this.flags, words).r;
 
     if (!target) return;
 
@@ -54,49 +46,7 @@ e.execute = async function (msg, words) {
     }
 
     bu.send(msg, response);
-};
-
-// returns success code
-// Error Object = Unknown error
-// 0 = successful
-// 1 = bot doesnt have kick permission
-// 2 = bot cannot kick target
-// 3 = user doesnt have kick permission
-// 4 = user cannot kick target
-// 5 = user not in guild
-
-e.kick = async function (msg, target, reason, tag = false, noPerms = false) {
-    if (!msg.channel.guild.members.get(bot.user.id).permission.json.kickMembers)
-        return 1;
-    let kickPerms = await bu.guildSettings.get(msg.guild.id, 'kickoverride') || 0;
-    if (!noPerms && !bu.comparePerms(msg.member, kickPerms) && !msg.member.permission.json.kickMembers)
-        return 3;
-
-    var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
-    var userPos = bu.getPosition(msg.member);
-    var targetPos = bu.getPosition(msg.channel.guild.members.get(target.id));
-    if (targetPos >= botPos)
-        return 2;
-    if (!noPerms && targetPos >= userPos && msg.author.id != msg.guild.ownerID)
-        return 4;
-
-    try {
-        await bot.kickGuildMember(
-            msg.channel.guild.id,
-            target.id,
-            'Kicked by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason : '')
-        );
-        bu.logAction(
-            msg.channel.guild,
-            target,
-            msg.author,
-            tag ? 'Tag Kick' : 'Kick',
-            reason,
-            bu.ModLogColour.KICK);
-        return 0;
-    }
-    catch (err) {
-        console.error(err);
-        return err;
     }
 }
+
+module.exports = KickCommand;

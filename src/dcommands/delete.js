@@ -1,18 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.IMAGE;
-};
+class DeleteCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'delete',
+            category: bu.CommandType.IMAGE,
+            usage: 'delete [text]',
+            info: 'Shows that you\'re about to delete something.'
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'delete [text]';
-e.info = `Shows that you're about to delete something.`;
-e.longinfo = `<p>Shows that you're about to delete something.</p>`;
-
-e.execute = async function(msg, words) {
+    async execute(msg, words, text) {
     if (words.length > 1) {
         let input = (await bu.filterMentions(words.slice(1).join('\n').replace(/\n/gim, ' ').substring(0, 256), msg.guild)).trim();
         let code = bu.genEventCode();
@@ -31,5 +29,7 @@ e.execute = async function(msg, words) {
     } else {
         await bu.send(msg, 'Not enough input!');
     }
+    }
+}
 
-};
+module.exports = DeleteCommand;

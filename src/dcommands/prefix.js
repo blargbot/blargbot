@@ -1,21 +1,22 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
-e.requireCtx = require;
+class PrefixCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'prefix',
+            category: bu.CommandType.ADMIN,
+            usage: 'prefix add|remove [prefix] [flags]',
+            info: 'Sets the command prefix.',
+            flags: [ { flag: 'd',
+    word: 'default',
+    desc: 'Sets the provided prefix as the default prefix for the guild.' } ]
+        });
+    }
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'prefix add|remove [prefix] [flags]';
-e.info = 'Sets the command prefix.';
-e.longinfo = `<p>Sets or removes the custom command prefix for the guild. You can set it to anything.</p>`;
-e.flags = [{ flag: 'd', word: 'default', desc: 'Sets the provided prefix as the default prefix for the guild.' }];
-
-e.execute = async (msg, words, text) => {
+    async execute(msg, words, text) {
 
     let prefixes = await bu.guildSettings.get(msg.guild.id, 'prefix');
-    let input = bu.parseInput(e.flags, words, true);
+    let input = bu.parseInput(this.flags, words, true);
     if (!prefixes) prefixes = [];
     if (!Array.isArray(prefixes)) prefixes = [prefixes.toLowerCase()];
     if (words.length > 2) {
@@ -48,4 +49,7 @@ e.execute = async (msg, words, text) => {
             await bu.send(msg, `${msg.guild.name} has the following personal prefixes:\n${prefixes.map(p => ' - ' + p).join('\n')}`);
     }
     //   }
-};
+    }
+}
+
+module.exports = PrefixCommand;

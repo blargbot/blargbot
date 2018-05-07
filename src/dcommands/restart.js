@@ -1,18 +1,14 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class RestartCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'restart',
+            category: bu.CommandType.CAT
+        });
+    }
 
-
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
-
-e.execute = async function (msg, words) {
+    async execute(msg, words, text) {
     if (msg.author.id === bu.CAT_ID) {
         if (words[1] === 'kill') {
             await bu.send(msg, 'Ah! You\'ve killed me! D:');
@@ -29,4 +25,7 @@ e.execute = async function (msg, words) {
             bot.sender.send('respawnAll', msg.channel.id);
         }
     }
-};
+    }
+}
+
+module.exports = RestartCommand;

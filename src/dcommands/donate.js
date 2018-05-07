@@ -1,18 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
+class DonateCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'donate',
+            category: bu.CommandType.GENERAL,
+            usage: 'donate',
+            info: 'Gets you my donation information'
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'donate';
-e.info = 'Gets you my donation information';
-e.longinfo = `<p>DMs you a list of my donation information.</p>`;
-
-e.execute = (msg) => {
+    async execute(msg, words, text) {
     bot.getDMChannel(msg.author.id).then(channel => {
         bu.send(channel.id, `Hi! This is stupid cat, creator of blargbot. I hope you're enjoying it!
 
@@ -26,5 +24,7 @@ Patreon: <https://www.patreon.com/stupidcat>
 ---------------------------------------------
 `);
     });
+    }
+}
 
-};
+module.exports = DonateCommand;

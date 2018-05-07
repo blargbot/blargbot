@@ -1,24 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class TimeCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'time',
+            category: bu.CommandType.GENERAL,
+            usage: 'time < <timezone> [ <timezone2> <time> ] | <user> >',
+            info: 'Tells you the current time in the specified timezone. If timezone2 and time are specified, converts the time from timezone to timezone2. Time must be formatted as `hh:mm[AM/PM]`, and timezones must use  the timezone codes listed here: <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>. Alternatively, tells you what time it is for a specified user if they\'ve set their timezone code using the `timezone` command.'
+        });
+    }
 
-
-
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'time < <timezone> [ <timezone2> <time> ] | <user> >';
-e.info = 'Tells you the current time in the specified timezone. If timezone2 and time are specified, converts the time from ' +
-    'timezone to timezone2. Time must be formatted as `hh:mm[AM/PM]`, and timezones must use ' +
-    ' the timezone codes listed here: <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>. Alternatively, tells you what time it is for a specified user if they\'ve set their timezone code using the `timezone` command.';
-e.longinfo = `    <p>Tells you the current time in the specified timezone. If timezone2 and time are specified, converts the time from
-    timezone to timezone2. Time must be formatted as <code>hh:mm[AM/PM]</code>, and timezones must use
-        <a href="https://en.wikipedia.org/wiki/List_of_tz_database_time_zones">these</a> timezone codes. Alternatively, tells you what time it is for a specified user if they\'ve set their timezone code using the <code>timezone</code> command.</p>`;
-
-e.execute = async (msg, words) => {
+    async execute(msg, words, text) {
     var message;
     let location = dep.moment().tz(words[1] || 'sadasdfsa');
     if (location.zoneAbbr() !== '') {
@@ -52,4 +44,7 @@ e.execute = async (msg, words) => {
     }
 
     bu.send(msg, message);
-};
+    }
+}
+
+module.exports = TimeCommand;

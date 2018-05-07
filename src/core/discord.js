@@ -2,14 +2,14 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-22 23:29:15
+ * @Last Modified time: 2018-05-07 10:19:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 global.Promise = require('bluebird');
 global.config = require('../../config.json');
 const Logger = require('./logger');
-new Logger(process.env.SHARD_ID, config.general.isbeta ? 'debug' : 'info').setGlobal();
+new Logger(process.env.SHARD_ID, config.general.isbeta ? 'module' : 'info').setGlobal();
 
 global.dep = require('./dep.js');
 

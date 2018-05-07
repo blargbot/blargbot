@@ -1,31 +1,25 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'brainfuck <code>';
-e.info = 'Executes brainfuck code.';
-e.longinfo = `<p>Executes brainfuck code.</p>`;
-e.alias = ['rainfuck', 'bf'];
-e.flags = [{
-    flag: 'p',
+class BrainfuckCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'brainfuck',
+            category: bu.CommandType.GENERAL,
+            usage: 'brainfuck <code>',
+            info: 'Executes brainfuck code.',
+            flags: [ { flag: 'p',
     word: 'pointers',
-    desc: 'Shows a list of pointers after the execution.'
-}, {
-    flag: 'i',
+    desc: 'Shows a list of pointers after the execution.' },
+  { flag: 'i',
     word: 'input',
-    desc: 'Specifies the input for the , operator.'
-}];
+    desc: 'Specifies the input for the , operator.' } ]
+        });
+    }
 
-e.execute = async function (msg, words) {
+    async execute(msg, words, text) {
     if (words[1] && /^-[-+<>\.,\[\]]/.test(words[1]))
         words[1] = '\\' + words[1];
-    let input = bu.parseInput(e.flags, words);
+    let input = bu.parseInput(this.flags, words);
     if (input.undefined.length == 0) {
         bu.send(msg, 'Not enough parameters! Do `b!help brainfuck` for more details.');
         return;
@@ -38,5 +32,7 @@ e.execute = async function (msg, words) {
         bu.send(msg, `Something went wrong!
 Error: \`${err.message}\``);
     }
+    }
+}
 
-};
+module.exports = BrainfuckCommand;

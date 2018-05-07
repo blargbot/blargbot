@@ -1,25 +1,18 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.IMAGE;
-};
+class ClintCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'clint',
+            category: bu.CommandType.IMAGE,
+            usage: 'clint [user]',
+            info: 'I don\'t even know, to be honest.',
+            flags: [ { flag: 'I', word: 'image', desc: 'A custom image.' } ]
+        });
+    }
 
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'clint [user]';
-e.info = `I don't even know, to be honest.`;
-e.longinfo = `<p>I don't even know, to be honest.</p>`;
-
-e.flags = [{
-    flag: 'I',
-    word: 'image',
-    desc: 'A custom image.'
-}];
-
-e.execute = async function (msg, words) {
-    let input = bu.parseInput(e.flags, words);
+    async execute(msg, words, text) {
+    let input = bu.parseInput(this.flags, words);
     let user = msg.author;
     let url;
     if (msg.attachments.length > 0) {
@@ -47,4 +40,7 @@ e.execute = async function (msg, words) {
         file: buffer,
         name: 'clint.png'
     });
-};
+    }
+}
+
+module.exports = ClintCommand;

@@ -1,21 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class StatusCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'status',
+            category: bu.CommandType.GENERAL,
+            usage: 'status <code> [cat | dog]',
+            info: 'Gets you an image of an HTTP status code.'
+        });
+    }
 
-
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'status <code> [cat | dog]';
-e.info = 'Gets you an image of an HTTP status code.';
-e.longinfo = '<p>Gets you an image of an HTTP status code.</p>';
-
-
-e.execute = (msg, words, text) => {
+    async execute(msg, words, text) {
     if (!words[1]) {
         bu.send(msg, `400 BAD REQUEST\nNot enough arguments provided!`);
         return;
@@ -54,5 +49,7 @@ e.execute = (msg, words, text) => {
                 });
         });
     }
+    }
+}
 
-};
+module.exports = StatusCommand;

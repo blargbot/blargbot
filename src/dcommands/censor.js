@@ -1,82 +1,44 @@
-/*
- * @Author: stupid cat
- * @Date: 2017-05-07 18:18:08
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-22 17:47:25
- *
- * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
- */
+const BaseCommand = require('../structures/BaseCommand');
 
-var e = module.exports = {};
-
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'censor help';
-e.info = `Creates message censorships.
-Commands:
-   ADD <text> [flags] - Adds a censor with for the provided text.
-   REMOVE - Brings up a menu to remove a censor
-   EXCEPTION <add | remove> [flags] - Adds or removes an exception.
-   RULE [flags] - Sets the censorship rules.
-   INFO - Displays information about censors.`;
-e.longinfo = `<p>Creates message censorships. Subcommands:</p>
-<ul>
-<li>ADD &lt;text&gt; [flags] - Adds a censor with for the provided text.</li>
-<li>REMOVE - Brings up a menu to remove a censor</li>
-<li>EDIT &lt;text&gt; [flags] - Brings up a menu to edit a censor</li>
-<li>EXCEPTION &lt;add | remove&gt; [flags] - Adds or removes an exception.</li>
-<li>RULE [flags] - Sets the censorship rules.</li>
-<li>INFO - Displays information about censors.</li>
-</ul>`;
-
-e.flags = [{
-    flag: 'R',
+class CensorCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'censor',
+            category: bu.CommandType.ADMIN,
+            usage: 'censor help',
+            info: 'Creates message censorships.\nCommands:\n   ADD <text> [flags] - Adds a censor with for the provided text.\n   REMOVE - Brings up a menu to remove a censor\n   EXCEPTION <add | remove> [flags] - Adds or removes an exception.\n   RULE [flags] - Sets the censorship rules.\n   INFO - Displays information about censors.',
+            flags: [ { flag: 'R',
     word: 'regex',
-    desc: 'Add/Edit: If specified, parse as /regex/ rather than plaintext.'
-}, {
-    flag: 'w',
+    desc: 'Add/Edit: If specified, parse as /regex/ rather than plaintext.' },
+  { flag: 'w',
     word: 'weight',
-    desc: 'Add/Edit: How many incidents the censor is worth.'
-}, {
-    flag: 'r',
+    desc: 'Add/Edit: How many incidents the censor is worth.' },
+  { flag: 'r',
     word: 'reason',
-    desc: 'Add/Edit: A custom modlog reason. NOT BBTag compatible.'
-}, {
-    flag: 'd',
+    desc: 'Add/Edit: A custom modlog reason. NOT BBTag compatible.' },
+  { flag: 'd',
     word: 'deletemessage',
-    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a message is deleted. Adds override rules.'
-}, {
-    flag: 'k',
+    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a message is deleted. Adds override rules.' },
+  { flag: 'k',
     word: 'kickmessage',
-    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is kicked. Adds override rules.'
-}, {
-    flag: 'b',
+    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is kicked. Adds override rules.' },
+  { flag: 'b',
     word: 'banmessage',
-    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is banned. Adds override rules.'
-}, {
-    flag: 'u',
+    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is banned. Adds override rules.' },
+  { flag: 'u',
     word: 'users',
-    desc: 'Exception: A list of users that are exempt from censorship.'
-}, {
-    flag: 'r',
+    desc: 'Exception: A list of users that are exempt from censorship.' },
+  { flag: 'r',
     word: 'roles',
-    desc: 'Exception: A list of roles that are exempt from censorship.'
-}, {
-    flag: 'c',
+    desc: 'Exception: A list of roles that are exempt from censorship.' },
+  { flag: 'c',
     word: 'channels',
-    desc: 'Exception: A list of channels that are exempt from censorship.'
-}];
+    desc: 'Exception: A list of channels that are exempt from censorship.' } ]
+        });
+    }
 
-e.defaultDeleteMessage = 'Deleted {username}#{userdiscrim}\'s message containing a blacklisted phrase.';
-e.defaultKickMessage = `Kicked {username}#{userdiscrim} for saying a blacklisted phrase.`;
-e.defaultBanMessage = `Banned {username}#{userdiscrim} for saying a blacklisted phrase.`;
-
-e.execute = async function (msg, words) {
-    let input = bu.parseInput(e.flags, words, true);
+    async execute(msg, words, text) {
+    let input = bu.parseInput(this.flags, words, true);
     if (!msg.guild) return;
     if (input.undefined.length == 0) {
         input.undefined[0] = '';
@@ -423,4 +385,7 @@ Ban Message: ${storedGuild.censor.rule.banMessage || 'Default'}
             bu.send(msg, output);
             break;
     }
-};
+    }
+}
+
+module.exports = CensorCommand;

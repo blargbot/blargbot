@@ -1,24 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class ObjectCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'object',
+            category: bu.CommandType.IMAGE,
+            usage: 'object &lt;text&gt;',
+            info: 'OBJECTION!'
+        });
+    }
 
-
-
-
-
-
-e.init = () => {
-    e.category = bu.CommandType.IMAGE;
-};
-
-e.requireCtx = require;
-
-e.isCommand = false;
-e.hidden = false;
-e.usage = 'object &lt;text&gt;';
-e.info = `OBJECTION!`;
-e.longinfo = `<p>OBJECTION!</p>`;
-
-e.execute = async function(msg, words) {
+    async execute(msg, words, text) {
 
     let code = bu.genEventCode();
     let buffer = await bu.awaitEvent({
@@ -31,4 +23,7 @@ e.execute = async function(msg, words) {
         file: buffer,
         name: 'OBJECTION.gif'
     });
-};
+    }
+}
+
+module.exports = ObjectCommand;

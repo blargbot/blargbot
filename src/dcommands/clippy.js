@@ -1,35 +1,33 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-const reload = dep.reload;
-
-e.init = () => {
-    e.category = bu.CommandType.IMAGE;
-};
-
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'clippy <text>';
-e.info = `Clippy the paperclip is here to save the day!`;
-e.longinfo = `<p>Clippy the paperclip is here to save the day!</p>`;
-e.alias = ['clippit', 'paperclip'];
-
-e.execute = async function (msg, words) {
-    if (words.length == 1) {
-        bu.send(msg, 'Not enough arguments!'); return;
+class ClippyCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'clippy',
+            category: bu.CommandType.IMAGE,
+            usage: 'clippy <text>',
+            info: 'Clippy the paperclip is here to save the day!'
+        });
     }
-    let text = await bu.filterMentions(words.slice(1).join(' '));
-    bot.sendChannelTyping(msg.channel.id);
-    let code = bu.genEventCode();
-    let buffer = await bu.awaitEvent({
-        cmd: 'img',
-        command: 'clippy',
-        code: code,
-        text
-    });
-    bu.send(msg, undefined, {
-        file: buffer,
-        name: 'DOYOUNEEDHELP.png'
-    });
-};
+
+    async execute(msg, words) {
+        if (words.length == 1) {
+            bu.send(msg, 'Not enough arguments!'); return;
+        }
+        let text = await bu.filterMentions(words.slice(1).join(' '));
+        bot.sendChannelTyping(msg.channel.id);
+        let code = bu.genEventCode();
+        let buffer = await bu.awaitEvent({
+            cmd: 'img',
+            command: 'clippy',
+            code: code,
+            text
+        });
+        bu.send(msg, undefined, {
+            file: buffer,
+            name: 'DOYOUNEEDHELP.png'
+        });
+    }
+}
+
+module.exports = ClippyCommand;

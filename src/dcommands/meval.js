@@ -1,15 +1,14 @@
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.CommandType.CAT;
-};
-e.requireCtx = require;
+const BaseCommand = require('../structures/BaseCommand');
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
+class MevalCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'meval',
+            category: bu.CommandType.CAT
+        });
+    }
 
-e.execute = async (msg, words, text) => {
+    async execute(msg, words, text) {
     if (msg.author.id === bu.CAT_ID) {
         let code = text.substring(words[0].length).trim();
         let res = await bot.sender.awaitMessage({
@@ -18,4 +17,7 @@ e.execute = async (msg, words, text) => {
         });
         await bu.send(msg, 'Master eval input:\n```js\n' + code + '\n```\nOutput:```js\n' + res.result + '\n```');
     }
-};
+    }
+}
+
+module.exports = MevalCommand;

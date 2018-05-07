@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-06 17:16:59
+ * @Last Modified time: 2018-05-07 10:37:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -290,7 +290,7 @@ var executeCommand = async function (commandName, msg, words, text) {
     bu.commandUses++;
 
     try {
-        await CommandManager.list[commandName].execute(msg, words, text);
+        await CommandManager.built[commandName].execute(msg, words, text);
     } catch (err) {
         if (err.response) {
             let response = JSON.parse(err.response);

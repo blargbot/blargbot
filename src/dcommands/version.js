@@ -1,17 +1,18 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-e.requireCtx = require;
+class VersionCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'version',
+            category: bu.CommandType.GENERAL,
+            usage: 'version',
+            info: 'Tells you what version I am on'
+        });
+    }
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'version';
-e.info = 'Tells you what version I am on';
-e.longinfo = `<p>Tells you what version the bot is currently running on.</p>`;
-
-e.execute = async (msg) => {
+    async execute(msg, words, text) {
     bu.send(msg, `I am running blargbot version ${await bu.getVersion()}!`);
+    }
+}
 
-};
+module.exports = VersionCommand;

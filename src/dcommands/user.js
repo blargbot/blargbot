@@ -1,19 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
+class UserCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'user',
+            category: bu.CommandType.GENERAL,
+            usage: 'user [id/name/mention]',
+            info: 'Gets information about specified user'
+        });
+    }
 
-
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
-e.requireCtx = require;
-
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'user [id/name/mention]';
-e.info = 'Gets information about specified user';
-e.longinfo = `<p>Gets information about the specified user.</p>`;
-
-e.execute = async function(msg, words) {
+    async execute(msg, words, text) {
     var userToGet;
     let isMember = true;
     if (!words[1]) {
@@ -59,4 +56,7 @@ Account created on ${dep.moment(userToGet.createdAt).format('llll')}
 \`\`\``;
     }
     bu.sendFile(msg.channel.id, message, isMember ? userToGet.user.avatarURL : userToGet.avatarURL);
-};
+    }
+}
+
+module.exports = UserCommand;

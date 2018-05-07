@@ -1,17 +1,16 @@
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.requireCtx = require;
+class TokenifyCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'tokenify',
+            category: bu.CommandType.GENERAL,
+            usage: 'tokenify <input>',
+            info: 'Converts the given input into a token.'
+        });
+    }
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'tokenify <input>';
-e.info = 'Converts the given input into a token.';
-e.longinfo = '<p>Converts the given input into a token.</p>';
-
-e.execute = (msg, words, text) => {
+    async execute(msg, words, text) {
     console.debug(words.length);
     if (words.length > 1) {
         var pasta = words.splice(1, words.length).join(' ').replace(/[^0-9a-z]/gi, '').toLowerCase();
@@ -39,4 +38,7 @@ e.execute = (msg, words, text) => {
     } else {
         bu.send(msg, 'Not enough arguments given');
     }
-};
+    }
+}
+
+module.exports = TokenifyCommand;

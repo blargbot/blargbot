@@ -1,24 +1,20 @@
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.requireCtx = require;
+class RvotebanCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'rvoteban',
+            category: bu.CommandType.ADMIN,
+            usage: 'rvoteban (<user> | <flags>)',
+            info: 'Removes the votebans for a specific user, or removes all votebans completely.',
+            flags: [ { flag: 'a', word: 'all', desc: 'Removes all votebans' } ]
+        });
+    }
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'rvoteban (<user> | <flags>)';
-e.info = 'Removes the votebans for a specific user, or removes all votebans completely.';
-e.longinfo = '<p>Removes the votebans for a specific user, or removes all votebans completely.</p>';
-e.alias = ['rpollban', 'removevoteban', 'removepollban', 'rvb', 'rpb'];
-e.flags = [
-    { flag: 'a', word: 'all', desc: 'Removes all votebans' }
-];
-
-e.execute = async function (msg, words, text) {
+    async execute(msg, words, text) {
     let storedGuild = await bu.getGuild(msg.guild.id);
     let votebans = storedGuild.votebans || {};
-    let input = bu.parseInput(e.flags, words);
+    let input = bu.parseInput(this.flags, words);
     if (input.a) {
         let msg2 = await bu.awaitMessage(msg, 'This will remove all the votebans on this guild. Type `yes` to confirm, or anything else to cancel.');
         if (msg2.content.toLowerCase() == 'yes' || msg2.content.toLowerCase() == 'y') {
@@ -40,4 +36,7 @@ e.execute = async function (msg, words, text) {
     } else {
         await bu.send(msg, 'Not enough arguments! Do `b!help rvoteban` for more details.');
     }
-};
+    }
+}
+
+module.exports = RvotebanCommand;

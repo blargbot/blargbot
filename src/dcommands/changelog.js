@@ -1,16 +1,16 @@
-var e = module.exports = {};
+const BaseCommand = require('../structures/BaseCommand');
 
-e.init = () => {
-    e.category = bu.CommandType.ADMIN;
-};
+class ChangelogCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'changelog',
+            category: bu.CommandType.ADMIN,
+            usage: 'changelog',
+            info: 'Sets the current channel as your guild\'s changelog channel. A message will be posted in this channel whenever there is an update. The bot requires the `embed links` permission for this.'
+        });
+    }
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = 'changelog';
-e.info = 'Sets the current channel as your guild\'s changelog channel. A message will be posted in this channel whenever there is an update. The bot requires the `embed links` permission for this.';
-e.longinfo = `<p>Sets the current channel as your guild\'s changelog channel. A message will be posted in this channel whenever there is an update. The bot requires the <code>embed links</code> permission for this.</p>`;
-
-e.execute = async function(msg) {
+    async execute(msg, words, text) {
     let channelid = msg.channel.id;
     if (msg.channelMentions.length > 0) channelid = msg.channelMentions[0];
 
@@ -34,4 +34,7 @@ e.execute = async function(msg) {
     }
 
     await r.table('vars').get('changelog').replace(changelogs).run();
-};
+    }
+}
+
+module.exports = ChangelogCommand;
