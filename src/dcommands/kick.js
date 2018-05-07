@@ -47,6 +47,42 @@ class KickCommand extends BaseCommand {
 
         bu.send(msg, response);
     }
+
+    async event(msg, target, reason, tag = false, noPerms = false) {
+        if (!msg.channel.guild.members.get(bot.user.id).permission.json.kickMembers)
+            return 1;
+        let kickPerms = await bu.guildSettings.get(msg.guild.id, 'kickoverride') || 0;
+        if (!noPerms && !bu.comparePerms(msg.member, kickPerms) && !msg.member.permission.json.kickMembers)
+            return 3;
+
+        var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
+        var userPos = bu.getPosition(msg.member);
+        var targetPos = bu.getPosition(msg.channel.guild.members.get(target.id));
+        if (targetPos >= botPos)
+            return 2;
+        if (!noPerms && targetPos >= userPos && msg.author.id != msg.guild.ownerID)
+            return 4;
+
+        try {
+            await bot.kickGuildMember(
+                msg.channel.guild.id,
+                target.id,
+                'Kicked by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason : '')
+            );
+            bu.logAction(
+                msg.channel.guild,
+                target,
+                msg.author,
+                tag ? 'Tag Kick' : 'Kick',
+                reason,
+                bu.ModLogColour.KICK);
+            return 0;
+        }
+        catch (err) {
+            console.error(err);
+            return err;
+        }
+    }
 }
 
 module.exports = KickCommand;

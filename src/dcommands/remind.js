@@ -41,6 +41,18 @@ Example: \`remind Do a thing! -t 1 day, two hours\``);
             await bu.send(msg, `:alarm_clock: Ok! I'll remind you ${channel ? 'here' : 'in a DM'} ${duration.humanize(true)}! :alarm_clock: `);
         }
     }
+
+    async event(args) {
+        let duration = dep.moment.duration(dep.moment() - dep.moment(args.starttime));
+        duration.subtract(duration * 2);
+        if (args.channel) {
+            bu.send(args.channel, `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this ${duration.humanize(true)}:
+    ${args.content}`);
+        } else {
+            bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this ${duration.humanize(true)}:
+    ${args.content}`);
+        }
+    };
 }
 
 module.exports = RemindCommand;

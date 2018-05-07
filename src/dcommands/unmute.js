@@ -53,6 +53,23 @@ class UnmuteCommand extends BaseCommand {
             }
         }
     }
+
+    async event(args) {
+        let guild = bot.guilds.get(args.guild);
+        if (!guild || !guild.members.get(args.user)) return;
+        let member = guild.members.get(args.user);
+
+        var roles = member.roles;
+        if (roles.indexOf(args.role) > -1) {
+            roles.splice(roles.indexOf(args.role), 1);
+            let voiceMute = guild.members.get(bot.user.id).permission.json.voiceMuteMembers;
+            await bot.editGuildMember(guild.id, member.id, {
+                roles: roles,
+                mute: voiceMute ? false : undefined
+            });
+            bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${dep.moment.duration(args.duration).humanize()}.`, bu.ModLogColour.UNMUTE);
+        }
+    };
 }
 
 module.exports = UnmuteCommand;

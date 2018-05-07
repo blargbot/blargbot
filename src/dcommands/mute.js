@@ -129,4 +129,8 @@ class MuteCommand extends BaseCommand {
     }
 }
 
+function logError(err) {
+    console.error(err);
+}
+
 module.exports = MuteCommand;

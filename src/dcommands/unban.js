@@ -23,6 +23,45 @@ class UnbanCommand extends BaseCommand {
             bu.send(msg, response[0]);
         }
     }
+
+    async unban(msg, user, reason, tag = false, noPerms = false) {
+        if (msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
+            let banPerms = await bu.guildSettings.get(msg.guild.id, 'banoverride') || 0;
+            if (noPerms || (bu.comparePerms(msg.member, banPerms) || msg.member.permission.json.banMembers)) {
+                if (typeof user === 'object') user = user.id;
+                if (!bu.unbans[msg.channel.guild.id])
+                    bu.unbans[msg.channel.guild.id] = {};
+                if (reason && Array.isArray(reason)) reason = reason.join(' ');
+
+                bu.unbans[msg.channel.guild.id][user] = {
+                    mod: noPerms ? bot.user : msg.author,
+                    type: tag ? 'Tag Unban' : 'Unban',
+                    reason: reason
+                };
+
+                try {
+                    await bot.unbanGuildMember(msg.channel.guild.id, user, 'Unbanned by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason : ''));
+                    return [':ok_hand:', true];
+                } catch (err) {
+                    return [`Failed to unban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, false];
+                }
+            } else {
+                return [`You don't have permission to unban users!`, '`User has no permissions`'];
+            }
+        } else {
+            return [`I don't have permission to unban users!`, '`Bot has no permissions`'];
+        }
+    }
+
+    async event(args) {
+        if (!bu.unbans[args.guild]) bu.unbans[args.guild] = {};
+        bu.unbans[args.guild][args.user] = {
+            mod: bot.user.id,
+            reason: `Automatically unbanned after ${dep.moment.duration(args.duration).humanize()}.`
+        };
+        await bot.unbanGuildMember(args.guild, args.user, 'Automatic unban after time');
+    }
+
 }
 
 module.exports = UnbanCommand;

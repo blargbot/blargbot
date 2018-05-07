@@ -652,6 +652,119 @@ ${Object.keys(user.favourites).join(', ')}
             bu.send(msg, e.info);
         }
     }
+
+    async event(args) {
+        // Migrate from the old version of timer structure
+        if (args.version !== 2) {
+            args.context = {
+                msg: JSON.parse(args.msg),
+                isCC: args.params.ccommand,
+                state: {
+                    return: 0,
+                    stackSize: 0,
+                    repeats: 0,
+                    embed: null,
+                    reactions: args.params.reactions,
+                    nsfw: null,
+                    dmCount: 0,
+                    timerCount: 0,
+                    replace: null,
+                    break: 0,
+                    continue: 0
+                },
+                scope: {},
+                input: args.params.words,
+                tagName: args.params.tagName,
+                author: args.params.author
+            };
+            let channel = bot.getChannel(args.channel);
+            args.context.msg.channel = {
+                id: args.channel,
+                serialized: JSON.stringify(channel)
+            };
+            args.context.msg.member = {
+                id: args.context.msg.author.id,
+                serialized: JSON.stringify(channel.guild.members.get(args.context.msg.author.id))
+            };
+
+            args.content = args.params.args[1];
+            args.tempVars = args.params.vars;
+        }
+
+        let context = await bbEngine.Context.deserialize(args.context),
+            content = args.content;
+
+        context.state.timerCount = -1;
+        context.state.embed = null;
+        context.state.reactions = [];
+        try {
+            await bbEngine.runTag(content, context);
+        } catch (err) {
+            console.error(err);
+            throw err;
+        }
+    };
 }
+
+
+function escapeRegex(str) {
+    return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+}
+
+function systemTag(name) {
+    return {
+        name,
+        content: 'System Generated Tag',
+        author: '1',
+        lastmodified: r.epochTime(0),
+        uses: 0,
+        systemOwned: true
+    };
+}
+
+function logChange(action, msg, actionObj) {
+    let actionArray = [];
+    let file = actionObj.content ? { name: actionObj.tag + '.bbtag', file: actionObj.content } : undefined;
+    for (let key in actionObj) {
+        if (actionObj[key].length > 1000) actionObj[key] = actionObj[key].substring(0, 1000) + '... (too long)';
+        actionArray.push({
+            name: key,
+            value: actionObj[key],
+            inline: true
+        });
+    }
+    let color = 0x000000;
+    switch (action.split(' ')[0].toLowerCase()) {
+        case 'create':
+            color = 0x0eed24;
+            break;
+        case 'edit':
+            color = 0x6b0eed;
+            break;
+        case 'delete':
+            color = 0xf20212;
+            break;
+        case 'rename':
+            color = 0x02f2ee;
+            break;
+    }
+    bu.send('230810364164440065', {
+        embed: {
+            title: action,
+            color: color,
+            fields: actionArray,
+            author: {
+                name: bu.getFullName(msg.author),
+                icon_url: msg.author.avatarURL,
+                url: `https://blargbot.xyz/user/${msg.author.id}`
+            },
+            timestamp: dep.moment(msg.timestamp),
+            footer: {
+                text: `MsgID: ${msg.id}`
+            }
+        }
+    }, file);
+}
+
 
 module.exports = TagCommand;

@@ -27,6 +27,12 @@ Example: \`timer 1 day, two hours\``);
             await bu.send(msg, `:alarm_clock: Ok! The timer will go off ${duration.humanize(true)}! :alarm_clock: `);
         }
     }
+
+    async event(args) {
+        let duration = dep.moment.duration(dep.moment() - dep.moment(args.starttime));
+        duration.subtract(duration * 2);
+        bu.send(args.channel, `:alarm_clock: *Bzzt!* <@${args.user}>, the timer you set ${duration.humanize(true)} has gone off! *Bzzt!* :alarm_clock:`);
+    };
 }
 
 module.exports = TimerCommand;

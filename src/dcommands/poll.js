@@ -143,6 +143,84 @@ class PollCommand extends BaseCommand {
             bu.send(msg, 'Incorrect usage! Do `b!help poll` for more information.');
         }
     }
+
+    async event(args) {
+        console.debug('poll has been triggered');
+        let msg3 = await bot.getMessage(args.channel, args.msg);
+        let reactions = [];
+        for (let key in msg3.reactions) {
+            msg3.reactions[key].emoji = key;
+            if (msg3.reactions[key].me) {
+                msg3.reactions[key].count--;
+            }
+            if (args.strict == undefined || (args.strict.includes(key) ||
+                (/[0-9]{17,23}/.test(key) ?
+                    args.strict.includes(key.match(/([0-9]{17,23})/)[0]) :
+                    false)))
+                reactions.push(msg3.reactions[key]);
+        }
+        if (reactions.length == 0) {
+            bu.send(args.channel, 'No results were collected!');
+            return;
+        }
+        let totalVotes = 0;
+        for (let key in reactions) {
+            if (/[0-9]{17,23}/.test(reactions[key].emoji))
+                reactions[key].emoji = `<:${reactions[key].emoji}>`;
+            totalVotes += reactions[key].count;
+        }
+        reactions.sort((a, b) => {
+            return b.count - a.count;
+        });
+        let max = reactions[0].count;
+        let winners = reactions.filter(r => r.count == max);
+        let winnerString = winners.map(r => r.emoji).join(' ');
+        console.debug(args.color);
+        console.debug(6);
+        let middleBit = winners.length > 1 ?
+            `It was a tie between these choices, at **${max}** vote${max == 1 ? '' : 's'} each:` :
+            `At **${max}** vote${max == 1 ? '' : 's'}, the winner is:`;
+        let output = {
+            embed: {
+                title: args.title,
+                color: args.color,
+                description: `The results are in! A total of **${totalVotes}** vote${totalVotes == 1 ? '' : 's'} were collected!
+     
+    ${middleBit}
+    
+    ${winnerString}`
+            }
+        };
+        let role;
+        if (args.roleId) {
+            role = msg3.guild.roles.get(args.roleId);
+            if (role.name == '@everyone') {
+                output.content = '@everyone';
+                output.disableEveryone = false;
+            } else {
+                output.content = role.mention;
+            }
+        }
+        if (role) {
+            try {
+                await role.edit({
+                    mentionable: true
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+        await bu.send(args.channel, output);
+        if (role) {
+            try {
+                await role.edit({
+                    mentionable: false
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    };
 }
 
 module.exports = PollCommand;
