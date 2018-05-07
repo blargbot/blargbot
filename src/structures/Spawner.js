@@ -189,7 +189,7 @@ class Spawner extends EventEmitter {
                 }
                 break;
             case 'shardStats':
-                if (wss) {
+                if (global.wss) {
                     wss.broadcast({ code: 'shard', data });
                     this.shardCache[data.id] = data;
                 }
