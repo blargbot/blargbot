@@ -1,19 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
 
-async function sendHelp(msg, message, type, isPlural = false) {
-    if (typeof message != 'object')
-        message = { content: message };
-
-    if (msg.channel.guild && await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp')) {
-        let dmChannel = await bot.getDMChannel(msg.author.id);
-        await bu.send(msg, '📧 DMing you the ' + type + ' 📧');
-        message.content = 'Here ' + (isPlural ? 'are' : 'is') + ' the ' + type + ' you requested in <#' + msg.channel.id + '>\n' + (message.content || '');
-        await bu.send(dmChannel.id, message);
-    } else
-        await bu.send(msg, message);
-};
-
-
 class HelpCommand extends BaseCommand {
     constructor() {
         super({
@@ -125,7 +111,7 @@ ${flags}`;
                     prefix = await bu.guildSettings.get(msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
                 commandsString += 'For more information about commands, do `' + prefix + 'help <commandname>` or visit <https://blargbot.xyz/commands>';
 
-                await sendHelp(msg, commandsString, 'commands');
+                await this.sendHelp(msg, commandsString, 'commands');
             };
 
             function nextCommand(category, completeCommandList) {
@@ -177,6 +163,20 @@ ${flags}`;
             processCategory(i);
         }
     }
+
+    async sendHelp(msg, message, type, isPlural = false) {
+        if (typeof message != 'object')
+            message = { content: message };
+
+        if (msg.channel.guild && await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp')) {
+            let dmChannel = await bot.getDMChannel(msg.author.id);
+            await bu.send(msg, '📧 DMing you the ' + type + ' 📧');
+            message.content = 'Here ' + (isPlural ? 'are' : 'is') + ' the ' + type + ' you requested in <#' + msg.channel.id + '>\n' + (message.content || '');
+            await bu.send(dmChannel.id, message);
+        } else
+            await bu.send(msg, message);
+    };
+
 }
 
 module.exports = HelpCommand;
