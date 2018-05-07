@@ -48,7 +48,7 @@ class KickCommand extends BaseCommand {
         bu.send(msg, response);
     }
 
-    async event(msg, target, reason, tag = false, noPerms = false) {
+    async kick(msg, target, reason, tag = false, noPerms = false) {
         if (!msg.channel.guild.members.get(bot.user.id).permission.json.kickMembers)
             return 1;
         let kickPerms = await bu.guildSettings.get(msg.guild.id, 'kickoverride') || 0;
