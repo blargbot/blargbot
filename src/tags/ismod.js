@@ -10,7 +10,8 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('isstaff')
+    Builder.AutoTag('ismod')
+        .withAlias('isstaff')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Checks if `user` is a member of staff. `user` defaults to the person running the tag. ' +
             'If the `user` cannot be found `false` will be returned.')
