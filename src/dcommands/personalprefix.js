@@ -4,6 +4,7 @@ class PersonalprefixCommand extends BaseCommand {
     constructor() {
         super({
             name: 'personalprefix',
+            aliases: ['pprefix'],
             category: bu.CommandType.GENERAL,
             usage: 'personalprefix add|remove [prefix]',
             info: 'Adds or removes a personal prefix.'

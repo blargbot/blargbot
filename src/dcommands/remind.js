@@ -4,6 +4,7 @@ class RemindCommand extends BaseCommand {
     constructor() {
         super({
             name: 'remind',
+            aliases: ['remindme'],
             category: bu.CommandType.GENERAL,
             usage: 'remind <text> -t <time>',
             info: 'Reminds you about something after a period of time in a DM.',

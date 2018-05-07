@@ -68,6 +68,9 @@ async function generate(file) {
     if (mod.info) params.push('info: ' + util.inspect(mod.info));
     if (mod.onlyOn) params.push('onlyOn: ' + util.inspect(mod.onlyOn));
     if (mod.flags) params.push('flags: ' + util.inspect(mod.flags));
+    if (mod.alias) {
+        console.log(path.join(newPath, file) + '.js', ':', mod.alias);
+    }
 
     let func = mod.execute.toString();
     func = func.substring(func.indexOf('{') + 1, func.lastIndexOf('}') - 1);
@@ -102,7 +105,7 @@ async function processCommands() {
         if (file.endsWith('.js')) {
             let { text, flagged } = await generate(file);
             if (flagged) manuals.push(file);
-            await writeFile(path.join(newPath, file), text, { encoding: 'utf8' });
+            //await writeFile(path.join(newPath, file), text, { encoding: 'utf8' });
             console.log('Rewrote file', file);
         }
     }

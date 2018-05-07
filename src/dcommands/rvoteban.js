@@ -4,6 +4,7 @@ class RvotebanCommand extends BaseCommand {
     constructor() {
         super({
             name: 'rvoteban',
+            aliases: ['rpollban', 'removevoteban', 'removepollban', 'rvb', 'rpb'],
             category: bu.CommandType.ADMIN,
             usage: 'rvoteban (<user> | <flags>)',
             info: 'Removes the votebans for a specific user, or removes all votebans completely.',

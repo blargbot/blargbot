@@ -4,6 +4,7 @@ class EmojifyCommand extends BaseCommand {
     constructor() {
         super({
             name: 'emojify',
+            aliases: ['💬'],
             category: bu.CommandType.GENERAL,
             usage: 'emojify <text>',
             info: 'Gets emojis based on input.'

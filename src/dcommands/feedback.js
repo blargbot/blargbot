@@ -4,6 +4,7 @@ class FeedbackCommand extends BaseCommand {
     constructor() {
         super({
             name: 'feedback',
+            aliases: ['suggest', 'report'],
             category: bu.CommandType.GENERAL,
             usage: 'feedback <feedback>',
             info: 'This command has three different functions for varying purposes. Please do not abuse it.\n\n**__feedback__** - give me feedback about the bot\n**__suggest__** - tell me something you want to be added or changed\n**__report__** - let me know about a bug you found\n\nThank you for your support. It means a lot to me!'

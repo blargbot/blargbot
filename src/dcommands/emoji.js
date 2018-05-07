@@ -6,6 +6,7 @@ class EmojiCommand extends BaseCommand {
     constructor() {
         super({
             name: 'emoji',
+            aliases: ['e'],
             category: bu.CommandType.GENERAL,
             usage: 'emoji <emoji> [size]',
             info: 'Gives you a large version of an emoji. If size is specified, makes the image that size.',

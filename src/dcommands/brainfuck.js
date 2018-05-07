@@ -4,6 +4,7 @@ class BrainfuckCommand extends BaseCommand {
     constructor() {
         super({
             name: 'brainfuck',
+            aliases: ['rainfuck', 'br'],
             category: bu.CommandType.GENERAL,
             usage: 'brainfuck <code>',
             info: 'Executes brainfuck code.',

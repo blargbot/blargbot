@@ -4,6 +4,7 @@ class ClippyCommand extends BaseCommand {
     constructor() {
         super({
             name: 'clippy',
+            aliases: ['clippit', 'paperclip'],
             category: bu.CommandType.IMAGE,
             usage: 'clippy <text>',
             info: 'Clippy the paperclip is here to save the day!'

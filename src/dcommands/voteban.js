@@ -4,6 +4,7 @@ class VotebanCommand extends BaseCommand {
     constructor() {
         super({
             name: 'voteban',
+            aliases: ['pollban', 'vb', 'pb'],
             category: bu.CommandType.GENERAL,
             usage: 'voteban [info <user> | <user> [reason]]',
             info: 'Sign a petition to ban somebody, or check the status of a petition. If no arguments are provided, get the most signed petitions.'

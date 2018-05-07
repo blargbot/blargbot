@@ -46,6 +46,7 @@ class SyntaxCommand extends BaseCommand {
     constructor() {
         super({
             name: 'syntax',
+            aliases: ['syntaxify'],
             category: bu.CommandType.GENERAL,
             usage: 'syntax [command name]',
             info: 'Gives you the \'syntax\' for a command :wink:'

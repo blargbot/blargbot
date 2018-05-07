@@ -4,6 +4,7 @@ class ShitCommand extends BaseCommand {
     constructor() {
         super({
             name: 'shit',
+            aliases: ['heck'],
             category: bu.CommandType.IMAGE,
             usage: 'shit <text> [flags]',
             info: 'Tells everyone what\'s shit.',

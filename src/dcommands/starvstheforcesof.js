@@ -4,6 +4,7 @@ class StarvstheforcesofCommand extends BaseCommand {
     constructor() {
         super({
             name: 'starvstheforcesof',
+            aliases: ['svtfo'],
             category: bu.CommandType.IMAGE,
             usage: 'starvstheforcesof [user]',
             info: 'WHO IS STAR BATTLING THIS EPISODE?',

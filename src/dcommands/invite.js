@@ -4,6 +4,7 @@ class InviteCommand extends BaseCommand {
     constructor() {
         super({
             name: 'invite',
+            aliases: ['join'],
             category: bu.CommandType.GENERAL,
             usage: 'invite',
             info: 'Gets you invite information.'

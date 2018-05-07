@@ -4,6 +4,7 @@ class TruthCommand extends BaseCommand {
     constructor() {
         super({
             name: 'truth',
+            aliases: ['scrolloftruth'],
             category: bu.CommandType.IMAGE,
             usage: 'truth <text>',
             info: 'Shows everyone what is written in the Scroll of Truth.'
