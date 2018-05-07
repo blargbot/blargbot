@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-14 10:44:08
+ * @Last Modified time: 2018-05-07 15:11:59
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -75,7 +75,7 @@ e.executeCC = async function (msg, ccName, command) {
 };
 
 e.docs = async function (msg, command, topic) {
-    let help = CommandManager.list['help'],
+    let help = CommandManager.built['help'],
         argsOptions = { separator: { default: ';' } },
         tags = Object.keys(TagManager.list).map(k => TagManager.list[k]),
         words = (topic || 'index').toLowerCase().split(' '),

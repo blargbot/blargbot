@@ -223,7 +223,7 @@ function initEvents() {
             else if (!event.channel && !event.guild && event.user && process.env.SHARD_ID != 0) continue;
             else if (event.type === 'purgelogs' && process.env.SHARD_ID != 0) continue;
             let type = event.type;
-            CommandManager.list[type].event(event);
+            CommandManager.built[type].event(event);
             r.table('events').get(event.id).delete().run();
         }
     }, 10000);

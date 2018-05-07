@@ -406,17 +406,17 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                         case 0:
                             if (cens.deleteMessage) content = cens.deleteMessage;
                             else if (censor.rule.deleteMessage) content = censor.rule.deleteMessage;
-                            else content = CommandManager.list['censor'].defaultDeleteMessage;
+                            else content = CommandManager.built['censor'].defaultDeleteMessage;
                             break;
                         case 1:
                             if (cens.banMessage) content = cens.banMessage;
                             else if (censor.rule.banMessage) content = censor.rule.banMessage;
-                            else content = CommandManager.list['censor'].defaultBanMessage;
+                            else content = CommandManager.built['censor'].defaultBanMessage;
                             break;
                         case 2:
                             if (cens.kickMessage) content = cens.kickMessage;
                             else if (censor.rule.kickMessage) content = censor.rule.kickMessage;
-                            else content = CommandManager.list['censor'].defaultKickMessage;
+                            else content = CommandManager.built['censor'].defaultKickMessage;
                             break;
                     }
                     await bbEngine.runTag({

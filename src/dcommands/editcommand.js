@@ -16,7 +16,7 @@ class EditcommandCommand extends BaseCommand {
             let storedGuild;
             storedGuild = await bu.getGuild(msg.guild.id);
             let commandperms = storedGuild.commandperms;
-            let allcommands = Object.keys(CommandManager.list);
+            let allcommands = Object.keys(CommandManager.built);
             for (const key in commandperms) {
                 if (!allcommands.includes(key))
                     delete commandperms[key];
@@ -56,8 +56,8 @@ class EditcommandCommand extends BaseCommand {
                     for (let i = 0; i < commands.length; i++) {
                         if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
-                            if (CommandManager.list[commandName].category == bu.CommandType.CAT ||
-                                CommandManager.list[commandName].category == bu.CommandType.MUSIC) {
+                            if (CommandManager.built[commandName].category == bu.CommandType.CAT ||
+                                CommandManager.built[commandName].category == bu.CommandType.MUSIC) {
                                 console.debug('no ur not allowed');
                             } else {
                                 if (words.length == 3) {
@@ -93,9 +93,9 @@ class EditcommandCommand extends BaseCommand {
                     for (let i = 0; i < commands.length; i++) {
                         if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
-                            if (CommandManager.list[commandName].category == bu.CommandType.CAT ||
-                                CommandManager.list[commandName].category == bu.CommandType.MUSIC ||
-                                CommandManager.list[commandName].cannotDisable === true) {
+                            if (CommandManager.built[commandName].category == bu.CommandType.CAT ||
+                                CommandManager.built[commandName].category == bu.CommandType.MUSIC ||
+                                CommandManager.built[commandName].cannotDisable === true) {
                                 console.debug('no ur not allowed');
                             } else {
                                 console.debug(commandperms[commandName]);
@@ -135,8 +135,8 @@ class EditcommandCommand extends BaseCommand {
                     for (let i = 0; i < commands.length; i++) {
                         if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
-                            if (CommandManager.list[commandName].category == bu.CommandType.CAT ||
-                                CommandManager.list[commandName].category == bu.CommandType.MUSIC) {
+                            if (CommandManager.built[commandName].category == bu.CommandType.CAT ||
+                                CommandManager.built[commandName].category == bu.CommandType.MUSIC) {
                                 console.debug('no ur not allowed');
                             } else {
                                 if (words.length == 3) {
