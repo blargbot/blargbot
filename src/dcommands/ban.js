@@ -88,5 +88,6 @@ class BanCommand extends BaseCommand {
             return [`Failed to ban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, false];
         }
     }
+}
 
 module.exports = BanCommand;
