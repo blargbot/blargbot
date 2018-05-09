@@ -90,6 +90,11 @@ bu.settings = {
         name: 'No Cleverbot',
         desc: 'Disables cleverbot functionality',
         type: 'bool'
+    },
+    disableeveryone: {
+        name: 'Disable Everyone Pings',
+        desc: 'Disables everyone pings in custom commands.',
+        type: 'bool'
     }
 };
 
@@ -179,6 +184,7 @@ class SettingsCommand extends BaseCommand {
             let staffPerms = settings.staffperms || bu.defaultStaff;
             let kickPerms = settings.kickoverride || 0;
             let banPerms = settings.banoverride || 0;
+            let disableEveryone = settings.disableeveryone || false;
             let greetChan = settings.greetchan ? bot.getChannel(settings.greetchan) : 'Default';
             if (greetChan && greetChan != 'Default') greetChan = greetChan.name;
             else greetChan = 'Default Channel';
@@ -203,10 +209,11 @@ CAH is NSFW : ${cahNsfw}
                     {
                         name: 'Messages',
                         value: `\`\`\`
-  Greeting : ${greeting}
-  Farewell : ${farewell}
-Tableflips : ${tableFlip}
- Cleverbot : ${!cleverbot}
+         Greeting : ${greeting}
+         Farewell : ${farewell}
+       Tableflips : ${tableFlip}
+        Cleverbot : ${!cleverbot}
+Disable @everyone : ${disableEveryone}
 \`\`\``,
                         inline: true
                     },
