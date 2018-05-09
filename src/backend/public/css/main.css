@@ -245,3 +245,7 @@ body {
 main {
     flex: 1 0 auto;
 }
+
+ul.collapsible.collapsible-accordion .collapsible-header {
+    padding: 0 32px;
+}
