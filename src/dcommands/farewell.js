@@ -12,12 +12,24 @@ class FarewellCommand extends BaseCommand {
                 flag: 'c',
                 word: 'channel',
                 desc: 'The channel to put the farewell messages in.'
+            }, {
+                flag: 'r',
+                word: 'raw',
+                desc: 'Gets the code from the currently-set greeting.'
             }]
         });
     }
 
     async execute(msg, words, text) {
         let input = bu.parseInput(this.flags, words);
+
+        if (input.r) {
+            let g = await r.table('guild').get(msg.channel.guild.id);
+            let farewell = g.settings.farewell;
+            let channel = g.settings.farewellchan;
+            return await bu.send(msg, `The farewell is set in <#${channel}>.`, { file: farewell, name: 'farewell.bbtag' });
+        }
+
         if (input.undefined.length == 0) {
             bu.guildSettings.remove(msg.channel.guild.id, 'farewell').then(() => {
                 bu.send(msg, 'Disabled farewells');
