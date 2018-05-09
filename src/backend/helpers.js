@@ -2,13 +2,13 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:35
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-07 11:44:47
+ * @Last Modified time: 2018-05-08 20:32:12
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const showdown = require('showdown');
-const converter = new showdown.Converter();
+const converter = new showdown.Converter({ backslashEscapesHTMLTags: true });
 
 const argumentFactory = require('../structures/ArgumentFactory')
 let e = module.exports = {};
@@ -202,7 +202,9 @@ e.init = () => {
                     }</p>`;
             }
             if (lastType != 1) {
-                toReturn += `<p>Arguments: <code>${mdToHtml(argumentFactory.toString(subtag.args))}</code></p>`;
+                console.log(argumentFactory.toString(subtag.args));
+                console.log(mdToHtml(argumentFactory.toString(subtag.args)));
+                toReturn += mdToHtml('Arguments: `' + argumentFactory.toString(subtag.args) + '`');
             }
             if (subtag.array) toReturn += `<p>Array compatible</p>`;
             toReturn += `<p>${addSubtagReferences(mdToHtml(subtag.desc))}</p>`;
