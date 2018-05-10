@@ -110,7 +110,7 @@ class LogsCommand extends BaseCommand {
         }, 10000);
         let msgids = [msg.id, msg2.id];
 
-        let query = `SELECT * FROM chatlogs2 WHERE
+        let query = `SELECT * FROM chatlogs3 WHERE
         channelid = :channel
     `;
         console.log(query);

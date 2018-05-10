@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-09 20:31:48
+ * @Last Modified time: 2018-05-09 20:35:17
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -67,7 +67,7 @@ const cclient = new cassandra.Client({
     authProvider: new cassandra.auth.PlainTextAuthProvider(config.cassandra.username, config.cassandra.password)
 });
 cclient.execute(`
-    CREATE TABLE IF NOT EXISTS chatlogs2 (
+    CREATE TABLE IF NOT EXISTS chatlogs3 (
         id BIGINT,
         channelid BIGINT,
         guildid BIGINT,
@@ -83,15 +83,15 @@ cclient.execute(`
 `)
     .then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_msgid2 ON chatlogs2 (msgid); 
+            CREATE INDEX IF NOT EXISTS i_msgid2 ON chatlogs3 (msgid); 
         `);
     }).then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_channelid2 ON chatlogs2 (channelid); 
+            CREATE INDEX IF NOT EXISTS i_channelid2 ON chatlogs3 (channelid); 
         `);
     }).then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_id2 ON chatlogs2 (id); 
+            CREATE INDEX IF NOT EXISTS i_id2 ON chatlogs3 (id); 
         `);
     }).catch(err => {
         console.error(err.message, err.stack);

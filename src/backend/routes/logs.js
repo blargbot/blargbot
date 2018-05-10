@@ -46,7 +46,7 @@ router.post('/', async (req, res) => {
         let messages = [];
         try {
             for (const id of logsSpecs.ids) {
-                let r = await bu.cclient.execute(`SELECT * FROM ${res.locals.beta ? 'blargbot_beta' : 'blargbot'}.chatlogs2 WHERE id = ?`,
+                let r = await bu.cclient.execute(`SELECT * FROM ${res.locals.beta ? 'blargbot_beta' : 'blargbot'}.chatlogs3 WHERE id = ?`,
                     [id], { prepare: true });
                 messages.push(bu.normalize(r.rows[0]));
             }
