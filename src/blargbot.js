@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-09 20:35:17
+ * @Last Modified time: 2018-05-09 20:36:42
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -83,15 +83,15 @@ cclient.execute(`
 `)
     .then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_msgid2 ON chatlogs3 (msgid); 
+            CREATE INDEX IF NOT EXISTS i_msgid3 ON chatlogs3 (msgid); 
         `);
     }).then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_channelid2 ON chatlogs3 (channelid); 
+            CREATE INDEX IF NOT EXISTS i_channelid3 ON chatlogs3 (channelid); 
         `);
     }).then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_id2 ON chatlogs3 (id); 
+            CREATE INDEX IF NOT EXISTS i_id3 ON chatlogs3 (id); 
         `);
     }).catch(err => {
         console.error(err.message, err.stack);
