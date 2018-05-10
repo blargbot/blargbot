@@ -22,7 +22,7 @@ class KickCommand extends BaseCommand {
 
         if (!target) return;
 
-        let state = await e.kick(msg, target, reason, false, false);
+        let state = await this.kick(msg, target, reason, false, false);
         let response;
         switch (state) {
             case 0: //Successful

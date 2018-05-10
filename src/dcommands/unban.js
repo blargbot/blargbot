@@ -19,7 +19,7 @@ class UnbanCommand extends BaseCommand {
                 bu.send(msg, `I couldn't find that user. Please make sure you're giving me a user id or a mention.`);
                 return;
             }
-            let response = await e.unban(msg, user, input.r);
+            let response = await this.unban(msg, user, input.r);
             bu.send(msg, response[0]);
         }
     }

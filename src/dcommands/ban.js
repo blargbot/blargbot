@@ -34,7 +34,7 @@ class BanCommand extends BaseCommand {
             if (input.t && input.t.length > 0) {
                 duration = bu.parseDuration(input.t.join(' '));
             }
-            bu.send(msg, (await e.ban(msg, user, parseInt(input.undefined.length > 1 ? input.undefined[input.undefined.length - 1] : 0), input.r, duration))[0]);
+            bu.send(msg, (await this.ban(msg, user, parseInt(input.undefined.length > 1 ? input.undefined[input.undefined.length - 1] : 0), input.r, duration))[0]);
         } else bu.send(msg, 'You have to tell me who to ban!');
     }
 
