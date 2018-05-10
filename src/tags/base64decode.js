@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:27:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-09 13:47:53
+ * @Last Modified time: 2018-05-10 10:22:27
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,7 +10,8 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('atob')
+    Builder.AutoTag('base64decode')
+        .withAlias('atob')
         .withArgs(a => [
             a.require('base64')
         ]).withDesc('Converts the provided base64 to a UTF-8 string.')

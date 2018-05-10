@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:27:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-09 13:46:34
+ * @Last Modified time: 2018-05-10 10:22:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,7 +10,8 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('btoa')
+    Builder.AutoTag('base64encode')
+        .withAlias('btoa')
         .withArgs(a => [
             a.require('text')
         ]).withDesc('Converts the provided text to base64.')
