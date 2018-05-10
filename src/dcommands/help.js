@@ -17,8 +17,8 @@ class HelpCommand extends BaseCommand {
                 && (!CommandManager.commandList[words[1]].onlyOn || CommandManager.commandList[words[1]].onlyOn === msg.guild.id)) {
                 let aliases = '';
                 let flags = '';
-                if (CommandManager.built[CommandManager.commandList[words[1]].name].alias)
-                    aliases = `\n**__Aliases__**: [ ${CommandManager.built[CommandManager.commandList[words[1]].name].alias.join(', ')} ]`;
+                if (CommandManager.built[CommandManager.commandList[words[1]].name].aliases)
+                    aliases = `\n**__Aliases__**: [ ${CommandManager.built[CommandManager.commandList[words[1]].name].aliases.join(', ')} ]`;
                 if (CommandManager.built[CommandManager.commandList[words[1]].name].flags) {
                     flags = `**__Flags__**:\n`;
                     for (let flag of CommandManager.built[CommandManager.commandList[words[1]].name].flags) {
