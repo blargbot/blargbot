@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-03 21:53:19
+ * @Last Modified time: 2018-05-09 19:10:26
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -226,6 +226,7 @@ bu.normalize = function (r) {
             n[key] = r[key].toJSON();
         else if (typeof r[key] !== 'function') n[key] = r[key];
     }
+    n.desnowflaked = bu.unmakeSnowflake(n.id);
     n.msgtime = new Date(n.msgtime);
     try {
         n.embeds = JSON.parse(n.embeds);
@@ -260,9 +261,11 @@ bu.insertChatlog = async function (msg, type) {
             type: type,
             embeds: JSON.stringify(msg.embeds)
         }
+        try {
+            await cclient.execute(insertQuery, data, { prepare: true });
+        } catch (err) {
 
-        await cclient.execute(insertQuery, data, { prepare: true });
-
+        }
         // r.table('chatlogs').insert({
         //     id: bu.makeSnowflake(),
         //     content: msg.content,

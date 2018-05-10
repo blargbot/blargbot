@@ -122,7 +122,7 @@ class LogsCommand extends BaseCommand {
                 if (types.includes(r.type) && (users.length === 0 || users.includes(r.userid.toJSON())))
                     results.push(bu.normalize(r));
             }
-            results.sort((a, b) => b.msgtime - a.msgtime);
+            results.sort((a, b) => b.desnowflaked - a.desnowflaked);
             results = results.slice(0, numberOfMessages);
         } catch (err) {
             console.error(err, err.message);
