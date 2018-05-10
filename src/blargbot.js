@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-09 19:36:27
+ * @Last Modified time: 2018-05-09 20:31:48
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -78,22 +78,20 @@ cclient.execute(`
         embeds TEXT,
         type INT,
         attachment TEXT,
-        PRIMARY KEY ((channelid), id)
-    ) WITH CLUSTERING ORDER BY (id DESC);
+        PRIMARY KEY ((type), channelid, id)
+    ) WITH CLUSTERING ORDER BY (channelid ASC, id DESC);
 `)
     .then(res => {
         return cclient.execute(`
             CREATE INDEX IF NOT EXISTS i_msgid2 ON chatlogs2 (msgid); 
         `);
-    })
-    .then(res => {
+    }).then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_userid2 ON chatlogs2 (userid); 
+            CREATE INDEX IF NOT EXISTS i_channelid2 ON chatlogs2 (channelid); 
         `);
-    })
-    .then(res => {
+    }).then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_type2 ON chatlogs2 (type); 
+            CREATE INDEX IF NOT EXISTS i_id2 ON chatlogs2 (id); 
         `);
     }).catch(err => {
         console.error(err.message, err.stack);
