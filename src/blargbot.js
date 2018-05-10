@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-09 20:36:42
+ * @Last Modified time: 2018-05-09 21:02:42
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -67,7 +67,7 @@ const cclient = new cassandra.Client({
     authProvider: new cassandra.auth.PlainTextAuthProvider(config.cassandra.username, config.cassandra.password)
 });
 cclient.execute(`
-    CREATE TABLE IF NOT EXISTS chatlogs3 (
+    CREATE TABLE IF NOT EXISTS chatlogs2 (
         id BIGINT,
         channelid BIGINT,
         guildid BIGINT,
@@ -78,20 +78,20 @@ cclient.execute(`
         embeds TEXT,
         type INT,
         attachment TEXT,
-        PRIMARY KEY ((type), channelid, id)
-    ) WITH CLUSTERING ORDER BY (channelid ASC, id DESC);
+        PRIMARY KEY ((type), id)
+    ) WITH CLUSTERING ORDER BY (id DESC);
 `)
     .then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_msgid3 ON chatlogs3 (msgid); 
+            CREATE INDEX IF NOT EXISTS i_msgid2 ON chatlogs2 (msgid); 
         `);
     }).then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_channelid3 ON chatlogs3 (channelid); 
+            CREATE INDEX IF NOT EXISTS i_channelid2 ON chatlogs2 (channelid); 
         `);
     }).then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_id3 ON chatlogs3 (id); 
+            CREATE INDEX IF NOT EXISTS i_id2 ON chatlogs2 (id); 
         `);
     }).catch(err => {
         console.error(err.message, err.stack);

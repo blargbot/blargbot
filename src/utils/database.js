@@ -214,7 +214,7 @@ bu.getGuild = async function (guildid) {
 };
 
 const insertQuery = `
-    INSERT INTO chatlogs3 (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)
+    INSERT INTO chatlogs2 (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)
         VALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)
         USING TTL 604800
 `;
@@ -238,7 +238,7 @@ bu.normalize = function (r) {
     return n;
 }
 bu.getChatlog = async function (id) {
-    let res = await cclient.execute(`SELECT * FROM chatlogs3 WHERE msgid = ?`, [id], { prepare: true });
+    let res = await cclient.execute(`SELECT * FROM chatlogs2 WHERE msgid = ?`, [id], { prepare: true });
     let msgs = [];
     for (const row of res.rows) {
         msgs.push(bu.normalize(row));
