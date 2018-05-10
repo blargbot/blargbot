@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const sf = require('snekfetch');
 
 class PccheckCommand extends BaseCommand {
     constructor() {
@@ -10,24 +11,17 @@ class PccheckCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (words.length === 1) {
             return bu.send(msg, 'You didn\'t provide any text!');
         }
-
+        let text = words.slice(1).join(' ');
         bot.sendChannelTyping(msg.channel.id);
-
-        let code = bu.genEventCode();
-
-        let buffer = await bu.awaitEvent({
-            cmd: 'img',
-            command: 'pccheck',
-            code: code,
-            text: words.slice(1).join(' ')
-        });
+        text = await bu.filterMentions(text);
+        let buf = await bu.blargbotApi('pccheck', { text: text });
 
         bu.send(msg, undefined, {
-            file: buffer,
+            file: buf,
             name: 'didyouknow.png'
         });
     }

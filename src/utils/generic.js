@@ -2,13 +2,14 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-06 14:08:04
+ * @Last Modified time: 2018-05-10 12:16:20
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const colors = require('../../res/colors') || {},
-    emojiRegex = require('emoji-regex');
+    emojiRegex = require('emoji-regex'),
+    snekfetch = require('snekfetch');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -1505,4 +1506,11 @@ bu.toBlocks = function (text) {
         if (numbers[i] !== undefined) result.push(parseFloat(numbers[i]));
     }
     return result;
+}
+
+bu.blargbotApi = async function (endpoint, args = {}) {
+    let res = await snekfetch.post(config.blargbot_api.base + endpoint)
+        .set({ Authorization: config.blargbot_api.token })
+        .send(args);
+    return res.body;
 }

@@ -16,24 +16,17 @@ class ShitCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = bu.parseInput(this.flags, words);
-        let shitText = 'Your favourite anime';
-        var plural = false;
+        let text = 'Your favourite anime';
+        let plural = false;
         if (input.p) plural = true;
         if (input.undefined.length > 0)
-            shitText = await bu.filterMentions(input.undefined.join(' '));
+            text = await bu.filterMentions(input.undefined.join(' '));
         bot.sendChannelTyping(msg.channel.id);
-        let code = bu.genEventCode();
-        let buffer = await bu.awaitEvent({
-            cmd: 'img',
-            command: 'shit',
-            code: code,
-            text: shitText,
-            plural: plural
-        });
+        let buf = await bu.blargbotApi('shit', { text, plural })
         bu.send(msg, undefined, {
-            file: buffer,
+            file: buf,
             name: 'SHIIIITTTTTT.png'
         });
     }

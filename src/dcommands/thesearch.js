@@ -10,18 +10,13 @@ class ThesearchCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
-        var shitText = 'I use betterdiscord';
-        if (words[1]) shitText = words.slice(1).join(' ');
-        shitText = await bu.filterMentions(shitText);
-        console.debug(dep.util.inspect(words));
+    async execute(msg, words) {
+        var text = 'I use betterdiscord';
+        if (words[1]) text = words.slice(1).join(' ');
+        text = await bu.filterMentions(text);
         bot.sendChannelTyping(msg.channel.id);
-        let code = bu.genEventCode();
-        let buffer = await bu.awaitEvent({
-            cmd: 'img',
-            command: 'thesearch',
-            code: code,
-            text: shitText
+        let buffer = await bu.blargbotApi('thesearch', {
+            text: text
         });
         bu.send(msg, undefined, {
             file: buffer,

@@ -10,20 +10,14 @@ class DeleteCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (words.length > 1) {
-            let input = (await bu.filterMentions(words.slice(1).join('\n').replace(/\n/gim, ' ').substring(0, 256), msg.guild)).trim();
+            let text = (await bu.filterMentions(words.slice(1).join('\n').replace(/\n/gim, ' ').substring(0, 256), msg.guild)).trim();
             let code = bu.genEventCode();
             bot.sendChannelTyping(msg.channel.id);
-
-            let buffer = await bu.awaitEvent({
-                cmd: 'img',
-                command: 'delete',
-                code: code,
-                input: input
-            });
+            let buf = await bu.blargbotApi('delete', { text });
             bu.send(msg, undefined, {
-                file: buffer,
+                file: buf,
                 name: 'deleted.png'
             });
         } else {
