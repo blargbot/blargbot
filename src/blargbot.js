@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-01 22:57:31
+ * @Last Modified time: 2018-05-09 19:36:27
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,8 +10,8 @@
 global.config = require('../config.json');
 const Logger = require('./core/logger');
 new Logger('MS', config.general.isbeta ? 'debug' : 'info').setGlobal();
-process.on('unhandledRejection', (reason, p) => {
-    console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
+process.on('unhandledRejection', (err) => {
+    console.error('Unhandled Promise Rejection:', err);
 });
 global.dep = require('./core/dep.js');
 
@@ -67,8 +67,8 @@ const cclient = new cassandra.Client({
     authProvider: new cassandra.auth.PlainTextAuthProvider(config.cassandra.username, config.cassandra.password)
 });
 cclient.execute(`
-    CREATE TABLE IF NOT EXISTS chatlogs (
-        id BIGINT PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS chatlogs2 (
+        id BIGINT,
         channelid BIGINT,
         guildid BIGINT,
         msgid BIGINT,
@@ -77,29 +77,26 @@ cclient.execute(`
         msgtime TIMESTAMP,
         embeds TEXT,
         type INT,
-        attachment TEXT
-    );
+        attachment TEXT,
+        PRIMARY KEY ((channelid), id)
+    ) WITH CLUSTERING ORDER BY (id DESC);
 `)
     .then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_msgid ON chatlogs (msgid); 
+            CREATE INDEX IF NOT EXISTS i_msgid2 ON chatlogs2 (msgid); 
         `);
     })
     .then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_userid ON chatlogs (userid); 
+            CREATE INDEX IF NOT EXISTS i_userid2 ON chatlogs2 (userid); 
         `);
     })
     .then(res => {
         return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_channelid ON chatlogs (channelid); 
-        `);
-    }).then(res => {
-        return cclient.execute(`
-            CREATE INDEX IF NOT EXISTS i_type ON chatlogs (type); 
+            CREATE INDEX IF NOT EXISTS i_type2 ON chatlogs2 (type); 
         `);
     }).catch(err => {
-        console.error(err);
+        console.error(err.message, err.stack);
     });
 
 init();

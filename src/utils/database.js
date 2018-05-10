@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-09 19:10:26
+ * @Last Modified time: 2018-05-09 19:30:11
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -214,8 +214,9 @@ bu.getGuild = async function (guildid) {
 };
 
 const insertQuery = `
-    INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)
+    INSERT INTO chatlogs2 (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)
         VALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)
+        USING TTL 604800
 `;
 
 bu.normalize = function (r) {
@@ -237,7 +238,7 @@ bu.normalize = function (r) {
     return n;
 }
 bu.getChatlog = async function (id) {
-    let res = await cclient.execute(`SELECT * FROM chatlogs WHERE msgid = ?`, [id], { prepare: true });
+    let res = await cclient.execute(`SELECT * FROM chatlogs2 WHERE msgid = ?`, [id], { prepare: true });
     let msgs = [];
     for (const row of res.rows) {
         msgs.push(bu.normalize(row));
