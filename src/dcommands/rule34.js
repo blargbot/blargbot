@@ -49,6 +49,7 @@ class Rule34Command extends BaseCommand {
             //    parsedXml = doc;
             //console.('result: ' + result);
             var urlList = [];
+            let message;
             //   console.(dep.util.inspect(doc.posts.post[0]))
             if (doc.posts.post != null)
                 for (let i = 0; i < doc.posts.post.length; i++) {
