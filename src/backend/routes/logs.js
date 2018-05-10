@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-03 21:56:39
+ * @Last Modified time: 2018-05-09 20:32:24
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -44,9 +44,14 @@ router.post('/', async (req, res) => {
         res.locals.continue = false;
     } else {
         let messages = [];
-        for (const id of logsSpecs.ids) {
-            let r = await bu.cclient.execute(`SELECT * FROM ${hash.startsWith('beta') ? 'blargbot_beta' : 'blargbot'}.chatlogs WHERE id = ?`, [id], { prepare: true });
-            messages.push(bu.normalize(r.rows[0]));
+        try {
+            for (const id of logsSpecs.ids) {
+                let r = await bu.cclient.execute(`SELECT * FROM ${res.locals.beta ? 'blargbot_beta' : 'blargbot'}.chatlogs2 WHERE id = ?`,
+                    [id], { prepare: true });
+                messages.push(bu.normalize(r.rows[0]));
+            }
+        } catch (err) {
+            console.error(err.query + '\n', err.info, err.message, err.stack);
         }
         // let messages = await r.db(db).table('chatlogs')
         //     .getAll(r.args(logsSpecs.ids), { index: 'msgid' })
