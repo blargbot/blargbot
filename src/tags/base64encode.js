@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:27:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-10 10:22:53
+ * @Last Modified time: 2018-05-10 12:57:29
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -16,7 +16,7 @@ module.exports =
             a.require('text')
         ]).withDesc('Converts the provided text to base64.')
         .withExample(
-        '{btoa;Fancy!}',
+        '{base64encode;Fancy!}',
         'RmFuY3kh'
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
