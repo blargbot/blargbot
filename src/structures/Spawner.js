@@ -33,7 +33,7 @@ class Spawner extends EventEmitter {
 
         this.metricsInterval = setInterval(async () => {
             await this.retrieveMetrics();
-        }, 30000);
+        }, 15000);
     }
 
     respawnAll() {
