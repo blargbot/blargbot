@@ -20,8 +20,10 @@ class Spawner extends EventEmitter {
         this.shardCache = {};
 
         this.uptimeInterval = setInterval(async () => {
+            bu.Metrics.shardStatus.reset();
             for (const key of Object.keys(this.shardCache)) {
                 const shard = this.shardCache[key];
+                bu.Metrics.shardStatus.labels(shard.status).inc();
                 let diff = moment.duration(moment() - shard.time);
                 if (!shard.respawning && diff.asMilliseconds() > 60000) {
                     shard.respawning = true;

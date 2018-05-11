@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-11 10:17:44
+ * @Last Modified time: 2018-05-11 11:32:26
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -141,7 +141,6 @@ process.on('message', async msg => {
                 case 'metrics': {
                     bu.Metrics.userGauge.set(bot.users.size);
                     bot.sender.send(eventKey, JSON.stringify(bu.Metrics.aggregated.getMetricsAsJSON()));
-                    bu.Metrics.guildChangeCounter.reset();
                     break;
                 }
                 case 'lookupChannel': {
