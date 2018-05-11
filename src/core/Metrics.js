@@ -46,4 +46,19 @@ const bbtagExecutions = new Prometheus.Counter({
     labelNames: ['type']
 });
 
-module.exports = { Prometheus, guildGauge, guildChangeCounter, userGauge, messageCounter, chatlogCounter, commandCounter, commandError, commandLatency, bbtagExecutions, register: Prometheus.register };
+const aggregate = function (regArray) {
+    let aggregated = Prometheus.AggregatorRegistry.aggregate(regArray);
+    return aggregated;
+}
+
+module.exports = {
+    Prometheus, aggregate, guildGauge, guildChangeCounter, userGauge, messageCounter,
+    chatlogCounter, commandCounter, commandError, commandLatency, bbtagExecutions,
+    registryCache: [],
+    get aggregated() {
+        let c = module.exports.registryCache.filter(m => true);
+        c.push(Prometheus.register.getMetricsAsJSON());
+
+        return aggregate(c);
+    }
+};
