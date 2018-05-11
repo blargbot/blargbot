@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-10 19:02:08
+ * @Last Modified time: 2018-05-10 19:16:27
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -272,7 +272,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
                     await executeCommand(commandName, msg, words, text);
                     timer.end();
                     bu.Metrics.commandLatency.labels(commandName).observe(timer.elapsed);
-                    bu.Metrics.commandCounter.labels(commandName, _built.category).inc();
+                    bu.Metrics.commandCounter.labels(commandName, bu.CommandType.properties[_built.category].name.toLowerCase()).inc();
                 } catch (err) {
                     console.error(err.stack);
                     bu.Metrics.commandError.labels(commandName).inc();
