@@ -57,7 +57,7 @@ module.exports = {
     registryCache: [],
     get aggregated() {
         let c = module.exports.registryCache.filter(m => true);
-        c.push(Prometheus.register.getMetricsAsJSON());
+        c.unshift(Prometheus.register.getMetricsAsJSON());
 
         return aggregate(c);
     }
