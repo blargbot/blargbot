@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:21:21
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-10 18:14:48
+ * @Last Modified time: 2018-05-10 20:11:14
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,6 +10,7 @@
 bot.on('guildCreate', async function (guild) {
     bu.postStats();
     bu.Metrics.guildGauge.inc();
+    bu.Metrics.guildChangeCounter.labels('join').inc();
     console.debug('added to guild');
     let storedGuild = await bu.getGuild(guild.id);
     if (!storedGuild || !storedGuild.active) {

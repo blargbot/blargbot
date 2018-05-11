@@ -7,6 +7,11 @@ const guildGauge = new Prometheus.Gauge({
     name: 'bot_guild_gauge', help: 'How many guilds the bot is in'
 });
 
+const guildChangeCounter = new Prometheus.Counter({
+    name: 'bot_guild_change_counter', help: 'How often guilds change',
+    labelNames: ['type']
+});
+
 const userGauge = new Prometheus.Gauge({
     name: 'bot_user_gauge', help: 'How many users the bot can see'
 });
@@ -41,4 +46,4 @@ const bbtagExecutions = new Prometheus.Counter({
     labelNames: ['type']
 });
 
-module.exports = { Prometheus, guildGauge, userGauge, messageCounter, chatlogCounter, commandCounter, commandError, commandLatency, bbtagExecutions, register: Prometheus.register };
+module.exports = { Prometheus, guildGauge, guildChangeCounter, userGauge, messageCounter, chatlogCounter, commandCounter, commandError, commandLatency, bbtagExecutions, register: Prometheus.register };
