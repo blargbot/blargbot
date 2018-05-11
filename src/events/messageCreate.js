@@ -2,13 +2,13 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-07 10:37:18
+ * @Last Modified time: 2018-05-10 19:02:08
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const bbEngine = require('../structures/BBTagEngine');
-
+const Timer = require('../structures/Timer');
 const cleverbotIo = new dep.cleverbotIo({
     user: config.cleverbot.ioid,
     key: config.cleverbot.iokey,
@@ -46,6 +46,7 @@ const cleverbot = new dep.cleverbot({
 });
 
 bot.on('messageCreate', async function (msg) {
+    bu.Metrics.messageCounter.inc();
     processUser(msg);
     let isDm = msg.channel.guild == undefined;
     let storedGuild;
@@ -255,19 +256,26 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
                 tagName: ccommandName,
                 author
             });
+            bu.Metrics.commandCounter.labels('custom', 'custom').inc();
             return true;
         }
     } else {
-        if (CommandManager.commandList.hasOwnProperty(words[0].toLowerCase())) {
-            let commandName = CommandManager.commandList[words[0].toLowerCase()].name;
+        let _command = CommandManager.commandList[words[0].toLowerCase()]
+        if (_command) {
+            let commandName = _command.name;
+            let _built = CommandManager.built[commandName];
             let val2 = await bu.canExecuteCommand(msg, commandName);
             if (val2[0]) {
                 try {
                     console.command(outputLog);
-
+                    let timer = new Timer().start();
                     await executeCommand(commandName, msg, words, text);
+                    timer.end();
+                    bu.Metrics.commandLatency.labels(commandName).observe(timer.elapsed);
+                    bu.Metrics.commandCounter.labels(commandName, _built.category).inc();
                 } catch (err) {
                     console.error(err.stack);
+                    bu.Metrics.commandError.labels(commandName).inc();
                 }
             }
             return val2[0];
@@ -277,18 +285,6 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
     }
 };
 var executeCommand = async function (commandName, msg, words, text) {
-    // console.debug(commandName);
-    // r.table('stats').get(commandName).update({
-    //     uses: r.row('uses').add(1),
-    //     lastused: r.epochTime(dep.moment() / 1000)
-    // }).run();
-    if (bu.commandStats.hasOwnProperty(commandName)) {
-        bu.commandStats[commandName]++;
-    } else {
-        bu.commandStats[commandName] = 1;
-    }
-    bu.commandUses++;
-
     try {
         await CommandManager.built[commandName].execute(msg, words, text);
     } catch (err) {

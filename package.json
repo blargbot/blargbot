@@ -54,6 +54,7 @@
     "phantom": "^4.0.12",
     "phantomjs": "^2.1.7",
     "phantomjs-prebuilt": "^2.1.16",
+    "prom-client": "^11.0.0",
     "promise": "^7.1.1",
     "request": "^2.79.0",
     "require-reload": "^0.2.2",

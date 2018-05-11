@@ -30,6 +30,10 @@ class Spawner extends EventEmitter {
                 }
             }
         }, 10000);
+
+        this.metricsInterval = setInterval(async () => {
+            await this.retrieveMetrics();
+        }, 30000);
     }
 
     respawnAll() {
@@ -116,6 +120,15 @@ class Spawner extends EventEmitter {
     async lookupChannel(id) {
         let res = await this.awaitBroadcast({ message: 'lookupChannel', id });
         return res.map(r => JSON.parse(r.message)).filter(r => r !== null)[0] || { channel: 'Unknown', guild: 'Unknown' };
+    }
+
+    async retrieveMetrics() {
+        let res = await this.awaitBroadcast({ message: 'metrics' });
+        res = res.map(r => JSON.parse(r.message));
+        res.push(bu.Metrics.Prometheus.register.getMetricsAsJSON());
+
+        let aggregateRegister = bu.Metrics.Prometheus.AggregatorRegistry.aggregate(res);
+        bu.Metrics.register = aggregateRegister;
     }
 
     async getStaffGuilds(userId, guilds) {

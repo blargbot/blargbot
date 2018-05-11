@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-09 19:30:11
+ * @Last Modified time: 2018-05-10 18:43:29
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -250,6 +250,7 @@ bu.getChatlog = async function (id) {
 
 bu.insertChatlog = async function (msg, type) {
     if (msg.channel.id != '204404225914961920') {
+        bu.Metrics.chatlogCounter.labels(type === 0 ? 'create' : type === 1 ? 'update' : 'delete').inc();
         let data = {
             id: bu.makeSnowflake(),
             content: msg.content,

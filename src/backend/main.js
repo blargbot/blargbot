@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-25 23:35:37
+ * @Last Modified time: 2018-05-10 18:38:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -103,6 +103,11 @@ e.init = () => {
     app.get('/messages', function (req, res) {
         res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
         res.render('messages');
+    });
+
+    app.get('/metrics', function (req, res) {
+        res.set('Content-Type', bu.Metrics.register.contentType)
+        res.end(bu.Metrics.register.metrics())
     });
 
     app.get('/avatar/:id', async function (req, res) {

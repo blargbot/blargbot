@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:22
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-02-25 14:02:31
+ * @Last Modified time: 2018-05-10 18:13:16
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -124,3 +124,5 @@ bu.ModLogColour = {
     WARN: 0xd1be79,
     PARDON: 0x79d196
 };
+
+bu.Metrics = require('../core/Metrics');

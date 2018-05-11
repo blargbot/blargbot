@@ -566,6 +566,8 @@ async function runTag(content, context) {
         }, attachment);
     if (response != null && response.channel != null)
         await bu.addReactions(response.channel.id, response.id, [...new Set(context.state.reactions)]);
+
+    bu.Metrics.bbtagExecutions.labels(context.isCC ? 'custom command' : 'tag').inc();
     return { context, result, response };
 };
 
