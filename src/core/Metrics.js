@@ -27,7 +27,7 @@ const commandCounter = new Prometheus.Counter({
 
 const commandLatency = new Prometheus.Histogram({
     name: 'bot_command_latency_ms', help: 'The latency of commands',
-    labelNames: ['command'],
+    labelNames: ['command', 'category'],
     buckets: [10, 100, 500, 1000, 2000, 5000]
 });
 
