@@ -26,17 +26,11 @@ module.exports =
             if (tag == null)
                 return Builder.util.error(subtag, context, 'Tag not found: ' + args[0]);
 
-            switch (args.length) {
-                case 1:
-                    return await this.execTag(subtag, context, tag.content, '');
+            if (args.length == 1)
+                return await this.execTag(subtag, context, tag.content, '');
 
-                case 2:
-                    return await this.execTag(subtag, context, tag.content, args[1]);
-
-                default:
-                    let a = Builder.util.flattenArgArrays(args.slice(1));
-                    return await this.execTag(subtag, context, tag.content, '"'+a.join('" "')+'"');
-            }
+            let a = Builder.util.flattenArgArrays(args.slice(1));
+            return await this.execTag(subtag, context, tag.content, '"'+a.join('" "')+'"');
         })
         .withProp('execTag', async function (subtag, context, tagContent, input) {
             if (context.state.stackSize >= 200) {

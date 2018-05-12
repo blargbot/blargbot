@@ -25,16 +25,10 @@ module.exports =
             if (ccommand == null)
                 return Builder.util.error(subtag, context, 'CCommand not found: ' + args[0]);
             
-            switch (args.length) {
-                case 1:
-                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '');
+            if (args.length == 1) 
+                return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '');
 
-                case 2:
-                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1]);
-
-                default:
-                    let a = Builder.util.flattenArgArrays(args.slice(1));
-                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '"'+a.join('" "')+'"');
-            }
+            let a = Builder.util.flattenArgArrays(args.slice(1));
+            return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '"'+a.join('" "')+'"');
         })
         .build();
