@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:59
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:58:28
+ * @Last Modified time: 2018-05-11 18:30:01
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,7 +14,7 @@ module.exports =
         .withArgs(a => [a.require('array'), a.require('start'), a.optional('deleteCount'), a.optional('items', true)])
         .withDesc('Removes `deleteCount` elements (defaults to 0) from `array` starting at `start`. ' +
             'Then, adds each `item` at that position in `array`. Returns the removed items. ' +
-            'If used with `{get}` this will modify the original array')
+            'If used with a variable this will modify the original array')
         .withExample(
             '{set;~array;["this", "is", "an", "array"]} {splice;{get;~array};1;1;was} {get;~array}',
             '["is"] {"v":["this","was","an","array"],"n":"~array"}'
