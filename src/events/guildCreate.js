@@ -10,7 +10,6 @@
 bot.on('guildCreate', async function (guild) {
     bu.postStats();
     bu.Metrics.guildGauge.inc();
-    bu.Metrics.guildChangeCounter.labels('join').inc();
     console.debug('added to guild');
     let storedGuild = await bu.getGuild(guild.id);
     if (!storedGuild || !storedGuild.active) {

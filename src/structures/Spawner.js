@@ -20,8 +20,10 @@ class Spawner extends EventEmitter {
         this.shardCache = {};
 
         this.uptimeInterval = setInterval(async () => {
+            bu.Metrics.shardStatus.reset();
             for (const key of Object.keys(this.shardCache)) {
                 const shard = this.shardCache[key];
+                bu.Metrics.shardStatus.labels(shard.status).inc();
                 let diff = moment.duration(moment() - shard.time);
                 if (!shard.respawning && diff.asMilliseconds() > 60000) {
                     shard.respawning = true;
@@ -30,7 +32,7 @@ class Spawner extends EventEmitter {
                 }
             }
         }, 10000);
-
+        this.metricCache = {};
         this.metricsInterval = setInterval(async () => {
             await this.retrieveMetrics();
         }, 15000);
@@ -124,11 +126,8 @@ class Spawner extends EventEmitter {
 
     async retrieveMetrics() {
         let res = await this.awaitBroadcast({ message: 'metrics' });
-        res = res.map(r => JSON.parse(r.message));
-        res.push(bu.Metrics.Prometheus.register.getMetricsAsJSON());
-
-        let aggregateRegister = bu.Metrics.Prometheus.AggregatorRegistry.aggregate(res);
-        bu.Metrics.register = aggregateRegister;
+        res.forEach(r => this.metricCache[r.shard] = JSON.parse(r.message));
+        bu.Metrics.registryCache = Object.values(this.metricCache);
     }
 
     async getStaffGuilds(userId, guilds) {
@@ -144,6 +143,9 @@ class Spawner extends EventEmitter {
             case 'await':
                 const eventKey = 'await:' + data.key;
                 switch (data.message) {
+                    case 'requestMetrics':
+                        await shard.send(eventKey, { metric: JSON.stringify(this.metricCache[shard.id] || null) });
+                        break;
                     case 'shardStatus':
                         let statuses = await this.awaitBroadcast('shardStatus');
                         await shard.send(eventKey, { message: statuses });

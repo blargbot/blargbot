@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:21:42
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-10 20:11:14
+ * @Last Modified time: 2018-05-11 11:21:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,7 +10,6 @@
 bot.on('guildDelete', async function (guild) {
     bu.postStats();
     bu.Metrics.guildGauge.dec();
-    bu.Metrics.guildChangeCounter.labels('leave').inc();
     console.debug('removed from guild');
     let members = guild.memberCount;
     if (guild.members) {

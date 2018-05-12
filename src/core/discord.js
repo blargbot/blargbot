@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-10 20:17:24
+ * @Last Modified time: 2018-05-11 11:32:26
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -47,6 +47,7 @@ class DiscordClient extends dep.Eris.Client {
         bu.commandMessages = {};
         bu.notCommandMessages = {};
 
+        this.sender = new Sender(this, process);
         console.debug('HELLOOOOO?');
 
 
@@ -72,7 +73,6 @@ class DiscordClient extends dep.Eris.Client {
 
         //website.init();
 
-        this.sender = new Sender(this, process);
 
         console.init('Connecting...');
         this.connect();
@@ -140,8 +140,7 @@ process.on('message', async msg => {
             switch (data.message) {
                 case 'metrics': {
                     bu.Metrics.userGauge.set(bot.users.size);
-                    bot.sender.send(eventKey, JSON.stringify(bu.Metrics.Prometheus.register.getMetricsAsJSON()));
-                    bu.Metrics.guildChangeCounter.reset();
+                    bot.sender.send(eventKey, JSON.stringify(bu.Metrics.aggregated.getMetricsAsJSON()));
                     break;
                 }
                 case 'lookupChannel': {

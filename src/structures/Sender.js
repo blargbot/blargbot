@@ -14,7 +14,8 @@ class Sender extends EventEmitter {
         }
         if (!(data instanceof Object))
             data = {
-                message: data
+                message: data,
+                shard: parseInt(process.env.SHARD_ID)
             };
         const message = {
             code, data

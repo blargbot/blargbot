@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-10 18:38:53
+ * @Last Modified time: 2018-05-11 09:30:23
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -106,8 +106,9 @@ e.init = () => {
     });
 
     app.get('/metrics', function (req, res) {
-        res.set('Content-Type', bu.Metrics.register.contentType)
-        res.end(bu.Metrics.register.metrics())
+        let register = bu.Metrics.aggregated;
+        res.set('Content-Type', register.contentType)
+        res.end(register.metrics())
     });
 
     app.get('/avatar/:id', async function (req, res) {

@@ -7,9 +7,9 @@ const guildGauge = new Prometheus.Gauge({
     name: 'bot_guild_gauge', help: 'How many guilds the bot is in'
 });
 
-const guildChangeCounter = new Prometheus.Counter({
-    name: 'bot_guild_change_counter', help: 'How often guilds change',
-    labelNames: ['type']
+const shardStatus = new Prometheus.Gauge({
+    name: 'bot_shard_status', help: 'The status of the shards',
+    labelNames: ['status']
 });
 
 const userGauge = new Prometheus.Gauge({
@@ -46,4 +46,19 @@ const bbtagExecutions = new Prometheus.Counter({
     labelNames: ['type']
 });
 
-module.exports = { Prometheus, guildGauge, guildChangeCounter, userGauge, messageCounter, chatlogCounter, commandCounter, commandError, commandLatency, bbtagExecutions, register: Prometheus.register };
+const aggregate = function (regArray) {
+    let aggregated = Prometheus.AggregatorRegistry.aggregate(regArray);
+    return aggregated;
+}
+
+module.exports = {
+    Prometheus, aggregate, guildGauge, shardStatus, userGauge, messageCounter,
+    chatlogCounter, commandCounter, commandError, commandLatency, bbtagExecutions,
+    registryCache: [],
+    get aggregated() {
+        let c = module.exports.registryCache.filter(m => true);
+        c.unshift(Prometheus.register.getMetricsAsJSON());
+
+        return aggregate(c);
+    }
+};
