@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:21
  * @Last Modified by: zoomah
- * @Last Modified time: 2018-05-13 8:00:21
+ * @Last Modified time: 2018-05-12 18:37:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -27,9 +27,6 @@ module.exports =
             
             if (args.length == 1) 
                 return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '');
-
-            if (args.length == 2) 
-                return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1]);
 
             let a = Builder.util.flattenArgArrays(args.slice(1));
             return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '"'+a.join('" "')+'"');
