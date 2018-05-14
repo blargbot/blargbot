@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:03
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-05 16:51:36
+ * @Last Modified time: 2018-05-11 19:08:27
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('push')
         .withArgs(a => [a.require('array'), a.require('values', true)])
-        .withDesc('Pushes `values` onto the end of `array`. If used with `{get}` this will update the original variable. Otherwise, it will simply output the new array.')
+        .withDesc('Pushes `values` onto the end of `array`. If provided a variable, this will update the original variable. Otherwise, it will simply output the new array.')
         .withExample(
             '{push;["this", "is", "an"];array}',
             '["this","is","an","array"]'

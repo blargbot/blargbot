@@ -304,6 +304,10 @@ class VariableCache {
      * @param {string} value The value to set the variable to
      */
     async set(variable, value) {
+        if (typeof value === 'object') {
+            value = JSON.parse(JSON.stringify(value));
+        }
+
         let forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
         if (this.cache[variable] == null)
@@ -518,6 +522,7 @@ function addError(tag, context, message) {
  * @param {Context} [context]
  */
 async function runTag(content, context) {
+    console.log('running tag', content);
     let config = {};
     if (typeof content == 'string') {
         if (!(context instanceof Context))
@@ -535,6 +540,7 @@ async function runTag(content, context) {
     context.execTimer.end();
     result = result.trim();
 
+    console.log('persist pl0x');
     await context.variables.persist();
 
     if (result != null && context.state.replace != null)
