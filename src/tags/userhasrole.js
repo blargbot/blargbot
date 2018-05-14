@@ -29,9 +29,9 @@ module.exports =
                 result = await this.checkRoles(context, args[0], args[1], quiet);
 
             if (result.user == null)
-                return Builder.errors.noUserFound(subtag, context);
+                return quiet ? false : Builder.errors.noUserFound(subtag, context);
             if (result.roles.length == 0)
-                return Builder.errors.noRoleFound(subtag, context);
+                return quiet ? false : Builder.errors.noRoleFound(subtag, context);
 
             return result.hasRole.reduce((a, b) => a || b, false);
         })
