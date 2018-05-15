@@ -1,5 +1,4 @@
 /*
-import { function } from './../backend/public/codemirror/mode/shell/shell';
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:16
  * @Last Modified by: zoomah
