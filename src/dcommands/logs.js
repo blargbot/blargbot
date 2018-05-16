@@ -116,7 +116,7 @@ class LogsCommand extends BaseCommand {
         console.log(query);
         let results = [];
         try {
-            let qresults = await bu.cclient.execute(query, { channel: channel }, { prepare: true });
+            let qresults = await bu.cclient.execute(query, { channel: channel }, { prepare: true, readTimeout: 200000 });
             console.log(qresults.rows.length);
             for (const r of qresults.rows) {
                 if (msgids.includes(r.msgid.toJSON())) continue;
