@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-10 12:16:20
+ * @Last Modified time: 2018-05-15 13:08:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -409,26 +409,30 @@ bu.getUser = async function (msg, name, quiet) {
                 userListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator}\n`;
             }
             let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
-            let resMsg = await bu.awaitMessage(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
+            try {
+                let resMsg = await bu.awaitMessage(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
 ${userListString}${moreUserString}--------------------
 C.cancel query
 \`\`\`
 **${bu.getFullName(msg.author)}**, please type the number of the user you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.
 `,
-                (msg2) => {
-                    if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newUserList.length + 1 && parseInt(msg2.content) >= 1)) {
-                        return true;
-                    } else return false;
-                });
-            if (resMsg.content.toLowerCase() == 'c') {
-                let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                await bot.deleteMessage(delmsg.channel.id, delmsg.id);
-                bu.send(msg, 'Query canceled.');
+                    (msg2) => {
+                        if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newUserList.length + 1 && parseInt(msg2.content) >= 1)) {
+                            return true;
+                        } else return false;
+                    });
+                if (resMsg.content.toLowerCase() == 'c') {
+                    let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
+                    await bot.deleteMessage(delmsg.channel.id, delmsg.id);
+                    bu.send(msg, 'Query canceled.');
+                    return null;
+                } else {
+                    let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
+                    await bot.deleteMessage(delmsg.channel.id, delmsg.id);
+                    return newUserList[parseInt(resMsg.content) - 1].user;
+                }
+            } catch (err) {
                 return null;
-            } else {
-                let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                await bot.deleteMessage(delmsg.channel.id, delmsg.id);
-                return newUserList[parseInt(resMsg.content) - 1].user;
             }
         } else {
             return null;
