@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:49:38
+ * @Last Modified time: 2018-05-16 11:34:56
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -19,7 +19,7 @@ bu.compareStats = (a, b) => {
     return 0;
 };
 
-bu.awaitMessage = async function (msg, message, callback, timeout, label) {
+bu.awaitMessage = async function (msg, message, callback, timeout, label, suppress) {
     let returnMsg = await bu.send(msg, message);
     if (!timeout) timeout = 300000;
     if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
@@ -52,7 +52,8 @@ bu.awaitMessage = async function (msg, message, callback, timeout, label) {
 
             bu.awaitMessages[msg.channel.id][msg.author.id].timer = setTimeout(() => {
                 bu.emitter.removeAllListeners(event);
-                bu.send(msg, `Query canceled${label ? ' in ' + label : ''} after ${dep.moment.duration(timeout).humanize()}.`);
+                if (!suppress)
+                    bu.send(msg, `Query canceled${label ? ' in ' + label : ''} after ${dep.moment.duration(timeout).humanize()}.`);
                 reject('Request timed out.');
             }, timeout);
         });
@@ -424,7 +425,7 @@ C.cancel query
                         if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newUserList.length + 1 && parseInt(msg2.content) >= 1)) {
                             return true;
                         } else return false;
-                    }, undefined, args.label);
+                    }, undefined, args.label, args.suppress);
                 if (resMsg.content.toLowerCase() == 'c') {
                     let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
                     await bot.deleteMessage(delmsg.channel.id, delmsg.id);
@@ -506,7 +507,7 @@ C. cancel query
                     if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
                         return true;
                     } else return false;
-                }, undefined, args.label);
+                }, undefined, args.label, args.suppress);
             if (resMsg.content.toLowerCase() == 'c') {
                 if (!args.suppress)
                     bu.send(msg, 'Query canceled.');
