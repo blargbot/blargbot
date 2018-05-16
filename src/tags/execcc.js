@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:21
- * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:37:21
+ * @Last Modified by: zoomah
+ * @Last Modified time: 2018-05-07 23:38:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -18,14 +18,21 @@ module.exports =
             'Let me do a ccommand for you. User#1111 has paid their respects. Total respects given: 5'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
-        .whenArgs('1-2', async function (subtag, context, args) {
+        .whenDefault(async function (subtag, context, args) {
             let storedGuild = await bu.getGuild(context.guild.id),
                 ccommand = storedGuild.ccommands[args[0].toLowerCase()];
 
             if (ccommand == null)
                 return Builder.util.error(subtag, context, 'CCommand not found: ' + args[0]);
-
-            return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1] || '');
+            
+            switch (args.length) {
+                case 1:
+                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '');
+                case 2:
+                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1]);
+                default:
+                    let a = Builder.util.flattenArgArrays(args.slice(1));
+                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '"'+a.join('" "')+'"');
+            } 
         })
-        .whenDefault(Builder.errors.tooManyArguments)
         .build();
