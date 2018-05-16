@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 12:20:00
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-02 09:57:59
+ * @Last Modified time: 2018-05-16 10:19:14
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,18 +15,21 @@ module.exports =
         .requireStaff()
         .withArgs(a => [a.require('user'), a.require([a.optional('message'), a.optional('embed')])])
         .withDesc('DMs `user` the given `message` and `embed`. At least one of `message` and `embed` must be provided. ' +
-            'You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\n' +
-            'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.'
+        'You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\n' +
+        'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.'
         ).withExample(
-            '{dm;stupid cat;Hello;{embedbuild;title:You\'re cool}}',
-            'DM: Hello\nEmbed: You\'re cool'
+        '{dm;stupid cat;Hello;{embedbuild;title:You\'re cool}}',
+        'DM: Hello\nEmbed: You\'re cool'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
             if (context.state.dmCount > 0)
                 return Builder.util.error(subtag, context, 'Already have DMed');
 
-            let user = await bu.getUser(context.msg, args[0]),
+            let user = await bu.getUser(context.msg, args[0], {
+                suppress: context.scope.suppressLookup,
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            }),
                 content = args[1],
                 embed = bu.parseEmbed(args[1]);
 
