@@ -20,13 +20,11 @@ class ClintCommand extends BaseCommand {
         } else if (input.I) {
             url = input.I.join(' ');
         } else if (input.undefined.join('') !== '') {
-            console.log(input.undefined, input.undefined.length);
             user = await bu.getUser(msg, input.undefined.join(' '));
             if (!user) return;
             url = user.avatarURL;
-        } else console.log('ok');
+        }
         if (!url) url = msg.author.avatarURL;
-        console.log(url);
         bot.sendChannelTyping(msg.channel.id);
 
         let buf = await bu.blargbotApi('clint', { image: url });
