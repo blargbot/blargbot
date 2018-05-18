@@ -168,7 +168,8 @@ class Context {
         this.flaggedInput._ = this.flaggedInput.undefined;
         this.flaggedInput.undefined = undefined;
         for (const key in this.flaggedInput)
-            this.flaggedInput[key] = this.flaggedInput[key].join('');
+            if (Array.isArray(this.flaggedInput[key]))
+                this.flaggedInput[key] = this.flaggedInput[key].join('');
         this.isCC = options.isCC;
         this._author = options.author;
         this.tagName = options.tagName;
