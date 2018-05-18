@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 11:34:56
+ * @Last Modified time: 2018-05-18 09:10:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1522,8 +1522,13 @@ bu.toBlocks = function (text) {
 }
 
 bu.blargbotApi = async function (endpoint, args = {}) {
-    let res = await snekfetch.post(config.blargbot_api.base + endpoint)
-        .set({ Authorization: config.blargbot_api.token })
-        .send(args);
-    return res.body;
+    try {
+        let res = await snekfetch.post(config.blargbot_api.base + endpoint)
+            .set({ Authorization: config.blargbot_api.token })
+            .send(args);
+        return res.body;
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
 }
