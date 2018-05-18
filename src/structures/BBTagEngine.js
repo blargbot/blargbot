@@ -162,6 +162,13 @@ class Context {
         this.input = bu.splitInput(options.input || '');
         if (this.input.length == 1 && this.input[0] == '')
             this.input = [];
+
+        let flags = Array.isArray(options.flags) ? options.flags : [];
+        this.flaggedInput = bu.parseInput(flags, [].concat([''], this.input));
+        this.flaggedInput._ = this.flaggedInput.undefined;
+        this.flaggedInput.undefined = undefined;
+        for (const key in this.flaggedInput)
+            this.flaggedInput[key] = this.flaggedInput[key].join('');
         this.isCC = options.isCC;
         this._author = options.author;
         this.tagName = options.tagName;
@@ -227,6 +234,7 @@ class Context {
             state: Object.assign({}, this.state),
             scope: Object.assign({}, this.scope),
             input: this.input,
+            flaggedInput: this.flaggedInput,
             tagName: this.tagName,
             author: this.author,
             tempVars: this.variables.list

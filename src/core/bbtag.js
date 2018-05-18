@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-07 15:11:59
+ * @Last Modified time: 2018-05-18 10:15:26
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -31,6 +31,7 @@ Reason: ${tag.reason}`);
         let result = await bbEngine.runTag({
             msg,
             tagContent: tag.content,
+            flags: tag.flags,
             input: command.map(c => '"' + c + '"').join(' '),
             isCC: false,
             tagName: tagName,
@@ -63,6 +64,7 @@ e.executeCC = async function (msg, ccName, command) {
         let result = await bbEngine.runTag({
             msg,
             tagContent: ccommand.content,
+            flags: ccommand.flags,
             input: command.map(c => '"' + c + '"').join(' '),
             isCC: true,
             tagName: ccName,
