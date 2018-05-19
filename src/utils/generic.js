@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-15 13:08:10
+ * @Last Modified time: 2018-05-18 09:10:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -19,7 +19,7 @@ bu.compareStats = (a, b) => {
     return 0;
 };
 
-bu.awaitMessage = async function (msg, message, callback, timeout) {
+bu.awaitMessage = async function (msg, message, callback, timeout, label, suppress) {
     let returnMsg = await bu.send(msg, message);
     if (!timeout) timeout = 300000;
     if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
@@ -52,7 +52,8 @@ bu.awaitMessage = async function (msg, message, callback, timeout) {
 
             bu.awaitMessages[msg.channel.id][msg.author.id].timer = setTimeout(() => {
                 bu.emitter.removeAllListeners(event);
-                bu.send(msg, `Query canceled after ${dep.moment.duration(timeout).humanize()}.`);
+                if (!suppress)
+                    bu.send(msg, `Query canceled${label ? ' in ' + label : ''} after ${dep.moment.duration(timeout).humanize()}.`);
                 reject('Request timed out.');
             }, timeout);
         });
@@ -314,11 +315,15 @@ bu.sendDM = async function (user, message, file) {
  * Gets a user from a name (smartly)
  * @param msg - the message (Message)
  * @param name - the name of the user (String)
- * @param quiet - if true, won't respond with multiple users found(Boolean)
+ * @param args - additional arguments, if a bool is provided defaults to quiet (Boolean|Object)
+ * @param args.quiet - if true, won't respond with multiple users found (Boolean)
+ * @param args.suppress - if true, won't output 'no user found' or 'query cancelled' messages (Boolean)
  * @returns {User|null}
  */
-bu.getUser = async function (msg, name, quiet) {
+bu.getUser = async function (msg, name, args = {}) {
     if (!name) return null;
+    if (typeof args !== 'object')
+        args = { quiet: args };
     var userList;
     var userId;
     var discrim;
@@ -395,11 +400,11 @@ bu.getUser = async function (msg, name, quiet) {
     if (userList.length == 1) {
         return userList[0].user;
     } else if (userList.length == 0) {
-        if (!quiet)
-            bu.send(msg, `No users found.`);
+        if (!args.quiet && !args.suppress)
+            bu.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
         return null;
     } else {
-        if (!quiet) {
+        if (!args.quiet) {
             var userListString = '';
             let newUserList = [];
             for (let i = 0; i < userList.length && i < 20; i++) {
@@ -420,11 +425,12 @@ C.cancel query
                         if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newUserList.length + 1 && parseInt(msg2.content) >= 1)) {
                             return true;
                         } else return false;
-                    });
+                    }, undefined, args.label, args.suppress);
                 if (resMsg.content.toLowerCase() == 'c') {
                     let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
                     await bot.deleteMessage(delmsg.channel.id, delmsg.id);
-                    bu.send(msg, 'Query canceled.');
+                    if (!args.suppress)
+                        bu.send(msg, `Query canceled${args.label ? ' in ' + args.label : ''}.`);
                     return null;
                 } else {
                     let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
@@ -440,7 +446,9 @@ C.cancel query
     }
 };
 
-bu.getRole = async function (msg, name, quiet) {
+bu.getRole = async function (msg, name, args = {}) {
+    if (typeof args !== 'object')
+        args = { quiet: args };
     if (msg.channel.guild.roles.get(name)) {
         return msg.channel.guild.roles.get(name);
     }
@@ -477,11 +485,11 @@ bu.getRole = async function (msg, name, quiet) {
     if (roleList.length == 1) {
         return roleList[0];
     } else if (roleList.length == 0) {
-        if (!quiet)
+        if (!args.quiet && !args.suppress)
             bu.send(msg, `No roles found.`);
         return null;
     } else {
-        if (!quiet) {
+        if (!args.quiet) {
             var roleListString = '';
             let newRoleList = [];
             for (let i = 0; i < roleList.length && i < 20; i++) {
@@ -499,9 +507,10 @@ C. cancel query
                     if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
                         return true;
                     } else return false;
-                });
+                }, undefined, args.label, args.suppress);
             if (resMsg.content.toLowerCase() == 'c') {
-                bu.send(msg, 'Query canceled.');
+                if (!args.suppress)
+                    bu.send(msg, 'Query canceled.');
                 return null;
             } else {
                 let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
@@ -1513,8 +1522,13 @@ bu.toBlocks = function (text) {
 }
 
 bu.blargbotApi = async function (endpoint, args = {}) {
-    let res = await snekfetch.post(config.blargbot_api.base + endpoint)
-        .set({ Authorization: config.blargbot_api.token })
-        .send(args);
-    return res.body;
+    try {
+        let res = await snekfetch.post(config.blargbot_api.base + endpoint)
+            .set({ Authorization: config.blargbot_api.token })
+            .send(args);
+        return res.body;
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
 }

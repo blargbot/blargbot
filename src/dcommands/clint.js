@@ -19,7 +19,7 @@ class ClintCommand extends BaseCommand {
             url = msg.attachments[0].url;
         } else if (input.I) {
             url = input.I.join(' ');
-        } else if (input.undefined.length > 0) {
+        } else if (input.undefined.join('') !== '') {
             user = await bu.getUser(msg, input.undefined.join(' '));
             if (!user) return;
             url = user.avatarURL;

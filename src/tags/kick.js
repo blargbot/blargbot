@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:26:54
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-07-13 10:40:52
+ * @Last Modified time: 2018-05-16 10:19:06
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -27,7 +27,10 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
-            let user = await bu.getUser(context.msg, args[0], true);
+            let user = await bu.getUser(context.msg, args[0], {
+                quiet: true, suppress: context.scope.suppressLookup,
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            });
             let noPerms = args[2] ? true : false;
             let error = (message) => Builder.util.error(subtag, context, message);
 

@@ -13,31 +13,29 @@ class CcommandCommand extends BaseCommand {
             aliases: ['cc'],
             category: bu.CommandType.ADMIN,
             usage: 'ccommand <command name> <command content>',
-            info: 'Creates a custom command, using the BBTag language.\n\nCustom commands take precedent over all other commands. As such, you can use it to overwrite commands, or disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the \'ccommand\' command. For more in-depth command customization, see the `editcommand` command.\n\n__**Usage:**__\n  **cc create <name> <content>** - creates a ccommand with given name and content\n  **cc edit <name> <content>** - edits an existing ccommand with given content\n  **cc set <name> <content>** - provides the functionality of `create` and `edit` in a single command\n  **cc delete <name>** - deletes the ccommand with given name, provided that you own it\n  **cc rename <tag1> <tag2>** - renames the ccommand by the name of `ccommand1` to `ccommand2`\n  **cc raw <name>** - displays the raw code of a ccommand\n  **cc setrole <name> [role names...]** - sets the roles required to execute the ccommand\n  **cc help** - shows this message\n  **cc sethelp** <name> [help text] - set the help message for a custom command\n  **cc docs** [topic] - view help docuentation for BBTag, specific to ccommands\n  \nFor more information about BBTag, visit https://blargbot.xyz/tags'
+            info: 'Creates a custom command, using the BBTag language.\n\nCustom commands take precedent over all other commands. As such, you can use it to overwrite commands, or disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the \'ccommand\' command. For more in-depth command customization, see the `editcommand` command.\n\n__**Usage:**__\n  **cc create <name> <content>** - creates a ccommand with given name and content\n  **cc edit <name> <content>** - edits an existing ccommand with given content\n  **cc set <name> <content>** - provides the functionality of `create` and `edit` in a single command\n  **cc delete <name>** - deletes the ccommand with given name, provided that you own it\n  **cc rename <tag1> <tag2>** - renames the ccommand by the name of `ccommand1` to `ccommand2`\n  **cc flag <name> | <add|remove> <name> <flags> - Retrieves or sets the flags for a custom command.\n  **cc raw <name>** - displays the raw code of a ccommand\n  **cc setrole <name> [role names...]** - sets the roles required to execute the ccommand\n  **cc help** - shows this message\n  **cc sethelp** <name> [help text] - set the help message for a custom command\n  **cc docs** [topic] - view help docuentation for BBTag, specific to ccommands\n  \nFor more information about BBTag, visit https://blargbot.xyz/tags'
         });
     }
 
     async execute(msg, words, text) {
         console.debug('Text:', text);
         if (words[1]) {
-            let storedTag;
+            let tag;
             let content;
             let title;
             switch (words[1].toLowerCase()) {
                 case 'setrole':
                     if (words.length > 2) {
                         title = filterTitle(words[2]);
-                        storedTag = await bu.ccommand.get(msg.guild.id, title);
-                        if (!storedTag) {
+                        tag = await bu.ccommand.get(msg.guild.id, title);
+                        if (!tag) {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             return;
                         }
                         let roles = [];
                         if (words[3]) roles = words.slice(3);
-                        await bu.ccommand.set(msg.guild.id, title, {
-                            content: storedTag.content || storedTag,
-                            roles: roles
-                        });
+                        tag.roles = roles;
+                        await bu.ccommand.set(msg.guild.id, title, tag);
                         if (roles.length === 0) {
                             bu.send(msg, `Removed the custom role requirement of '${title}'.`);
                         } else
@@ -54,8 +52,8 @@ class CcommandCommand extends BaseCommand {
                             bu.send(msg, 'You cannot overwrite the `ccommand` command!');
                             break;
                         }
-                        storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
-                        if (storedTag) {
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (tag) {
                             bu.send(msg, 'That ccommand already exists!');
                             break;
                         }
@@ -69,11 +67,71 @@ class CcommandCommand extends BaseCommand {
                         bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                     }
                     break;
+                case 'flag':
+                    let input = bu.parseInput([], words);
+                    if (input.undefined.length >= 3) {
+                        let title = filterTitle(input.undefined[2]);
+                        tag = await bu.ccommand.get(msg.guild.id, title);
+                        if (!tag) {
+                            bu.send(msg, `❌ That custom command doesn't exist! ❌`);
+                            break;
+                        }
+                        if (!Array.isArray(tag.flags))
+                            tag.flags = [];
+                        switch (input.undefined[1].toLowerCase()) {
+                            case 'add':
+                            case 'create':
+                                for (const key in input) {
+                                    if (key !== 'undefined') {
+                                        if (!input[key][0]) {
+                                            bu.send(msg, 'No word was specified for flag `' + key + '`');
+                                            return;
+                                        }
+                                        let word = (input[key][0]).replace(/[^a-z]/g, '').toLowerCase();
+                                        if (tag.flags.filter(f => f.word === word).length > 0)
+                                            return bu.send(msg, `A flag with the word \`${word}\` has already been specified.`);
+                                        let desc = input[key].slice(1).join(' ').replace(/\n/g, ' ');
+                                        tag.flags.push({ flag: key, word, desc })
+                                    }
+                                }
+                                await bu.ccommand.set(msg.guild.id, title, tag);
+                                bu.send(msg, 'The flags have been modified.');
+                                break;
+                            case 'remove':
+                            case 'delete':
+                                let keys = Object.keys(input).filter(k => k !== 'undefined');
+                                tag.flags = tag.flags.filter(f => !keys.includes(f.flag));
+                                await bu.ccommand.set(msg.guild.id, title, tag);
+                                bu.send(msg, 'The flags have been modified.');
+                                break;
+                            default:
+                                bu.send(msg, 'Usage: `tag flag add|delete [flags]`');
+                                break;
+                        }
+                    } else if (input.undefined.length === 2) {
+                        let title = filterTitle(input.undefined[1]);
+                        tag = await bu.ccommand.get(msg.guild.id, title);
+                        if (!tag) {
+                            bu.send(msg, `❌ That custom command doesn't exist! ❌`);
+                            break;
+                        }
+                        console.log(tag);
+                        if (Array.isArray(tag.flags) && tag.flags.length > 0) {
+                            let out = 'Here are the flags for that custom command:\n\n';
+                            for (const flag of tag.flags) {
+                                out += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `
+                            }
+                            bu.send(msg, out)
+                        } else {
+                            bu.send(msg, 'That custom command has no flags.');
+                        }
+                    }
+                    break;
                 case 'edit':
                     if (words.length > 3) {
                         title = filterTitle(words[2]);
-                        storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
-                        if (!storedTag) {
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (!tag) {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             break;
                         }
@@ -108,8 +166,8 @@ class CcommandCommand extends BaseCommand {
                 case 'delete':
                     if (words.length > 2) {
                         title = filterTitle(words[2]);
-                        storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
-                        if (!storedTag) {
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (!tag) {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             break;
                         }
@@ -122,11 +180,11 @@ class CcommandCommand extends BaseCommand {
                 case 'rename':
                     if (words.length > 3) {
                         title = words[2];
-                        storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
-                        if (!storedTag) {
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (!tag) {
                             title = filterTitle(words[2]);
-                            storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
-                            if (!storedTag) {
+                            tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                            if (!tag) {
                                 bu.send(msg, `The ccommand ${title} doesn\'t exist!`);
                                 break;
                             }
@@ -145,17 +203,17 @@ class CcommandCommand extends BaseCommand {
                 case 'raw':
                     if (words.length > 2) {
                         title = filterTitle(words[2]);
-                        storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
-                        if (!storedTag) {
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (!tag) {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             break;
                         }
                         let lang = '';
-                        if (storedTag.content) storedTag = storedTag.content;
-                        if (/\{lang;.*?}/i.test(storedTag)) {
-                            lang = storedTag.match(/\{lang;(.*?)}/i)[1];
+                        if (tag.content) tag = tag.content;
+                        if (/\{lang;.*?}/i.test(tag)) {
+                            lang = tag.match(/\{lang;(.*?)}/i)[1];
                         }
-                        content = storedTag.replace(/`/g, '`\u200B');
+                        content = tag.replace(/`/g, '`\u200B');
 
                         bu.send(msg, `The raw code for ${title} is\`\`\`${lang}\n${content}\n\`\`\``);
                     } else {
@@ -169,8 +227,8 @@ class CcommandCommand extends BaseCommand {
                 case 'sethelp':
                     if (words.length > 3) {
                         title = filterTitle(words[2]);
-                        storedTag = await bu.ccommand.get(msg.channel.guild.id, title);
-                        if (!storedTag) {
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (!tag) {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             break;
                         }

@@ -91,6 +91,11 @@ const subcommands = [
         name: 'docs',
         args: '[topic]',
         desc: 'Returns helpful information about the specified topic.'
+    },
+    {
+        name: 'flag',
+        args: '<tag> | <add|remove> <name> <flags>',
+        desc: 'Retrieves or sets the flags for a tag.'
     }
 ];
 const tagNameMsg = 'Enter the name of the tag:';
@@ -172,7 +177,7 @@ class TagCommand extends BaseCommand {
             name: 'tag',
             aliases: ['t'],
             category: bu.CommandType.GENERAL,
-            usage: 'tag [<name> | create | edit | delete | rename | raw | info | top | author | search | list | favorite | report | test | debug | help | docs]',
+            usage: 'tag [<name> | create | edit | delete | rename | flag | raw | info | top | author | search | list | favorite | report | test | debug | help | docs]',
             info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n**Subcommands**:\n**<name>**, **create**, **edit**, **delete**, **rename**, **raw**, **info**, **top**, **author**, **search**, **list**, **favorite**, **report**, **test**, **debug**, **help**, **docs**\n\nFor more information about a subcommand, do `b!tag help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)'
         });
     }
@@ -327,7 +332,8 @@ class TagCommand extends BaseCommand {
                         author: msg.author.id,
                         content: content,
                         lastmodified: r.epochTime(dep.moment() / 1000),
-                        uses: tag ? tag.uses : 0
+                        uses: tag ? tag.uses : 0,
+                        flags: []
                     }).run();
                     bu.send(msg, `✅ Tag \`${title}\` ${tag ? 'edited' : 'created'}. ✅`);
                     logChange(tag ? 'Edit' : 'Create', msg, {
@@ -376,7 +382,78 @@ ${command[0].desc}`);
                             await bu.send(msg, 'That subcommand was not found!');
                         }
                     } else
-                        await bu.send(msg, e.info);
+                        await bu.send(msg, this.info);
+                    break;
+                case 'flag':
+                    let input = bu.parseInput([], words);
+                    if (input.undefined.length >= 3) {
+                        let title = filterTitle(input.undefined[2]);
+                        let tag = await r.table('tag').get(title).run();
+                        if (!tag) {
+                            bu.send(msg, `❌ That tag doesn't exist! ❌`);
+                            break;
+                        }
+                        if (tag && tag.author != msg.author.id) {
+                            bu.send(msg, `❌ You don't own this tag! ❌`);
+                            break;
+                        }
+                        if (!Array.isArray(tag.flags))
+                            tag.flags = [];
+                        switch (input.undefined[1].toLowerCase()) {
+                            case 'add':
+                            case 'create':
+                                for (const key in input) {
+                                    if (key !== 'undefined') {
+                                        if (!input[key][0]) {
+                                            bu.send(msg, 'No word was specified for flag `' + key + '`');
+                                            return;
+                                        }
+                                        let word = (input[key][0]).replace(/[^a-z]/g, '').toLowerCase();
+                                        if (tag.flags.filter(f => f.word === word).length > 0)
+                                            return bu.send(msg, `A flag with the word \`${word}\` has already been specified.`);
+                                        let desc = input[key].slice(1).join(' ').replace(/\n/g, ' ');
+                                        tag.flags.push({ flag: key, word, desc })
+                                    }
+                                }
+                                await r.table('tag').get(title).update({
+                                    flags: tag.flags,
+                                    lastmodified: r.epochTime(dep.moment() / 1000)
+                                });
+                                bu.send(msg, 'The flags have been modified.');
+                                break;
+                            case 'remove':
+                            case 'delete':
+                                let keys = Object.keys(input).filter(k => k !== 'undefined');
+                                tag.flags = tag.flags.filter(f => !keys.includes(f.flag));
+                                await r.table('tag').get(title).update({
+                                    flags: tag.flags,
+                                    lastmodified: r.epochTime(dep.moment() / 1000)
+                                });
+                                bu.send(msg, 'The flags have been modified.');
+                                break;
+                            default:
+                                bu.send(msg, 'Usage: `tag flag <add|delete> <name> [flags]`');
+                                break;
+                        }
+                    } else if (input.undefined.length === 2) {
+                        console.log(input.undefined)
+                        let title = filterTitle(input.undefined[1]);
+                        let tag = await r.table('tag').get(title).run();
+                        if (!tag) {
+                            bu.send(msg, `❌ That tag doesn't exist! ❌`);
+                            break;
+                        }
+                        console.log(tag);
+                        if (Array.isArray(tag.flags) && tag.flags.length > 0) {
+                            let out = 'Here are the flags for that tag:\n\n';
+                            for (const flag of tag.flags) {
+                                out += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `
+                            }
+                            bu.send(msg, out)
+                        } else {
+                            bu.send(msg, 'That tag has no flags.');
+                        }
+                    }
                     break;
                 case 'raw':
                     if (words[2]) title = words[2];
@@ -675,6 +752,7 @@ ${Object.keys(user.favourites).join(', ')}
                 },
                 scope: {},
                 input: args.params.words,
+                flaggedInput: input,
                 tagName: args.params.tagName,
                 author: args.params.author
             };

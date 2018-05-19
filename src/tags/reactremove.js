@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:35
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:51:35
+ * @Last Modified time: 2018-05-16 10:18:51
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -18,10 +18,10 @@ module.exports =
             a.require([a.optional('users', true), a.optional('reactions')])
         ])
         .withDesc('Removes `reactions` from `messageId` which were placed by `users`.\n`users` defaults to the user who executed the tag.\n' +
-            '`reactions` defaults to all reactions.\n`channelId` defaults to the current channel.')
+        '`reactions` defaults to all reactions.\n`channelId` defaults to the current channel.')
         .withExample(
-            '{reactremove;12345678901234;:thinking:}',
-            '(removed the 🤔 reaction by the user)'
+        '{reactremove;12345678901234;:thinking:}',
+        '(removed the 🤔 reaction by the user)'
         ).whenDefault(async function (subtag, context, emotes) {
             let channel = null,
                 message = null,
@@ -55,7 +55,10 @@ module.exports =
                 let entries = deserialized && Array.isArray(deserialized.v)
                     ? deserialized.v
                     : emote;
-                entries = await Promise.all(entries.map(entry => bu.getUser(context.msg, entry, true)));
+                entries = await Promise.all(entries.map(entry => bu.getUser(context.msg, entry, {
+                    quiet: true, suppress: context.scope.suppressLookup,
+                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+                })));
                 if (entries.reduce((c, entry) => c && entry == null, true)) {
                     emotes.splice(0, 0, emote);
                     break;
