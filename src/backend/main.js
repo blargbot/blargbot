@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-11 09:30:23
+ * @Last Modified time: 2018-05-19 15:27:30
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -111,10 +111,21 @@ e.init = () => {
         res.end(register.metrics())
     });
 
+    let avatarInvalidation = {};
     app.get('/avatar/:id', async function (req, res) {
         let id = req.params.id.split('.')[0];
         try {
-            let u = await bot.getRESTUser(id);
+            let u = bot.users.get(id);
+            if (!u) {
+                console.website('Avatar Endpoint: Retrieving user', id)
+                u = await bot.getRESTUser(id);
+                bot.users.add(u);
+                if (avatarInvalidation[id])
+                    clearTimeout(avatarInvalidation[id]);
+                avatarInvalidation[id] = setTimeout(() => {
+                    bot.users.remove({ id });
+                }, 1000 * 60 * 1); // invalidate after 1 minutes
+            }
             res.redirect(u.dynamicAvatarURL(undefined, 1024));
         } catch (err) {
             console.error(err);
