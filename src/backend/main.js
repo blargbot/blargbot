@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-19 15:27:30
+ * @Last Modified time: 2018-05-19 15:48:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -124,7 +124,7 @@ e.init = () => {
                     clearTimeout(avatarInvalidation[id]);
                 avatarInvalidation[id] = setTimeout(() => {
                     bot.users.remove({ id });
-                }, 1000 * 60 * 1); // invalidate after 1 minutes
+                }, 1000 * 60 * 15); // invalidate after 15 minutes
             }
             res.redirect(u.dynamicAvatarURL(undefined, 1024));
         } catch (err) {
