@@ -14,9 +14,9 @@ module.exports =
         .withArgs(a => [a.require('code')])
         .withDesc('Returns the value of the specified case-sensitive flag code. Use `_` to get the values without a flag.')
         .withExample(
-        '{flagset;a} {flagset;b}',
+        '{flag;a} {flag;_}',
         'Hello, -a world!',
-        'true false'
+        'world! Hello,'
         )
         .whenArgs('1', async function (_, context, args) {
             return context.flaggedInput[args[0]];

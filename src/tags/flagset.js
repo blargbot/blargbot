@@ -14,9 +14,9 @@ module.exports =
         .withArgs(a => [a.require('code')])
         .withDesc('Returns `true` or `false`, depending on whether the specified case-sensitive flag code has been set or not.')
         .withExample(
-        '{flag;a} {flag;_}',
+        '{flagset;a} {flagset;b}',
         'Hello, -a world!',
-        'world! Hello,'
+        'true false'
         )
         .whenArgs('1', async function (_, context, args) {
             return context.flaggedInput[args[0]] !== undefined;
