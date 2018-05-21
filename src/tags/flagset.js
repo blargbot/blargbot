@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:28
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-18 10:24:53
+ * @Last Modified time: 2018-05-21 14:34:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,9 +14,9 @@ module.exports =
         .withArgs(a => [a.require('code')])
         .withDesc('Returns `true` or `false`, depending on whether the specified case-sensitive flag code has been set or not.')
         .withExample(
-        '{flag;a} {flag;_}',
-        'Hello, -a world!',
-        'world! Hello,'
+            '{flagset;a} {flagset;_}',
+            'Hello, -a world!',
+            'true false'
         )
         .whenArgs('1', async function (_, context, args) {
             return context.flaggedInput[args[0]] !== undefined;
