@@ -192,6 +192,12 @@ class CcommandCommand extends BaseCommand {
                         else
                             title = filterTitle(words[3]);
 
+                        let existing = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (existing) {
+                            bu.send(msg, 'That ccommand already exists!');
+                            break;
+                        }
+
                         tag = await r.table('tag').get(words[2]).run();
                         if (tag) {
                             let author = await r.table('user').get(tag.author).run();
