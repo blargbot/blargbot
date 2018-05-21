@@ -443,7 +443,6 @@ ${command[0].desc}`);
                             bu.send(msg, `❌ That tag doesn't exist! ❌`);
                             break;
                         }
-                        console.log(tag);
                         if (Array.isArray(tag.flags) && tag.flags.length > 0) {
                             let out = 'Here are the flags for that tag:\n\n';
                             for (const flag of tag.flags) {
@@ -523,6 +522,12 @@ It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!
 It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1 ? '' : 's'}**!`;
                     if (tag.reports && tag.reports > 0)
                         output += `\n:warning: It has been reported ${tag.reports || 0} **time${(tag.reports == 1 || 0) ? '' : 's'}**!`;
+                    if (Array.isArray(tag.flags) && tag.flags.length > 0) {
+                        output += '\n\n**Flags**:\n';
+                        for (const flag of tag.flags) {
+                            output += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `
+                        }
+                    }
                     bu.send(msg, output);
                     break;
                 case 'search':
