@@ -7,7 +7,7 @@ class GreetCommand extends BaseCommand {
             name: 'greet',
             category: bu.CommandType.ADMIN,
             usage: 'greet [message]',
-            info: 'Sets a greeting for when users join.',
+            info: 'Sets a greeting for when users join. To disable it, simply type the command with no content.',
             flags: [{
                 flag: 'c',
                 word: 'channel',
@@ -29,7 +29,7 @@ class GreetCommand extends BaseCommand {
             return await bu.send(msg, `The greeting is set in <#${channel}>.`, { file: greeting, name: 'greeting.bbtag' });
         }
 
-        if (input.undefined.length == 0) {
+        if (input.undefined.length == 0 && !input.c) {
             bu.guildSettings.remove(msg.channel.guild.id, 'greeting').then(() => {
                 bu.send(msg, 'Disabled greetings');
             });
