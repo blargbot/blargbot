@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-10 18:43:29
+ * @Last Modified time: 2018-05-21 17:38:13
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -108,9 +108,9 @@ bu.ccommand = {
     },
     get: async function (guildid, key) {
         let storedGuild = await bu.getGuild(guildid);
-
-        if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return null;
-        return storedGuild.ccommands[key.toLowerCase()];
+        key = key.toLowerCase();
+        if (!storedGuild || !storedGuild.ccommands[key]) return null;
+        return storedGuild.ccommands[key];
     },
     rename: async function (guildid, key1, key2) {
         let storedGuild = await bu.getGuild(guildid);

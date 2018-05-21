@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:21
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:37:21
+ * @Last Modified time: 2018-05-21 17:42:43
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -24,6 +24,8 @@ module.exports =
 
             if (ccommand == null)
                 return Builder.util.error(subtag, context, 'CCommand not found: ' + args[0]);
+            if (ccommand.alias)
+                return Builder.util.error(subtag, context, 'Cannot execcc imported tag: ' + args[0]);
 
             return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1] || '');
         })

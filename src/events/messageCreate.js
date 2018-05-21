@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-10 19:17:05
+ * @Last Modified time: 2018-05-21 17:38:40
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -230,6 +230,9 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
         return false;
     }
     let val = await bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0].toLowerCase());
+    if (val && val.alias) {
+        val = await r.table('tag').get(val.alias);
+    }
     if (val && val.content) {
         let ccommandName = words[0].toLowerCase();
         let ccommandContent;

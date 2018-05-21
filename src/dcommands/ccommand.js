@@ -3,7 +3,7 @@ const BaseCommand = require('../structures/BaseCommand'),
     bbtag = require('../core/bbtag');
 
 function filterTitle(title) {
-    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()]/gi, '');
+    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()<>]/gi, '');
 }
 
 class CcommandCommand extends BaseCommand {
@@ -91,6 +91,10 @@ class CcommandCommand extends BaseCommand {
                             bu.send(msg, `❌ That custom command doesn't exist! ❌`);
                             break;
                         }
+                        if (tag.alias) {
+                            bu.send(msg, 'That ccommand is imported, and cannot be edited.');
+                            break;
+                        }
                         if (!Array.isArray(tag.flags))
                             tag.flags = [];
                         switch (input.undefined[1].toLowerCase()) {
@@ -149,6 +153,10 @@ class CcommandCommand extends BaseCommand {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             break;
                         }
+                        if (tag.alias) {
+                            bu.send(msg, 'That ccommand is imported, and cannot be edited.');
+                            break;
+                        }
                         content = bu.splitInput(text, true).slice(3).join(' ');
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
@@ -175,6 +183,26 @@ class CcommandCommand extends BaseCommand {
                     } else {
                         bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                     }
+                    break;
+                case 'import':
+                    if (words.length > 2) {
+                        if (!words[3])
+                            title = filterTitle(words[2]);
+                        else
+                            title = filterTitle(words[3]);
+
+                        tag = await r.table('tag').get(words[2]).run();
+                        if (tag) {
+                            let author = await r.table('user').get(tag.author).run();
+                            await bu.ccommand.set(msg.channel.guild.id, title, {
+                                alias: tag.name
+                            });
+                            bu.send(msg, `✅ The tag \`${tag.name}\` by **${author.username}#${author.discriminator}** has been imported as \`${title}\`. ✅`);
+                        } else {
+                            bu.send(msg, `A tag with the name of \`${words[2]}\` could not be found.`);
+                        }
+                    } else bu.send(msg, `Not enough arguments! Usage is: \`ccommand import <tag> [name]\`.`);
+
                     break;
                 case 'remove':
                 case 'delete':
@@ -220,6 +248,10 @@ class CcommandCommand extends BaseCommand {
                         tag = await bu.ccommand.get(msg.channel.guild.id, title);
                         if (!tag) {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
+                            break;
+                        }
+                        if (tag.alias) {
+                            bu.send(msg, `That ccommand is imported. The raw source is available from the \`${tag.alias}\` tag.`);
                             break;
                         }
                         let lang = '';
