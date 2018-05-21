@@ -130,7 +130,6 @@ class CcommandCommand extends BaseCommand {
                             bu.send(msg, `❌ That custom command doesn't exist! ❌`);
                             break;
                         }
-                        console.log(tag);
                         if (Array.isArray(tag.flags) && tag.flags.length > 0) {
                             let out = 'Here are the flags for that custom command:\n\n';
                             for (const flag of tag.flags) {
