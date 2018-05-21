@@ -280,7 +280,7 @@ TagBuilder.errors = {
     channelNotInGuild(subtag, context) { return TagBuilder.util.error(subtag, context, 'Channel not in guild'); },
     tooManyLoops(subtag, context) { return TagBuilder.util.error(subtag, context, 'Too many loops'); },
     unsafeRegex(subtag, context) { return TagBuilder.util.error(subtag, context, 'Unsafe regex detected'); },
-    invalidEmbed(subtag, context, issue) { return TagBuilder.util.error(subtag, context, 'Inavlid embed: ' + issue); }
+    invalidEmbed(subtag, context, issue) { return TagBuilder.util.error(subtag, context, 'Invalid embed: ' + issue); }
 };
 
 module.exports = TagBuilder;
