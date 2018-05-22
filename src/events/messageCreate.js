@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-21 17:38:40
+ * @Last Modified time: 2018-05-21 18:05:09
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -254,6 +254,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             await bbEngine.runTag({
                 msg,
                 tagContent: ccommandContent,
+                flags: val.flags,
                 input: command,
                 isCC: true,
                 tagName: ccommandName,
