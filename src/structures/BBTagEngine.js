@@ -169,7 +169,7 @@ class Context {
         this.flaggedInput.undefined = undefined;
         for (const key in this.flaggedInput)
             if (Array.isArray(this.flaggedInput[key]))
-                this.flaggedInput[key] = this.flaggedInput[key].join('');
+                this.flaggedInput[key] = this.flaggedInput[key].join(' ');
         this.isCC = options.isCC;
         this._author = options.author;
         this.tagName = options.tagName;
@@ -435,49 +435,51 @@ async function execute(bbtag, context) {
         content = bbtag.source;
 
     context.scopes.beginScope();
-    for (const subtag of bbtag.children) {
-        result.push(content.slice(prevIndex, subtag.start));
-        prevIndex = subtag.end;
+    if (context.state.return == 0) // only iterate if return state is 0
+        for (const subtag of bbtag.children) {
+            result.push(content.slice(prevIndex, subtag.start));
+            prevIndex = subtag.end;
 
-        if (subtag.children.length == 0) {
-            result.push(addError(subtag, context, 'Missing SubTag declaration'));
-            continue;
-        }
-        let name = await execute(subtag.children[0], context);
-        let definition = TagManager.get(name.toLowerCase());
-        if (definition == null) {
-            result.push(addError(subtag, context, 'Unknown subtag ' + name));
-            continue;
-        }
-
-        subtag.name = name;
-        try {
-            result.push(await definition.execute(subtag, context));
-        } catch (err) {
-            if (err instanceof RangeError) {
-                bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);
-                throw err;
+            if (subtag.children.length == 0) {
+                result.push(addError(subtag, context, 'Missing SubTag declaration'));
+                continue;
             }
-            result.push(addError(subtag, context, 'An internal server error has occurred'));
-            bu.send('250859956989853696', {
-                content: 'A tag error occurred.',
-                embed: {
-                    title: err.message || (typeof err == 'string' ? err : JSON.stringify(err)),
-                    description: err.stack || 'No error stack!',
-                    fields: [
-                        { name: 'SubTag', value: definition.name, inline: true },
-                        { name: 'Arguments', value: JSON.stringify(subtag.children.map(c => c.content.length < 100 ? c.content : c.content.substr(0, 97) + '...')) },
-                        { name: 'Tag Name', value: context.tagName, inline: true },
-                        { name: 'Location', value: `${subtag.start} - ${subtag.end}`, inline: true },
-                        { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
-                        { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
-                    ]
+            let name = await execute(subtag.children[0], context);
+            let definition = TagManager.get(name.toLowerCase());
+
+            if (definition == null) {
+                result.push(addError(subtag, context, 'Unknown subtag ' + name));
+                continue;
+            }
+
+            subtag.name = name;
+            try {
+                result.push(await definition.execute(subtag, context));
+            } catch (err) {
+                if (err instanceof RangeError) {
+                    bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);
+                    throw err;
                 }
-            });
+                result.push(addError(subtag, context, 'An internal server error has occurred'));
+                bu.send('250859956989853696', {
+                    content: 'A tag error occurred.',
+                    embed: {
+                        title: err.message || (typeof err == 'string' ? err : JSON.stringify(err)),
+                        description: err.stack || 'No error stack!',
+                        fields: [
+                            { name: 'SubTag', value: definition.name, inline: true },
+                            { name: 'Arguments', value: JSON.stringify(subtag.children.map(c => c.content.length < 100 ? c.content : c.content.substr(0, 97) + '...')) },
+                            { name: 'Tag Name', value: context.tagName, inline: true },
+                            { name: 'Location', value: `${subtag.start} - ${subtag.end}`, inline: true },
+                            { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
+                            { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
+                        ]
+                    }
+                });
+            }
+            if (context.state.return != 0)
+                break;
         }
-        if (context.state.return != 0)
-            break;
-    }
     if (context.state.return == 0)
         result.push(content.slice(prevIndex, Math.max(prevIndex, bbtag.end - endOffset)));
     context.scopes.finishScope();
