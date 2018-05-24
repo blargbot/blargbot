@@ -29,8 +29,7 @@ module.exports =
                 result = '';
             let array = Array.from(arr.v);
             for (const item of array) {
-                context.state.foreach += 1;
-                if (context.state.foreach > 3000) {
+                if (++context.state.foreach > 3000) {
                     result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }
