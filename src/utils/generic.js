@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-18 09:10:19
+ * @Last Modified time: 2018-05-24 10:50:11
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1008,7 +1008,7 @@ bu.parseInput = function (map, text, noTrim) {
     let words;
     if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
     else words = bu.splitInput(text, noTrim);
-    console.verbose(words);
+    // console.verbose(words);
     let output = {
         undefined: []
     };

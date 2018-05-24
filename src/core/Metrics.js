@@ -36,6 +36,12 @@ const commandLatency = new Prometheus.Histogram({
     buckets: [10, 100, 500, 1000, 2000, 5000]
 });
 
+const subtagLatency = new Prometheus.Histogram({
+    name: 'bot_subtag_latency_ms', help: 'Latency of subtag execution',
+    labelNames: ['subtag'],
+    buckets: [0, 5, 10, 100, 500, 1000, 2000, 5000]
+});
+
 const commandError = new Prometheus.Counter({
     name: 'bot_command_error_counter', help: 'Commands errored',
     labelNames: ['command']
@@ -54,6 +60,7 @@ const aggregate = function (regArray) {
 module.exports = {
     Prometheus, aggregate, guildGauge, shardStatus, userGauge, messageCounter,
     chatlogCounter, commandCounter, commandError, commandLatency, bbtagExecutions,
+    subtagLatency,
     registryCache: [],
     get aggregated() {
         let c = module.exports.registryCache.filter(m => true);

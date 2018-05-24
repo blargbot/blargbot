@@ -455,7 +455,11 @@ async function execute(bbtag, context) {
 
             subtag.name = name;
             try {
+                const timer = new Timer().start();
                 result.push(await definition.execute(subtag, context));
+                timer.end();
+                bu.Metrics.subtagLatency
+                    .labels(subtag.name).observe(timer.elapsed);
             } catch (err) {
                 if (err instanceof RangeError) {
                     bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);
