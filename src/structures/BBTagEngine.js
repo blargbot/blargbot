@@ -186,6 +186,7 @@ class Context {
             return: 0,
             stackSize: 0,
             repeats: 0,
+            foreach: 0,
             embed: null,
             reactions: [],
             nsfw: null,
