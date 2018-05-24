@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-24 12:53:10
+ * @Last Modified time: 2018-05-24 13:21:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -297,7 +297,7 @@ e.generateDebug = function (code, context, result) {
             total: context.state.subtags[s].reduce((a, b) => a + b),
         }
     });
-    subtags.sort((a, b) => a.average - b.average);
+    subtags.sort((a, b) => b.average - a.average);
     subtags = subtags.map(s => `${s.name}: Average ${s.average}ms | Total ${s.total}ms\n${s.times.map(ss => ss + 'ms').join(', ')}`)
     return {
         name: 'BBTag.debug.txt',
