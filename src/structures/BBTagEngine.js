@@ -195,7 +195,8 @@ class Context {
             /** @type {{regex: RegExp|string, with: string}} */
             replace: null,
             break: 0,
-            continue: 0
+            continue: 0,
+            subtags: {}
         };
     }
 
@@ -460,6 +461,9 @@ async function execute(bbtag, context) {
                 timer.end();
                 bu.Metrics.subtagLatency
                     .labels(subtag.name).observe(timer.elapsed);
+                if (!context.state.subtags[subtag.name])
+                    context.state.subtags[subtag.name] = 0;
+                context.state.subtags[subtag.name]++;
             } catch (err) {
                 if (err instanceof RangeError) {
                     bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);

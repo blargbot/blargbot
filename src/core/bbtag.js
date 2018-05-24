@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-18 10:15:26
+ * @Last Modified time: 2018-05-24 12:23:13
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -295,7 +295,9 @@ e.generateDebug = function (code, context, result) {
         file: 'User input:\n' + JSON.stringify(context.input.length > 0 ? context.input : 'No input.') + '\n\n' +
             'Code Executed:\n' + code + '\n\n' +
             'Errors:\n' + (errors.length > 0 ? errors.join('\n') : 'No errors') + '\n\n' +
-            'Variables:\n' + (variables.length > 0 ? variables.join('\n') : 'No variables')
+            'Variables:\n' + (variables.length > 0 ? variables.join('\n') : 'No variables') + '\n\n' +
+            'Subtag Breakdown:\n' + JSON.stringify(context.state.subtags, null, 4)
+
     };
 };
 
@@ -316,7 +318,7 @@ function viewErrors(...errors) {
 
         let offset = ''.padStart(text.length, ' ');
         let lines = viewErrors(...e.error).map(l => offset + l);
-        lines[0] = text + lines[0].substring(offset.length);
+        lines[0] = text + (lines[0] || '').substring(offset.length);
         result.push(...lines);
     }
     return result;
