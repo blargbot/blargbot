@@ -1,5 +1,6 @@
 const ArgFactory = require('./ArgumentFactory'),
-    bbEngine = require('../structures/BBTagEngine');
+    bbEngine = require('../structures/BBTagEngine'),
+    Timer = require('./Timer');
 
 class TagBuilder {
     static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
@@ -63,13 +64,19 @@ class TagBuilder {
                         }
                     }
                     callback = callback || execDefault;
+                    const timer = new Timer().start();
 
                     if (callback == null)
                         throw new Error('Missing default execution on subtag ' + definition.name + '\nParams:' + JSON.stringify(context));
-
                     let result = callback.apply(definition, [subtag, context, subtagArgs]);
                     if (typeof result != 'string')
                         result = await result;
+                    timer.end();
+                    bu.Metrics.subtagLatency
+                        .labels(subtag.name).observe(timer.elapsed);
+                    if (!context.state.subtags[subtag.name])
+                        context.state.subtags[subtag.name] = [];
+                    context.state.subtags[subtag.name].push(timer.elapsed);
                     return '' + (result == null ? '' : result);
                 }
                 catch (e) {

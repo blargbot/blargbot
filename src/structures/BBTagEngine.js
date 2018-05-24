@@ -456,14 +456,14 @@ async function execute(bbtag, context) {
 
             subtag.name = name;
             try {
-                const timer = new Timer().start();
+                // const timer = new Timer().start();
                 result.push(await definition.execute(subtag, context));
-                timer.end();
-                bu.Metrics.subtagLatency
-                    .labels(subtag.name).observe(timer.elapsed);
-                if (!context.state.subtags[subtag.name])
-                    context.state.subtags[subtag.name] = 0;
-                context.state.subtags[subtag.name]++;
+                // timer.end();
+                // bu.Metrics.subtagLatency
+                //     .labels(subtag.name).observe(timer.elapsed);
+                // if (!context.state.subtags[subtag.name])
+                //     context.state.subtags[subtag.name] = [];
+                // context.state.subtags[subtag.name].push(timer.elapsed);
             } catch (err) {
                 if (err instanceof RangeError) {
                     bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);

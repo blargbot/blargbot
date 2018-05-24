@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-24 12:23:13
+ * @Last Modified time: 2018-05-24 12:53:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -290,14 +290,22 @@ e.generateDebug = function (code, context, result) {
             json.replace(/\n/, '\n' + offset);
             return key + ': ' + json;
         }).slice(0, 24);
+    let subtags = Object.keys(context.state.subtags).map(s => {
+        return {
+            name: s, times: context.state.subtags[s],
+            average: context.state.subtags[s].reduce((a, b) => a + b) / context.state.subtags[s].length,
+            total: context.state.subtags[s].reduce((a, b) => a + b),
+        }
+    });
+    subtags.sort((a, b) => a.average - b.average);
+    subtags = subtags.map(s => `${s.name}: Average ${s.average}ms | Total ${s.total}ms\n${s.times.map(ss => ss + 'ms').join(', ')}`)
     return {
         name: 'BBTag.debug.txt',
         file: 'User input:\n' + JSON.stringify(context.input.length > 0 ? context.input : 'No input.') + '\n\n' +
             'Code Executed:\n' + code + '\n\n' +
             'Errors:\n' + (errors.length > 0 ? errors.join('\n') : 'No errors') + '\n\n' +
             'Variables:\n' + (variables.length > 0 ? variables.join('\n') : 'No variables') + '\n\n' +
-            'Subtag Breakdown:\n' + JSON.stringify(context.state.subtags, null, 4)
-
+            'Subtag Breakdown:\n' + subtags.join('\n\n')
     };
 };
 
