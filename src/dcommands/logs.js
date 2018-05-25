@@ -111,17 +111,19 @@ class LogsCommand extends BaseCommand {
         let msgids = [msg.id, msg2.id];
 
         let query = `SELECT * FROM chatlogs2 WHERE
-        channelid = :channel
-    `;
+            type = :type and channelid = :channel
+        `;
         console.log(query);
         let results = [];
         try {
-            let qresults = await bu.cclient.execute(query, { channel: channel }, { prepare: true, readTimeout: 200000 });
-            console.log(qresults.rows.length);
-            for (const r of qresults.rows) {
-                if (msgids.includes(r.msgid.toJSON())) continue;
-                if (types.includes(r.type) && (users.length === 0 || users.includes(r.userid.toJSON())))
-                    results.push(bu.normalize(r));
+            for (const type of types) {
+                let qresults = await bu.cclient.execute(query, { channel: channel, type }, { prepare: true, readTimeout: 200000 });
+                console.log(qresults.rows.length);
+                for (const r of qresults.rows) {
+                    if (msgids.includes(r.msgid.toJSON())) continue;
+                    if (users.length === 0 || users.includes(r.userid.toJSON()))
+                        results.push(bu.normalize(r));
+                }
             }
             results.sort((a, b) => b.desnowflaked - a.desnowflaked);
             results = results.slice(0, numberOfMessages);
