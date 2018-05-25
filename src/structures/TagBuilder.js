@@ -74,6 +74,8 @@ class TagBuilder {
                     timer.end();
                     bu.Metrics.subtagLatency
                         .labels(subtag.name).observe(timer.elapsed);
+                    if (!context.state.subtags)
+                        context.state.subtags = {};
                     if (!context.state.subtags[subtag.name] || !Array.isArray(context.state.subtags[subtag.name]))
                         context.state.subtags[subtag.name] = [];
                     context.state.subtags[subtag.name].push(timer.elapsed);
