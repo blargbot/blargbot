@@ -29,6 +29,7 @@ class CcommandCommand extends BaseCommand {
                 + '  **cc import <tag> [name]** - imports a tag as a custom command, retaining all data such as author variables'
                 + '  **cc help** - shows this message\n  **cc sethelp** <name> [help text] - set the help message for a custom command\n'
                 + '  **cc docs** [topic] - view help docuentation for BBTag, specific to ccommands\n'
+                + '  **cc debug <name>** - executes the specified custom command and sends a file containing all the debug information.
                 + '  \nFor more information about BBTag, visit https://blargbot.xyz/tags'
         });
     }
@@ -308,6 +309,11 @@ class CcommandCommand extends BaseCommand {
                 case 'docs':
                     bbtag.docs(msg, words[0], words.slice(2).join(' '));
                     break;
+                case 'debug':
+                    let result = await bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3));
+                    await bu.send(result.context.msg, null, bbtag.generateDebug(result.code, result.context, result.result));
+                    
+                    break;
                 case 'exec':
                 case 'eval':
                 case 'test':
@@ -344,11 +350,6 @@ class CcommandCommand extends BaseCommand {
                             attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                         });
                     }
-                    break;
-                case 'debug':
-                    let result = await bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3));
-                    await bu.send(result.context.msg, null, bbtag.generateDebug(result.code, result.context, result.result));
-
                     break;
                 default:
                     bu.send(msg, 'Improper usage. Do \`help ccommand\` for more details.');
