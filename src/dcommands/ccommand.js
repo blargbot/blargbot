@@ -29,6 +29,7 @@ class CcommandCommand extends BaseCommand {
                 + '  **cc import <tag> [name]** - imports a tag as a custom command, retaining all data such as author variables\n'
                 + '  **cc help** - shows this message\n'
                 + '  **cc sethelp** <name> [help text] - set the help message for a custom command\n'
+                + '  **cc debug <name>** - executes the specified custom command and sends a file containing all the debug information\n'
                 + '  **cc docs** [topic] - view help docuentation for BBTag, specific to ccommands\n'
                 + '  \nFor more information about BBTag, visit https://blargbot.xyz/tags'
         });
