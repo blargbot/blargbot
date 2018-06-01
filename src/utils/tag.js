@@ -24,19 +24,16 @@ bu.deserializeTagArray = function (value) {
     let obj = null;
     try {
         // Try to parse out any 1...5 to the full expansion
-        var expanded = value.replace(/(-?\d+)\.\.\.(-?\d+)/g, function (match, from, to) {
+        let expanded = value.replace(/(-?\d+)\.\.\.(-?\d+)/g, function (match, from, to) {
             from = parseInt(from);
             to = parseInt(to);
             let descending = from > to;
             let count = Math.abs(to - from) + 1;
             let offset = Math.min(from, to);
-            let values = [...Array(count).keys()].map(function(entry) {
-				return entry + offset;
-            })
-			if (descending) {
-				values = values.reverse();
-            }
-			return values.join(',');
+            let values = [...Array(count).keys()].map(e => e + offset);
+            if (descending)
+                values = values.reverse();
+            return values.join(',');
         }
         obj = JSON.parse(expanded);
     } catch (err) {
