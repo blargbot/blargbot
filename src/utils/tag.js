@@ -34,7 +34,7 @@ bu.deserializeTagArray = function (value) {
             if (descending)
                 values = values.reverse();
             return values.join(',');
-        }
+        });
         obj = JSON.parse(expanded);
     } catch (err) {
         // failed with ... expansion, try again without expanding
