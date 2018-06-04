@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:21
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 10:27:10
+ * @Last Modified time: 2018-06-04 11:39:51
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -28,6 +28,10 @@ module.exports =
                 return Builder.util.error(subtag, context, 'Cannot execcc imported tag: ' + args[0]);
 
             let name = args[0].toLowerCase();
+            if (!context._cooldowns[context.msg.guild.id][true])
+                context._cooldowns[context.msg.guild.id][true] = {};
+            if (!context._cooldowns[context.msg.guild.id][true][context.msg.author.id])
+                context._cooldowns[context.msg.guild.id][true][context.msg.author.id] = {};
             let cd = context._cooldowns[context.msg.guild.id][true][context.msg.author.id];
             if (cd) {
                 let cdDate = cd[name] + (ccommand.cooldown || 0);
