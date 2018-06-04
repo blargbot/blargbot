@@ -1,5 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 
+let id;
 class SnippetCommand extends BaseCommand {
     constructor() {
         super({
