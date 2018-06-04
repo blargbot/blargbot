@@ -27,8 +27,10 @@ class CcommandCommand extends BaseCommand {
                 + '  **cc cooldown [time]** - Sets the cooldown of a tag, in milliseconds. Cooldowns must be greater than 500ms.'
                 + '  **cc raw <name>** - displays the raw code of a ccommand\n'
                 + '  **cc setrole <name> [role names...]** - sets the roles required to execute the ccommand\n'
-                + '  **cc import <tag> [name]** - imports a tag as a custom command, retaining all data such as author variables'
-                + '  **cc help** - shows this message\n  **cc sethelp** <name> [help text] - set the help message for a custom command\n'
+                + '  **cc import <tag> [name]** - imports a tag as a custom command, retaining all data such as author variables\n'
+                + '  **cc help** - shows this message\n'
+                + '  **cc sethelp** <name> [help text] - set the help message for a custom command\n'
+                + '  **cc debug <name>** - executes the specified custom command and sends a file containing all the debug information\n'
                 + '  **cc docs** [topic] - view help docuentation for BBTag, specific to ccommands\n'
                 + '  \nFor more information about BBTag, visit https://blargbot.xyz/tags'
         });

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-21 18:05:09
+ * @Last Modified time: 2018-05-30 23:32:20
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -230,8 +230,10 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
         return false;
     }
     let val = await bu.ccommand.get(msg.channel.guild ? msg.channel.guild.id : '', words[0].toLowerCase());
+    let alias = false;
     if (val && val.alias) {
-        val = await r.table('tag').get(val.alias);
+        alias = val.alias;
+        val = await r.table('tag').get(alias);
     }
     if (val && val.content) {
         let ccommandName = words[0].toLowerCase();
@@ -251,6 +253,12 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             console.command(outputLog);
             let command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
+            if (alias !== false) {
+                await r.table('tag').get(alias).update({
+                    uses: val.uses + 1,
+                    lastuse: r.now()
+                }).run();
+            }
             await bbEngine.runTag({
                 msg,
                 tagContent: ccommandContent,
@@ -261,6 +269,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
                 author
             });
             bu.Metrics.commandCounter.labels('custom', 'custom').inc();
+
             return true;
         }
     } else {

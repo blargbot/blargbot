@@ -14,8 +14,8 @@ module.exports =
         .withArgs(a => [a.require('chars'), a.require('length')])
         .withDesc('Creates a random string with characters from `chars` that is `length` characters long.')
         .withExample(
-            'You rolled a {randint;1;6}.',
-            'You rolled a 5.'
+            '{randstr;abcdefghijklmnopqrstuvwxyz;9}',
+            'kgzyqcvda'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs(2, async function (subtag, context, args) {
