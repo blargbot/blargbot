@@ -32,6 +32,11 @@ const subcommands = [
         desc: 'Renames the tag with the name of of the provided tag to the given name'
     },
     {
+        name: 'cooldown',
+        args: '<time>',
+        desc: 'Sets the cooldown of a tag, in milliseconds.'
+    },
+    {
         name: 'raw',
         args: '<name>',
         desc: 'Displays the raw code of a tag'
@@ -177,8 +182,8 @@ class TagCommand extends BaseCommand {
             name: 'tag',
             aliases: ['t'],
             category: bu.CommandType.GENERAL,
-            usage: 'tag [<name> | create | edit | delete | rename | flag | raw | info | top | author | search | list | favorite | report | test | debug | help | docs]',
-            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n**Subcommands**:\n**<name>**, **create**, **edit**, **delete**, **rename**, **raw**, **info**, **top**, **author**, **search**, **list**, **favorite**, **report**, **test**, **debug**, **help**, **docs**\n\nFor more information about a subcommand, do `b!tag help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)'
+            usage: 'tag [<name> | create | edit | delete | rename | flag | cooldown | raw | info | top | author | search | list | favorite | report | test | debug | help | docs]',
+            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n**Subcommands**:\n**<name>**, **create**, **edit**, **delete**, **rename**, **flag**, **cooldown**, **raw**, **info**, **top**, **author**, **search**, **list**, **favorite**, **report**, **test**, **debug**, **help**, **docs**\n\nFor more information about a subcommand, do `b!tag help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)'
         });
     }
 
@@ -187,6 +192,34 @@ class TagCommand extends BaseCommand {
         let title, content, tag, author, originalTagList;
         if (words[1]) {
             switch (words[1].toLowerCase()) {
+                case 'cooldown':
+                    let title = filterTitle(words[2]);
+                    let cooldown;
+                    if (words[3]) {
+                        cooldown = parseInt(words[3]);
+                        if (isNaN(cooldown)) {
+                            bu.send(msg, `❌ The cooldown must be a valid integer (in milliseconds)! ❌`);
+                            break;
+                        }
+                        if (cooldown < 500) {
+                            bu.send(msg, `❌ The cooldown must be greater than 500ms! ❌`);
+                            break;
+                        }
+                    }
+                    let tag = await r.table('tag').get(title).run();
+                    if (!tag) {
+                        bu.send(msg, `❌ That tag doesn't exist! ❌`);
+                        break;
+                    }
+                    if (tag && tag.author != msg.author.id) {
+                        bu.send(msg, `❌ You don't own this tag! ❌`);
+                        break;
+                    }
+                    await r.table('tag').get(title).update({
+                        cooldown: r.literal(cooldown)
+                    });
+                    bu.send(msg, `✅ The cooldown for Tag \`${oldTagName}\` has been set to \`${cooldown || 500}ms\`. ✅`);
+                    break;
                 case 'add':
                 case 'create':
                     if (words[2]) title = words[2];
@@ -517,6 +550,7 @@ ${content}
                     author = await r.table('user').get(tag.author).run();
                     let output = `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
+Cooldown: ${tag.cooldown || 500}ms
 It was last modified **${dep.moment(tag.lastmodified).format('LLLL')}**.
 It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!
 It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1 ? '' : 's'}**!`;

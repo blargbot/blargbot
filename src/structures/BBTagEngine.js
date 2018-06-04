@@ -106,6 +106,9 @@ class SubTag extends BaseTag {
     }
 }
 
+// stores cooldown values per-guild-per-tag-per-user
+const cooldowns = {};
+
 class Context {
     static async deserialize(obj) {
         let msg;
@@ -173,6 +176,16 @@ class Context {
         this.isCC = options.isCC;
         this._author = options.author;
         this.tagName = options.tagName;
+        this.cooldown = options.cooldown;
+
+        if (!cooldowns[this.msg.guild.id])
+            cooldowns[this.msg.guild.id] = {};
+        if (!cooldowns[this.msg.guild.id][this.isCC])
+            cooldowns[this.msg.guild.id][this.isCC] = {};
+        if (!cooldowns[this.msg.guild.id][this.isCC][context.msg.author.id])
+            cooldowns[this.msg.guild.id][this.isCC][context.msg.author.id] = {};
+        options.cooldowns = cooldowns[context.msg.guild.id][this.isCC][context.msg.author.id];
+        options._cooldowns = cooldowns;
 
         /** @type {bbError[]} */
         this.errors = [];
@@ -543,6 +556,7 @@ function addError(tag, context, message) {
  */
 async function runTag(content, context) {
     console.log('running tag', content);
+
     let config = {};
     if (typeof content == 'string') {
         if (!(context instanceof Context))
@@ -554,6 +568,17 @@ async function runTag(content, context) {
         config = content;
         content = content.tagContent;
     }
+
+    if (context.cooldowns[context.tagName]) {
+        let cdDate = context.cooldown[context.tagName] + (context.cooldown || 500);
+        let diff = Date.now() - cdDate;
+        if (diff < 0) {
+            let f = Math.floor(diff / 100) / 10;
+            await bu.send(context.msg, `This ${context.isCC ? 'tag' : 'custom command'} is currently under cooldown. Please try again in ${f} seconds.`)
+            return;
+        }
+    }
+    context.cooldowns[context.tagName] = Date.now();
 
     context.execTimer.start();
     let result = await execString(content.trim(), context);
