@@ -2,10 +2,13 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-11 10:35:58
+ * @Last Modified time: 2018-06-03 23:01:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+
+const blacklist = require('../../blacklist.json');
+
 
 bot.on('ready', async function () {
     bot.sender.send('ready', bot.guilds.map(g => g.id));
@@ -78,6 +81,18 @@ bot.on('ready', async function () {
     bu.postStats();
     if (eventTimer == undefined) {
         initEvents();
+    }
+
+    for (const g of blacklist) {
+        if (bot.guilds.get(g)) {
+            let guild = bot.guilds.get(g);
+            let owner = guild.members.get(guild.ownerID).user;
+            let pc = await owner.getDMChannel();
+
+            await pc.createMessage(`Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
+
+            return await guild.leave();
+        }
     }
 });
 
