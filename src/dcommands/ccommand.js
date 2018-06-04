@@ -306,8 +306,11 @@ class CcommandCommand extends BaseCommand {
                     break;
                 case 'list':
                     let storedGuild = await bu.getGuild(msg.guild.id);
-                    bu.send(msg, `Here are a list of the custom commands on this guild:\`\`\`${Object.keys(storedGuild.ccommands).join(', ')}\`\`\` `);
-                    break;
+                    let ccommands = Object.keys(storedGuild.ccommands);
+                    let output = (ccommands && ccommands.length > 0) 
+                                    ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` ` 
+                                    : `There are no custom commands on this guild.`;
+                    bu.send(msg,output);
                 case 'sethelp':
                     if (words.length > 3) {
                         title = filterTitle(words[2]);
