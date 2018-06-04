@@ -33,7 +33,7 @@ const subcommands = [
     },
     {
         name: 'cooldown',
-        args: '<time>',
+        args: '<name> [time]',
         desc: 'Sets the cooldown of a tag, in milliseconds.'
     },
     {

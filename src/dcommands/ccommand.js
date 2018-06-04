@@ -24,7 +24,7 @@ class CcommandCommand extends BaseCommand {
                 + '  **cc delete <name>** - deletes the ccommand with given name, provided that you own it\n'
                 + '  **cc rename <tag1> <tag2>** - renames the ccommand by the name of `ccommand1` to `ccommand2`\n'
                 + '  **cc flag <name> | <add|remove> <name> <flags>** - Retrieves or sets the flags for a custom command. Flags are added in the format `-x <name> <desc>`. For example, `-f flag This is a flag!`\n'
-                + '  **cc cooldown [time]** - Sets the cooldown of a tag, in milliseconds. Cooldowns must be greater than 500ms.'
+                + '  **cc cooldown <name> [time]** - Sets the cooldown of a tag, in milliseconds. Cooldowns must be greater than 500ms.'
                 + '  **cc raw <name>** - displays the raw code of a ccommand\n'
                 + '  **cc setrole <name> [role names...]** - sets the roles required to execute the ccommand\n'
                 + '  **cc import <tag> [name]** - imports a tag as a custom command, retaining all data such as author variables\n'
