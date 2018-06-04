@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 11:58:02
+ * @Last Modified time: 2018-06-04 12:22:05
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1020,19 +1020,29 @@ bu.parseInput = function (map, text, noTrim) {
     for (let i = 0; i < words.length; i++) {
         let pushFlag = true;
         if (words[i].startsWith('--')) {
-            let flags = map.filter(f => f.word == words[i].substring(2).toLowerCase());
-            if (flags.length > 0) {
-                currentFlag = flags[0].flag;
-                output[currentFlag] = [];
+            if (words[i].length > 2) {
+                let flags = map.filter(f => f.word == words[i].substring(2).toLowerCase());
+                if (flags.length > 0) {
+                    currentFlag = flags[0].flag;
+                    output[currentFlag] = [];
+                    pushFlag = false;
+                }
+            } else {
+                currentFlag = '';
                 pushFlag = false;
             }
         } else if (words[i].startsWith('-')) {
-            let tempFlag = words[i].substring(1);
-            for (let char of tempFlag) {
-                currentFlag = char;
-                output[currentFlag] = [];
+            if (words[i].length > 1) {
+                let tempFlag = words[i].substring(1);
+
+                for (let char of tempFlag) {
+                    currentFlag = char;
+                    output[currentFlag] = [];
+                }
+                pushFlag = false;
             }
-            pushFlag = false;
+        } else if (words[i].startsWith('\\-')) {
+            words[i] = words[i].substring(1);
         }
         if (pushFlag) {
             if (currentFlag != '') {
@@ -1042,6 +1052,7 @@ bu.parseInput = function (map, text, noTrim) {
             }
         }
     }
+    console.log(output);
     return output;
 };
 
