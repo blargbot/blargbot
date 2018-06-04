@@ -1,6 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 
 let id;
+let queue = '401811029647949824';
 class SnippetCommand extends BaseCommand {
     constructor() {
         super({
