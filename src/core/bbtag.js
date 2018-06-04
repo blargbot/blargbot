@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-24 13:21:21
+ * @Last Modified time: 2018-06-04 10:36:20
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -36,6 +36,7 @@ Reason: ${tag.reason}`);
             isCC: false,
             tagName: tagName,
             author: tag.author,
+            cooldown: tag.cooldown,
             modResult: function (context, text) {
                 return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
                     let user = msg.guild.members.get(id);

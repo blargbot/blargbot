@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:21
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 10:18:59
+ * @Last Modified time: 2018-06-04 10:27:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -30,11 +30,11 @@ module.exports =
             let name = args[0].toLowerCase();
             let cd = context._cooldowns[context.msg.guild.id][true][context.msg.author.id];
             if (cd) {
-                let cdDate = cd[name] + (ccommand.cooldown || 500);
+                let cdDate = cd[name] + (ccommand.cooldown || 0);
                 let diff = Date.now() - cdDate;
                 if (diff < 0) {
                     let f = Math.floor(diff / 100) / 10;
-                    return Builder.util.error(subtag, context, 'Cooldown: ' + diff);
+                    return Builder.util.error(subtag, context, 'Cooldown: ' + (diff * -1));
                 }
             }
             cd[name] = Date.now();

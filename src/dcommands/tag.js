@@ -193,7 +193,7 @@ class TagCommand extends BaseCommand {
         if (words[1]) {
             switch (words[1].toLowerCase()) {
                 case 'cooldown':
-                    let title = filterTitle(words[2]);
+                    title = filterTitle(words[2]);
                     let cooldown;
                     if (words[3]) {
                         cooldown = parseInt(words[3]);
@@ -201,12 +201,12 @@ class TagCommand extends BaseCommand {
                             bu.send(msg, `❌ The cooldown must be a valid integer (in milliseconds)! ❌`);
                             break;
                         }
-                        if (cooldown < 500) {
-                            bu.send(msg, `❌ The cooldown must be greater than 500ms! ❌`);
+                        if (cooldown < 0) {
+                            bu.send(msg, `❌ The cooldown must be greater than 0ms! ❌`);
                             break;
                         }
                     }
-                    let tag = await r.table('tag').get(title).run();
+                    tag = await r.table('tag').get(title).run();
                     if (!tag) {
                         bu.send(msg, `❌ That tag doesn't exist! ❌`);
                         break;
@@ -218,7 +218,7 @@ class TagCommand extends BaseCommand {
                     await r.table('tag').get(title).update({
                         cooldown: r.literal(cooldown)
                     });
-                    bu.send(msg, `✅ The cooldown for Tag \`${oldTagName}\` has been set to \`${cooldown || 500}ms\`. ✅`);
+                    bu.send(msg, `✅ The cooldown for Tag \`${title}\` has been set to \`${cooldown || 500}ms\`. ✅`);
                     break;
                 case 'add':
                 case 'create':
@@ -333,7 +333,6 @@ class TagCommand extends BaseCommand {
                     });
                     break;
                 case 'set':
-
                     if (words[2]) title = words[2];
                     if (words[3]) content = bu.splitInput(text, true).slice(3).join(' ');
                     //                if (words[3]) content = text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim();

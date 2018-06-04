@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-30 23:32:20
+ * @Last Modified time: 2018-06-04 10:37:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -266,6 +266,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
                 input: command,
                 isCC: true,
                 tagName: ccommandName,
+                cooldown: val.cooldown,
                 author
             });
             bu.Metrics.commandCounter.labels('custom', 'custom').inc();

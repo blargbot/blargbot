@@ -182,10 +182,10 @@ class Context {
             cooldowns[this.msg.guild.id] = {};
         if (!cooldowns[this.msg.guild.id][this.isCC])
             cooldowns[this.msg.guild.id][this.isCC] = {};
-        if (!cooldowns[this.msg.guild.id][this.isCC][context.msg.author.id])
-            cooldowns[this.msg.guild.id][this.isCC][context.msg.author.id] = {};
-        options.cooldowns = cooldowns[context.msg.guild.id][this.isCC][context.msg.author.id];
-        options._cooldowns = cooldowns;
+        if (!cooldowns[this.msg.guild.id][this.isCC][this.msg.author.id])
+            cooldowns[this.msg.guild.id][this.isCC][this.msg.author.id] = {};
+        this.cooldowns = cooldowns[this.msg.guild.id][this.isCC][this.msg.author.id];
+        this._cooldowns = cooldowns;
 
         /** @type {bbError[]} */
         this.errors = [];
@@ -221,16 +221,16 @@ class Context {
      * @param {runArgs} options The option overrides to give to the new context
      */
     makeChild(options = {}) {
+        if (options.msg === undefined) options.msg = this.msg;
+        if (options.input === undefined) options.input = this.input;
+        if (options.isCC === undefined) options.isCC = this.isCC;
+        if (options.tagName === undefined) options.tagName = this.tagName;
+        if (options.author === undefined) options.author = this.author;
+
         let context = new Context(options, this);
         context.state = this.state;
         context.scopes = this.scopes;
         context.variables = this.variables;
-
-        if (options.msg === undefined) context.msg = context.message = this.msg;
-        if (options.input === undefined) context.input = this.input;
-        if (options.isCC === undefined) context.isCC = this.isCC;
-        if (options.tagName === undefined) context.tagName = this.tagName;
-        if (options.author === undefined) context._author = this.author;
 
         return context;
     }
@@ -570,11 +570,12 @@ async function runTag(content, context) {
     }
 
     if (context.cooldowns[context.tagName]) {
-        let cdDate = context.cooldown[context.tagName] + (context.cooldown || 500);
+        let cdDate = context.cooldowns[context.tagName] + (context.cooldown || 0);
         let diff = Date.now() - cdDate;
+        console.log('\n' + context.cooldowns[context.tagName] + '\n' + cdDate + '\n' + Date.now(), diff, context.cooldown);
         if (diff < 0) {
             let f = Math.floor(diff / 100) / 10;
-            await bu.send(context.msg, `This ${context.isCC ? 'tag' : 'custom command'} is currently under cooldown. Please try again in ${f} seconds.`)
+            await bu.send(context.msg, `This ${context.isCC ? 'tag' : 'custom command'} is currently under cooldown. Please try again in ${f * -1} seconds.`)
             return;
         }
     }

@@ -44,7 +44,7 @@ class CcommandCommand extends BaseCommand {
             let title;
             switch (words[1].toLowerCase()) {
                 case 'cooldown':
-                    let title = filterTitle(words[2]);
+                    title = filterTitle(words[2]);
                     let cooldown;
                     if (words[3]) {
                         cooldown = parseInt(words[3]);
@@ -52,8 +52,8 @@ class CcommandCommand extends BaseCommand {
                             bu.send(msg, `❌ The cooldown must be a valid integer (in milliseconds)! ❌`);
                             break;
                         }
-                        if (cooldown < 500) {
-                            bu.send(msg, `❌ The cooldown must be greater than 500ms! ❌`);
+                        if (cooldown < 0) {
+                            bu.send(msg, `❌ The cooldown must be greater than 0ms! ❌`);
                             break;
                         }
                     }
@@ -67,9 +67,9 @@ class CcommandCommand extends BaseCommand {
                         break;
                     }
                     await r.table('guild').get(msg.guild.id).update({
-                        ccommands: { title: { cooldown: r.literal(cooldown) } }
+                        ccommands: { [title]: { cooldown: r.literal(cooldown) } }
                     });
-                    bu.send(msg, `✅ The cooldown for Custom Command \`${oldTagName}\` has been set to \`${cooldown || 500}ms\`. ✅`);
+                    bu.send(msg, `✅ The cooldown for Custom Command \`${title}\` has been set to \`${cooldown || 500}ms\`. ✅`);
                     break;
                 case 'setrole':
                     if (words.length > 2) {
