@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:16
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 11:00:36
+ * @Last Modified time: 2018-06-04 11:31:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,7 +25,7 @@ module.exports =
                 return Builder.util.error(subtag, context, 'Tag not found: ' + args[0]);
 
             let name = args[0];
-            let cd = context._cooldowns[context.msg.guild.id][fakse][context.msg.author.id];
+            let cd = context._cooldowns[context.msg.guild.id][false][context.msg.author.id];
             if (cd) {
                 let cdDate = cd[name] + (tag.cooldown || 0);
                 let diff = Date.now() - cdDate;
