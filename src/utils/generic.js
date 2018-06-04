@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-24 10:50:11
+ * @Last Modified time: 2018-06-04 11:46:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -744,6 +744,7 @@ bu.comparePerms = (m, allow) => {
 
 bu.splitInput = (content, noTrim) => {
     let input;
+    if (Array.isArray(content)) content = content.join(' ');
     if (!noTrim) input = content.replace(/ +/g, ' ').split(' ');
     else input = content.split(' ');
     let words = [];
