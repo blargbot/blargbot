@@ -11,7 +11,7 @@ class PurgeCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        //  if (bu.hasPerm(msg, 'Bot Commander')) {
+        //  if (await bu.hasPerm(msg, 'Bot Commander')) {
         bot.getMessages(msg.channel.id, 100)
             .then(function (messageArray) {
                 /**

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 11:46:18
+ * @Last Modified time: 2018-06-04 11:58:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -74,7 +74,7 @@ function getId(text) {
  * @param quiet - if true, won't output an error (Boolean)
  * @returns {boolean}
  */
-bu.hasPerm = (msg, perm, quiet, override = true) => {
+bu.hasPerm = async (msg, perm, quiet, override = true) => {
     let member;
     if (msg instanceof dep.Eris.Member) {
         member = msg;
@@ -118,8 +118,11 @@ bu.hasPerm = (msg, perm, quiet, override = true) => {
         }
     }
     if (!quiet) {
-        let permString = Array.isArray(perm) ? perm.map(m => '`' + m + '`').join(', or ') : '`' + perm + '`';
-        bu.send(msg, `You need the role ${permString} in order to use this command!`);
+        let guild = await bu.getGuild(msg.guild.id);
+        if (!guild.settings.disablenoperms) {
+            let permString = Array.isArray(perm) ? perm.map(m => '`' + m + '`').join(', or ') : '`' + perm + '`';
+            bu.send(msg, `You need the role ${permString} in order to use this command!`);
+        }
     }
     return false;
 };
@@ -792,7 +795,7 @@ bu.canExecuteCcommand = async function (msg, commandName, quiet) {
         let roles = val.roles;
         if (roles && roles.length > 0) {
             for (let role of roles) {
-                if (bu.hasPerm(msg, role, quiet))
+                if (await bu.hasPerm(msg, role, quiet))
                     return true;
             }
         } else return true;
@@ -836,12 +839,12 @@ bu.canExecuteCommand = async function (msg, commandName, quiet) {
                 if (command.permission && bu.comparePerms(msg.member, command.permission)) {
                     return [true, commandName];
                 } else if (command.rolename) {
-                    if (bu.hasPerm(msg, command.rolename, quiet))
+                    if (await bu.hasPerm(msg, command.rolename, quiet))
                         return [true, commandName];
                     else return [false, commandName];
                 } else if (!command.rolename) {
                     if (bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
-                        if (!bu.hasPerm(msg, adminrole || bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
+                        if (!await bu.hasPerm(msg, adminrole || bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
                             return [false, commandName, 1];
                         }
                     }
@@ -850,14 +853,14 @@ bu.canExecuteCommand = async function (msg, commandName, quiet) {
             }
         }
         if (CommandManager.commandList[commandName] && bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
-            if (!bu.hasPerm(msg, adminrole || bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
+            if (!await bu.hasPerm(msg, adminrole || bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
                 return [false, commandName, 3];
             }
         }
         return [true, commandName];
     } else {
         if (bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
-            if (!bu.hasPerm(msg, bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
+            if (!await bu.hasPerm(msg, bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
                 return [false, commandName, 3];
             }
         }

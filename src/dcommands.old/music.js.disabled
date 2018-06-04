@@ -114,7 +114,7 @@ e.execute = (msg, words) => {
                             eval2(msg, words.join(' '));
                             break;
                         case 'setchannel':
-                            if (bu.hasPerm(msg, 'Bot Commander')) {
+                            if (await bu.hasPerm(msg, 'Bot Commander')) {
                                 bu.guildSettings.get(msg.channel.guild.id, 'musicchannel').then(channel => {
                                     if (channel == msg.channel.id) {
                                         bu.guildSettings.remove(msg.channel.guild.id, 'musicchannel').then(() => {
@@ -169,7 +169,7 @@ Commands:
                 console.music('skipping');
                 if (voiceConnections.get(msg.channel.guild.id).ready) {
                     //     if (queue.hasOwnProperty(msg.channel.guild.id)) {
-                    if (words[0] == 'force' && bu.hasPerm(msg, 'Bot Commander')) {
+                    if (words[0] == 'force' && await bu.hasPerm(msg, 'Bot Commander')) {
                         voiceConnections.get(msg.channel.guild.id).stopPlaying();
                         return;
                     }
@@ -375,7 +375,7 @@ Type ${prefix ? prefix : config.discord.defaultPrefix}music for music commands.`
                             });
                             break;
                         case 'remove':
-                            if (bu.hasPerm(msg, 'Bot Commander')) {
+                            if (await bu.hasPerm(msg, 'Bot Commander')) {
                                 if (words[1]) {
                                     var index = parseInt(words[1]) - 1;
                                     if (queue[msg.channel.guild.id][index]) {

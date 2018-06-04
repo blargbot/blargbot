@@ -95,6 +95,11 @@ bu.settings = {
         name: 'Disable Everyone Pings',
         desc: 'Disables everyone pings in custom commands.',
         type: 'bool'
+    },
+    disablenoperms: {
+        name: 'Disable No Perms',
+        desc: 'Disables the \'You need the role to use this command\' message.',
+        type: 'bool'
     }
 };
 
@@ -185,6 +190,7 @@ class SettingsCommand extends BaseCommand {
             let kickPerms = settings.kickoverride || 0;
             let banPerms = settings.banoverride || 0;
             let disableEveryone = settings.disableeveryone || false;
+            let disableNoPerms = settings.disablenoperms || false;
             let greetChan = settings.greetchan ? bot.getChannel(settings.greetchan) : 'Default';
             if (greetChan && greetChan != 'Default') greetChan = greetChan.name;
             else greetChan = 'Default Channel';
@@ -200,9 +206,10 @@ class SettingsCommand extends BaseCommand {
                     {
                         name: 'General',
                         value: `\`\`\`
-     Prefix : ${prefix}
-CAH is NSFW : ${cahNsfw}
-    DM Help : ${dmHelp}
+          Prefix : ${prefix}
+     CAH is NSFW : ${cahNsfw}
+         DM Help : ${dmHelp}
+Disable No Perms : ${disableNoPerms}
 \`\`\``,
                         inline: true
                     },
