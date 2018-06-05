@@ -1,7 +1,10 @@
 const BaseCommand = require('../structures/BaseCommand');
 
 let id;
-let queue = '419235660088606739';
+const queue = '419235660088606739';
+const snippetChannel = '387709753758842883';
+const commandChannel = '414754839059365908';
+
 class SnippetCommand extends BaseCommand {
     constructor() {
         super({
