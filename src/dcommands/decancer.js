@@ -6,7 +6,7 @@ class DecancerCommand extends BaseCommand {
             name: 'decancer',
             category: bu.CommandType.GENERAL,
             usage: 'decancer <user | text>',
-            info: 'Decancerify\' the user\'s nickname/username, or the provided text.'
+            info: 'Decancerify\' the user\'s nickname/username, or the provided text, to simple ASCII.'
         });
     }
 
