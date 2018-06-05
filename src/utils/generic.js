@@ -2,14 +2,17 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 12:22:05
+ * @Last Modified time: 2018-06-05 13:48:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const colors = require('../../res/colors') || {},
     emojiRegex = require('emoji-regex'),
-    snekfetch = require('snekfetch');
+    snekfetch = require('snekfetch'),
+    unorm = require('unorm'),
+    limax = require('limax'),
+    User = require('eris/lib/structures/User');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -330,16 +333,17 @@ bu.getUser = async function (msg, name, args = {}) {
     var userList;
     var userId;
     var discrim;
-    if (/<@!?[0-9]{17,21}>/.test(name)) {
-        userId = name.match(/<@!?([0-9]{17,21})>/)[1];
-        if (bot.users.get(userId)) {
-            return bot.users.get(userId);
-        }
-    }
+
     if (/[0-9]{17,21}/.test(name)) {
-        userId = name.match(/([0-9]{17,21})/)[1];
+        userId = name.match(/(\d{17,21})/)[1];
         if (bot.users.get(userId)) {
             return bot.users.get(userId);
+        } else {
+            let user = await bot.sender.awaitMessage({ message: 'retrieveUser', id: userId });
+            if (user.user) {
+                user = new User(user.user, bot);
+                return user;
+            }
         }
     }
     if (/^.*#\d{4}$/.test(name)) {
@@ -1546,4 +1550,16 @@ bu.blargbotApi = async function (endpoint, args = {}) {
         console.error(err);
         return null;
     }
+}
+
+bu.decancer = function (text) {
+    text = unorm.nfkd(text);
+    text = limax(text, {
+        replacement: ' ',
+        tone: false,
+        separateNumbers: false,
+        maintainCase: true,
+        custom: ['.', ',', ' ', '!', '\'', '"', '?']
+    });
+    return text;
 }

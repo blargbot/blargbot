@@ -119,6 +119,31 @@ class Spawner extends EventEmitter {
         });
     }
 
+    // Returns the first value that fulfils the conditional callback
+    // If no values fulfil the requirement, returns null
+    awaitConditionalBroadcast(data, condition) {
+        const shards = this.shards;
+        return new Promise((fulfill, reject) => {
+            let datum = [];
+            let i = 0;
+            function onComplete(received) {
+                datum.push(received);
+                if (condition(received))
+                    fulfill(received);
+                if (datum.length >= shards.size)
+                    fulfill(null);
+            }
+            for (const [id, shard] of shards) {
+                if (shard.file === this.file) {
+                    i++;
+                    shard.awaitMessage(data).then(received => {
+                        onComplete(received);
+                    }).catch(reject);
+                }
+            }
+        });
+    }
+
     async lookupChannel(id) {
         let res = await this.awaitBroadcast({ message: 'lookupChannel', id });
         return res.map(r => JSON.parse(r.message)).filter(r => r !== null)[0] || { channel: 'Unknown', guild: 'Unknown' };
@@ -149,6 +174,16 @@ class Spawner extends EventEmitter {
                     case 'shardStatus':
                         let statuses = await this.awaitBroadcast('shardStatus');
                         await shard.send(eventKey, { message: statuses });
+                        break;
+                    case 'retrieveUser':
+                        let user = await this.awaitConditionalBroadcast({ message: 'retrieveUser', id: data.id },
+                            data => data.user != null);
+                        if (!user) {
+                            try {
+                                user = await bot.getRESTUser(data.id);
+                            } catch (err) { }
+                        } else user = user.user;
+                        await shard.send(eventKey, { user });
                         break;
                     case 'seval': {
                         let evals = await this.awaitBroadcast({ message: 'eval', code: data.code });

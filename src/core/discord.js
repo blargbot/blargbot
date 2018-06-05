@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-11 11:32:26
+ * @Last Modified time: 2018-06-05 13:46:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -155,6 +155,9 @@ process.on('message', async msg => {
                     bot.sender.send(eventKey, { result: result.result, shard: parseInt(process.env.SHARD_ID) });
                     break;
                 }
+                case 'retrieveUser':
+                    bot.sender.send(eventKey, { user: bot.users.get(data.id) });
+                    break;
                 case 'getStaffGuilds': {
                     let { user, guilds } = data;
                     let res = [];
