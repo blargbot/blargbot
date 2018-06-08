@@ -95,7 +95,8 @@ class EditcommandCommand extends BaseCommand {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
                             if (CommandManager.built[commandName].category == bu.CommandType.CAT ||
                                 CommandManager.built[commandName].category == bu.CommandType.MUSIC ||
-                                CommandManager.built[commandName].cannotDisable === true) {
+                                CommandManager.built[commandName].cannotDisable === true ||
+                                commandName === 'editcommand') {
                                 console.debug('no ur not allowed');
                             } else {
                                 console.debug(commandperms[commandName]);
