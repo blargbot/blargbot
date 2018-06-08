@@ -21,15 +21,33 @@ bu.serializeTagArray = function (array, varName) {
 };
 
 bu.deserializeTagArray = function (value) {
+    let obj = null;
     try {
-        let obj = JSON.parse(value);
-        if (Array.isArray(obj)) obj = {
-            v: obj
-        };
-        return { v: obj.v, n: obj.n }; //Done to prevent injection
+        // Try to parse out any 1...5 to the full expansion
+        let expanded = value.replace(/(-?\d+)\.\.\.(-?\d+)/g, function (match, from, to) {
+            from = parseInt(from);
+            to = parseInt(to);
+            let descending = from > to;
+            let count = Math.abs(to - from) + 1;
+            let offset = Math.min(from, to);
+            let values = [...Array(count).keys()].map(e => e + offset);
+            if (descending)
+                values = values.reverse();
+            return values.join(',');
+        });
+        obj = JSON.parse(expanded);
     } catch (err) {
-        return null;
+        // failed with ... expansion, try again without expanding
+        try {
+           obj = JSON.parse(value);
+        }
+        catch (err) {}
     }
+    if (obj === null)
+        return null;
+    if (Array.isArray(obj)) 
+        obj = { v: obj };
+    return { v: obj.v, n: obj.n };
 };
 
 bu.getArray = async function (context, arrName) {
