@@ -6,8 +6,8 @@ class EditcommandCommand extends BaseCommand {
             name: 'editcommand',
             category: bu.CommandType.ADMIN,
             usage: 'editcommand < list \n    | setrole <commandname | "commandname,..."> [role name]... \n    | setperm <commandname | "commandname,..."> [perm number] \n    | toggle <commandname | "commandname,...">',
-            info: 'Changes command-specific usage permissions.\n\n**list** \nShows a list of modified commands (role required/perms required)\n\n**setrole**\nSets the role(s) required in order to use the command(s). Set to blank to disable the custom role requirement.\n\n**setperm** \nSets the permissions required in order to bypass the role requirement (requires `permoverride` in the settings command to be enabled). This has to be a permission number, which can be calculated at <https://discordapi.com/permissions.html>. Set to blank to disable the custom permission options.\n\n**toggle** \nEnables/disables the listed commands'/*,
-            cannotDisable:false*/
+            info: 'Changes command-specific usage permissions.\n\n**list** \nShows a list of modified commands (role required/perms required)\n\n**setrole**\nSets the role(s) required in order to use the command(s). Set to blank to disable the custom role requirement.\n\n**setperm** \nSets the permissions required in order to bypass the role requirement (requires `permoverride` in the settings command to be enabled). This has to be a permission number, which can be calculated at <https://discordapi.com/permissions.html>. Set to blank to disable the custom permission options.\n\n**toggle** \nEnables/disables the listed commands',
+            cannotDisable: true
         });
     }
 
@@ -96,8 +96,7 @@ class EditcommandCommand extends BaseCommand {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
                             if (CommandManager.built[commandName].category == bu.CommandType.CAT ||
                                 CommandManager.built[commandName].category == bu.CommandType.MUSIC ||
-                                CommandManager.built[commandName].cannotDisable === true ||
-                                commandName === 'editcommand') {
+                                CommandManager.built[commandName].cannotDisable === true) {
                                 console.debug('no ur not allowed');
                             } else {
                                 console.debug(commandperms[commandName]);
