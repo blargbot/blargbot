@@ -8,7 +8,7 @@ class BaseCommand {
         this.aliases = params.aliases || [];
         this.onlyOn = params.onlyOn || undefined;
         this.flags = params.flags || undefined;
-        //this.cannotDisable = params.cannotDisable || false;
+        this.cannotDisable = params.cannotDisable || false;
     }
 
     get isCommand() {
