@@ -26,13 +26,17 @@ module.exports =
             let result = await context.variables.get(args[0]),
                 index = bu.parseInt(args[1]);
 
-            if (!Array.isArray(result)) return result;
+            if (!Array.isArray(result))
+                return result;
 
-            if (!args[1]) return bu.serializeTagArray(result, args[0]);
+            if (!args[1])
+                return bu.serializeTagArray(result, args[0]);
 
-            if (isNaN(index)) return Builder.errors.notANumber(subtag, context);
+            if (isNaN(index))
+                return Builder.errors.notANumber(subtag, context);
 
-            if (!result[index]) return Builder.util.error(subtag, context, 'Index out of range');
+            if (result[index] === undefined)
+                return Builder.util.error(subtag, context, 'Index out of range');
 
             return result[index];
         }).whenDefault(Builder.errors.tooManyArguments)
