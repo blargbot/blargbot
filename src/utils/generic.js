@@ -8,11 +8,11 @@
  */
 
 const colors = require('../../res/colors') || {},
-    emojiRegex = require('emoji-regex'),
     snekfetch = require('snekfetch'),
     unorm = require('unorm'),
     limax = require('limax'),
-    User = require('eris/lib/structures/User');
+    User = require('eris/lib/structures/User'),
+    emojiRegex = `👁|${require('emoji-regex')().source}|<a?:\\w+:\\d{17,23}>`;
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -1466,7 +1466,7 @@ bu.findEmoji = function (text, distinct) {
     let match;
     let result = [];
 
-    let regex = new RegExp(`${emojiRegex().source}|<a?:\\w+:\\d{17,23}>`, "gi");
+    let regex = new RegExp(emojiRegex, "gi");
     while (match = regex.exec(text))
         result.push(match[0].replace(/[<>]/g, ''));
 
