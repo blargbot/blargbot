@@ -754,6 +754,10 @@ bu.splitInput = (content, noTrim) => {
     if (Array.isArray(content)) content = content.join(' ');
     if (!noTrim) input = content.replace(/ +/g, ' ').split(' ');
     else input = content.split(' ');
+    if (input.length > 0 && input[0] == '')
+        input.shift();
+    if (input.length > 0 && input.slice(-1)[0] == '')
+        input.pop();
     let words = [];
     let inQuote = false;
     let quoted = '';
