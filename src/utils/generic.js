@@ -530,6 +530,15 @@ C. cancel query
     }
 };
 
+bu.getMessage = async function (channelId, messageId) {
+    if (/^\d{17,23}$/.test(messageId)) {
+        try {
+            return await bot.getMessage(channelId, messageId);
+        } catch (e) { }
+    }
+    return null;
+};
+
 /**
  * Saves the config file
  */
