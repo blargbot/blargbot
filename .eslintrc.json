@@ -62,6 +62,10 @@
         "_constants": false,
         "_config": false,
         "_core": false,
-        "_discord": false
+        "_discord": false,
+        "workers": false,
+        "UtilManager": false,
+        "EventManager": false,
+        "wss": false
     }
 }

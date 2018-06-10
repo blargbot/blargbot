@@ -444,7 +444,7 @@ ${command[0].desc}`);
                                         if (tag.flags.filter(f => f.word === word).length > 0)
                                             return bu.send(msg, `A flag with the word \`${word}\` has already been specified.`);
                                         let desc = input[key].slice(1).join(' ').replace(/\n/g, ' ');
-                                        tag.flags.push({ flag: key, word, desc })
+                                        tag.flags.push({ flag: key, word, desc });
                                     }
                                 }
                                 await r.table('tag').get(title).update({
@@ -468,7 +468,7 @@ ${command[0].desc}`);
                                 break;
                         }
                     } else if (input.undefined.length === 2) {
-                        console.log(input.undefined)
+                        console.log(input.undefined);
                         let title = filterTitle(input.undefined[1]);
                         let tag = await r.table('tag').get(title).run();
                         if (!tag) {
@@ -478,9 +478,9 @@ ${command[0].desc}`);
                         if (Array.isArray(tag.flags) && tag.flags.length > 0) {
                             let out = 'Here are the flags for that tag:\n\n';
                             for (const flag of tag.flags) {
-                                out += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `
+                                out += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `;
                             }
-                            bu.send(msg, out)
+                            bu.send(msg, out);
                         } else {
                             bu.send(msg, 'That tag has no flags.');
                         }
@@ -558,7 +558,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                     if (Array.isArray(tag.flags) && tag.flags.length > 0) {
                         output += '\n\n**Flags**:\n';
                         for (const flag of tag.flags) {
-                            output += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `
+                            output += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `;
                         }
                     }
                     bu.send(msg, output);
@@ -765,7 +765,7 @@ ${Object.keys(user.favourites).join(', ')}
                     break;
             }
         } else {
-            bu.send(msg, e.info);
+            bu.send(msg, this.info);
         }
     }
 
@@ -790,7 +790,6 @@ ${Object.keys(user.favourites).join(', ')}
                 },
                 scope: {},
                 input: args.params.words,
-                flaggedInput: input,
                 tagName: args.params.tagName,
                 author: args.params.author
             };

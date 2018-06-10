@@ -34,7 +34,7 @@ class MuteCommand extends BaseCommand {
                     for (var i = 0; i < channels.length; i++) {
                         bot.editChannelPermission(channels[i].id, role.id, 0, 2048, 'role', 'Automatic muted role configuration').catch(logError);
                     }
-                    e.execute(msg, words, text);
+                    this.execute(msg, words, text);
                 } else {
                     bu.send(msg, `I created a \`muted\` role, but don't have permissions to configure it! Either configure it yourself, or make sure I have the \`manage channel\` permission, delete the \`muted\` role, and try again.`);
                 }
@@ -46,7 +46,7 @@ class MuteCommand extends BaseCommand {
             if (!msg.channel.guild.roles.get(mutedrole)) {
                 await bu.send(msg, `Couldn't find the muted role! Attempting to regenerate it...`);
                 await bu.guildSettings.remove(msg.channel.guild.id, 'mutedrole');
-                await e.execute(msg, words, text);
+                await this.execute(msg, words, text);
                 return;
             }
         }

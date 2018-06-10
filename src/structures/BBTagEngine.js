@@ -348,7 +348,7 @@ class VariableCache {
     }
 
     async persist(variables = null) {
-        let execOngoing = this.parent.execTimer._start !== null
+        let execOngoing = this.parent.execTimer._start !== null;
         if (execOngoing)
             this.parent.execTimer.end();
         this.parent.dbTimer.resume();
@@ -555,8 +555,6 @@ function addError(tag, context, message) {
  * @param {Context} [context]
  */
 async function runTag(content, context) {
-    console.log('running tag', content);
-
     let config = {};
     if (typeof content == 'string') {
         if (!(context instanceof Context))
@@ -575,7 +573,7 @@ async function runTag(content, context) {
         console.log('\n' + context.cooldowns[context.tagName] + '\n' + cdDate + '\n' + Date.now(), diff, context.cooldown);
         if (diff < 0) {
             let f = Math.floor(diff / 100) / 10;
-            await bu.send(context.msg, `This ${context.isCC ? 'tag' : 'custom command'} is currently under cooldown. Please try again in ${f * -1} seconds.`)
+            await bu.send(context.msg, `This ${context.isCC ? 'tag' : 'custom command'} is currently under cooldown. Please try again in ${f * -1} seconds.`);
             return;
         }
     }
@@ -586,7 +584,6 @@ async function runTag(content, context) {
     context.execTimer.end();
     result = result.trim();
 
-    console.log('persist pl0x');
     await context.variables.persist();
 
     if (result != null && context.state.replace != null)
@@ -598,7 +595,6 @@ async function runTag(content, context) {
         result = await result;
 
     if (context.state.embed == null && (result == null || result.trim() == '')) {
-        console.debug('End run tag - No output');
         return { context, result, response: null };
     }
 

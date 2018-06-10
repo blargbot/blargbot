@@ -26,7 +26,7 @@ class TimezoneCommand extends BaseCommand {
             if (!storedUser.timezone)
                 message = 'You haven\'t set a timezone yet.';
             else
-                message = `Your stored timezone code is \`${storedUser.timezone}\`, which is equivalent to ${dep.moment().tz(storedUser.timezone).format('z (Z)')}.`
+                message = `Your stored timezone code is \`${storedUser.timezone}\`, which is equivalent to ${dep.moment().tz(storedUser.timezone).format('z (Z)')}.`;
         }
         await bu.send(msg, message);
     }

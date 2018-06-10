@@ -75,7 +75,7 @@ async function handleUserMessage(msg, storedGuild) {
         handleRoleme(msg, storedGuild);
         handleTableflip(msg);
         if (Array.isArray(storedGuild.settings.prefix)) {
-            prefixes.push(...storedGuild.settings.prefix)
+            prefixes.push(...storedGuild.settings.prefix);
         } else if (storedGuild.settings.prefix != undefined)
             prefixes.push(storedGuild.settings.prefix);
     };
@@ -226,7 +226,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             return true;
         }
     } else {
-        let _command = CommandManager.commandList[words[0].toLowerCase()]
+        let _command = CommandManager.commandList[words[0].toLowerCase()];
         if (_command) {
             let commandName = _command.name;
             let _built = CommandManager.built[commandName];

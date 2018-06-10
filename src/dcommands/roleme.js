@@ -257,11 +257,11 @@ class RolemeCommand extends BaseCommand {
                     bu.send(msg, rolemeString);
                     break;
                 default:
-                    bu.send(msg, e.info);
+                    bu.send(msg, this.info);
                     break;
             }
         } else {
-            bu.send(msg, e.info);
+            bu.send(msg, this.info);
         }
     }
 }

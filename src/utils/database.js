@@ -11,7 +11,7 @@ const cassandra = require('cassandra-driver');
 const cclient = new cassandra.Client({
     contactPoints: config.cassandra.contactPoints, keyspace: config.cassandra.keyspace,
     authProvider: new cassandra.auth.PlainTextAuthProvider(config.cassandra.username, config.cassandra.password)
-})
+});
 bu.cclient = cclient;
 
 bu.guildSettings = {
@@ -236,7 +236,7 @@ bu.normalize = function (r) {
         console.error(err);
     }
     return n;
-}
+};
 bu.getChatlog = async function (id) {
     let res = await cclient.execute(`SELECT * FROM chatlogs2 WHERE msgid = ?`, [id], { prepare: true });
     let msgs = [];
@@ -246,7 +246,7 @@ bu.getChatlog = async function (id) {
     if (msgs.length > 1)
         msgs.sort((a, b) => b.msgtime - a.msgtime);
     return msgs;
-}
+};
 
 bu.insertChatlog = async function (msg, type) {
     if (msg.channel.id != '204404225914961920') {
@@ -262,7 +262,7 @@ bu.insertChatlog = async function (msg, type) {
             msgtime: Date.now(),
             type: type,
             embeds: JSON.stringify(msg.embeds)
-        }
+        };
         try {
             await cclient.execute(insertQuery, data, { prepare: true });
         } catch (err) {

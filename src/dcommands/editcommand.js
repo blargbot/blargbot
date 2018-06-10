@@ -169,7 +169,7 @@ class EditcommandCommand extends BaseCommand {
                     bu.send(msg, toSend + changedCommands.join(', ') + '\n```');
                     break;
                 default:
-                    bu.send(msg, e.info);
+                    bu.send(msg, this.info);
                     break;
             }
             storedGuild.commandperms = commandperms;

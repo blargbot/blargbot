@@ -168,7 +168,7 @@ bu.addReactions = async function addReactions(channelId, messageId, reactions) {
     }
 
     return errored;
-}
+};
 
 /**
  * Sends a message to discord.
@@ -1048,7 +1048,6 @@ bu.parseInput = function (map, text, noTrim) {
     let words;
     if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
     else words = bu.splitInput(text, noTrim);
-    // console.verbose(words);
     let output = {
         undefined: []
     };
@@ -1088,7 +1087,6 @@ bu.parseInput = function (map, text, noTrim) {
             }
         }
     }
-    console.log(output);
     return output;
 };
 
@@ -1556,7 +1554,7 @@ bu.compare = function (a, b) {
 
     //All pairs are identical
     return 0;
-}
+};
 
 bu.toBlocks = function (text) {
     let regex = /[-+]?\d+(?:\.\d*)?(?:e\+?\d+)?/g;
@@ -1570,7 +1568,7 @@ bu.toBlocks = function (text) {
         if (numbers[i] !== undefined) result.push(parseFloat(numbers[i]));
     }
     return result;
-}
+};
 
 bu.blargbotApi = async function (endpoint, args = {}) {
     try {
@@ -1582,7 +1580,7 @@ bu.blargbotApi = async function (endpoint, args = {}) {
         console.error(err);
         return null;
     }
-}
+};
 
 bu.decancer = function (text) {
     text = unorm.nfkd(text);
@@ -1594,4 +1592,4 @@ bu.decancer = function (text) {
         custom: ['.', ',', ' ', '!', '\'', '"', '?']
     });
     return text;
-}
+};

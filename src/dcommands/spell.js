@@ -7,7 +7,6 @@ for (let key in jsonSpells) {
     temp.id = key;
     spells.add(temp);
 }
-console.debug(spells.size);
 const components = {
     V: 'Verbal',
     S: 'Somantic',

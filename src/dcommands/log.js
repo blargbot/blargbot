@@ -55,7 +55,7 @@ class LogCommand extends BaseCommand {
                         await r.table('guild').get(msg.channel.guild.id).replace(storedGuild);
                         bu.send(msg, 'Done!');
                     } else {
-                        bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
+                        bu.send(msg, `Usage: \`${this.usage}\`\n${this.info}`);
                     }
                     break;
                 case 'disable':
@@ -74,15 +74,15 @@ class LogCommand extends BaseCommand {
                         await r.table('guild').get(msg.channel.guild.id).replace(storedGuild);
                         bu.send(msg, 'Done!');
                     } else {
-                        bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
+                        bu.send(msg, `Usage: \`${this.usage}\`\n${this.info}`);
                     }
                     break;
                 default:
-                    bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
+                    bu.send(msg, `Usage: \`${this.usage}\`\n${this.info}`);
                     break;
             }
         } else {
-            bu.send(msg, `Usage: \`${e.usage}\`\n${e.info}`);
+            bu.send(msg, `Usage: \`${this.usage}\`\n${this.info}`);
         }
     }
 }
