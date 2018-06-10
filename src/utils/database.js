@@ -284,5 +284,53 @@ bu.insertChatlog = async function (msg, type) {
 };
 
 /**
+ * Processes a user into the database
+ * @param user - The user to process
+ */
+bu.processUser = async function (user) {
+    if (user.discriminator == '0000') return;
+    let storedUser = await r.table('user').get(user.id).run();
+    if (!storedUser) {
+        console.debug(`inserting user ${user.id} (${user.username})`);
+        r.table('user').insert({
+            userid: user.id,
+            username: user.username,
+            usernames: [{
+                name: user.username,
+                date: r.epochTime(dep.moment() / 1000)
+            }],
+            isbot: user.bot,
+            lastspoke: r.epochTime(dep.moment() / 1000),
+            lastcommand: null,
+            lastcommanddate: null,
+            discriminator: user.discriminator,
+            todo: []
+        }).run();
+    } else {
+        let newUser = {};
+        let update = false;
+        if (storedUser.username != user.username) {
+            newUser.username = user.username;
+            newUser.usernames = storedUser.usernames;
+            newUser.usernames.push({
+                name: user.username,
+                date: r.epochTime(dep.moment() / 1000)
+            });
+            update = true;
+        }
+        if (storedUser.discriminator != user.discriminator) {
+            newUser.discriminator = user.discriminator;
+            update = true;
+        }
+        if (storedUser.avatarURL != user.avatarURL) {
+            newUser.avatarURL = user.avatarURL;
+            update = true;
+        }
+        if (update)
+            r.table('user').get(user.id).update(newUser).run();
+    }
+};
+
+/**
  * Changefeed stuff
  */

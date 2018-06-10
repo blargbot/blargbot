@@ -47,7 +47,7 @@ const cleverbot = new dep.cleverbot({
 
 bot.on('messageCreate', async function (msg) {
     bu.Metrics.messageCounter.inc();
-    processUser(msg);
+    bu.processUser(msg.author);
     let isDm = msg.channel.guild == undefined;
     let storedGuild;
     if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
@@ -125,54 +125,6 @@ async function handleUserMessage(msg, storedGuild) {
         handleAwaitMessage(msg);
     }
 }
-
-/**
- * Processes a user into the database
- * @param msg - message (Message)
- */
-var processUser = async function (msg) {
-    if (msg.author.discriminator == '0000') return;
-    let storedUser = await r.table('user').get(msg.author.id).run();
-    if (!storedUser) {
-        console.debug(`inserting user ${msg.author.id} (${msg.author.username})`);
-        r.table('user').insert({
-            userid: msg.author.id,
-            username: msg.author.username,
-            usernames: [{
-                name: msg.author.username,
-                date: r.epochTime(dep.moment() / 1000)
-            }],
-            isbot: msg.author.bot,
-            lastspoke: r.epochTime(dep.moment() / 1000),
-            lastcommand: null,
-            lastcommanddate: null,
-            discriminator: msg.author.discriminator,
-            todo: []
-        }).run();
-    } else {
-        let newUser = {};
-        let update = false;
-        if (storedUser.username != msg.author.username) {
-            newUser.username = msg.author.username;
-            newUser.usernames = storedUser.usernames;
-            newUser.usernames.push({
-                name: msg.author.username,
-                date: r.epochTime(dep.moment() / 1000)
-            });
-            update = true;
-        }
-        if (storedUser.discriminator != msg.author.discriminator) {
-            newUser.discriminator = msg.author.discriminator;
-            update = true;
-        }
-        if (storedUser.avatarURL != msg.author.avatarURL) {
-            newUser.avatarURL = msg.author.avatarURL;
-            update = true;
-        }
-        if (update)
-            r.table('user').get(msg.author.id).update(newUser).run();
-    }
-};
 
 /**
  * Sends a message to irc
