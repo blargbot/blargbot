@@ -171,136 +171,121 @@ bu.addReactions = async function addReactions(channelId, messageId, reactions) {
 };
 
 /**
- * Sends a message to discord.
- * @param channel - the channel id (String) or message object (Object)
- * @param message - the message to send (String)
- * @param file - the file to send (Object|null)
- * @param embed - the message embed
- * @returns {Message}
+ * 
+ * @param {*} context The context to send. Can be a channelId, Message or Channel object
+ * @param {String|Object} payload The payload to send. Can be a string or an object
+ * @param {Object|Object[]} files The files to attach to the message
  */
-bu.send = async function (channel, message, file, embed) {
-    let channelid, toSend, nsfw;
-    if (typeof message === "string" || !message) {
-        toSend = { content: message || '', embed };
-    } else {
-        toSend = message;
-        if (embed)
-            toSend.embed = embed;
-        nsfw = message.nsfw;
-    }
-
-    if (typeof channel == 'object' &&
-        'channel' in channel) {
-        // Channel is actually a Message object
-        channelid = channel.channel.id;
-    }
-
-    if (typeof channel == "string") { // channel id
-        channelid = channel;
-        if (nsfw) {
-            channel = await bot.getChannel(channelid);
-            if (!channel || !channel.nsfw) {
-                toSend = { content: nsfw };
-            }
-        }
-    } else if (typeof channel === "object") {
-        if (channel.channel) { // message object
-            channel = channel.channel;
-        }
-
-        channelid = channel.id;
-        if (nsfw && !channel.nsfw) {
-            toSend = { content: nsfw };
-        }
-
-    }
-
+bu.send = async function (context, payload, files) {
+    let channel, message;
     bu.messageStats++;
 
-    if (!toSend.content) toSend.content = '';
-    toSend.content = toSend.content.trim();
+    // Process context into a channel and maybe a message
+    switch (typeof context) {
+        // Id provided, get channel object
+        case "string": channel = await bot.getChannel(context); break;
+        case "object":
+            // Probably a message provided
+            if (context.channel) {
+                channel = context.channel;
+                message = context;
+            }
+            // Probably a channel provided
+            else {
+                channel = context;
+            }
+            break;
+        // Invalid option given
+        default: channel = null;
+    }
 
-    if (toSend.content.length == 0 && !file && !toSend.embed) {
-        console.info('Tried to send a message with no content.');
+    if (channel == null) throw new Error("Channel not found");
+
+
+    switch (typeof payload) {
+        case "string": payload = { content: payload }; break;
+        case "object": break;
+        default: payload = {};
+    }
+
+    if (files != null && !Array.isArray(files))
+        files = [files];
+
+    if (!payload.content) payload.content = '';
+    else payload.content = payload.content.trim();
+    if (payload.nsfw && !channel.nsfw) {
+        payload.content = payload.nsfw;
+        payload.embed = payload.embeds = files = null;
+    }
+
+    if (!payload.content && !payload.embed && !payload.embeds && (!files || files.length == 0)) {
+        console.error('Tried to send an empty message!');
         return new Error('No content');
     }
 
-    if (toSend.content.length > 2000) {
-        if (!file) file = {
-            file: Buffer.from(toSend.content.toString()),
+    if (payload.content.length > 2000) {
+        (files || (files = [])).push({
+            file: Buffer.from(payload.content.toString()),
             name: 'output.txt'
-        };
-        toSend.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
-
+        });
+        payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
     }
 
-    try {
-        console.debug('Sending content: ', JSON.stringify(toSend));
-        return await bot.createMessage(channelid, toSend, file);
-    } catch (err) {
-        try {
-            let response;
-            if (err.response)
-                response = JSON.parse(err.response);
-            else {
-                response = {};
-            }
-            let dmMsg, warnMsg;
-            switch (response.code) {
-                case 10003:
-                    warnMsg = 'Channel not found';
-                    break;
-                case 50013:
-                    warnMsg = 'Tried sending a message, but had no permissions!';
-                    dmMsg = 'I tried to send a message in response to your command, ' +
-                        'but didn\'t have permission to speak. If you think this is an error, ' +
-                        'please contact the staff on your guild to give me the `Send Messages` permission.';
+    console.debug('Sending content: ', JSON.stringify(payload));
+    let sendPromise = bot.createMessage(channel.id, payload, files);
+    return await sendPromise.catch(async function (error) {
+        let response = error.response;
+        if (typeof response !== 'object')
+            response = JSON.parse(error.response || "{}");
+        if (!bu.send.catch.hasOwnProperty(response.code))
+            return console.error(error.response, error.stack);
 
-                    break;
-                case 50006:
-                    warnMsg = 'Tried to send an empty message!';
-                    break;
-                case 50004:
-                    warnMsg = 'Tried embeding a link, but had no permissions!';
+        let result = await bu.send.catch[response.code](channel, payload);
+        if (typeof result === 'string' && message && await bu.canDmErrors(message.author.id)) {
+            if (message.guild) result += `\nGuild: ${message.guild.name} (${message.guild.id})`;
+            result += `\nChannel: ${message.channel.name} (${message.channel.id})`;
+            if (message.content.length > 100) result += `\nCommand: ${message.content.substring(0, 100)}...`;
+            else result += `\nCommand: ${message.content}`;
+            result += '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.';
 
-                    dmMsg = 'I tried to send a message in response to your command, ' +
-                        'but didn\'t have permission to create embeds. If you think this is an error, ' +
-                        'please contact the staff on your guild to give me the `Embed Links` permission.';
-                    bu.send(channelid, `I don't have permission to embed links! This will break several of my commands. Please give me the \`Embed Links\` permission. Thanks!`);
-                    break;
-                case 50007:
-                    warnMsg = 'Can\'t send a message to this user!';
-                    break;
-                case 50008:
-                    warnMsg = 'Can\'t send messages in a voice channel!';
-                    break;
-                case 50001:
-                    warnMsg = 'Missing access!';
-
-                    dmMsg = 'I tried to send a message in response to your command, ' +
-                        'but didn\'t have permission to see the channel. If you think this is an error, ' +
-                        'please contact the staff on your guild to give me the `Read Messages` permission.';
-                    break;
-                default:
-                    console.error(err.response, err.stack);
-                    throw err;
-            }
-            if (typeof channel == 'string') {
-                throw {
-                    message: warnMsg,
-                    throwOriginal: true
-                };
-            }
-            if (dmMsg && channel.author) {
-                let storedUser = await r.table('user').get(channel.author.id);
-                if (!storedUser.dontdmerrors) {
-                    bu.sendDM(channel.author.id, dmMsg + '\nGuild: ' + channel.guild.name + '\nChannel: ' + channel.channel.name + '\nCommand: ' + channel.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
-                }
-            }
-        } catch (err2) {
-            // no-op
+            await bu.sendDM(message.author.id, result);
         }
+    });
+};
+
+/**
+ * A collection of handlers for response codes from a failed message send
+ */
+bu.send.catch = {
+    '10003': function (channel) { console.error('10003: Channel not found. ', channel); },
+    '50006': function () { console.error('50006: Tried to send an empty message!'); },
+    '50007': function () { console.error('50007: Can\'t send a message to this user!'); },
+    '50008': function () { console.error('50008: Can\'t send messages in a voice channel!'); },
+
+    '50013': function () {
+        console.warn('50013: Tried sending a message, but had no permissions!');
+        return 'I tried to send a message in response to your command, ' +
+            'but didn\'t have permission to speak. If you think this is an error, ' +
+            'please contact the staff on your guild to give me the `Send Messages` permission.';
+    },
+    '50001': function () {
+        console.warn('50001: Missing Access');
+        return 'I tried to send a message in response to your command, ' +
+            'but didn\'t have permission to see the channel. If you think this is an error, ' +
+            'please contact the staff on your guild to give me the `Read Messages` permission.';
+    },
+    '50004': function (channel) {
+        console.warn('50004: Tried embeding a link, but had no permissions!');
+        bu.send(channel, 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
+        return 'I tried to send a message in response to your command, ' +
+            'but didn\'t have permission to create embeds. If you think this is an error, ' +
+            'please contact the staff on your guild to give me the `Embed Links` permission.';
     }
+};
+
+bu.canDmErrors = async function (userId) {
+    let storedUser = await r.table('user').get(userId);
+    return !storedUser.dontdmerrors;
 };
 
 /**
@@ -327,8 +312,8 @@ bu.sendDM = async function (user, message, file) {
     }
     try {
         let privateChannel = await bot.getDMChannel(userid);
-        if (!file) return await bu.send(privateChannel.id, message);
-        else return await bu.send(privateChannel.id, message, file);
+        if (!file) return await bu.send(privateChannel, message);
+        else return await bu.send(privateChannel, message, file);
     } catch (err) {
         console.error(err.stack);
         return err;
