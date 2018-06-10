@@ -179,31 +179,50 @@ bu.addReactions = async function addReactions(channelId, messageId, reactions) {
  * @returns {Message}
  */
 bu.send = async function (channel, message, file, embed) {
-    let channelid = channel;
+    let channelid, toSend, nsfw;
+    if (typeof message === "string" || !message) {
+        toSend = { content: message || '', embed };
+    } else {
+        toSend = message;
+        if (embed)
+            toSend.embed = embed;
+        nsfw = message.nsfw;
+    }
+
     if (typeof channel == 'object' &&
         'channel' in channel) {
+        // Channel is actually a Message object
         channelid = channel.channel.id;
     }
 
-    if (!message) message = '';
+    if (typeof channel == "string") { // channel id
+        channelid = channel;
+        if (nsfw) {
+            channel = await bot.getChannel(channelid);
+            if (!channel || !channel.nsfw) {
+                toSend = { content: nsfw };
+            }
+        }
+    } else if (typeof channel === "object") {
+        if (channel.channel) { // message object
+            channel = channel.channel;
+        }
+
+        channelid = channel.id;
+        if (nsfw && !channel.nsfw) {
+            toSend = { content: nsfw };
+        }
+
+    }
 
     bu.messageStats++;
-    let toSend = {};
-    if (typeof message === "string") {
-        toSend.content = message;
-    } else {
-        toSend = message;
-    }
 
     if (!toSend.content) toSend.content = '';
     toSend.content = toSend.content.trim();
 
-    if (embed) toSend.embed = embed;
-    // content.content = dep.emoji.emojify(content.content).trim();
-
-    if (toSend.content.length <= 0 && !file && !embed && !toSend.embed) {
+    if (toSend.content.length == 0 && !file && !toSend.embed) {
         console.info('Tried to send a message with no content.');
-        return Error('No content');
+        return new Error('No content');
     }
 
     if (toSend.content.length > 2000) {
