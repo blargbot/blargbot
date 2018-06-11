@@ -22,47 +22,101 @@ bu.compareStats = (a, b) => {
     return 0;
 };
 
-bu.awaitMessage = async function (msg, message, callback, timeout, label, suppress) {
-    let returnMsg = await bu.send(msg, message);
-    if (!timeout) timeout = 300000;
-    if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
-        bu.awaitMessages[msg.channel.id] = {};
-    let event = 'await' + msg.channel.id + '-' + msg.author.id;
-    if (bu.awaitMessages[msg.channel.id][msg.author.id]) {
-        clearTimeout(bu.awaitMessages[msg.channel.id][msg.author.id].timer);
-    }
-    bu.awaitMessages[msg.channel.id][msg.author.id] = {
-        event: event,
-        time: dep.moment(msg.timestamp),
-        botmsg: returnMsg
-    };
-    bu.emitter.removeAllListeners(event);
-
-    function registerEvent() {
-        return new Promise((fulfill, reject) => {
-            bu.emitter.on(event, async function (msg2) {
-                let response;
-                if (callback) {
-                    response = await callback(msg2);
-                } else
-                    response = true;
-                if (response) {
-                    bu.emitter.removeAllListeners(event);
-                    clearTimeout(bu.awaitMessages[msg.channel.id][msg.author.id].timer);
-                    fulfill(msg2);
-                }
-            });
-
-            bu.awaitMessages[msg.channel.id][msg.author.id].timer = setTimeout(() => {
-                bu.emitter.removeAllListeners(event);
-                if (!suppress)
-                    bu.send(msg, `Query canceled${label ? ' in ' + label : ''} after ${dep.moment.duration(timeout).humanize()}.`);
-                reject('Request timed out.');
-            }, timeout);
-        });
-    }
-    return await registerEvent();
+bu.awaitQuery = async function (msg, content, check, timeout, label) {
+    let query = await bu.createQuery(msg, content, check, timeout, label);
+    return await query.response;
 };
+
+bu.createQuery = async function (msg, content, check, timeout, label) {
+    if (timeout == null || typeof timeout != "number")
+        timeout = 300000;
+    let timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${dep.moment.duration(timeout).humanize()}.`;
+    return bu.createPrompt(msg, content, check, timeout, timeoutMessage);
+};
+
+bu.awaitPrompt = async function (msg, content, check, timeout, timeoutMessage) {
+    let prompt = await bu.createPrompt(msg, content, check, timeout, timeoutMessage);
+    return await prompt.response;
+};
+
+bu.createPrompt = async function (msg, content, check, timeout, timeoutMessage) {
+    let prompt = await bu.send(msg, content);
+    let response = bu.awaitMessage([msg.channel.id], [msg.author.id], check, timeout);
+
+    response.catch(function (error) {
+        if (timeoutMessage && typeof timeoutMessage == "string" && error instanceof TimeoutError) {
+            bu.send(msg, timeoutMessage);
+        }
+    });
+
+    return {
+        prompt,
+        response
+    };
+};
+
+let eventCounter = 0;
+
+bu.awaitMessage = async function (channels, users, check, timeout) {
+    if (!Array.isArray(channels))
+        channels = [channels];
+    if (!Array.isArray(users))
+        users = [users];
+    if (typeof check != "function")
+        check = function () { return true; };
+    if (timeout == null || typeof timeout != "number")
+        timeout = 300000;
+
+    let eventName = `await_message_${eventCounter++}`;
+    let eventReferences = [];
+
+    for (const channel of channels) {
+        for (const user of users) {
+            let c = bu.awaitMessages[channel] || (bu.awaitMessages[channel] = {});
+            let u = c[user] || (c[user] = []);
+            u.push(eventName);
+            eventReferences.push(u);
+        }
+    }
+
+    bu.emitter.removeAllListeners(eventName);
+
+    console.debug(`awaiting message | channels: [${channels}] users: [${users}] timeout: ${timeout}`);
+
+    return await new Promise(async function (resolve, reject) {
+        let timeoutId = setTimeout(function () {
+            reject(new TimeoutError('Request timed out'));
+        }, timeout);
+
+        bu.emitter.on(eventName, async function (message) {
+            try {
+                if (await check(message)) {
+                    clearTimeout(timeoutId);
+                    resolve(message);
+                }
+            } catch (err) {
+                clearTimeout(timeoutId);
+                reject(err);
+            }
+        });
+    }).finally(function () {
+        bu.emitter.removeAllListeners(eventName);
+        for (const ref of eventReferences) {
+            let index = ref.indexOf(eventName);
+            if (index != -1) {
+                ref.splice(index, 1);
+            }
+        }
+    });
+};
+
+
+class TimeoutError extends Error {
+    constructor(message) {
+        super(message);
+    }
+}
+bu.TimeoutError = TimeoutError;
 
 
 function getId(text) {
@@ -426,7 +480,7 @@ bu.getUser = async function (msg, name, args = {}) {
             }
             let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
             try {
-                let resMsg = await bu.awaitMessage(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
+                let query = await bu.createQuery(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
 ${userListString}${moreUserString}--------------------
 C.cancel query
 \`\`\`
@@ -437,16 +491,15 @@ C.cancel query
                             return true;
                         } else return false;
                     }, undefined, args.label, args.suppress);
-                if (resMsg.content.toLowerCase() == 'c') {
-                    let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                    await bot.deleteMessage(delmsg.channel.id, delmsg.id);
+                let response = await query.response;
+                if (response.content.toLowerCase() == 'c') {
+                    await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
                     if (!args.suppress)
                         bu.send(msg, `Query canceled${args.label ? ' in ' + args.label : ''}.`);
                     return null;
                 } else {
-                    let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                    await bot.deleteMessage(delmsg.channel.id, delmsg.id);
-                    return newUserList[parseInt(resMsg.content) - 1].user;
+                    await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
+                    return newUserList[parseInt(response.content) - 1].user;
                 }
             } catch (err) {
                 return null;
@@ -455,6 +508,15 @@ C.cancel query
             return null;
         }
     }
+};
+
+bu.getMessage = async function (channelId, messageId) {
+    if (/^\d{17,23}$/.test(messageId)) {
+        try {
+            return await bot.getMessage(channelId, messageId);
+        } catch (e) { }
+    }
+    return null;
 };
 
 bu.getRole = async function (msg, name, args = {}) {
@@ -510,7 +572,7 @@ bu.getRole = async function (msg, name, args = {}) {
                 roleListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newRoleList[i].name} - ${newRoleList[i].color.toString(16)} (${newRoleList[i].id})\n`;
             }
             let moreRoleString = newRoleList.length < roleList.length ? `...and ${roleList.length - newRoleList.length} more.\n` : '';
-            let resMsg = await bu.awaitMessage(msg, `Multiple roles found! Please select one from the list.\`\`\`prolog
+            let query = await bu.createQuery(msg, `Multiple roles found! Please select one from the list.\`\`\`prolog
 ${roleListString}${moreRoleString}--------------------
 C. cancel query
 \`\`\`
@@ -519,14 +581,14 @@ C. cancel query
                         return true;
                     } else return false;
                 }, undefined, args.label, args.suppress);
-            if (resMsg.content.toLowerCase() == 'c') {
+            let response = await query.response;
+            if (response.content.toLowerCase() == 'c') {
                 if (!args.suppress)
                     bu.send(msg, 'Query canceled.');
                 return null;
             } else {
-                let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                await bot.deleteMessage(delmsg.channel.id, delmsg.id);
-                return newRoleList[parseInt(resMsg.content) - 1];
+                await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
+                return newRoleList[parseInt(response.content) - 1];
             }
         } else {
             return null;

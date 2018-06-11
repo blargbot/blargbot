@@ -50,7 +50,7 @@ class RolemeCommand extends BaseCommand {
             let addList = [],
                 removeList = [],
                 channelList = [],
-                resList, activationMessage, caseSensitive, outputMessage, resMsg;
+                resList, activationMessage, caseSensitive, outputMessage, query;
             switch (input.undefined[0].toLowerCase()) {
                 case 'create':
                 case 'add':
@@ -82,7 +82,7 @@ class RolemeCommand extends BaseCommand {
                         }
 
                     } else {
-                        res = (await bu.awaitMessage(msg, 'List all the roles that this will add, each on a new line. If you do not wish any roles, type `0`.')).content;
+                        res = (await bu.awaitQuery(msg, 'List all the roles that this will add, each on a new line. If you do not wish any roles, type `0`.')).content;
                         if (res != 0) {
                             resList = res.split('\n');
                             for (let i = 0; i < resList.length; i++) {
@@ -91,7 +91,7 @@ class RolemeCommand extends BaseCommand {
                                     addList.push(role.id);
                             }
                         }
-                        res = (await bu.awaitMessage(msg, 'List all the roles that this will remove, each on a new line. If you do not wish any roles, type `0`.')).content;
+                        res = (await bu.awaitQuery(msg, 'List all the roles that this will remove, each on a new line. If you do not wish any roles, type `0`.')).content;
                         if (res != 0) {
                             resList = res.split('\n');
                             for (let i = 0; i < resList.length; i++) {
@@ -104,10 +104,10 @@ class RolemeCommand extends BaseCommand {
                             await bu.send(msg, 'You must have some roles!');
                             break;
                         }
-                        res = (await bu.awaitMessage(msg, 'Mention all the channels that this will apply to (in #<channelname> format). Alternatively, don\'t mention any channels to make it apply everywhere.'));
+                        res = (await bu.awaitQuery(msg, 'Mention all the channels that this will apply to (in #<channelname> format). Alternatively, don\'t mention any channels to make it apply everywhere.'));
                         channelList = res.channelMentions;
-                        activationMessage = (await bu.awaitMessage(msg, 'Type the sentence that users should type in order for this action to happen.')).content;
-                        caseSensitive = (await bu.awaitMessage(msg, 'Type `1` if the previous sentence should be case-sensitive. Type anything else to make it match regardless of capitalization.'));
+                        activationMessage = (await bu.awaitQuery(msg, 'Type the sentence that users should type in order for this action to happen.')).content;
+                        caseSensitive = (await bu.awaitQuery(msg, 'Type `1` if the previous sentence should be case-sensitive. Type anything else to make it match regardless of capitalization.'));
                         caseSensitive = caseSensitive.content == '1' ? true : false;
                     }
                     roleme.push({
@@ -147,16 +147,16 @@ class RolemeCommand extends BaseCommand {
                     if (rolemeString.length > 1900) rolemeString = rolemeString.substring(0, 1850) + '...';
                     rolemeString += '```\nPlease type the number of the roleme you wish to remove, or `c` to cancel.';
                     //  console.debug(rolemeString.length, rolemeString);
-                    resMsg = (await bu.awaitMessage(msg, rolemeString, m => (!isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length) || m.content.toLowerCase() == 'c'));
-                    if (resMsg.content.toLowerCase() == 'c') {
+                    query = await bu.createQuery(msg, rolemeString, m => (!isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length) || m.content.toLowerCase() == 'c');
+                    res = await query.response;
+                    if (res.content.toLowerCase() == 'c') {
                         await bu.send(msg, 'Remove canceled!');
                         break;
                     }
-                    roleme.splice(parseInt(resMsg.content) - 1, 1);
+                    roleme.splice(parseInt(res.content) - 1, 1);
                     storedGuild.roleme = roleme;
                     await r.table('guild').get(msg.channel.guild.id).replace(storedGuild).run();
-                    let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                    await bot.deleteMessage(delmsg.channel.id, delmsg.id);
+                    await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
                     await bu.send(msg, 'Done! :ok_hand:');
                     break;
                 case 'edit':
@@ -182,14 +182,14 @@ class RolemeCommand extends BaseCommand {
                     if (rolemeString.length > 1900) rolemeString = rolemeString.substring(0, 1850) + '...';
                     rolemeString += '```\nPlease type the number of the roleme you wish to edit, or `c` to cancel.';
                     //  console.debug(rolemeString.length, rolemeString);
-                    resMsg = (await bu.awaitMessage(msg, rolemeString, m => (!isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length) || m.content.toLowerCase() == 'c'));
-                    if (resMsg.content.toLowerCase() == 'c') {
+                    query = await bu.createQuery(msg, rolemeString, m => (!isNaN(parseInt(m.content)) && parseInt(m.content) > 0 && parseInt(m.content) <= rolemeList.length) || m.content.toLowerCase() == 'c');
+                    res = await query.response;
+                    if (res.content.toLowerCase() == 'c') {
                         await bu.send(msg, 'Edit canceled!');
                         break;
                     }
-                    let delmsg2 = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                    await bot.deleteMessage(delmsg2.channel.id, delmsg2.id);
-                    let index = parseInt(resMsg.content) - 1;
+                    await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
+                    let index = parseInt(res.content) - 1;
 
                     if (input.a) {
                         for (let i = 0; i < input.a.length; i++) {

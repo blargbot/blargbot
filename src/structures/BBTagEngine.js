@@ -209,7 +209,9 @@ class Context {
             replace: null,
             break: 0,
             continue: 0,
-            subtags: {}
+            subtags: {},
+            isAwait: false,
+            overrides: {}
         };
     }
 
@@ -233,6 +235,18 @@ class Context {
         context.variables = this.variables;
 
         return context;
+    }
+
+    override(subtag, callback) {
+        let overrides = this.state.overrides;
+        let previous = overrides[subtag];
+        overrides[subtag] = callback;
+        return {
+            previous,
+            revert() {
+                overrides[subtag] = previous;
+            }
+        };
     }
 
     serialize() {
@@ -468,9 +482,10 @@ async function execute(bbtag, context) {
             }
 
             subtag.name = name;
+            let runSubtag = context.state.overrides[definition.name] || definition.execute;
             try {
                 // const timer = new Timer().start();
-                result.push(await definition.execute(subtag, context));
+                result.push(await runSubtag(subtag, context));
                 // timer.end();
                 // bu.Metrics.subtagLatency
                 //     .labels(subtag.name).observe(timer.elapsed);
@@ -570,7 +585,6 @@ async function runTag(content, context) {
     if (context.cooldowns[context.tagName]) {
         let cdDate = context.cooldowns[context.tagName] + (context.cooldown || 0);
         let diff = Date.now() - cdDate;
-        console.log('\n' + context.cooldowns[context.tagName] + '\n' + cdDate + '\n' + Date.now(), diff, context.cooldown);
         if (diff < 0) {
             let f = Math.floor(diff / 100) / 10;
             await bu.send(context.msg, `This ${context.isCC ? 'tag' : 'custom command'} is currently under cooldown. Please try again in ${f * -1} seconds.`);

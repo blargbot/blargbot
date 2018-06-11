@@ -15,8 +15,8 @@ module.exports =
         .withArgs(a => [a.require('tag'), a.optional('args')])
         .withDesc('Executes another `tag`, giving it `args` as the input. Useful for modules.')
         .withExample(
-        'Let me do a tag for you. {exec;f}',
-        'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
+            'Let me do a tag for you. {exec;f}',
+            'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
@@ -51,7 +51,11 @@ module.exports =
             let childContext = context.makeChild({ input });
 
             context.state.stackSize += 1;
-            let result = await bbEngine.execString(tagContent || '', childContext);
+            let result;
+            if (typeof tagContent == "string" || tagContent == null)
+                result = await bbEngine.execString(tagContent || '', childContext);
+            else
+                result = await bbEngine.execute(tagContent, context);
             context.state.stackSize -= 1;
 
             context.errors.push({

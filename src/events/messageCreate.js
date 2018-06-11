@@ -561,12 +561,11 @@ async function updateStats() {
 
 
 function handleAwaitMessage(msg) {
-    if (bu.awaitMessages.hasOwnProperty(msg.channel.id) &&
-        bu.awaitMessages[msg.channel.id].hasOwnProperty(msg.author.id)) {
-        let firstTime = bu.awaitMessages[msg.channel.id][msg.author.id].time;
-        if (dep.moment.duration(dep.moment() - firstTime).asMinutes() <= 5) {
-            bu.emitter.emit(bu.awaitMessages[msg.channel.id][msg.author.id].event, msg);
-        }
+    let channelEvents, userEvents;
+    if ((channelEvents = bu.awaitMessages[msg.channel.id]) &&
+        (userEvents = channelEvents[msg.author.id]) &&
+        Array.isArray(userEvents)) {
+        bu.emitter.emit(userEvents[0], msg);
     }
 }
 
