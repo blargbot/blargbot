@@ -51,7 +51,7 @@ module.exports =
             a.optional('timeout')])
         .withDesc('Pauses the command until one of the given users sends a message in any of the given channels. ' +
             'When a message is sent, `condition` will be run to determine if the message can be accepted. ' +
-            'If no message has been accepted within `timeout` then the tag returns `Wait timed out`, otherwise it returns an array containing ' +
+            'If no message has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing ' +
             'the channel Id, then the message Id. ' +
             '\n\n`channels` defaults to the current channel.' +
             '\n`users` defaults to the current user.' +
@@ -59,14 +59,14 @@ module.exports =
             '\n`timeout` is a number of seconds. This defaults to 60 and is limited to 300' +
             '\n\n While inside the `condition` parameter, none of the following subtags may be used: `' + overrideSubtags.join(', ') + '`' +
             '\nAlso, the current message becomes the users message that is to be checked. This means that ' +
-            '`{channelid}`, `{messageid}` and all related subtags will point to the message being checked.')
+            '`{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.')
         .withExample(
-            '{waitmessage;{channelid};{userid};{bool;{messagecontent};startswith;Hi};300}',
+            '{waitmessage;{channelid};{userid};{bool;{messagetext};startswith;Hi};300}',
             'Hi how you doing?',
             '["111111111111111","2222222222222"]'
         )
         .resolveArgs(0, 1, 3)
-        .whenArgs('0-5', async function (subtag, context, args) {
+        .whenArgs('0-4', async function (subtag, context, args) {
             let channels, users, checkBBTag, timeout, failure;
 
             // parse channels
@@ -112,7 +112,7 @@ module.exports =
                 timeout = 60;
             }
 
-            let checkFunc = this.createCheck(subtag, context, checkBBTag);
+            let checkFunc = this.createCheck(subtag, context, checkBBTag, msg => context.makeChild({ msg }));
 
             try {
                 let result = await bu.awaitMessage(channels, users, checkFunc, timeout * 1000);
@@ -122,16 +122,16 @@ module.exports =
                     return err(subtag, context);
                 }
                 if (err instanceof bu.TimeoutError) {
-                    return Builder.util.error(subtag, context, "Wait timed out");
+                    return Builder.util.error(subtag, context, `Wait timed out after ${err.timeout}`);
                 }
                 throw err;
             }
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .withProp('overrideSubtags', overrideSubtags)
-        .withProp('createCheck', function (subtag, context, checkBBtag) {
+        .withProp('createCheck', function (subtag, context, checkBBtag, makeChild) {
             let overrideSubtags = this.overrideSubtags;
-            return async function (msg) {
+            return async function (...args) {
                 let overrides = [];
                 try {
                     for (const name of overrideSubtags) {
@@ -139,7 +139,7 @@ module.exports =
                             return Builder.util.error(_subtag, _context, `Subtag {${_subtag.name}} is disabled inside {${subtag.name}}`);
                         }));
                     }
-                    let childContext = context.makeChild({ msg });
+                    let childContext = makeChild(...args);
                     let result = await bbengine.execute(checkBBtag, childContext);
                     context.errors.push(...childContext.errors);
                     let bool = bu.parseBoolean(result.trim());

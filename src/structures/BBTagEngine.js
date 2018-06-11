@@ -238,12 +238,16 @@ class Context {
 
     override(subtag, callback) {
         let overrides = this.state.overrides;
+        let exists = overrides.hasOwnProperty(subtag);
         let previous = overrides[subtag];
         overrides[subtag] = callback;
         return {
             previous,
             revert() {
-                overrides[subtag] = previous;
+                if (!exists)
+                    delete overrides[subtag];
+                else
+                    overrides[subtag] = previous;
             }
         };
     }
@@ -473,15 +477,21 @@ async function execute(bbtag, context) {
                 continue;
             }
             let name = await execute(subtag.children[0], context);
-            let definition = TagManager.get(name.toLowerCase());
+            let definition, runSubtag;
+            if (context.state.overrides.hasOwnProperty(name)) {
+                runSubtag = context.state.overrides[name.toLowerCase()];
+                definition = { name: name.toLowerCase() };
+            } else {
+                definition = TagManager.get(name.toLowerCase()) || {};
+                runSubtag = context.state.overrides[definition.name] || definition.execute;
+            }
 
-            if (definition == null) {
+            if (runSubtag == null) {
                 result.push(addError(subtag, context, 'Unknown subtag ' + name));
                 continue;
             }
 
             subtag.name = name;
-            let runSubtag = context.state.overrides[definition.name] || definition.execute;
             try {
                 // const timer = new Timer().start();
                 result.push(await runSubtag(subtag, context));

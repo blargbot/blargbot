@@ -55,7 +55,7 @@ bu.createPrompt = async function (msg, content, check, timeout, timeoutMessage) 
     };
 };
 
-let eventCounter = 0;
+let awaitMessageCounter = 0;
 
 bu.awaitMessage = async function (channels, users, check, timeout) {
     if (!Array.isArray(channels))
@@ -67,7 +67,7 @@ bu.awaitMessage = async function (channels, users, check, timeout) {
     if (timeout == null || typeof timeout != "number")
         timeout = 300000;
 
-    let eventName = `await_message_${eventCounter++}`;
+    let eventName = `await_message_${awaitMessageCounter++}`;
     let eventReferences = [];
 
     for (const channel of channels) {
@@ -85,7 +85,7 @@ bu.awaitMessage = async function (channels, users, check, timeout) {
 
     return await new Promise(async function (resolve, reject) {
         let timeoutId = setTimeout(function () {
-            reject(new TimeoutError('Request timed out'));
+            reject(new TimeoutError(timeout));
         }, timeout);
 
         bu.emitter.on(eventName, async function (message) {
@@ -110,10 +110,72 @@ bu.awaitMessage = async function (channels, users, check, timeout) {
     });
 };
 
+let awaitReactionCounter = 0;
+
+bu.awaitReact = async function (messages, users, reactions, check, timeout) {
+    if (!Array.isArray(messages))
+        messages = [messages];
+    if (!Array.isArray(users))
+        users = [users];
+    if (reactions != null) {
+        if (!Array.isArray(reactions))
+            reactions = [reactions];
+        reactions = reactions.map(r => r.replace(/[<>]]/g, ''));
+    }
+    if (typeof check != "function")
+        check = function () { return true; };
+    if (timeout == null || typeof timeout != "number")
+        timeout = 300000;
+
+    let eventName = `await_reaction_${awaitMessageCounter++}`;
+    let eventReferences = [];
+
+    for (const message of messages) {
+        let msg = bu.awaitReactions[message] || (bu.awaitReactions[message] = {})
+        for (const user of users) {
+            let usr = msg[user] || (msg[user] = []);
+            usr.push(eventName);
+            eventReferences.push(usr);
+        }
+    }
+
+    bu.emitter.removeAllListeners(eventName);
+
+    console.debug(`awaiting reaction | messages: [${messages}] users: [${users}] reactions: ${JSON.stringify(reactions)} timeout: ${timeout}`);
+
+    return await new Promise(async function (resolve, reject) {
+        let timeoutId = setTimeout(function () {
+            reject(new TimeoutError(timeout));
+        }, timeout);
+
+        bu.emitter.on(eventName, async function (message, emoji, user) {
+            try {
+                if (reactions && reactions.length > 0 && !reactions.includes(emoji))
+                    return;
+                if (await check(message, user, emoji)) {
+                    clearTimeout(timeoutId);
+                    resolve({ message, channel: message.channel, user, emoji });
+                }
+            } catch (err) {
+                clearTimeout(timeoutId);
+                reject(err);
+            }
+        });
+    }).finally(function () {
+        bu.emitter.removeAllListeners(eventName);
+        for (const ref of eventReferences) {
+            let index = ref.indexOf(eventName);
+            if (index != -1) {
+                ref.splice(index, 1);
+            }
+        }
+    });
+};
 
 class TimeoutError extends Error {
-    constructor(message) {
-        super(message);
+    constructor(timeout) {
+        super("Action timed out");
+        this.timeout = timeout;
     }
 }
 bu.TimeoutError = TimeoutError;
@@ -374,6 +436,26 @@ bu.sendDM = async function (user, message, file) {
     }
 };
 
+/**
+ * 
+ * @param {String} userId
+ */
+bu.getUserById = async function (userId) {
+    let match = userId.match(/\d{17,21}/);
+    if (match) {
+        let user = bot.users.get(match[0]);
+        if (user) {
+            return user;
+        } else {
+            user = (await bot.sender.awaitMessage({ message: 'retrieveUser', id: match[0] })).user;
+            if (user) {
+                user = new User(user, bot);
+                return user;
+            }
+        }
+    }
+    return null;
+};
 
 /**
  * Gets a user from a name (smartly)
@@ -392,18 +474,10 @@ bu.getUser = async function (msg, name, args = {}) {
     var userId;
     var discrim;
 
-    if (/[0-9]{17,21}/.test(name)) {
-        userId = name.match(/(\d{17,21})/)[1];
-        if (bot.users.get(userId)) {
-            return bot.users.get(userId);
-        } else {
-            let user = await bot.sender.awaitMessage({ message: 'retrieveUser', id: userId });
-            if (user.user) {
-                user = new User(user.user, bot);
-                return user;
-            }
-        }
-    }
+    let user = await bu.getUserById(name);
+    if (user)
+        return user;
+
     if (/^.*#\d{4}$/.test(name)) {
         discrim = name.match(/^.*#(\d{4}$)/)[1];
         name = name.substring(0, name.length - 5);

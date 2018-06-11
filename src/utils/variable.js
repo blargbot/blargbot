@@ -22,6 +22,8 @@ bu.cleverbotStats = 0;
 bu.messageStats = 0;
 // A map of messages to await for
 bu.awaitMessages = {};
+// A map of reactions to wait for
+bu.awaitReactions = {};
 bu.stats = {};
 bu.cleverStats = {};
 
