@@ -67,10 +67,6 @@ module.exports =
         )
         .resolveArgs(0, 1, 3)
         .whenArgs('0-5', async function (subtag, context, args) {
-            if (context.state.isAwait) {
-                return Builder.util.error(subtag, context, "Cannot nest waiting subtags");
-            }
-
             let channels, users, checkBBTag, timeout, failure;
 
             // parse channels
@@ -119,7 +115,6 @@ module.exports =
             let checkFunc = this.createCheck(subtag, context, checkBBTag);
 
             try {
-                context.state.isAwait = true;
                 let result = await bu.awaitMessage(channels, users, checkFunc, timeout * 1000);
                 return JSON.stringify([result.channel.id, result.id]);
             } catch (err) {
@@ -130,8 +125,6 @@ module.exports =
                     return Builder.util.error(subtag, context, "Wait timed out");
                 }
                 throw err;
-            } finally {
-                context.state.isAwait = false;
             }
         })
         .whenDefault(Builder.errors.tooManyArguments)

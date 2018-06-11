@@ -210,7 +210,6 @@ class Context {
             break: 0,
             continue: 0,
             subtags: {},
-            isAwait: false,
             overrides: {}
         };
     }
