@@ -131,7 +131,7 @@ bu.awaitReact = async function (messages, users, reactions, check, timeout) {
     let eventReferences = [];
 
     for (const message of messages) {
-        let msg = bu.awaitReactions[message] || (bu.awaitReactions[message] = {})
+        let msg = bu.awaitReactions[message] || (bu.awaitReactions[message] = {});
         for (const user of users) {
             let usr = msg[user] || (msg[user] = []);
             usr.push(eventName);
@@ -287,7 +287,6 @@ bu.addReactions = async function addReactions(channelId, messageId, reactions) {
 };
 
 /**
- * 
  * @param {*} context The context to send. Can be a channelId, Message or Channel object
  * @param {String|Object} payload The payload to send. Can be a string or an object
  * @param {Object|Object[]} files The files to attach to the message
@@ -437,7 +436,6 @@ bu.sendDM = async function (user, message, file) {
 };
 
 /**
- * 
  * @param {String} userId
  */
 bu.getUserById = async function (userId) {
