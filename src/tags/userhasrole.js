@@ -15,23 +15,23 @@ module.exports =
         .acceptsArrays()
         .withArgs(a => [a.require('roleids'), a.optional('user'), a.optional('quiet')])
         .withDesc('Checks if a user has any of the provided `roleids`, and returns either `true` or `false`. ' +
-        'Roleid can be an array of role ids, or a single role id. ' +
-        'You can find a list of roles and their ids by doing \`b!roles\`. ' +
-        'If `user` is provided, check that `user`, otherwise use the person who called this tag.' +
-        'If `quiet` is specified, if a user can\'t be found it will simply return `false`')
+            'Roleid can be an array of role ids, or a single role id. ' +
+            'You can find a list of roles and their ids by doing \`b!roles\`. ' +
+            'If `user` is provided, check that `user`, otherwise use the person who called this tag.' +
+            'If `quiet` is specified, if a user can\'t be found it will simply return `false`')
         .withExample(
-        'You are a moderator: {userhasrole;moderator}',
-        'You are a moderator: false'
+            'You are a moderator: {userhasrole;moderator}',
+            'You are a moderator: false'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[3],
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
                 result = await this.checkRoles(context, args[0], args[1], quiet);
 
             if (result.user == null)
-                return Builder.errors.noUserFound(subtag, context);
+                return quiet ? false : Builder.errors.noUserFound(subtag, context);
             if (result.roles.length == 0)
-                return Builder.errors.noRoleFound(subtag, context);
+                return quiet ? false : Builder.errors.noRoleFound(subtag, context);
 
             return result.hasRole.reduce((a, b) => a || b, false);
         })
