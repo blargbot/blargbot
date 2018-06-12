@@ -1160,8 +1160,8 @@ bu.parseDuration = function (text) {
         duration.add(parseInt(text.match(/([0-9]+) ?(hours|hour|h)/i)[1]) || 0, 'h');
     if (/([0-9]+) ?(minutes|minute|mins|min|m)/i.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(minutes|minute|mins|min|m)/i)[1]) || 0, 'm');
-    if (/([0-9]+) ?(seconds|second|secs|sec|s)/i.test(text))
-        duration.add(parseInt(text.match(/([0-9]+) ?(seconds|second|secs|sec|s)/i)[1]) || 0, 's');
+    if (/((?:[0-9]*[.])?[0-9]+) ?(seconds|second|secs|sec|s)/i.test(text))
+        duration.add(Math.floor(parseFloat(text.match(/((?:[0-9]*[.])?[0-9]+) ?(seconds|second|secs|sec|s)/i)[1]) * 1000) || 0, 'ms');
     return duration;
 };
 
