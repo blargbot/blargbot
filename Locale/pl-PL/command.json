@@ -90,7 +90,7 @@
                 },
                 "favorite": {
                     "usage": "",
-                    "info": ""
+                    "info": "Favourites the specified tag."
                 },
                 "report": {
                     "usage": "",
@@ -122,7 +122,7 @@
             "nobots": "[[emote.x]] Nie można oddać tagu do bota!",
             "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
             "transfercomplete": "[[emote.check]] {{user}} teraz posiada tag `{{tag}}`.",
-            "taginfo": "",
+            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
             "descupdate": "Zaktualizowano opis dla '{{tag}}'.",
             "descreset": "Opis dla `{{tag}}` został zresetowany.",
             "subcommandconflict": "Nie możesz używać nazwy `{{name}}` ponieważ jest już pod-komenda z taką nazwą!",
