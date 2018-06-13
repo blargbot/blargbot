@@ -90,7 +90,7 @@
                 },
                 "favorite": {
                     "usage": "",
-                    "info": "Met en favoris le tag spécifié, ou donne une liste de vos tags favoris."
+                    "info": "Met le tag spécifié dans vos favoris."
                 },
                 "report": {
                     "usage": "",
@@ -122,7 +122,7 @@
             "nobots": "[[emote.x]]Vous ne pouvez pas transférer de tag à un bot!!",
             "transfercancelled": "[[emote.x]]Le transfert a été annuler.",
             "transfercomplete": "[[emote.check]] {{user}} possède maintenant le tag `{{tag}}`.",
-            "taginfo": "",
+            "taginfo": "__**Tag | {{name}}**__\nAuteur.**{{author}}**\nDernière modification: **{{lastModified}}**\nUtilisé un totale de **{{uses}} fois**!\nMis en favoris **{{favourites}} fois**!\n\n{{desc}}",
             "descupdate": "La description pour `{{tag}}` a été mise à jour.",
             "descreset": "La description pour `{{tag}}` a été réinitialisée.",
             "subcommandconflict": "Vous ne pouvez pas utiliser le nom `{{name}}` parce qu'il y a une sous-commande qui porte ce nom!",
@@ -356,7 +356,7 @@
             },
             "mute": {
                 "setrole": "Le rôle muet a été mis a jour.",
-                "rolequery": ""
+                "rolequery": "Sélectionnez le rôle muet."
             },
             "announce": {
                 "set": "Les annonces ont été paramétrées.",
