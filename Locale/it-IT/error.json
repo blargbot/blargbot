@@ -16,7 +16,7 @@
     "notenoughparams": "Troppi pochi argomenti! Scrivi `{{prefix}}help {{name}}` per maggiori dettagli \n\nMi aspettavo `{{expected}}` parametri, ma ne ho ricevuti `{{received}}`",
     "tag": {
         "restricted": "",
-        "notfound": "",
+        "notfound": "La tag '{{tag}}' non esiste.",
         "toomanyargs": "Troppi argomenti (r:{{received}} e:{{expected}})",
         "toofewargs": "Troppi pochi argomenti (r:{{received}} e:{{expected}})",
         "isnan": "Mi aspettavo '{{arg}}' che fosse un numero, invece ho ricevuto '{{value}}'",
