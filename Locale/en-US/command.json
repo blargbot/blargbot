@@ -85,15 +85,15 @@
                     "info": "Searches for a tag with a name containing your query."
                 },
                 "list": {
-                    "usage": "",
+                    "usage": "[@user]",
                     "info": "Lists all the tags, or optionally all the tags created by a specific user."
                 },
                 "favorite": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Favorites the specified tag."
                 },
                 "report": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Reports a tag for violating the ToS. Please use responsibly."
                 },
                 "test": {
@@ -109,11 +109,11 @@
                     "info": "Gives a link to the BBTag documentation, or provides information about a specific subtag."
                 },
                 "setdesc": {
-                    "info": "",
+                    "info": "info",
                     "usage": ""
                 },
                 "setusage": {
-                    "info": "",
+                    "info": "info",
                     "usage": ""
                 }
             },
@@ -122,7 +122,7 @@
             "nobots": "[[emote.x]] You cannot transfer a tag to a bot!",
             "transfercancelled": "[[emote.x]] The transfer has been canceled.",
             "transfercomplete": "[[emote.check]] {{user}} now owns the tag `{{tag}}`.",
-            "taginfo": "",
+            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favorited **{{favourites}} times**!",
             "descupdate": "The description for `{{tag}}` has been updated.",
             "descreset": "The description for `{{tag}}` has been reset.",
             "subcommandconflict": "You can't use the name `{{name}}` because there is a subcommand with that name!",
@@ -333,7 +333,7 @@
             "info": "Configures various settings.",
             "subcommand": {
                 "staffuser": {
-                    "usage": "",
+                    "usage": "<add | remove> <user>...",
                     "info": "Adds or removes users to the staff list."
                 },
                 "staffrole": {
@@ -346,7 +346,7 @@
                     "info": "Sets up announcements."
                 },
                 "modlog": {
-                    "usage": "",
+                    "usage": "[event]... [flags]",
                     "info": "Sets up the modlog for the specified events. If no channel is specified, defaults to the current channel. If no events are specified, defaults to all events."
                 },
                 "punishment": {
@@ -356,7 +356,7 @@
             },
             "mute": {
                 "setrole": "The muted role has been updated.",
-                "rolequery": ""
+                "rolequery": "Select the muted role."
             },
             "announce": {
                 "set": "Announcements have been set up.",
