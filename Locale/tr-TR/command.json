@@ -85,15 +85,15 @@
                     "info": "Sorgu içeren bir adla bir etiket arar."
                 },
                 "list": {
-                    "usage": "",
+                    "usage": "[@user]",
                     "info": "Tüm etiketleri veya belirli bir kullanıcı tarafından oluşturulan isteğe bağlı olarak tüm etiketleri listeler."
                 },
                 "favorite": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<name>",
+                    "info": "Sık Kullanılanlar belirtilen etiket."
                 },
                 "report": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "ToS ihlal için bir etiket bildirir. Lütfen sorumlu bir şekilde kullanın."
                 },
                 "test": {
@@ -109,11 +109,11 @@
                     "info": "BBTag belgeler için bir bağlantı sunar veya belirli bir alt etiket hakkında bilgi sağlar."
                 },
                 "setdesc": {
-                    "info": "",
+                    "info": "info",
                     "usage": ""
                 },
                 "setusage": {
-                    "info": "",
+                    "info": "info",
                     "usage": ""
                 }
             },
@@ -122,7 +122,7 @@
             "nobots": "[[emote.x]] Bir bot için bir etiket aktaramazsınız!",
             "transfercancelled": "[[emote.x]] Aktarımı iptal edildi.",
             "transfercomplete": "[[emote.check]] {{user}} şimdi etiket '{{tag}}' sahibi.",
-            "taginfo": "",
+            "taginfo": "__ ** Etiketi | {{name}} ** \n__ Yazar: **{{author}} ** \nson değişiklik: **{{lastModified}} ** \nbu kez kullanılan toplam **{{uses}} kez **! \nÇok beğenilen oldu **{{favourites}} kez **!",
             "descupdate": "'{{tag}}' için açıklama güncelleştirildi.",
             "descreset": "'{{tag}}' için açıklama sıfırlandı.",
             "subcommandconflict": "Bu ada sahip bir alt olduğu '{{name}}' adı kullanılamaz!",
@@ -333,7 +333,7 @@
             "info": "Çeşitli ayarlarını yapılandırır.",
             "subcommand": {
                 "staffuser": {
-                    "usage": "staffuser <add | remove><user>...",
+                    "usage": "<add | remove> <user>...",
                     "info": "Ekler veya personel listesi kullanıcılara kaldırır."
                 },
                 "staffrole": {
@@ -346,7 +346,7 @@
                     "info": "Duyurular kanalını kurar."
                 },
                 "modlog": {
-                    "usage": "",
+                    "usage": "[event]... [flags]",
                     "info": "Modlog belirtilen olaylar için ayarlar. Kanal yok belirtilirse, geçerli kanal için varsayılan olarak ayarlanır. Hiçbir olay belirttiyseniz, tüm olaylara varsayılan olarak ayarlanır."
                 },
                 "punishment": {
@@ -356,7 +356,7 @@
             },
             "mute": {
                 "setrole": "Muted rolü güncelleştirildi.",
-                "rolequery": ""
+                "rolequery": "Muted rolünü seçin."
             },
             "announce": {
                 "set": "Duyurular kuruldu.",
