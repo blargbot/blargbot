@@ -16,7 +16,7 @@
     "notenoughparams": "Kulang sa parameters! Para sa mga detalye, gawin ang `{{prefix}}help {{name}}`.\n\nInaasahan ang `{{expected}}` parameters, pero sa halip `{{received}}` ang nakuha.",
     "tag": {
         "restricted": "",
-        "notfound": "",
+        "notfound": "Walang `{{tag}}` tag.",
         "toomanyargs": "Sobra sa argumento (r:{{received}} e:{{expected}})",
         "toofewargs": "Kulang sa argumento (r:{{received}} e:{{expected}})",
         "isnan": "Inaasahan ang `{{args}` ay numero, pero ang natanggap ay `{{value}}`",
