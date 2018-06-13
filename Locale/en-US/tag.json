@@ -1,10 +1,10 @@
 {
     "array": {
         "filter": {
-            "desc": ""
+            "desc": "Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array only containing the elements where the result of the iteration was `true` or `1`."
         },
         "foreach": {
-            "desc": ""
+            "desc": "Iterates through an array, setting the local variable `i` to the current element. If `varName` is provided, sets that variable instead."
         },
         "get": {
             "desc": "Gets an element from an array at the position `index`."
@@ -19,7 +19,7 @@
             "desc": "Returns the length of the given array."
         },
         "map": {
-            "desc": ""
+            "desc": "Iterates through an array, setting the current element to a local variable `i`. If `varName` is specified, sets that variable instead.\n\nReturns a new array where each element is the result of each iteration."
         },
         "pop": {
             "desc": "Removes and returns the last element of the array."
@@ -37,7 +37,7 @@
             "desc": "Returns a section of the array, including the `start` index and excluding the `end` index. If `end` is unspecified, defaults to all remaining elements."
         },
         "sort": {
-            "desc": ""
+            "desc": "Sorts and returns an array, by default in ascending order.\n\nIf `function` is provided, sorting will occur based on the result of executing said function. This will set two local variables: `a` (or `varNameOne`) and `b` (or `varNameTwo`). \n\nThe function must return a number. If the number is greater than 0, `a` will be considered greater than `b`. If the number is lower than 0, `b` will be considered greater than `a`. Any non-number result will be converted to 0, where both elements are equal."
         },
         "splice": {
             "desc": "Starting at the position `start`, removes `deleteCount` elements from the array and adds the remaining `items` at that position. Returns the removed elements."
@@ -146,7 +146,7 @@
             "desc": "Rounds the provided decimal down."
         },
         "math": {
-            "desc": ""
+            "desc": "Calculates the value of the provided expression using the following operators:\n\n - `^` - exponents\n - `/` - division\n - `*` - multiplication\n - `+` - addition\n - `-` - subtraction\n - `&` - bitwise AND\n - `|` - bitwise OR\n - `XOR` - bitwise XOR\n\nOperators are executed using the Order of Operations (Brackets, Exponents, Division, Multiplication, Addition, Subtraction, Bitwise).\n\nIf an operator isn't specified, it uses the last-used operator (defaulting to addition).\n\nBrackets would be achieved by using another nested {math} tag.\n\nIf an `operand` or `augend` cannot be parsed as a number, a variable with the same name will be retrieved. If the retrieved variable is also not a number, throws an error."
         },
         "parsefloat": {
             "desc": "Attempts to parse the given text as a decimal."
