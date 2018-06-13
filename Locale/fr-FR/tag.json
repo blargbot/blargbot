@@ -1,10 +1,10 @@
 {
     "array": {
         "filter": {
-            "desc": ""
+            "desc": "Itère à travers un tableau en modifiant l'élément à une variable locale `i`. Si `varName` est spécifiée, remplace l'élément par cette variable à la place de `i`.\n\nRenvoie un nouveau tableau qui contient seulement les éléments où le résultat de l'itération était `vrai` ou `1`"
         },
         "foreach": {
-            "desc": ""
+            "desc": "Itère à travers un tableau en remplaçant l'élément actuel par la variable `i`. Si `varName` est donné, remplace l'élément actuel par celui-ci à la place de `i`."
         },
         "get": {
             "desc": "Obtient l'élément d'un tableau à la position `index`"
@@ -19,7 +19,7 @@
             "desc": "Renvoie la longueur du tableau donné."
         },
         "map": {
-            "desc": ""
+            "desc": "Itère à travers un tableau en remplaçant l'élément actuel par une variable `i`. Si `varName` est spécifié, remplace l'élément actuel par celui-ci plutôt que par `i`.\n\nRenvoie un nouveau tableau où chaque élément est le résultat d'une itération."
         },
         "pop": {
             "desc": "Supprime et renvoie le dernier élément du tableau."
@@ -37,7 +37,7 @@
             "desc": "Renvoie la partie du tableau incluant l'index de `début` et excluant l'index de `fin`. Si l'index de `fin` n'est pas spécifié, le définit par défaut à tous les éléments restants."
         },
         "sort": {
-            "desc": ""
+            "desc": "Trie et rassemble un tableau, par défaut dans l'ordre ascendant.\n\nSi la `fonction` est fournie, le tri se produira en fonction du résultat de l'exécution de ladite fonction. Cela va créer deux variables locales : `a` (ou `varNomUn`) et `b` (ou `varNomDeux`).\n\nLa fonction doit être un nombre. Si le nombre est plus grand que 0, `a` sera considérer plus grand que `b`. Si le nombre est plus petit que 0, `b` sera considérer plus grand que `a`. Tout les résultats qui ne sont pas des nombres seront convertis en 0, où tout les nombres seront alors égaux."
         },
         "splice": {
             "desc": "Départ sur la position `start`, supprimera les éléments `deleteCount` du tableau et ajouteront les `items` restants de la position.  Résultats des éléments supprimés."
@@ -146,7 +146,7 @@
             "desc": "Arrondis le nombre donné à l'unité inférieure."
         },
         "math": {
-            "desc": ""
+            "desc": "Calcule  l'opération donnée avec les opérateurs suivant:\n\n- `^` - exponents\n- `/` - division\n- `*` - multiplication\n- `+` - addition\n- `-` - substraction\n- `&` - et\n- `|` - ou\n- `XOR` - (vérifie que c'est pas pareil)\n\nles opérateur respectent l'ordre de calcul (parenthèses, exposants, division, multiplication, addition, soustraction, logique (et/ou/xor))\n\nSi l'opérateur n'est pas spécifié, il utilise le dernier opérateur utilisé (l'addition par défaut)\n\nLes parenthèses doivent être finies avec un autre tag {math}.\n\nSi un des `thermes` ne peux pas être reconnu en tant que nombre, cherche un variable du même nom. Si la variable n'est pas un nombre, affiche une erreur."
         },
         "parsefloat": {
             "desc": "affiche les nombres décimaux du texte donné."
