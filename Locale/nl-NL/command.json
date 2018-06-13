@@ -90,7 +90,7 @@
                 },
                 "favorite": {
                     "usage": "",
-                    "info": ""
+                    "info": "Favourites the specified tag."
                 },
                 "report": {
                     "usage": "",
@@ -122,7 +122,7 @@
             "nobots": "",
             "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
             "transfercomplete": "",
-            "taginfo": "",
+            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
             "descupdate": "",
             "descreset": "",
             "subcommandconflict": "",
