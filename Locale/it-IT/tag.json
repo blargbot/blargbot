@@ -1,10 +1,10 @@
 {
     "array": {
         "filter": {
-            "desc": ""
+            "desc": "Cicla tutti gli elementi di un array, impostando l'elemento corrente ad una variabile locale `i`. Se `varName` è specificato, imposta quella variabile.\n\nRitorna un nuovo array contenente solo gli elementi il cui risultato del ciclo sia `true` o `1`."
         },
         "foreach": {
-            "desc": ""
+            "desc": "Cicla tutti gli elementi di un array, impostando la variabile locale `i` all'elemento corrente. Se `varName` è specificato, imposta quella variabile."
         },
         "get": {
             "desc": "Prende un elemento di un array alla posizione `indice`."
@@ -19,7 +19,7 @@
             "desc": "Restituisce la lunghezza dell'array dato."
         },
         "map": {
-            "desc": ""
+            "desc": "Cicla tutti gli elementi di un array, impostando l'elemento corrente in una variabile locale `i`. Se `varName` è specificato, imposta quella variabile.\n\nRestituisce un nuovo array in cui ogni elemento è il risultato del ciclo."
         },
         "pop": {
             "desc": "Rimuove e restituisce l'ultimo elemento dell'array."
@@ -37,7 +37,7 @@
             "desc": "Ritorna una sezione dell'array, incluso l'indice `start` ed escluso l'indice `end`. Se `end` non è specificato, restituisce gli elementi rimanenti."
         },
         "sort": {
-            "desc": ""
+            "desc": "Ordina e restituisce un array, con default in ordine crescente.\n\nSe `function` è fornita, l'ordinamento sarà eseguito in base al risultato della funzione. Questo imposterà due variabili: `a` (o `nomePrimaVariabile`) e `b` (o `nomeSecondaVariabile`). \n\nLa funzione deve restituire un numero. Se questo è più grande di 0, `a` verrà considerata più grande di `b`. Qualunque risultato non numerico sarà tradotto in 0, dove entrambi gli elementi sono uguali."
         },
         "splice": {
             "desc": "Iniziando dalla posizione `start`, rimuove `deleteCount` elementi dall'array e aggiunge gli `oggetti` rimanenti a quella posizone. Restituisce gli elementi rimossi."
