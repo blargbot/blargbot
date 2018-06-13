@@ -90,7 +90,7 @@
                 },
                 "favorite": {
                     "usage": "",
-                    "info": ""
+                    "info": "Marca como favorito la tag especificada."
                 },
                 "report": {
                     "usage": "",
@@ -109,11 +109,11 @@
                     "info": "Muestra un enlace a la documentación de BBTag, o enseña información acerca de una subtag específica."
                 },
                 "setdesc": {
-                    "info": "",
+                    "info": "Información",
                     "usage": ""
                 },
                 "setusage": {
-                    "info": "",
+                    "info": "Información",
                     "usage": ""
                 }
             },
@@ -122,7 +122,7 @@
             "nobots": "[emote.x] ¡No puedes transferir la etiqueta a un bot!",
             "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
             "transfercomplete": "[emote.check]{{user}} ahora posee la etiqueta {{tag}}.",
-            "taginfo": "",
+            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
             "descupdate": "Se actualizo la descripción para '{{tag}}'.",
             "descreset": "La descripcion para {{tag}} ha sido reiniciada.",
             "subcommandconflict": "No puedes usar mas el nombre {{name}} ¡por que hay un subcomando con ese nombre!",
