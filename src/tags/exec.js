@@ -25,6 +25,22 @@ module.exports =
              if (tag == null)
                  return Builder.util.error(subtag, context, 'Tag not found: ' + args[0]);
 
+   
+             let name = args[0];
+             if (!context._cooldowns[context.msg.guild.id][false])
+                 context._cooldowns[context.msg.guild.id][false] = {};
+             if (!context._cooldowns[context.msg.guild.id][false][context.msg.author.id])
+                 context._cooldowns[context.msg.guild.id][false][context.msg.author.id] = {};
+             let cd = context._cooldowns[context.msg.guild.id][false][context.msg.author.id];
+             if (cd) {
+                 let cdDate = cd[name] + (tag.cooldown || 0);
+                 let diff = Date.now() - cdDate;
+                 if (diff < 0) {
+                     return Builder.util.error(subtag, context, 'Cooldown: ' + (diff * -1));
+                 }
+             }
+             cd[name] = Date.now();
+    
              switch (args.length) {
                  case 1: 
                      return await this.execTag(subtag, context, tag.content, '');
