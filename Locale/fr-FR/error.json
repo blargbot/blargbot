@@ -16,7 +16,7 @@
     "notenoughparams": "Pas assez de paramètres. Utilisez `{{prefix}}help {{name}}` pour plus de détails.\n\nIl fallait `{{expected}}` parameters, mais j'ai reçu `{{received}}` à la place.",
     "tag": {
         "restricted": "",
-        "notfound": "",
+        "notfound": "Le tag `{{tag}}` n'existe pas.",
         "toomanyargs": "Trop d'arguments! (r:{{received}} e:{{expected}})",
         "toofewargs": "Pas assez d'arguments! (r:{{received}} e:{{expected}})",
         "isnan": "'{{arg}}' s'attend à être un nombre, mais reçois une '{{value}}'",
