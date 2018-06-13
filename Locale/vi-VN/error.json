@@ -16,7 +16,7 @@
     "notenoughparams": "Chưa đủ giá trị cần nhập! Gõ theo cú pháp `{{prefix}}help {{name}}` để biết thêm thông tin chi tiết.\n\nCần `{{expected}}` giá trị, thay vào đó mình chỉ nhận được `{{received}}`.",
     "tag": {
         "restricted": "",
-        "notfound": "",
+        "notfound": "'{{tag}}' không tồn tại.",
         "toomanyargs": "Quá nhiều đơn vị (nhận:{{received}} cần:{{expected}})",
         "toofewargs": "Không đủ đơn vị (nhận:{{received}} cần:{{expected}})",
         "isnan": "Cần '{{arg}}' là chữ số, nhưng nhận được '{{value}}'",
