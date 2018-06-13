@@ -1,10 +1,10 @@
 {
     "array": {
         "filter": {
-            "desc": ""
+            "desc": "Geçerli öğe yerel bir değişkene 'i' ayarlama bir dizi aracılığıyla sırayla dolaşır. 'Değişken ' adı belirtilirse, bu değişken yerine ayarlar. Yeni bir dizi öğelerini içeren sadece nereye yineleme sonucu 'true' veya '1' verir."
         },
         "foreach": {
-            "desc": ""
+            "desc": "Geçerli öğeye yerel değişken 'i' ayarlama bir dizi aracılığıyla sırayla dolaşır. 'Değişken ' adı verdiyse, bu değişken yerine ayarlar."
         },
         "get": {
             "desc": "Bir diziden bir öğe konumunda 'index' alır."
@@ -19,7 +19,7 @@
             "desc": "Verilen dizi uzunluğu döndürür."
         },
         "map": {
-            "desc": ""
+            "desc": "Geçerli öğe yerel bir değişkene 'i' ayarlama bir dizi aracılığıyla sırayla dolaşır. 'Değişken ' adı belirtilirse, bu değişken yerine ayarlar. Yeni bir dizi öğelerini içeren sadece nereye yineleme sonucu 'true' veya '1' verir."
         },
         "pop": {
             "desc": "Kaldırır ve dizinin son öğesi döndürür."
@@ -37,7 +37,7 @@
             "desc": "'Başlangıç' dizini de dahil olmak üzere, 'bitiş' dizini hariç olduğu dizi, bir bölümünü döndürür. 'End' belirtilmemiş ise, varsayılan olarak tüm öğeleri kalan."
         },
         "sort": {
-            "desc": ""
+            "desc": "Sıralar ve varsayılan olarak artan bir dizi döndürür. 'İşlev' verdiyse, sıralama dayalı dedi işlevini çalıştırmadan sonucu olarak ortaya çıkar. Bu iki yerel değişkenleri ayarlar: 'a' (veya 'varNameOne') ve 'b' (veya 'varNameTwo'). Işlev bir sayı döndürmesi gerekir. Sayı 0'dan büyük ise, 'bir' 'b' büyük dikkate alınacaktır. Sayı 0'dan daha düşük ise, \"b\" 'a' büyük dikkate alınacaktır. Herhangi bir sayı olmayan sonuç 0 olarak her iki öğeleri eşit olduğu dönüştürülür."
         },
         "splice": {
             "desc": "Başlangıç konumu 'start', 'DeleteAt' öğeleri diziden kaldırır ve bu konumda kalan 'öğeleri' ekler. Kaldırılan öğeleri verir."
