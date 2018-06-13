@@ -16,7 +16,7 @@
     "notenoughparams": "Not enough parameters! Do `{{prefix}}help {{name}}` for more details.\n\nExpected `{{expected}}` parameters, but got `{{received}}` instead.",
     "tag": {
         "restricted": "",
-        "notfound": "",
+        "notfound": "Subtag '{{tag}}' doesn't exist.",
         "toomanyargs": "Too many args (r:{{received}} e:{{expected}})",
         "toofewargs": "Not enough args (r:{{received}} e:{{expected}})",
         "isnan": "Expected '{{arg}}' to be a number, but received '{{value}}'",
