@@ -23,7 +23,7 @@ const messageCounter = new Prometheus.Counter({
 const chatlogCounter = new Prometheus.Counter({
     name: 'bot_chatlog_counter', help: 'Chatlogs created',
     labelNames: ['type']
-})
+});
 
 const commandCounter = new Prometheus.Counter({
     name: 'bot_command_counter', help: 'Commands executed',
@@ -55,7 +55,7 @@ const bbtagExecutions = new Prometheus.Counter({
 const aggregate = function (regArray) {
     let aggregated = Prometheus.AggregatorRegistry.aggregate(regArray);
     return aggregated;
-}
+};
 
 module.exports = {
     Prometheus, aggregate, guildGauge, shardStatus, userGauge, messageCounter,

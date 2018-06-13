@@ -209,7 +209,8 @@ class Context {
             replace: null,
             break: 0,
             continue: 0,
-            subtags: {}
+            subtags: {},
+            overrides: {}
         };
     }
 
@@ -233,6 +234,22 @@ class Context {
         context.variables = this.variables;
 
         return context;
+    }
+
+    override(subtag, callback) {
+        let overrides = this.state.overrides;
+        let exists = overrides.hasOwnProperty(subtag);
+        let previous = overrides[subtag];
+        overrides[subtag] = callback;
+        return {
+            previous,
+            revert() {
+                if (!exists)
+                    delete overrides[subtag];
+                else
+                    overrides[subtag] = previous;
+            }
+        };
     }
 
     serialize() {
@@ -348,7 +365,7 @@ class VariableCache {
     }
 
     async persist(variables = null) {
-        let execOngoing = this.parent.execTimer._start !== null
+        let execOngoing = this.parent.execTimer._start !== null;
         if (execOngoing)
             this.parent.execTimer.end();
         this.parent.dbTimer.resume();
@@ -460,9 +477,16 @@ async function execute(bbtag, context) {
                 continue;
             }
             let name = await execute(subtag.children[0], context);
-            let definition = TagManager.get(name.toLowerCase());
+            let definition, runSubtag;
+            if (context.state.overrides.hasOwnProperty(name)) {
+                runSubtag = context.state.overrides[name.toLowerCase()];
+                definition = { name: name.toLowerCase() };
+            } else {
+                definition = TagManager.get(name.toLowerCase()) || {};
+                runSubtag = context.state.overrides[definition.name] || definition.execute;
+            }
 
-            if (definition == null) {
+            if (runSubtag == null) {
                 result.push(addError(subtag, context, 'Unknown subtag ' + name));
                 continue;
             }
@@ -470,7 +494,7 @@ async function execute(bbtag, context) {
             subtag.name = name;
             try {
                 // const timer = new Timer().start();
-                result.push(await definition.execute(subtag, context));
+                result.push(await runSubtag(subtag, context));
                 // timer.end();
                 // bu.Metrics.subtagLatency
                 //     .labels(subtag.name).observe(timer.elapsed);
@@ -555,8 +579,6 @@ function addError(tag, context, message) {
  * @param {Context} [context]
  */
 async function runTag(content, context) {
-    console.log('running tag', content);
-
     let config = {};
     if (typeof content == 'string') {
         if (!(context instanceof Context))
@@ -572,10 +594,9 @@ async function runTag(content, context) {
     if (context.cooldowns[context.tagName]) {
         let cdDate = context.cooldowns[context.tagName] + (context.cooldown || 0);
         let diff = Date.now() - cdDate;
-        console.log('\n' + context.cooldowns[context.tagName] + '\n' + cdDate + '\n' + Date.now(), diff, context.cooldown);
         if (diff < 0) {
             let f = Math.floor(diff / 100) / 10;
-            await bu.send(context.msg, `This ${context.isCC ? 'tag' : 'custom command'} is currently under cooldown. Please try again in ${f * -1} seconds.`)
+            await bu.send(context.msg, `This ${context.isCC ? 'tag' : 'custom command'} is currently under cooldown. Please try again in ${f * -1} seconds.`);
             return;
         }
     }
@@ -586,7 +607,6 @@ async function runTag(content, context) {
     context.execTimer.end();
     result = result.trim();
 
-    console.log('persist pl0x');
     await context.variables.persist();
 
     if (result != null && context.state.replace != null)
@@ -598,7 +618,6 @@ async function runTag(content, context) {
         result = await result;
 
     if (context.state.embed == null && (result == null || result.trim() == '')) {
-        console.debug('End run tag - No output');
         return { context, result, response: null };
     }
 

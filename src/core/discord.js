@@ -239,9 +239,9 @@ function getCPU() {
     return new Promise((res, rej) => {
         let pid = process.pid;
         usage.lookup(pid, { keepHistory: true }, function (err, result) {
-            if (err) res('NaN')
+            if (err) res('NaN');
             else res(result.cpu);
-        })
+        });
     });
 }
 // shard status posting

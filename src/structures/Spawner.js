@@ -245,7 +245,7 @@ class Spawner extends EventEmitter {
                 }
                 break;
             case 'ircMessage':
-                this.client.irc.bot.say(config.irc.channel, data.message)
+                this.client.irc.bot.say(config.irc.channel, data.message);
                 break;
             case 'eventGuild':
                 console.log(data);

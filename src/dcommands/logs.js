@@ -46,7 +46,7 @@ class LogsCommand extends BaseCommand {
             return;
         }
         if (words[0].toLowerCase() == 'help') {
-            bu.send(msg, e.info);
+            bu.send(msg, this.info);
             return;
         }
         let input = bu.parseInput(this.flags, words);
@@ -154,7 +154,7 @@ class LogsCommand extends BaseCommand {
             clearTimeout(timer);
             if (input.j) {
                 let toSend = `${pingUser ? 'Sorry that took so long, ' + msg.author.mention : ''}Here are your logs, in a JSON file!`;
-                results.forEach(m => delete m.id)
+                results.forEach(m => delete m.id);
                 await bu.send(msg, toSend, {
                     file: JSON.stringify(results, null, 2),
                     name: `${msg.channel.id}-logs.json`

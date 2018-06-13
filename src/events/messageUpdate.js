@@ -60,7 +60,7 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
             }
         let oldMsg;
         if (storedGuild.settings.makelogs)
-            oldMsg = oldmsg.content || 'No content to display. This is either due to the message only containing an attachment, or existing before makelogs was set to true'
+            oldMsg = oldmsg.content || 'No content to display. This is either due to the message only containing an attachment, or existing before makelogs was set to true';
         else
             oldMsg = 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';
         let newMsg = msg.content || '""';

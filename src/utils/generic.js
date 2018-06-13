@@ -8,11 +8,11 @@
  */
 
 const colors = require('../../res/colors') || {},
-    emojiRegex = require('emoji-regex'),
     snekfetch = require('snekfetch'),
     unorm = require('unorm'),
     limax = require('limax'),
-    User = require('eris/lib/structures/User');
+    User = require('eris/lib/structures/User'),
+    emojiRegex = `👁|${require('emoji-regex')().source}|<a?:\\w+:\\d{17,23}>`;
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -22,47 +22,163 @@ bu.compareStats = (a, b) => {
     return 0;
 };
 
-bu.awaitMessage = async function (msg, message, callback, timeout, label, suppress) {
-    let returnMsg = await bu.send(msg, message);
-    if (!timeout) timeout = 300000;
-    if (!bu.awaitMessages.hasOwnProperty(msg.channel.id))
-        bu.awaitMessages[msg.channel.id] = {};
-    let event = 'await' + msg.channel.id + '-' + msg.author.id;
-    if (bu.awaitMessages[msg.channel.id][msg.author.id]) {
-        clearTimeout(bu.awaitMessages[msg.channel.id][msg.author.id].timer);
-    }
-    bu.awaitMessages[msg.channel.id][msg.author.id] = {
-        event: event,
-        time: dep.moment(msg.timestamp),
-        botmsg: returnMsg
-    };
-    bu.emitter.removeAllListeners(event);
-
-    function registerEvent() {
-        return new Promise((fulfill, reject) => {
-            bu.emitter.on(event, async function (msg2) {
-                let response;
-                if (callback) {
-                    response = await callback(msg2);
-                } else
-                    response = true;
-                if (response) {
-                    bu.emitter.removeAllListeners(event);
-                    clearTimeout(bu.awaitMessages[msg.channel.id][msg.author.id].timer);
-                    fulfill(msg2);
-                }
-            });
-
-            bu.awaitMessages[msg.channel.id][msg.author.id].timer = setTimeout(() => {
-                bu.emitter.removeAllListeners(event);
-                if (!suppress)
-                    bu.send(msg, `Query canceled${label ? ' in ' + label : ''} after ${dep.moment.duration(timeout).humanize()}.`);
-                reject('Request timed out.');
-            }, timeout);
-        });
-    }
-    return await registerEvent();
+bu.awaitQuery = async function (msg, content, check, timeout, label) {
+    let query = await bu.createQuery(msg, content, check, timeout, label);
+    return await query.response;
 };
+
+bu.createQuery = async function (msg, content, check, timeout, label) {
+    if (timeout == null || typeof timeout != "number")
+        timeout = 300000;
+    let timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${dep.moment.duration(timeout).humanize()}.`;
+    return bu.createPrompt(msg, content, check, timeout, timeoutMessage);
+};
+
+bu.awaitPrompt = async function (msg, content, check, timeout, timeoutMessage) {
+    let prompt = await bu.createPrompt(msg, content, check, timeout, timeoutMessage);
+    return await prompt.response;
+};
+
+bu.createPrompt = async function (msg, content, check, timeout, timeoutMessage) {
+    let prompt = await bu.send(msg, content);
+    let response = bu.awaitMessage([msg.channel.id], [msg.author.id], check, timeout);
+
+    response.catch(function (error) {
+        if (timeoutMessage && typeof timeoutMessage == "string" && error instanceof TimeoutError) {
+            bu.send(msg, timeoutMessage);
+        }
+    });
+
+    return {
+        prompt,
+        response
+    };
+};
+
+let awaitMessageCounter = 0;
+
+bu.awaitMessage = async function (channels, users, check, timeout) {
+    if (!Array.isArray(channels))
+        channels = [channels];
+    if (!Array.isArray(users))
+        users = [users];
+    if (typeof check != "function")
+        check = function () { return true; };
+    if (timeout == null || typeof timeout != "number")
+        timeout = 300000;
+
+    let eventName = `await_message_${awaitMessageCounter++}`;
+    let eventReferences = [];
+
+    for (const channel of channels) {
+        for (const user of users) {
+            let c = bu.awaitMessages[channel] || (bu.awaitMessages[channel] = {});
+            let u = c[user] || (c[user] = []);
+            u.push(eventName);
+            eventReferences.push(u);
+        }
+    }
+
+    bu.emitter.removeAllListeners(eventName);
+
+    console.debug(`awaiting message | channels: [${channels}] users: [${users}] timeout: ${timeout}`);
+
+    return await new Promise(async function (resolve, reject) {
+        let timeoutId = setTimeout(function () {
+            reject(new TimeoutError(timeout));
+        }, timeout);
+
+        bu.emitter.on(eventName, async function (message) {
+            try {
+                if (await check(message)) {
+                    clearTimeout(timeoutId);
+                    resolve(message);
+                }
+            } catch (err) {
+                clearTimeout(timeoutId);
+                reject(err);
+            }
+        });
+    }).finally(function () {
+        bu.emitter.removeAllListeners(eventName);
+        for (const ref of eventReferences) {
+            let index = ref.indexOf(eventName);
+            if (index != -1) {
+                ref.splice(index, 1);
+            }
+        }
+    });
+};
+
+let awaitReactionCounter = 0;
+
+bu.awaitReact = async function (messages, users, reactions, check, timeout) {
+    if (!Array.isArray(messages))
+        messages = [messages];
+    if (!Array.isArray(users))
+        users = [users];
+    if (reactions != null) {
+        if (!Array.isArray(reactions))
+            reactions = [reactions];
+        reactions = reactions.map(r => r.replace(/[<>]]/g, ''));
+    }
+    if (typeof check != "function")
+        check = function () { return true; };
+    if (timeout == null || typeof timeout != "number")
+        timeout = 300000;
+
+    let eventName = `await_reaction_${awaitMessageCounter++}`;
+    let eventReferences = [];
+
+    for (const message of messages) {
+        let msg = bu.awaitReactions[message] || (bu.awaitReactions[message] = {});
+        for (const user of users) {
+            let usr = msg[user] || (msg[user] = []);
+            usr.push(eventName);
+            eventReferences.push(usr);
+        }
+    }
+
+    bu.emitter.removeAllListeners(eventName);
+
+    console.debug(`awaiting reaction | messages: [${messages}] users: [${users}] reactions: ${JSON.stringify(reactions)} timeout: ${timeout}`);
+
+    return await new Promise(async function (resolve, reject) {
+        let timeoutId = setTimeout(function () {
+            reject(new TimeoutError(timeout));
+        }, timeout);
+
+        bu.emitter.on(eventName, async function (message, emoji, user) {
+            try {
+                if (reactions && reactions.length > 0 && !reactions.includes(emoji))
+                    return;
+                if (await check(message, user, emoji)) {
+                    clearTimeout(timeoutId);
+                    resolve({ message, channel: message.channel, user, emoji });
+                }
+            } catch (err) {
+                clearTimeout(timeoutId);
+                reject(err);
+            }
+        });
+    }).finally(function () {
+        bu.emitter.removeAllListeners(eventName);
+        for (const ref of eventReferences) {
+            let index = ref.indexOf(eventName);
+            if (index != -1) {
+                ref.splice(index, 1);
+            }
+        }
+    });
+};
+
+class TimeoutError extends Error {
+    constructor(timeout) {
+        super("Action timed out");
+        this.timeout = timeout;
+    }
+}
+bu.TimeoutError = TimeoutError;
 
 
 function getId(text) {
@@ -168,120 +284,123 @@ bu.addReactions = async function addReactions(channelId, messageId, reactions) {
     }
 
     return errored;
-}
+};
 
 /**
- * Sends a message to discord.
- * @param channel - the channel id (String) or message object (Object)
- * @param message - the message to send (String)
- * @param file - the file to send (Object|null)
- * @param embed - the message embed
- * @returns {Message}
+ * @param {*} context The context to send. Can be a channelId, Message or Channel object
+ * @param {String|Object} payload The payload to send. Can be a string or an object
+ * @param {Object|Object[]} files The files to attach to the message
  */
-bu.send = async function (channel, message, file, embed) {
-    let channelid = channel;
-    if (typeof channel == 'object' &&
-        'channel' in channel) {
-        channelid = channel.channel.id;
-    }
-
-    if (!message) message = '';
-
+bu.send = async function (context, payload, files) {
+    let channel, message;
     bu.messageStats++;
-    let toSend = {};
-    if (typeof message === "string") {
-        toSend.content = message;
-    } else {
-        toSend = message;
-    }
 
-    if (!toSend.content) toSend.content = '';
-    toSend.content = toSend.content.trim();
-
-    if (embed) toSend.embed = embed;
-    // content.content = dep.emoji.emojify(content.content).trim();
-
-    if (toSend.content.length <= 0 && !file && !embed && !toSend.embed) {
-        console.info('Tried to send a message with no content.');
-        return Error('No content');
-    }
-
-    if (toSend.content.length > 2000) {
-        if (!file) file = {
-            file: Buffer.from(toSend.content.toString()),
-            name: 'output.txt'
-        };
-        toSend.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
-
-    }
-
-    try {
-        console.debug('Sending content: ', JSON.stringify(toSend));
-        return await bot.createMessage(channelid, toSend, file);
-    } catch (err) {
-        try {
-            let response;
-            if (err.response)
-                response = JSON.parse(err.response);
+    // Process context into a channel and maybe a message
+    switch (typeof context) {
+        // Id provided, get channel object
+        case "string": channel = await bot.getChannel(context); break;
+        case "object":
+            // Probably a message provided
+            if (context.channel) {
+                channel = context.channel;
+                message = context;
+            }
+            // Probably a channel provided
             else {
-                response = {};
+                channel = context;
             }
-            let dmMsg, warnMsg;
-            switch (response.code) {
-                case 10003:
-                    warnMsg = 'Channel not found';
-                    break;
-                case 50013:
-                    warnMsg = 'Tried sending a message, but had no permissions!';
-                    dmMsg = 'I tried to send a message in response to your command, ' +
-                        'but didn\'t have permission to speak. If you think this is an error, ' +
-                        'please contact the staff on your guild to give me the `Send Messages` permission.';
-
-                    break;
-                case 50006:
-                    warnMsg = 'Tried to send an empty message!';
-                    break;
-                case 50004:
-                    warnMsg = 'Tried embeding a link, but had no permissions!';
-
-                    dmMsg = 'I tried to send a message in response to your command, ' +
-                        'but didn\'t have permission to create embeds. If you think this is an error, ' +
-                        'please contact the staff on your guild to give me the `Embed Links` permission.';
-                    bu.send(channelid, `I don't have permission to embed links! This will break several of my commands. Please give me the \`Embed Links\` permission. Thanks!`);
-                    break;
-                case 50007:
-                    warnMsg = 'Can\'t send a message to this user!';
-                    break;
-                case 50008:
-                    warnMsg = 'Can\'t send messages in a voice channel!';
-                    break;
-                case 50001:
-                    warnMsg = 'Missing access!';
-
-                    dmMsg = 'I tried to send a message in response to your command, ' +
-                        'but didn\'t have permission to see the channel. If you think this is an error, ' +
-                        'please contact the staff on your guild to give me the `Read Messages` permission.';
-                    break;
-                default:
-                    console.error(err.response, err.stack);
-                    throw err;
-            }
-            if (typeof channel == 'string') {
-                throw {
-                    message: warnMsg,
-                    throwOriginal: true
-                };
-            }
-            if (dmMsg && channel.author) {
-                let storedUser = await r.table('user').get(channel.author.id);
-                if (!storedUser.dontdmerrors) {
-                    bu.sendDM(channel.author.id, dmMsg + '\nGuild: ' + channel.guild.name + '\nChannel: ' + channel.channel.name + '\nCommand: ' + channel.content + '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.');
-                }
-            }
-        } catch (err2) {
-            // no-op
-        }
+            break;
+        // Invalid option given
+        default: channel = null;
     }
+
+    if (channel == null) throw new Error("Channel not found");
+
+
+    switch (typeof payload) {
+        case "string": payload = { content: payload }; break;
+        case "object": break;
+        default: payload = {};
+    }
+
+    if (files != null && !Array.isArray(files))
+        files = [files];
+
+    if (!payload.content) payload.content = '';
+    else payload.content = payload.content.trim();
+    if (payload.nsfw && !channel.nsfw) {
+        payload.content = payload.nsfw;
+        payload.embed = payload.embeds = files = null;
+    }
+
+    if (!payload.content && !payload.embed && !payload.embeds && (!files || files.length == 0)) {
+        console.error('Tried to send an empty message!');
+        return new Error('No content');
+    }
+
+    if (payload.content.length > 2000) {
+        (files || (files = [])).push({
+            file: Buffer.from(payload.content.toString()),
+            name: 'output.txt'
+        });
+        payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+    }
+
+    console.debug('Sending content: ', JSON.stringify(payload));
+    let sendPromise = bot.createMessage(channel.id, payload, files);
+    return await sendPromise.catch(async function (error) {
+        let response = error.response;
+        if (typeof response !== 'object')
+            response = JSON.parse(error.response || "{}");
+        if (!bu.send.catch.hasOwnProperty(response.code))
+            return console.error(error.response, error.stack);
+
+        let result = await bu.send.catch[response.code](channel, payload);
+        if (typeof result === 'string' && message && await bu.canDmErrors(message.author.id)) {
+            if (message.guild) result += `\nGuild: ${message.guild.name} (${message.guild.id})`;
+            result += `\nChannel: ${message.channel.name} (${message.channel.id})`;
+            if (message.content.length > 100) result += `\nCommand: ${message.content.substring(0, 100)}...`;
+            else result += `\nCommand: ${message.content}`;
+            result += '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.';
+
+            await bu.sendDM(message.author.id, result);
+        }
+    });
+};
+
+/**
+ * A collection of handlers for response codes from a failed message send
+ */
+bu.send.catch = {
+    '10003': function (channel) { console.error('10003: Channel not found. ', channel); },
+    '50006': function () { console.error('50006: Tried to send an empty message!'); },
+    '50007': function () { console.error('50007: Can\'t send a message to this user!'); },
+    '50008': function () { console.error('50008: Can\'t send messages in a voice channel!'); },
+
+    '50013': function () {
+        console.warn('50013: Tried sending a message, but had no permissions!');
+        return 'I tried to send a message in response to your command, ' +
+            'but didn\'t have permission to speak. If you think this is an error, ' +
+            'please contact the staff on your guild to give me the `Send Messages` permission.';
+    },
+    '50001': function () {
+        console.warn('50001: Missing Access');
+        return 'I tried to send a message in response to your command, ' +
+            'but didn\'t have permission to see the channel. If you think this is an error, ' +
+            'please contact the staff on your guild to give me the `Read Messages` permission.';
+    },
+    '50004': function (channel) {
+        console.warn('50004: Tried embeding a link, but had no permissions!');
+        bu.send(channel, 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
+        return 'I tried to send a message in response to your command, ' +
+            'but didn\'t have permission to create embeds. If you think this is an error, ' +
+            'please contact the staff on your guild to give me the `Embed Links` permission.';
+    }
+};
+
+bu.canDmErrors = async function (userId) {
+    let storedUser = await r.table('user').get(userId);
+    return !storedUser.dontdmerrors;
 };
 
 /**
@@ -308,14 +427,33 @@ bu.sendDM = async function (user, message, file) {
     }
     try {
         let privateChannel = await bot.getDMChannel(userid);
-        if (!file) return await bu.send(privateChannel.id, message);
-        else return await bu.send(privateChannel.id, message, file);
+        if (!file) return await bu.send(privateChannel, message);
+        else return await bu.send(privateChannel, message, file);
     } catch (err) {
         console.error(err.stack);
         return err;
     }
 };
 
+/**
+ * @param {String} userId
+ */
+bu.getUserById = async function (userId) {
+    let match = userId.match(/\d{17,21}/);
+    if (match) {
+        let user = bot.users.get(match[0]);
+        if (user) {
+            return user;
+        } else {
+            user = (await bot.sender.awaitMessage({ message: 'retrieveUser', id: match[0] })).user;
+            if (user) {
+                user = new User(user, bot);
+                return user;
+            }
+        }
+    }
+    return null;
+};
 
 /**
  * Gets a user from a name (smartly)
@@ -334,18 +472,10 @@ bu.getUser = async function (msg, name, args = {}) {
     var userId;
     var discrim;
 
-    if (/[0-9]{17,21}/.test(name)) {
-        userId = name.match(/(\d{17,21})/)[1];
-        if (bot.users.get(userId)) {
-            return bot.users.get(userId);
-        } else {
-            let user = await bot.sender.awaitMessage({ message: 'retrieveUser', id: userId });
-            if (user.user) {
-                user = new User(user.user, bot);
-                return user;
-            }
-        }
-    }
+    let user = await bu.getUserById(name);
+    if (user)
+        return user;
+
     if (/^.*#\d{4}$/.test(name)) {
         discrim = name.match(/^.*#(\d{4}$)/)[1];
         name = name.substring(0, name.length - 5);
@@ -422,7 +552,7 @@ bu.getUser = async function (msg, name, args = {}) {
             }
             let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
             try {
-                let resMsg = await bu.awaitMessage(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
+                let query = await bu.createQuery(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
 ${userListString}${moreUserString}--------------------
 C.cancel query
 \`\`\`
@@ -433,16 +563,15 @@ C.cancel query
                             return true;
                         } else return false;
                     }, undefined, args.label, args.suppress);
-                if (resMsg.content.toLowerCase() == 'c') {
-                    let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                    await bot.deleteMessage(delmsg.channel.id, delmsg.id);
+                let response = await query.response;
+                if (response.content.toLowerCase() == 'c') {
+                    await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
                     if (!args.suppress)
                         bu.send(msg, `Query canceled${args.label ? ' in ' + args.label : ''}.`);
                     return null;
                 } else {
-                    let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                    await bot.deleteMessage(delmsg.channel.id, delmsg.id);
-                    return newUserList[parseInt(resMsg.content) - 1].user;
+                    await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
+                    return newUserList[parseInt(response.content) - 1].user;
                 }
             } catch (err) {
                 return null;
@@ -451,6 +580,15 @@ C.cancel query
             return null;
         }
     }
+};
+
+bu.getMessage = async function (channelId, messageId) {
+    if (/^\d{17,23}$/.test(messageId)) {
+        try {
+            return await bot.getMessage(channelId, messageId);
+        } catch (e) { }
+    }
+    return null;
 };
 
 bu.getRole = async function (msg, name, args = {}) {
@@ -506,7 +644,7 @@ bu.getRole = async function (msg, name, args = {}) {
                 roleListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newRoleList[i].name} - ${newRoleList[i].color.toString(16)} (${newRoleList[i].id})\n`;
             }
             let moreRoleString = newRoleList.length < roleList.length ? `...and ${roleList.length - newRoleList.length} more.\n` : '';
-            let resMsg = await bu.awaitMessage(msg, `Multiple roles found! Please select one from the list.\`\`\`prolog
+            let query = await bu.createQuery(msg, `Multiple roles found! Please select one from the list.\`\`\`prolog
 ${roleListString}${moreRoleString}--------------------
 C. cancel query
 \`\`\`
@@ -515,19 +653,28 @@ C. cancel query
                         return true;
                     } else return false;
                 }, undefined, args.label, args.suppress);
-            if (resMsg.content.toLowerCase() == 'c') {
+            let response = await query.response;
+            if (response.content.toLowerCase() == 'c') {
                 if (!args.suppress)
                     bu.send(msg, 'Query canceled.');
                 return null;
             } else {
-                let delmsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
-                await bot.deleteMessage(delmsg.channel.id, delmsg.id);
-                return newRoleList[parseInt(resMsg.content) - 1];
+                await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
+                return newRoleList[parseInt(response.content) - 1];
             }
         } else {
             return null;
         }
     }
+};
+
+bu.getMessage = async function (channelId, messageId) {
+    if (/^\d{17,23}$/.test(messageId)) {
+        try {
+            return await bot.getMessage(channelId, messageId);
+        } catch (e) { }
+    }
+    return null;
 };
 
 /**
@@ -754,6 +901,10 @@ bu.splitInput = (content, noTrim) => {
     if (Array.isArray(content)) content = content.join(' ');
     if (!noTrim) input = content.replace(/ +/g, ' ').split(' ');
     else input = content.split(' ');
+    if (input.length > 0 && input[0] == '')
+        input.shift();
+    if (input.length > 0 && input.slice(-1)[0] == '')
+        input.pop();
     let words = [];
     let inQuote = false;
     let quoted = '';
@@ -1007,8 +1158,8 @@ bu.parseDuration = function (text) {
         duration.add(parseInt(text.match(/([0-9]+) ?(hours|hour|h)/i)[1]) || 0, 'h');
     if (/([0-9]+) ?(minutes|minute|mins|min|m)/i.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(minutes|minute|mins|min|m)/i)[1]) || 0, 'm');
-    if (/([0-9]+) ?(seconds|second|secs|sec|s)/i.test(text))
-        duration.add(parseInt(text.match(/([0-9]+) ?(seconds|second|secs|sec|s)/i)[1]) || 0, 's');
+    if (/((?:[0-9]*[.])?[0-9]+) ?(seconds|second|secs|sec|s)/i.test(text))
+        duration.add(Math.floor(parseFloat(text.match(/((?:[0-9]*[.])?[0-9]+) ?(seconds|second|secs|sec|s)/i)[1]) * 1000) || 0, 'ms');
     return duration;
 };
 
@@ -1016,7 +1167,6 @@ bu.parseInput = function (map, text, noTrim) {
     let words;
     if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
     else words = bu.splitInput(text, noTrim);
-    // console.verbose(words);
     let output = {
         undefined: []
     };
@@ -1056,7 +1206,6 @@ bu.parseInput = function (map, text, noTrim) {
             }
         }
     }
-    console.log(output);
     return output;
 };
 
@@ -1462,7 +1611,7 @@ bu.findEmoji = function (text, distinct) {
     let match;
     let result = [];
 
-    let regex = new RegExp(`${emojiRegex().source}|<a?:\\w+:\\d{17,23}>`, "gi");
+    let regex = new RegExp(emojiRegex, "gi");
     while (match = regex.exec(text))
         result.push(match[0].replace(/[<>]/g, ''));
 
@@ -1524,7 +1673,7 @@ bu.compare = function (a, b) {
 
     //All pairs are identical
     return 0;
-}
+};
 
 bu.toBlocks = function (text) {
     let regex = /[-+]?\d+(?:\.\d*)?(?:e\+?\d+)?/g;
@@ -1538,7 +1687,7 @@ bu.toBlocks = function (text) {
         if (numbers[i] !== undefined) result.push(parseFloat(numbers[i]));
     }
     return result;
-}
+};
 
 bu.blargbotApi = async function (endpoint, args = {}) {
     try {
@@ -1550,7 +1699,7 @@ bu.blargbotApi = async function (endpoint, args = {}) {
         console.error(err);
         return null;
     }
-}
+};
 
 bu.decancer = function (text) {
     text = unorm.nfkd(text);
@@ -1562,4 +1711,4 @@ bu.decancer = function (text) {
         custom: ['.', ',', ' ', '!', '\'', '"', '?']
     });
     return text;
-}
+};

@@ -11,7 +11,7 @@ const cassandra = require('cassandra-driver');
 const cclient = new cassandra.Client({
     contactPoints: config.cassandra.contactPoints, keyspace: config.cassandra.keyspace,
     authProvider: new cassandra.auth.PlainTextAuthProvider(config.cassandra.username, config.cassandra.password)
-})
+});
 bu.cclient = cclient;
 
 bu.guildSettings = {
@@ -236,7 +236,7 @@ bu.normalize = function (r) {
         console.error(err);
     }
     return n;
-}
+};
 bu.getChatlog = async function (id) {
     let res = await cclient.execute(`SELECT * FROM chatlogs2 WHERE msgid = ?`, [id], { prepare: true });
     let msgs = [];
@@ -246,7 +246,7 @@ bu.getChatlog = async function (id) {
     if (msgs.length > 1)
         msgs.sort((a, b) => b.msgtime - a.msgtime);
     return msgs;
-}
+};
 
 bu.insertChatlog = async function (msg, type) {
     if (msg.channel.id != '204404225914961920') {
@@ -262,7 +262,7 @@ bu.insertChatlog = async function (msg, type) {
             msgtime: Date.now(),
             type: type,
             embeds: JSON.stringify(msg.embeds)
-        }
+        };
         try {
             await cclient.execute(insertQuery, data, { prepare: true });
         } catch (err) {
@@ -280,6 +280,54 @@ bu.insertChatlog = async function (msg, type) {
         //     type: type,
         //     embeds: msg.embeds
         // }).run();
+    }
+};
+
+/**
+ * Processes a user into the database
+ * @param user - The user to process
+ */
+bu.processUser = async function (user) {
+    if (user.discriminator == '0000') return;
+    let storedUser = await r.table('user').get(user.id).run();
+    if (!storedUser) {
+        console.debug(`inserting user ${user.id} (${user.username})`);
+        r.table('user').insert({
+            userid: user.id,
+            username: user.username,
+            usernames: [{
+                name: user.username,
+                date: r.epochTime(dep.moment() / 1000)
+            }],
+            isbot: user.bot,
+            lastspoke: r.epochTime(dep.moment() / 1000),
+            lastcommand: null,
+            lastcommanddate: null,
+            discriminator: user.discriminator,
+            todo: []
+        }).run();
+    } else {
+        let newUser = {};
+        let update = false;
+        if (storedUser.username != user.username) {
+            newUser.username = user.username;
+            newUser.usernames = storedUser.usernames;
+            newUser.usernames.push({
+                name: user.username,
+                date: r.epochTime(dep.moment() / 1000)
+            });
+            update = true;
+        }
+        if (storedUser.discriminator != user.discriminator) {
+            newUser.discriminator = user.discriminator;
+            update = true;
+        }
+        if (storedUser.avatarURL != user.avatarURL) {
+            newUser.avatarURL = user.avatarURL;
+            update = true;
+        }
+        if (update)
+            r.table('user').get(user.id).update(newUser).run();
     }
 };
 

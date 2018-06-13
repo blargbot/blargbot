@@ -9,6 +9,7 @@
 const bbEngine = require('../structures/BBTagEngine');
 
 bot.on('guildMemberAdd', async function (guild, member) {
+    bu.processUser(member.user);
     let val = await bu.guildSettings.get(guild.id, 'greeting');
     let chan = await bu.guildSettings.get(guild.id, 'greetchan');
     if (chan && val) {

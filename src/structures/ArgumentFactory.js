@@ -15,9 +15,8 @@ const types = [
     'user',
     'channel',
     'role',
-    'time',
-
-]
+    'time'
+];
 
 function require(value, types, multiple) {
     return makeArg(kinds.required, value, types, multiple);

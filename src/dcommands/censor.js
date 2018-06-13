@@ -79,7 +79,7 @@ class CensorCommand extends BaseCommand {
             cases: {}
         };
         let changes = 0;
-        let censorList, suffix, msg2, addCensor, term, messages;
+        let censorList, suffix, response, addCensor, term, messages;
         switch (input.undefined[0].toLowerCase()) {
             case 'create':
             case 'add':
@@ -146,16 +146,16 @@ class CensorCommand extends BaseCommand {
                     }
                 }
                 censorList += suffix;
-                msg2 = await bu.awaitMessage(msg, censorList, m => {
+                response = await bu.awaitQuery(msg, censorList, m => {
                     if (m.content.toLowerCase() == 'c') return true;
                     let choice = parseInt(m.content);
                     return !isNaN(choice) && choice > 0 && choice <= storedGuild.censor.list.length;
                 });
-                if (msg2.content.toLowerCase() == 'c') {
+                if (response.content.toLowerCase() == 'c') {
                     bu.send(msg, 'Query canceled.');
                     return;
                 }
-                let index = parseInt(msg2.content) - 1;
+                let index = parseInt(response.content) - 1;
                 addCensor = storedGuild.censor.list[index];
                 term = input.undefined.slice(1).join(' ') || addCensor.term;
 
@@ -216,16 +216,16 @@ class CensorCommand extends BaseCommand {
                     }
                 }
                 censorList += suffix;
-                msg2 = await bu.awaitMessage(msg, censorList, m => {
+                response = await bu.awaitQuery(msg, censorList, m => {
                     if (m.content.toLowerCase() == 'c') return true;
                     let choice = parseInt(m.content);
                     return !isNaN(choice) && choice > 0 && choice <= storedGuild.censor.list.length;
                 });
-                if (msg2.content.toLowerCase() == 'c') {
+                if (response.content.toLowerCase() == 'c') {
                     bu.send(msg, 'Query canceled.');
                     return;
                 }
-                let removed = storedGuild.censor.list.splice(parseInt(msg2.content) - 1, 1);
+                let removed = storedGuild.censor.list.splice(parseInt(response.content) - 1, 1);
                 await saveGuild();
                 bu.send(msg, `Censor \`${removed[0].term}\` removed!`);
                 break;
@@ -358,16 +358,16 @@ class CensorCommand extends BaseCommand {
                     }
                 }
                 censorList += suffix;
-                msg2 = await bu.awaitMessage(msg, censorList, m => {
+                response = await bu.awaitQuery(msg, censorList, m => {
                     if (m.content.toLowerCase() == 'c') return true;
                     let choice = parseInt(m.content);
                     return !isNaN(choice) && choice > 0 && choice <= storedGuild.censor.list.length;
                 });
-                if (msg2.content.toLowerCase() == 'c') {
+                if (response.content.toLowerCase() == 'c') {
                     bu.send(msg, 'Query canceled.');
                     return;
                 }
-                let censor = storedGuild.censor.list[parseInt(msg2.content) - 1];
+                let censor = storedGuild.censor.list[parseInt(response.content) - 1];
                 let triggeredMessages = [];
                 if (censor.deleteMessage) triggeredMessages.push('**Delete Message**: ' + censor.deleteMessage);
                 if (censor.kickMessage) triggeredMessages.push('**Kick Message**: ' + censor.kickMessage);

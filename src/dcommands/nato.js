@@ -27,7 +27,7 @@ let natoMap = {
     x: 'Xray',
     y: 'Yankee',
     z: 'Zulu'
-}
+};
 
 class NatoCommand extends BaseCommand {
     constructor() {

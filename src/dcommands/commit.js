@@ -59,7 +59,7 @@ class CommitCommand extends BaseCommand {
                 description: body.commit.message,
                 color: bu.getRandomInt(0x1, 0xffffff)
             }
-        })
+        });
     }
 }
 

@@ -10,6 +10,7 @@
 bot.on('guildMemberUpdate', (guild, member, oldMember) => {
     if (member && oldMember) {
         if (member.user.id != bot.user.id) {
+            bu.processUser(member.user);
             if (member.nick != oldMember.nick) {
                 let fields = [];
                 let description = 'Nickname Changed';

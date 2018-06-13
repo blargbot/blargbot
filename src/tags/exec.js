@@ -15,33 +15,42 @@ module.exports =
         .withArgs(a => [a.require('tag'), a.optional('args')])
         .withDesc('Executes another `tag`, giving it `args` as the input. Useful for modules.')
         .withExample(
-        'Let me do a tag for you. {exec;f}',
-        'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
+            'Let me do a tag for you. {exec;f}',
+            'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
-        .whenArgs('1-2', async function (subtag, context, args) {
-            let tag = await r.table('tag').get(args[0]).run();
-            if (tag == null)
-                return Builder.util.error(subtag, context, 'Tag not found: ' + args[0]);
+        .whenDefault(async function(subtag, context, args){
+             let tag = await r.table('tag').get(args[0]).run();
 
-            let name = args[0];
-            if (!context._cooldowns[context.msg.guild.id][false])
-                context._cooldowns[context.msg.guild.id][false] = {};
-            if (!context._cooldowns[context.msg.guild.id][false][context.msg.author.id])
-                context._cooldowns[context.msg.guild.id][false][context.msg.author.id] = {};
-            let cd = context._cooldowns[context.msg.guild.id][false][context.msg.author.id];
-            if (cd) {
-                let cdDate = cd[name] + (tag.cooldown || 0);
-                let diff = Date.now() - cdDate;
-                if (diff < 0) {
-                    return Builder.util.error(subtag, context, 'Cooldown: ' + (diff * -1));
-                }
-            }
-            cd[name] = Date.now();
+             if (tag == null)
+                 return Builder.util.error(subtag, context, 'Tag not found: ' + args[0]);
 
-            return await this.execTag(subtag, context, tag.content, args[1] || '');
-        })
-        .whenDefault(Builder.errors.tooManyArguments)
+   
+             let name = args[0];
+             if (!context._cooldowns[context.msg.guild.id][false])
+                 context._cooldowns[context.msg.guild.id][false] = {};
+             if (!context._cooldowns[context.msg.guild.id][false][context.msg.author.id])
+                 context._cooldowns[context.msg.guild.id][false][context.msg.author.id] = {};
+             let cd = context._cooldowns[context.msg.guild.id][false][context.msg.author.id];
+             if (cd) {
+                 let cdDate = cd[name] + (tag.cooldown || 0);
+                 let diff = Date.now() - cdDate;
+                 if (diff < 0) {
+                     return Builder.util.error(subtag, context, 'Cooldown: ' + (diff * -1));
+                 }
+             }
+             cd[name] = Date.now();
+    
+             switch (args.length) {
+                 case 1: 
+                     return await this.execTag(subtag, context, tag.content, '');
+                 case 2: 
+                     return await this.execTag(subtag, context, tag.content, args[1]);
+                 default:
+                     let a = Builder.util.flattenArgArrays(args.slice(1));
+                     return await this.execTag(subtag, context, tag.content, '"'+a.join('" "')+'"');
+             }
+         })
         .withProp('execTag', async function (subtag, context, tagContent, input) {
             if (context.state.stackSize >= 200) {
                 context.state.return = -1;
@@ -51,7 +60,11 @@ module.exports =
             let childContext = context.makeChild({ input });
 
             context.state.stackSize += 1;
-            let result = await bbEngine.execString(tagContent || '', childContext);
+            let result;
+            if (typeof tagContent == "string" || tagContent == null)
+                result = await bbEngine.execString(tagContent || '', childContext);
+            else
+                result = await bbEngine.execute(tagContent, context);
             context.state.stackSize -= 1;
 
             context.errors.push({
