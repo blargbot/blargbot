@@ -16,7 +16,7 @@
     "notenoughparams": "Yetersiz parametre. Daha fazla ayrıntı için '{{prefix}}help {{name}}' yapmak. \n\nBunun yerine '{{received}}' var, ama beklenen '{{expected}}' parametreleri.",
     "tag": {
         "restricted": "",
-        "notfound": "",
+        "notfound": "Alt etiket '{{tag}}' diye biri yok.",
         "toomanyargs": "Çok fazla args (Ar:{{received}} e:{{expected}})",
         "toofewargs": "Yeterli args yok (Ar:{{received}} e:{{expected}})",
         "isnan": "'Bir numara, ama beklenen{{arg}}' '{{value}}' alınan",
