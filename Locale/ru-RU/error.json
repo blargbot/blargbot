@@ -16,7 +16,7 @@
     "notenoughparams": "Недостаточно параметров! Введите `{{prefix}}help {{name}}` для справки.\n\nОжидал `{{expected}}` параметров, а получил `{{received}}`.",
     "tag": {
         "restricted": "",
-        "notfound": "",
+        "notfound": "Тега '{{tag}}' не существует.",
         "toomanyargs": "Слишком много аргументов (получено: {{received}}, ожидалось: {{expected})",
         "toofewargs": "Недостаточно аргументов (получено: {{received}} ожидалось: {{expected}})",
         "isnan": "Ожидал '{{arg}}' будет числом, а получил '{{value}}",
