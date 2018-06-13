@@ -90,7 +90,7 @@
                 },
                 "favorite": {
                     "usage": "",
-                    "info": ""
+                    "info": "Favorisier dein markierten tag"
                 },
                 "report": {
                     "usage": "",
@@ -109,7 +109,7 @@
                     "info": "Gibt einen Link zu der BBTag Dokumentation, oder enthält Informationen zu einem bestimmten Kürzel."
                 },
                 "setdesc": {
-                    "info": "",
+                    "info": "Info",
                     "usage": ""
                 },
                 "setusage": {
@@ -122,7 +122,7 @@
             "nobots": "[[emote.x]] du kannst nicht einen tag zu einem bot übertragen",
             "transfercancelled": "[[emote.x]] die übertragung wurde abgebrochen",
             "transfercomplete": "[[emote.check]] {{user}} besitzt nun den Tag \"{{tag}}\".",
-            "taginfo": "",
+            "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
             "descupdate": "Die Beschreibung für \"{{tag}}\" wurde aktualisiert.",
             "descreset": "Die Beschreibung für '{{tag}}' wurde zurückgesetzt.",
             "subcommandconflict": "Sie können den Namen \"{{name}}\" nicht verwenden, da es bereits einen Unterbefehl mit diesen Namen gibt!",
@@ -356,7 +356,7 @@
             },
             "mute": {
                 "setrole": "Die mute rolle wurde geupdatet",
-                "rolequery": ""
+                "rolequery": "Wählt die mute rolle"
             },
             "announce": {
                 "set": "",
