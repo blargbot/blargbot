@@ -85,15 +85,15 @@
                     "info": "Cerca una tag con un nome che contiene la tua query."
                 },
                 "list": {
-                    "usage": "[utente]",
+                    "usage": "[@utente]",
                     "info": "Mostra la lista di tutte le tag, o solo quelle di un utente specifico."
                 },
                 "favorite": {
-                    "usage": "[nome]",
-                    "info": "Imposta nei preferiti la tag specificata, o ottieni la lista delle tue tag preferite."
+                    "usage": "<nome>",
+                    "info": "Preferisci una specifica tag."
                 },
                 "report": {
-                    "usage": "<nome> <motivo>",
+                    "usage": "<nome>",
                     "info": "Segnala una tag che viola i ToS. Usa con responsabilità."
                 },
                 "test": {
@@ -109,11 +109,11 @@
                     "info": "Restituisce il link alla documentazione BBTag, o restituisce informazioni su una tag specifica."
                 },
                 "setdesc": {
-                    "info": "Imposta le informazioni per la tag specificata.",
+                    "info": "Info",
                     "usage": "<nome> <descrizione>"
                 },
                 "setusage": {
-                    "info": "Imposta le informazioni sull'utilizzo della tag specificata.",
+                    "info": "Info",
                     "usage": "<nome> <utilizzo>"
                 }
             },
@@ -122,7 +122,7 @@
             "nobots": "[[emote.x]] Non puoi trasferire la proprietà ad un bot!",
             "transfercancelled": "[[emote.x]] Il trasferimento è stato annullato.",
             "transfercomplete": "[[emote.check]] {{user}} ora possiede la tag `{{tag}}`.",
-            "taginfo": "__**Tag | {{name}}**__\nAutore: **{{author}}**\nUltima modifica: **{{lastModified}}**\nUsi: **{{uses}}**\nPreferiti: **{{favourites}}**\n\nUtilizzo: ` {{usage}}`\n\n{{desc}}",
+            "taginfo": "__**Tag | {{name}}**__\nAutore: **{{author}}**\nUltima modifica: **{{lastModified}}**\nE' stata usata un totale di **{{uses}} volte**!\nE' stata preferita per un totale di **{{favourites}} volte**!\n\n{{desc}}",
             "descupdate": "La descrizione per `{{tag}}` è stata aggiornata.",
             "descreset": "La descrizione per `{{tag}}` è stata resettata.",
             "subcommandconflict": "Non puoi usare il nome `{{name}}` perchè esiste già un sottocomando con quel nome!",
@@ -356,7 +356,7 @@
             },
             "mute": {
                 "setrole": "Il ruolo muto è stato aggiornato.",
-                "rolequery": "Seleziona il ruolo muto. Il ruolo attuale è {{current}}"
+                "rolequery": "Seleziona il ruolo muto."
             },
             "announce": {
                 "set": "Gli annunci sono stati impostati.",
