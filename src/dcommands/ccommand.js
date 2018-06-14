@@ -142,7 +142,7 @@ class CcommandCommand extends BaseCommand {
                                         if (tag.flags.filter(f => f.word === word).length > 0)
                                             return bu.send(msg, `A flag with the word \`${word}\` has already been specified.`);
                                         let desc = input[key].slice(1).join(' ').replace(/\n/g, ' ');
-                                        tag.flags.push({ flag: key, word, desc })
+                                        tag.flags.push({ flag: key, word, desc });
                                     }
                                 }
                                 await bu.ccommand.set(msg.guild.id, title, tag);
@@ -169,9 +169,9 @@ class CcommandCommand extends BaseCommand {
                         if (Array.isArray(tag.flags) && tag.flags.length > 0) {
                             let out = 'Here are the flags for that custom command:\n\n';
                             for (const flag of tag.flags) {
-                                out += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `
+                                out += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `;
                             }
-                            bu.send(msg, out)
+                            bu.send(msg, out);
                         } else {
                             bu.send(msg, 'That custom command has no flags.');
                         }
@@ -307,8 +307,8 @@ class CcommandCommand extends BaseCommand {
                 case 'list':
                     let storedGuild = await bu.getGuild(msg.guild.id);
                     let ccommands = Object.keys(storedGuild.ccommands);
-                    let output = (ccommands && ccommands.length > 0) 
-                                    ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` ` 
+                    let output = (ccommands && ccommands.length > 0)
+                                    ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` `
                                     : `There are no custom commands on this guild.`;
                     bu.send(msg,output);
                 case 'sethelp':
@@ -337,7 +337,7 @@ class CcommandCommand extends BaseCommand {
                     }
                     break;
                 case 'help':
-                    bu.send(msg, e.info);
+                    bu.send(msg, this.info);
                     break;
                 case 'docs':
                     bbtag.docs(msg, words[0], words.slice(2).join(' '));

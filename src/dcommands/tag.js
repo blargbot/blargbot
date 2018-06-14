@@ -105,35 +105,35 @@ const subcommands = [
 ];
 const tagNameMsg = 'Enter the name of the tag:';
 const tagContentsMsg = 'Enter the tag\'s contents:';
-var searchTags = async function (msg, originalTagList, query, page, deleteMsg) {
+var searchTags = async function (msg, originalTagList, search, page, deleteMsg) {
     let tagList = originalTagList.map(m => m.name);
     let maxPages = Math.floor(originalTagList.length / results) + 1;
     tagList.sort();
     tagList = tagList.slice((page - 1) * results, ((page - 1) * results) + results);
     if (tagList.length != 0) {
         if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
-        var message = `Found ${tagList.length}/${originalTagList.length} tags matching '${query}'.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.join(', ').trim()}\n\`\`\`\nType a number between 1-${maxPages} to view that page, or type \`c\` to cancel.`;
-        let newPage = (await bu.awaitMessage(msg, message, m => {
+        var message = `Found ${tagList.length}/${originalTagList.length} tags matching '${search}'.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.join(', ').trim()}\n\`\`\`\nType a number between 1-${maxPages} to view that page, or type \`c\` to cancel.`;
+        let query = await bu.createQuery(msg, message, m => {
             let page = parseInt(m.content);
             return m.content.toLowerCase() == 'c' || (!isNaN(page) && page <= maxPages);
-        })).content;
-        if (newPage.toLowerCase() == 'c') {
+        });
+        let response = await query.response;
+        if (response.content.toLowerCase() == 'c') {
             bu.send(msg, 'I hope you found what you were looking for!');
             return;
         }
-        let choice = parseInt(newPage);
-        deleteMsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
+        let choice = parseInt(response.content);
         if (!isNaN(choice) && choice >= 1 && choice <= maxPages) {
-            return searchTags(msg, originalTagList, query, choice, deleteMsg);
+            return searchTags(msg, originalTagList, search, choice, query.prompt);
         } else {
             originalTagList = await r.table('tag').filter(
-                r.row('name').match('(?i)' + escapeRegex(newPage))
+                r.row('name').match('(?i)' + escapeRegex(response.content))
             ).run();
             if (originalTagList.length == 0) {
                 bu.send(msg, 'No results found!');
                 return;
             }
-            return searchTags(msg, originalTagList, newPage, 1, deleteMsg);
+            return searchTags(msg, originalTagList, response.content, 1, query.prompt);
         }
     } else {
         bu.send(msg, 'No results found!');
@@ -154,18 +154,18 @@ var listTags = async function (msg, originalTagList, page, author, deleteMsg) {
         if (deleteMsg) await bot.deleteMessage(deleteMsg.channel.id, deleteMsg.id);
         let message = `Found ${tagList.length}/${originalTagList.length} tags${author ? ' made by **' + bu.getFullName(author) + '**' : ''}.\nPage **#${page}/${maxPages}**\n\`\`\`fix\n${tagList.length == 0 ? 'No results found.' : tagList.join(', ').trim()}\n\`\`\`Type a number between 1-${maxPages} to view that page, or type \`c\` to cancel.`;
         console.debug(message, message.length);
-        let newPage = (await bu.awaitMessage(msg, message, m => {
+        let query = await bu.createQuery(msg, message, m => {
             let page = parseInt(m.content);
             return m.content.toLowerCase() == 'c' || (!isNaN(page) && page <= maxPages);
-        })).content;
-        if (newPage.toLowerCase() == 'c') {
+        });
+        let response = await query.response;
+        if (response.content.toLowerCase() == 'c') {
             bu.send(msg, 'I hope you found what you were looking for!');
             return;
         }
-        let choice = parseInt(newPage);
-        deleteMsg = bu.awaitMessages[msg.channel.id][msg.author.id].botmsg;
+        let choice = parseInt(response.content);
         if (!isNaN(choice) && choice >= 1 && choice <= maxPages) {
-            return listTags(msg, originalTagList, choice, author, deleteMsg);
+            return listTags(msg, originalTagList, choice, author, query.prompt);
         }
     } else {
         bu.send(msg, 'No results found!');
@@ -225,7 +225,7 @@ class TagCommand extends BaseCommand {
                     if (words[2]) title = words[2];
                     if (words[3]) content = bu.splitInput(text, true).slice(3).join(' ');
                     if (!title)
-                        title = (await bu.awaitMessage(msg, tagNameMsg)).content;
+                        title = (await bu.awaitQuery(msg, tagNameMsg)).content;
 
                     title = filterTitle(title);
                     tag = await r.table('tag').get(title).run();
@@ -238,7 +238,7 @@ class TagCommand extends BaseCommand {
                     }
 
                     if (!content)
-                        content = (await bu.awaitMessage(msg, tagContentsMsg)).content;
+                        content = (await bu.awaitQuery(msg, tagContentsMsg)).content;
 
                     //    content = bu.fixContent(content);
 
@@ -261,7 +261,7 @@ class TagCommand extends BaseCommand {
 
                     if (words[3]) newTagName = words[3];
 
-                    if (!oldTagName) oldTagName = (await bu.awaitMessage(msg, `Enter the name of the tag you wish to rename:`)).content;
+                    if (!oldTagName) oldTagName = (await bu.awaitQuery(msg, `Enter the name of the tag you wish to rename:`)).content;
                     oldTagName = filterTitle(oldTagName);
                     let oldTag = await r.table('tag').get(oldTagName).run();
                     if (!oldTag) {
@@ -277,7 +277,7 @@ class TagCommand extends BaseCommand {
                         break;
                     }
 
-                    if (!newTagName) newTagName = (await bu.awaitMessage(msg, `Enter the new name.`)).content;
+                    if (!newTagName) newTagName = (await bu.awaitQuery(msg, `Enter the new name.`)).content;
                     newTagName = filterTitle(newTagName);
                     let newTag = await r.table('tag').get(newTagName).run();
                     if (newTag) {
@@ -300,7 +300,7 @@ class TagCommand extends BaseCommand {
                     if (words[3]) content = bu.splitInput(text, true).slice(3).join(' ');
 
                     if (!title)
-                        title = await bu.awaitMessage(msg, tagNameMsg).content;
+                        title = await bu.awaitQuery(msg, tagNameMsg).content;
 
                     title = filterTitle(title);
                     tag = await r.table('tag').get(title).run();
@@ -318,7 +318,7 @@ class TagCommand extends BaseCommand {
                     }
 
                     if (!content)
-                        content = await bu.awaitMessage(msg, tagContentsMsg).content;
+                        content = await bu.awaitQuery(msg, tagContentsMsg).content;
 
                     //  content = bu.fixContent(content);
 
@@ -338,7 +338,7 @@ class TagCommand extends BaseCommand {
                     //                if (words[3]) content = text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim();
 
                     if (!title)
-                        title = await bu.awaitMessage(msg, tagNameMsg).content;
+                        title = await bu.awaitQuery(msg, tagNameMsg).content;
 
                     title = filterTitle(title);
                     tag = await r.table('tag').get(title).run();
@@ -353,7 +353,7 @@ class TagCommand extends BaseCommand {
 
 
                     if (!content)
-                        content = (await bu.awaitMessage(msg, tagContentsMsg)).content;
+                        content = (await bu.awaitQuery(msg, tagContentsMsg)).content;
 
                     //    content = content.replace(/(?:^)(\s+)|(?:\n)(\s+)/g, '');
                     //console.debug('First:', content, words);
@@ -377,7 +377,7 @@ class TagCommand extends BaseCommand {
                 case 'remove':
                 case 'delete':
                     if (words[2]) title = words[2];
-                    if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
+                    if (!title) title = await bu.awaitQuery(msg, tagNameMsg);
 
                     tag = await r.table('tag').get(title).run();
                     if (!tag) {
@@ -444,7 +444,7 @@ ${command[0].desc}`);
                                         if (tag.flags.filter(f => f.word === word).length > 0)
                                             return bu.send(msg, `A flag with the word \`${word}\` has already been specified.`);
                                         let desc = input[key].slice(1).join(' ').replace(/\n/g, ' ');
-                                        tag.flags.push({ flag: key, word, desc })
+                                        tag.flags.push({ flag: key, word, desc });
                                     }
                                 }
                                 await r.table('tag').get(title).update({
@@ -468,7 +468,7 @@ ${command[0].desc}`);
                                 break;
                         }
                     } else if (input.undefined.length === 2) {
-                        console.log(input.undefined)
+                        console.log(input.undefined);
                         let title = filterTitle(input.undefined[1]);
                         let tag = await r.table('tag').get(title).run();
                         if (!tag) {
@@ -478,9 +478,9 @@ ${command[0].desc}`);
                         if (Array.isArray(tag.flags) && tag.flags.length > 0) {
                             let out = 'Here are the flags for that tag:\n\n';
                             for (const flag of tag.flags) {
-                                out += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `
+                                out += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `;
                             }
-                            bu.send(msg, out)
+                            bu.send(msg, out);
                         } else {
                             bu.send(msg, 'That tag has no flags.');
                         }
@@ -488,7 +488,7 @@ ${command[0].desc}`);
                     break;
                 case 'raw':
                     if (words[2]) title = words[2];
-                    if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
+                    if (!title) title = await bu.awaitQuery(msg, tagNameMsg);
 
                     tag = await r.table('tag').get(words[2]).run();
                     if (!tag) {
@@ -511,7 +511,7 @@ ${content}
                     break;
                 case 'author':
                     if (words[2]) title = words[2];
-                    if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
+                    if (!title) title = await bu.awaitQuery(msg, tagNameMsg);
 
                     tag = await r.table('tag').get(words[2]).run();
                     if (!tag) {
@@ -536,7 +536,7 @@ ${content}
                     break;
                 case 'info':
                     if (words[2]) title = words[2];
-                    if (!title) title = await bu.awaitMessage(msg, tagNameMsg);
+                    if (!title) title = await bu.awaitQuery(msg, tagNameMsg);
                     tag = await r.table('tag').get(words[2]).run();
                     if (!tag) {
                         bu.send(msg, `❌ That tag doesn't exist! ❌`);
@@ -558,7 +558,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                     if (Array.isArray(tag.flags) && tag.flags.length > 0) {
                         output += '\n\n**Flags**:\n';
                         for (const flag of tag.flags) {
-                            output += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `
+                            output += `  \`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}\n `;
                         }
                     }
                     bu.send(msg, output);
@@ -566,7 +566,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                 case 'search':
                     let query;
                     if (words[2]) query = words[2];
-                    if (!query) query = await bu.awaitMessage(msg, `What would you like to search for?`).content;
+                    if (!query) query = (await bu.awaitQuery(msg, `What would you like to search for?`)).content;
 
                     page = 1;
 
@@ -765,7 +765,7 @@ ${Object.keys(user.favourites).join(', ')}
                     break;
             }
         } else {
-            bu.send(msg, e.info);
+            bu.send(msg, this.info);
         }
     }
 
@@ -790,7 +790,6 @@ ${Object.keys(user.favourites).join(', ')}
                 },
                 scope: {},
                 input: args.params.words,
-                flaggedInput: input,
                 tagName: args.params.tagName,
                 author: args.params.author
             };

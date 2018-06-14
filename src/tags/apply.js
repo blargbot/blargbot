@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
+const Builder = require('../structures/TagBuilder'),
+    exec = require('./exec');
 
 module.exports =
     Builder.ArrayTag('apply')
@@ -20,12 +21,13 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
-            if (!TagManager.list.hasOwnProperty(args[0]))
+            let definition = TagManager.get(args[0].toLowerCase());
+            if (!definition == null)
                 return Builder.util.error(subtag, context, 'No subtag found');
 
             let tagArgs = Builder.util.flattenArgArrays(args.slice(1));
             let code = '{' + [args[0], ...tagArgs].join(';') + '}';
 
-            return TagManager.list['exec'].execTag(subtag, context, code, undefined);
+            return exec.execTag(definition.name, context, code, undefined);
         })
         .build();

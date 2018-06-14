@@ -24,7 +24,7 @@ class ShitCommand extends BaseCommand {
         if (input.undefined.length > 0)
             text = await bu.filterMentions(input.undefined.join(' '));
         bot.sendChannelTyping(msg.channel.id);
-        let buf = await bu.blargbotApi('shit', { text, plural })
+        let buf = await bu.blargbotApi('shit', { text, plural });
         bu.send(msg, undefined, {
             file: buf,
             name: 'SHIIIITTTTTT.png'

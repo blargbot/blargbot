@@ -85,7 +85,7 @@ class TidyCommand extends BaseCommand {
         }
         if (limit < 0 || isNaN(limit)) limit = 100;
         if (limit > 100) {
-            let msg2 = await bu.awaitMessage(msg, `This operation will clear up to ${limit} messages. There is no way to recover them after deletion. Please type 'yes' to continue, or anything else to cancel. This query will expire in 60 seconds.`, undefined, 60000);
+            let msg2 = await bu.awaitQuery(msg, `This operation will clear up to ${limit} messages. There is no way to recover them after deletion. Please type 'yes' to continue, or anything else to cancel. This query will expire in 60 seconds.`, undefined, 60000);
             if (msg2.content.toLowerCase() != 'yes') {
                 bu.send(msg, 'Tidy canceled.');
                 return;

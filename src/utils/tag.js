@@ -21,15 +21,49 @@ bu.serializeTagArray = function (array, varName) {
 };
 
 bu.deserializeTagArray = function (value) {
+    let parsed;
     try {
-        let obj = JSON.parse(value);
-        if (Array.isArray(obj)) obj = {
-            v: obj
-        };
-        return { v: obj.v, n: obj.n }; //Done to prevent injection
-    } catch (err) {
-        return null;
+        parsed = JSON.parse(value);
     }
+    catch (err) { }
+    if (!parsed) {
+        try {
+            let replaced = value.replace(/([\[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
+                (_, before, from, to, after) => before + bu.getRange(from, to).join(',') + after);
+            parsed = JSON.parse(replaced);
+        }
+        catch (err) { }
+    }
+    if (Array.isArray(parsed)) {
+        parsed = {
+            v: parsed
+        };
+    }
+    if (!parsed || !Array.isArray(parsed.v) || (parsed.n !== undefined && typeof parsed.n != "string"))
+        parsed = null;
+    if (parsed) {
+        return {
+            n: parsed.n,
+            v: parsed.v
+        };
+    }
+    return null;
+};
+
+bu.getRange = function (from, to) {
+    from = bu.parseInt(from);
+    to = bu.parseInt(to);
+    if (isNaN(from) || isNaN(to))
+        throw new Error("Invalid from or to");
+    let descending = from > to;
+    let count = Math.abs(from - to) + 1;
+    if (count > 200)
+        throw new Error("Range cannot be larger than 200");
+    let offset = Math.min(from, to);
+    let values = [...Array(count).keys()].map(e => e + offset);
+    if (descending)
+        values = values.reverse();
+    return values;
 };
 
 bu.getArray = async function (context, arrName) {

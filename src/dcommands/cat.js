@@ -25,7 +25,7 @@ class CatCommand extends BaseCommand {
                 },
                 color: bu.getRandomInt(0x1, 0xffffff)
             }
-        })
+        });
     }
 }
 

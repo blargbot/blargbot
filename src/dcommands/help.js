@@ -15,13 +15,14 @@ class HelpCommand extends BaseCommand {
             var message = '';
             if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden
                 && (!CommandManager.commandList[words[1]].onlyOn || CommandManager.commandList[words[1]].onlyOn === msg.guild.id)) {
+                let command = CommandManager.built[CommandManager.commandList[words[1]].name];
                 let aliases = '';
                 let flags = '';
-                if (CommandManager.built[CommandManager.commandList[words[1]].name].aliases)
-                    aliases = `\n**__Aliases__**: [ ${CommandManager.built[CommandManager.commandList[words[1]].name].aliases.join(', ')} ]`;
-                if (CommandManager.built[CommandManager.commandList[words[1]].name].flags) {
+                if (command.aliases && command.aliases.length > 0)
+                    aliases = `\n**__Aliases__**: [ ${command.aliases.join(', ')} ]`;
+                if (command.flags && command.flags.length > 0) {
                     flags = `**__Flags__**:\n`;
-                    for (let flag of CommandManager.built[CommandManager.commandList[words[1]].name].flags) {
+                    for (let flag of command.flags) {
                         flags += `   \`-${flag.flag}\` or \`--${flag.word}\` - ${flag.desc}\n`;
                     }
                 }

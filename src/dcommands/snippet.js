@@ -32,7 +32,7 @@ class SnippetCommand extends BaseCommand {
         if (!id) {
             let idVal = (await r.table('vars').get('snippetid'));
             if (!idVal) {
-                id = 1
+                id = 1;
                 await r.table('vars').insert({ varname: 'snippetid', value: id });
             } else {
                 id = idVal.value;
@@ -90,7 +90,7 @@ ${snippet.content}
 \`\`\`
 `;
                 let msg3 = await bu.send(snippet.snippet ? snippetChannel : commandChannel, content);
-                await msg3.addReaction(snippet.snippet ? '👍' : ':calp:298905944224563201')
+                await msg3.addReaction(snippet.snippet ? '👍' : ':calp:298905944224563201');
 
                 let msg2 = await bot.getMessage(queue, snippet.msgid);
                 content = msg2.content.split('\n');
@@ -105,14 +105,14 @@ ${snippet.content}
                 if (!words[3]) return await bu.send(msg, 'You must specify a rejection reason.');
                 let snippet = await r.table('snippet').get(parseInt(words[2]));
                 if (!snippet) return await bu.send(msg, 'There is no snippet with that ID.');
-                if (snippet.status) return await bu.send(msg, `That snippet has already been ${snippet.status}!`)
+                if (snippet.status) return await bu.send(msg, `That snippet has already been ${snippet.status}!`);
                 let reason = words.slice(3).join(' ');
                 let msg2 = await bot.getMessage(queue, snippet.msgid);
                 let content = msg2.content.split('\n');
                 content[0] = `❌ **Rejected** \`${snippet.id}\``;
                 await r.table('snippet').get(snippet.id).update({ status: 'rejected' });
                 await msg2.edit(content.join('\n'));
-                await bu.send(snippet.channel, `Hey <@${snippet.author}>, snippet \`${snippet.id}\` got rejected by **${bu.getFullName(msg.author)}** for the following reason:\n\n${reason}`)
+                await bu.send(snippet.channel, `Hey <@${snippet.author}>, snippet \`${snippet.id}\` got rejected by **${bu.getFullName(msg.author)}** for the following reason:\n\n${reason}`);
                 return await bu.send(msg, 'Snippet has been rejected! 👌');
                 break;
             }

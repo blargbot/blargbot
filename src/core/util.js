@@ -38,7 +38,7 @@ bu.registerChangefeed = async () => {
     registerSubChangefeed('user', 'userid', bu.userCache);
     registerSubChangefeed('tag', 'name', bu.tagCache);
     registerGlobalChangefeed();
-}
+};
 
 async function registerGlobalChangefeed() {
     try {

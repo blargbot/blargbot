@@ -33,14 +33,14 @@ class AnnounceCommand extends BaseCommand {
                 roleId = storedGuild.announce.role;
             } else {
 
-                let msg2 = await bu.awaitMessage(msg,
+                let msg2 = await bu.awaitQuery(msg,
                     'This guild doesn\'t have announcements set up. Please mention the channel that announcements should be put in.',
                     m => {
                         if (m.channelMentions.length > 0) return true;
                         else return false;
                     });
                 changeChannel = msg2.channelMentions[0];
-                msg2 = await bu.awaitMessage(msg,
+                msg2 = await bu.awaitQuery(msg,
                     'Please type the name or ID of the role to announce to.');
                 let role = await bu.getRole(msg, msg2.content);
                 if (role != null) {

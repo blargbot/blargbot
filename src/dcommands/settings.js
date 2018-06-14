@@ -280,7 +280,7 @@ Admin Role Name : ${adminRoleName}
                     bu.send(msg, message);
                     break;
                 case 'help':
-                    bu.send(msg, e.info);
+                    bu.send(msg, this.info);
                     break;
                 case 'set':
                     words.shift();

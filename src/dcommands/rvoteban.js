@@ -17,7 +17,7 @@ class RvotebanCommand extends BaseCommand {
         let votebans = storedGuild.votebans || {};
         let input = bu.parseInput(this.flags, words);
         if (input.a) {
-            let msg2 = await bu.awaitMessage(msg, 'This will remove all the votebans on this guild. Type `yes` to confirm, or anything else to cancel.');
+            let msg2 = await bu.awaitQuery(msg, 'This will remove all the votebans on this guild. Type `yes` to confirm, or anything else to cancel.');
             if (msg2.content.toLowerCase() == 'yes' || msg2.content.toLowerCase() == 'y') {
                 await r.table('guild').get(msg.guild.id).update({
                     votebans: r.literal({})

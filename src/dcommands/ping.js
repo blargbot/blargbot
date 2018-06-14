@@ -25,7 +25,7 @@ class PingCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         var message = messages[bu.getRandomInt(0, messages.length - 1)];
-        let msg2 = await bu.send(msg, message)
+        let msg2 = await bu.send(msg, message);
         await msg2.edit(`Pong! (${msg2.timestamp - msg.timestamp}ms)`);
     }
 }

@@ -141,7 +141,7 @@ e.docs = async function (msg, command, topic) {
                     'This prefix can be combined with other prefixes and will act the ' +
                     'same as if you have called `{set}` and then `{commit}` immediately after. e.g. ' +
                     '```{set;!@varname;value}``` is identical to ```{set;@varname;value}{commit;@varname}```'
-            })
+            });
             return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);
         case 'argtypes':
         case 'arguments':
@@ -295,11 +295,11 @@ e.generateDebug = function (code, context, result) {
         return {
             name: s, times: context.state.subtags[s],
             average: context.state.subtags[s].reduce((a, b) => a + b) / context.state.subtags[s].length,
-            total: context.state.subtags[s].reduce((a, b) => a + b),
-        }
+            total: context.state.subtags[s].reduce((a, b) => a + b)
+        };
     });
     subtags.sort((a, b) => b.average - a.average);
-    subtags = subtags.map(s => `${s.name}: Average ${s.average}ms | Total ${s.total}ms\n${s.times.map(ss => ss + 'ms').join(', ')}`)
+    subtags = subtags.map(s => `${s.name}: Average ${s.average}ms | Total ${s.total}ms\n${s.times.map(ss => ss + 'ms').join(', ')}`);
     return {
         name: 'BBTag.debug.txt',
         file: 'User input:\n' + JSON.stringify(context.input.length > 0 ? context.input : 'No input.') + '\n\n' +

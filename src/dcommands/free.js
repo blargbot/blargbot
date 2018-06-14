@@ -14,7 +14,7 @@ class FreeCommand extends BaseCommand {
     async execute(msg, words, text) {
         let input = bu.parseInput(this.flags, words);
         if (input.undefined.length == 0) {
-            bu.send(msg, `Usage: \`${e.usage}\``);
+            bu.send(msg, `Usage: \`${this.usage}\``);
             return;
         }
         bot.sendChannelTyping(msg.channel.id);
