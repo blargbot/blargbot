@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:30:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-12-05 17:02:16
+ * @Last Modified time: 2018-06-14 11:39:26
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -57,5 +57,15 @@ var e = module.exports = {
 Object.defineProperty(e.Eris.Message.prototype, "guild", {
     get: function guild() {
         return this.channel.guild;
+    }
+});
+
+// super important string prototype
+Object.defineProperty(String.prototype, 'succ', {
+    enumerable: false,
+    configurable: false,
+    get() {
+        let cc = this.charCodeAt(this.length - 1); cc++;
+        return this.substring(0, this.length - 1) + String.fromCharCode(cc);
     }
 });
