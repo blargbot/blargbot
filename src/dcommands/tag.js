@@ -300,7 +300,7 @@ class TagCommand extends BaseCommand {
                     if (words[3]) content = bu.splitInput(text, true).slice(3).join(' ');
 
                     if (!title)
-                        title = await bu.awaitQuery(msg, tagNameMsg).content;
+                        title = (await bu.awaitQuery(msg, tagNameMsg)).content;
 
                     title = filterTitle(title);
                     tag = await r.table('tag').get(title).run();
@@ -318,7 +318,7 @@ class TagCommand extends BaseCommand {
                     }
 
                     if (!content)
-                        content = await bu.awaitQuery(msg, tagContentsMsg).content;
+                        content = (await bu.awaitQuery(msg, tagContentsMsg)).content;
 
                     //  content = bu.fixContent(content);
 
@@ -338,7 +338,7 @@ class TagCommand extends BaseCommand {
                     //                if (words[3]) content = text.replace(words[0], '').trim().replace(words[1], '').trim().replace(words[2], '').trim();
 
                     if (!title)
-                        title = await bu.awaitQuery(msg, tagNameMsg).content;
+                        title = (await bu.awaitQuery(msg, tagNameMsg)).content;
 
                     title = filterTitle(title);
                     tag = await r.table('tag').get(title).run();
@@ -377,7 +377,7 @@ class TagCommand extends BaseCommand {
                 case 'remove':
                 case 'delete':
                     if (words[2]) title = words[2];
-                    if (!title) title = await bu.awaitQuery(msg, tagNameMsg);
+                    if (!title) title = (await bu.awaitQuery(msg, tagNameMsg)).content;
 
                     tag = await r.table('tag').get(title).run();
                     if (!tag) {
@@ -488,7 +488,7 @@ ${command[0].desc}`);
                     break;
                 case 'raw':
                     if (words[2]) title = words[2];
-                    if (!title) title = await bu.awaitQuery(msg, tagNameMsg);
+                    if (!title) title = (await bu.awaitQuery(msg, tagNameMsg)).content;
 
                     tag = await r.table('tag').get(words[2]).run();
                     if (!tag) {
@@ -511,7 +511,7 @@ ${content}
                     break;
                 case 'author':
                     if (words[2]) title = words[2];
-                    if (!title) title = await bu.awaitQuery(msg, tagNameMsg);
+                    if (!title) title = (await bu.awaitQuery(msg, tagNameMsg)).content;
 
                     tag = await r.table('tag').get(words[2]).run();
                     if (!tag) {
@@ -536,7 +536,7 @@ ${content}
                     break;
                 case 'info':
                     if (words[2]) title = words[2];
-                    if (!title) title = await bu.awaitQuery(msg, tagNameMsg);
+                    if (!title) title = (await bu.awaitQuery(msg, tagNameMsg)).content;
                     tag = await r.table('tag').get(words[2]).run();
                     if (!tag) {
                         bu.send(msg, `❌ That tag doesn't exist! ❌`);
