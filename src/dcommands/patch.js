@@ -70,13 +70,12 @@ class PatchCommand extends BaseCommand {
                         embed
                     });
                 } catch (err) {
-                    console.error(err);
                     delete changelogs.guilds[guild];
-                    //console.error('Changelog Patch:', err.message);
                 }
             }
+            await bu.send(msg, 'Done! Sent to ' + Object.keys(changelogs.guilds).length + ' guilds.');
+            console.log(changelogs);
         }
-        await bu.send(msg, 'Done! Sent to', Object.keys(changelogs.guilds).length, 'guilds.');
         await r.table('vars').get('changelog').replace(changelogs);
     }
 }
