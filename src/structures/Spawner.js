@@ -266,7 +266,7 @@ class Spawner extends EventEmitter {
             case 'respawn': {
                 console.log('Respawning a shard');
                 let timer = new Timer().start();
-                await this.respawnShard(data.id || shard.id);
+                await this.respawnShard(data.id !== undefined ? data.id : shard.id);
                 timer.end();
                 await this.client.discord.createMessage(data.channel, `The shard has been successfully respawned! It only took me ${timer.format()}`);
                 break;
