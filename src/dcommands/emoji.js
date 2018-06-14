@@ -26,7 +26,7 @@ class EmojiCommand extends BaseCommand {
             if (emoji.length > 0) {
                 if (emoji[0].startsWith('a:') || emoji[0].startsWith(':')) {
                     let url = `https://cdn.discordapp.com/emojis/${emoji[0].match(/.*:(\d+)/)[1]}.${emoji[0][0] == 'a' ? 'gif' : 'png'}`;
-                    await bu.send(msg, {
+                    bu.send(msg, {
                         embed: {
                             image: {
                                 url
