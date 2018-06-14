@@ -116,13 +116,11 @@ class PollCommand extends BaseCommand {
                     console.error(err);
                 }
             }
-            for (let choice of choices) {
-                try {
-                    await bot.addMessageReaction(msg2.channel.id, msg2.id, choice);
-                } catch (err) {
-                    //NO-OP
-                    //   console.error(err);
-                }
+            try {
+                await bu.addReactions(msg2.channel.id, msg2.id, choices);
+            } catch (err) {
+                //NO-OP
+                //   console.error(err);
             }
             await r.table('events').insert({
                 title: title,
