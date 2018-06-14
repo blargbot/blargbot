@@ -12,7 +12,7 @@ const colors = require('../../res/colors') || {},
     unorm = require('unorm'),
     limax = require('limax'),
     User = require('eris/lib/structures/User'),
-    emojiRegex = `👁|${require('emoji-regex')().source}|<a?:\\w+:\\d{17,23}>`;
+    twemoji = require('twemoji');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -1615,14 +1615,29 @@ bu.findEmoji = function (text, distinct) {
     let match;
     let result = [];
 
-    let regex = new RegExp(emojiRegex, "gi");
+    // Find custom emotes
+    let regex = /<(a?:\w+:\d{17,23})>/gi;
     while (match = regex.exec(text))
-        result.push(match[0].replace(/[<>]/g, ''));
+        result.push(match[1]);
+
+    // Find twemoji defined emotes
+    twemoji.replace(text, function (match) {
+        result.push(match);
+        return match;
+    });
 
     if (distinct)
         result = [...new Set(result)];
 
-    return result;
+    // Sort by order of appearance
+    result = result.map(r => {
+        return {
+            value: r,
+            index: text.indexOf(r)
+        };
+    });
+
+    return result.sort((a, b) => a.index - b.index).map(r => r.value);
 };
 
 /**
