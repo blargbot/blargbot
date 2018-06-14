@@ -1,7 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 
-// var changeChannel = '222199986123833344';
-var changeChannel = '229692244746043393';
+var changeChannel = '222199986123833344';
+// var changeChannel = '229692244746043393';
 const roleId = '239399475263700992';
 const betaRoleId = '455448380320251925'; // temp role for testing
 
