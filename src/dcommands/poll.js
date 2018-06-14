@@ -45,7 +45,7 @@ class PollCommand extends BaseCommand {
         let input = bu.parseInput(this.flags, words, true);
         if (input.undefined.length >= 1) {
             if (input.e) {
-                choices = input.e;
+                choices = bu.findEmoji(input.e.join(' '), true);
             }
             let time = dep.moment.duration(60, 's');
             if (input.t) {
@@ -117,7 +117,6 @@ class PollCommand extends BaseCommand {
                 }
             }
             for (let choice of choices) {
-                choice = choice.replace(/[<>]/g, '');
                 try {
                     await bot.addMessageReaction(msg2.channel.id, msg2.id, choice);
                 } catch (err) {
