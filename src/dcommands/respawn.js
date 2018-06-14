@@ -6,7 +6,7 @@ class RespawnCommand extends BaseCommand {
             name: 'respawn',
             category: bu.CommandType.GENERAL,
             hidden: true,
-            usage: 'respawn <id> | all',
+            usage: 'respawn <id>',
             info: 'Shard respawning only for staff.'
         });
     }
@@ -14,7 +14,6 @@ class RespawnCommand extends BaseCommand {
     async execute(msg, words, text) {
         let police = (await r.table('vars').get('police')).value;
         if (police.includes(msg.author.id)) {
-            console.log('aaa');
             let id = parseInt(words[1]);
             if (isNaN(id))
                 return await bu.send(msg, 'that wasn\'t even a number pls');
