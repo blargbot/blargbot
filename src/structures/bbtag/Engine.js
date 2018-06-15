@@ -12,9 +12,9 @@ function parse(content) {
     let bbtag = BBTag.parse(content);
     if (bbtag.content.length != bbtag.source.length)
         return { success: false, error: 'Unexpected \'}\' at ' + (bbtag.content.length) };
-    let error = bbtag.children.find(c => !c.content.endsWith('}'));
-    if (error != null)
-        return { success: false, error: 'Unmatched \'{\' at ' + error.start };
+    let errors = bbtag.validate()
+    if (errors.length > 0)
+        return { success: false, error: errors[0].message + ' at ' + errors[0].position };
     return { success: true, bbtag };
 }
 

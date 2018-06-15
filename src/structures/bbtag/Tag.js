@@ -88,6 +88,28 @@ class SubTag extends BaseTag {
         this.name = this.children[0];
     }
 
+    /**
+     * @returns {{tag:BaseTag,position:number,message:String}[]}
+     */
+    validate() {
+        let errors = [];
+        let checkChild = (i, callback) => {
+            let child = this.children.slice(i, i + 1 || undefined)[0];
+            if (child === undefined)
+                return false;
+            return callback(child);
+        };
+
+        if (!this.content.startsWith('{') || checkChild(1, c => c.start == this.start))
+            errors.push({ tag: this, position: this.end, message: 'Unmatched \'}\'' });
+        if (!this.content.endsWith('}') || checkChild(-1, c => c.end == this.end))
+            errors.push({ tag: this, position: this.start, message: 'Unmatched \'{\'' });
+
+        for (const child of this.children)
+            errors.push(...child.validate());
+
+        return errors;
+    }
 }
 
 /**
@@ -123,6 +145,15 @@ class BBTag extends BaseTag {
     /** @param {string|SubTag} parent */
     constructor(parent) { super(parent); }
 
+    /**
+     * @returns {{tag:BaseTag,position:number,message:String}[]}
+     */
+    validate() {
+        let errors = [];
+        for (const child of this.children)
+            errors.push(...child.validate());
+        return errors;
+    }
 }
 
 
