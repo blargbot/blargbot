@@ -1,5 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand'),
-    bbEngine = require('../structures/BBTagEngine'),
+    bbEngine = require('../structures/bbtag/Engine'),
     bbtag = require('../core/bbtag');
 
 function filterTitle(title) {

@@ -7,7 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const bbEngine = require('../structures/BBTagEngine');
+const bbEngine = require('../structures/bbtag/Engine');
 
 bot.on('guildMemberRemove', async function (guild, member) {
     let val = await bu.guildSettings.get(guild.id, 'farewell');

@@ -9,7 +9,7 @@
 
 const argFactory = require('../structures/ArgumentFactory'),
     af = argFactory,
-    bbEngine = require('../structures/BBTagEngine');
+    bbEngine = require('../structures/bbtag/Engine');
 
 var e = module.exports = {};
 

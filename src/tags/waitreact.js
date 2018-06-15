@@ -8,7 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    bbengine = require('../structures/BBTagEngine'),
+    bbengine = require('../structures/bbtag/Engine'),
     waitMessage = require('./waitmessage');
 
 function padEmoji(emoji) {

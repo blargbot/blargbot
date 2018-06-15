@@ -8,7 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    bbengine = require('../structures/BBTagEngine');
+    bbengine = require('../structures/bbtag/Engine');
 
 function quickErr(text) {
     return (subtag, context) => Builder.util.error(subtag, context, text);
