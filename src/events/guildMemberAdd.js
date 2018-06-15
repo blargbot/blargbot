@@ -6,7 +6,7 @@
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
-const bbEngine = require('../structures/BBTagEngine');
+const bbEngine = require('../structures/bbtag/Engine');
 
 bot.on('guildMemberAdd', async function (guild, member) {
     bu.processUser(member.user);

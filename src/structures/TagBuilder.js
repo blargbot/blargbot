@@ -1,5 +1,5 @@
 const ArgFactory = require('./ArgumentFactory'),
-    bbEngine = require('../structures/BBTagEngine'),
+    bbEngine = require('../structures/bbtag/Engine'),
     Timer = require('./Timer');
 
 class TagBuilder {

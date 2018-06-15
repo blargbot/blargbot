@@ -8,7 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/BBTagEngine');
+    bbEngine = require('../structures/bbtag/Engine');
 
 module.exports =
     Builder.AutoTag('exec')

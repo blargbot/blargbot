@@ -1,6 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand'),
     bbtag = require('../core/bbtag'),
-    bbEngine = require('../structures/BBTagEngine'),
+    bbEngine = require('../structures/bbtag/Engine'),
     { Message } = require('eris');
 
 const results = 100;
