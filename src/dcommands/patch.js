@@ -1,8 +1,9 @@
 const BaseCommand = require('../structures/BaseCommand');
 
 var changeChannel = '222199986123833344';
+// var changeChannel = '229692244746043393';
 const roleId = '239399475263700992';
-const betaRoleId = '268577839639560192'; // temp role for testing
+const betaRoleId = '455448380320251925'; // temp role for testing
 
 class PatchCommand extends BaseCommand {
     constructor() {
@@ -70,11 +71,11 @@ class PatchCommand extends BaseCommand {
                     });
                 } catch (err) {
                     delete changelogs.guilds[guild];
-                    //console.error('Changelog Patch:', err.message);
                 }
             }
+            await bu.send(msg, 'Done! Sent to ' + Object.keys(changelogs.guilds).length + ' guilds.');
+            console.log(changelogs);
         }
-        await bu.send(msg, 'Done! Sent to', Object.keys(changelogs.guilds).length, 'guilds.');
         await r.table('vars').get('changelog').replace(changelogs);
     }
 }
