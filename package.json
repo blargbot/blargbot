@@ -81,12 +81,12 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/Ratismal/blargbot.git"
+        "url": "git+https://github.com/blargbot/blargbot.git"
     },
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/Ratismal/blargbot/issues"
+        "url": "https://github.com/blargbot/blargbot/issues"
     },
-    "homepage": "https://github.com/Ratismal/blargbot#readme"
+    "homepage": "https://github.com/blargbot/blargbot#readme"
 }
