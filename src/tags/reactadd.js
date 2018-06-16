@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder'),
     bbEngine = require('../structures/bbtag/Engine');
 
 module.exports =
-    Builder.AutoTag('reactadd')
+    Builder.APITag('reactadd')
         .withAlias('addreact')
         .withArgs(a => [
             a.optional([a.optional('channelId'),

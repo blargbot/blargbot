@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('channelname')
+    Builder.APITag('channelname')
         .withDesc('Returns the name of the current channel.')
         .withExample(
             'This channel\'s name is {channelname}',

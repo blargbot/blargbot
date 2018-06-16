@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('reactremove')
+    Builder.APITag('reactremove')
         .withAlias('removereact')
         .withArgs(a => [
             a.optional('channelId'),

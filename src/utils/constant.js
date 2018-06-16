@@ -24,6 +24,7 @@ bu.TagType = {
     COMPLEX: 2,
     ARRAY: 3,
     CCOMMAND: 4,
+    API: 5,
     properties: {
         1: {
             name: 'Simple',
@@ -40,6 +41,10 @@ bu.TagType = {
         4: {
             name: 'Custom Command',
             desc: 'Subtags that only work in custom commands.'
+        },
+        5: {
+            name: 'API',
+            desc: 'Subtags that access the discord API to perform operations'
         }
     }
 };

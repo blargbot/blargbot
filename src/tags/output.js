@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('output')
+    Builder.APITag('output')
         .withArgs(a => a.optional('text'))
         .withDesc('Forces an early send of the default output message, using `text` as the text to show. ' +
             'If this is used then there will be no output sent once the tag finishes. Only 1 `{output}` may be used per ' +
