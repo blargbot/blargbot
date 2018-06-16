@@ -123,6 +123,9 @@ class Context {
     async sendOutput(text, files) {
         if (!this.state.outputMessage) {
             this.state.outputMessage = new Promise(async function (resolve, reject) {
+                if (!text) {
+                    return resolve(null);
+                }
                 try {
                     let disableEveryone = true;
                     if (this.isCC) {
