@@ -18,6 +18,7 @@ module.exports =
             'Hello, -a world!',
             'true false'
         )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1', async function (_, context, args) {
             return context.flaggedInput[args[0]] !== undefined;
         })

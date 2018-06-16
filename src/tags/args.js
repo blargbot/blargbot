@@ -22,13 +22,16 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => context.input.join(' '))
         .whenArgs('1-2', async function (subtag, context, args) {
+            return await this.getArgs(subtag, context, args, context.input);
+        })
+        .withProp('getArgs', async function (subtag, context, args, values) {
             let from = bu.parseInt(args[0]),
                 to = args[1];
 
             if (!to)
                 to = from + 1;
             else if (to === 'n')
-                to = context.input.length;
+                to = values.length;
             else
                 to = bu.parseInt(to);
 
@@ -38,10 +41,10 @@ module.exports =
             if (from > to)
                 from = [to, to = from][0];
 
-            if (!context.input[from])
+            if (!values.hasOwnProperty(from))
                 return Builder.errors.notEnoughArguments(subtag, context);
 
-            return context.input.slice(from, to).join(' ');
+            return values.slice(from, to).join(' ');
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
