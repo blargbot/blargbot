@@ -3,6 +3,7 @@
 const ScopeCollection = require('./Scope');
 const Timer = require('../Timer');
 const { VariableCache, CacheEntry } = require('./Caching');
+const ReadWriteLock = require('rwlock');
 
 // stores cooldown values per-guild-per-tag-per-user
 const cooldowns = {};
@@ -44,6 +45,7 @@ class Context {
         this._author = options.author;
         this.tagName = options.tagName;
         this.cooldown = options.cooldown;
+        this.locks = options.locks || {};
 
         if (!cooldowns[this.msg.guild.id])
             cooldowns[this.msg.guild.id] = {};
@@ -96,6 +98,7 @@ class Context {
         if (options.isCC === undefined) options.isCC = this.isCC;
         if (options.tagName === undefined) options.tagName = this.tagName;
         if (options.author === undefined) options.author = this.author;
+        if (options.locks === undefined) options.locks = this.locks;
 
         let context = new Context(options, this);
         context.state = this.state;
@@ -119,6 +122,10 @@ class Context {
                     overrides[subtag] = previous;
             }
         };
+    }
+
+    getLock(key) {
+        return this.locks[key] || (this.locks[key] = new ReadWriteLock());
     }
 
     async sendOutput(text, files) {
