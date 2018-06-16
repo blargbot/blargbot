@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('messagesender')
+    Builder.APITag('messagesender')
         .withAlias('sender')
         .withArgs(a => a.optional([a.optional('channel'), a.require('messageid')]))
         .withDesc('Returns the sender id of the given message in the given channel.' +

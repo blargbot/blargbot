@@ -190,22 +190,8 @@ async function runTag(content, context) {
         return { context, result, response: null };
     }
 
-    let attachment = (config.attach || (c => null))(context, result);
-
-    let disableEveryone = true;
-    if (context.isCC) {
-        let s = await r.table('guild').get(context.msg.guild.id);
-        disableEveryone = s.settings.disableeveryone === true;
-    }
-    let response = await bu.send(context.msg,
-        {
-            content: result,
-            embed: context.state.embed,
-            nsfw: context.state.nsfw,
-            disableEveryone: disableEveryone
-        }, attachment);
-    if (response != null && response.channel != null)
-        await bu.addReactions(response.channel.id, response.id, [...new Set(context.state.reactions)]);
+    let attachment = (config.attach || (() => null))(context, result);
+    let response = await context.sendOutput(result, attachment);
 
     bu.Metrics.bbtagExecutions.labels(context.isCC ? 'custom command' : 'tag').inc();
     return { context, result, response };

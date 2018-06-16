@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('randuser')
+    Builder.APITag('randuser')
         .withDesc('Returns the id of a random user on the current guild.')
         .withExample(
             '{username;{randuser}} is a lovely person! {username;{randuser}} isn\'t as good.',

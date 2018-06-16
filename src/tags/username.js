@@ -10,13 +10,13 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('username')
+    Builder.APITag('username')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Returns `user`\'s name. `user` defaults to the user who executed the containing tag. ' +
-        'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.')
+            'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.')
         .withExample(
-        'Your username is {username}!',
-        'Your username is user!'
+            'Your username is {username}!',
+            'Your username is user!'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],

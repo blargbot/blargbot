@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('messageembeds')
+    Builder.APITag('messageembeds')
         .withArgs(a => a.optional([a.optional('channel'), a.require('messageid')]))
         .withDesc('Returns the array of embeds on the given message in the given channel.' +
             '\n`channel` defaults to the current channel' +

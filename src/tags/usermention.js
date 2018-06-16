@@ -10,13 +10,13 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('usermention')
+    Builder.APITag('usermention')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Mentions `user`. `user` defaults to the user who executed the containing tag. ' +
-        'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.')
+            'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.')
         .withExample(
-        'Hello, {usermention}!',
-        'Hello, @user!'
+            'Hello, {usermention}!',
+            'Hello, @user!'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],

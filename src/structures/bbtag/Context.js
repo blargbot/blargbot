@@ -62,6 +62,7 @@ class Context {
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
         this.state = {
+            outputMessage: null,
             ownedMsgs: [],
             return: 0,
             stackSize: 0,
@@ -117,6 +118,36 @@ class Context {
                     overrides[subtag] = previous;
             }
         };
+    }
+
+    async sendOutput(text, files) {
+        if (!this.state.outputMessage) {
+            this.state.outputMessage = new Promise(async function (resolve, reject) {
+                try {
+                    let disableEveryone = true;
+                    if (this.isCC) {
+                        let s = await r.table('guild').get(this.msg.guild.id);
+                        disableEveryone = s.settings.disableeveryone === true;
+                    }
+                    let response = await bu.send(this.msg,
+                        {
+                            content: text,
+                            embed: this.state.embed,
+                            nsfw: this.state.nsfw,
+                            disableEveryone: disableEveryone
+                        }, files);
+
+                    if (response != null && response.channel != null)
+                        await bu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
+                    this.state.ownedMsgs.push(response.id);
+                    resolve(response.id);
+                    this.state.outputMessage = response.id;
+                } catch (err) {
+                    reject(err);
+                }
+            }.bind(this));
+        };
+        return await this.state.outputMessage;
     }
 
     static async deserialize(obj) {

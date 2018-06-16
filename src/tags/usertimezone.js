@@ -10,14 +10,14 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('usertimezone')
+    Builder.APITag('usertimezone')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Returns the set timezone code of the specified `user`. `user` defaults to the user who executed the containing tag.' +
-        'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.' +
-        'If the user has no set timezone, the output will be UTC.')
+            'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.' +
+            'If the user has no set timezone, the output will be UTC.')
         .withExample(
-        'My timezone is {timezone}',
-        'My timezone is UTC'
+            'My timezone is {timezone}',
+            'My timezone is UTC'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],

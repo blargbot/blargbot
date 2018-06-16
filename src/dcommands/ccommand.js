@@ -308,9 +308,9 @@ class CcommandCommand extends BaseCommand {
                     let storedGuild = await bu.getGuild(msg.guild.id);
                     let ccommands = Object.keys(storedGuild.ccommands);
                     let output = (ccommands && ccommands.length > 0)
-                                    ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` `
-                                    : `There are no custom commands on this guild.`;
-                    bu.send(msg,output);
+                        ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` `
+                        : `There are no custom commands on this guild.`;
+                    bu.send(msg, output);
                 case 'sethelp':
                     if (words.length > 3) {
                         title = filterTitle(words[2]);
@@ -381,7 +381,7 @@ class CcommandCommand extends BaseCommand {
                     break;
                 case 'debug':
                     let result = await bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3));
-                    await bu.send(result.context.msg, null, bbtag.generateDebug(result.code, result.context, result.result));
+                    await bu.send(result.context.msg, null, bbtag.generateDebug(result.code, result.context));
 
                     break;
                 default:

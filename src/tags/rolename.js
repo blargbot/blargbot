@@ -10,13 +10,13 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('rolename')
+    Builder.APITag('rolename')
         .withArgs(a => [a.require('role'), a.optional('quiet')])
         .withDesc('Returns `role`\'s name. ' +
-        'If `quiet` is specified, if `role` can\'t be found it will simply return nothing.')
+            'If `quiet` is specified, if `role` can\'t be found it will simply return nothing.')
         .withExample(
-        'The admin role name is: {rolename;admin}.',
-        'The admin role name is: Administrator.'
+            'The admin role name is: {rolename;admin}.',
+            'The admin role name is: Administrator.'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {

@@ -14,7 +14,7 @@ function getUrls(message) {
 }
 
 module.exports =
-    Builder.AutoTag('messageattachments')
+    Builder.APITag('messageattachments')
         .withAlias('attachments')
         .withArgs(a => a.optional([a.optional('channel'), a.require('messageid')]))
         .withDesc('Returns the array of attachment uthe attachments in the given channel.' +

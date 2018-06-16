@@ -10,14 +10,14 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('roles')
+    Builder.APITag('roles')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Returns an array of roles on the current guild. ' +
-        'If `user` is specified, get the roles that `user` has. ' +
-        'If `quiet` is specified, if a `user` can\'t be found it will simply return nothing.')
+            'If `user` is specified, get the roles that `user` has. ' +
+            'If `quiet` is specified, if a `user` can\'t be found it will simply return nothing.')
         .withExample(
-        'The roles on this guild are: {roles}.',
-        'The roles on this guild are: ["11111111111111111","22222222222222222"].'
+            'The roles on this guild are: {roles}.',
+            'The roles on this guild are: ["11111111111111111","22222222222222222"].'
         )
         .whenArgs(0, async function (subtag, context, args) {
             let roles = context.guild.roles.map(r => r);

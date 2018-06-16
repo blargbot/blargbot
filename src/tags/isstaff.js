@@ -10,14 +10,14 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('isstaff')
+    Builder.APITag('isstaff')
         .withAlias('ismod')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Checks if `user` is a member of staff. `user` defaults to the person running the tag. ' +
-        'If the `user` cannot be found `false` will be returned.')
+            'If the `user` cannot be found `false` will be returned.')
         .withExample(
-        '{if;{isstaff};You are a staff member!;You are not a staff member :(}',
-        'You are a staff member!'
+            '{if;{isstaff};You are a staff member!;You are not a staff member :(}',
+            'You are a staff member!'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
             if (args.length == 0)
