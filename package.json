@@ -58,6 +58,7 @@
         "require-reload": "^0.2.2",
         "rethinkdb": "^2.3.3",
         "rethinkdbdash": "^2.3.26",
+        "rwlock": "^5.0.0",
         "safe-regex": "^1.1.0",
         "showdown": "^1.8.6",
         "snekfetch": "^3.6.0",
