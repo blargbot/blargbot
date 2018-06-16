@@ -20,7 +20,11 @@ module.exports =
             '{output;Hello!}',
             'Hello!'
         )
-        .whenArgs('0-1', async function (_, context, args) {
+        .whenArgs('0-1', async function (subtag, context, args) {
+            if (context.state.timerCount == -1)
+                return Builder.util.error(subtag, context, '{output} is disabled inside timers.');
+            if (context.state.outputMessage && args[0])
+                return Builder.util.error(subtag, context, 'Cannot send multiple outputs');
             return await context.sendOutput(args[0]);
         })
         .whenDefault(Builder.errors.tooManyArguments)
