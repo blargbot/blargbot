@@ -143,8 +143,8 @@ function addError(tag, context, message) {
  * @param {Context} [context]
  */
 async function runTag(content, context) {
-    let timer = new Timer().start();
     console.bbtag('Start run tag');
+    let timer = new Timer().start();
     let config = {};
     if (typeof content == 'string') {
         if (!(context instanceof Context))
@@ -156,7 +156,7 @@ async function runTag(content, context) {
         config = content;
         content = content.tagContent;
     }
-    console.bbtag('Created context', timer.poll(true));
+    console.bbtag('Created context in', timer.poll(true), 'ms');
 
     if (context.cooldowns[context.tagName]) {
         let cdDate = context.cooldowns[context.tagName] + (context.cooldown || 0);
@@ -169,19 +169,17 @@ async function runTag(content, context) {
     }
     context.cooldowns[context.tagName] = Date.now();
 
-    console.bbtag('Checked cooldowns', timer.poll(true));
+    console.bbtag('Checked cooldowns in', timer.poll(true), 'ms');
 
     context.execTimer.start();
-    let result = await execString(content.trim(), context);
+    let result = (await execString(content.trim(), context)).trim();
     context.execTimer.end();
 
-    console.bbtag('Tag run complete', timer.poll(true));
-
-    result = result.trim();
+    console.bbtag('Tag run complete in', timer.poll(true), 'ms');
 
     await context.variables.persist();
 
-    console.bbtag('Saved variables', timer.poll(true));
+    console.bbtag('Saved variables in', timer.poll(true), 'ms');
 
     if (result != null && context.state.replace != null)
         result = result.replace(context.state.replace.regex, context.state.replace.with);
