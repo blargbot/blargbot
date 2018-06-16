@@ -9,7 +9,7 @@
 
 const argFactory = require('../structures/ArgumentFactory'),
     af = argFactory,
-    bbEngine = require('../structures/BBTagEngine');
+    bbEngine = require('../structures/bbtag/Engine');
 
 var e = module.exports = {};
 
@@ -279,9 +279,9 @@ e.docs = async function (msg, command, topic) {
     return await bu.send(msg, 'Oops, I didnt recognise that topic! Try using `' + prefix + command + ' docs` for a list of all topics');
 };
 
-e.generateDebug = function (code, context, result) {
+e.generateDebug = function (code, context) {
     if (arguments.length == 1)
-        return (context, result) => this.generateDebug(code, context, result);
+        return (context) => this.generateDebug(code, context);
 
     let errors = viewErrors(...context.errors);
     let variables = Object.keys(context.variables.cache)

@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('userhasrole')
+    Builder.APITag('userhasrole')
         .withAlias('hasrole')
         .acceptsArrays()
         .withArgs(a => [a.require('roleids'), a.optional('user'), a.optional('quiet')])

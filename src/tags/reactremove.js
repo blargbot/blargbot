@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('reactremove')
+    Builder.APITag('reactremove')
         .withAlias('removereact')
         .withArgs(a => [
             a.optional('channelId'),
@@ -18,10 +18,10 @@ module.exports =
             a.require([a.optional('users', true), a.optional('reactions')])
         ])
         .withDesc('Removes `reactions` from `messageId` which were placed by `users`.\n`users` defaults to the user who executed the tag.\n' +
-        '`reactions` defaults to all reactions.\n`channelId` defaults to the current channel.')
+            '`reactions` defaults to all reactions.\n`channelId` defaults to the current channel.')
         .withExample(
-        '{reactremove;12345678901234;:thinking:}',
-        '(removed the 🤔 reaction by the user)'
+            '{reactremove;12345678901234;:thinking:}',
+            '(removed the 🤔 reaction by the user)'
         ).whenDefault(async function (subtag, context, emotes) {
             let channel = null,
                 message = null,
@@ -54,7 +54,7 @@ module.exports =
                 let deserialized = await bu.deserializeTagArray(emote);
                 let entries = deserialized && Array.isArray(deserialized.v)
                     ? deserialized.v
-                    : emote;
+                    : [emote];
                 entries = await Promise.all(entries.map(entry => bu.getUser(context.msg, entry, {
                     quiet: true, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``

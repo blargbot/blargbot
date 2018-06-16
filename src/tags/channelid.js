@@ -11,7 +11,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('channelid')
+    Builder.APITag('channelid')
         .withDesc('Returns the ID of the current channel.')
         .withExample(
             'This channel\'s id is {channelid}',

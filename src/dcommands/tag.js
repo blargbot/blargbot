@@ -1,6 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand'),
     bbtag = require('../core/bbtag'),
-    bbEngine = require('../structures/BBTagEngine'),
+    bbEngine = require('../structures/bbtag/Engine'),
     { Message } = require('eris');
 
 const results = 100;
@@ -639,7 +639,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                     if (result.context.author != result.context.user.id)
                         await bu.send(dmChannel.id, "Oops! I cant send a debug output for someone elses tag!");
                     else
-                        await bu.send(dmChannel.id, null, bbtag.generateDebug(result.code, result.context, result.result));
+                        await bu.send(dmChannel.id, null, bbtag.generateDebug(result.code, result.context));
 
                     break;
                 case 'favourite':

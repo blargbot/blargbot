@@ -1,5 +1,5 @@
 const ArgFactory = require('./ArgumentFactory'),
-    bbEngine = require('../structures/BBTagEngine'),
+    bbEngine = require('../structures/bbtag/Engine'),
     Timer = require('./Timer');
 
 class TagBuilder {
@@ -7,6 +7,7 @@ class TagBuilder {
     static ComplexTag(name) { return new TagBuilder().withCategory(bu.TagType.COMPLEX).withName(name); }
     static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name).acceptsArrays(true); }
     static CCommandTag(name) { return new TagBuilder().withCategory(bu.TagType.CCOMMAND).withName(name); }
+    static APITag(name) { return new TagBuilder().withCategory(bu.TagType.API).withName(name); }
     static AutoTag(name) { return new TagBuilder().withCategory(0).withName(name); }
 
     constructor(init) {

@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('messageedittime')
+    Builder.APITag('messageedittime')
         .withArgs(a => [a.optional([a.optional('channel'), a.require('messageid')]), a.optional('format')])
         .withDesc('Returns the edit time of the given message in the given channel using the given format.' +
             '\n`channel` defaults to the current channel' +

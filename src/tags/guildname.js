@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('guildname')
+    Builder.APITag('guildname')
         .withDesc('Returns the name of the current guild.')
         .withExample(
             'This guild\'s name is {guildname}.',

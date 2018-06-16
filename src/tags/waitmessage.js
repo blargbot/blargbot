@@ -8,11 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    bbengine = require('../structures/BBTagEngine');
-
-function quickErr(text) {
-    return (subtag, context) => Builder.util.error(subtag, context, text);
-}
+    bbengine = require('../structures/bbtag/Engine');
 
 const overrideSubtags = [
     // API subtags
@@ -43,7 +39,7 @@ const overrideSubtags = [
 ];
 
 module.exports =
-    Builder.AutoTag('waitmessage')
+    Builder.APITag('waitmessage')
         .withArgs(a => [
             a.optional('channels'),
             a.optional('users'),

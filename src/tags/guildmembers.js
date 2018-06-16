@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('guildmembers')
+    Builder.APITag('guildmembers')
         .withDesc('Returns an array of user IDs of the members on the current guild.')
         .withExample(
             'This guild has {length;{guildmembers}} members.',

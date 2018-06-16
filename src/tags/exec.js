@@ -8,7 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/BBTagEngine');
+    bbEngine = require('../structures/bbtag/Engine');
 
 module.exports =
     Builder.AutoTag('exec')
@@ -19,52 +19,56 @@ module.exports =
             'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
-        .whenDefault(async function(subtag, context, args){
-             let tag = await r.table('tag').get(args[0]).run();
+        .whenDefault(async function (subtag, context, args) {
+            let tag = await context.getCached(args[0], key => r.table('tag').get(key).run());
 
-             if (tag == null)
-                 return Builder.util.error(subtag, context, 'Tag not found: ' + args[0]);
+            if (tag == null)
+                return Builder.util.error(subtag, context, 'Tag not found: ' + args[0]);
 
-   
-             let name = args[0];
-             if (!context._cooldowns[context.msg.guild.id][false])
-                 context._cooldowns[context.msg.guild.id][false] = {};
-             if (!context._cooldowns[context.msg.guild.id][false][context.msg.author.id])
-                 context._cooldowns[context.msg.guild.id][false][context.msg.author.id] = {};
-             let cd = context._cooldowns[context.msg.guild.id][false][context.msg.author.id];
-             if (cd) {
-                 let cdDate = cd[name] + (tag.cooldown || 0);
-                 let diff = Date.now() - cdDate;
-                 if (diff < 0) {
-                     return Builder.util.error(subtag, context, 'Cooldown: ' + (diff * -1));
-                 }
-             }
-             cd[name] = Date.now();
-    
-             switch (args.length) {
-                 case 1: 
-                     return await this.execTag(subtag, context, tag.content, '');
-                 case 2: 
-                     return await this.execTag(subtag, context, tag.content, args[1]);
-                 default:
-                     let a = Builder.util.flattenArgArrays(args.slice(1));
-                     return await this.execTag(subtag, context, tag.content, '"'+a.join('" "')+'"');
-             }
-         })
+
+            let name = args[0];
+            if (!context._cooldowns[context.msg.guild.id][false])
+                context._cooldowns[context.msg.guild.id][false] = {};
+            if (!context._cooldowns[context.msg.guild.id][false][context.msg.author.id])
+                context._cooldowns[context.msg.guild.id][false][context.msg.author.id] = {};
+            let cd = context._cooldowns[context.msg.guild.id][false][context.msg.author.id];
+            if (cd) {
+                let cdDate = cd[name] + (tag.cooldown || 0);
+                let diff = Date.now() - cdDate;
+                if (diff < 0) {
+                    return Builder.util.error(subtag, context, 'Cooldown: ' + (diff * -1));
+                }
+            }
+            cd[name] = Date.now();
+
+            switch (args.length) {
+                case 1:
+                    return await this.execTag(subtag, context, tag.content, '');
+                case 2:
+                    return await this.execTag(subtag, context, tag.content, args[1]);
+                default:
+                    let a = Builder.util.flattenArgArrays(args.slice(1));
+                    return await this.execTag(subtag, context, tag.content, '"' + a.join('" "') + '"');
+            }
+        })
         .withProp('execTag', async function (subtag, context, tagContent, input) {
             if (context.state.stackSize >= 200) {
                 context.state.return = -1;
                 return Builder.util.error(subtag, context, 'Terminated recursive tag after ' + context.state.stackSize + ' execs.');
             }
 
-            let childContext = context.makeChild({ input });
+            let result;
+            if (typeof tagContent == "string" || tagContent == null) {
+                let parsed = bbEngine.parse(tagContent || '');
+                if (!parsed.success)
+                    return Builder.util.error(subtag, context, parsed.error);
+                tagContent = parsed.bbtag;
+            }
 
             context.state.stackSize += 1;
-            let result;
-            if (typeof tagContent == "string" || tagContent == null)
-                result = await bbEngine.execString(tagContent || '', childContext);
-            else
-                result = await bbEngine.execute(tagContent, context);
+            let childContext = context.makeChild({ input });
+            if (tagContent != null)
+                result = await bbEngine.execute(tagContent, childContext);
             context.state.stackSize -= 1;
 
             context.errors.push({

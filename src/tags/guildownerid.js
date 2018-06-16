@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('guildownerid')
+    Builder.APITag('guildownerid')
         .withDesc('Returns the id of the guild\'s owner.')
         .withExample(
             'The owner\'s id is {guildownerid}.',

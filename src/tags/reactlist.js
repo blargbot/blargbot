@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('reactlist')
+    Builder.APITag('reactlist')
         .withAlias('listreact')
         .withArgs(a => [
             a.optional([a.optional('channelId'),

@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('webhook')
+    Builder.APITag('webhook')
         .withArgs(a => [
             a.require('id'),
             a.require('token'),

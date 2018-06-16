@@ -8,10 +8,10 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/BBTagEngine');
+    bbEngine = require('../structures/bbtag/Engine');
 
 module.exports =
-    Builder.AutoTag('reactadd')
+    Builder.APITag('reactadd')
         .withAlias('addreact')
         .withArgs(a => [
             a.optional([a.optional('channelId'),
@@ -57,9 +57,11 @@ module.exports =
             if (parsed.length == 0 && emotes.length > 0)
                 return Builder.util.error(subtag, context, 'Invalid Emojis');
 
-            if (message != null) {
+            let messageid = message ? message.id : await context.state.outputMessage;
+
+            if (messageid != null) {
                 // Perform add of each reaction
-                var errors = await bu.addReactions(channel.id, message.id, parsed);
+                var errors = await bu.addReactions(channel.id, messageid, parsed);
                 if (errors.length > 0)
                     return Builder.util.error(subtag, context, 'Unknown Emoji: ' + errors.join(', '));
                 return;
