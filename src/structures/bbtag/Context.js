@@ -141,6 +141,7 @@ class Context {
                         await bu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
                     this.state.ownedMsgs.push(response.id);
                     resolve(response.id);
+                    this.state.outputMessage = response.id;
                 } catch (err) {
                     reject(err);
                 }
