@@ -24,7 +24,7 @@ class VariableCache {
     async get(variable) {
         let forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
-        if (forced || this.cache[variable] == null) {
+        if (forced || this.cache[variable] === undefined) {
             let scope = bu.tagVariableScopes.find(s => variable.startsWith(s.prefix));
             if (scope == null) throw new Error('Missing default variable scope!');
             try {
@@ -49,7 +49,7 @@ class VariableCache {
 
         let forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
-        if (this.cache[variable] == null)
+        if (this.cache[variable] === undefined)
             await this.get(variable);
         this.cache[variable].value = value;
         if (forced)

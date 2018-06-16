@@ -2,6 +2,7 @@
 
 const Context = require('./Context');
 const { BBTag } = require('./Tag');
+const Timer = require('../Timer');
 
 /**
  * Parses the given text as BBTag
@@ -12,7 +13,7 @@ function parse(content) {
     let bbtag = BBTag.parse(content);
     if (bbtag.content.length != bbtag.source.length)
         return { success: false, error: 'Unexpected \'}\' at ' + (bbtag.content.length) };
-    let errors = bbtag.validate()
+    let errors = bbtag.validate();
     if (errors.length > 0)
         return { success: false, error: errors[0].message + ' at ' + errors[0].position };
     return { success: true, bbtag };
@@ -36,7 +37,7 @@ async function execute(bbtag, context) {
         content = bbtag.source;
 
     context.scopes.beginScope();
-    if (context.state.return == 0) // only iterate if return state is 0
+    if (context.state.return == 0) { // only iterate if return state is 0
         for (const subtag of bbtag.children) {
             result.push(content.slice(prevIndex, subtag.start));
             prevIndex = subtag.end;
@@ -62,14 +63,7 @@ async function execute(bbtag, context) {
 
             subtag.name = name;
             try {
-                // const timer = new Timer().start();
                 result.push(await runSubtag(subtag, context));
-                // timer.end();
-                // bu.Metrics.subtagLatency
-                //     .labels(subtag.name).observe(timer.elapsed);
-                // if (!context.state.subtags[subtag.name])
-                //     context.state.subtags[subtag.name] = [];
-                // context.state.subtags[subtag.name].push(timer.elapsed);
             } catch (err) {
                 if (err instanceof RangeError) {
                     bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);
@@ -95,6 +89,7 @@ async function execute(bbtag, context) {
             if (context.state.return != 0)
                 break;
         }
+    }
     if (context.state.return == 0)
         result.push(content.slice(prevIndex, Math.max(prevIndex, bbtag.end - endOffset)));
     context.scopes.finishScope();
@@ -148,6 +143,8 @@ function addError(tag, context, message) {
  * @param {Context} [context]
  */
 async function runTag(content, context) {
+    let timer = new Timer().start();
+    console.bbtag('Start run tag');
     let config = {};
     if (typeof content == 'string') {
         if (!(context instanceof Context))
@@ -159,6 +156,7 @@ async function runTag(content, context) {
         config = content;
         content = content.tagContent;
     }
+    console.bbtag('Created context', timer.poll(true));
 
     if (context.cooldowns[context.tagName]) {
         let cdDate = context.cooldowns[context.tagName] + (context.cooldown || 0);
@@ -171,12 +169,19 @@ async function runTag(content, context) {
     }
     context.cooldowns[context.tagName] = Date.now();
 
+    console.bbtag('Checked cooldowns', timer.poll(true));
+
     context.execTimer.start();
     let result = await execString(content.trim(), context);
     context.execTimer.end();
+
+    console.bbtag('Tag run complete', timer.poll(true));
+
     result = result.trim();
 
     await context.variables.persist();
+
+    console.bbtag('Saved variables', timer.poll(true));
 
     if (result != null && context.state.replace != null)
         result = result.replace(context.state.replace.regex, context.state.replace.with);

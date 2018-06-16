@@ -31,6 +31,15 @@ class Timer {
         return this;
     }
 
+    poll(reset = false) {
+        let elapsed = this.elapsed;
+        if (reset) {
+            this.end();
+            this.start();
+        }
+        return elapsed;
+    }
+
     resume() {
         return this.start(false);
     }
