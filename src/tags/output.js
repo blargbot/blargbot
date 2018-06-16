@@ -12,7 +12,9 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('output')
         .withArgs(a => a.optional('text'))
-        .withDesc('WIP')
+        .withDesc('Forces an early send of the default output message, using `text` as the text to show. ' +
+            'If this is used then there will be no output sent once the tag finishes.' +
+            '\nThe message id of the output that was sent will be returned.')
         .withExample(
             '{output;Hello!}',
             'Hello!'
