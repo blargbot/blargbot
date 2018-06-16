@@ -18,10 +18,7 @@ module.exports =
             'Hello!'
         )
         .whenArgs('0-1', async function (_, context, args) {
-            let result = await context.sendOutput(args[0]);
-            if (result == null)
-                return '';
-            return result.id;
+            return await context.sendOutput(args[0]);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

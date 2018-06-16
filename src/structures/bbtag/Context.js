@@ -142,7 +142,7 @@ class Context {
 
                     if (response != null && response.channel != null)
                         await bu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
-                    resolve(response);
+                    resolve(response.id);
                 } catch (err) {
                     reject(err);
                 }
