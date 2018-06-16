@@ -1,5 +1,7 @@
 'use strict';
 
+const Timer = require('../Timer');
+
 class CacheEntry {
     get updated() { return JSON.stringify(this.original) != JSON.stringify(this.value); }
 
@@ -24,7 +26,7 @@ class VariableCache {
     async get(variable) {
         let forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
-        if (forced || this.cache[variable] == null) {
+        if (forced || this.cache[variable] === undefined) {
             let scope = bu.tagVariableScopes.find(s => variable.startsWith(s.prefix));
             if (scope == null) throw new Error('Missing default variable scope!');
             try {
@@ -49,7 +51,7 @@ class VariableCache {
 
         let forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
-        if (this.cache[variable] == null)
+        if (this.cache[variable] === undefined)
             await this.get(variable);
         this.cache[variable].value = value;
         if (forced)
@@ -82,13 +84,13 @@ class VariableCache {
             }
         }
         for (const key in pools) {
+            let timer = new Timer().start();
             let scope = bu.tagVariableScopes.find(s => key === s.prefix);
-            let start = Date.now();
             let objectCount = Object.keys(pools[key]).length;
-            console.log('Committing', objectCount, 'objects to the', key, 'pool.');
+            console.bbtag('Committing', objectCount, 'objects to the', key, 'pool.');
             await scope.setter(this.parent, pools[key]);
-            let diff = Date.now() - start;
-            console[diff > 3000 ? 'info' : 'log']('Commited', objectCount, 'objects to the', key, 'pool in', Date.now() - start, 'ms.');
+            timer.end();
+            console[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', key, 'pool in', timer.elapsed, 'ms.');
             this.parent.dbObjectsCommitted += objectCount;
         }
         this.parent.dbTimer.end();

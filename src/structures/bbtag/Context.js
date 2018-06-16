@@ -78,7 +78,8 @@ class Context {
             break: 0,
             continue: 0,
             subtags: {},
-            overrides: {}
+            overrides: {},
+            cache: {}
         };
     }
 
@@ -150,6 +151,12 @@ class Context {
         return await this.state.outputMessage;
     }
 
+    getCached(key, getIfNotSet) {
+        if (this.state.cache.hasOwnProperty(key))
+            return this.state.cache[key];
+        return this.state.cache[key] = getIfNotSet(key);
+    }
+
     static async deserialize(obj) {
         let msg;
         try {
@@ -186,7 +193,7 @@ class Context {
     }
 
     serialize() {
-        return {
+        let result = {
             msg: {
                 id: this.message.id,
                 timestamp: this.message.timestamp,
@@ -210,6 +217,8 @@ class Context {
                     return p;
                 }, {})
         };
+        delete result.state.cache;
+        return result;
     }
 }
 

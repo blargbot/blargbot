@@ -14,13 +14,13 @@ module.exports =
         .withArgs(a => [a.require('ccommand'), a.optional('args')])
         .withDesc('Executes `ccommand` using `args` as the input. Useful for modules.')
         .withExample(
-        'Let me do a ccommand for you. {execcc;f}',
-        'Let me do a ccommand for you. User#1111 has paid their respects. Total respects given: 5'
+            'Let me do a ccommand for you. {execcc;f}',
+            'Let me do a ccommand for you. User#1111 has paid their respects. Total respects given: 5'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
-            let storedGuild = await bu.getGuild(context.guild.id),
-                ccommand = storedGuild.ccommands[args[0].toLowerCase()];
+            let ccommand = await context.getCached(args[0].toLowerCase(),
+                async key => (await bu.getGuild(context.guild.id)).ccommands[key]);
 
             if (ccommand == null)
                 return Builder.util.error(subtag, context, 'CCommand not found: ' + args[0]);
@@ -49,7 +49,7 @@ module.exports =
                     return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1]);
                 default:
                     let a = Builder.util.flattenArgArrays(args.slice(1));
-                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '"'+a.join('" "')+'"');
+                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '"' + a.join('" "') + '"');
             }
             return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1] || '');
         })
