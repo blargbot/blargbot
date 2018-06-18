@@ -30,7 +30,7 @@ bot.on('guildMemberUpdate', (guild, member, oldMember) => {
                     inline: true
                 });
 
-                bu.logEvent(guild.id, 'nickupdate', fields, {
+                bu.logEvent(guild.id, member.user.id, 'nickupdate', fields, {
                     thumbnail: {
                         url: member.user.avatarURL
                     },

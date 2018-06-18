@@ -43,7 +43,7 @@ bot.on('guildBanAdd', async function (guild, user) {
         delete bu.bans[guild.id][user.id];
     }
     bu.logAction(guild, user, mod, type, reason, bu.ModLogColour.BAN);
-    bu.logEvent(guild.id, 'memberban', [{
+    bu.logEvent(guild.id, user.id, 'memberban', [{
         name: 'User',
         value: bu.getFullName(user) + ` (${user.id})`,
         inline: true
