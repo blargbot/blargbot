@@ -1048,10 +1048,15 @@ bu.padRight = (value, length) => {
     return (value.toString().length < length) ? bu.padRight(value + ' ', length) : value;
 };
 
-bu.logEvent = async function (guildid, event, fields, embed) {
+bu.logEvent = async function (guildid, userids, event, fields, embed) {
     let storedGuild = await bu.getGuild(guildid);
-    if (!storedGuild.hasOwnProperty('log'))
-        storedGuild.log = {};
+    if (!storedGuild.hasOwnProperty('log')) storedGuild.log = {};
+    if (!storedGuild.hasOwnProperty('logIgnore')) storedGuild.logIgnore = [];
+    if (!Array.isArray(userids)) userids = [userids];
+    // If there are not any userId's that are not contained in the ignore, then return
+    // I.e. if all the users are contained in the ignore list
+    if (!userids.find(id => !storedGuild.logIgnore.includes(id)))
+        return;
     if (storedGuild.log.hasOwnProperty(event)) {
         let color;
         let eventName;

@@ -37,7 +37,7 @@ bot.on('userUpdate', (user, oldUser) => {
                 });
 
                 guilds.forEach(g => {
-                    bu.logEvent(g.id, 'nameupdate', fields, {
+                    bu.logEvent(g.id, user.id, 'nameupdate', fields, {
                         thumbnail: {
                             url: user.avatarURL
                         },
@@ -58,7 +58,7 @@ bot.on('userUpdate', (user, oldUser) => {
                     inline: true
                 });
                 guilds.forEach(g => {
-                    bu.logEvent(g.id, 'avatarupdate', fields, {
+                    bu.logEvent(g.id, user.id, 'avatarupdate', fields, {
                         image: {
                             url: user.avatarURL
                         },
