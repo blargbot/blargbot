@@ -11,6 +11,7 @@
         "babel-preset-es2016": "^6.24.1",
         "babel-preset-latest": "^6.22.0",
         "better-cleverbot-io": "^1.0.2",
+        "big-integer": "^1.6.31",
         "big-number": "^0.4.0",
         "body-parser": "^1.15.2",
         "brainfuck-node": "^1.0.1",
@@ -58,7 +59,6 @@
         "require-reload": "^0.2.2",
         "rethinkdb": "^2.3.3",
         "rethinkdbdash": "^2.3.26",
-        "rwlock": "^5.0.0",
         "safe-regex": "^1.1.0",
         "showdown": "^1.8.6",
         "snekfetch": "^3.6.0",
@@ -82,12 +82,12 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/blargbot/blargbot.git"
+        "url": "git+https://github.com/Ratismal/blargbot.git"
     },
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/blargbot/blargbot/issues"
+        "url": "https://github.com/Ratismal/blargbot/issues"
     },
-    "homepage": "https://github.com/blargbot/blargbot#readme"
+    "homepage": "https://github.com/Ratismal/blargbot#readme"
 }

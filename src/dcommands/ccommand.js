@@ -69,7 +69,7 @@ class CcommandCommand extends BaseCommand {
                     await r.table('guild').get(msg.guild.id).update({
                         ccommands: { [title]: { cooldown: r.literal(cooldown) } }
                     });
-                    bu.send(msg, `✅ The cooldown for Custom Command \`${title}\` has been set to \`${cooldown || 500}ms\`. ✅`);
+                    bu.send(msg, `✅ The cooldown for Custom Command \`${title}\` has been set to \`${cooldown || 0}ms\`. ✅`);
                     break;
                 case 'setrole':
                     if (words.length > 2) {
