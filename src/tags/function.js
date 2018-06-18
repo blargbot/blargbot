@@ -23,9 +23,12 @@ function parameters(parameters) {
 module.exports =
     Builder.AutoTag('function')
         .withArgs(a => [a.require('name'), a.require('code')])
-        .withDesc('WIP')
+        .withDesc('Defines a function called `name`. Functions are called in the same way as subtags, however they are prefixed with `func.`. ' +
+            'While inside the `code` block of a function, you may use the `params`, `paramsarray` and `paramslength` subtags to access the values ' +
+            'passed to the function. These function identically to their `args` counterparts. ' +
+            '\n\nPlease note that the there is a recursion limit of 200 which is also shared by `{exec}`, `{execcc}` and `{inject}`.')
         .withExample(
-            '{function;test;{paramsarray}} {test;1;2;3;4}',
+            '{function;test;{paramsarray}} {func.test;1;2;3;4}',
             '["1","2","3","4"]'
         )
         .resolveArgs(0)
@@ -35,16 +38,26 @@ module.exports =
             let code = args[1];
 
             if (!name) return Builder.util.error(subtag, context, 'Must provide a name');
-            if (!name.startsWith('~'))
-                name = '~' + name;
+            if (!name.startsWith('func.'))
+                name = 'func.' + name;
 
             context.override(name, async function (subtag, context) {
+                if (context.state.stackSize >= 200) {
+                    context.state.return = -1;
+                    return Builder.util.error(subtag, context, 'Terminated recursive tag after ' + context.state.stackSize + ' execs.');
+                }
+
                 args = await Promise.all(subtag.children.slice(1).map(arg => engine.execute(arg, context)));
                 context.override('params', parameters(args));
                 context.override('paramsarray', () => JSON.stringify(args));
                 context.override('paramslength', () => args.length);
 
-                return await engine.execute(code, context);
+                context.state.stackSize++;
+                try {
+                    return await engine.execute(code, context);
+                } finally {
+                    context.state.stackSize--;
+                }
             });
         })
         .whenDefault(Builder.errors.tooManyArguments)
