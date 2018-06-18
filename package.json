@@ -11,6 +11,7 @@
     "babel-preset-es2016": "^6.24.1",
     "babel-preset-latest": "^6.22.0",
     "better-cleverbot-io": "^1.0.2",
+    "big-integer": "^1.6.31",
     "big-number": "^0.4.0",
     "body-parser": "^1.15.2",
     "brainfuck-node": "^1.0.1",

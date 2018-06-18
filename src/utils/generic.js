@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-14 12:20:59
+ * @Last Modified time: 2018-06-18 11:01:51
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1292,13 +1292,6 @@ bu.isUserStaff = async function (userId, guildId) {
     return false;
 };
 
-bu.makeSnowflake = function (date = Date.now()) {
-    return dep.BigNumber(date).minus(1420070400000).multiply(4194304).toString();
-};
-
-bu.unmakeSnowflake = function (snowflake) {
-    return (snowflake / 4194304) + 1420070400000;
-};
 
 bu.createRegExp = function (term) {
     if (/^\/?.*\/.*/.test(term)) {
