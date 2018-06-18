@@ -38,7 +38,6 @@ class LogCommand extends BaseCommand {
         let storedGuild = await bu.getGuild(msg.guild.id), args, users;
         if (!storedGuild.hasOwnProperty('log')) storedGuild.log = {};
         if (!storedGuild.hasOwnProperty('logIgnore')) storedGuild.logIgnore = [];
-        console.debug(storedGuild.logIgnore);
         if (words.length >= 2) {
             switch (words[1].toLowerCase()) {
                 case 'list':
@@ -48,12 +47,14 @@ class LogCommand extends BaseCommand {
                                 {
                                     name: 'Currently logged events',
                                     value: Object.keys(storedGuild.log).map(key => `**${key}** - <#${storedGuild.log[key]}>`).join('\n')
-                                        || 'No events logged'
+                                        || 'No events logged',
+                                    inline: true
                                 },
                                 {
                                     name: 'Currently ignored users',
                                     value: storedGuild.logIgnore.map(id => `<@${id}> (${id})`).join('\n')
-                                        || 'No ignored users'
+                                        || 'No ignored users',
+                                    inline: true
                                 }
                             ]
                         }
@@ -175,7 +176,6 @@ class LogCommand extends BaseCommand {
         } else {
             bu.send(msg, `Usage: \`${this.usage}\`\n${this.info}`);
         }
-        console.debug(storedGuild.logIgnore);
     }
 }
 
