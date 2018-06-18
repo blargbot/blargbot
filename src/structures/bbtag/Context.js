@@ -225,6 +225,7 @@ class Context {
                 }, {})
         };
         delete result.state.cache;
+        delete result.state.overrides;
         return result;
     }
 }

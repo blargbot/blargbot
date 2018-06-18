@@ -85,6 +85,7 @@ async function execute(bbtag, context) {
                         ]
                     }
                 });
+                console.error(err);
             }
             if (context.state.return != 0)
                 break;
