@@ -314,10 +314,10 @@ function viewErrors(...errors) {
     let result = [];
     for (const e of errors) {
         let text = '';
-        if (e.tag.start == null || e.tag.end == null)
+        if (e.tag.range == null)
             text += 'General';
         else
-            text += 'Position ' + e.tag.start + ' - ' + e.tag.end;
+            text += `Position [${e.tag.range.toString('-')}]`;
         text += ': ';
 
         if (typeof e.error == 'string') {

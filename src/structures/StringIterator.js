@@ -1,5 +1,7 @@
 'use strict';
 
+const { Position } = require('./Position');
+
 /**
  * A tool to navigate a string. Used to communicate between scopes
  * @prop {number} current The current cursor position. This is always between characters, or at the start/end of the string
@@ -14,6 +16,7 @@ class StringIterator {
     constructor(text) {
         this.content = text;
         this.current = 0;
+        this.lines = text.split(/\r?\n/g).map(line => line.length);
     }
 
     /** Attempts to move the cursor 1 place forwards. If successful, it returns `true`, otherwise `false` */
@@ -32,6 +35,17 @@ class StringIterator {
             return true;
         }
         return false;
+    }
+
+    get position() {
+        let line = 0;
+        let column = this.current;
+        while (column > this.lines[line]) {
+            column -= this.lines[line] + 1;
+            line++;
+        }
+
+        return new Position(line + 1, column + 1);
     }
 }
 

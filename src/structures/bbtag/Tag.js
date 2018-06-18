@@ -1,6 +1,7 @@
 'use strict';
 
 const Iterator = require('../StringIterator');
+const { Range } = require('../Position');
 
 /**
  * This represents a block of text within the BBTag language.
@@ -22,6 +23,11 @@ class BaseTag {
      * The position in `source` where this tag ends
      * */
     get end() { return this._protected.end; }
+    /**
+     * @type {Range}
+     * The range this tag spans
+     */
+    get range() { return this._protected.range; }
     /** 
      * @type {String}
      * The text that is contained in this tag
@@ -65,11 +71,12 @@ class SubTag extends BaseTag {
     /**
      * Attempts to create a SubTag object from the given values.
      * @param {BBTag} parent The parent to use for creation of this SubTag instance
-     * @param {StringIterator} iterator The start position of this SubTag instance
+     * @param {Iterator} iterator The start position of this SubTag instance
      */
     static parse(parent, iterator) {
         let result = new SubTag(parent);
         result._protected.start = iterator.current;
+        let start = iterator.position;
 
         while (iterator.moveNext()) {
             if (iterator.prevChar == '}') break;
@@ -77,6 +84,7 @@ class SubTag extends BaseTag {
         }
 
         result._protected.end = iterator.current;
+        result._protected.range = new Range(start, iterator.position);
         return result;
     }
 
@@ -120,7 +128,7 @@ class BBTag extends BaseTag {
     /**
      * Attempts to create a BBTag object from the given values.
      * @param {string|SubTag} parent The parent to use for creation of this BBTag instance
-     * @param {StringIterator} iterator The start position of this BBTag instance
+     * @param {Iterator} iterator The start position of this BBTag instance
      */
     static parse(parent, iterator = null) {
         if (typeof parent != 'string' && iterator == null)
@@ -128,6 +136,7 @@ class BBTag extends BaseTag {
         iterator = iterator || new Iterator(parent);
         let result = new BBTag(parent);
         result._protected.start = iterator.current;
+        let start = iterator.position;
 
         do {
             if (iterator.nextChar == '}') break;
@@ -139,6 +148,7 @@ class BBTag extends BaseTag {
         } while (iterator.moveNext());
 
         result._protected.end = iterator.current;
+        result._protected.range = new Range(start, iterator.position);
         return result;
     }
 
