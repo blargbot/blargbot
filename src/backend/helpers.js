@@ -53,13 +53,14 @@ const tagType = {
 };
 
 function mdToHtml(text) {
+    text = text.replace(/([,;/])(?=\S)/g, '$1\u200b');
     return converter.makeHtml(text).replace(/\n/g, '<br>');
 }
 
 function addSubtagReferences(text) {
     return text.replace(/\{([a-z]+)\}/ig, function (match, subtag) {
         return `<a href='#${subtag}'>${match}</a>`;
-    })
+    });
 }
 
 e.init = () => {
