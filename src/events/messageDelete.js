@@ -69,7 +69,7 @@ async function handleDelete(msg, quiet) {
         newMsg = 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';
     if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
     if (!quiet)
-        bu.logEvent(msg.channel.guild.id, 'messagedelete', [{
+        bu.logEvent(msg.channel.guild.id, msg.author.id, 'messagedelete', [{
             name: 'User',
             value: bu.getFullName(msg.author) + ` (${msg.author.id})`,
             inline: true
@@ -93,7 +93,7 @@ bot.on('messageDeleteBulk', function (msgs) {
     for (const msg of msgs) {
         handleDelete(msg, true);
     }
-    bu.logEvent(msgs[0].channel.guild.id, 'messagedelete', [{
+    bu.logEvent(msgs[0].channel.guild.id, msgs.map(m => m.author.id), 'messagedelete', [{
         name: 'Count',
         value: msgs.length,
         inline: true

@@ -35,7 +35,7 @@ bot.on('guildMemberRemove', async function (guild, member) {
             author
         });
     }
-    bu.logEvent(guild.id, 'memberleave', [{
+    bu.logEvent(guild.id, member.user.id, 'memberleave', [{
         name: 'User',
         value: bu.getFullName(member.user) + ` (${member.user.id})`,
         inline: true
