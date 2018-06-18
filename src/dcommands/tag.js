@@ -218,7 +218,7 @@ class TagCommand extends BaseCommand {
                     await r.table('tag').get(title).update({
                         cooldown: r.literal(cooldown)
                     });
-                    bu.send(msg, `✅ The cooldown for Tag \`${title}\` has been set to \`${cooldown || 500}ms\`. ✅`);
+                    bu.send(msg, `✅ The cooldown for Tag \`${title}\` has been set to \`${cooldown || 0}ms\`. ✅`);
                     break;
                 case 'add':
                 case 'create':
@@ -549,7 +549,7 @@ ${content}
                     author = await r.table('user').get(tag.author).run();
                     let output = `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
-Cooldown: ${tag.cooldown || 500}ms
+Cooldown: ${tag.cooldown || 0}ms
 It was last modified **${dep.moment(tag.lastmodified).format('LLLL')}**.
 It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!
 It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1 ? '' : 's'}**!`;

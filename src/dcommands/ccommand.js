@@ -69,7 +69,7 @@ class CcommandCommand extends BaseCommand {
                     await r.table('guild').get(msg.guild.id).update({
                         ccommands: { [title]: { cooldown: r.literal(cooldown) } }
                     });
-                    bu.send(msg, `✅ The cooldown for Custom Command \`${title}\` has been set to \`${cooldown || 500}ms\`. ✅`);
+                    bu.send(msg, `✅ The cooldown for Custom Command \`${title}\` has been set to \`${cooldown || 0}ms\`. ✅`);
                     break;
                 case 'setrole':
                     if (words.length > 2) {
@@ -308,9 +308,9 @@ class CcommandCommand extends BaseCommand {
                     let storedGuild = await bu.getGuild(msg.guild.id);
                     let ccommands = Object.keys(storedGuild.ccommands);
                     let output = (ccommands && ccommands.length > 0)
-                                    ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` `
-                                    : `There are no custom commands on this guild.`;
-                    bu.send(msg,output);
+                        ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` `
+                        : `There are no custom commands on this guild.`;
+                    bu.send(msg, output);
                 case 'sethelp':
                     if (words.length > 3) {
                         title = filterTitle(words[2]);
