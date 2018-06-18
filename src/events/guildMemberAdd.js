@@ -35,7 +35,7 @@ bot.on('guildMemberAdd', async function (guild, member) {
             author
         });
     }
-    bu.logEvent(guild.id, 'memberjoin', [{
+    bu.logEvent(guild.id, member.user.id, 'memberjoin', [{
         name: 'User',
         value: bu.getFullName(member.user) + ` (${member.user.id})\nMember #${guild.memberCount}`,
         inline: true
