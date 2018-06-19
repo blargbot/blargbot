@@ -1,0 +1,561 @@
+{
+    "general": {
+        "ping": {
+            "info": "",
+            "randmsg": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "final": ""
+        },
+        "brainfuck": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "p": "",
+                "i": "",
+                "pointers": "",
+                "input": ""
+            }
+        },
+        "ship": {
+            "info": "",
+            "usage": "",
+            "final": "",
+            "notenough": ""
+        },
+        "tag": {
+            "info": "",
+            "usage": "",
+            "dontown": "",
+            "alreadyexists": "",
+            "notag": "",
+            "tagset": "",
+            "tagrename": "",
+            "raw": "",
+            "testoutput": "",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": ""
+                },
+                "delete": {
+                    "usage": "",
+                    "info": ""
+                },
+                "rename": {
+                    "usage": "",
+                    "info": ""
+                },
+                "raw": {
+                    "usage": "",
+                    "info": ""
+                },
+                "info": {
+                    "usage": "",
+                    "info": ""
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": ""
+                },
+                "top": {
+                    "info": ""
+                },
+                "author": {
+                    "usage": "",
+                    "info": ""
+                },
+                "search": {
+                    "usage": "",
+                    "info": ""
+                },
+                "list": {
+                    "usage": "",
+                    "info": ""
+                },
+                "favorite": {
+                    "usage": "",
+                    "info": ""
+                },
+                "report": {
+                    "usage": "",
+                    "info": ""
+                },
+                "test": {
+                    "usage": "",
+                    "info": ""
+                },
+                "help": {
+                    "usage": "",
+                    "info": ""
+                },
+                "docs": {
+                    "usage": "",
+                    "info": ""
+                },
+                "setdesc": {
+                    "info": "",
+                    "usage": ""
+                },
+                "setusage": {
+                    "info": "",
+                    "usage": ""
+                }
+            },
+            "subcommandnotfound": "",
+            "transferprompt": "",
+            "nobots": "",
+            "transfercancelled": "",
+            "transfercomplete": "",
+            "taginfo": "",
+            "descupdate": "",
+            "descreset": "",
+            "subcommandconflict": "",
+            "toptagformat": "",
+            "toptags": "",
+            "tagauthor": "",
+            "favouriteadd": "",
+            "favouriteremove": "",
+            "favourites": ""
+        },
+        "locale": {
+            "info": "",
+            "set": "",
+            "list": ""
+        },
+        "tokenify": {
+            "info": ""
+        },
+        "nato": {
+            "info": ""
+        },
+        "invite": {
+            "info": "",
+            "message": ""
+        },
+        "donate": {
+            "info": "",
+            "willdm": "",
+            "message": ""
+        },
+        "mods": {
+            "info": "",
+            "mods": "",
+            "nomods": "",
+            "nomodsonline": ""
+        },
+        "help": {
+            "info": "",
+            "allcommands": "",
+            "nocommand": "",
+            "commandinfo": "",
+            "aliases": "",
+            "subcommand": "",
+            "command": "",
+            "nosubcommand": "",
+            "subcommands": ""
+        },
+        "gamatoto": {
+            "info": "",
+            "subcommand": {
+                "start": {
+                    "usage": "",
+                    "info": ""
+                },
+                "end": {
+                    "info": ""
+                },
+                "locations": {
+                    "info": ""
+                }
+            },
+            "stats": "",
+            "alreadystarted": "",
+            "notstarted": "",
+            "nolocation": "",
+            "invalidlocation": "",
+            "expeditionbeings": "",
+            "expeditionends": "",
+            "notimeelapsed": "",
+            "itemfound": "",
+            "levelup": "",
+            "gamatotoxp": "",
+            "itemincrease": "",
+            "locations": "",
+            "wronglevel": "",
+            "gamatotoitems": "",
+            "gamatotostats": "",
+            "gamatotocurrent": "",
+            "gamatotoidle": ""
+        },
+        "prefix": {
+            "info": "",
+            "subcommand": {
+                "add": {
+                    "usage": "",
+                    "info": ""
+                },
+                "remove": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "prefixlist": "",
+            "userprefixes": "",
+            "guildprefixes": "",
+            "noprefixes": "",
+            "defaultprefixes": "",
+            "prefixadded": "",
+            "prefixremoved": "",
+            "nothingchanged": ""
+        },
+        "warnings": {
+            "output": ""
+        },
+        "economy": {
+            "info": "",
+            "invalidamount": "",
+            "invalidcode": "",
+            "converted": "",
+            "usage": ""
+        },
+        "usettings": {
+            "info": "",
+            "subcommand": {
+                "dmerrors": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dmerrorsenabled": "",
+            "dmerrorsdisabled": "",
+            "userinfo": ""
+        },
+        "rr": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "capacity": "",
+                "emote": ""
+            },
+            "capacitylow": "",
+            "bulletslow": "",
+            "bulletshigh": "",
+            "begin": "",
+            "death": "",
+            "life": "",
+            "livemessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ],
+            "deathmessages": [
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""
+            ]
+        },
+        "user": {
+            "usage": "",
+            "info": "",
+            "description": "",
+            "guildinfoheader": "",
+            "guildinfo": "",
+            "status": [
+                "",
+                "",
+                "",
+                ""
+            ]
+        }
+    },
+    "image": {
+        "cat": {
+            "info": ""
+        },
+        "delete": {
+            "info": ""
+        },
+        "thesearch": {
+            "info": "",
+            "defaulttext": ""
+        },
+        "shit": {
+            "info": "",
+            "usage": "",
+            "flags": {
+                "plural": ""
+            }
+        },
+        "writepoem": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "monika": "",
+                "sayori": "",
+                "yuri": "",
+                "natsuki": ""
+            }
+        }
+    },
+    "admin": {
+        "setup": {
+            "staff": {
+                "setrole": "",
+                "rolequery": ""
+            },
+            "info": "",
+            "subcommand": {
+                "staffuser": {
+                    "usage": "",
+                    "info": ""
+                },
+                "staffrole": {
+                    "info": ""
+                },
+                "mute": {
+                    "info": ""
+                },
+                "announcement": {
+                    "info": ""
+                },
+                "modlog": {
+                    "usage": "",
+                    "info": ""
+                },
+                "punishment": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "mute": {
+                "setrole": "",
+                "rolequery": ""
+            },
+            "announce": {
+                "set": "",
+                "rolequery": "",
+                "channelquery": ""
+            },
+            "modlog": {
+                "set": "",
+                "remove": "",
+                "invalid": "",
+                "hadinvalid": "",
+                "list": ""
+            },
+            "subcommands": {
+                "modlog": {
+                    "flags": {
+                        "channel": "",
+                        "remove": "",
+                        "list": ""
+                    }
+                },
+                "punishment": {
+                    "flags": {
+                        "kick": "",
+                        "ban": "",
+                        "mute": "",
+                        "time": "",
+                        "list": "",
+                        "days": ""
+                    }
+                }
+            },
+            "punishment": {
+                "toolow": "",
+                "invalidweight": "",
+                "invalidchoice": "",
+                "invalidtypes": "",
+                "added": "",
+                "removed": "",
+                "overwritten": "",
+                "doesntexist": "",
+                "list": ""
+            },
+            "default": ""
+        },
+        "reason": {
+            "info": "",
+            "nocase": "",
+            "reasonset": ""
+        },
+        "help": {
+            "info": "",
+            "allcommands": "",
+            "nocommand": "",
+            "commandinfo": ""
+        },
+        "warn": {
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "warningassigned": "",
+            "negativecount": "",
+            "usage": "",
+            "limitexceeded": ""
+        },
+        "pardon": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "count": "",
+                "reason": ""
+            },
+            "invalidcount": "",
+            "negativecount": "",
+            "warningassigned": "",
+            "invaliduser": ""
+        },
+        "kick": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "kicked": "",
+            "invaliduser": ""
+        },
+        "mute": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": "",
+                "duration": "",
+                "time": ""
+            },
+            "muted": "",
+            "invaliduser": "",
+            "norole": "",
+            "unmutein": ""
+        },
+        "unmute": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "unmuted": "",
+            "invaliduser": "",
+            "unmutedafter": ""
+        },
+        "ban": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": "",
+                "days": "",
+                "time": ""
+            },
+            "banned": "",
+            "invaliduser": "",
+            "unbunin": ""
+        },
+        "unban": {
+            "usage": "",
+            "info": "",
+            "flags": {
+                "reason": ""
+            },
+            "banned": "",
+            "invaliduser": "",
+            "unbannedafter": ""
+        },
+        "cc": {
+            "usage": "",
+            "info": "",
+            "subcommand": {
+                "set": {
+                    "usage": "",
+                    "info": ""
+                },
+                "delete": {
+                    "usage": "",
+                    "info": ""
+                },
+                "rename": {
+                    "usage": "",
+                    "info": ""
+                },
+                "raw": {
+                    "usage": "",
+                    "info": ""
+                },
+                "transfer": {
+                    "usage": "",
+                    "info": ""
+                },
+                "author": {
+                    "usage": "",
+                    "info": ""
+                },
+                "list": {
+                    "info": ""
+                },
+                "test": {
+                    "usage": "",
+                    "info": ""
+                },
+                "help": {
+                    "usage": "",
+                    "info": ""
+                },
+                "setdesc": {
+                    "usage": "",
+                    "info": ""
+                },
+                "setusage": {
+                    "usage": "",
+                    "info": ""
+                }
+            },
+            "dontown": "",
+            "notag": "",
+            "tagset": "",
+            "tagrename": "",
+            "raw": "",
+            "alreadyexists": "",
+            "testoutput": "",
+            "subcommandnotfound": "",
+            "transferprompt": "",
+            "nobots": "",
+            "transfercancelled": "",
+            "transfercomplete": "",
+            "descupdate": "",
+            "descreset": "",
+            "subcommandconflict": "",
+            "tagauthor": "",
+            "list": ""
+        }
+    }
+}
