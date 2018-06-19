@@ -109,11 +109,11 @@
                     "info": "Giver et link til BBTag dokumentationen, eller giver oplysninger om et bestemt undertag."
                 },
                 "setdesc": {
-                    "info": "",
+                    "info": "Sætter info dokumentationen for det angivne tag.",
                     "usage": "<name><description>"
                 },
                 "setusage": {
-                    "info": "",
+                    "info": "Sætter brugs dokumentationen for det angivne tag.",
                     "usage": "<name><usage>"
                 }
             },
@@ -497,7 +497,7 @@
             "subcommand": {
                 "set": {
                     "usage": "<navn><indhold>",
-                    "info": ""
+                    "info": "Skaber eller redigerer en brugerdefineret kommando med det angivne navn og indhold. Vil ikke erstatte noget tag der er lavet af en anden person."
                 },
                 "delete": {
                     "usage": "<navn>",
