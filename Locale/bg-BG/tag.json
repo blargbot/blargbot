@@ -1,0 +1,227 @@
+{
+    "array": {
+        "filter": {
+            "desc": ""
+        },
+        "foreach": {
+            "desc": ""
+        },
+        "get": {
+            "desc": ""
+        },
+        "isarray": {
+            "desc": ""
+        },
+        "join": {
+            "desc": ""
+        },
+        "length": {
+            "desc": ""
+        },
+        "map": {
+            "desc": ""
+        },
+        "pop": {
+            "desc": ""
+        },
+        "push": {
+            "desc": ""
+        },
+        "set": {
+            "desc": ""
+        },
+        "shift": {
+            "desc": ""
+        },
+        "slice": {
+            "desc": ""
+        },
+        "sort": {
+            "desc": ""
+        },
+        "splice": {
+            "desc": ""
+        },
+        "split": {
+            "desc": ""
+        },
+        "unshift": {
+            "desc": ""
+        }
+    },
+    "channel": {
+        "id": {
+            "desc": ""
+        },
+        "nsfw": {
+            "desc": ""
+        },
+        "name": {
+            "desc": ""
+        },
+        "position": {
+            "desc": ""
+        },
+        "topic": {
+            "desc": ""
+        },
+        "type": {
+            "desc": ""
+        }
+    },
+    "general": {
+        "clean": {
+            "desc": ""
+        },
+        "comment": {
+            "desc": ""
+        },
+        "get": {
+            "desc": ""
+        },
+        "set": {
+            "desc": ""
+        },
+        "trim": {
+            "desc": ""
+        },
+        "void": {
+            "desc": ""
+        },
+        "newline": {
+            "desc": ""
+        },
+        "space": {
+            "desc": ""
+        },
+        "json": {
+            "desc": ""
+        }
+    },
+    "guild": {
+        "createdat": {
+            "desc": ""
+        },
+        "channels": {
+            "desc": ""
+        },
+        "icon": {
+            "desc": ""
+        },
+        "id": {
+            "desc": ""
+        },
+        "name": {
+            "desc": ""
+        },
+        "owner": {
+            "desc": ""
+        },
+        "region": {
+            "desc": ""
+        },
+        "roles": {
+            "desc": ""
+        }
+    },
+    "logic": {
+        "if": {
+            "desc": ""
+        },
+        "logic": {
+            "desc": ""
+        }
+    },
+    "math": {
+        "abs": {
+            "desc": ""
+        },
+        "base": {
+            "desc": ""
+        },
+        "ceil": {
+            "desc": ""
+        },
+        "floor": {
+            "desc": ""
+        },
+        "math": {
+            "desc": ""
+        },
+        "parsefloat": {
+            "desc": ""
+        },
+        "parseint": {
+            "desc": ""
+        },
+        "randint": {
+            "desc": ""
+        },
+        "round": {
+            "desc": ""
+        }
+    },
+    "message": {
+        "id": {
+            "desc": ""
+        }
+    },
+    "role": {
+        "color": {
+            "desc": ""
+        },
+        "id": {
+            "desc": ""
+        },
+        "mention": {
+            "desc": ""
+        },
+        "name": {
+            "desc": ""
+        },
+        "position": {
+            "desc": ""
+        }
+    },
+    "user": {
+        "avatar": {
+            "desc": ""
+        },
+        "createdat": {
+            "desc": ""
+        },
+        "discrim": {
+            "desc": ""
+        },
+        "fullname": {
+            "desc": ""
+        },
+        "game": {
+            "desc": ""
+        },
+        "id": {
+            "desc": ""
+        },
+        "joinedat": {
+            "desc": ""
+        },
+        "mention": {
+            "desc": ""
+        },
+        "name": {
+            "desc": ""
+        },
+        "nick": {
+            "desc": ""
+        },
+        "roles": {
+            "desc": ""
+        },
+        "setnick": {
+            "desc": ""
+        },
+        "status": {
+            "desc": ""
+        }
+    }
+}
