@@ -1,0 +1,37 @@
+{
+    "keyundef": "",
+    "memberundef": "",
+    "userundef": "",
+    "channelundef": "",
+    "roleundef": "",
+    "pleasereport": "",
+    "generic": "",
+    "invalidduration": "",
+    "moderation": {
+        "position": "",
+        "owner": ""
+    },
+    "couldnotsend": "",
+    "messagetoolong": "",
+    "notenoughparams": "",
+    "tag": {
+        "restricted": "",
+        "notfound": "",
+        "toomanyargs": "",
+        "toofewargs": "",
+        "isnan": "",
+        "maxlessthanmin": "",
+        "ccommandonly": "",
+        "authorstaff": "",
+        "noperms": "",
+        "toolow": "",
+        "unclosed": "",
+        "unopened": "",
+        "invalidradix": "",
+        "notanarray": "",
+        "notbool": "",
+        "missingarg": "",
+        "namedunsupported": ""
+    },
+    "inputtoolong": ""
+}
