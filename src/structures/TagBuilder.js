@@ -279,11 +279,10 @@ TagBuilder.util = {
         let author = context.guild.members.get(context.author);
         if (!author)
             return 0;
-        return (author.roles.map(id => context.guild.roles.get(id))
-            .sort((a, b) => b.position - a.position)
-            .find(role => role.permissions.has('manageRoles') || role.permissions.has('administrator')) || {
-                position: 0
-            }).position;
+        let roles = author.roles.map(id => context.guild.roles.get(id));
+        if (roles.find(role => role.permissions.has('manageRoles') || role.permissions.has('administrator')))
+            return Math.max(...roles.map(role => role.position));
+        return 0;
     }
 };
 
