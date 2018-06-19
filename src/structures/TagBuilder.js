@@ -272,6 +272,18 @@ TagBuilder.util = {
                 return TagBuilder.errors.channelNotInGuild;
         }
         return channel;
+    },
+    getTopRoleEditPosition(context) {
+        if (context.guild.ownerID == context.author.id)
+            return Number.MAX_SAFE_INTEGER;
+        let author = context.guild.members.get(context.author);
+        if (!author)
+            return 0;
+        return (author.roles.map(id => context.guild.roles.get(id))
+            .sort((a, b) => b.position - a.position)
+            .find(role => role.permissions.has('manageRoles') || role.permissions.has('administrator')) || {
+                position: 0
+            }).position;
     }
 };
 
