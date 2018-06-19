@@ -1,0 +1,26 @@
+{
+    "events": {
+        "kick": "",
+        "ban": "",
+        "unban": "",
+        "mute": "",
+        "unmute": "",
+        "warn": "",
+        "pardon": "",
+        "rename": "",
+        "specialroleadd": "",
+        "specialroleremove": ""
+    },
+    "case": "",
+    "setreason": "",
+    "warnings": {
+        "given": "",
+        "removed": "",
+        "total": ""
+    },
+    "rename": {
+        "old": "",
+        "new": ""
+    },
+    "duration": ""
+}
