@@ -23,7 +23,7 @@
             "final": "Понг! ({{time}}ms)"
         },
         "brainfuck": {
-            "info": "",
+            "info": "Изпълнява brainfuck код.",
             "usage": "",
             "flags": {
                 "p": "",
