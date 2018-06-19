@@ -1,0 +1,90 @@
+{
+    "language": "",
+    "header": {
+        "login": "",
+        "logout": "",
+        "commands": "",
+        "bbtag": "",
+        "subtags": "",
+        "dashboard": ""
+    },
+    "generic": {
+        "loading": "",
+        "collapse": "",
+        "expand": "",
+        "search": "",
+        "noresults": "",
+        "resultsfound": ""
+    },
+    "index": {
+        "desc": "",
+        "commands": {
+            "title": "",
+            "desc": ""
+        },
+        "bbtag": {
+            "title": "",
+            "desc": ""
+        },
+        "customization": {
+            "title": "",
+            "desc": ""
+        },
+        "moderation": {
+            "title": "",
+            "desc": ""
+        },
+        "opensource": {
+            "title": "",
+            "desc": ""
+        },
+        "suggestions": {
+            "title": "",
+            "desc": ""
+        }
+    },
+    "bbtag": {
+        "main": "",
+        "subtags": {
+            "title": "",
+            "desc": ""
+        },
+        "variables": {
+            "title": "",
+            "desc": ""
+        },
+        "arrays": {
+            "title": "",
+            "desc": ""
+        }
+    },
+    "subtags": {
+        "components": {
+            "argument": "",
+            "named": "",
+            "unnamed": "",
+            "array": "",
+            "staff": "",
+            "noimplicit": ""
+        },
+        "referdocs": ""
+    },
+    "commands": {
+        "title": "",
+        "desc": "",
+        "components": {
+            "usage": "",
+            "flags": "",
+            "aliases": "",
+            "subcommands": ""
+        }
+    },
+    "dashboard": {
+        "userheader": "",
+        "guildheader": "",
+        "notauthed": "",
+        "user": {
+            "dmerrors": ""
+        }
+    }
+}
