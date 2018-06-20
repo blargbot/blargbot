@@ -1,6 +1,7 @@
 const ArgFactory = require('./ArgumentFactory'),
     bbEngine = require('../structures/bbtag/Engine'),
-    Timer = require('./Timer');
+    Timer = require('./Timer'),
+    Permission = require('eris/lib/structures/Permission');
 
 class TagBuilder {
     static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
@@ -272,6 +273,19 @@ TagBuilder.util = {
                 return TagBuilder.errors.channelNotInGuild;
         }
         return channel;
+    },
+    getRoleEditPosition(context) {
+        if (context.guild.ownerID == context.author.id)
+            return Number.MAX_SAFE_INTEGER;
+        let permission = this.getPerms(context);
+        if (!permission.has('manageRoles') && !permission.has('administrator'))
+            return 0;
+        let author = context.guild.members.get(context.author);
+        return Math.max(author.roles.map(id => (context.guild.roles.get(id) || { position: 0 }).position));
+    },
+    getPerms(context) {
+        return (context.guild.members.get(context.author) ||
+            { permission: new Permission(0, 0) }).permission;
     }
 };
 

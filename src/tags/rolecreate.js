@@ -31,17 +31,25 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-5', async function (subtag, context, args) {
-            let errors = [],
-                options = {
-                    name: args[0],
-                    color: bu.parseColor(args[1]) || 0,
-                    permissions: bu.parseInt(args[2] || 0),
-                    mentionable: bu.parseBoolean(args[3], false),
-                    hoisted: bu.parseBoolean(args[4], false)
-                };
+            let permission = Builder.util.getPerms(context);
+            let topRole = Builder.util.getRoleEditPosition(context);
+
+            if (topRole == 0)
+                return Builder.util.error(subtag, context, 'Author cannot create roles');
+
+            let options = {
+                name: args[0],
+                color: bu.parseColor(args[1]) || 0,
+                permissions: bu.parseInt(args[2] || 0),
+                mentionable: bu.parseBoolean(args[3], false),
+                hoisted: bu.parseBoolean(args[4], false)
+            };
 
             if (isNaN(options.permissions))
                 return Builder.util.error(subtag, context, 'Permissions not a number');
+
+            if ((options.permissions & permission.allow) != options.permissions)
+                return Builder.util.error(subtag, context, 'Author missing requested permissions');
 
             try {
                 let role = await context.guild.createRole(options, `Created with a custom command command, executed by user: ${context.user.id}`);
