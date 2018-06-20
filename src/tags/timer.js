@@ -20,19 +20,19 @@ module.exports =
         ).resolveArgs(1)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs(2, async function (subtag, context, args) {
-            if (context.state.timerCount == -1)
+            if (context.state.count.timer == -1)
                 return Builder.util.error(subtag, context, 'Nested timers are not allowed');
 
             let duration = bu.parseDuration(args[1]);
 
             if (duration.asMilliseconds() <= 0) return Builder.util.error(subtag, context, 'Invalid duration');
 
-            if (context.state.timerCount > 2) return Builder.util.error(subtag, context, 'Max 3 timers per tag');
+            if (context.state.count.timer > 2) return Builder.util.error(subtag, context, 'Max 3 timers per tag');
 
-            context.state.timerCount += 1;
+            context.state.count.timer += 1;
             await r.table('events').insert({
                 type: 'tag',
-                version: 2,
+                version: 3,
                 channel: context.channel.id,
                 endtime: r.epochTime(dep.moment().add(duration).unix()),
                 context: context.serialize(),

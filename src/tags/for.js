@@ -58,8 +58,8 @@ module.exports =
             if (errors.length > 0) return Builder.util.error(subtag, context, errors.join(', '));
 
             for (let i = initial; operator(i, limit); i += increment) {
-                context.state.repeats += 1;
-                if (context.state.repeats > 1500) {
+                context.state.count.loop += 1;
+                if (context.state.count.loop > 1500) {
                     result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }

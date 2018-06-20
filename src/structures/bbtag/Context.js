@@ -64,17 +64,24 @@ class Context {
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
         this.state = {
+            count: {
+                dm: 0,
+                send: 0,
+                edit: 0,
+                delete: 0,
+                react: 0, // Not implemented, potential for the future
+                reactRemove: 0, // Not implemented, potential for the future
+                timer: 0,
+                loop: 0,
+                foreach: 0
+            },
             outputMessage: null,
             ownedMsgs: [],
             return: 0,
             stackSize: 0,
-            repeats: 0,
-            foreach: 0,
             embed: null,
             reactions: [],
             nsfw: null,
-            dmCount: 0,
-            timerCount: 0,
             /** @type {{regex: RegExp|string, with: string}} */
             replace: null,
             break: 0,
