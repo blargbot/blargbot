@@ -1299,6 +1299,8 @@ bu.isUserStaff = async function (userId, guildId) {
 
 
 bu.createRegExp = function (term) {
+    if (term.length > 2000)
+        throw new Error('Regex too long');
     if (/^\/?.*\/.*/.test(term)) {
         let regexList = term.match(/^\/?(.*)\/(.*)/);
 

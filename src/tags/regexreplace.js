@@ -27,7 +27,7 @@ module.exports =
             try {
                 regex = bu.createRegExp(args[args.length - 2].content);
             } catch (e) {
-                return Builder.util.error(subtag, context, e);
+                return Builder.util.error(subtag, context, e.message);
             }
 
             if (args.length == 3)
