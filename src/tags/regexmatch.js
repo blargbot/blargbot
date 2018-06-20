@@ -27,9 +27,10 @@ module.exports =
                 regex = bu.createRegExp(args[1].content);
             }
             catch (e) {
-                return Builder.errors.unsafeRegex(subtag, context);
+                return Builder.util.error(subtag, context, e.message);
             }
 
             return bu.serializeTagArray(text.match(regex) || []);
         }).whenDefault(Builder.errors.tooManyArguments)
+        .withProp('argLimit', 50000)
         .build();

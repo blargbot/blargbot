@@ -29,7 +29,7 @@ class TagBuilder {
     }
 
     build() {
-        let tag = Object.assign({}, this.properties);
+        let tag = { ...this.properties };
 
         if (tag.category === 0) {
             if (tag.args != null && tag.args.length !== 0)
@@ -37,6 +37,8 @@ class TagBuilder {
             else
                 tag.category = bu.TagType.SIMPLE;
         }
+
+        tag.executeArg = executeArg.bind(tag, tag.argLimit || 500000);
 
         tag.execute = function (definition, resolveArgs, execConditional, execDefault) {
             return async function (subtag, context) {
@@ -55,7 +57,7 @@ class TagBuilder {
 
                     for (const index of new Set(execArgs))
                         if (subtagArgs[index] !== undefined)
-                            subtagArgs[index] = await bbEngine.execute(subtagArgs[index], context);
+                            subtagArgs[index] = await definition.executeArg(subtag, subtagArgs[index], context);
 
                     let callback = execConditional.find(c => c.condition.apply(definition, [subtag, context, subtagArgs]));
 
@@ -306,6 +308,43 @@ TagBuilder.errors = {
     unsafeRegex(subtag, context) { return TagBuilder.util.error(subtag, context, 'Unsafe regex detected'); },
     invalidEmbed(subtag, context, issue) { return TagBuilder.util.error(subtag, context, 'Invalid embed: ' + issue); }
 };
+
+function buildLengthEmbed(definition, subtag, context) {
+    return {
+        fields: [
+            { name: `Details`, value: `Guild: ${context.guild.id}\nChannel: ${context.channel.id}\nAuthor: <@${context.author}>\nUser: <@${context.user.id}>`, inline: true },
+            { name: `Type: ${context.isCC ? 'CC' : 'Tag'}`, value: context.tagName || 'unknown', inline: true },
+            { name: `Subtag`, value: definition.name, inline: true },
+            { name: `Location`, value: subtag.range.toString(), inline: true }
+        ]
+    };
+}
+
+async function executeArg(limit, subtag, arg, context) {
+    let result = await bbEngine.execute(arg, context);
+    if (typeof limit === 'number' && limit > 0) {
+        if (result.length > limit) {
+            bu.send('420956612333797398', {
+                embed: {
+                    title: `ERROR: SubTag arg > ${limit}`,
+                    color: bu.parseColor('red'),
+                    ...buildLengthEmbed(this, subtag, context)
+                }
+            });
+            context.state.return = -1;
+            return TagBuilder.util.error(arg, context, 'Argument length exceeded limit');
+        } else if (result.length > (limit / 2)) {
+            bu.send('420956612333797398', {
+                embed: {
+                    title: `WARN: SubTag arg length ${result.length}`,
+                    color: bu.parseColor('yellow'),
+                    ...buildLengthEmbed(this, subtag, context)
+                }
+            });
+        }
+    }
+    return result;
+}
 
 module.exports = TagBuilder;
 
