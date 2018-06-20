@@ -539,7 +539,7 @@
                     "info": ""
                 }
             },
-            "dontown": "",
+            "dontown": "[[emote.x]] Du ikke kan ændre denne system brugerdefinerede kommando.",
             "notag": "[[emote.x]] Der er ingen brugerdefineret kommando med det navn.",
             "tagset": "",
             "tagrename": "",
