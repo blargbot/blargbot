@@ -75,6 +75,7 @@ async function execute(bbtag, context) {
                     embed: {
                         title: err.message || (typeof err == 'string' ? err : JSON.stringify(err)),
                         description: err.stack || 'No error stack!',
+                        color: bu.parseColor('red'),
                         fields: [
                             { name: 'SubTag', value: definition.name, inline: true },
                             { name: 'Arguments', value: JSON.stringify(subtag.children.map(c => c.content.length < 100 ? c.content : c.content.substr(0, 97) + '...')) },
