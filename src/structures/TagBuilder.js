@@ -322,7 +322,7 @@ function buildLengthEmbed(definition, subtag, context) {
 
 async function executeArg(limit, subtag, arg, context) {
     let result = await bbEngine.execute(arg, context);
-    if (typeof limit === 'number') {
+    if (typeof limit === 'number' && limit > 0) {
         if (result.length > limit) {
             bu.send('420956612333797398', {
                 embed: {
