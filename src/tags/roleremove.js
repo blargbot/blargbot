@@ -24,7 +24,7 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
-            let topRole = Builder.util.getTopRoleEditPosition(context);
+            let topRole = Builder.util.getRoleEditPosition(context);
             if (topRole == 0)
                 return Builder.util.error(subtag, context, 'Author cannot remove roles');
 

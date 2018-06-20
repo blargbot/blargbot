@@ -274,7 +274,7 @@ TagBuilder.util = {
         }
         return channel;
     },
-    getTopRoleEditPosition(context) {
+    getRoleEditPosition(context) {
         if (context.guild.ownerID == context.author.id)
             return Number.MAX_SAFE_INTEGER;
         let permission = this.getPerms(context);

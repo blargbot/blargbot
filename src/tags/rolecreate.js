@@ -32,7 +32,7 @@ module.exports =
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-5', async function (subtag, context, args) {
             let permission = Builder.util.getPerms(context);
-            let topRole = Builder.util.getTopRoleEditPosition(context);
+            let topRole = Builder.util.getRoleEditPosition(context);
 
             if (topRole == 0)
                 return Builder.util.error(subtag, context, 'Author cannot create roles');
@@ -48,7 +48,7 @@ module.exports =
             if (isNaN(options.permissions))
                 return Builder.util.error(subtag, context, 'Permissions not a number');
 
-            if (options.permissions & permission.allow != options.permissions)
+            if ((options.permissions & permission.allow) != options.permissions)
                 return Builder.util.error(subtag, context, 'Author missing requested permissions');
 
             try {
