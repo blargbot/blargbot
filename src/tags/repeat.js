@@ -32,8 +32,8 @@ module.exports =
             if (amount < 0) return Builder.util.error(subtag, context, 'Cant be negative');
 
             for (let i = 0; i < amount; i++) {
-                context.state.repeats += 1;
-                if (context.state.repeats > 1500) {
+                context.state.count.loop += 1;
+                if (context.state.count.loop > 1500) {
                     result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }

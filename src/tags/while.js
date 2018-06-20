@@ -45,8 +45,8 @@ module.exports =
 
             code = args.shift();
 
-            while (context.state.repeats <= 1500) {
-                context.state.repeats += 1;
+            while (context.state.count.loop <= 1500) {
+                context.state.count.loop += 1;
 
                 val1 = await bbEngine.execute(val1Raw, context);
                 val2 = await bbEngine.execute(val2Raw, context);
