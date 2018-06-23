@@ -7,8 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    engine = require('../structures/bbtag/Engine');
+const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('lock')
@@ -64,17 +63,17 @@ module.exports =
             let lockOverride = context.override('lock', (subtag, context) => Builder.util.error(subtag, context, 'Lock cannot be nested'));
 
             try {
-                return await new Promise(async function (resolve, reject) {
+                return await new Promise((async function (resolve, reject) {
                     lockFunc(async function (release) {
                         try {
-                            resolve(await engine.execute(code, context));
+                            resolve(await this.executeArg(subtag, code, context));
                         } catch (err) {
                             reject(err);
                         } finally {
                             release();
                         }
                     });
-                });
+                }).bind(this));
             } finally {
                 lockOverride.revert();
             }

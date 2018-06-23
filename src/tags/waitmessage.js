@@ -136,7 +136,7 @@ module.exports =
                         }));
                     }
                     let childContext = makeChild(...args);
-                    let result = await bbengine.execute(checkBBtag, childContext);
+                    let result = await this.executeArg(subtag, checkBBtag, childContext);
                     context.errors.push(...childContext.errors);
                     let bool = bu.parseBoolean(result.trim());
                     if (bool == null)

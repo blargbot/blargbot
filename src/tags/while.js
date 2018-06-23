@@ -48,16 +48,16 @@ module.exports =
             while (context.state.count.loop <= 1500) {
                 context.state.count.loop += 1;
 
-                val1 = await bbEngine.execute(val1Raw, context);
-                val2 = await bbEngine.execute(val2Raw, context);
-                operator = await bbEngine.execute(operatorRaw, context);
+                val1 = await this.executeArg(subtag, val1Raw, context);
+                val2 = await this.executeArg(subtag, val2Raw, context);
+                operator = await this.executeArg(subtag, operatorRaw, context);
 
                 if (!bool.runCondition(subtag, context, val1, operator, val2)) {
                     loopLimit = false;
                     break;
                 }
 
-                result += await bbEngine.execute(code, context);
+                result += await this.executeArg(subtag, code, context);
             }
 
             if (loopLimit)

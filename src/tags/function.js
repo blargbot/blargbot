@@ -8,16 +8,15 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    engine = require('../structures/bbtag/Engine'),
     argsTag = require('./args');
 
 function parameters(parameters) {
-    return async function (subtag, context) {
-        let args = await Promise.all(subtag.children.slice(1).map(arg => engine.execute(arg, context)));
+    return (async function (subtag, context) {
+        let args = await Promise.all(subtag.children.slice(1).map(arg => this.executeArg(subtag, arg, context)));
         if (args.length === 0)
             return parameters.join(' ');
         return await argsTag.getArgs(subtag, context, args, parameters);
-    };
+    }).bind(this);
 }
 
 module.exports =
@@ -41,24 +40,24 @@ module.exports =
             if (!name.startsWith('func.'))
                 name = 'func.' + name;
 
-            context.override(name, async function (subtag, context) {
+            context.override(name, (async function (subtag, context) {
                 if (context.state.stackSize >= 200) {
                     context.state.return = -1;
                     return Builder.util.error(subtag, context, 'Terminated recursive tag after ' + context.state.stackSize + ' execs.');
                 }
 
-                args = await Promise.all(subtag.children.slice(1).map(arg => engine.execute(arg, context)));
-                context.override('params', parameters(args));
+                args = await Promise.all(subtag.children.slice(1).map(arg => this.executeArg(subtag, arg, context)));
+                context.override('params', parameters(args).bind(this));
                 context.override('paramsarray', () => JSON.stringify(args));
                 context.override('paramslength', () => args.length);
 
                 context.state.stackSize++;
                 try {
-                    return await engine.execute(code, context);
+                    return await this.executeArg(subtag, code, context);
                 } finally {
                     context.state.stackSize--;
                 }
-            });
+            }).bind(this));
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

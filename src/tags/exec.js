@@ -68,7 +68,7 @@ module.exports =
             context.state.stackSize += 1;
             let childContext = context.makeChild({ input });
             if (tagContent != null)
-                result = await bbEngine.execute(tagContent, childContext);
+                result = this.executeArg(subtag, tagContent, childContext);
             context.state.stackSize -= 1;
 
             context.errors.push({
