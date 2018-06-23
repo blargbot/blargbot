@@ -38,7 +38,7 @@ class TagBuilder {
                 tag.category = bu.TagType.SIMPLE;
         }
 
-        tag.executeArg = executeArg.bind(tag, tag.argLimit || 500000);
+        tag.executeArg = executeArg.bind(tag, tag.argLimit || 1000000);
 
         tag.execute = function (definition, resolveArgs, execConditional, execDefault) {
             return async function (subtag, context) {
