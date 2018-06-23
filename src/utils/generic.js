@@ -11,7 +11,7 @@ const colors = require('../../res/colors') || {},
     snekfetch = require('snekfetch'),
     unorm = require('unorm'),
     limax = require('limax'),
-    User = require('eris/lib/structures/User'),
+    { User, Channel } = require('eris'),
     twemoji = require('twemoji');
 
 bu.compareStats = (a, b) => {
@@ -301,7 +301,7 @@ bu.send = async function (context, payload, files) {
         case "string":
             channel = await bot.getChannel(context);
             if (!channel)
-                channel = { id: context };
+                channel = new Channel({ id: context });
             break;
         case "object":
             // Probably a message provided
@@ -319,12 +319,18 @@ bu.send = async function (context, payload, files) {
     }
 
     if (channel == null) throw new Error("Channel not found");
-
-
     switch (typeof payload) {
         case "string": payload = { content: payload }; break;
         case "object": break;
         default: payload = {};
+    }
+
+    if ('permissionsOf' in channel &&
+        payload.embed &&
+        'asString' in payload.embed &&
+        !channel.permissionsOf(bot.user.id).has('embedLinks')) {
+        payload.content = (payload.content || '') + payload.embed.asString;
+        delete payload.embed;
     }
 
     if (files != null && !Array.isArray(files))
@@ -359,7 +365,7 @@ bu.send = async function (context, payload, files) {
         if (!bu.send.catch.hasOwnProperty(response.code))
             return console.error(error.response, error.stack);
 
-        let result = await bu.send.catch[response.code](channel, payload);
+        let result = await bu.send.catch[response.code](channel, payload, files);
         if (typeof result === 'string' && message && await bu.canDmErrors(message.author.id)) {
             if (message.guild) result += `\nGuild: ${message.guild.name} (${message.guild.id})`;
             result += `\nChannel: ${message.channel.name} (${message.channel.id})`;
@@ -368,6 +374,8 @@ bu.send = async function (context, payload, files) {
             result += '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.';
 
             await bu.sendDM(message.author.id, result);
+        } else if (typeof result === 'object' && 'id' in result) {
+            return result;
         }
     });
 };
@@ -393,7 +401,7 @@ bu.send.catch = {
             'but didn\'t have permission to see the channel. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Read Messages` permission.';
     },
-    '50004': function (channel) {
+    '50004': function (channel, payload, files) {
         console.warn('50004: Tried embeding a link, but had no permissions!');
         bu.send(channel, 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
         return 'I tried to send a message in response to your command, ' +

@@ -1,4 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
+const stringify = BaseCommand.stringify;
+const moment = require('moment-timezone');
 
 class HelpCommand extends BaseCommand {
     constructor() {
@@ -10,38 +12,63 @@ class HelpCommand extends BaseCommand {
         });
     }
 
+    getColor(category) {
+        switch (category) {
+            case bu.CommandType.CAT:
+            case bu.CommandType.ADMIN: return 0xff0000;
+            case bu.CommandType.NSFW: return 0x010101;
+            case bu.CommandType.IMAGE:
+            case bu.CommandType.GENERAL: return 0xefff00;
+            default: return 0x7289da;
+        }
+    }
+
     async execute(msg, words, text) {
         if (words.length > 1) {
-            var message = '';
+            let embed = {
+                fields: [],
+                get asString() {
+                    return stringify(this);
+                }
+            };
             if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden
                 && (!CommandManager.commandList[words[1]].onlyOn || CommandManager.commandList[words[1]].onlyOn === msg.guild.id)) {
-                let command = CommandManager.built[CommandManager.commandList[words[1]].name];
-                let aliases = '';
-                let flags = '';
-                if (command.aliases && command.aliases.length > 0)
-                    aliases = `\n**__Aliases__**: [ ${command.aliases.join(', ')} ]`;
-                if (command.flags && command.flags.length > 0) {
-                    flags = `**__Flags__**:\n`;
-                    for (let flag of command.flags) {
-                        flags += `   \`-${flag.flag}\` or \`--${flag.word}\` - ${flag.desc}\n`;
-                    }
-                }
-                message = `**__Command Name__**: ${CommandManager.commandList[words[1]].name}
-**__Usage__**: \`${CommandManager.commandList[words[1]].usage}\`${aliases}
-${CommandManager.commandList[words[1]].info}
-
-${flags}`;
+                let instance = CommandManager.built[CommandManager.commandList[words[1]].name];
+                let definition = CommandManager.commandList[words[1]];
+                embed.title = `Help for ${definition.name}`;
+                embed.url = `https://blargbot.xyz/commands#${definition.name}`;
+                embed.description = `**__Usage__**:\`${definition.usage}\`\n${definition.info}`;
+                embed.color = this.getColor(instance.category);
+                if (instance.aliases && instance.aliases.length > 0)
+                    embed.fields.push({
+                        name: '**Aliases**',
+                        value: instance.aliases.join(', ')
+                    });
+                if (instance.flags && instance.flags.length > 0)
+                    embed.fields.push({
+                        name: '**Flags**',
+                        value: instance.flags.map(flag => `\`-${flag.flag}\` or \`--${flag.word}\` - ${flag.desc}`).join('\n')
+                    });
             } else {
-                let ccommand = await bu.ccommand.gethelp(msg.guild.id, words[1]);
-                if (ccommand)
-                    message = `**__Custom Command Name__**: ${words[1].toLowerCase()}\n${ccommand}`;
+                let helpText = await bu.ccommand.gethelp(msg.guild.id, words[1]);
+                if (helpText) {
+                    embed.color = this.getColor('CUSTOM');
+                    embed.title = `Help for ${words[1].toLowerCase()} (Custom Command)`;
+                    embed.description = helpText;
+                }
             }
-            if (!message) {
-                message = `No description could be found for command \`${words[1]}\`.`;
-            }
-            bu.send(msg, message);
+            if (!embed.title)
+                bu.send(msg, `No description could be found for command \`${words[1]}\`.`);
+            else
+                bu.send(msg, { embed });
         } else {
-            var commandsString = '```prolog\nGeneral Commands:\n  ';
+            let embed = {
+                fields: [],
+                get asString() {
+                    return stringify(this);
+                }
+            };
+            embed.color = this.getColor('CUSTOM');
             var generalCommands = [];
             var otherCommands = {};
             var modifiedCommands = [];
@@ -72,7 +99,7 @@ ${flags}`;
             //   console.debug(otherCommands);
             for (var command in CommandManager.built) {
                 if (modifiedCommands.indexOf(command) == -1)
-                    if (!CommandManager.built[command].hidden && (!CommandManager.built[command].onlyOn || CommandManager.built[command].onlyOn === msg.guild.id)) {
+                    if (!CommandManager.built[command].hidden && (!CommandManager.built[command].onlyOn || (msg.guild && CommandManager.built[command].onlyOn === msg.guild.id))) {
                         if (CommandManager.built[command].category == bu.CommandType.GENERAL) {
                             if ((await bu.canExecuteCommand(msg, command, true))[0])
                                 generalCommands.push(command);
@@ -85,34 +112,43 @@ ${flags}`;
                     }
             }
             generalCommands.sort();
-            commandsString += generalCommands.join(', ');
+            embed.fields.push({
+                name: 'General Commands',
+                value: '```\n' + generalCommands.join(', ') + '\n```'
+            });
 
             var onComplete = async () => {
                 if (msg.channel.guild) {
                     let ccommands = storedGuild.ccommands;
                     //      console.debug(ccommands);
                     if (ccommands && Object.keys(ccommands).length > 0) {
-                        var ccommandsString = 'Custom Commands:\n  ';
                         var helpCommandList = [];
                         for (var key in ccommands) {
                             if (await bu.canExecuteCcommand(msg, key, true))
                                 helpCommandList.push(key);
                         }
                         helpCommandList.sort();
-                        ccommandsString += helpCommandList.join(', ');
-                        commandsString += `\n${ccommandsString}`;
+                        embed.fields.push({
+                            name: 'Custom Commands',
+                            value: '```\n' + helpCommandList.join(', ') + '\n```'
+                        });
                     }
                 }
 
-                commandsString += '```';
                 let prefix = '';
+                let finalText = ''
                 if (!msg.channel.guild)
-                    commandsString += 'Not all of these commands will work in DM\'s\n';
+                    finalText += 'Not all of these commands will work in DM\'s\n';
                 else
                     prefix = await bu.guildSettings.get(msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
-                commandsString += 'For more information about commands, do `' + prefix + 'help <commandname>` or visit <https://blargbot.xyz/commands>';
+                finalText += 'For more information about commands, do `' + prefix + 'help <commandname>` or visit <https://blargbot.xyz/commands>';
 
-                await this.sendHelp(msg, commandsString, 'commands');
+                embed.fields.push({
+                    name: '\u200B',
+                    value: finalText
+                });
+
+                await this.sendHelp(msg, { embed }, 'commands');
             };
 
             function nextCommand(category, completeCommandList) {
@@ -126,8 +162,10 @@ ${flags}`;
                                 categoryString = adminRole;
                             else categoryString = bu.CommandType.properties[category].name;
                         } else categoryString = category;
-                        commandsString += `\n${categoryString.charAt(0).toUpperCase() + categoryString.slice(1)} Commands:\n  `;
-                        commandsString += completeCommandList.join(', ');
+                        embed.fields.push({
+                            name: `${categoryString.charAt(0).toUpperCase() + categoryString.slice(1)} Commands`,
+                            value: '```\n' + completeCommandList.join(', ') + '\n```'
+                        });
                     }
                 }
                 i++;

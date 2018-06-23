@@ -152,6 +152,6 @@ module.exports =
                         override.revert();
                     }
                 }
-            };
+            }.bind(this);
         })
         .build();
