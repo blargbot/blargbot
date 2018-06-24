@@ -63,10 +63,12 @@ class PollCommand extends BaseCommand {
             let title = input.undefined.join(' ');
             let message = {
                 embed: {
-                    title,
+                    author: {
+                        name: title,
+                        icon_url: msg.author.avatarURL
+                    },
                     footer: {
-                        text: 'The poll will expire',
-                        icon_url: 'https://discord.gold/17021816cm.png'
+                        text: 'The poll will expire'
                     },
                     timestamp: endTime,
                     color: color
@@ -123,14 +125,16 @@ class PollCommand extends BaseCommand {
                 //   console.error(err);
             }
             await r.table('events').insert({
-                title: title,
                 source: msg.guild ? msg.guild.id : msg.author.id,
+                content: title,
                 user: msg.author.id,
                 type: 'poll',
                 channel: channel,
                 msg: msg2.id,
                 endtime: r.epochTime(endTime.unix()),
+                starttime: r.epochTime(dep.moment().unix()),
                 color: color,
+                icon: msg.author.avatarURL,
                 roleId,
                 strict: input.s ? choices.map(m => {
                     if (/[0-9]{17,23}/.test(m))
@@ -181,7 +185,10 @@ class PollCommand extends BaseCommand {
             `At **${max}** vote${max == 1 ? '' : 's'}, the winner is:`;
         let output = {
             embed: {
-                title: args.title,
+                author: {
+                    name: args.content,
+                    icon_url: args.icon
+                },
                 color: args.color,
                 description: `The results are in! A total of **${totalVotes}** vote${totalVotes == 1 ? '' : 's'} were collected!
      

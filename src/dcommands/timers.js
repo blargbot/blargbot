@@ -6,7 +6,7 @@ class TimersCommand extends BaseCommand {
         super({
             name: 'timers',
             category: bu.CommandType.ADMIN,
-            usage: 'timers <[page] | cancel <ids...>>',
+            usage: 'timers <[page] | cancel <ids...> | clear>',
             info: 'Lists all the timers currently active here. You can also cancel any of them by using the cancel subcommand'
         });
         this.pageSize = 15;
@@ -15,6 +15,16 @@ class TimersCommand extends BaseCommand {
     async execute(msg, words, text) {
         let source = msg.guild ? msg.guild.id : msg.author.id;
         switch (String(words[1] || '').toLowerCase()) {
+            case 'clear':
+                let response = await bu.awaitPrompt(msg, 'Are you sure you want to cancel all timers? Type `yes` to confirm, or anything else to cancel.',
+                    m => true, 60000, 'Query timed out. Cancelling clear');
+                if (response && response.content.toLowerCase() == 'yes') {
+                    await r.table('events').filter({ source }).delete().run();
+                    bu.send(msg, 'All timers cancelled.');
+                } else {
+                    bu.send(msg, 'Failed to clear timers');
+                }
+                break;
             case 'delete':
             case 'cancel':
                 if (words[2]) {
@@ -58,17 +68,19 @@ class TimersCommand extends BaseCommand {
                     if (selected.length == 0)
                         selected = timers.slice(from = (to = timers.length) - (timers.length % this.pageSize));
 
-                    let getUserString = user => `${user.username}#${user.discriminator}`;
+                    let getUserString = user => typeof user === 'object' ? `${user.username}#${user.discriminator}` : user;
                     let records = [];
                     for (const timer of selected) {
+                        console.debug(timer);
                         let id = timer.id.substring(0, 5);
                         let type = timer.type;
-                        let user = getUserString(bot.users.get(timer.user));
+                        let user = getUserString(bot.users.get(timer.user) || timer.user);
                         let elapsed = timer.starttime.humanize();
                         let remain = moment.duration(now.diff(timer.endtime)).humanize();
                         let content = timer.content || '';
-                        if (content.length > 30)
-                            content = content.substring(0, 27) + '...';
+                        if (content.length > 40)
+                            content = content.substring(0, 37) + '...';
+                        content.replace(/[\n\t\r]/g, '');
                         records.push([id, elapsed, remain, user, type, content]);
                     }
                     let headers = ['Id', 'Elapsed', 'Remain', 'User', 'Type', 'Content'];

@@ -37,6 +37,7 @@ module.exports =
                 user: context.user.id,
                 channel: context.channel.id,
                 endtime: r.epochTime(dep.moment().add(duration).unix()),
+                starttime: r.epochTime(dep.moment().unix()),
                 context: context.serialize(),
                 content: args[0].content
             });
