@@ -6,7 +6,7 @@ class TimersCommand extends BaseCommand {
         super({
             name: 'timers',
             category: bu.CommandType.ADMIN,
-            usage: 'timers <[page] | cancel <id>>',
+            usage: 'timers <[page] | cancel <ids...>>',
             info: ''
         });
         this.pageSize = 15;
@@ -18,18 +18,23 @@ class TimersCommand extends BaseCommand {
             case 'delete':
             case 'cancel':
                 if (words[2]) {
-                    let id = (words[2] || '').toLowerCase();
-                    let timer;
-                    if (id.length === 5 && /^[\da-f]+$/i.test(id)) {
-                        let timers = await r.table('events').filter({ source }).run();
-                        timer = timers.find(t => t.id.startsWith(id));
+                    let ids = (words.slice(2) || '').map(s => s.toLowerCase());
+                    let timers = await r.table('events').filter({ source }).run();
+                    let failed = [], success = [];
+                    for (const id of ids) {
+                        let timer = timers.find(t => t.id.startsWith(id));
+                        if (timer && timer.source == source) {
+                            r.table('events').get(timer.id).delete().run();
+                            success.push(id);
+                        } else {
+                            failed.push(id);
+                        }
                     }
-                    if (timer && timer.source == source) {
-                        r.table('events').get(timer.id).delete().run();
-                        bu.send(msg, 'Successfully deleted timer `' + id + '`');
-                    } else {
-                        bu.send(msg, 'I couldnt find timer `' + id + '`');
-                    }
+                    if (success.length == 0)
+                        bu.send(msg, `I couldnt find ${ids.length != 1 ? 'any of the ids you gave' : 'the id you gave'}`);
+                    else
+                        bu.send(msg, `Successfully cancelled ${success.length} timer${success.length != 1 ? 's' : ''} \`${success.join(', ')}\`.` +
+                            (failed.length == 0 ? '' : ` Could not find id${failed.length != 1 ? 's' : ''} \`${failed.join(', ')}\``));
                 } else {
                     bu.send(msg, 'You must give me the id of the timer to cancel');
                 }
