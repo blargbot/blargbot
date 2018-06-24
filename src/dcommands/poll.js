@@ -124,6 +124,8 @@ class PollCommand extends BaseCommand {
             }
             await r.table('events').insert({
                 title: title,
+                source: msg.guild ? msg.guild.id : msg.author.id,
+                user: msg.author.id,
                 type: 'poll',
                 channel: channel,
                 msg: msg2.id,

@@ -104,6 +104,7 @@ class MuteCommand extends BaseCommand {
                                 if (duration.asMilliseconds() > 0) {
                                     await r.table('events').insert({
                                         type: 'unmute',
+                                        source: msg.guild.id,
                                         user: user.id,
                                         guild: msg.guild.id,
                                         duration: duration.toJSON(),

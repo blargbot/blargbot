@@ -75,6 +75,7 @@ class BanCommand extends BaseCommand {
             if (duration) {
                 await r.table('events').insert({
                     type: 'unban',
+                    source: msg.guild.id,
                     user: user.id,
                     guild: msg.guild.id,
                     duration: duration.toJSON(),

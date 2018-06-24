@@ -33,6 +33,8 @@ module.exports =
             await r.table('events').insert({
                 type: 'tag',
                 version: 3,
+                source: context.guild ? context.guild.id : context.user.id,
+                user: context.user.id,
                 channel: context.channel.id,
                 endtime: r.epochTime(dep.moment().add(duration).unix()),
                 context: context.serialize(),
