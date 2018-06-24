@@ -152,11 +152,14 @@ class Context {
                             disableEveryone: disableEveryone
                         }, files);
 
-                    if (response != null && response.channel != null)
+                    if (response != null && response.channel != null) {
                         await bu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
-                    this.state.ownedMsgs.push(response.id);
-                    resolve(response.id);
-                    this.state.outputMessage = response.id;
+                        this.state.ownedMsgs.push(response.id);
+                        resolve(response.id);
+                        this.state.outputMessage = response.id;
+                    } else {
+                        reject(new Error('Failed to send'));
+                    }
                 } catch (err) {
                     reject(err);
                 }
