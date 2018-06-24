@@ -542,7 +542,7 @@
             "dontown": "[[emote.x]] Du kan ikke ændre denne system brugerdefinerede kommando.",
             "notag": "[[emote.x]] Der er ingen brugerdefineret kommando med det navn.",
             "tagset": "[[emote.check]] Brugerdefineret kommando `{{name}}` {{process}}!",
-            "tagrename": "",
+            "tagrename": "[[emote.check]] Den brugerdefinerede kommando `{{old}}` er blevet omdøbt til `{{new}}`.",
             "raw": "Koden for {{name}} er:\n```{{code}}```",
             "alreadyexists": "[[emote.x]] Der findes allerede en brugerdefineret kommando med det navn!",
             "testoutput": "Test udbytte:\n\n{{output}}",
