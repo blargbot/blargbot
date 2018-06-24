@@ -7,7 +7,7 @@ class TimersCommand extends BaseCommand {
             name: 'timers',
             category: bu.CommandType.ADMIN,
             usage: 'timers <[page] | cancel <ids...>>',
-            info: ''
+            info: 'Lists all the timers currently active here. You can also cancel any of them by using the cancel subcommand'
         });
         this.pageSize = 15;
     }
