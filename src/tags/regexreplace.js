@@ -35,4 +35,5 @@ module.exports =
             context.state.replace = { regex, with: rWith };
 
         }).whenDefault(Builder.errors.tooManyArguments)
+        .withProp('argLimit', 50000)
         .build();

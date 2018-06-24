@@ -28,4 +28,5 @@ module.exports =
 
             return JSON.stringify(args[0].split(regex));
         }).whenDefault(Builder.errors.tooManyArguments)
+        .withProp('argLimit', 50000)
         .build();

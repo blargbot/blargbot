@@ -29,4 +29,5 @@ module.exports =
             return regex.test(args[0]);
 
         }).whenDefault(Builder.errors.tooManyArguments)
+        .withProp('argLimit', 50000)
         .build();
