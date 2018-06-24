@@ -47,7 +47,7 @@ const cleverbot = new dep.cleverbot({
 
 bot.on('messageCreate', async function (msg) {
     bu.Metrics.messageCounter.inc();
-    bu.processUser(msg.author);
+    await bu.processUser(msg.author);
     let isDm = msg.channel.guild == undefined;
     let storedGuild;
     if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
