@@ -47,7 +47,7 @@ module.exports =
 
             roleText = [roleText];
             if (userText) {
-                result.user = await bu.getUser(context.msg, userText, {
+                result.user = await context.getUser(userText, {
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });

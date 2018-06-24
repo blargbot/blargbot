@@ -55,7 +55,7 @@ module.exports =
                 let entries = deserialized && Array.isArray(deserialized.v)
                     ? deserialized.v
                     : [emote];
-                entries = await Promise.all(entries.map(entry => bu.getUser(context.msg, entry, {
+                entries = await Promise.all(entries.map(entry => context.getUser(entry, {
                     quiet: true, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 })));

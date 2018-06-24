@@ -27,7 +27,7 @@ module.exports =
                 return Builder.util.error(subtag, context, 'Author cannot edit roles');
 
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
-                role = await bu.getRole(context.msg, args[0], {
+                role = await context.getRole(args[0], {
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 }),

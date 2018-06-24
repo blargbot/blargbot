@@ -549,8 +549,10 @@ bu.getUser = async function (msg, name, args = {}) {
     if (userList.length == 1) {
         return userList[0].user;
     } else if (userList.length == 0) {
-        if (!args.quiet && !args.suppress)
+        if (!args.quiet && !args.suppress) {
+            if (args.onSendCallback) args.onSendCallback();
             bu.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
+        }
         return null;
     } else {
         if (!args.quiet) {
@@ -564,6 +566,7 @@ bu.getUser = async function (msg, name, args = {}) {
             }
             let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
             try {
+                if (args.onSendCallback) args.onSendCallback();
                 let query = await bu.createQuery(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
 ${userListString}${moreUserString}--------------------
 C.cancel query
@@ -578,8 +581,10 @@ C.cancel query
                 let response = await query.response;
                 if (response.content.toLowerCase() == 'c') {
                     await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
-                    if (!args.suppress)
+                    if (!args.suppress) {
+                        if (args.onSendCallback) args.onSendCallback();
                         bu.send(msg, `Query canceled${args.label ? ' in ' + args.label : ''}.`);
+                    }
                     return null;
                 } else {
                     await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);

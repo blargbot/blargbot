@@ -24,7 +24,7 @@ module.exports =
                 return await context.isStaff;
 
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
-                user = await bu.getUser(context.msg, args[0], {
+                user = await context.getUser(args[0], {
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });

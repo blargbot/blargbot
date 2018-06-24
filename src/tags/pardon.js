@@ -18,10 +18,10 @@ module.exports =
             a.optional('reason')
         ])
         .withDesc('Gives `user` `count` pardons with `reason`, and returns their new warning count. ' +
-        '`user` defaults to the person running the tag and `count` defaults to 1')
+            '`user` defaults to the person running the tag and `count` defaults to 1')
         .withExample(
-        'Be pardoned! {pardon}',
-        'Be pardoned! 0'
+            'Be pardoned! {pardon}',
+            'Be pardoned! 0'
         )
         .whenArgs('0-3', async function (subtag, context, args) {
             let user = context.author,
@@ -29,7 +29,7 @@ module.exports =
                 reason = args[2];
 
             if (args[0])
-                user = await bu.getUser(context.msg, args[0], {
+                user = await context.getUser(args[0], {
                     suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });

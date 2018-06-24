@@ -75,6 +75,11 @@ class Context {
                 loop: 0,
                 foreach: 0
             },
+            query: {
+                count: 0,
+                user: {},
+                role: {}
+            },
             outputMessage: null,
             ownedMsgs: [],
             return: 0,
@@ -113,6 +118,50 @@ class Context {
         context.variables = this.variables;
 
         return context;
+    }
+
+    async getUser(name, args) {
+        let didSend = false;
+        if (this.state.query.count >= 5)
+            args.quiet = args.suppress = true;
+        if (args.onSendCallback)
+            args.onSendCallback = ((oldCallback) => () => (didSend = true, oldCallback()))(args.onSendCallback);
+        else
+            args.onSendCallback = () => didSend = true;
+
+        if (name in this.state.query.user)
+            return bot.users.get(this.state.query.user[name]);
+
+        let result;
+        try {
+            result = await bu.getUser(this.msg, name, args);
+        } finally { }
+        if (didSend)
+            this.state.query.count++;
+        this.state.query.user[name] = (result || { id: undefined }).id;
+        return result;
+    }
+
+    async getRole(name, args) {
+        let didSend = false;
+        if (this.state.query.count >= 5)
+            args.quiet = args.suppress = true;
+        if (args.onSendCallback)
+            args.onSendCallback = ((oldCallback) => () => (didSend = true, oldCallback()))(args.onSendCallback);
+        else
+            args.onSendCallback = () => didSend = true;
+
+        if (name in this.state.query.role)
+            return bot.guilds.get(this.guild.id).roles.get(this.state.query.role[name]);
+
+        let result;
+        try {
+            result = await bu.getRole(this.msg, name, args);
+        } finally { }
+        if (didSend)
+            this.state.query.count++;
+        this.state.query.role[name] = (result || { id: undefined }).id;
+        return result;
     }
 
     override(subtag, callback) {

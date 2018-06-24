@@ -54,7 +54,7 @@ module.exports =
             // parse users
             if (args[1]) {
                 users = Builder.util.flattenArgArrays([args[1]]);
-                users = await Promise.all(users.map(async input => await bu.getUser(context.msg, input, { quiet: true, suppress: true })));
+                users = await Promise.all(users.map(async input => await context.getUser(input, { quiet: true, suppress: true })));
                 if (users.find(user => user == null))
                     return Builder.errors.noUserFound(subtag, context);
                 users = users.map(user => user.id);

@@ -26,7 +26,7 @@ module.exports =
             if (context.state.count.dm > 0)
                 return Builder.util.error(subtag, context, 'Already have DMed');
 
-            let user = await bu.getUser(context.msg, args[0], {
+            let user = await context.getUser(args[0], {
                 suppress: context.scope.suppressLookup,
                 label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
             }),

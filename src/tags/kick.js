@@ -17,17 +17,17 @@ module.exports =
             a.optional('reason'),
             a.optional('noperms')
         ]).withDesc('Kicks `user`. ' +
-        'This functions the same as the kick command. ' +
-        'If the kick is successful, `Success` will be returned, otherwise the error will be given. ' +
-        'If `noperms` is provided, do not check if the command executor is actually able to kick people. ' +
-        'Only provide this if you know what you\'re doing.'
+            'This functions the same as the kick command. ' +
+            'If the kick is successful, `Success` will be returned, otherwise the error will be given. ' +
+            'If `noperms` is provided, do not check if the command executor is actually able to kick people. ' +
+            'Only provide this if you know what you\'re doing.'
         ).withExample(
-        '{kick;stupid cat;because I can} @stupid cat was kicked!',
-        'Success @stupid cat was kicked!'
+            '{kick;stupid cat;because I can} @stupid cat was kicked!',
+            'Success @stupid cat was kicked!'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
-            let user = await bu.getUser(context.msg, args[0], {
+            let user = await context.getUser(args[0], {
                 quiet: true, suppress: context.scope.suppressLookup,
                 label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
             });
