@@ -2,17 +2,19 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-26 13:16:03
+ * @Last Modified time: 2018-06-26 17:04:30
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const cassandra = require('cassandra-driver');
-const cclient = new cassandra.Client({
-    contactPoints: config.cassandra.contactPoints, keyspace: config.cassandra.keyspace,
-    authProvider: new cassandra.auth.PlainTextAuthProvider(config.cassandra.username, config.cassandra.password)
-});
-bu.cclient = cclient;
+if (config.cassandra) {
+    const cclient = new cassandra.Client({
+        contactPoints: config.cassandra.contactPoints, keyspace: config.cassandra.keyspace,
+        authProvider: new cassandra.auth.PlainTextAuthProvider(config.cassandra.username, config.cassandra.password)
+    });
+    bu.cclient = cclient;
+}
 
 bu.guildSettings = {
     set: async function (guildid, key, value, type) {
@@ -242,9 +244,10 @@ bu.normalize = function (r) {
 };
 
 bu.getChatlog = async function (id) {
-    let res = await cclient.execute(`SELECT channelid, id FROM chatlogs_map WHERE msgid = :id LIMIT 1`, { id }, { prepare: true });
+    if (!config.cassandra) return null;
+    let res = await bu.cclient.execute(`SELECT channelid, id FROM chatlogs_map WHERE msgid = :id LIMIT 1`, { id }, { prepare: true });
     if (res.rows.length > 0) {
-        let msg = await cclient.execute(`SELECT * FROM chatlogs WHERE channelid = :channelid and id = :id LIMIT 1`, {
+        let msg = await bu.cclient.execute(`SELECT * FROM chatlogs WHERE channelid = :channelid and id = :id LIMIT 1`, {
             id: res.rows[0].id,
             channelid: res.rows[0].channelid
         }, { prepare: true });
@@ -255,6 +258,7 @@ bu.getChatlog = async function (id) {
 };
 
 bu.insertChatlog = async function (msg, type) {
+    if (!config.cassandra) return null;
     if (msg.channel.id != '204404225914961920') {
         bu.Metrics.chatlogCounter.labels(type === 0 ? 'create' : type === 1 ? 'update' : 'delete').inc();
         let data = {
@@ -270,8 +274,8 @@ bu.insertChatlog = async function (msg, type) {
             embeds: JSON.stringify(msg.embeds)
         };
         try {
-            await cclient.execute(insertQuery1, data, { prepare: true });
-            await cclient.execute(insertQuery2, { id: data.id, msgid: msg.id, channelid: msg.channel.id },
+            await bu.cclient.execute(insertQuery1, data, { prepare: true });
+            await bu.cclient.execute(insertQuery2, { id: data.id, msgid: msg.id, channelid: msg.channel.id },
                 { prepare: true });
         } catch (err) {
 
