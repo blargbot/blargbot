@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:49:31
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-26 14:36:29
+ * @Last Modified time: 2018-06-26 14:53:13
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -63,8 +63,8 @@ module.exports =
             let lockOverride = context.override('lock', (subtag, context) => Builder.util.error(subtag, context, 'Lock cannot be nested'));
 
             try {
-                return await new Promise((async function (resolve, reject) {
-                    lockFunc(async function (release) {
+                return await new Promise((async (resolve, reject) => {
+                    lockFunc(async (release) => {
                         try {
                             resolve(await this.executeArg(subtag, code, context));
                         } catch (err) {
@@ -73,7 +73,7 @@ module.exports =
                             release();
                         }
                     });
-                }).bind(this));
+                }));
             } finally {
                 lockOverride.revert();
             }
