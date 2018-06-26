@@ -7,7 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const bbEngine = require('../structures/BBTagEngine');
+const bbEngine = require('../structures/bbtag/Engine');
 
 bot.on('guildMemberRemove', async function (guild, member) {
     let val = await bu.guildSettings.get(guild.id, 'farewell');
@@ -35,7 +35,7 @@ bot.on('guildMemberRemove', async function (guild, member) {
             author
         });
     }
-    bu.logEvent(guild.id, 'memberleave', [{
+    bu.logEvent(guild.id, member.user.id, 'memberleave', [{
         name: 'User',
         value: bu.getFullName(member.user) + ` (${member.user.id})`,
         inline: true

@@ -1,5 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand'),
-    bbEngine = require('../structures/BBTagEngine');
+    bbEngine = require('../structures/bbtag/Engine');
 
 class GreetCommand extends BaseCommand {
     constructor() {
@@ -35,7 +35,7 @@ class GreetCommand extends BaseCommand {
             });
             return;
         }
-        var greeting = input.undefined.join(' ');
+        var greeting = { content: input.undefined.join(' '), author: msg.author.id };
         await bu.guildSettings.set(msg.channel.guild.id, 'greeting', greeting);
         let suffix = '';
         let channelStr = input.c ? input.c.join(' ') : msg.channel.id;
@@ -52,7 +52,7 @@ class GreetCommand extends BaseCommand {
         }
         await bbEngine.runTag({
             msg,
-            tagContent: greeting,
+            tagContent: greeting.content,
             input: '',
             isCC: true,
             author: msg.author.id,

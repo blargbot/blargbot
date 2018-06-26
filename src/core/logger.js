@@ -24,6 +24,7 @@ class Logger {
             { name: 'init', color: chalk.black.bgBlue },
             { name: 'info', color: chalk.black.bgGreen },
             { name: 'output', color: chalk.black.bgMagenta },
+            { name: 'bbtag', color: chalk.black.bgGreen },
             { name: 'verbose', color: chalk.black.bgCyan },
             { name: 'adebug', color: chalk.cyan.bgBlack },
             { name: 'debug', color: chalk.magenta.bgBlack, alias: ['log', 'dir'] },

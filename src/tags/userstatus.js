@@ -10,21 +10,21 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('userstatus')
+    Builder.APITag('userstatus')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Returns the status of `user` (`online`, `idle`, `dnd`, or `offline`). ' +
-        '`user` defaults to the user who executed the containing tag. ' +
-        'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.')
+            '`user` defaults to the user who executed the containing tag. ' +
+            'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.')
         .withExample(
-        'You are currently {userstatus}',
-        'You are currently online'
+            'You are currently {userstatus}',
+            'You are currently online'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
                 user = context.user;
 
             if (args[0])
-                user = await bu.getUser(context.msg, args[0], {
+                user = await context.getUser(args[0], {
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });

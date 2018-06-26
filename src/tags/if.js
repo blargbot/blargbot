@@ -7,8 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/BBTagEngine');
+const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('if')
@@ -28,7 +27,7 @@ module.exports =
         ).resolveArgs(-1)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-5', async function (subtag, context, args) {
-            let val1 = await bbEngine.execute(args[0], context),
+            let val1 = await this.executeArg(subtag, args[0], context),
                 otherwise = args.length % 2 == 1,
                 shouldRun;
 
@@ -41,16 +40,16 @@ module.exports =
                     break;
                 case 4:
                 case 5:
-                    let opKey = await bbEngine.execute(args[1], context);
-                    let val2 = await bbEngine.execute(args[2], context);
+                    let opKey = await this.executeArg(subtag, args[1], context);
+                    let val2 = await this.executeArg(subtag, args[2], context);
                     shouldRun = await TagManager.list['bool'].runCondition(subtag, context, val1, opKey, val2);
                     break;
             }
 
             if (shouldRun)
-                return await bbEngine.execute(args[args.length - 1 - otherwise], context);
+                return await this.executeArg(subtag, args[args.length - 1 - otherwise], context);
             else if (otherwise)
-                return await bbEngine.execute(args[args.length - 1], context);
+                return await this.executeArg(subtag, args[args.length - 1], context);
             return '';
         })
         .whenDefault(Builder.errors.tooManyArguments)

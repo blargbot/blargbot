@@ -1,6 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand'),
     bbtag = require('../core/bbtag'),
-    bbEngine = require('../structures/BBTagEngine'),
+    bbEngine = require('../structures/bbtag/Engine'),
+    Context = require('../structures/bbtag/Context'),
     { Message } = require('eris');
 
 const results = 100;
@@ -639,7 +640,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                     if (result.context.author != result.context.user.id)
                         await bu.send(dmChannel.id, "Oops! I cant send a debug output for someone elses tag!");
                     else
-                        await bu.send(dmChannel.id, null, bbtag.generateDebug(result.code, result.context, result.result));
+                        await bu.send(dmChannel.id, undefined, bbtag.generateDebug(result.code, result.context));
 
                     break;
                 case 'favourite':
@@ -771,19 +772,27 @@ ${Object.keys(user.favourites).join(', ')}
 
     async event(args) {
         // Migrate from the old version of timer structure
-        if (args.version !== 2) {
+        if (typeof args.version !== 'number' || args.version < 2) {
             args.context = {
                 msg: JSON.parse(args.msg),
                 isCC: args.params.ccommand,
                 state: {
+                    count: {
+                        dm: 0,
+                        send: 0,
+                        edit: 0,
+                        delete: 0,
+                        react: 0,
+                        reactRemove: 0,
+                        timer: 0,
+                        loop: 0,
+                        foreach: 0
+                    },
                     return: 0,
                     stackSize: 0,
-                    repeats: 0,
                     embed: null,
                     reactions: args.params.reactions,
                     nsfw: null,
-                    dmCount: 0,
-                    timerCount: 0,
                     replace: null,
                     break: 0,
                     continue: 0
@@ -807,12 +816,27 @@ ${Object.keys(user.favourites).join(', ')}
             args.tempVars = args.params.vars;
         }
 
-        let context = await bbEngine.Context.deserialize(args.context),
+        let context = await Context.deserialize(args.context),
             content = args.content;
 
-        context.state.timerCount = -1;
+        context.state.count.timer = -1;
         context.state.embed = null;
         context.state.reactions = [];
+
+        console.debug(context.state);
+
+        if (args.version == 2) {
+            context.state.count.loop = context.state.repeats;
+            context.state.count.foreach = context.state.foreach;
+            context.state.count.dm = context.state.dm;
+            delete context.state.timerCount;
+            delete context.state.dmCount;
+            delete context.state.repeats;
+            delete context.state.foreach;
+        }
+
+        console.debug(context.state);
+
         try {
             await bbEngine.runTag(content, context);
         } catch (err) {

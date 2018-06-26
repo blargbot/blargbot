@@ -104,11 +104,14 @@ class MuteCommand extends BaseCommand {
                                 if (duration.asMilliseconds() > 0) {
                                     await r.table('events').insert({
                                         type: 'unmute',
+                                        source: msg.guild.id,
                                         user: user.id,
+                                        content: `${user.username}#${user.discriminator}`,
                                         guild: msg.guild.id,
                                         duration: duration.toJSON(),
                                         role: mutedrole,
-                                        endtime: r.epochTime(dep.moment().add(duration).unix())
+                                        endtime: r.epochTime(dep.moment().add(duration).unix()),
+                                        starttime: r.epochTime(dep.moment().unix())
                                     });
                                     suffix = `The user will be unmuted ${duration.humanize(true)}.`;
                                 } else {

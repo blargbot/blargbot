@@ -6,10 +6,10 @@
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
-const bbEngine = require('../structures/BBTagEngine');
+const bbEngine = require('../structures/bbtag/Engine');
 
 bot.on('guildMemberAdd', async function (guild, member) {
-    bu.processUser(member.user);
+    await bu.processUser(member.user);
     let val = await bu.guildSettings.get(guild.id, 'greeting');
     let chan = await bu.guildSettings.get(guild.id, 'greetchan');
     if (chan && val) {
@@ -35,7 +35,7 @@ bot.on('guildMemberAdd', async function (guild, member) {
             author
         });
     }
-    bu.logEvent(guild.id, 'memberjoin', [{
+    bu.logEvent(guild.id, member.user.id, 'memberjoin', [{
         name: 'User',
         value: bu.getFullName(member.user) + ` (${member.user.id})\nMember #${guild.memberCount}`,
         inline: true

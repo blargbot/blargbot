@@ -11,8 +11,8 @@ const colors = require('../../res/colors') || {},
     snekfetch = require('snekfetch'),
     unorm = require('unorm'),
     limax = require('limax'),
-    User = require('eris/lib/structures/User'),
-    emojiRegex = `👁|${require('emoji-regex')().source}|<a?:\\w+:\\d{17,23}>`;
+    { User, Channel } = require('eris'),
+    twemoji = require('twemoji');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -270,20 +270,20 @@ bu.hasRole = (msg, roles, override = true) => {
     return false;
 };
 
-bu.addReactions = async function addReactions(channelId, messageId, reactions) {
-    let errored = [];
+bu.addReactions = async function (channelId, messageId, reactions) {
+    let errors = [];
     for (const reaction of new Set(reactions || [])) {
         try {
             await bot.addMessageReaction(channelId, messageId, reaction);
         } catch (e) {
-            if (e.message == 'Unknown Emoji')
-                errored.push(reaction);
-            else
-                throw e;
+            errors.push({ error: e, reaction });
         }
     }
 
-    return errored;
+    let failure;
+    if (failure = errors.find(e => e.error.message != 'Unknown Emoji'))
+        throw failure;
+    return errors.map(e => e.reaction);
 };
 
 /**
@@ -301,7 +301,7 @@ bu.send = async function (context, payload, files) {
         case "string":
             channel = await bot.getChannel(context);
             if (!channel)
-                channel = { id: context };
+                channel = new Channel({ id: context });
             break;
         case "object":
             // Probably a message provided
@@ -319,12 +319,18 @@ bu.send = async function (context, payload, files) {
     }
 
     if (channel == null) throw new Error("Channel not found");
-
-
     switch (typeof payload) {
         case "string": payload = { content: payload }; break;
         case "object": break;
         default: payload = {};
+    }
+
+    if ('permissionsOf' in channel &&
+        payload.embed &&
+        'asString' in payload.embed &&
+        !channel.permissionsOf(bot.user.id).has('embedLinks')) {
+        payload.content = (payload.content || '') + payload.embed.asString;
+        delete payload.embed;
     }
 
     if (files != null && !Array.isArray(files))
@@ -359,7 +365,7 @@ bu.send = async function (context, payload, files) {
         if (!bu.send.catch.hasOwnProperty(response.code))
             return console.error(error.response, error.stack);
 
-        let result = await bu.send.catch[response.code](channel, payload);
+        let result = await bu.send.catch[response.code](channel, payload, files);
         if (typeof result === 'string' && message && await bu.canDmErrors(message.author.id)) {
             if (message.guild) result += `\nGuild: ${message.guild.name} (${message.guild.id})`;
             result += `\nChannel: ${message.channel.name} (${message.channel.id})`;
@@ -368,6 +374,8 @@ bu.send = async function (context, payload, files) {
             result += '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.';
 
             await bu.sendDM(message.author.id, result);
+        } else if (typeof result === 'object' && 'id' in result) {
+            return result;
         }
     });
 };
@@ -541,8 +549,10 @@ bu.getUser = async function (msg, name, args = {}) {
     if (userList.length == 1) {
         return userList[0].user;
     } else if (userList.length == 0) {
-        if (!args.quiet && !args.suppress)
+        if (!args.quiet && !args.suppress) {
+            if (args.onSendCallback) args.onSendCallback();
             bu.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
+        }
         return null;
     } else {
         if (!args.quiet) {
@@ -556,6 +566,7 @@ bu.getUser = async function (msg, name, args = {}) {
             }
             let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
             try {
+                if (args.onSendCallback) args.onSendCallback();
                 let query = await bu.createQuery(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
 ${userListString}${moreUserString}--------------------
 C.cancel query
@@ -570,8 +581,10 @@ C.cancel query
                 let response = await query.response;
                 if (response.content.toLowerCase() == 'c') {
                     await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
-                    if (!args.suppress)
+                    if (!args.suppress) {
+                        if (args.onSendCallback) args.onSendCallback();
                         bu.send(msg, `Query canceled${args.label ? ' in ' + args.label : ''}.`);
+                    }
                     return null;
                 } else {
                     await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
@@ -1048,10 +1061,15 @@ bu.padRight = (value, length) => {
     return (value.toString().length < length) ? bu.padRight(value + ' ', length) : value;
 };
 
-bu.logEvent = async function (guildid, event, fields, embed) {
+bu.logEvent = async function (guildid, userids, event, fields, embed) {
     let storedGuild = await bu.getGuild(guildid);
-    if (!storedGuild.hasOwnProperty('log'))
-        storedGuild.log = {};
+    if (!storedGuild.hasOwnProperty('log')) storedGuild.log = {};
+    if (!storedGuild.hasOwnProperty('logIgnore')) storedGuild.logIgnore = [];
+    if (!Array.isArray(userids)) userids = [userids];
+    // If there are not any userId's that are not contained in the ignore, then return
+    // I.e. if all the users are contained in the ignore list
+    if (!userids.find(id => !storedGuild.logIgnore.includes(id)))
+        return;
     if (storedGuild.log.hasOwnProperty(event)) {
         let color;
         let eventName;
@@ -1294,6 +1312,8 @@ bu.isUserStaff = async function (userId, guildId) {
 
 
 bu.createRegExp = function (term) {
+    if (term.length > 2000)
+        throw new Error('Regex too long');
     if (/^\/?.*\/.*/.test(term)) {
         let regexList = term.match(/^\/?(.*)\/(.*)/);
 
@@ -1608,14 +1628,29 @@ bu.findEmoji = function (text, distinct) {
     let match;
     let result = [];
 
-    let regex = new RegExp(emojiRegex, "gi");
+    // Find custom emotes
+    let regex = /<(a?:\w+:\d{17,23})>/gi;
     while (match = regex.exec(text))
-        result.push(match[0].replace(/[<>]/g, ''));
+        result.push(match[1]);
+
+    // Find twemoji defined emotes
+    twemoji.replace(text, function (match) {
+        result.push(match);
+        return match;
+    });
 
     if (distinct)
         result = [...new Set(result)];
 
-    return result;
+    // Sort by order of appearance
+    result = result.map(r => {
+        return {
+            value: r,
+            index: text.indexOf(r)
+        };
+    });
+
+    return result.sort((a, b) => a.index - b.index).map(r => r.value);
 };
 
 /**

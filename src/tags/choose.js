@@ -7,8 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/BBTagEngine');
+const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('choose')
@@ -28,6 +27,6 @@ module.exports =
             if (index < 0)
                 return Builder.util.error(subtag, context, 'Choice cannot be negative');
 
-            return await bbEngine.execute(args[index + 1], context);
+            return await this.executeArg(subtag, args[index + 1], context);
         })
         .build();

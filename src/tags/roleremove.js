@@ -24,6 +24,10 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
+            let topRole = Builder.util.getRoleEditPosition(context);
+            if (topRole == 0)
+                return Builder.util.error(subtag, context, 'Author cannot remove roles');
+
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
                 result = await TagManager.list['userhasrole'].checkRoles(context, args[0], args[1], quiet);
 
@@ -35,6 +39,9 @@ module.exports =
 
             if (result.roles.length == 0)
                 return Builder.errors.noRoleFound(subtag, context);
+
+            if (result.roles.find(role => role.position >= topRole))
+                return Builder.util.error(subtag, context, 'Role above author');
 
             let roles = result.roles.filter((e, i) => result.hasRole[i]);
             if (roles.length == 0)

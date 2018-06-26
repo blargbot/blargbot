@@ -10,18 +10,18 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('rolecolor')
+    Builder.APITag('rolecolor')
         .withArgs(a => [a.require('role'), a.optional('quiet')])
         .withDesc('Returns `role`\'s hex color code. ' +
-        'If `quiet` is specified, if `role` can\'t be found it will simply return nothing.')
+            'If `quiet` is specified, if `role` can\'t be found it will simply return nothing.')
         .withExample(
-        'The admin role color is: #{rolecolor;admin}.',
-        'The admin role ID is: #1b1b1b.'
+            'The admin role color is: #{rolecolor;admin}.',
+            'The admin role ID is: #1b1b1b.'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
-                role = await bu.getRole(context.msg, args[0], {
+                role = await context.getRole(args[0], {
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });

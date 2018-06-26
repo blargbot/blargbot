@@ -10,21 +10,21 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('usernick')
+    Builder.APITag('usernick')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Returns `user`\'s nickname. If it doesn\'t exist, returns their username instead. ' +
-        '`user` defaults to the user who executed the containing tag. ' +
-        'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.')
+            '`user` defaults to the user who executed the containing tag. ' +
+            'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.')
         .withExample(
-        'Your nick is {usernick}!',
-        'Your nick is Cool Dude 1337!'
+            'Your nick is {usernick}!',
+            'Your nick is Cool Dude 1337!'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
                 user = context.user;
 
             if (args[0])
-                user = await bu.getUser(context.msg, args[0], {
+                user = await context.getUser(args[0], {
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });

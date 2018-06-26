@@ -68,7 +68,7 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
             if (newMsg.length > 900) newMsg = newMsg.substring(0, 900) + '... (too long to display)';
         }
         if (msg.guild) {
-            await bu.logEvent(msg.guild.id, 'messageupdate', [{
+            await bu.logEvent(msg.guild.id, msg.author.id, 'messageupdate', [{
                 name: 'User',
                 value: msg.author ? bu.getFullName(msg.author) + ` (${msg.author.id})` : 'Undefined',
                 inline: true

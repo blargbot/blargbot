@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('channelpos')
+    Builder.APITag('channelpos')
         .withDesc('Returns the position of the current channel.')
         .withExample(
             'This channel is in position {channelpos}',

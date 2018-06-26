@@ -7,8 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/BBTagEngine');
+const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('repeat')
@@ -32,12 +31,12 @@ module.exports =
             if (amount < 0) return Builder.util.error(subtag, context, 'Cant be negative');
 
             for (let i = 0; i < amount; i++) {
-                context.state.repeats += 1;
-                if (context.state.repeats > 1500) {
+                context.state.count.loop += 1;
+                if (context.state.count.loop > 1500) {
                     result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }
-                result += await bbEngine.execute(args[0], context);
+                result += await this.executeArg(subtag, args[0], context);
                 if (context.state.return != 0)
                     break;
             }

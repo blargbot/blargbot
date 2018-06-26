@@ -39,9 +39,10 @@ bot.on('guildBanRemove', async function (guild, user) {
     } else {
         bu.logAction(guild, user, mod, type || 'Unban', reason, bu.ModLogColour.UNBAN);
     }
-    bu.logEvent(guild.id, 'memberunban', [{
+    bu.logEvent(guild.id, user.id, 'memberunban', [{
         name: 'User',
         value: bu.getFullName(user) + ` (${user.id})`,
         inline: true
     }]);
+    r.table('events').filter({ user: user.id, type: 'unban', source: guild.id }).delete().run();
 });

@@ -33,6 +33,7 @@ Example: \`remind Do a thing! -t 1 day, two hours\``);
             if (input.c) channel = msg.channel.id;
             await r.table('events').insert({
                 type: 'remind',
+                source: msg.author.id,
                 user: msg.author.id,
                 content: input.undefined.join(' '),
                 channel: channel,

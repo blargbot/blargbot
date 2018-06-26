@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('guildsize')
+    Builder.APITag('guildsize')
         .withAlias('inguild')
         .withDesc('Returns the number of members on the current guild.')
         .withExample(

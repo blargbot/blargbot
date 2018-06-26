@@ -1,5 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand'),
-    bbEngine = require('../structures/BBTagEngine'),
+    bbEngine = require('../structures/bbtag/Engine'),
     bbtag = require('../core/bbtag');
 
 function filterTitle(title) {
@@ -381,7 +381,7 @@ class CcommandCommand extends BaseCommand {
                     break;
                 case 'debug':
                     let result = await bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3));
-                    await bu.send(result.context.msg, null, bbtag.generateDebug(result.code, result.context, result.result));
+                    await bu.send(result.context.msg, undefined, bbtag.generateDebug(result.code, result.context));
 
                     break;
                 default:

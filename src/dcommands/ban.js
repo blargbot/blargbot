@@ -75,10 +75,13 @@ class BanCommand extends BaseCommand {
             if (duration) {
                 await r.table('events').insert({
                     type: 'unban',
+                    source: msg.guild.id,
                     user: user.id,
+                    content: `${user.username}#${user.discriminator}`,
                     guild: msg.guild.id,
                     duration: duration.toJSON(),
-                    endtime: r.epochTime(dep.moment().add(duration).unix())
+                    endtime: r.epochTime(dep.moment().add(duration).unix()),
+                    starttime: r.epochTime(dep.moment().unix())
                 });
                 return [`:ok_hand: The user will be unbanned ${duration.humanize(true)}.`, duration.asMilliseconds()];
             } else {

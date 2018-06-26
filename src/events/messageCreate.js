@@ -7,7 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const bbEngine = require('../structures/BBTagEngine');
+const bbEngine = require('../structures/bbtag/Engine');
 const Timer = require('../structures/Timer');
 const cleverbotIo = new dep.cleverbotIo({
     user: config.cleverbot.ioid,
@@ -47,7 +47,7 @@ const cleverbot = new dep.cleverbot({
 
 bot.on('messageCreate', async function (msg) {
     bu.Metrics.messageCounter.inc();
-    bu.processUser(msg.author);
+    await bu.processUser(msg.author);
     let isDm = msg.channel.guild == undefined;
     let storedGuild;
     if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);

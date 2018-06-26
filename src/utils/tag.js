@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const bbEngine = require('../structures/BBTagEngine');
+const bbEngine = require('../structures/bbtag/Engine'),
+    ReadWriteLock = require('rwlock');
 
 bu.serializeTagArray = function (array, varName) {
     if (!varName)
@@ -193,7 +194,8 @@ bu.tagVariableScopes = [
                 context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
         getter: async (context, name) =>
             await bu.getVariable(context.guild.id, name,
-                context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD)
+                context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
+        getLock: (context, key) => bu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
     },
     {
         name: 'Author',
@@ -209,7 +211,8 @@ bu.tagVariableScopes = [
             if (context.author)
                 return await bu.getVariable(context.author, name, bu.TagVariableType.AUTHOR);
             return bbEngine.addError({}, context, '`No author found`');
-        }
+        },
+        getLock: (context, key) => bu.getLock(...['AUTHOR', context.author.id, key])
     },
     {
         name: 'Global',
@@ -219,7 +222,8 @@ bu.tagVariableScopes = [
         setter: async (context, values) =>
             await bu.setVariable(undefined, values, bu.TagVariableType.GLOBAL),
         getter: async (context, name) =>
-            await bu.getVariable(undefined, name, bu.TagVariableType.GLOBAL)
+            await bu.getVariable(undefined, name, bu.TagVariableType.GLOBAL),
+        getLock: (context, key) => bu.getLock(...['GLOBAL', key])
     },
     {
         name: 'Temporary',
@@ -227,7 +231,8 @@ bu.tagVariableScopes = [
         description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
             'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type',
         setter: async (context, values) => { return ''; }, //Temporary is never persisted to the database
-        getter: async (context, name) => { } //Temporary is never persisted to the database
+        getter: async (context, name) => { }, //Temporary is never persisted to the database
+        getLock: (context, key) => context.getLock(key)
     },
     {
         name: 'Local',
@@ -244,6 +249,19 @@ bu.tagVariableScopes = [
             if (context.isCC)
                 return await bu.getVariable(context.tagName, name, bu.TagVariableType.GUILDLOCAL, context.guild.id);
             return await bu.getVariable(context.tagName, name, bu.TagVariableType.LOCAL);
-        }
+        },
+        getLock: (context, key) => bu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', context.tagName])
     }
 ];
+
+bu.getLock = function (...path) {
+    let key = path.slice(-1)[0];
+    path = path.slice(0, -1);
+
+    let node = bu.tagLocks || (bu.tagLocks = {});
+
+    for (const entry of path)
+        node = node[entry] || (node[entry] = {});
+
+    return node[key] || (node[key] = new ReadWriteLock());
+};

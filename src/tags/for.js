@@ -8,7 +8,6 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/BBTagEngine'),
     operators = {
         '==': (a, b) => a === b,
         '!=': (a, b) => a !== b,
@@ -49,7 +48,7 @@ module.exports =
             if (args.length == 5)
                 increment = 1;
             else
-                increment = bu.parseFloat(await bbEngine.execute(args[4], context));
+                increment = bu.parseFloat(await this.executeArg(subtag, args[4], context));
 
             if (isNaN(initial)) errors.push('Initial must be a number');
             if (!operator) errors.push('Invalid operator');
@@ -58,13 +57,13 @@ module.exports =
             if (errors.length > 0) return Builder.util.error(subtag, context, errors.join(', '));
 
             for (let i = initial; operator(i, limit); i += increment) {
-                context.state.repeats += 1;
-                if (context.state.repeats > 1500) {
+                context.state.count.loop += 1;
+                if (context.state.count.loop > 1500) {
                     result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }
                 await context.variables.set(varName, i);
-                result += await bbEngine.execute(args[code], context);
+                result += await this.executeArg(subtag, args[code], context);
                 i = bu.parseFloat(await context.variables.get(varName));
                 if (isNaN(i)) {
                     result += Builder.errors.notANumber(subtag, context);
