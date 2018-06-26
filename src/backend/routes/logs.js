@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-15 20:32:24
+ * @Last Modified time: 2018-06-26 13:01:47
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -46,8 +46,8 @@ router.post('/', async (req, res) => {
         let messages = [];
         try {
             for (const id of logsSpecs.ids) {
-                let r = await bu.cclient.execute(`SELECT * FROM ${res.locals.beta ? 'blargbot_beta' : 'blargbot'}.chatlogs2 WHERE id = ?`,
-                    [id], { prepare: true, readTimeout: 200000 });
+                let r = await bu.cclient.execute(`SELECT * FROM ${res.locals.beta ? 'blargbot_beta' : 'blargbot'}.chatlogs WHERE channelid = :channelid and id = :id`,
+                    { id, channelid: logsSpecs.channel }, { prepare: true, readTimeout: 200000 });
                 messages.push(bu.normalize(r.rows[0]));
             }
         } catch (err) {
@@ -66,7 +66,13 @@ router.post('/', async (req, res) => {
             if (temp) {
                 userCache[id] = { username: temp.username, discriminator: temp.discriminator, bot: temp.isbot, avatarURL: temp.avatarURL };
             } else if (!userCache[id])
-                userCache[id] = await bot.getRESTUser(id);
+                try {
+                    userCache[id] = await bot.getRESTUser(id);
+                } catch (err) {
+                    userCache[id] = {
+                        id, username: 'unknown', discriminator: '0000'
+                    }
+                }
             return userCache[id];
         }
         if (messages.length > 0) {

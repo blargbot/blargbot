@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-21 17:38:13
+ * @Last Modified time: 2018-06-26 13:16:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -213,10 +213,13 @@ bu.getGuild = async function (guildid) {
     return storedGuild;
 };
 
-const insertQuery = `
-    INSERT INTO chatlogs2 (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)
+const insertQuery1 = `
+    INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)
         VALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)
         USING TTL 604800
+`;
+const insertQuery2 = `
+    INSERT INTO chatlogs_map (id, msgid, channelid) VALUES (:id, :msgid, :channelid) USING TTL 604800
 `;
 
 bu.normalize = function (r) {
@@ -237,15 +240,18 @@ bu.normalize = function (r) {
     }
     return n;
 };
+
 bu.getChatlog = async function (id) {
-    let res = await cclient.execute(`SELECT * FROM chatlogs2 WHERE msgid = ?`, [id], { prepare: true });
-    let msgs = [];
-    for (const row of res.rows) {
-        msgs.push(bu.normalize(row));
-    }
-    if (msgs.length > 1)
-        msgs.sort((a, b) => b.msgtime - a.msgtime);
-    return msgs;
+    let res = await cclient.execute(`SELECT channelid, id FROM chatlogs_map WHERE msgid = :id LIMIT 1`, { id }, { prepare: true });
+    if (res.rows.length > 0) {
+        let msg = await cclient.execute(`SELECT * FROM chatlogs WHERE channelid = :channelid and id = :id LIMIT 1`, {
+            id: res.rows[0].id,
+            channelid: res.rows[0].channelid
+        }, { prepare: true });
+        if (msg.rows.length > 0)
+            return bu.normalize(msg.rows[0]);
+        else return null;
+    } else return null;
 };
 
 bu.insertChatlog = async function (msg, type) {
@@ -264,7 +270,9 @@ bu.insertChatlog = async function (msg, type) {
             embeds: JSON.stringify(msg.embeds)
         };
         try {
-            await cclient.execute(insertQuery, data, { prepare: true });
+            await cclient.execute(insertQuery1, data, { prepare: true });
+            await cclient.execute(insertQuery2, { id: data.id, msgid: msg.id, channelid: msg.channel.id },
+                { prepare: true });
         } catch (err) {
 
         }
