@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-01 22:14:55
+ * @Last Modified time: 2018-06-26 12:30:27
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,11 +17,10 @@ async function handleDelete(msg, quiet) {
     const storedGuild = await bu.getGuild(msg.channel.guild.id);
     if (!msg.author || !msg.channel) {
         let storedMsg = await bu.getChatlog(msg.id);
-        if (storedMsg.length > 0) {
+        if (storedMsg) {
 
             console.debug('Somebody deleted an uncached message, but we found it in the DB.');
 
-            storedMsg = storedMsg[0];
             msg.content = storedMsg.content;
             msg.author = bot.users.get(storedMsg.userid) || {
                 id: storedMsg.userid
