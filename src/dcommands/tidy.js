@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const isSafeRegex = require('safe-regex');
 
 class TidyCommand extends BaseCommand {
     constructor() {
@@ -58,7 +59,7 @@ class TidyCommand extends BaseCommand {
             } else {
                 query = new RegExp(queryStr);
             }
-            if (!dep.safe(query)) {
+            if (!isSafeRegex(query)) {
                 bu.send(msg, 'That regex is not safe! Terminating operation.');
                 return;
             }

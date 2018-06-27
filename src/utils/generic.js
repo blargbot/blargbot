@@ -15,6 +15,7 @@ const limax = require('limax');
 const { User, Channel, Member, Message, Permission } = require('eris');
 const twemoji = require('twemoji');
 const request = require('request');
+const isSafeRegex = require('safe-regex');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -1323,7 +1324,7 @@ bu.createRegExp = function (term) {
             throw new Error('Unsafe Regex');
 
         let temp = new RegExp(regexList[1], regexList[2]);
-        if (!dep.safe(temp)) {
+        if (!isSafeRegex(temp)) {
             throw new Error('Unsafe Regex');
         }
         return temp;

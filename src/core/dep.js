@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    safe: require('safe-regex'),
     twemoji: require('twemoji'),
     svg2png: require('svg2png'),
     Table: require('cli-table'),
