@@ -41,8 +41,6 @@ const loggr = new CatLoggr({
     ]
 }).setGlobal();
 
-global.dep = require('./dep.js');
-
 const https = require('https');
 global.bbtag = require('./bbtag.js');
 const Sender = require('../structures/Sender');

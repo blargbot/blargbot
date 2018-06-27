@@ -8,10 +8,6 @@ const oldPath = path.join(__dirname, '..', 'src', 'dcommands.old');
 const newPath = path.join(__dirname, '..', 'src', 'dcommands');
 
 global.Promise = require('bluebird');
-global.dep = {
-    Eris: require('eris'),
-    reload: function () { return { patrons: '', donators: '' } }
-};
 global.config = { wolke: 'asdsad' };
 global.bu = { escapeHTML() { } };
 

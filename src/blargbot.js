@@ -38,7 +38,6 @@ const loggr = new CatLoggr({
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Promise Rejection:', err);
 });
-global.dep = require('./core/dep.js');
 
 const reload = require('require-reload')(require);
 const EventEmitter = require('eventemitter3');
