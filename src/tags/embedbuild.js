@@ -32,7 +32,7 @@ const fields = [
         error: (e, v) => v.host == null
             ? 'Invalid url'
             : false,
-        parse: v => dep.url.parse(v),
+        parse: v => url.parse(v),
         setter: (e, v) => e.url = v.href
     },
     {
@@ -59,7 +59,7 @@ const fields = [
         error: (e, v) => v.host == null
             ? 'Invalid footer.icon_url'
             : false,
-        parse: v => dep.url.parse(v),
+        parse: v => url.parse(v),
         setter: (e, v) => getObj(e, 'footer').icon_url = v.href
     },
     {
@@ -75,7 +75,7 @@ const fields = [
         error: (e, v) => v.host == null
             ? 'Invalid thumbnail.url'
             : false,
-        parse: v => dep.url.parse(v),
+        parse: v => url.parse(v),
         setter: (e, v) => getObj(e, 'thumbnail').url = v.href
     },
     {
@@ -83,7 +83,7 @@ const fields = [
         error: (e, v) => v.host == null
             ? 'Invalid image.url'
             : false,
-        parse: v => dep.url.parse(v),
+        parse: v => url.parse(v),
         setter: (e, v) => getObj(e, 'image').url = v.href
     },
     {
@@ -99,7 +99,7 @@ const fields = [
         error: (e, v) => v.host == null
             ? 'Invalid author.url'
             : false,
-        parse: v => dep.url.parse(v),
+        parse: v => url.parse(v),
         setter: (e, v) => getObj(e, 'author').url = v.href
     },
     {
@@ -107,7 +107,7 @@ const fields = [
         error: (e, v) => v.host == null
             ? 'Invalid author.icon_url'
             : false,
-        parse: v => dep.url.parse(v),
+        parse: v => url.parse(v),
         setter: (e, v) => getObj(e, 'author').icon_url = v.href
     },
     {
