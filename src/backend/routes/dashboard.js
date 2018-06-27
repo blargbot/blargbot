@@ -8,6 +8,7 @@
  */
 
 const router = dep.express.Router();
+const hbs = require('hbs');
 
 router.get('/', async function (req, res) {
     // if (!req.user) {
@@ -26,7 +27,7 @@ router.get('/', async function (req, res) {
     //         return returnObj;
     //     });
     //     //  console.debug(settings);
-    //     res.locals.gsettings = new dep.hbs.handlebars.SafeString(JSON.stringify(settings).replace(/`/g, '\\`'));
+    //     res.locals.gsettings = new hbs.handlebars.SafeString(JSON.stringify(settings).replace(/`/g, '\\`'));
     //     let guilds = req.user.guilds;
     //     let firstGuildCount = guilds.length;
 

@@ -8,6 +8,7 @@
  */
 
 const showdown = require('showdown');
+const hbs = require('hbs');
 const converter = new showdown.Converter({ backslashEscapesHTMLTags: true });
 
 const argumentFactory = require('../structures/ArgumentFactory')
@@ -64,9 +65,9 @@ function addSubtagReferences(text) {
 }
 
 e.init = () => {
-    dep.hbs.registerPartials(dep.path.join(__dirname, 'views', 'partials'));
+    hbs.registerPartials(dep.path.join(__dirname, 'views', 'partials'));
 
-    dep.hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
+    hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
 
         switch (operator) {
             case '==':
@@ -94,7 +95,7 @@ e.init = () => {
         }
     });
 
-    dep.hbs.registerHelper('listcommands', function () {
+    hbs.registerHelper('listcommands', function () {
         let sidebar = '';
         let commands = CommandManager.list;
         let lastType = -10;
@@ -114,7 +115,7 @@ e.init = () => {
         return sidebar;
     });
 
-    dep.hbs.registerHelper('listtags', function () {
+    hbs.registerHelper('listtags', function () {
         let sidebar = '';
         let lastType = -10;
         let tags = TagManager.list;
@@ -133,7 +134,7 @@ e.init = () => {
         return sidebar;
     });
 
-    dep.hbs.registerHelper('tags', function (text, url) {
+    hbs.registerHelper('tags', function (text, url) {
         let toReturn = '';
         let lastType = -10;
         let tags = TagManager.list;
@@ -225,7 +226,7 @@ e.init = () => {
         return toReturn;
     });
 
-    dep.hbs.registerHelper('tagseditor', (text, url) => {
+    hbs.registerHelper('tagseditor', (text, url) => {
         let tags = Object.keys(TagManager.list).map(m => {
             return {
                 text: m,
@@ -239,7 +240,7 @@ e.init = () => {
 
 
 
-    dep.hbs.registerHelper('commands', function (text, url) {
+    hbs.registerHelper('commands', function (text, url) {
         let toReturn = '';
         let lastType = -10;
         let commands = CommandManager.list;

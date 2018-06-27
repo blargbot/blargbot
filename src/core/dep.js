@@ -13,7 +13,6 @@ var e = module.exports = {
     path: require('path'),
     request: require('request'),
     fs: require('fs'),
-    hbs: require('hbs'),
     sf: require('snekfetch'),
     'child_process': require('child_process'),
     exec: require('child_process').exec,

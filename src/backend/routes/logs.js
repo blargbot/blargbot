@@ -8,6 +8,7 @@
  */
 
 const router = dep.express.Router();
+const hbs = require('hbs');
 
 const types = [{
     name: 'Create',
@@ -109,7 +110,7 @@ router.post('/', async (req, res) => {
                 m.msgtime = dep.moment(bu.unmakeSnowflake(m.id)).unix();
                 let text = m.content;
 
-                text = dep.hbs.handlebars.Utils.escapeExpression(text);
+                text = hbs.handlebars.Utils.escapeExpression(text);
 
                 text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
                 while (/&lt;@!?(\d+)&gt;/.test(text)) {
@@ -134,7 +135,7 @@ router.post('/', async (req, res) => {
                     data-user-id='${id}'
                     data-clipboard-text='${id}'>@${user.username}#${user.discriminator}</span>`);
                 }
-                m.content = new dep.hbs.handlebars.SafeString(text);
+                m.content = new hbs.handlebars.SafeString(text);
                 m.type = types[m.type];
                 messages2.push(m);
             }
