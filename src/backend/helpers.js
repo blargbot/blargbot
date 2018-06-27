@@ -9,9 +9,10 @@
 
 const showdown = require('showdown');
 const hbs = require('hbs');
-const converter = new showdown.Converter({ backslashEscapesHTMLTags: true });
+const argumentFactory = require('../structures/ArgumentFactory');
+const path = require('path');
 
-const argumentFactory = require('../structures/ArgumentFactory')
+const converter = new showdown.Converter({ backslashEscapesHTMLTags: true });
 let e = module.exports = {};
 let TagManager = {
     list: {}
@@ -65,7 +66,7 @@ function addSubtagReferences(text) {
 }
 
 e.init = () => {
-    hbs.registerPartials(dep.path.join(__dirname, 'views', 'partials'));
+    hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
     hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
 

@@ -1,6 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
 const heapdump = require('heapdump');
+const path = require('path');
 
 class HeapdumpCommand extends BaseCommand {
     constructor() {
@@ -29,7 +30,7 @@ class HeapdumpCommand extends BaseCommand {
             async function doHeapdump() {
                 startTime = moment();
                 await bu.send(msg, 'Writing snapshot...');
-                heapdump.writeSnapshot(dep.path.join(__dirname, '..', `blargdump${i}.heapsnapshot`), (err, filename) => {
+                heapdump.writeSnapshot(path.join(__dirname, '..', `blargdump${i}.heapsnapshot`), (err, filename) => {
                     let diff = moment.duration(moment() - startTime);
                     // https://canary.discordapp.com/api/webhooks/368920953356288001/
                     bot.executeWebhook('368920953356288001', config.emerg.heap, {

@@ -12,10 +12,10 @@ var e = module.exports = {};
 const express = require('express');
 const router = express.Router();
 const app = express();
-
 const Strategy = dep.Strategy;
-
 const helpers = require('./helpers');
+const path = require('path');
+
 app.use(dep.bodyParser.json());
 app.use(dep.bodyParser.urlencoded({ // to support URL-encoded bodies
     limit: '50mb',
@@ -23,8 +23,8 @@ app.use(dep.bodyParser.urlencoded({ // to support URL-encoded bodies
 }));
 
 app.set('view engine', 'hbs');
-app.set('views', dep.path.join(__dirname, 'views'));
-app.use(express.static(dep.path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 helpers.init();
 

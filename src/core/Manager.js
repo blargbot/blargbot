@@ -7,6 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const path = require('path');
+
 class Manager {
 
     constructor(type, removeListeners, init = true) {
@@ -19,7 +21,7 @@ class Manager {
     }
 
     init() {
-        var fileArray = dep.fs.readdirSync(dep.path.join(__dirname, '..', this.type));
+        var fileArray = dep.fs.readdirSync(path.join(__dirname, '..', this.type));
         for (var i = 0; i < fileArray.length; i++) {
             var file = fileArray[i];
             if (/.+\.js$/.test(file)) {

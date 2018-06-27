@@ -12,6 +12,7 @@ const moment = require('moment-timezone');
 const freefreefree = require('../dcommands/free.js');
 const util = require('util');
 const http = dep.http;
+const path = require('path');
 
 var e = module.exports = {};
 e.requireCtx = require;
@@ -397,7 +398,7 @@ var userdataDir = 'userdata';
 dep.mkdirp(userdataDir);
 
 function getUserFilePath(name) {
-    return dep.path.join(__dirname, '..', '..', `${userdataDir}/${name}.json`.toLowerCase());
+    return path.join(__dirname, '..', '..', `${userdataDir}/${name}.json`.toLowerCase());
 }
 
 function createDefaultUserFile(name) {
