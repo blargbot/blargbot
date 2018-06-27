@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    http: require('http'),
     safe: require('safe-regex'),
     twemoji: require('twemoji'),
     svg2png: require('svg2png'),

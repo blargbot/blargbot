@@ -11,7 +11,7 @@ const irc = require('irc');
 const moment = require('moment-timezone');
 const freefreefree = require('../dcommands/free.js');
 const util = require('util');
-const http = dep.http;
+const http = require('http');
 const path = require('path');
 const fs = require('fs');
 

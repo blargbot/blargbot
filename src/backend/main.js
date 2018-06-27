@@ -17,6 +17,7 @@ const helpers = require('./helpers');
 const path = require('path');
 const passport = require('passport');
 const session = require('express-session');
+const http = require('http');
 
 app.use(dep.bodyParser.json());
 app.use(dep.bodyParser.urlencoded({ // to support URL-encoded bodies
@@ -30,7 +31,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 helpers.init();
 
-const server = app.server = dep.http.createServer(app);
+const server = app.server = http.createServer(app);
 require('./websocket.js').init(server);
 
 var scopes = ['identify', 'guilds'];
