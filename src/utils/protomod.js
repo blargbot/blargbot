@@ -1,13 +1,8 @@
-/*
- * @Author: stupid cat
- * @Date: 2017-05-07 19:30:02
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-14 11:39:26
- *
- * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
- */
+// Perform all prototype modifications here
 
-Object.defineProperty(e.Eris.Message.prototype, "guild", {
+const { Message } = require('eris');
+
+Object.defineProperty(Message.prototype, "guild", {
     get: function guild() {
         return this.channel.guild;
     }
