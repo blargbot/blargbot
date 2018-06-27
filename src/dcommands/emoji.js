@@ -1,7 +1,8 @@
-const BaseCommand = require('../structures/BaseCommand'),
-    fs = require('fs'),
-    path = require('path'),
-    svg2png = require('svg2png');
+const BaseCommand = require('../structures/BaseCommand');
+const fs = require('fs');
+const path = require('path');
+const svg2png = require('svg2png');
+const twemoji = require('twemoji');
 
 class EmojiCommand extends BaseCommand {
     constructor() {
@@ -34,7 +35,7 @@ class EmojiCommand extends BaseCommand {
                         }
                     });
                 } else {
-                    let codePoint = dep.twemoji.convert.toCodePoint(emoji[0]);
+                    let codePoint = twemoji.convert.toCodePoint(emoji[0]);
                     let file = path.join(__dirname, '..', '..', 'node_modules', 'twemoji', '2', 'svg', codePoint + '.svg');
                     if (fs.existsSync(file)) {
                         let body = fs.readFileSync(file);

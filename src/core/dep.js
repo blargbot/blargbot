@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    twemoji: require('twemoji'),
     svg2png: require('svg2png'),
     Table: require('cli-table'),
     youtubeStream: require('youtube-audio-stream'),
