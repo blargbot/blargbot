@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    gm: require('gm'),
     http: require('http'),
     safe: require('safe-regex'),
     twemoji: require('twemoji'),
