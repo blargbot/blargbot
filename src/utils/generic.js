@@ -14,6 +14,7 @@ const unorm = require('unorm');
 const limax = require('limax');
 const { User, Channel } = require('eris');
 const twemoji = require('twemoji');
+const request = require('request');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -723,7 +724,7 @@ bu.sendFile = (channelid, message, url) => {
     var i = url.lastIndexOf('/');
     if (i != -1) {
         var filename = url.substring(i + 1, url.length);
-        dep.request({
+        request({
             uri: url,
             encoding: null
         }, function (err, res, body) {
@@ -1244,7 +1245,7 @@ bu.getPerms = function (channelid) {
 
 bu.request = function (options) {
     return new Promise((fulfill, reject) => {
-        dep.request(options, (err, res, body) => {
+        request(options, (err, res, body) => {
             if (err) {
                 reject(err);
                 return;
@@ -1337,7 +1338,7 @@ bu.postStats = function () {
         shard_count: config.discord.shards,
         shard_id: process.env.SHARD_ID
     };
-    dep.request.post({
+    request.post({
         'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
         'headers': {
             'content-type': 'application/json',
@@ -1353,7 +1354,7 @@ bu.postStats = function () {
     if (!config.general.isbeta) {
         console.info('Posting to matt');
 
-        dep.request.post({
+        request.post({
             'url': 'https://www.carbonitex.net/discord/data/botdata.php',
             'headers': {
                 'content-type': 'application/json'
@@ -1370,7 +1371,7 @@ bu.postStats = function () {
             if (err) console.error(err);
         });
 
-        dep.request.post({
+        request.post({
             url: `https://discordbots.org/api/bots/${bot.user.id}/stats`,
             json: true,
             headers: {

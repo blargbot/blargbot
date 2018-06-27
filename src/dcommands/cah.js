@@ -1,5 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const path = require('path');
+const request = require('request');
 
 var cah = {};
 var cad = {};
@@ -17,7 +18,7 @@ class CahCommand extends BaseCommand {
             cah = JSON.parse(dep.fs.readFileSync(path.join(__dirname, '..', '..', 'res', 'cah.json'), 'utf8'));
         }
 
-        dep.request('https://api.cardcastgame.com/v1/decks/JJDFG/cards', (err, res, body) => {
+        request('https://api.cardcastgame.com/v1/decks/JJDFG/cards', (err, res, body) => {
             try {
                 let tempCad = JSON.parse(body);
                 cad.black = tempCad.calls.map(m => {

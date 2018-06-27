@@ -1,5 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const request = require('request');
 
 var part = {
     verb: 'v',
@@ -39,7 +40,7 @@ class DefineCommand extends BaseCommand {
         }
         vars.uses++;
         await r.table('vars').get('wordapis').update(vars);
-        dep.request({
+        request({
             url: `https://wordsapiv1.p.mashape.com/words/${args}`,
             headers: {
                 'X-Mashape-Key': config.general.mashape,

@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const request = require('request');
 
 module.exports =
     Builder.AutoTag('emoji')
@@ -24,7 +25,7 @@ module.exports =
             if (amount > 10) amount = 10;
             else if (amount < 1) amount = 1;
             let emojis = await new Promise((resolve, reject) => {
-                dep.request(`https://emoji.getdango.com/api/emoji?q=${q}`, (req, res, body) => {
+                request(`https://emoji.getdango.com/api/emoji?q=${q}`, (req, res, body) => {
                     body = JSON.parse(body);
                     resolve(body.results.map(result => result.text));
                 });

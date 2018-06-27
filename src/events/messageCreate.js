@@ -11,6 +11,7 @@ const moment = require('moment-timezone');
 const bbEngine = require('../structures/bbtag/Engine');
 const Timer = require('../structures/Timer');
 const util = require('util');
+const request = require('request');
 const cleverbotIo = new dep.cleverbotIo({
     user: config.cleverbot.ioid,
     key: config.cleverbot.iokey,
@@ -491,7 +492,7 @@ const cleverCache = {};
 
 function query(input) {
     return new Promise((res, rej) => {
-        dep.request.post(config.cleverbot.endpoint, {
+        request.post(config.cleverbot.endpoint, {
             form: { input }
         }, (err, re, bod) => {
             if (err) rej(err);
