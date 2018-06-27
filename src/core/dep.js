@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    BigNumber: require('big-number'),
     url: require('url')
 };
 
