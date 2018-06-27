@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    cluster: require('cluster'),
     reload: require('require-reload'),
     os: require('os'),
     Eris: require('eris'),

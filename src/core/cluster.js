@@ -9,7 +9,7 @@
 if (process.execArgv[0])
     process.execArgv[0] = process.execArgv[0].replace('-brk', '');
 
-const cluster = dep.cluster;
+const cluster = require('cluster');
 const util = require('util');
 
 module.exports = cluster;
