@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    brainfuck: new (require('brainfuck-node'))(),
     BigNumber: require('big-number'),
     url: require('url')
 };
