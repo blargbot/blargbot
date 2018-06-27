@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    path: require('path'),
     request: require('request'),
     fs: require('fs'),
     sf: require('snekfetch'),
