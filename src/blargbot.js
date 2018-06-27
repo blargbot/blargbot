@@ -2,14 +2,39 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-26 12:41:54
+ * @Last Modified time: 2018-06-27 11:25:23
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 global.config = require('../config.json');
-const Logger = require('./core/logger');
-new Logger('MS', config.general.isbeta ? 'debug' : 'info').setGlobal();
+const CatLoggr = require('cat-loggr');
+const loggr = new CatLoggr({
+    shardId: 'MS',
+    level: config.general.isbeta ? 'debug' : 'info',
+    levels: [
+        { name: 'fatal', color: CatLoggr._chalk.red.bgBlack, err: true },
+        { name: 'error', color: CatLoggr._chalk.black.bgRed, err: true },
+        { name: 'warn', color: CatLoggr._chalk.black.bgYellow, err: true },
+        { name: 'trace', color: CatLoggr._chalk.green.bgBlack, trace: true },
+        { name: 'website', color: CatLoggr._chalk.black.bgCyan },
+        { name: 'ws', color: CatLoggr._chalk.yellow.bgBlack },
+        { name: 'cluster', color: CatLoggr._chalk.black.bgMagenta },
+        { name: 'worker', color: CatLoggr._chalk.black.bgMagenta },
+        { name: 'command', color: CatLoggr._chalk.black.bgBlue },
+        { name: 'irc', color: CatLoggr._chalk.yellow.bgBlack },
+        { name: 'shardi', color: CatLoggr._chalk.blue.bgYellow },
+        { name: 'init', color: CatLoggr._chalk.black.bgBlue },
+        { name: 'info', color: CatLoggr._chalk.black.bgGreen },
+        { name: 'output', color: CatLoggr._chalk.black.bgMagenta },
+        { name: 'bbtag', color: CatLoggr._chalk.black.bgGreen },
+        { name: 'verbose', color: CatLoggr._chalk.black.bgCyan },
+        { name: 'adebug', color: CatLoggr._chalk.cyan.bgBlack },
+        { name: 'debug', color: CatLoggr._chalk.magenta.bgBlack, aliases: ['log', 'dir'] },
+        { name: 'database', color: CatLoggr._chalk.black.bgBlue },
+        { name: 'module', color: CatLoggr._chalk.black.bgBlue }
+    ]
+}).setGlobal();
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Promise Rejection:', err);
 });
