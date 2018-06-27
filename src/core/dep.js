@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    mkdirp: require('mkdirp'),
     winston: require('winston'),
     wconfig: require('winston/lib/winston/config'),
     Trello: require('node-trello'),

@@ -14,6 +14,7 @@ const util = require('util');
 const http = require('http');
 const path = require('path');
 const fs = require('fs');
+const mkdirp = require('mkdirp');
 
 var e = module.exports = {};
 e.requireCtx = require;
@@ -396,7 +397,7 @@ function sendMessageToIrc(channel, message) {
 }
 
 var userdataDir = 'userdata';
-dep.mkdirp(userdataDir);
+mkdirp(userdataDir);
 
 function getUserFilePath(name) {
     return path.join(__dirname, '..', '..', `${userdataDir}/${name}.json`.toLowerCase());
