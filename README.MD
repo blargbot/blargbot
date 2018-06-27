@@ -4,7 +4,7 @@
 	<br>
 </h1>
 
-<h0 align="center"> blargbot </h0>
+<h1 align="center"> blargbot </h1>
 
 
 blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.
