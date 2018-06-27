@@ -9,8 +9,9 @@
 
 var e = module.exports = {};
 
-const router = dep.express.Router();
-const app = dep.express();
+const express = require('express');
+const router = express.Router();
+const app = express();
 
 const Strategy = dep.Strategy;
 
@@ -23,7 +24,7 @@ app.use(dep.bodyParser.urlencoded({ // to support URL-encoded bodies
 
 app.set('view engine', 'hbs');
 app.set('views', dep.path.join(__dirname, 'views'));
-app.use(dep.express.static(dep.path.join(__dirname, 'public')));
+app.use(express.static(dep.path.join(__dirname, 'public')));
 
 helpers.init();
 

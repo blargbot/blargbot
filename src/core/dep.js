@@ -17,7 +17,6 @@ var e = module.exports = {
     'child_process': require('child_process'),
     exec: require('child_process').exec,
     Jimp: require('jimp'),
-    express: require('express'),
     passport: require('passport'),
     session: require('express-session'),
     Strategy: require('passport-discord').Strategy,

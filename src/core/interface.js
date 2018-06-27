@@ -7,13 +7,15 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const express = require('express');
+
 var app;
 var e = module.exports;
 
 var server;
 
 e.init = () => {
-    app = dep.express();
+    app = express();
     app.use(dep.bodyParser.json());
     app.use(dep.bodyParser.urlencoded({ limit: '50mb', extended: true }));
     server = app.listen(8081, function () {
