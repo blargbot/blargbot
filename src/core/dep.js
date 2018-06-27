@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    Jimp: require('jimp'),
     passport: require('passport'),
     session: require('express-session'),
     Strategy: require('passport-discord').Strategy,
