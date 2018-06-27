@@ -80,7 +80,7 @@ class TimersCommand extends BaseCommand {
                         let content = timer.content || '';
                         if (content.length > 40)
                             content = content.substring(0, 37) + '...';
-                        content.replace(/[\n\t\r]/g, '');
+                        content = content.replace(/[\n\t\r]/g, '');
                         records.push([id, elapsed, remain, user, type, content]);
                     }
                     let headers = ['Id', 'Elapsed', 'Remain', 'User', 'Type', 'Content'];
