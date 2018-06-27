@@ -16,6 +16,7 @@ const { User, Channel, Member, Message, Permission } = require('eris');
 const twemoji = require('twemoji');
 const request = require('request');
 const isSafeRegex = require('safe-regex');
+const { emojify } = require('node-emoji');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -435,7 +436,7 @@ bu.sendDM = async function (user, message, file) {
         return Error('No content');
     }
     bu.messageStats++;
-    message = dep.emoji.emojify(message);
+    message = emojify(message);
 
     if (message.length > 2000) {
         message = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';

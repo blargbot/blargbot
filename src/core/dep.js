@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    emoji: require('node-emoji'),
     //    wordsearch: require('wordsearch'),
     cleverbot: require('cleverbot'),
     cleverbotIo: require('better-cleverbot-io'),
