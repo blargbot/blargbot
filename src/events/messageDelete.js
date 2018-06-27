@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-26 12:30:27
+ * @Last Modified time: 2018-06-26 17:07:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -92,7 +92,8 @@ bot.on('messageDeleteBulk', function (msgs) {
     for (const msg of msgs) {
         handleDelete(msg, true);
     }
-    bu.logEvent(msgs[0].channel.guild.id, msgs.map(m => m.author.id), 'messagedelete', [{
+
+    bu.logEvent(msgs[0].channel.guild.id, msgs.map(m => m.author ? m.author.id : '1'), 'messagedelete', [{
         name: 'Count',
         value: msgs.length,
         inline: true

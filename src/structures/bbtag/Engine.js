@@ -48,6 +48,10 @@ async function execute(bbtag, context) {
             }
             let name = await execute(subtag.children[0], context);
             let definition, runSubtag;
+
+            if (!context.state.overrides)
+                context.state.overrides = {};
+
             if (context.state.overrides.hasOwnProperty(name)) {
                 runSubtag = context.state.overrides[name.toLowerCase()];
                 definition = { name: name.toLowerCase() };

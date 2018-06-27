@@ -819,6 +819,8 @@ ${Object.keys(user.favourites).join(', ')}
         let context = await Context.deserialize(args.context),
             content = args.content;
 
+        if (!context.state.count) context.state.count = {};
+
         context.state.count.timer = -1;
         context.state.embed = null;
         context.state.reactions = [];

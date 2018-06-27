@@ -2,7 +2,11 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
+<<<<<<< HEAD
  * @Last Modified time: 2018-06-27 11:25:23
+=======
+ * @Last Modified time: 2018-06-26 17:04:57
+>>>>>>> dba55d0b93b1ca3b21255a1728156e8ee325f4ca
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -87,11 +91,12 @@ botEmitter.on('reloadBu', () => {
 });
 
 const cassandra = require('cassandra-driver');
-const cclient = new cassandra.Client({
-    contactPoints: config.cassandra.contactPoints, keyspace: config.cassandra.keyspace,
-    authProvider: new cassandra.auth.PlainTextAuthProvider(config.cassandra.username, config.cassandra.password)
-});
-cclient.execute(`
+if (config.cassandra) {
+    const cclient = new cassandra.Client({
+        contactPoints: config.cassandra.contactPoints, keyspace: config.cassandra.keyspace,
+        authProvider: new cassandra.auth.PlainTextAuthProvider(config.cassandra.username, config.cassandra.password)
+    });
+    cclient.execute(`
     CREATE TABLE IF NOT EXISTS chatlogs (
         id BIGINT,
         channelid BIGINT,
@@ -105,9 +110,9 @@ cclient.execute(`
         attachment TEXT,
         PRIMARY KEY ((channelid), id)
     ) WITH CLUSTERING ORDER BY (id DESC);
-`)
-    .then(res => {
-        return cclient.execute(`
+    `)
+        .then(res => {
+            return cclient.execute(`
             CREATE TABLE IF NOT EXISTS chatlogs_map (
                 id BIGINT,
                 msgid BIGINT,
@@ -115,8 +120,8 @@ cclient.execute(`
                 PRIMARY KEY ((msgid), id)
             ) WITH CLUSTERING ORDER BY (id DESC);
         `);
-    }).catch(err => {
-        console.error(err.message, err.stack);
-    });
-
+        }).catch(err => {
+            console.error(err.message, err.stack);
+        });
+}
 init();
