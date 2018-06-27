@@ -1,6 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
-const Table = dep.require('cli-table');
+const Table = require('cli-table');
 
 class SqlCommand extends BaseCommand {
     constructor() {
