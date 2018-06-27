@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    cleverbotIo: require('better-cleverbot-io'),
     cleverbotIoIo: require('cleverbot.io'),
     bodyParser: require('body-parser'),
     mkdirp: require('mkdirp'),

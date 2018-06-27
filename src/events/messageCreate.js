@@ -12,13 +12,14 @@ const bbEngine = require('../structures/bbtag/Engine');
 const Timer = require('../structures/Timer');
 const util = require('util');
 const request = require('request');
-const cleverbotIo = new dep.cleverbotIo({
+const cleverbotIo = require('better-cleverbot-io');
+const cleverbot = new cleverbotIo({
     user: config.cleverbot.ioid,
     key: config.cleverbot.iokey,
     nick: 'blargbot' + bu.makeSnowflake()
 });
 
-cleverbotIo.create().then(function (session) {
+cleverbot.create().then(function (session) {
     console.init('Cleverbot.io initialized with session', session);
 });
 
@@ -35,9 +36,9 @@ dep.cleverbotIoIo.prototype.askPromise = function (input) {
     });
 };
 
-const cleverbotIo = new dep.cleverbotIoIo(config.cleverbot.ioid, config.cleverbot.iokey);
-cleverbotIo.setNick('blargbot' + bu.makeSnowflake());
-cleverbotIo.create(function (err, session) {
+const cleverbot = new dep.cleverbotIoIo(config.cleverbot.ioid, config.cleverbot.iokey);
+cleverbot.setNick('blargbot' + bu.makeSnowflake());
+cleverbot.create(function (err, session) {
     if (err) console.error('Cleverbot error', err);
     else
         console.info('Created a cleverbot instance with session ' + session);
@@ -516,8 +517,8 @@ async function handleCleverbot(msg) {
         await bu.send(msg, response);
     } catch (err) {
         try {
-            //cleverbotIo.setNick('blargbot' + msg.channel.id);
-            let response = await cleverbotIo.ask(msgToSend);
+            //cleverbot.setNick('blargbot' + msg.channel.id);
+            let response = await cleverbot.ask(msgToSend);
             await bu.sleep(1500);
             await bu.send(msg, response);
         } catch (err) {
