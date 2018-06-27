@@ -7,10 +7,6 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {
-    url: require('url')
-};
-
 Object.defineProperty(e.Eris.Message.prototype, "guild", {
     get: function guild() {
         return this.channel.guild;
