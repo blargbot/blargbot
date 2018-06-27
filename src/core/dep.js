@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    util: require('util'),
     path: require('path'),
     request: require('request'),
     fs: require('fs'),

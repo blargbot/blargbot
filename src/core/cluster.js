@@ -10,6 +10,8 @@ if (process.execArgv[0])
     process.execArgv[0] = process.execArgv[0].replace('-brk', '');
 
 const cluster = dep.cluster;
+const util = require('util');
+
 module.exports = cluster;
 
 const reload = dep.reload;
@@ -54,7 +56,7 @@ if (cluster.isMaster) {
                 bu.emitter.emit(msg.code, Buffer.from(msg.buffer, 'base64'));
                 break;
             default:
-                console.cluster(`Worker ${worker.process.pid} says:\n${dep.util.inspect(msg)}`);
+                console.cluster(`Worker ${worker.process.pid} says:\n${util.inspect(msg)}`);
                 break;
         }
     });

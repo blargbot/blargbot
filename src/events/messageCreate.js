@@ -10,6 +10,7 @@
 const moment = require('moment-timezone');
 const bbEngine = require('../structures/bbtag/Engine');
 const Timer = require('../structures/Timer');
+const util = require('util');
 const cleverbotIo = new dep.cleverbotIo({
     user: config.cleverbot.ioid,
     key: config.cleverbot.iokey,
@@ -301,7 +302,7 @@ function handleIRCMessage(msg) {
         console.output(message);
         var attachUrl = '';
         if (msg.attachments.length > 0) {
-            console.debug(dep.util.inspect(msg.attachments[0]));
+            console.debug(util.inspect(msg.attachments[0]));
             attachUrl += ` ${msg.attachments[0].url}`;
         }
         sendMessageToIrc(message + attachUrl);

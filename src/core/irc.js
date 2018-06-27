@@ -10,8 +10,9 @@
 const irc = require('irc');
 const moment = require('moment-timezone');
 const freefreefree = require('../dcommands/free.js');
-
+const util = require('util');
 const http = dep.http;
+
 var e = module.exports = {};
 e.requireCtx = require;
 var botIrc;
@@ -542,7 +543,7 @@ Comic #${output.num}
 
 function getTime(channel, user, words) {
     var message = 'meow';
-    console.irc(dep.util.inspect(words));
+    console.irc(util.inspect(words));
     if (words.length > 1) {
         var location = words[1].split('/');
         if (location.length == 2)
