@@ -9,6 +9,7 @@
 
 const router = require('express').Router();
 const hbs = require('hbs');
+const moment = require('moment-timezone');
 
 router.get('/:id', async function (req, res) {
     let id = req.params.id;
@@ -18,7 +19,7 @@ router.get('/:id', async function (req, res) {
     let nicks = bot.guilds.filter(g => g.members.get(id) && g.members.get(id).nick)
         .map(g => '<li class="collection-item blue-grey darken-3">' + g.members.get(id).nick + '</li>');
     res.locals.nicks = new hbs.handlebars.SafeString(nicks.join('\n'));
-    res.locals.createdAt = dep.moment(user.createdAt).format('lll');
+    res.locals.createdAt = moment(user.createdAt).format('lll');
     res.locals.user = req.user;
     req.session.returnTo = req.path;
     res.locals.shared = bot.guilds.filter(g => g.members.get(id)).length;

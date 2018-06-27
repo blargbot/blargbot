@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class AnnounceCommand extends BaseCommand {
     constructor() {
@@ -75,7 +76,7 @@ class AnnounceCommand extends BaseCommand {
                 },
                 color: getTopRole(msg.member).color,
                 description: message + '\n',
-                timestamp: dep.moment(msg.timestamp),
+                timestamp: moment(msg.timestamp),
                 author: {
                     name: 'Announcement',
                     icon_url: 'http://i.imgur.com/zcGyun6.png',
@@ -85,7 +86,7 @@ class AnnounceCommand extends BaseCommand {
             let roleMention = role.mention;
             if (role.name == '@everyone')
                 roleMention = '@everyone';
-            message = `**:information_source: Announcement [${dep.moment().format('MM/DD/YYYY')}] ${roleMention} :information_source:**
+            message = `**:information_source: Announcement [${moment().format('MM/DD/YYYY')}] ${roleMention} :information_source:**
 **${msg.author.username}#${msg.author.discriminator}** has made the following announcement:
 
 ${message}`;

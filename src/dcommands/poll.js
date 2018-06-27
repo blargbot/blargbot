@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class PollCommand extends BaseCommand {
     constructor() {
@@ -47,7 +48,7 @@ class PollCommand extends BaseCommand {
             if (input.e) {
                 choices = bu.findEmoji(input.e.join(' '), true);
             }
-            let time = dep.moment.duration(60, 's');
+            let time = moment.duration(60, 's');
             if (input.t) {
                 time = bu.parseDuration(input.t.join(' '));
             }
@@ -59,7 +60,7 @@ class PollCommand extends BaseCommand {
             let color = bu.parseColor(input.c[0]);
             if (color === null)
                 color = bu.getRandomInt(0, 0xffffff);
-            let endTime = dep.moment(msg.timestamp).add(time);
+            let endTime = moment(msg.timestamp).add(time);
             let title = input.undefined.join(' ');
             let message = {
                 embed: {
@@ -132,7 +133,7 @@ class PollCommand extends BaseCommand {
                 channel: channel,
                 msg: msg2.id,
                 endtime: r.epochTime(endTime.unix()),
-                starttime: r.epochTime(dep.moment().unix()),
+                starttime: r.epochTime(moment().unix()),
                 color: color,
                 icon: msg.author.avatarURL,
                 roleId,

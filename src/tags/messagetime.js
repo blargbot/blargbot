@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const moment = require('moment-timezone');
 
 module.exports =
     Builder.APITag('messagetime')
@@ -52,7 +53,7 @@ module.exports =
             }
             if (message == null)
                 return Builder.errors.noMessageFound(subtag, context);
-            return dep.moment(message.timestamp).format(format);
+            return moment(message.timestamp).format(format);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

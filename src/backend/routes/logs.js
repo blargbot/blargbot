@@ -9,6 +9,7 @@
 
 const router = require('express').Router();
 const hbs = require('hbs');
+const moment = require('moment-timezone');
 
 const types = [{
     name: 'Create',
@@ -107,7 +108,7 @@ router.post('/', async (req, res) => {
                             embed.separateFooter = true;
                     }
 
-                m.msgtime = dep.moment(bu.unmakeSnowflake(m.id)).unix();
+                m.msgtime = moment(bu.unmakeSnowflake(m.id)).unix();
                 let text = m.content;
 
                 text = hbs.handlebars.Utils.escapeExpression(text);

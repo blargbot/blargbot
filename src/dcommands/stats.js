@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 function pad(value, length) {
     return (value.toString().length < length) ? pad(' ' + value, length) : value;
@@ -39,7 +40,7 @@ class StatsCommand extends BaseCommand {
         }
         let embeds = {
             color: bu.avatarColours[bu.avatarId],
-            timestamp: dep.moment(),
+            timestamp: moment(),
             description: 'Bot Statistics',
             footer: {
                 text: 'blargbot',
@@ -70,7 +71,7 @@ class StatsCommand extends BaseCommand {
                 inline: true
             }, {
                 name: 'Uptime',
-                value: '' + bu.createTimeDiffString(dep.moment(), bu.startTime),
+                value: '' + bu.createTimeDiffString(moment(), bu.startTime),
                 inline: true
             }, {
                 name: 'Messages',
@@ -78,7 +79,7 @@ class StatsCommand extends BaseCommand {
                 inline: true
             }, {
                 name: 'Per Minute',
-                value: '' + Math.floor(bu.messageStats / dep.moment.duration(dep.moment() - bu.startTime).asMinutes() * 100) / 100,
+                value: '' + Math.floor(bu.messageStats / moment.duration(moment() - bu.startTime).asMinutes() * 100) / 100,
                 inline: true
             }, {
                 name: 'Command Used This Session',
@@ -86,7 +87,7 @@ class StatsCommand extends BaseCommand {
                 inline: true
             }, {
                 name: 'Commands Per Minute',
-                value: '' + Math.floor(bu.commandUses / dep.moment.duration(dep.moment() - bu.startTime).asMinutes() * 100) / 100,
+                value: '' + Math.floor(bu.commandUses / moment.duration(moment() - bu.startTime).asMinutes() * 100) / 100,
                 inline: true
             }, {
                 name: 'Cleverbots Used This Session',

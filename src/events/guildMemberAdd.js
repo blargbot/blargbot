@@ -7,6 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 const bbEngine = require('../structures/bbtag/Engine');
+const moment = require('moment-timezone');
 
 bot.on('guildMemberAdd', async function (guild, member) {
     await bu.processUser(member.user);
@@ -41,8 +42,8 @@ bot.on('guildMemberAdd', async function (guild, member) {
         inline: true
     }, {
         name: 'Created',
-        value: dep.moment(member.user.createdAt).tz('Etc/GMT').format('llll') +
-            ` GMT\n(${dep.moment.duration(-1 * (dep.moment() - dep.moment(member.user.createdAt))).humanize(true)})`,
+        value: moment(member.user.createdAt).tz('Etc/GMT').format('llll') +
+            ` GMT\n(${moment.duration(-1 * (moment() - moment(member.user.createdAt))).humanize(true)})`,
         inline: false
     }]);
 });

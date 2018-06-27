@@ -9,6 +9,8 @@
 global.Promise = require('bluebird');
 global.config = require('../../config.json');
 const CatLoggr = require('cat-loggr');
+const moment = require('moment-timezone');
+
 const loggr = new CatLoggr({
     shardId: process.env.SHARD_ID,
     level: config.general.isbeta ? 'debug' : 'info',
@@ -143,7 +145,7 @@ ${err.stack}
     }
 }
 
-var startTime = dep.moment();
+var startTime = moment();
 
 function filterUrls(input) {
     return input.replace(/https?\:\/\/.+\.[a-z]{1,20}(\/[^\s]*)?/gi, '');

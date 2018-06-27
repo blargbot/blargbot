@@ -7,6 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const moment = require('moment-timezone');
 const bbEngine = require('../structures/bbtag/Engine');
 const Timer = require('../structures/Timer');
 const cleverbotIo = new dep.cleverbotIo({
@@ -464,7 +465,7 @@ function logCommand(msg) {
                 icon_url: msg.author.avatarURL,
                 url: `https://blargbot.xyz/user/${msg.author.id}`
             },
-            timestamp: dep.moment(msg.timestamp),
+            timestamp: moment(msg.timestamp),
             footer: {
                 text: `MsgID: ${msg.id}`
             }
@@ -530,7 +531,7 @@ async function handleCleverbot(msg) {
 }
 
 async function updateStats() {
-    let today = dep.moment().format('YYYY-MM-DD');
+    let today = moment().format('YYYY-MM-DD');
     if (!bu.cleverStats[today]) {
         let storedStats = await r.table('vars').get('cleverstats');
         if (!storedStats) {

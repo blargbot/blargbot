@@ -70,7 +70,8 @@
     {{> sidebar}}
 
     <a class="btn-floating btn-primary button-collapse btn-large waves-effects waves-light" data-activates="slide-out">
-        <i class="large material-icons">menu</i></a>
+        <i class="large material-icons">menu</i>
+    </a>
 
     <header class="page-header">
         <h1 class="centre">User</h1>
@@ -86,7 +87,8 @@
                             <div class='chip bot white-text z-depth-1'>BOT</div>
                             {{/if}}
                             <span class='badge white-text text-lighten-1 time'>{{gotUser.createdAt}}</span>
-                            <br><br>
+                            <br>
+                            <br>
                             <p>ID: {{gotUser.id}}</p>
                             <br>
                             <p>Nicknames:</p>
@@ -104,12 +106,12 @@
     <!-- Menu Toggle Script -->
     <script>
         init();
-    function doStuff() {
+        function doStuff() {
             var first = true;
             var elements = document.getElementsByClassName('time');
             for 0        i < elemeth; i++) {
                 var timestamp = elements.item(i).innerHTML;
-                var newTimestamp = dep.moment(parseInt(timestamp));
+                var newTimestamp = moment(parseInt(timestamp));
                 elements.item(i).innerHTML = 'Created ' + newTimestamp.format('lll');
             }
         }

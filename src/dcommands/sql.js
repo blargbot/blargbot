@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 var Table = dep.Table;
 
@@ -41,7 +42,7 @@ class SqlCommand extends BaseCommand {
                             let data = [];
                             for (let key in columns) {
                                 if (fields[key].type == 12) {
-                                    data.push(dep.moment(rows[i][columns[key]]).format('YY/MM HH:mm:ss'));
+                                    data.push(moment(rows[i][columns[key]]).format('YY/MM HH:mm:ss'));
                                 } else
                                     data.push(rows[i][columns[key]]);
                             }

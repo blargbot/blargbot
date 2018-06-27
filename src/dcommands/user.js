@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class UserCommand extends BaseCommand {
     constructor() {
@@ -40,8 +41,8 @@ ${bu.padLeft('ID', 19)} : ${userToGet.user.id}
 ${bu.padLeft('Allowed Permissions', 19)} : ${userToGet.permission.allow}
 ${bu.padLeft('Denied Permissions', 19)} : ${userToGet.permission.deny}
 ${bu.padLeft('Avatar URL', 19)} : ${userToGet.user.avatarURL}
-Account created on ${dep.moment(userToGet.user.createdAt).format('llll')}
-Account joined guild '${msg.channel.guild.name}' on ${dep.moment(userToGet.joinedAt).format('llll')}
+Account created on ${moment(userToGet.user.createdAt).format('llll')}
+Account joined guild '${msg.channel.guild.name}' on ${moment(userToGet.joinedAt).format('llll')}
 ${userToGet.game == null ? `Not playing anything` : `Currently ${userToGet.game.type != null && userToGet.game.type > 0 ? 'streaming' : 'playing'} ${userToGet.game.name}`}
 \`\`\``;
         } else {
@@ -52,7 +53,7 @@ ${bu.padLeft('Discriminator', 14)} : ${userToGet.discriminator}
 ${!userToGet.bot ? `${bu.padLeft('Account Type', 14)} : User` : `${bu.padLeft('Account Type', 14)} : Bot`}
 ${bu.padLeft('ID', 14)} : ${userToGet.id}
 ${bu.padLeft('Avatar URL', 14)} : ${userToGet.avatarURL}
-Account created on ${dep.moment(userToGet.createdAt).format('llll')}
+Account created on ${moment(userToGet.createdAt).format('llll')}
 \`\`\``;
         }
         bu.sendFile(msg.channel.id, message, isMember ? userToGet.user.avatarURL : userToGet.avatarURL);

@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class TimeCommand extends BaseCommand {
     constructor() {
@@ -12,7 +13,7 @@ class TimeCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         var message;
-        let location = dep.moment().tz(words[1] || 'sadasdfsa');
+        let location = moment().tz(words[1] || 'sadasdfsa');
         if (location.zoneAbbr() !== '') {
             if (words.length == 2) {
                 if (location.zoneAbbr() !== '')
@@ -21,11 +22,11 @@ class TimeCommand extends BaseCommand {
                     message = 'Invalid parameters! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.';
                 }
             } else if (words.length > 3) {
-                var location2 = dep.moment().tz(words[2]);
+                var location2 = moment().tz(words[2]);
                 if (location.zoneAbbr() !== '' && location2.zoneAbbr() !== '') {
-                    var time = dep.moment.tz(words[3], 'hh:mma', words[1]).tz(words[2]).format('LT');
+                    var time = moment.tz(words[3], 'hh:mma', words[1]).tz(words[2]).format('LT');
                     if (time != 'Invalid date')
-                        message = `When it's **${dep.moment.tz(words[3], 'hh:mma', words[1]).format('LT')}** in **${location.zoneAbbr()}**, it's **${time}** in **${location2.zoneAbbr()}**.`;
+                        message = `When it's **${moment.tz(words[3], 'hh:mma', words[1]).format('LT')}** in **${location.zoneAbbr()}**, it's **${time}** in **${location2.zoneAbbr()}**.`;
                     else
                         message = `Please use the format 'hh:mma' in your time.`;
                 } else
@@ -36,7 +37,7 @@ class TimeCommand extends BaseCommand {
             if (user) {
                 let storedUser = await r.table('user').get(user.id);
                 if (storedUser.timezone) {
-                    message = `It is currently **${dep.moment().tz(storedUser.timezone).format('LT')}** for **${bu.getFullName(user)}**.`;
+                    message = `It is currently **${moment().tz(storedUser.timezone).format('LT')}** for **${bu.getFullName(user)}**.`;
                 } else message = `${bu.getFullName(user)} has not set their timezone in the \`timezone\` command yet.`;
             } else {
                 message = 'You either provided an invalid user or an invalid timezone code. See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.';

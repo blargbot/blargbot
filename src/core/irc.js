@@ -7,9 +7,9 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var irc = require('irc');
-
-var freefreefree = require('../dcommands/free.js');
+const irc = require('irc');
+const moment = require('moment-timezone');
+const freefreefree = require('../dcommands/free.js');
 
 const http = dep.http;
 var e = module.exports = {};
@@ -117,7 +117,7 @@ e.init = (v, em) => {
                     welcomeMessage += ` You have unread messages. Type '!mail read' to read them.`;
                 }
                 sendNoticeToIrc(nick, welcomeMessage);
-                userFile.seen = dep.moment().format();
+                userFile.seen = moment().format();
                 saveUserFile(nick, userFile);
             }
         }
@@ -129,7 +129,7 @@ e.init = (v, em) => {
         console.irc(`[IRC] ${quitMessage}`);
         sendMessageToDiscord(quitMessage);
         var userFile = getUserFile(nick);
-        userFile.seen = dep.moment().format();
+        userFile.seen = moment().format();
         saveUserFile(nick, userFile);
         reloadUserList();
     });
@@ -139,7 +139,7 @@ e.init = (v, em) => {
         console.irc(`[IRC] ${quitMessage}`);
         sendMessageToDiscord(quitMessage);
         var userFile = getUserFile(nick);
-        userFile.seen = dep.moment().format();
+        userFile.seen = moment().format();
         saveUserFile(nick, userFile);
         reloadUserList();
     });
@@ -153,7 +153,7 @@ e.init = (v, em) => {
 
         //   console.irc(`[IRC] ${nickMessage}`);
         var userFile = getUserFile(oldnick);
-        userFile.seen = dep.moment().format();
+        userFile.seen = moment().format();
         saveUserFile(oldnick, userFile);
         if (!dep.fs.existsSync(getUserFilePath(newnick))) {
             console.irc(`[IRC] Generating userfile for ${newnick}`);
@@ -162,7 +162,7 @@ e.init = (v, em) => {
         } else {
 
             userFile = getUserFile(newnick);
-            userFile.seen = dep.moment().format();
+            userFile.seen = moment().format();
             saveUserFile(newnick, userFile);
         }
         reloadUserList();
@@ -243,7 +243,7 @@ function handleIrcCommand(channel, user, text) {
                         } else {
                             var recipient = words[2];
                             userFile = getUserFile(recipient);
-                            var timeStamp = `[${dep.moment().format('MM/DD HH:mm')}]`;
+                            var timeStamp = `[${moment().format('MM/DD HH:mm')}]`;
                             var messageToSend = text.replace(`mail send ${recipient} `, '');
                             userFile.mail[userFile.number] = {
                                 read: false,
@@ -317,8 +317,8 @@ function handleIrcCommand(channel, user, text) {
                     sendIrcCommandMessage(channel, `${words[1]} is online right now!`);
                 } else {
                     userFile = getUserFile(words[1], true);
-                    time = createTimeDiffString(dep.moment(), dep.moment(userFile.seen));
-                    console.irc(time, dep.moment(), dep.moment(userFile.seen), userFile.seen);
+                    time = createTimeDiffString(moment(), moment(userFile.seen));
+                    console.irc(time, moment(), moment(userFile.seen), userFile.seen);
                     sendIrcCommandMessage(channel, `I haven't seen ${words[1]} in ${time}`);
                 }
             } catch (err) {
@@ -326,7 +326,7 @@ function handleIrcCommand(channel, user, text) {
             }
             break;
         case 'uptime':
-            var uptimeString = `Catter uptime: ${createTimeDiffString(dep.moment(), startTime)}`;
+            var uptimeString = `Catter uptime: ${createTimeDiffString(moment(), startTime)}`;
             sendIrcCommandMessage(channel, uptimeString);
             break;
         case 'notify':
@@ -405,7 +405,7 @@ function createDefaultUserFile(name) {
         read: true,
         number: 0,
         notify: true,
-        seen: dep.moment().format(),
+        seen: moment().format(),
         mail: {}
     };
 
@@ -546,7 +546,7 @@ function getTime(channel, user, words) {
     if (words.length > 1) {
         var location = words[1].split('/');
         if (location.length == 2)
-            message = `In ${location[1]}, it is currently ${dep.moment().tz(words[1]).format('LTS')}`;
+            message = `In ${location[1]}, it is currently ${moment().tz(words[1]).format('LTS')}`;
         else {
             message = 'Invalid parameters! See https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for timezone codes that I understand.';
         }
@@ -559,7 +559,7 @@ function createTimeDiffString(moment1, moment2) {
 
     var ms = moment1.diff(moment2);
 
-    var diff = dep.moment.duration(ms);
+    var diff = moment.duration(ms);
     //  console.irc(diff.humanize());
     var days = diff.days();
     diff.subtract(days, 'd');

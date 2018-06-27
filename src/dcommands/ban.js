@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class BanCommand extends BaseCommand {
     constructor() {
@@ -80,8 +81,8 @@ class BanCommand extends BaseCommand {
                     content: `${user.username}#${user.discriminator}`,
                     guild: msg.guild.id,
                     duration: duration.toJSON(),
-                    endtime: r.epochTime(dep.moment().add(duration).unix()),
-                    starttime: r.epochTime(dep.moment().unix())
+                    endtime: r.epochTime(moment().add(duration).unix()),
+                    starttime: r.epochTime(moment().unix())
                 });
                 return [`:ok_hand: The user will be unbanned ${duration.humanize(true)}.`, duration.asMilliseconds()];
             } else {
