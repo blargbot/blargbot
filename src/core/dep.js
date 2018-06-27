@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    https: require('https'),
     gm: require('gm'),
     http: require('http'),
     safe: require('safe-regex'),
