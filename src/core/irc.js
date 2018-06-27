@@ -13,6 +13,7 @@ const freefreefree = require('../dcommands/free.js');
 const util = require('util');
 const http = dep.http;
 const path = require('path');
+const fs = require('fs');
 
 var e = module.exports = {};
 e.requireCtx = require;
@@ -107,8 +108,8 @@ e.init = (v, em) => {
         }
         if (nick !== botIrc.nick) {
             //console.irc(getUserFilePath(nick));
-            //console.irc(dep.fs.existsSync(getUserFilePath(nick)));
-            if (!dep.fs.existsSync(getUserFilePath(nick))) {
+            //console.irc(fs.existsSync(getUserFilePath(nick)));
+            if (!fs.existsSync(getUserFilePath(nick))) {
                 console.irc(`[IRC] Generating userfile for ${nick}`);
                 sendIrcCommandMessage(config.irc.channel, `Welcome ${nick}. I hope you enjoy your stay.`);
                 createDefaultUserFile(nick);
@@ -157,7 +158,7 @@ e.init = (v, em) => {
         var userFile = getUserFile(oldnick);
         userFile.seen = moment().format();
         saveUserFile(oldnick, userFile);
-        if (!dep.fs.existsSync(getUserFilePath(newnick))) {
+        if (!fs.existsSync(getUserFilePath(newnick))) {
             console.irc(`[IRC] Generating userfile for ${newnick}`);
             sendIrcCommandMessage(config.irc.channel, `Welcome ${newnick}. I hope you enjoy your stay.`);
             createDefaultUserFile(newnick);
@@ -219,11 +220,11 @@ function handleIrcCommand(channel, user, text) {
             break;
         case 'servers':
             var servers;
-            if (!dep.fs.existsSync('servers.json')) {
+            if (!fs.existsSync('servers.json')) {
                 servers = {
                     example: 'server'
                 };
-                dep.fs.writeFile('servers.json', JSON.stringify(servers, null, 4));
+                fs.writeFile('servers.json', JSON.stringify(servers, null, 4));
             } else {
                 servers = getJsonFile('servers.json');
             }
@@ -416,11 +417,11 @@ function createDefaultUserFile(name) {
 }
 
 function saveUserFile(name, file) {
-    dep.fs.writeFileSync(getUserFilePath(name), JSON.stringify(file, null, 4));
+    fs.writeFileSync(getUserFilePath(name), JSON.stringify(file, null, 4));
 }
 
 function getUserFile(name, dontCreate) {
-    if (!dontCreate && !dep.fs.existsSync(getUserFilePath(name))) {
+    if (!dontCreate && !fs.existsSync(getUserFilePath(name))) {
         createDefaultUserFile(name);
     }
     try {
@@ -435,7 +436,7 @@ function getUserFile(name, dontCreate) {
 }
 
 function getJsonFile(path) {
-    return JSON.parse(dep.fs.readFileSync(path, 'utf8'));
+    return JSON.parse(fs.readFileSync(path, 'utf8'));
 }
 
 function sendMessageToDiscord(msg) {

@@ -11,6 +11,7 @@ global.config = require('../../config.json');
 const CatLoggr = require('cat-loggr');
 const moment = require('moment-timezone');
 const path = require('path');
+const fs = require('fs');
 
 const loggr = new CatLoggr({
     shardId: process.env.SHARD_ID,
@@ -83,7 +84,7 @@ class DiscordClient extends dep.Eris.Client {
         bu.startTime = startTime;
 
         if (process.env.SHARD_ID == 0)
-            bu.avatars = JSON.parse(dep.fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
+            bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
 
         const Manager = require('./Manager.js');
         global.EventManager = new Manager('events', true);

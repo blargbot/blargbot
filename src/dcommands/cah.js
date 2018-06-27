@@ -1,6 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const path = require('path');
 const request = require('request');
+const fs = require('fs');
 
 var cah = {};
 var cad = {};
@@ -14,8 +15,8 @@ class CahCommand extends BaseCommand {
             info: 'Generates a set of CAH cards.'
         });
 
-        if (dep.fs.existsSync(path.join(__dirname, '..', '..', 'res', 'cah.json'))) {
-            cah = JSON.parse(dep.fs.readFileSync(path.join(__dirname, '..', '..', 'res', 'cah.json'), 'utf8'));
+        if (fs.existsSync(path.join(__dirname, '..', '..', 'res', 'cah.json'))) {
+            cah = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', 'cah.json'), 'utf8'));
         }
 
         request('https://api.cardcastgame.com/v1/decks/JJDFG/cards', (err, res, body) => {

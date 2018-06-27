@@ -8,6 +8,7 @@
  */
 
 const path = require('path');
+const fs = require('fs');
 
 class Manager {
 
@@ -21,7 +22,7 @@ class Manager {
     }
 
     init() {
-        var fileArray = dep.fs.readdirSync(path.join(__dirname, '..', this.type));
+        var fileArray = fs.readdirSync(path.join(__dirname, '..', this.type));
         for (var i = 0; i < fileArray.length; i++) {
             var file = fileArray[i];
             if (/.+\.js$/.test(file)) {
