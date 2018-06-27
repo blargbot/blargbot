@@ -1,4 +1,10 @@
-# blargbot
+<h1 align="center">
+    
+<img width="600" src="https://cdn.discordapp.com/attachments/229135536596451328/229136473390186498/blarg-header.png" alt="Blargbot" href='https://blargbot.xyz'>
+	<br>
+</h1>
+
+<h1 align="center"> blargbot </h1>
 blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.
 
 ### Commands
