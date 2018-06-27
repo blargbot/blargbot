@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    reload: require('require-reload'),
     os: require('os'),
     Eris: require('eris'),
     xml2js: require('xml2js'),

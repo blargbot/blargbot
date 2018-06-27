@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
-const { patrons, donators } = dep.reload('../../res/donators.json');
+const reload = require('require-reload')(require);
+const { patrons, donators } = reload('../../res/donators.json');
 
 const startDate = 1444708800000;
 var patronStr, donatorStr;
-async function reload() {
+async function reloadStrings() {
     patronStr = (await Promise.map(patrons, async p => {
         if (/^[0-9]{17,23}$/.test(p)) {
             return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
@@ -18,8 +19,8 @@ async function reload() {
     console.log('reloaded');
 }
 let titan;
-setInterval(reload, 60 * 60 * 1000);
-reload();
+setInterval(reloadStrings, 60 * 60 * 1000);
+reloadStrings();
 
 function pad(value, length) {
     return (value.toString().length < length) ? pad(' ' + value, length) : value;

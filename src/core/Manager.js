@@ -9,6 +9,7 @@
 
 const path = require('path');
 const fs = require('fs');
+const reload = require('require-reload')(require);
 
 class Manager {
 
@@ -82,7 +83,7 @@ class Manager {
             if (this.list.hasOwnProperty(name)) {
                 if (this.removeListeners)
                     bot.removeAllListeners(name);
-                this.list[name] = dep.reload(this.constructPath(name));
+                this.list[name] = reload(this.constructPath(name));
                 if (typeof this.list[name].init == 'function') this.list[name].init();
 
                 return true;

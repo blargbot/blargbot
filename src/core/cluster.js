@@ -11,12 +11,11 @@ if (process.execArgv[0])
 
 const cluster = require('cluster');
 const util = require('util');
-
-module.exports = cluster;
-
-const reload = dep.reload;
+const reload = require('require-reload')(require);
 
 const numCPUs = 1;
+
+module.exports = cluster;
 
 if (cluster.isMaster) {
     const Collection = dep.Eris.Collection;

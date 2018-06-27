@@ -40,7 +40,7 @@ process.on('unhandledRejection', (err) => {
 });
 global.dep = require('./core/dep.js');
 
-const reload = dep.reload(require);
+const reload = require('require-reload')(require);
 const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
