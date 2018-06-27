@@ -18,9 +18,10 @@ const path = require('path');
 const passport = require('passport');
 const session = require('express-session');
 const http = require('http');
+const bodyParser = require('body-parser');
 
-app.use(dep.bodyParser.json());
-app.use(dep.bodyParser.urlencoded({ // to support URL-encoded bodies
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     limit: '50mb',
     extended: true
 }));

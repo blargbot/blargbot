@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    bodyParser: require('body-parser'),
     mkdirp: require('mkdirp'),
     winston: require('winston'),
     wconfig: require('winston/lib/winston/config'),

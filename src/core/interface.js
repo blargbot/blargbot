@@ -8,6 +8,7 @@
  */
 
 const express = require('express');
+const bodyParser = require('body-parser');
 
 var app;
 var e = module.exports;
@@ -16,8 +17,8 @@ var server;
 
 e.init = () => {
     app = express();
-    app.use(dep.bodyParser.json());
-    app.use(dep.bodyParser.urlencoded({ limit: '50mb', extended: true }));
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
     server = app.listen(8081, function () {
         var host = server.address().address;
         var port = server.address().port;
