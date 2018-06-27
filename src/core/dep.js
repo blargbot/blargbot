@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    google: require('googleapis'),
     SC: require('node-soundcloud'),
     emoji: require('node-emoji'),
     //    wordsearch: require('wordsearch'),
