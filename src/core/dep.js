@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    Table: require('cli-table'),
     youtubeStream: require('youtube-audio-stream'),
     google: require('googleapis'),
     SC: require('node-soundcloud'),

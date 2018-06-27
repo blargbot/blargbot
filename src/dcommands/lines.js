@@ -1,6 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const path = require('path');
-const Table = dep.Table;
+const Table = require('cli-table');
 const { exec } = require('child_process');
 
 class LinesCommand extends BaseCommand {
