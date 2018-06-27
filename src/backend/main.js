@@ -16,6 +16,7 @@ const Strategy = dep.Strategy;
 const helpers = require('./helpers');
 const path = require('path');
 const passport = require('passport');
+const session = require('express-session');
 
 app.use(dep.bodyParser.json());
 app.use(dep.bodyParser.urlencoded({ // to support URL-encoded bodies
@@ -62,7 +63,7 @@ e.init = () => {
             return done(null, profile);
         });
     }));
-    app.use(dep.session({
+    app.use(session({
         secret: config.website.sessionsecret,
         resave: false,
         saveUninitialized: true,

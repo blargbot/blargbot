@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    session: require('express-session'),
     Strategy: require('passport-discord').Strategy,
     ws: require('ws'),
     cluster: require('cluster'),
