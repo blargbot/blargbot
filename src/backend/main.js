@@ -15,6 +15,7 @@ const app = express();
 const Strategy = dep.Strategy;
 const helpers = require('./helpers');
 const path = require('path');
+const passport = require('passport');
 
 app.use(dep.bodyParser.json());
 app.use(dep.bodyParser.urlencoded({ // to support URL-encoded bodies
@@ -45,13 +46,13 @@ e.init = () => {
         return sessionUserMap[sessionId];
     };
 
-    dep.passport.serializeUser(function (user, done) {
+    passport.serializeUser(function (user, done) {
         done(null, user);
     });
-    dep.passport.deserializeUser(function (obj, done) {
+    passport.deserializeUser(function (obj, done) {
         done(null, obj);
     });
-    dep.passport.use(new Strategy({
+    passport.use(new Strategy({
         clientID: config.website.clientid,
         clientSecret: config.website.secret,
         callbackURL: config.website.callback,
@@ -72,13 +73,13 @@ e.init = () => {
         }
     }));
 
-    app.use(dep.passport.initialize());
-    app.use(dep.passport.session());
-    app.get('/login', dep.passport.authenticate('discord', {
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.get('/login', passport.authenticate('discord', {
         scope: scopes
     }), function (req, res) { });
     app.get('/callback',
-        dep.passport.authenticate('discord', {
+        passport.authenticate('discord', {
             failureRedirect: '/'
         }),
         function (req, res) {
