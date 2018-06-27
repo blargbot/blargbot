@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    xml2js: require('xml2js'),
     https: require('https'),
     gm: require('gm'),
     http: require('http'),

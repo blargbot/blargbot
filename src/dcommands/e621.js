@@ -1,6 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const util = require('util');
-const xml2js = dep.xml2js;
+const xml2js = require('xml2js');
 const https = dep.https;
 
 class E621Command extends BaseCommand {
