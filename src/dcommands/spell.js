@@ -1,7 +1,8 @@
-const BaseCommand = require('../structures/BaseCommand'),
-    jsonSpells = require('../../res/spells.json');
+const BaseCommand = require('../structures/BaseCommand');
+const jsonSpells = require('../../res/spells.json');
+const { Collection } = require('eris');
 
-const spells = new dep.Eris.Collection(Object);
+const spells = new Collection(Object);
 for (let key in jsonSpells) {
     let temp = jsonSpells[key];
     temp.id = key;

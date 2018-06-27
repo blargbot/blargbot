@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    Eris: require('eris'),
     xml2js: require('xml2js'),
     https: require('https'),
     gm: require('gm'),

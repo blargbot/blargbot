@@ -45,6 +45,7 @@ const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
 const Spawner = require('./structures/Spawner');
+const Eris = require('eris');
 
 var irc = require('./core/irc.js');
 
@@ -58,7 +59,7 @@ bu.init();
 
 var VERSION = config.version;
 
-global.bot = new dep.Eris(config.discord.token, { restMode: true, defaultImageFormat: 'png' });
+global.bot = new Eris(config.discord.token, { restMode: true, defaultImageFormat: 'png' });
 var spawner = new Spawner({
     discord: bot,
     irc

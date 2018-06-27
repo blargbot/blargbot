@@ -12,6 +12,7 @@ const CatLoggr = require('cat-loggr');
 const moment = require('moment-timezone');
 const path = require('path');
 const fs = require('fs');
+const { Client } = require('eris');
 
 const loggr = new CatLoggr({
     shardId: process.env.SHARD_ID,
@@ -54,7 +55,7 @@ process.on('unhandledRejection', (err, p) => {
 global.bu = require('./util.js');
 
 
-class DiscordClient extends dep.Eris.Client {
+class DiscordClient extends Client {
     constructor() {
         super(config.discord.token, {
             autoReconnect: true,

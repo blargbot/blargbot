@@ -12,7 +12,7 @@ const moment = require('moment-timezone');
 const snekfetch = require('snekfetch');
 const unorm = require('unorm');
 const limax = require('limax');
-const { User, Channel } = require('eris');
+const { User, Channel, Member, Message, Permission } = require('eris');
 const twemoji = require('twemoji');
 const request = require('request');
 
@@ -197,7 +197,7 @@ function getId(text) {
  */
 bu.hasPerm = async (msg, perm, quiet, override = true) => {
     let member;
-    if (msg instanceof dep.Eris.Member) {
+    if (msg instanceof Member) {
         member = msg;
     } else {
         if (!msg.channel.guild) return true;
@@ -250,7 +250,7 @@ bu.hasPerm = async (msg, perm, quiet, override = true) => {
 
 bu.hasRole = (msg, roles, override = true) => {
     let member;
-    if (msg instanceof dep.Eris.Member) {
+    if (msg instanceof Member) {
         member = msg;
     } else {
         if (!msg.channel.guild) return true;
@@ -426,7 +426,7 @@ bu.canDmErrors = async function (userId) {
  */
 bu.sendDM = async function (user, message, file) {
     let userid = user;
-    if (user instanceof dep.Eris.Message) {
+    if (user instanceof Message) {
         userid = user.author.id;
     }
     if (message.length == 0) {
@@ -906,7 +906,7 @@ bu.issuePardon = async function (user, guild, count, params) {
 
 bu.comparePerms = (m, allow) => {
     if (!allow) allow = bu.defaultStaff;
-    let newPerm = new dep.Eris.Permission(allow);
+    let newPerm = new Permission(allow);
     for (let key in newPerm.json) {
         if (m.permission.has(key)) {
             return true;

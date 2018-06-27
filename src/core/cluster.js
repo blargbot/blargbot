@@ -12,13 +12,13 @@ if (process.execArgv[0])
 const cluster = require('cluster');
 const util = require('util');
 const reload = require('require-reload')(require);
+const { Collection } = require('eris');
 
 const numCPUs = 1;
 
 module.exports = cluster;
 
 if (cluster.isMaster) {
-    const Collection = dep.Eris.Collection;
     global.workers = new Collection(cluster.Worker);
 
     var i = 0;
