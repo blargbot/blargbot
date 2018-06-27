@@ -277,7 +277,7 @@ TagBuilder.util = {
         return channel;
     },
     getRoleEditPosition(context) {
-        if (context.guild.ownerID == context.author.id)
+        if (context.guild.ownerID == context.author || context.guild.id == context.author)
             return Number.MAX_SAFE_INTEGER;
         let permission = this.getPerms(context);
         if (!permission.has('manageRoles') && !permission.has('administrator'))

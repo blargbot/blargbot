@@ -24,12 +24,12 @@ module.exports =
         .withAlias('func')
         .withArgs(a => [a.require('name'), a.require('code')])
         .withDesc('Defines a function called `name`. Functions are called in the same way as subtags, however they are prefixed with `func.`. ' +
-        'While inside the `code` block of a function, you may use the `params`, `paramsarray` and `paramslength` subtags to access the values ' +
-        'passed to the function. These function identically to their `args` counterparts. ' +
-        '\n\nPlease note that the there is a recursion limit of 200 which is also shared by `{exec}`, `{execcc}` and `{inject}`.')
+            'While inside the `code` block of a function, you may use the `params`, `paramsarray` and `paramslength` subtags to access the values ' +
+            'passed to the function. These function identically to their `args` counterparts. ' +
+            '\n\nPlease note that the there is a recursion limit of 200 which is also shared by `{exec}`, `{execcc}` and `{inject}`.')
         .withExample(
-        '{function;test;{paramsarray}} {func.test;1;2;3;4}',
-        '["1","2","3","4"]'
+            '{function;test;{paramsarray}} {func.test;1;2;3;4}',
+            '["1","2","3","4"]'
         )
         .resolveArgs(0)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
@@ -48,7 +48,7 @@ module.exports =
                 }
 
                 args = await Promise.all(subtag.children.slice(1).map(arg => this.executeArg(subtag, arg, context)));
-                context.override('params', parameters(args).bind(this));
+                context.override('params', parameters.call(this, args));
                 context.override('paramsarray', () => JSON.stringify(args));
                 context.override('paramslength', () => args.length);
 

@@ -54,19 +54,22 @@ class RolemeCommand extends BaseCommand {
             switch (input.undefined[0].toLowerCase()) {
                 case 'create':
                 case 'add':
+                    let perms = msg.member.permission;
+                    if (!perms.has('manageRoles') && !perms.has('administrator'))
+                        return bu.send(msg, 'You do not have permission to manage roles.');
                     if ((input.a || input.r) && input.p && input.p.length > 0) {
                         if (input.a) {
                             for (let i = 0; i < input.a.length; i++) {
                                 let role = await bu.getRole(msg, input.a[i]);
                                 if (role)
-                                    addList.push(role.id);
+                                    addList.push(role);
                             }
                         }
                         if (input.r) {
                             for (let i = 0; i < input.r.length; i++) {
                                 let role = await bu.getRole(msg, input.r[i]);
                                 if (role)
-                                    removeList.push(role.id);
+                                    removeList.push(role);
                             }
                         }
                         activationMessage = input.p.join(' ');
@@ -88,7 +91,7 @@ class RolemeCommand extends BaseCommand {
                             for (let i = 0; i < resList.length; i++) {
                                 let role = await bu.getRole(msg, resList[i]);
                                 if (role)
-                                    addList.push(role.id);
+                                    addList.push(role);
                             }
                         }
                         res = (await bu.awaitQuery(msg, 'List all the roles that this will remove, each on a new line. If you do not wish any roles, type `0`.')).content;
@@ -97,7 +100,7 @@ class RolemeCommand extends BaseCommand {
                             for (let i = 0; i < resList.length; i++) {
                                 let role = await bu.getRole(msg, resList[i]);
                                 if (role)
-                                    removeList.push(role.id);
+                                    removeList.push(role);
                             }
                         }
                         if (addList.length == 0 && removeList.length == 0) {
@@ -110,9 +113,16 @@ class RolemeCommand extends BaseCommand {
                         caseSensitive = (await bu.awaitQuery(msg, 'Type `1` if the previous sentence should be case-sensitive. Type anything else to make it match regardless of capitalization.'));
                         caseSensitive = caseSensitive.content == '1' ? true : false;
                     }
+                    // Check role positions
+                    let topRole = msg.guild.ownerID == msg.author.id
+                        ? Number.MAX_SAFE_INTEGER
+                        : Math.max(msg.member.roles.map(id => (msg.guild.roles.get(id) || { position: 0 }).position));
+                    if (addList.find(role => role.position >= topRole) || removeList.find(role => role.position >= topRole))
+                        return bu.send(msg, 'You cannot add or remove roles higher than your top role');
+
                     roleme.push({
-                        add: addList,
-                        remove: removeList,
+                        add: addList.map(r => r.id),
+                        remove: removeList.map(r => r.id),
                         channels: channelList,
                         message: activationMessage,
                         casesensitive: caseSensitive,
