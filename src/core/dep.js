@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    youtubeStream: require('youtube-audio-stream'),
     google: require('googleapis'),
     SC: require('node-soundcloud'),
     emoji: require('node-emoji'),
