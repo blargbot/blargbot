@@ -253,6 +253,9 @@ class Context {
         result.state = obj.state;
         result.input = obj.input;
 
+        result.state.cache = {};
+        result.state.overrides = {};
+
         for (const key of Object.keys(obj.tempVars || {}))
             result.variables.cache[key] = new CacheEntry(result, key, obj.tempVars[key]);
         return result;
