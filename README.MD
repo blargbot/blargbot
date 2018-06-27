@@ -1,8 +1,8 @@
-<h1 align="center">
+<p align="center">
     
 <img width="600" src="https://cdn.discordapp.com/attachments/229135536596451328/229136473390186498/blarg-header.png" alt="Blargbot" href='https://blargbot.xyz'>
 	<br>
-</h1>
+</p>
 
 <h1 align="center"> blargbot </h1>
 
