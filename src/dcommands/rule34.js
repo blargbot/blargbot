@@ -1,7 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const util = require('util');
 const xml2js = dep.xml2js;
-const sf = dep.sf;
+const snekfetch = require('snekfetch');
 
 class Rule34Command extends BaseCommand {
     constructor() {
@@ -37,7 +37,7 @@ class Rule34Command extends BaseCommand {
             }
         }
 
-        let res = await sf.get('http://rule34.paheal.net/api/danbooru/find_posts/index.xml').query({
+        let res = await snekfetch.get('http://rule34.paheal.net/api/danbooru/find_posts/index.xml').query({
             tags: usedTags.join('%20'),
             limit: 50
         });
