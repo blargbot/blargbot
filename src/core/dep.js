@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    moment: require('moment-timezone'),
     util: require('util'),
     path: require('path'),
     request: require('request'),
