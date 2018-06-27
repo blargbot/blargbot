@@ -1,6 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const path = require('path');
 const Table = dep.Table;
+const { exec } = require('child_process');
 
 class LinesCommand extends BaseCommand {
     constructor() {
@@ -15,7 +16,7 @@ class LinesCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         bot.sendChannelTyping(msg.channel.id);
-        dep.exec(`cloc ${path.join(__dirname, '..')} --exclude-dir=codemirror`, (err, stdout, stderr) => {
+        exec(`cloc ${path.join(__dirname, '..')} --exclude-dir=codemirror`, (err, stdout, stderr) => {
             if (err) {
                 console.error(err);
                 bu.send(msg, 'An error has occurred!');

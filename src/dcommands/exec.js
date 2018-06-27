@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const { exec } = require('child_process');
 
 class ExecCommand extends BaseCommand {
     constructor() {
@@ -18,7 +19,7 @@ class ExecCommand extends BaseCommand {
                 bu.send(msg, 'No! That\'s dangerous! Do `b!restart` instead.\n\nIt\'s not that I don\'t trust you, it\'s just...\n\nI don\'t trust you.');
                 return;
             }
-            dep.exec(commandToProcess, function (err, stdout, stderr) {
+            exec(commandToProcess, function (err, stdout, stderr) {
                 if (err) {
                     bu.send(msg, `Error!
 \`\`\`js

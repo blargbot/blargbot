@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const { exec } = require('child_process');
 
 class UpdateCommand extends BaseCommand {
     constructor() {
@@ -14,7 +15,7 @@ class UpdateCommand extends BaseCommand {
         if (msg.author.id === bu.CAT_ID) {
 
             if (!config.general.isbeta) {
-                dep.exec('git pull', async (err, stdout, stderr) => {
+                exec('git pull', async (err, stdout, stderr) => {
                     var message = '```xl\n';
                     if (err) {
                         message += err + '\n';
