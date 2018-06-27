@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    SC: require('node-soundcloud'),
     emoji: require('node-emoji'),
     //    wordsearch: require('wordsearch'),
     cleverbot: require('cleverbot'),
