@@ -23,28 +23,6 @@ cleverbot.create().then(function (session) {
     console.init('Cleverbot.io initialized with session', session);
 });
 
-/*
-dep.cleverbotIoIo.prototype.askPromise = function (input) {
-    return new Promise((resolve, reject) => {
-        this.ask(input, function (err, res) {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve(res);
-        });
-    });
-};
-
-const cleverbot = new dep.cleverbotIoIo(config.cleverbot.ioid, config.cleverbot.iokey);
-cleverbot.setNick('blargbot' + bu.makeSnowflake());
-cleverbot.create(function (err, session) {
-    if (err) console.error('Cleverbot error', err);
-    else
-        console.info('Created a cleverbot instance with session ' + session);
-});
-*/
-
 bot.on('messageCreate', async function (msg) {
     bu.Metrics.messageCounter.inc();
     await bu.processUser(msg.author);
