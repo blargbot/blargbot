@@ -8,7 +8,6 @@
  */
 
 var e = module.exports = {
-    Strategy: require('passport-discord').Strategy,
     ws: require('ws'),
     cluster: require('cluster'),
     reload: require('require-reload'),

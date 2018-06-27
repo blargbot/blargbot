@@ -12,7 +12,7 @@ var e = module.exports = {};
 const express = require('express');
 const router = express.Router();
 const app = express();
-const Strategy = dep.Strategy;
+const { Strategy } = require('passport-discord');
 const helpers = require('./helpers');
 const path = require('path');
 const passport = require('passport');
