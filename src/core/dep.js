@@ -8,8 +8,6 @@
  */
 
 var e = module.exports = {
-    //    wordsearch: require('wordsearch'),
-    cleverbot: require('cleverbot'),
     cleverbotIo: require('better-cleverbot-io'),
     cleverbotIoIo: require('cleverbot.io'),
     bodyParser: require('body-parser'),

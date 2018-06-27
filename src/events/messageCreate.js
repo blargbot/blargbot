@@ -44,10 +44,6 @@ cleverbotIo.create(function (err, session) {
 });
 */
 
-const cleverbot = new dep.cleverbot({
-    key: config.cleverbot.key
-});
-
 bot.on('messageCreate', async function (msg) {
     bu.Metrics.messageCounter.inc();
     await bu.processUser(msg.author);
