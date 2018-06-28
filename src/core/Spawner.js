@@ -31,7 +31,7 @@ class Spawner extends EventEmitter {
                 let diff = moment.duration(moment() - shard.time);
                 if (!shard.respawning && diff.asMilliseconds() > 60000) {
                     shard.respawning = true;
-                    await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive shard ${shard.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
+                    await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${shard.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
                     this.respawnShard(parseInt(shard.id));
                 }
             }
@@ -57,7 +57,7 @@ class Spawner extends EventEmitter {
                 }
                 this.shards.set(id, shard);
                 res();
-                await this.client.discord.createMessage('398946258854871052', `Shard ${shard.id} has been respawned.`);
+                await this.client.discord.createMessage('398946258854871052', `Cluster ${shard.id} has been respawned.`);
             });
         });
     }
