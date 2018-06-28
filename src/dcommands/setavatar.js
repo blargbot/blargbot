@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const request = require('request');
 
 class SetavatarCommand extends BaseCommand {
     constructor() {
@@ -19,7 +20,7 @@ class SetavatarCommand extends BaseCommand {
             } else {
                 bu.send(msg, 'No URL given.');
             }
-            dep.request.get(avatarUrl, function (error, response, body) {
+            request.get(avatarUrl, function (error, response, body) {
                 if (!error && response.statusCode == 200) {
                     let data = 'data:' + response.headers['content-type'] + ';base64,' + new Buffer(body).toString('base64');
                     console.debug(data);

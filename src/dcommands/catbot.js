@@ -1,4 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
+const path = require('path');
+const fs = require('fs');
 
 class CatbotCommand extends BaseCommand {
     constructor() {
@@ -55,7 +57,7 @@ class CatbotCommand extends BaseCommand {
                     if (message.guildid != '197529405659021322' && message.nsfw == 0)
                         content.push(message.content);
                 }
-                dep.fs.writeFile(dep.path.join(__dirname, '..', '..', 'catbot', 'cat.json'),
+                fs.writeFile(path.join(__dirname, '..', '..', 'catbot', 'cat.json'),
                     JSON.stringify(content, null, 2), (err) => {
                         if (err) bu.send(msg, err);
                         bu.send(msg, 'Done!');

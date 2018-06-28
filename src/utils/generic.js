@@ -7,12 +7,16 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const colors = require('../../res/colors') || {},
-    snekfetch = require('snekfetch'),
-    unorm = require('unorm'),
-    limax = require('limax'),
-    { User, Channel } = require('eris'),
-    twemoji = require('twemoji');
+const colors = require('../../res/colors') || {};
+const moment = require('moment-timezone');
+const snekfetch = require('snekfetch');
+const unorm = require('unorm');
+const limax = require('limax');
+const { User, Channel, Member, Message, Permission } = require('eris');
+const twemoji = require('twemoji');
+const request = require('request');
+const isSafeRegex = require('safe-regex');
+const { emojify } = require('node-emoji');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -30,7 +34,7 @@ bu.awaitQuery = async function (msg, content, check, timeout, label) {
 bu.createQuery = async function (msg, content, check, timeout, label) {
     if (timeout == null || typeof timeout != "number")
         timeout = 300000;
-    let timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${dep.moment.duration(timeout).humanize()}.`;
+    let timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${moment.duration(timeout).humanize()}.`;
     return bu.createPrompt(msg, content, check, timeout, timeoutMessage);
 };
 
@@ -195,7 +199,7 @@ function getId(text) {
  */
 bu.hasPerm = async (msg, perm, quiet, override = true) => {
     let member;
-    if (msg instanceof dep.Eris.Member) {
+    if (msg instanceof Member) {
         member = msg;
     } else {
         if (!msg.channel.guild) return true;
@@ -248,7 +252,7 @@ bu.hasPerm = async (msg, perm, quiet, override = true) => {
 
 bu.hasRole = (msg, roles, override = true) => {
     let member;
-    if (msg instanceof dep.Eris.Member) {
+    if (msg instanceof Member) {
         member = msg;
     } else {
         if (!msg.channel.guild) return true;
@@ -424,7 +428,7 @@ bu.canDmErrors = async function (userId) {
  */
 bu.sendDM = async function (user, message, file) {
     let userid = user;
-    if (user instanceof dep.Eris.Message) {
+    if (user instanceof Message) {
         userid = user.author.id;
     }
     if (message.length == 0) {
@@ -432,7 +436,7 @@ bu.sendDM = async function (user, message, file) {
         return Error('No content');
     }
     bu.messageStats++;
-    message = dep.emoji.emojify(message);
+    message = emojify(message);
 
     if (message.length > 2000) {
         message = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
@@ -722,7 +726,7 @@ bu.sendFile = (channelid, message, url) => {
     var i = url.lastIndexOf('/');
     if (i != -1) {
         var filename = url.substring(i + 1, url.length);
-        dep.request({
+        request({
             uri: url,
             encoding: null
         }, function (err, res, body) {
@@ -741,7 +745,7 @@ bu.sendFile = (channelid, message, url) => {
  * @returns {string}
  */
 bu.createTimeDiffString = (moment1, moment2) => {
-    var diff = dep.moment.duration(moment1.diff(moment2));
+    var diff = moment.duration(moment1.diff(moment2));
     return `${diff.days() > 0 ? diff.days() + ' days, ' : ''}${diff.hours() > 0 ? diff.hours() + ' hours, ' : ''}${diff.minutes()} minutes, and ${diff.seconds()} seconds`;
 };
 
@@ -796,7 +800,7 @@ bu.logAction = async function (guild, user, mod, type, reason, color = 0x17c484,
                 value: reason,
                 inline: true
             }],
-            timestamp: dep.moment()
+            timestamp: moment()
         };
         if (fields != undefined && Array.isArray(fields)) {
             for (const field of fields) {
@@ -904,7 +908,7 @@ bu.issuePardon = async function (user, guild, count, params) {
 
 bu.comparePerms = (m, allow) => {
     if (!allow) allow = bu.defaultStaff;
-    let newPerm = new dep.Eris.Permission(allow);
+    let newPerm = new Permission(allow);
     for (let key in newPerm.json) {
         if (m.permission.has(key)) {
             return true;
@@ -1114,7 +1118,7 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
         let channel = storedGuild.log[event];
         if (!embed) embed = {};
         embed.title = `:information_source: ${eventName}`;
-        embed.timestamp = dep.moment();
+        embed.timestamp = moment();
         embed.fields = fields;
         embed.color = color;
         try {
@@ -1173,7 +1177,7 @@ const timeKeywords = {
 };
 
 bu.parseDuration = function (text) {
-    let duration = dep.moment.duration();
+    let duration = moment.duration();
     if (/([0-9]+) ?(day|days|d)/i.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(day|days|d)/i)[1]) || 0, 'd');
     if (/([0-9]+) ?(hours|hour|h)/i.test(text))
@@ -1243,7 +1247,7 @@ bu.getPerms = function (channelid) {
 
 bu.request = function (options) {
     return new Promise((fulfill, reject) => {
-        dep.request(options, (err, res, body) => {
+        request(options, (err, res, body) => {
             if (err) {
                 reject(err);
                 return;
@@ -1321,7 +1325,7 @@ bu.createRegExp = function (term) {
             throw new Error('Unsafe Regex');
 
         let temp = new RegExp(regexList[1], regexList[2]);
-        if (!dep.safe(temp)) {
+        if (!isSafeRegex(temp)) {
             throw new Error('Unsafe Regex');
         }
         return temp;
@@ -1336,7 +1340,7 @@ bu.postStats = function () {
         shard_count: config.discord.shards,
         shard_id: process.env.SHARD_ID
     };
-    dep.request.post({
+    request.post({
         'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
         'headers': {
             'content-type': 'application/json',
@@ -1352,7 +1356,7 @@ bu.postStats = function () {
     if (!config.general.isbeta) {
         console.info('Posting to matt');
 
-        dep.request.post({
+        request.post({
             'url': 'https://www.carbonitex.net/discord/data/botdata.php',
             'headers': {
                 'content-type': 'application/json'
@@ -1369,7 +1373,7 @@ bu.postStats = function () {
             if (err) console.error(err);
         });
 
-        dep.request.post({
+        request.post({
             url: `https://discordbots.org/api/bots/${bot.user.id}/stats`,
             json: true,
             headers: {
@@ -1382,7 +1386,7 @@ bu.postStats = function () {
     }
 };
 async function updateStats() {
-    let yesterday = dep.moment().subtract(1, 'day').format('YYYY-MM-DD');
+    let yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
     if (!bu.stats[yesterday]) {
         let storedStats = await r.table('vars').get('stats');
         if (!storedStats) {
@@ -1402,7 +1406,7 @@ async function updateStats() {
             };
         }
     }
-    let day = dep.moment().format('YYYY-MM-DD');
+    let day = moment().format('YYYY-MM-DD');
     if (!bu.stats[day]) bu.stats[day] = {};
     bu.stats[day].guilds = bot.guilds.size;
     bu.stats[day].change = bu.stats[day].guilds - bu.stats[yesterday].guilds;
@@ -1589,7 +1593,7 @@ const prettyTimeMagnitudes = {
 };
 
 bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
-    let now = dep.moment.tz(timezone);
+    let now = moment.tz(timezone);
     if (!text) return now;
     switch (text.toLowerCase()) {
         case 'now': return now;
@@ -1608,7 +1612,7 @@ bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
         return now.add(magnitude, quantity);
     }
 
-    return dep.moment.tz(text, format, timezone).utcOffset(0);
+    return moment.tz(text, format, timezone).utcOffset(0);
 };
 
 bu.parseInt = function (s, radix = 10) {

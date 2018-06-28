@@ -1,9 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
+const reload = require('require-reload')(require);
+const { patrons, donators } = reload('../../res/donators.json');
 
-const { patrons, donators } = dep.reload('../../res/donators.json');
 const startDate = 1444708800000;
 var patronStr, donatorStr;
-async function reload() {
+async function reloadStrings() {
     patronStr = (await Promise.map(patrons, async p => {
         if (/^[0-9]{17,23}$/.test(p)) {
             return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
@@ -17,8 +19,8 @@ async function reload() {
     console.log('reloaded');
 }
 let titan;
-setInterval(reload, 60 * 60 * 1000);
-reload();
+setInterval(reloadStrings, 60 * 60 * 1000);
+reloadStrings();
 
 function pad(value, length) {
     return (value.toString().length < length) ? pad(' ' + value, length) : value;
@@ -39,7 +41,7 @@ class InfoCommand extends BaseCommand {
             let t = await bot.getRESTUser('135556895086870528');
             titan = bu.getFullName(t);
         }
-        let age = dep.moment.duration(dep.moment() - dep.moment(startDate));
+        let age = moment.duration(moment() - moment(startDate));
         let dateStr = `${age.years()} year${age.years() != 1 ? 's' : ''}, ${age.months()} month${age.months() != 1 ? 's' : ''}, ${age.days()} day${age.days() != 1 ? 's' : ''}, ${age.hours()} hour${age.hours() != 1 ? 's' : ''}, ${age.minutes()} minute${age.minutes() != 1 ? 's' : ''}, and ${age.seconds()} second${age.seconds() != 1 ? 's' : ''}`;
         try {
             bu.send(msg, `blargbot is a multipurpose bot with new features implemented regularly, written in javascript using Eris.

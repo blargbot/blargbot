@@ -38,13 +38,13 @@ const loggr = new CatLoggr({
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Promise Rejection:', err);
 });
-global.dep = require('./core/dep.js');
 
-const reload = dep.reload(require);
+const reload = require('require-reload')(require);
 const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
 const Spawner = require('./structures/Spawner');
+const Eris = require('eris');
 
 var irc = require('./core/irc.js');
 
@@ -58,7 +58,7 @@ bu.init();
 
 var VERSION = config.version;
 
-global.bot = new dep.Eris(config.discord.token, { restMode: true, defaultImageFormat: 'png' });
+global.bot = new Eris(config.discord.token, { restMode: true, defaultImageFormat: 'png' });
 var spawner = new Spawner({
     discord: bot,
     irc

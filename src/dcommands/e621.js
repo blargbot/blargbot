@@ -1,7 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
-
-var xml2js = dep.xml2js;
-var https = dep.https;
+const util = require('util');
+const xml2js = require('xml2js');
+const https = require('https');
 
 class E621Command extends BaseCommand {
     constructor() {
@@ -90,7 +90,7 @@ class E621Command extends BaseCommand {
                                     if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                                         urlList.push(doc.posts.post[i].file_url);
                                 }
-                            //    console.(dep.util.inspect(urlList));
+                            //    console.(util.inspect(urlList));
                             if (urlList.length == 0) {
                                 bu.send(msg, 'No results found!');
                                 return;

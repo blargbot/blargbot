@@ -1,6 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
-
-var https = dep.https;
+const https = require('https');
 
 class DanbooruCommand extends BaseCommand {
     constructor() {

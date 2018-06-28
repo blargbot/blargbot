@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const moment = require('moment-timezone');
 
 module.exports =
     Builder.APITag('usercreatedat')
@@ -32,7 +33,7 @@ module.exports =
                 });
 
             if (user != null)
-                return dep.moment(user.createdAt).utcOffset(0).format(args[0] || '');
+                return moment(user.createdAt).utcOffset(0).format(args[0] || '');
 
             if (quiet)
                 return '';

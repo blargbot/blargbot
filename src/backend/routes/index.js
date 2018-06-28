@@ -7,7 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const router = dep.express.Router();
+const router = require('express').Router();
 
 router.get('/', (req, res) => {
     res.locals.user = req.user;

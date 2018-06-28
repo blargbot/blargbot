@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const moment = require('moment-timezone');
 
 module.exports =
     Builder.APITag('userjoinedat')
@@ -34,7 +35,7 @@ module.exports =
             if (user != null) {
                 let member = context.guild.members.get(user.id);
                 if (member != null)
-                    return dep.moment(member.joinedAt).utcOffset(0).format(args[0] || '');
+                    return moment(member.joinedAt).utcOffset(0).format(args[0] || '');
                 return Builder.errors.userNotInGuild(subtag, context);
             }
 

@@ -1,6 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
-
-const { xml2js, sf } = dep;
+const util = require('util');
+const xml2js = require('xml2js');
+const snekfetch = require('snekfetch');
 
 class Rule34Command extends BaseCommand {
     constructor() {
@@ -36,7 +37,7 @@ class Rule34Command extends BaseCommand {
             }
         }
 
-        let res = await sf.get('http://rule34.paheal.net/api/danbooru/find_posts/index.xml').query({
+        let res = await snekfetch.get('http://rule34.paheal.net/api/danbooru/find_posts/index.xml').query({
             tags: usedTags.join('%20'),
             limit: 50
         });
@@ -50,14 +51,14 @@ class Rule34Command extends BaseCommand {
             //console.('result: ' + result);
             var urlList = [];
             let message;
-            //   console.(dep.util.inspect(doc.posts.post[0]))
+            //   console.(util.inspect(doc.posts.post[0]))
             if (doc.posts.post != null)
                 for (let i = 0; i < doc.posts.post.length; i++) {
                     var imgUrl = doc.posts.post[i].$.file_url;
                     if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                         urlList.push(doc.posts.post[i].$.file_url);
                 }
-            //    console.(dep.util.inspect(urlList));
+            //    console.(util.inspect(urlList));
             if (urlList.length == 0) {
                 bu.send(msg, 'No results found!');
                 return;

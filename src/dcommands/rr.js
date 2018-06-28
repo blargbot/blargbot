@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const { emojify } = require('node-emoji');
 
 var numMap = ['zero', 'one', 'two', 'three', 'four', 'five'];
 var mojiList =
@@ -58,11 +59,11 @@ class RrCommand extends BaseCommand {
             bu.send(msg, `${words[2] || mojiList[bu.getRandomInt(0, mojiList.length - 1)]}:gun:`).then(msg3 => {
                 setTimeout(() => {
                     if (dead) {
-                        bot.editMessage(msg2.channel.id, msg2.id, dep.emoji.emojify(message + `\n***BOOM!*** ${deathMsg[bu.getRandomInt(0, deathMsg.length - 1)]}`));
-                        bot.editMessage(msg3.channel.id, msg3.id, dep.emoji.emojify(`:boom::gun:`));
+                        bot.editMessage(msg2.channel.id, msg2.id, emojify(message + `\n***BOOM!*** ${deathMsg[bu.getRandomInt(0, deathMsg.length - 1)]}`));
+                        bot.editMessage(msg3.channel.id, msg3.id, emojify(`:boom::gun:`));
                     } else {
-                        bot.editMessage(msg2.channel.id, msg2.id, dep.emoji.emojify(msg2.content + `\n*Click!* ${liveMsg[bu.getRandomInt(0, liveMsg.length - 1)]}`));
-                        bot.editMessage(msg3.channel.id, msg3.id, dep.emoji.emojify(`:relieved::gun:`));
+                        bot.editMessage(msg2.channel.id, msg2.id, emojify(msg2.content + `\n*Click!* ${liveMsg[bu.getRandomInt(0, liveMsg.length - 1)]}`));
+                        bot.editMessage(msg3.channel.id, msg3.id, emojify(`:relieved::gun:`));
                     }
                 }, 4000);
             });

@@ -9,6 +9,11 @@
 global.Promise = require('bluebird');
 global.config = require('../../config.json');
 const CatLoggr = require('cat-loggr');
+const moment = require('moment-timezone');
+const path = require('path');
+const fs = require('fs');
+const { Client } = require('eris');
+
 const loggr = new CatLoggr({
     shardId: process.env.SHARD_ID,
     level: config.general.isbeta ? 'debug' : 'info',
@@ -36,9 +41,7 @@ const loggr = new CatLoggr({
     ]
 }).setGlobal();
 
-global.dep = require('./dep.js');
-
-const https = dep.https;
+const https = require('https');
 global.bbtag = require('./bbtag.js');
 const Sender = require('../structures/Sender');
 
@@ -50,7 +53,7 @@ process.on('unhandledRejection', (err, p) => {
 global.bu = require('./util.js');
 
 
-class DiscordClient extends dep.Eris.Client {
+class DiscordClient extends Client {
     constructor() {
         super(config.discord.token, {
             autoReconnect: true,
@@ -80,7 +83,7 @@ class DiscordClient extends dep.Eris.Client {
         bu.startTime = startTime;
 
         if (process.env.SHARD_ID == 0)
-            bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
+            bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
 
         const Manager = require('./Manager.js');
         global.EventManager = new Manager('events', true);
@@ -143,7 +146,7 @@ ${err.stack}
     }
 }
 
-var startTime = dep.moment();
+var startTime = moment();
 
 function filterUrls(input) {
     return input.replace(/https?\:\/\/.+\.[a-z]{1,20}(\/[^\s]*)?/gi, '');

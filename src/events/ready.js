@@ -8,7 +8,7 @@
  */
 
 const blacklist = require('../../blacklist.json');
-
+const moment = require('moment-timezone');
 
 bot.on('ready', async function () {
     bot.sender.send('ready', bot.guilds.map(g => g.id));
@@ -35,7 +35,7 @@ bot.on('ready', async function () {
     if (process.env.SHARD_ID == 0) {
         let restart = await r.table('vars').get('restart').run();
         if (restart && restart.varvalue) {
-            bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(dep.moment(), dep.moment(restart.varvalue.time)) + '.');
+            bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(moment(), moment(restart.varvalue.time)) + '.');
             r.table('vars').get('restart').delete().run();
         }
     }
@@ -126,7 +126,7 @@ async function switchGame(forced) {
         while (oldId == gameId) {
             gameId = bu.getRandomInt(0, 11);
         }
-        switch (dep.moment().format('MM-DD')) {
+        switch (moment().format('MM-DD')) {
             case '04-16':
                 name = 'Happy age++, stupid cat!';
                 break;
