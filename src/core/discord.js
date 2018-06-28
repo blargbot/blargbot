@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-28 11:39:04
+ * @Last Modified time: 2018-06-28 15:07:31
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -103,6 +103,12 @@ class DiscordClient extends Client {
 
         console.init('Connecting...');
         this.connect();
+
+        console.addPostHook(({ text, level, timestamp }) => {
+            this.sender.send('log', {
+                text, level, timestamp
+            });
+        })
     }
 
     async eval(msg, text, send = true) {

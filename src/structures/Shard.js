@@ -10,7 +10,7 @@ class Shard extends Sender {
         this.respawn = true;
 
         let firstShard = Math.min(this.manager.max - 1, this.manager.shardsPerCluster * this.id);
-        let lastShard = Math.min(this.manager.max - 1, 
+        let lastShard = Math.min(this.manager.max - 1,
             (this.manager.shardsPerCluster * this.id) + this.manager.shardsPerCluster - 1)
         let shardCount = lastShard - firstShard + 1;
         this.env = Object.assign({}, process.env, this.manager.env, {
@@ -43,7 +43,7 @@ class Shard extends Sender {
         this.process.once('disconnect', () => {
             if (this.respawn) {
                 console.warn('The shard disconnected, respawning');
-                this.manager.respawnShard(this.id);
+                this.manager.respawnShard(this.id, true);
             }
         });
 
