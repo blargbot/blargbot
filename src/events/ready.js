@@ -32,7 +32,7 @@ bot.on('ready', async function () {
         });
     }
 
-    if (process.env.SHARD_ID == 0) {
+    if (process.env.CLUSTER_ID == 0) {
         let restart = await r.table('vars').get('restart').run();
         if (restart && restart.varvalue) {
             bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(moment(), moment(restart.varvalue.time)) + '.');
@@ -76,7 +76,7 @@ bot.on('ready', async function () {
     else
         bu.avatarId = 0;
     switchGame();
-    if (process.env.SHARD_ID == 0)
+    if (process.env.CLUSTER_ID == 0)
         switchAvatar();
     bu.postStats();
     if (eventTimer == undefined) {
@@ -247,8 +247,8 @@ function initEvents() {
         for (let event of events) {
             if (event.channel && !bot.getChannel(event.channel)) continue;
             else if (event.guild && !bot.guilds.get(event.guild)) continue;
-            else if (!event.channel && !event.guild && event.user && process.env.SHARD_ID != 0) continue;
-            else if (event.type === 'purgelogs' && process.env.SHARD_ID != 0) continue;
+            else if (!event.channel && !event.guild && event.user && process.env.CLUSTER_ID != 0) continue;
+            else if (event.type === 'purgelogs' && process.env.CLUSTER_ID != 0) continue;
             let type = event.type;
             CommandManager.built[type].event(event);
             r.table('events').get(event.id).delete().run();

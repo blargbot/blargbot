@@ -66,6 +66,11 @@
         <h1 class="centre">Shard Status</h1>
     </header>
     <main>
+        <h2 class='centre'>Clusters</h2>
+        <div id='cluster-container'>
+
+        </div>
+        <h2 class='centre'>Shards</h2>
         <div id='shard-container'>
 
         </div>
@@ -112,7 +117,8 @@
             margin: 1px 0;
         }
 
-        .shard {
+        .shard,
+        .cluster {
             flex: 0 0 400px;
             background: #37474f;
             margin: 15px;
@@ -123,7 +129,12 @@
             transition: border-color 1s;
         }
 
-        .shard h3 {
+        .cluster {
+            border: none;
+        }
+
+        .shard h3,
+        .cluster h3 {
             margin: 0 0 10px 0;
             text-align: center;
             display: block;
@@ -131,7 +142,8 @@
 
         }
 
-        #shard-container {
+        #shard-container,
+        #cluster-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -143,17 +155,25 @@
 init();
 let ws = new WebSocket('{{url}}');
 let shardContainer = document.getElementById('shard-container');
+let clusterContainer = document.getElementById('cluster-container');
 let shards = {};
+let clusters = {};
+
 function clearElement(n) {
     while (n.hasChildNodes())
         n.removeChild(n.lastChild);
 }
 
 function refreshContainer() {
+    clearElement(clusterContainer);
+    for (let i of Object.keys(clusters).sort((a,b) => parseInt(a) - parseInt(b))) {
+        clusterContainer.appendChild(clusters[i].element);
+    }
     clearElement(shardContainer);
     for (let i of Object.keys(shards).sort((a,b) => parseInt(a) - parseInt(b))) {
         shardContainer.appendChild(shards[i].element);
     }
+    
 }
 
 function setProperty(el, shard, label, key) {
@@ -165,6 +185,46 @@ function setProperty(el, shard, label, key) {
     dyn.classList.add('col', 's6');
     el.appendChild(dyn);
     shard.components[key] = dyn;
+}
+
+function updateCluster(s) {
+    if (!clusters[s.id]) {
+        let el = document.createElement('div');
+        el.classList.add('cluster');
+        el.id = `cluster${s.id}`;
+        clusters[s.id] = {element: el, components:{}};
+        let c = clusters[s.id].components;
+
+        c.head = document.createElement('h3');
+        c.head.innerText = 'cluster ' + s.id;
+        el.appendChild(c.head);
+
+        let container = document.createElement('div');
+        container.className = 'row';
+        el.appendChild(container);
+
+        setProperty(container, clusters[s.id], 'Guilds: ', 'guilds');
+        setProperty(container, clusters[s.id], 'Memory: ', 'memory');
+        setProperty(container, clusters[s.id], 'CPU: ', 'cpu');
+        setProperty(container, clusters[s.id], 'Uptime: ', 'uptime');
+        setProperty(container, clusters[s.id], 'Last Update: ', 'lastResponse');
+        setProperty(container, clusters[s.id], 'Shards: ', 'shards');
+        refreshContainer();
+    }
+    for (const shard of s.shards)
+        updateShard(shard);
+    Object.assign(clusters[s.id], s);
+    let c = clusters[s.id].components;
+    clusters[s.id].element.className = 'cluster ' + clusters[s.id].status;
+
+    c.guilds.innerText = clusters[s.id].guilds;
+    c.memory.innerText = clusters[s.id].rss ? formatBytes(clusters[s.id].rss) : 'NaN';
+    if (typeof clusters[s.id].cpu === 'number')
+     clusters[s.id].cpu = Math.round(clusters[s.id].cpu * 10) / 10;
+    c.cpu.innerText = (clusters[s.id].cpu || 'NaN') + '%';
+    c.shards.innerText = clusters[s.id].shardCount;
+    c.uptime.innerText = clusters[s.id].readyTime === 0 ? 'Starting...' : moment.duration(moment() - clusters[s.id].readyTime).toISOString();
+    c.lastResponse.innerText = moment(clusters[s.id].time).format('LTS');
 }
 
 function updateShard(s) {
@@ -185,10 +245,8 @@ function updateShard(s) {
 
         setProperty(container, shards[s.id], 'Guilds: ', 'guilds');
         setProperty(container, shards[s.id], 'Latency: ', 'latency');
-        setProperty(container, shards[s.id], 'Memory: ', 'memory');
-        setProperty(container, shards[s.id], 'CPU: ', 'cpu');
-        setProperty(container, shards[s.id], 'Uptime: ', 'uptime');
         setProperty(container, shards[s.id], 'Last Update: ', 'lastResponse');
+        setProperty(container, shards[s.id], 'Cluster: ', 'cluster');
         refreshContainer();
     }
     Object.assign(shards[s.id], s);
@@ -197,12 +255,9 @@ function updateShard(s) {
 
     c.guilds.innerText = shards[s.id].guilds;
     c.latency.innerText = shards[s.id].latency + 'ms';
-    c.uptime.innerText = shards[s.id].readyTime === 0 ? 'Starting...' : moment.duration(moment() - shards[s.id].readyTime).toISOString();
-    c.memory.innerText = shards[s.id].rss ? formatBytes(shards[s.id].rss) : 'NaN';
-    if (typeof shards[s.id].cpu === 'number')
-     shards[s.id].cpu = Math.round(shards[s.id].cpu * 10) / 10;
-    c.cpu.innerText = (shards[s.id].cpu || 'NaN') + '%';
+    console.log(shards[s.id]);
     c.lastResponse.innerText = moment(shards[s.id].time).format('LTS')
+    c.cluster.innerText = shards[s.id].cluster;
 }
 
 function formatBytes(a,b){if(0==a)return"0 Bytes";var c=1024,d=b||2,e=["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"],f=Math.floor(Math.log(a)/Math.log(c));return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]}
@@ -232,7 +287,7 @@ ws.onmessage = event => {
     let data = JSON.parse(event.data);
     switch (data.code) {
         case 'shard':
-            updateShard(data.data);
+            updateCluster(data.data);
             break;
     }
 };

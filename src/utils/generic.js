@@ -1338,7 +1338,7 @@ bu.postStats = function () {
     var stats = {
         server_count: bot.guilds.size,
         shard_count: config.discord.shards,
-        shard_id: process.env.SHARD_ID
+        shard_id: process.env.CLUSTER_ID
     };
     request.post({
         'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,

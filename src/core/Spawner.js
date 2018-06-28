@@ -1,13 +1,17 @@
-const Shard = require('./Shard');
+const Shard = require('../structures/Shard');
 const EventEmitter = require('eventemitter3');
 const moment = require('moment');
-const Timer = require('./Timer');
+const Timer = require('../structures/Timer');
 
 class Spawner extends EventEmitter {
     constructor(client, options = {}) {
         super();
         this.client = client;
-        this.max = config.discord.shards;
+
+        this.max = config.shards.max;
+        this.shardsPerCluster = config.shards.perCluster;
+        this.clusterCount = Math.ceil(this.max / this.shardsPerCluster);
+
         this.file = options.file || 'src/core/discord.js';
         this.respawn = options.respawn || true;
         this.shards = new Map();
@@ -85,7 +89,7 @@ class Spawner extends EventEmitter {
     async spawnAll() {
         let spawned = [];
         // let spawned = [await this.spawnFrontend(), await this.spawnEventTimer()];
-        for (let i = 0; i < this.max; i++) {
+        for (let i = 0; i < this.clusterCount; i++) {
             spawned.push(await this.spawn(i));
         }
         return spawned;

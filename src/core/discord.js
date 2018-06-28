@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-27 11:25:17
+ * @Last Modified time: 2018-06-28 11:39:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,7 +15,7 @@ const fs = require('fs');
 const { Client } = require('eris');
 
 const loggr = new CatLoggr({
-    shardId: process.env.SHARD_ID,
+    shardId: process.env.CLUSTER_ID,
     level: config.general.isbeta ? 'debug' : 'info',
     levels: [
         { name: 'fatal', color: CatLoggr._chalk.red.bgBlack, err: true },
@@ -52,7 +52,6 @@ process.on('unhandledRejection', (err, p) => {
 /** CONFIG STUFF **/
 global.bu = require('./util.js');
 
-
 class DiscordClient extends Client {
     constructor() {
         super(config.discord.token, {
@@ -63,9 +62,9 @@ class DiscordClient extends Client {
                 TYPING_START: true,
                 VOICE_STATE_UPDATE: true
             },
-            maxShards: config.discord.shards || 1,
-            firstShardID: parseInt(process.env.SHARD_ID),
-            lastShardID: parseInt(process.env.SHARD_ID),
+            maxShards: parseInt(process.env.SHARDS_MAX),
+            firstShardID: parseInt(process.env.SHARDS_FIRST),
+            lastShardID: parseInt(process.env.SHARDS_LAST),
             restMode: true,
             defaultImageFormat: 'png',
             defaultImageSize: 512,
@@ -82,7 +81,7 @@ class DiscordClient extends Client {
         bu.init();
         bu.startTime = startTime;
 
-        if (process.env.SHARD_ID == 0)
+        if (process.env.CLUSTER_ID == 0)
             bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
 
         const Manager = require('./Manager.js');
@@ -153,7 +152,7 @@ function filterUrls(input) {
 }
 
 var discord = new DiscordClient();
-discord.sender.send('threadReady', process.env.SHARD_ID);
+discord.sender.send('threadReady', process.env.CLUSTER_ID);
 
 process.on('message', async msg => {
     const { data, code } = JSON.parse(msg);
@@ -180,7 +179,7 @@ process.on('message', async msg => {
                 }
                 case 'eval': {
                     let result = await discord.eval({ author: { id: bu.CAT_ID } }, data.code, false);
-                    bot.sender.send(eventKey, { result: result.result, shard: parseInt(process.env.SHARD_ID) });
+                    bot.sender.send(eventKey, { result: result.result, shard: parseInt(process.env.CLUSTER_ID) });
                     break;
                 }
                 case 'retrieveUser':
@@ -274,17 +273,24 @@ function getCPU() {
 }
 // shard status posting
 let shardStatusInterval = setInterval(async () => {
-    let shard = bot.shards.get(parseInt(process.env.SHARD_ID));
     let mem = process.memoryUsage();
+    let clusterId = parseInt(process.env.CLUSTER_ID);
     bot.sender.send('shardStats', {
-        id: process.env.SHARD_ID,
+        id: clusterId,
         time: Date.now(),
         readyTime: bot.startTime,
         guilds: bot.guilds.size,
         rss: mem.rss,
         cpu: await getCPU(),
-        status: shard.status,
-        latency: shard.latency
+        shardCount: parseInt(process.env.SHARDS_COUNT),
+        shards: bot.shards.map(s => ({
+            id: s.id,
+            status: s.status,
+            latency: s.latency,
+            guilds: bot.guilds.filter(g => g.shard.id === s.id).length,
+            cluster: clusterId,
+            time: Date.now()
+        }))
     });
 }, 10000);
 

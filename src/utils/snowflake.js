@@ -2,7 +2,7 @@ const bigInt = require('big-integer');
 
 let increment = bigInt.zero;
 // assign shard id to the current shard's ID, or to the max value if master shard 
-const shard_id = bigInt(process.env.SHARD_ID ? parseInt(process.env.SHARD_ID) : 0b1111111111)
+const shard_id = bigInt(process.env.CLUSTER_ID ? parseInt(process.env.CLUSTER_ID) : 0b1111111111)
     .shiftLeft(12);
 
 bu.makeSnowflake = function (date = Date.now()) {

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-27 11:29:10
+ * @Last Modified time: 2018-06-28 10:43:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -43,7 +43,7 @@ const reload = require('require-reload')(require);
 const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
-const Spawner = require('./structures/Spawner');
+const Spawner = require('./core/Spawner');
 const Eris = require('eris');
 
 var irc = require('./core/irc.js');
