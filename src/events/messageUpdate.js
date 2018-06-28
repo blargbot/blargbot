@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:57
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-26 12:38:56
+ * @Last Modified time: 2018-06-28 09:42:30
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -41,6 +41,7 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
                 if (storedMsg.attachment) oldmsg.attachments = [{
                     url: storedMsg.attachment
                 }];
+                msg.embeds = storedMsg.embeds;
                 oldmsg.channel = bot.getChannel(msg.channel.id);
 
             } else {
