@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import NuxtLoading from './components/nuxt-loading.vue'
 
-import '../src/frontend/assets/css/main.css'
+import '../src/frontend/assets/scss/base.scss'
 
 
 let layouts = {

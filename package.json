@@ -57,7 +57,9 @@
     },
     "devDependencies": {
         "eslint": "^5.0.1",
-        "eslint-loader": "^2.0.0"
+        "eslint-loader": "^2.0.0",
+        "node-sass": "^4.9.0",
+        "sass-loader": "^7.0.3"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"

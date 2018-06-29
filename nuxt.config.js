@@ -22,7 +22,7 @@ module.exports = {
     /*
     ** Global CSS
     */
-    css: ['~assets/css/main.css'],
+    css: [],
     /*
     ** Customize the progress-bar color
     */
@@ -39,7 +39,7 @@ module.exports = {
     proxy: {
         "/api/": config.origin || "https://giveaways.stupidcat.me"
     },
-
+    css: [{ src: '@/assets/scss/base.scss', type: 'scss' }],
     /*
      ** Build configuration
      */
