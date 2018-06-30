@@ -549,12 +549,14 @@ ${content}
                         break;
                     }
                     author = await r.table('user').get(tag.author).run();
+                    let count = await r.table('user').getAll(tag.name, { index: 'favourite_tag' }).count();
+
                     let output = `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
 Cooldown: ${tag.cooldown || 0}ms
 It was last modified **${moment(tag.lastmodified).format('LLLL')}**.
 It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!
-It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1 ? '' : 's'}**!`;
+It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                     if (tag.reports && tag.reports > 0)
                         output += `\n:warning: It has been reported ${tag.reports || 0} **time${(tag.reports == 1 || 0) ? '' : 's'}**!`;
                     if (Array.isArray(tag.flags) && tag.flags.length > 0) {
@@ -648,7 +650,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                 case 'favorite':
                     if (words.length > 2) {
                         title = filterTitle(words[2]);
-                        tag = await r.table('tag').get(words[2]).run();
+                        tag = await r.table('tag').get(title).run();
                         if (!tag) {
                             bu.send(msg, `❌ That tag doesn't exist! ❌`);
                             break;
@@ -670,11 +672,13 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                             tag.favourites--;
                             output = `The tag \`${title}\` is no longer on your favourites list!`;
                         }
-                        await r.table('tag').get(title).update({
-                            favourites: r.literal(tag.favourites)
-                        });
                         await r.table('user').get(msg.author.id).update({
                             favourites: r.literal(user.favourites)
+                        });
+                        let count = await r.table('user').getAll(tag.name, { index: 'favourite_tag' }).count();
+                        console.log(count);
+                        await r.table('tag').get(title).update({
+                            favourites: r.literal(count)
                         });
                         await bu.send(msg, output);
                     } else {
