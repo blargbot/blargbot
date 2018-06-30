@@ -663,7 +663,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                         if (!user.favourites[title]) {
                             user.favourites[title] = true;
                             tag.favourites++;
-                            output = `The tag \`${title}\` is now on your favourites list!`;
+                            output = `The tag \`${title}\` is now on your favourites list!\n\nNote: there is no way for a tag to tell if you've favourited it, and thus it's impossible to give rewards for favouriting. Any tag that claims otherwise is lying, and should be reported.`;
                         } else {
                             user.favourites[title] = undefined;
                             tag.favourites--;
