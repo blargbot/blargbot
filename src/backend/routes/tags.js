@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const router = dep.express.Router();
+const router = require('express').Router();
+const moment = require('moment-timezone');
 
 let tags;
 
@@ -326,7 +327,7 @@ async function logChange(user, action, actionObj) {
                 icon_url: user.avatarURL,
                 url: `https://blargbot.xyz/user/${user.id}`
             },
-            timestamp: dep.moment(),
+            timestamp: moment(),
             footer: {
                 text: 'Web Interface'
             }

@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class UnmuteCommand extends BaseCommand {
     constructor() {
@@ -67,7 +68,7 @@ class UnmuteCommand extends BaseCommand {
                 roles: roles,
                 mute: voiceMute ? false : undefined
             });
-            bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${dep.moment.duration(args.duration).humanize()}.`, bu.ModLogColour.UNMUTE);
+            bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${moment.duration(args.duration).humanize()}.`, bu.ModLogColour.UNMUTE);
         }
     };
 }

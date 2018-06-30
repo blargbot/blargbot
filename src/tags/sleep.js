@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const moment = require('moment-timezone');
 
 module.exports =
     Builder.AutoTag('sleep')
@@ -24,7 +25,7 @@ module.exports =
             if (duration.asMilliseconds() <= 0)
                 return Builder.util.error(subtag, context, 'Invalid duration');
             if (duration.asMilliseconds() > 300000)
-                duration = dep.moment(300000);
+                duration = moment(300000);
 
             await new Promise(function (resolve) {
                 setTimeout(() => resolve(), duration.asMilliseconds());

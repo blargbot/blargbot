@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const moment = require('moment-timezone');
 
 module.exports =
     Builder.CCommandTag('timer')
@@ -36,8 +37,8 @@ module.exports =
                 source: context.guild ? context.guild.id : context.user.id,
                 user: context.user.id,
                 channel: context.channel.id,
-                endtime: r.epochTime(dep.moment().add(duration).unix()),
-                starttime: r.epochTime(dep.moment().unix()),
+                endtime: r.epochTime(moment().add(duration).unix()),
+                starttime: r.epochTime(moment().unix()),
                 context: context.serialize(),
                 content: args[0].content
             });

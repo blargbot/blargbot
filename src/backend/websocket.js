@@ -7,11 +7,12 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const { Server } = require('ws');
+
 const e = module.exports = {};
-const WebSocketServer = dep.ws.Server;
 
 e.init = function (server) {
-    global.wss = new WebSocketServer({
+    global.wss = new Server({
         server: server
     });
 

@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class NamesCommand extends BaseCommand {
     constructor() {
@@ -33,7 +34,7 @@ class NamesCommand extends BaseCommand {
         let output = `Usernames for **${bu.getFullName(user)}**`;
         if (!input.a) {
             usernames = usernames.filter(n => {
-                return dep.moment.duration(Date.now() - n.date).asDays() < 30;
+                return moment.duration(Date.now() - n.date).asDays() < 30;
             });
             output += ' in the last 30 days';
         }
@@ -41,7 +42,7 @@ class NamesCommand extends BaseCommand {
 
         if (input.v) {
             usernames = usernames.map(n => {
-                return `${n.name} - ${dep.moment(n.date).format('llll')}`;
+                return `${n.name} - ${moment(n.date).format('llll')}`;
             });
         } else {
             usernames = usernames.map(n => {

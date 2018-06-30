@@ -1,4 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
+const Brainfuck = require('brainfuck-node');
+const bfClient = new Brainfuck();
 
 class BrainfuckCommand extends BaseCommand {
     constructor() {
@@ -30,7 +32,7 @@ class BrainfuckCommand extends BaseCommand {
             return;
         }
         try {
-            let output = dep.brainfuck.execute(input.undefined.join(' '), (input.i || []).join(' '));
+            let output = bfClient.execute(input.undefined.join(' '), (input.i || []).join(' '));
             bu.send(msg, output.output.length == 0 ? 'No output...' : `Output:\n${await bu.filterMentions(output.output)}${input.p ? '\n\n[' + output.memory.list.join(', ') + ']\nPointer: ' + output.memory.pointer : ''}`);
         } catch (err) {
             console.error(err);

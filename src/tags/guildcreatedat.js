@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const moment = require('moment-timezone');
 
 module.exports =
     Builder.APITag('guildcreatedat')
@@ -18,6 +19,6 @@ module.exports =
             'This guild was created on {guildcreatedat;YYYY/MM/DD HH:mm:ss}',
             'This guild was created on 2016/01/01 01:00:00'
         )
-        .whenArgs('0-1', async (_, context, args) => dep.moment(context.guild.createdAt).utcOffset(0).format(args[0] || ''))
+        .whenArgs('0-1', async (_, context, args) => moment(context.guild.createdAt).utcOffset(0).format(args[0] || ''))
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

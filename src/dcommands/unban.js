@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class UnbanCommand extends BaseCommand {
     constructor() {
@@ -57,7 +58,7 @@ class UnbanCommand extends BaseCommand {
         if (!bu.unbans[args.guild]) bu.unbans[args.guild] = {};
         bu.unbans[args.guild][args.user] = {
             mod: bot.user.id,
-            reason: `Automatically unbanned after ${dep.moment.duration(args.duration).humanize()}.`
+            reason: `Automatically unbanned after ${moment.duration(args.duration).humanize()}.`
         };
         await bot.unbanGuildMember(args.guild, args.user, 'Automatic unban after time');
     }

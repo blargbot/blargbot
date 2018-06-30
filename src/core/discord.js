@@ -2,18 +2,46 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-05 13:46:53
+ * @Last Modified time: 2018-06-28 15:32:47
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 global.Promise = require('bluebird');
 global.config = require('../../config.json');
-const Logger = require('./logger');
-new Logger(process.env.SHARD_ID, config.general.isbeta ? 'module' : 'info').setGlobal();
+const CatLoggr = require('cat-loggr');
+const moment = require('moment-timezone');
+const path = require('path');
+const fs = require('fs');
+const { Client } = require('eris');
 
-global.dep = require('./dep.js');
+const loggr = new CatLoggr({
+    shardId: process.env.CLUSTER_ID,
+    level: config.general.isbeta ? 'debug' : 'info',
+    levels: [
+        { name: 'fatal', color: CatLoggr._chalk.red.bgBlack, err: true },
+        { name: 'error', color: CatLoggr._chalk.black.bgRed, err: true },
+        { name: 'warn', color: CatLoggr._chalk.black.bgYellow, err: true },
+        { name: 'trace', color: CatLoggr._chalk.green.bgBlack, trace: true },
+        { name: 'website', color: CatLoggr._chalk.black.bgCyan },
+        { name: 'ws', color: CatLoggr._chalk.yellow.bgBlack },
+        { name: 'cluster', color: CatLoggr._chalk.black.bgMagenta },
+        { name: 'worker', color: CatLoggr._chalk.black.bgMagenta },
+        { name: 'command', color: CatLoggr._chalk.black.bgBlue },
+        { name: 'irc', color: CatLoggr._chalk.yellow.bgBlack },
+        { name: 'shardi', color: CatLoggr._chalk.blue.bgYellow },
+        { name: 'init', color: CatLoggr._chalk.black.bgBlue },
+        { name: 'info', color: CatLoggr._chalk.black.bgGreen },
+        { name: 'output', color: CatLoggr._chalk.black.bgMagenta },
+        { name: 'bbtag', color: CatLoggr._chalk.black.bgGreen },
+        { name: 'verbose', color: CatLoggr._chalk.black.bgCyan },
+        { name: 'adebug', color: CatLoggr._chalk.cyan.bgBlack },
+        { name: 'debug', color: CatLoggr._chalk.magenta.bgBlack, aliases: ['log', 'dir'] },
+        { name: 'database', color: CatLoggr._chalk.black.bgBlue },
+        { name: 'module', color: CatLoggr._chalk.black.bgBlue }
+    ]
+}).setGlobal();
 
-const https = dep.https;
+const https = require('https');
 global.bbtag = require('./bbtag.js');
 const Sender = require('../structures/Sender');
 
@@ -24,8 +52,7 @@ process.on('unhandledRejection', (err, p) => {
 /** CONFIG STUFF **/
 global.bu = require('./util.js');
 
-
-class DiscordClient extends dep.Eris.Client {
+class DiscordClient extends Client {
     constructor() {
         super(config.discord.token, {
             autoReconnect: true,
@@ -35,9 +62,9 @@ class DiscordClient extends dep.Eris.Client {
                 TYPING_START: true,
                 VOICE_STATE_UPDATE: true
             },
-            maxShards: config.discord.shards || 1,
-            firstShardID: parseInt(process.env.SHARD_ID),
-            lastShardID: parseInt(process.env.SHARD_ID),
+            maxShards: parseInt(process.env.SHARDS_MAX),
+            firstShardID: parseInt(process.env.SHARDS_FIRST),
+            lastShardID: parseInt(process.env.SHARDS_LAST),
             restMode: true,
             defaultImageFormat: 'png',
             defaultImageSize: 512,
@@ -54,8 +81,8 @@ class DiscordClient extends dep.Eris.Client {
         bu.init();
         bu.startTime = startTime;
 
-        if (process.env.SHARD_ID == 0)
-            bu.avatars = JSON.parse(dep.fs.readFileSync(dep.path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
+        if (process.env.CLUSTER_ID == 0)
+            bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
 
         const Manager = require('./Manager.js');
         global.EventManager = new Manager('events', true);
@@ -76,6 +103,14 @@ class DiscordClient extends dep.Eris.Client {
 
         console.init('Connecting...');
         this.connect();
+
+        console.addPostHook(({ text, level, timestamp }) => {
+            try {
+                this.sender.send('log', {
+                    text, level, timestamp
+                });
+            } catch (err) { }
+        })
     }
 
     async eval(msg, text, send = true) {
@@ -118,14 +153,14 @@ ${err.stack}
     }
 }
 
-var startTime = dep.moment();
+var startTime = moment();
 
 function filterUrls(input) {
     return input.replace(/https?\:\/\/.+\.[a-z]{1,20}(\/[^\s]*)?/gi, '');
 }
 
 var discord = new DiscordClient();
-discord.sender.send('threadReady', process.env.SHARD_ID);
+discord.sender.send('threadReady', process.env.CLUSTER_ID);
 
 process.on('message', async msg => {
     const { data, code } = JSON.parse(msg);
@@ -152,7 +187,7 @@ process.on('message', async msg => {
                 }
                 case 'eval': {
                     let result = await discord.eval({ author: { id: bu.CAT_ID } }, data.code, false);
-                    bot.sender.send(eventKey, { result: result.result, shard: parseInt(process.env.SHARD_ID) });
+                    bot.sender.send(eventKey, { result: result.result, shard: parseInt(process.env.CLUSTER_ID) });
                     break;
                 }
                 case 'retrieveUser':
@@ -246,17 +281,24 @@ function getCPU() {
 }
 // shard status posting
 let shardStatusInterval = setInterval(async () => {
-    let shard = bot.shards.get(parseInt(process.env.SHARD_ID));
     let mem = process.memoryUsage();
+    let clusterId = parseInt(process.env.CLUSTER_ID);
     bot.sender.send('shardStats', {
-        id: process.env.SHARD_ID,
+        id: clusterId,
         time: Date.now(),
         readyTime: bot.startTime,
         guilds: bot.guilds.size,
         rss: mem.rss,
         cpu: await getCPU(),
-        status: shard.status,
-        latency: shard.latency
+        shardCount: parseInt(process.env.SHARDS_COUNT),
+        shards: bot.shards.map(s => ({
+            id: s.id,
+            status: s.status,
+            latency: s.latency,
+            guilds: bot.guilds.filter(g => g.shard.id === s.id).length,
+            cluster: clusterId,
+            time: Date.now()
+        }))
     });
 }, 10000);
 

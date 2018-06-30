@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class MuteCommand extends BaseCommand {
     constructor() {
@@ -110,8 +111,8 @@ class MuteCommand extends BaseCommand {
                                         guild: msg.guild.id,
                                         duration: duration.toJSON(),
                                         role: mutedrole,
-                                        endtime: r.epochTime(dep.moment().add(duration).unix()),
-                                        starttime: r.epochTime(dep.moment().unix())
+                                        endtime: r.epochTime(moment().add(duration).unix()),
+                                        starttime: r.epochTime(moment().unix())
                                     });
                                     suffix = `The user will be unmuted ${duration.humanize(true)}.`;
                                 } else {

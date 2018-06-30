@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-26 17:07:36
+ * @Last Modified time: 2018-06-28 09:47:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -35,6 +35,8 @@ async function handleDelete(msg, quiet) {
             if (storedMsg.attachment) msg.attachments = [{
                 url: storedMsg.attachment
             }];
+            msg.embeds = storedMsg.embeds;
+
             //   msg.channel = bot.getChannel(msg.channelID);
 
         } else {

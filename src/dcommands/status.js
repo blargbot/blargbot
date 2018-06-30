@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const request = require('request');
 
 class StatusCommand extends BaseCommand {
     constructor() {
@@ -35,7 +36,7 @@ class StatusCommand extends BaseCommand {
         var i = url.lastIndexOf('/');
         if (i != -1) {
             var filename = url.substring(i + 1, url.length);
-            dep.request({
+            request({
                 uri: url,
                 encoding: null
             }, function (err, res, body) {

@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class UptimeCommand extends BaseCommand {
     constructor() {
@@ -11,7 +12,7 @@ class UptimeCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        bu.send(msg, `Bot Uptime: ${bu.createTimeDiffString(dep.moment(), bu.startTime)}`);
+        bu.send(msg, `Bot Uptime: ${bu.createTimeDiffString(moment(), bu.startTime)}`);
     }
 }
 

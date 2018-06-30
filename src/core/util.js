@@ -7,9 +7,10 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var bu = module.exports = {};
-
 const EventEmitter = require('eventemitter3');
+const Trello = require('node-trello');
+
+var bu = module.exports = {};
 
 global.cluster = require('./cluster.js');
 
@@ -25,7 +26,7 @@ bu.init = () => {
         buffer: 5,
         timeoutError: 10000
     });
-    bu.trello = new dep.Trello(config.general.trellokey, config.general.trellotoken);
+    bu.trello = new Trello(config.general.trellokey, config.general.trellotoken);
     const Manager = require('./Manager.js');
     global.UtilManager = new Manager('utils');
     bu.registerChangefeed();

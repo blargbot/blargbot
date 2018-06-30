@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class TimezoneCommand extends BaseCommand {
     constructor() {
@@ -14,7 +15,7 @@ class TimezoneCommand extends BaseCommand {
         let message;
         if (words.length > 1) {
             let code = words.slice(1).join(' ').toUpperCase();
-            let tz = dep.moment().tz(code);
+            let tz = moment().tz(code);
             if (tz.zoneAbbr() === '') {
                 message = 'Invalid parameters! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.';
             } else {
@@ -26,7 +27,7 @@ class TimezoneCommand extends BaseCommand {
             if (!storedUser.timezone)
                 message = 'You haven\'t set a timezone yet.';
             else
-                message = `Your stored timezone code is \`${storedUser.timezone}\`, which is equivalent to ${dep.moment().tz(storedUser.timezone).format('z (Z)')}.`;
+                message = `Your stored timezone code is \`${storedUser.timezone}\`, which is equivalent to ${moment().tz(storedUser.timezone).format('z (Z)')}.`;
         }
         await bu.send(msg, message);
     }

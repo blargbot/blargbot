@@ -7,6 +7,10 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const path = require('path');
+const fs = require('fs');
+const reload = require('require-reload')(require);
+
 class Manager {
 
     constructor(type, removeListeners, init = true) {
@@ -19,7 +23,7 @@ class Manager {
     }
 
     init() {
-        var fileArray = dep.fs.readdirSync(dep.path.join(__dirname, '..', this.type));
+        var fileArray = fs.readdirSync(path.join(__dirname, '..', this.type));
         for (var i = 0; i < fileArray.length; i++) {
             var file = fileArray[i];
             if (/.+\.js$/.test(file)) {
@@ -79,7 +83,7 @@ class Manager {
             if (this.list.hasOwnProperty(name)) {
                 if (this.removeListeners)
                     bot.removeAllListeners(name);
-                this.list[name] = dep.reload(this.constructPath(name));
+                this.list[name] = reload(this.constructPath(name));
                 if (typeof this.list[name].init == 'function') this.list[name].init();
 
                 return true;

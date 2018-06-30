@@ -1,17 +1,24 @@
-const Shard = require('./Shard');
+const Shard = require('../structures/Shard');
 const EventEmitter = require('eventemitter3');
 const moment = require('moment');
-const Timer = require('./Timer');
+const Timer = require('../structures/Timer');
+const stripAnsi = require('strip-ansi');
 
 class Spawner extends EventEmitter {
     constructor(client, options = {}) {
         super();
         this.client = client;
-        this.max = config.discord.shards;
+
+        this.max = config.shards.max;
+        this.shardsPerCluster = config.shards.perCluster;
+        this.clusterCount = Math.ceil(this.max / this.shardsPerCluster);
+
         this.file = options.file || 'src/core/discord.js';
         this.respawn = options.respawn || true;
         this.shards = new Map();
         this.guildShardMap = {};
+
+        this.logCache = {};
 
         process.on('exit', code => {
             this.killAll();
@@ -27,8 +34,8 @@ class Spawner extends EventEmitter {
                 let diff = moment.duration(moment() - shard.time);
                 if (!shard.respawning && diff.asMilliseconds() > 60000) {
                     shard.respawning = true;
-                    await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive shard ${shard.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
-                    this.respawnShard(parseInt(shard.id));
+                    await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${shard.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
+                    this.respawnShard(parseInt(shard.id), true);
                 }
             }
         }, 10000);
@@ -42,8 +49,16 @@ class Spawner extends EventEmitter {
         return Promise.all(Array.from(this.shards.values()).filter(s => !isNaN(parseInt(s.id))).map(s => this.respawnShard(s.id)));
     }
 
-    respawnShard(id) {
+    respawnShard(id, dirty = false) {
         return new Promise(async (res, rej) => {
+            let logs = '';
+            if (dirty) {
+                logs = `\n\nLast 5 console outputs:\n\`\`\`md\n${
+                    this.logCache[id].slice(0, 5).reverse().map(m => {
+                        return `[${m.timestamp}][${m.level}] ${m.text}`;
+                    }).join('\n')
+                    }\n\`\`\` `
+            }
             let shard = await this.spawn(id, false);
             shard.on('ready', async () => {
                 if (this.shards.get(id) !== undefined) {
@@ -53,7 +68,9 @@ class Spawner extends EventEmitter {
                 }
                 this.shards.set(id, shard);
                 res();
-                await this.client.discord.createMessage('398946258854871052', `Shard ${shard.id} has been respawned.`);
+                let output = `Cluster ${id} has been respawned.`;
+
+                await this.client.discord.createMessage('398946258854871052', output + logs);
             });
         });
     }
@@ -85,7 +102,7 @@ class Spawner extends EventEmitter {
     async spawnAll() {
         let spawned = [];
         // let spawned = [await this.spawnFrontend(), await this.spawnEventTimer()];
-        for (let i = 0; i < this.max; i++) {
+        for (let i = 0; i < this.clusterCount; i++) {
             spawned.push(await this.spawn(i));
         }
         return spawned;
@@ -237,6 +254,12 @@ class Spawner extends EventEmitter {
                         await shard.send(eventKey, 'Unknown await key: ' + data.message);
                         break;
                 }
+                break;
+            case 'log':
+                if (!this.logCache[shard.id]) this.logCache[shard.id] = [];
+                data.text = stripAnsi(data.text);
+                this.logCache[shard.id].unshift(data);
+                if (this.logCache[shard.id].length >= 180) this.logCache[shard.id].pop();
                 break;
             case 'shardStats':
                 if (global.wss) {

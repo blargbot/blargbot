@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class FeedbackCommand extends BaseCommand {
     constructor() {
@@ -115,7 +116,7 @@ class FeedbackCommand extends BaseCommand {
                             icon_url: msg.author.avatarURL,
                             url: `https://blargbot.xyz/user/${msg.author.id}`
                         },
-                        timestamp: dep.moment(msg.timestamp),
+                        timestamp: moment(msg.timestamp),
                         footer: {
                             text: 'Case ' + i + ' | ' + msg.id
                         },
@@ -138,7 +139,7 @@ class FeedbackCommand extends BaseCommand {
                     channel: msg.channel.id,
                     message: words.slice(1).join(' '),
                     messageid: msg.id,
-                    date: r.epochTime(dep.moment().unix()),
+                    date: r.epochTime(moment().unix()),
                     cardId: data.id,
                     cardUrl: data.shortUrl
                 }).run();

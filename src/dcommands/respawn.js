@@ -7,7 +7,7 @@ class RespawnCommand extends BaseCommand {
             category: bu.CommandType.GENERAL,
             hidden: true,
             usage: 'respawn <id>',
-            info: 'Shard respawning only for staff.'
+            info: 'Cluster respawning only for staff.'
         });
     }
 
@@ -18,9 +18,9 @@ class RespawnCommand extends BaseCommand {
             if (isNaN(id))
                 return await bu.send(msg, 'that wasn\'t even a number pls');
 
-            await bu.send('398946258854871052', `**${bu.getFullName(msg.author)}** has called for a respawn of shard ${id}.`);
+            await bu.send('398946258854871052', `**${bu.getFullName(msg.author)}** has called for a respawn of cluster ${id}.`);
             bot.sender.send('respawn', { id, channel: msg.channel.id });
-            await bu.send(msg, 'ok shard ' + id + ' is being respawned and stuff now');
+            await bu.send(msg, 'ok cluster ' + id + ' is being respawned and stuff now');
         }
     }
 }

@@ -8,6 +8,7 @@
  */
 
 const cassandra = require('cassandra-driver');
+const moment = require('moment-timezone');
 if (config.cassandra) {
     const cclient = new cassandra.Client({
         contactPoints: config.cassandra.contactPoints, keyspace: config.cassandra.keyspace,
@@ -288,7 +289,7 @@ bu.insertChatlog = async function (msg, type) {
         //     msgid: msg.id,
         //     channelid: msg.channel.id,
         //     guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
-        //     msgtime: r.epochTime(dep.moment(msg.timestamp) / 1000),
+        //     msgtime: r.epochTime(moment(msg.timestamp) / 1000),
         //     type: type,
         //     embeds: msg.embeds
         // }).run();
@@ -309,10 +310,10 @@ bu.processUser = async function (user) {
             username: user.username,
             usernames: [{
                 name: user.username,
-                date: r.epochTime(dep.moment() / 1000)
+                date: r.epochTime(moment() / 1000)
             }],
             isbot: user.bot,
-            lastspoke: r.epochTime(dep.moment() / 1000),
+            lastspoke: r.epochTime(moment() / 1000),
             lastcommand: null,
             lastcommanddate: null,
             discriminator: user.discriminator,
@@ -326,7 +327,7 @@ bu.processUser = async function (user) {
             newUser.usernames = storedUser.usernames;
             newUser.usernames.push({
                 name: user.username,
-                date: r.epochTime(dep.moment() / 1000)
+                date: r.epochTime(moment() / 1000)
             });
             update = true;
         }
