@@ -158,7 +158,7 @@
             "desc": ""
         },
         "round": {
-            "desc": ""
+            "desc": "Rondt het gegeven `getal` naar de gegeven aantal decimale `plaatsen`, standaard is 1."
         }
     },
     "message": {
