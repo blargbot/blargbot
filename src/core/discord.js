@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 13:22:42
+ * @Last Modified time: 2018-07-04 13:25:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -45,7 +45,7 @@ const loggr = new CatLoggr({
 
 loggr.addArgHook(({ arg }) => {
     if (arg instanceof seqErrors.BaseError && Array.isArray(arg.errors)) {
-        let text = []
+        let text = [arg.stack]
         for (const err of arg.errors) {
             text.push(`\n - ${err.message}\n   - ${err.path} ${err.validatorKey} ${err.value}`);
         }
