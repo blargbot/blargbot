@@ -33,7 +33,7 @@ async function prepare(type, name, scope, content) {
             content = content.toString();
 
         values.push({
-            name, type, scope, content
+            name: name.substring(0, 256), type, scope: scope.substring(0, 256), content
         });
     }
 }
