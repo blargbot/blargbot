@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 14:03:35
+ * @Last Modified time: 2018-07-04 14:09:24
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -129,10 +129,7 @@ bu.setVariable = async function (name, values, type, guildId) {
     for (const key in values) {
         let query = getQuery(name, key, type, guildId);
         let val = values[key];
-        if (typeof val === 'object')
-            val = JSON.stringify(val);
-        else if (!(typeof val === 'string'))
-            val = val.toString();
+        val = JSON.stringify(val);
         query.content = val;
         try {
             await bot.models.BBTagVariable.upsert(query);
