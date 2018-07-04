@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 14:09:24
+ * @Last Modified time: 2018-07-04 14:42:11
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -95,7 +95,7 @@ function getQuery(name, key, type, guildId) {
             break;
         case bu.TagVariableType.TAGGUILD:
             query.type = 'GUILD_TAG';
-            query.scope = guildId;
+            query.scope = name;
             break;
         case bu.TagVariableType.AUTHOR:
             query.type = 'AUTHOR';
