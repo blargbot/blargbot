@@ -26,14 +26,14 @@ const s = client.database.sequelize;
 
 let values = [];
 async function prepare(type, name, scope, content) {
-    if (content) {
+    if (content && name.length < 256) {
         if (typeof content === 'object')
             content = JSON.stringify(content);
         if (typeof content !== 'string')
             content = content.toString();
 
         values.push({
-            name: name.substring(0, 255), type, scope: scope.substring(0, 255), content
+            name: name, type, scope: scope, content
         });
     }
 }
