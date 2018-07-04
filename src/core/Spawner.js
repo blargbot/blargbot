@@ -60,6 +60,12 @@ class Spawner extends EventEmitter {
                     }\n\`\`\` `
             }
             let shard = await this.spawn(id, false);
+            shard.on('shardReady', async (data) => {
+                if (this.shards.get(id) !== undefined) {
+                    let oldShard = this.shards.get(id);
+                    oldShard.send('killShard', { id: data });
+                }
+            });
             shard.on('ready', async () => {
                 if (this.shards.get(id) !== undefined) {
                     let oldShard = this.shards.get(id);
@@ -285,6 +291,9 @@ class Spawner extends EventEmitter {
                     if (this.guildShardMap[guild] === shard.id) delete this.guildShardMap[guild];
                 for (const guild of data)
                     this.guildShardMap[guild] = shard.id;
+                break;
+            case 'shardReady':
+                shard.emit('shardReady', data.id);
                 break;
             case 'respawn': {
                 console.log('Respawning a shard');

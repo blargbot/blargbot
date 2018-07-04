@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 13:25:34
+ * @Last Modified time: 2018-07-04 13:54:12
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -281,6 +281,14 @@ process.on('message', async msg => {
                 topic: topic
             });
             break;
+        case 'killShard':
+            let { id } = data;
+            console.shardi('Killing shard', id, 'without a reconnect.');
+            let shard = bot.shards.find(s => s.id === id);
+            if (shard)
+                shard.disconnect({
+                    reconnect: false
+                });
     }
 });
 
