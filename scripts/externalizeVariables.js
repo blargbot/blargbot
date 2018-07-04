@@ -86,7 +86,7 @@ async function externalize() {
             }
             if (values.length > 0) {
                 await bulkInsert();
-                await r.table('guild').get(guild.guildid).update(toSet);
+                // await r.table('guild').get(guild.guildid).update(toSet);
             }
             if (++i % 100000 === 0)
                 console.log('Processed', i, 'guilds.');
@@ -117,7 +117,7 @@ async function externalize() {
             }
             if (values.length > 0) {
                 await bulkInsert();
-                await r.table('user').get(user.userid).update(toSet);
+                // await r.table('user').get(user.userid).update(toSet);
             }
             if (++i % 100000 === 0)
                 console.log('Processed', i, 'users.');
@@ -148,7 +148,7 @@ async function externalize() {
             }
             if (values.length > 0) {
                 await bulkInsert();
-                await r.table('tag').get(tag.name).update(toSet);
+                // await r.table('tag').get(tag.name).update(toSet);
             }
             if (++i % 100000 === 0)
                 console.log('Processed', i, 'tags.');
@@ -172,9 +172,9 @@ async function externalize() {
         }
         if (values.length > 0) {
             await bulkInsert();
-            await r.table('vars').get('tagVars').update({
-                values: null
-            });
+            // await r.table('vars').get('tagVars').update({
+            //     values: null
+            // });
         }
         console.log('Finished tags.');
     } catch (err) {
