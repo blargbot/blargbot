@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 13:16:53
+ * @Last Modified time: 2018-07-04 13:59:17
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -154,8 +154,14 @@ bu.getVariable = async function (name, key, type, guildId) {
     let v = await bot.models.BBTagVariable.findOne({
         where: query
     });
-    if (v)
-        return v.get('content');
+    let result;
+    if (v) {
+        result = v.get('content');
+        // try parsing to a json value
+        try {
+            result = JSON.parse(result);
+        } catch { /* no-op */ }
+    }
     else return null;
 };
 
