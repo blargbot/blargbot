@@ -49,6 +49,7 @@ async function error(err) {
             console.error(e.path, e.validatorKey, e.value);
         }
     }
+    values = [];
 }
 
 async function externalize() {
