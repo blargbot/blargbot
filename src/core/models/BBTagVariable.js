@@ -6,7 +6,7 @@ module.exports = class BBTagVariableModel extends Base {
 
         this.model = db.define('bbtag_variable', {
             name: {
-                type: this.Sequelize.STRING,
+                type: this.Sequelize.STRING(512),
                 primaryKey: true,
                 allowNull: false
             },
