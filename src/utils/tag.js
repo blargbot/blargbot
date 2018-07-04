@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 13:59:17
+ * @Last Modified time: 2018-07-04 14:03:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -161,6 +161,8 @@ bu.getVariable = async function (name, key, type, guildId) {
         try {
             result = JSON.parse(result);
         } catch { /* no-op */ }
+
+        return result;
     }
     else return null;
 };
