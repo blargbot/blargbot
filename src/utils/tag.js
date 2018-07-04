@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 13:03:46
+ * @Last Modified time: 2018-07-04 13:11:41
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -128,8 +128,22 @@ bu.setVariable = async function (name, values, type, guildId) {
     let trans = await bot.database.sequelize.transaction();
     for (const key in values) {
         let query = getQuery(name, key, type, guildId);
-        query.content = values[key];
-        await bot.models.BBTagVariable.upsert(query);
+        let val = values[key];
+        if (typeof val === 'object')
+            val = JSON.stringify(val);
+        else if (!(typeof val === 'string'))
+            val = val.toString();
+        query.content = val;
+        try {
+            await bot.models.BBTagVariable.upsert(query);
+        } catch (err) {
+            console.error(err);
+            if (err.errors) {
+                for (const e of err.errors)
+                    console.error(e.path, e.validatorKey, e.value);
+            }
+            console.info(query);
+        }
     }
     return await trans.commit();
 };
