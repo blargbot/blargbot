@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 12:59:26
+ * @Last Modified time: 2018-07-04 13:03:46
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -81,7 +81,7 @@ bu.getArray = async function (context, arrName) {
 
 function getQuery(name, key, type, guildId) {
     let query = {
-        type: null, name: key.substring(0, 255), scope: ''
+        type: null, name: key.substring(0, 255), scope: null
     }
 
     switch (type) {
@@ -109,9 +109,10 @@ function getQuery(name, key, type, guildId) {
             query.type = 'GLOBAL';
             query.scope = '';
             break;
-        default:
-            console.info(type);
-            break;
+    }
+    if (query.scope === null) {
+        query.scope = '';
+        console.info(type, key, name, guildId);
     }
     if (typeof query.scope === 'string')
         query.scope = query.scope.substring(0, 255);
