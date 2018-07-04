@@ -42,6 +42,15 @@ async function bulkInsert() {
     values = [];
 }
 
+async function error(err) {
+    console.error(err.stack);
+    if (err.errors) {
+        for (const e of err.errors) {
+            console.error(e.path, e.validatorKey, e.value);
+        }
+    }
+}
+
 async function externalize() {
     // guilds
     console.log('Loading guilds...');
@@ -93,8 +102,7 @@ async function externalize() {
         }
         console.log('Finished guilds.');
     } catch (err) {
-        console.error(err.stack);
-        console.log(id);
+        await error(err);
     }
 
     // users
@@ -124,8 +132,7 @@ async function externalize() {
         }
         console.log('Finished users.');
     } catch (err) {
-        console.error(err.stack);
-        console.log(id);
+        await error(err);
     }
 
     // users
@@ -155,8 +162,7 @@ async function externalize() {
         }
         console.log('Finished tags.');
     } catch (err) {
-        console.error(err.stack);
-        console.log(id);
+        await error(err);
     }
 
     // globals
@@ -178,8 +184,7 @@ async function externalize() {
         }
         console.log('Finished tags.');
     } catch (err) {
-        console.error(err.stack);
-        console.log(id);
+        await error(err);
     }
 
 }
