@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 10:11:43
+ * @Last Modified time: 2018-07-04 13:22:42
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,6 +14,7 @@ const path = require('path');
 const fs = require('fs');
 const { Client } = require('eris');
 const Database = require('./Database');
+const seqErrors = require('sequelize/lib/errors');
 
 const loggr = new CatLoggr({
     shardId: process.env.CLUSTER_ID,
@@ -41,6 +42,16 @@ const loggr = new CatLoggr({
         { name: 'module', color: CatLoggr._chalk.black.bgBlue }
     ]
 }).setGlobal();
+
+loggr.addArgHook(({ arg }) => {
+    if (arg instanceof seqErrors.BaseError && Array.isArray(arg.errors)) {
+        let text = []
+        for (const err of arg.errors) {
+            text.push(`\n - ${err.message}\n   - ${err.path} ${err.validatorKey} ${err.value}`);
+        }
+        return text;
+    } else return null;
+});
 
 const https = require('https');
 global.bbtag = require('./bbtag.js');
