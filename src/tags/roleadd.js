@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:25:36
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:25:36
+ * @Last Modified time: 2018-07-05 15:14:42
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -16,12 +16,12 @@ module.exports =
         .withAlias('addrole')
         .withArgs(a => [a.require('role'), a.optional('user'), a.optional('quiet')])
         .withDesc('Gives `user` the chosen `role`, where `role` is a role ID or mention. ' +
-            'You can find a list of roles and their ids by doing `b!roles`. ' +
-            'Returns `true` if `role` was given, and `false` otherwise. ' +
-            'If `quiet` is specified, if a user can\'t be found it will simply return `false`'
+        'You can find a list of roles and their ids by doing `b!roles`. ' +
+        'Returns `true` if `role` was given, and `false` otherwise. ' +
+        'If `quiet` is specified, if a user can\'t be found it will simply return `false`'
         ).withExample(
-            'Have a role! {roleadd;11111111111111111}',
-            'Have a role! true'
+        'Have a role! {roleadd;11111111111111111}',
+        'Have a role! true'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
@@ -50,7 +50,7 @@ module.exports =
 
             try {
                 for (const role of roles)
-                    await result.user.addRole(role.id);
+                    await result.user.addRole(role.id, context.scope.reason || undefined);
                 return 'true';
             } catch (err) {
                 console.error(err);
