@@ -61,8 +61,8 @@ module.exports =
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .withProp('runEdit', async function (subtag, context, channel, messageId, text, embed) {
-            if (++context.state.count.edit > 10)
-                return Builder.util.error(subtag, context, 'Edit limit reached (10)');
+            if (++context.state.count.edit > 50)
+                return Builder.util.error(subtag, context, 'Edit limit reached (50)');
 
             if (!(await context.isStaff || context.ownsMessage(messageId)))
                 return Builder.util.error(subtag, context, 'Author must be staff to edit unrelated messages');
