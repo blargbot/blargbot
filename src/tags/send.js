@@ -22,8 +22,8 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
-            if (++context.state.count.send > 10)
-                return Builder.util.error(subtag, context, 'Send limit reached (10)');
+            if (++context.state.count.send > 50)
+                return Builder.util.error(subtag, context, 'Send limit reached (50)');
 
             let channel = bu.parseChannel(args[0], true),
                 message = args[1],
