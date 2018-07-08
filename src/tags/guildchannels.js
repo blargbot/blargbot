@@ -11,10 +11,10 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('guildmembers')
-        .withDesc('Returns an array of user IDs of the members on the current guild.')
+        .withDesc('Returns an array of user IDs of the channels on the current guild.')
         .withExample(
-            'This guild has {length;{guildmembers}} members.',
-            'This guild has 123 members.'
+            'This guild has {length;{guildchannels}} channels.',
+            'This guild has 123 channels.'
         )
         .whenArgs(0, async (_, context) => JSON.stringify(context.guild.channels.map(c => c.id)))
         .whenDefault(Builder.errors.tooManyArguments)
