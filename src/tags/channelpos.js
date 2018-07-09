@@ -19,9 +19,9 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => context.channel.position)
         .whenArgs('1-2', async (_, context, args) => {
-            let i = context.guild.channels.findIndex(c => c.id == args[0]);
+            let ch = context.guild.channels.find(c => c.id == args[0]);
             let quiet = !!args[1];
-            return i >= 0 ? i : quiet ? '' : '`Channel not found`';
+            return ch ? (ch.position || -1) : quiet ? '' : '`Channel not found`';
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
