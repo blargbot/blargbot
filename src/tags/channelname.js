@@ -19,8 +19,8 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => context.channel.name)
         .whenArgs(1, async (_, context, args) => {
-            context.guild.channels.foreach(g => {
-                if (g.id == args[0]) return (g.name || '');
+            context.guild.channels.foreach(c => {
+                if (c.id == args[0]) return (c.name || '');
             });
             return `Channel not found.`;
         })
