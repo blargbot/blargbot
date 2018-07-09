@@ -19,10 +19,8 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => context.channel.name)
         .whenArgs(1, async (_, context, args) => {
-            context.guild.channels.foreach(c => {
-                if (c.id == args[0]) return (c.name || '');
-            });
-            return `Channel not found.`;
+            let ch = context.guild.channels.find(c => c.id == args[0]);
+            return ch ? (c.name || '') : `Channel not found.`;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
