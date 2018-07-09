@@ -21,7 +21,7 @@ module.exports =
         .whenArgs('1-2', async (_, context, args) => {
             let ch = context.guild.channels.find(c => c.id == args[0]);
             let quiet = !!args[1];
-            return ch ? (c.name || '') : quiet ? '' : '`Channel not found.`';
+            return ch ? (c.name || '') : quiet ? '' : '`Channel not found`';
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
