@@ -11,16 +11,17 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('channelpos')
-        .withArgs(a => [a.optional('channelid')])
+        .withArgs(a => [a.optional('channelid')], a => [a.optional('quiet')])
         .withDesc('Returns the position of the current channel. If no channelid is given, the current channels position will be returned.')
         .withExample(
             'This channel is in position {channelpos}',
             'This channel is in position 1'
         )
         .whenArgs(0, async (_, context) => context.channel.position)
-        .whenArgs(1, async (_, context, args) => {
+        .whenArgs('1-2', async (_, context, args) => {
             let i = context.guild.channels.findIndex(c => c.id == args[0]);
-            return i >= 0 ? i : `Channel not found.`;
+            let quiet = !!args[1];
+            return i >= 0 ? i : quiet ? '' : '`Channel not found`';
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
