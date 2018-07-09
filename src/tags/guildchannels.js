@@ -10,8 +10,8 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.APITag('guildmembers')
-        .withDesc('Returns an array of user IDs of the channels on the current guild.')
+    Builder.APITag('guildchannels')
+        .withDesc('Returns an array of channel IDs of the channels on the current guild.')
         .withExample(
             'This guild has {length;{guildchannels}} channels.',
             'This guild has 123 channels.'
