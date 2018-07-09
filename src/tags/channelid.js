@@ -12,11 +12,17 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('channelid')
-        .withDesc('Returns the ID of the current channel.')
+        .withArgs(a => [a.optional('channelname')], a => [a.optional('quiet')])
+        .withDesc('Returns the ID of the given channelname. If no channelname is given, it uses the current channel.')
         .withExample(
             'This channel\'s id is {channelid}',
             'This channel\'s id is 1234567890123456'
         )
         .whenArgs(0, async (_, context) => context.channel.id)
+        .whenArgs('1-2', async (_, context, args) => {
+            let ch = context.guild.channels.find(c => c.name == args[0]);
+            let quiet = !!args[1];
+            return ch ? c.id : quiet? '' : '`Channel not found.`';
+        })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
