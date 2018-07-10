@@ -23,7 +23,7 @@ module.exports =
         .whenArgs('1-2', async (_, context, args) => {
             let ch = bu.parseChannel(args[0], true);
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
-            return ch ? ch.id : quiet ? '' : '`Channel not found`';
+            return ch ? ch.id : quiet ? '' : Builder.errors.noChannelFound(subtag, context);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
