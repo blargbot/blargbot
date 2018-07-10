@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('channeliscategory')
+    Builder.APITag('channeliscategory')
         .withAlias('iscategory')
         .withArgs(a => [a.require('channelId'), a.optional('quiet')])
         .withDesc('Checks if `channelId` is a category. `channelId` defaults to the current channel')

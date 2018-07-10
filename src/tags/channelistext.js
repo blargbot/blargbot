@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('channelistext')
+    Builder.APITag('channelistext')
         .withAlias('istext')
         .withArgs(a => [a.optional('channelId'), a.optional('quiet')])
         .withDesc('Checks if `channelId` is a text channel. `channelId` defaults to the current channel')
