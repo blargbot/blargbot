@@ -11,16 +11,14 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('iscategory')
-        .withArgs(a => a.optional('channelId'), a => [a.optional('quiet')])
+        .withArgs(a => [a.require('channelId'), a.optional('quiet')])
         .withDesc('Checks if `channelId` is a category. `channelId` defaults to the current channel')
         .withExample(
             '{if;{iscategory,123456789};yup;nope}',
             'nope'
         )
-        .whenArgs('0-2', async function (subtag, context, args) {
-            let channel = context.channel;
-            if (args[0])
-                channel = bu.parseChannel(args[0], true);
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let channel = bu.parseChannel(args[0], true);
 
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
             
