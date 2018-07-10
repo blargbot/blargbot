@@ -20,7 +20,7 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => context.channel.name)
         .whenArgs('1-2', async (subtag, context, args) => {
-            let ch = context.channels.find(c => c.id == bu.parseChannel(args[0], true));
+            let ch = context.guild.channels.find(c => c.id == bu.parseChannel(args[0], true));
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
             return ch ? ch.name : quiet ? '' : Builder.errors.noChannelFound(subtag, context);
         })
