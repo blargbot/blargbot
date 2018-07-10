@@ -12,10 +12,10 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('iscategory')
         .withArgs(a => a.optional('channelId'), a => [a.optional('quiet')])
-        .withDesc('Checks if `channelId` is a NSFW channel. `channelId` defaults to the current channel')
+        .withDesc('Checks if `channelId` is a category. `channelId` defaults to the current channel')
         .withExample(
-            '{if;{isnsfw};Spooky nsfw stuff;fluffy bunnies}',
-            'fluffy bunnies'
+            '{if;{iscategory,123456789};yup;nope}',
+            'nope'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
             let channel = context.channel;
@@ -26,7 +26,7 @@ module.exports =
             
             if (channel == null) return quiet ? '' : Builder.errors.noChannelFound(subtag, context);
 
-            return await bu.isNsfwChannel(channel.id);
+            return channel.type == 4;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
