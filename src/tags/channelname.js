@@ -12,6 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.APITag('channelname')
         .withArgs(a => [a.optional('channelid')], a => [a.optional('quiet')])
+        .withAlias('categoryname')
         .withDesc('Returns the name of the given channel. If no channelid is given, the current channels name will be returned.')
         .withExample(
             'This channel\'s name is {channelname}',
