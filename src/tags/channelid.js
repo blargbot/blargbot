@@ -20,7 +20,7 @@ module.exports =
             'This channel\'s id is 1234567890123456'
         )
         .whenArgs(0, async (_, context) => context.channel.id)
-        .whenArgs('1-2', async (_, context, args) => {
+        .whenArgs('1-2', async (subtag, context, args) => {
             let ch = bu.parseChannel(args[0], true);
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
             return ch ? ch.id : quiet ? '' : Builder.errors.noChannelFound(subtag, context);
