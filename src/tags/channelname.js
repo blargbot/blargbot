@@ -19,10 +19,10 @@ module.exports =
             'This channel\'s name is test-channel'
         )
         .whenArgs(0, async (_, context) => context.channel.name)
-        .whenArgs('1-2', async (_, context, args) => {
+        .whenArgs('1-2', async (subtag, context, args) => {
             let ch = bu.parseChannel(args[0], true);
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
-            return ch ? ch.name : quiet ? '' : '`Channel not found`';
+            return ch ? ch.name : quiet ? '' : Builder.errors.noChannelFound(subtag, context);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
