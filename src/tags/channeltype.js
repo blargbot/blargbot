@@ -13,7 +13,7 @@ const types = ['text','dm','voice','group-dm','category'];
 
 module.exports =
     Builder.APITag('channeltype')
-        .withArgs(a => [a.optional('channelid')], a => [a.optional('quiet')])
+        .withArgs(a => [a.optional('channelid'), a.optional('quiet')])
         .withDesc('Returns the type of a given channel. If no channelid is given, the current channels type will be returned.\n'
                  +'Possible results: `'+types.join(', ')+'`')
         .withExample(
