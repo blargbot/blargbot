@@ -17,6 +17,7 @@ module.exports =
             '{if;{iscategory,123456789};yup;nope}',
             'nope'
         )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let channel = context.channels.find(c => c.id == bu.parseChannel(args[0], true));
 
