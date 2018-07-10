@@ -11,6 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('channelpos')
+        .withAlias('categorypos')
         .withArgs(a => [a.optional('channelid')], a => [a.optional('quiet')])
         .withDesc('Returns the position of the current channel. If no channelid is given, the current channels position will be returned.')
         .withExample(
