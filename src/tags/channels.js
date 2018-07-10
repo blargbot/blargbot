@@ -19,7 +19,7 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => JSON.stringify(context.guild.channels.map(c => c.id)))
         .whenArgs('1-2', async (subtag, context, args) => {
-            let ch = Builder.parseChannel(context, args[0]);
+            let ch = Builder.util.parseChannel(context, args[0]);
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
             if (typeof ch === 'function') return quiet ? '' : ch(subtag, context);
             return JSON.stringify(ch.channels ? ch.channels.map(c => c.id) : []);

@@ -2,7 +2,7 @@
  * @Author: zoomah
  * @Date: 2018-07-10 7:08:15
  * @Last Modified by: zoomah
- * @Last Modified time: 2018-07-10 12:51:10
+ * @Last Modified time: 2018-07-10 12:53:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -22,7 +22,7 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => types[context.channel.type])
         .whenArgs('1-2', async (_, context, args) => {
-            let ch = Builder.parseChannel(context, args[0]);
+            let ch = Builder.util.parseChannel(context, args[0]);
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
             if (typeof ch === 'function') return quiet ? '' : ch(subtag, context);
             return types[ch.type];
