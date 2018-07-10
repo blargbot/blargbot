@@ -18,10 +18,11 @@ module.exports =
             'This guild has 23 channels.'
         )
         .whenArgs(0, async (_, context) => JSON.stringify(context.guild.channels.map(c => c.id)))
-        .whenArgs('1-2', async (_, context, args) => {
+        .whenArgs('1-2', async (subtag, context, args) => {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
             let ch == bu.parseChannel(args[0], true);
-            return (ch && ch.channels) ? JSON.stringify(ch.channels.map(c => c.id)) : quiet ? '' : '`Category not found`';
+            if (ch == null) return quiet ? '' : Builder.errors.noChannelFound(subtag, context);
+            return JSON.stringify(ch.channels ? ch.channels.map(c => c.id) : []);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
