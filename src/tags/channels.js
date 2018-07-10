@@ -20,7 +20,7 @@ module.exports =
         .whenArgs(0, async (_, context) => JSON.stringify(context.guild.channels.map(c => c.id)))
         .whenArgs('1-2', async (subtag, context, args) => {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
-            let ch == bu.parseChannel(args[0], true);
+            let ch = context.channels.find(c => c.id == bu.parseChannel(args[0], true));
             if (ch == null) return quiet ? '' : Builder.errors.noChannelFound(subtag, context);
             return JSON.stringify(ch.channels ? ch.channels.map(c => c.id) : []);
         })
