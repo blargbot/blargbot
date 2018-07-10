@@ -14,8 +14,8 @@ module.exports =
         .withArgs(a => [a.optional('categoryid')], a => [a.optional('quiet')])
         .withDesc('Returns an array of channel IDs on the current guild or within a given category.')
         .withExample(
-            'This guild has {length;{guildchannels}} channels.',
-            'This guild has 123 channels.'
+            'This guild has {length;{channels}} channels.',
+            'This guild has 23 channels.'
         )
         .whenArgs(0, async (_, context) => JSON.stringify(context.guild.channels.map(c => c.id)))
         .whenArgs('1-2', async (_, context, args) => {
