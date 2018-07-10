@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('isnsfw')
+    Builder.AutoTag('channelisnsfw')
         .withAlias('isnsfw')
         .withArgs(a => [a.optional('channelId'), a.optional('quiet')])
         .withDesc('Checks if `channelId` is a NSFW channel. `channelId` defaults to the current channel')
@@ -23,7 +23,7 @@ module.exports =
             if (args[0])
                 channel = bu.parseChannel(args[0], true);
 
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
 
             if (channel == null) return quiet ? '' : Builder.errors.noChannelFound(subtag, context);
 

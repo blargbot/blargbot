@@ -9,23 +9,23 @@
 
 const Builder = require('../structures/TagBuilder');
 
-const types = ['text','dm','voice','group-dm','category'];
+const types = ['text', 'dm', 'voice', 'group-dm', 'category'];
 
 module.exports =
     Builder.APITag('channeltype')
         .withArgs(a => [a.optional('channelid'), a.optional('quiet')])
         .withDesc('Returns the type of a given channel. If no channelid is given, the current channels type will be returned.\n'
-                 +'Possible results: '+types.map(t => '`'+t+'`').join(', '))
+            + 'Possible results: ' + types.map(t => '`' + t + '`').join(', '))
         .withExample(
             'This channel is {channeltype} channel',
             'This channel is text channel'
         )
         .whenArgs(0, async (_, context) => types[context.channel.type])
-        .whenArgs('1-2', async (_, context, args) => {
-            let ch = Builder.util.parseChannel(context, args[0]);
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
-            if (typeof ch === 'function') return quiet ? '' : ch(subtag, context);
-            return types[ch.type];
+        .whenArgs('1-2', async (subtag, context, args) => {
+            let channel = Builder.util.parseChannel(context, args[0]);
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
+            if (typeof channel === 'function') return quiet ? '' : channel(subtag, context);
+            return types[channel.type];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

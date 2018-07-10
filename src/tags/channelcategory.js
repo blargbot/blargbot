@@ -10,7 +10,8 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.APITag('category')
+    Builder.APITag('channelcategory')
+        .withAlias('category')
         .withArgs(a => [a.optional('channelid'), a.optional('quiet')])
         .withDesc('Returns the category of the given channel. If no channelid is given, the current channels category will be returned.')
         .withExample(
@@ -19,10 +20,10 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => (context.channel.parentID || ''))
         .whenArgs('1-2', async (subtag, context, args) => {
-            let ch = Builder.util.parseChannel(context, args[0]);
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
-            if (typeof ch === 'function') return quiet ? '' : ch(subtag, context);
-            return ch.parentID || '';
+            let channel = Builder.util.parseChannel(context, args[0]);
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
+            if (typeof channel === 'function') return quiet ? '' : channel(subtag, context);
+            return channel.parentID || '';
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

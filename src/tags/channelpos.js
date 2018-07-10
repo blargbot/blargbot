@@ -14,17 +14,17 @@ module.exports =
         .withAlias('categorypos')
         .withArgs(a => [a.optional('channelid'), a.optional('quiet')])
         .withDesc('Returns the position of the current channel. If no channelid is given, the current channels position will be returned.\n'
-                 +'The position is the index per channel type (text, voice or category) in the channel list.')
+            + 'The position is the index per channel type (text, voice or category) in the channel list.')
         .withExample(
             'This channel is in position {channelpos}',
             'This channel is in position 1'
         )
         .whenArgs(0, async (_, context) => context.channel.position)
         .whenArgs('1-2', async (subtag, context, args) => {
-            let ch = Builder.util.parseChannel(context, args[0]);
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
-            if (typeof ch === 'function') return quiet ? '' : ch(subtag, context);
-            return ch.position;
+            let channel = Builder.util.parseChannel(context, args[0]);
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
+            if (typeof channel === 'function') return quiet ? '' : channel(subtag, context);
+            return channel.position;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

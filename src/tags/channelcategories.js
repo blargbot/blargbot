@@ -10,7 +10,8 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.APITag('categories')
+    Builder.APITag('channelcategories')
+        .withAlias('categories')
         .withDesc('Returns an array of category IDs on the current guild.')
         .withExample(
             'This guild has {length;{categories}} categories.',

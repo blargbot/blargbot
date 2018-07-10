@@ -20,12 +20,12 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
-            let ch = Builder.util.parseChannel(context, args[0]);
+            let channel = Builder.util.parseChannel(context, args[0]);
 
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
-            if (typeof ch === 'function') return quiet ? false : ch(subtag, context);
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
+            if (typeof channel === 'function') return quiet ? false : channel(subtag, context);
 
-            return ch.type == 4;
+            return channel.type == 4;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

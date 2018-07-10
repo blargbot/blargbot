@@ -21,9 +21,9 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => context.channel.id)
         .whenArgs('1-2', async (subtag, context, args) => {
-            let ch = context.guild.channels.find(c => c.name.toLowerCase() == args[0].toLowerCase());
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
-            return ch ? ch.id : quiet ? '' : Builder.errors.noChannelFound(subtag, context);
+            let channel = context.guild.channels.find(c => c.name.toLowerCase() == args[0].toLowerCase());
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
+            return channel ? channel.id : quiet ? '' : Builder.errors.noChannelFound(subtag, context);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

@@ -19,13 +19,13 @@ module.exports =
             'nope'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
-            let ch = context.channel;
-            if (args[0]) ch = Builder.util.parseChannel(context, args[0]);
+            let channel = context.channel;
+            if (args[0]) channel = Builder.util.parseChannel(context, args[0]);
 
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
-            if (typeof ch === 'function') return quiet ? false : ch(subtag, context);
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
+            if (typeof channel === 'function') return quiet ? false : channel(subtag, context);
 
-            return ch.type == 2;
+            return channel.type == 2;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
