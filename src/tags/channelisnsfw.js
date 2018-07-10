@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:50:20
  * @Last Modified by: zoomah
- * @Last Modified time: 2018-07-10 7:08:15
+ * @Last Modified time: 2018-07-10 13:38:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,7 +25,7 @@ module.exports =
 
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
 
-            if (channel == null) return quiet ? '' : Builder.errors.noChannelFound(subtag, context);
+            if (channel == null) return quiet ? false : Builder.errors.noChannelFound(subtag, context);
 
             return await bu.isNsfwChannel(channel.id);
         })
