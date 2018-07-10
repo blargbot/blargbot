@@ -20,7 +20,7 @@ module.exports =
         .whenArgs('0-2', async function (subtag, context, args) {
             let channel = context.channel;
             if (args[0])
-                channel = context.channels.find(c => c.id == bu.parseChannel(args[0], true));
+                channel = context.guild.channels.find(c => c.id == bu.parseChannel(args[0], true));
 
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
             
