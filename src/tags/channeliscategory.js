@@ -2,7 +2,7 @@
  * @Author: zoomah
  * @Date: 2018-07-10 7:08:15
  * @Last Modified by: zoomah
- * @Last Modified time: 2018-07-10 7:08:15
+ * @Last Modified time: 2018-07-10 12:46:444
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,21 +10,22 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('isvoice')
-        .withArgs(a => [a.optional('channelId'), a.optional('quiet')])
-        .withDesc('Checks if `channelId` is a voice channel. `channelId` defaults to the current channel')
+    Builder.AutoTag('channeliscategory')
+        .withAlias('iscategory')
+        .withArgs(a => [a.require('channelId'), a.optional('quiet')])
+        .withDesc('Checks if `channelId` is a category. `channelId` defaults to the current channel')
         .withExample(
-            '{if;{istext,123456789};yup;nope}',
+            '{if;{iscategory,123456789};yup;nope}',
             'nope'
         )
-        .whenArgs('0-2', async function (subtag, context, args) {
-            let ch = context.channel;
-            if (args[0]) ch = Builder.util.parseChannel(context, args[0]);
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs('1-2', async function (subtag, context, args) {
+            let ch = Builder.util.parseChannel(context, args[0]);
 
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
             if (typeof ch === 'function') return quiet ? false : ch(subtag, context);
 
-            return ch.type == 2;
+            return ch.type == 4;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

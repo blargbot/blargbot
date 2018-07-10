@@ -10,9 +10,10 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('istext')
+    Builder.AutoTag('channelisvoice')
+        .withAlias('isvoice')
         .withArgs(a => [a.optional('channelId'), a.optional('quiet')])
-        .withDesc('Checks if `channelId` is a text channel. `channelId` defaults to the current channel')
+        .withDesc('Checks if `channelId` is a voice channel. `channelId` defaults to the current channel')
         .withExample(
             '{if;{istext,123456789};yup;nope}',
             'nope'
@@ -24,7 +25,7 @@ module.exports =
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
             if (typeof ch === 'function') return quiet ? false : ch(subtag, context);
 
-            return ch.type == 0;
+            return ch.type == 2;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
