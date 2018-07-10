@@ -15,7 +15,7 @@ module.exports =
     Builder.APITag('channeltype')
         .withArgs(a => [a.optional('channelid'), a.optional('quiet')])
         .withDesc('Returns the type of a given channel. If no channelid is given, the current channels type will be returned.\n'
-                 +'Possible results: `'+types.join(', ')+'`')
+                 +'Possible results: '+types.map(t => '`'+t+'`').join(', '))
         .withExample(
             'This channel is {channeltype} channel',
             'This channel is text channel'
