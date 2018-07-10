@@ -22,7 +22,7 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => types[context.channel.type])
         .whenArgs('1-2', async (_, context, args) => {
-            let ch = context.guild.channels.find(c => c.id == args[0]);
+            let ch = bu.parseChannel(args[0], true);
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1]
             return ch ? types[ch.type] : quiet ? '' : '`Channel not found`';
         })
