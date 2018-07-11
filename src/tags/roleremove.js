@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:53:27
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:54:01
+ * @Last Modified time: 2018-07-05 15:14:52
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,12 +15,12 @@ module.exports =
         .withAlias('removerole')
         .withArgs(a => [a.require('role'), a.optional('user'), a.optional('quiet')])
         .withDesc('Removes `role` from `user`, where `role` is a role ID or mention. ' +
-            'You can find a list of roles and their ids by doing \`b!roles\`. ' +
-            'Returns true if `role` was removed, and false otherwise.' +
-            'If `quiet` is specified, if a user can\'t be found it will simply return `false`'
+        'You can find a list of roles and their ids by doing \`b!roles\`. ' +
+        'Returns true if `role` was removed, and false otherwise.' +
+        'If `quiet` is specified, if a user can\'t be found it will simply return `false`'
         ).withExample(
-            'No more role! {roleremove;11111111111111111}',
-            'No more role! true'
+        'No more role! {roleremove;11111111111111111}',
+        'No more role! true'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
@@ -49,7 +49,7 @@ module.exports =
 
             try {
                 for (const role of roles)
-                    await result.user.removeRole(role.id);
+                    await result.user.removeRole(role.id, context.scope.reason || undefined);
                 return 'true';
             } catch (err) {
                 console.error(err);

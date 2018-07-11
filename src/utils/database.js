@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:53
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-26 17:04:30
+ * @Last Modified time: 2018-07-04 13:14:49
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -165,23 +165,6 @@ bu.isBlacklistedChannel = async function (channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
-bu.getCachedGlobal = async function (varname) {
-    let storedVar;
-    if (bu.globalVars[varname]) {
-        storedVar = bu.globalVars[varname];
-    } else {
-        let globalVars = await r.table('vars').get('tagVars');
-        if (!globalVars) {
-            await r.table('vars').insert({
-                varname: 'tagVars',
-                values: {}
-            });
-            bu.globalVars = {};
-        } else bu.globalVars = globalVars.values;
-        storedVar = bu.globalVars[varname];
-    }
-    return storedVar;
-};
 
 bu.getCachedTag = async function (tagname) {
     let storedTag;

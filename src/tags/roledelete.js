@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:18:22
+ * @Last Modified time: 2018-07-05 15:17:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,8 +15,8 @@ module.exports =
         .withArgs(a => [a.require('role'), a.optional('quiet')])
         .withDesc('Deletes `role`. If `quiet` is specified, if `role` can\'t be found it will return nothing')
         .withExample(
-            '{roledelete;Super Cool Role!}',
-            '(rip no more super cool roles for anyone)'
+        '{roledelete;Super Cool Role!}',
+        '(rip no more super cool roles for anyone)'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
@@ -34,7 +34,7 @@ module.exports =
                     return Builder.util.error(subtag, context, 'Role above author');
 
                 try {
-                    await role.delete(`Deleted with the '${context.tagName}' command, executed by ${context.user.username}#${context.user.discrim} (${context.user.id})`);
+                    await role.delete(context.scope.reason || `Deleted with the '${context.tagName}' command, executed by ${context.user.username}#${context.user.discrim} (${context.user.id})`);
                 } catch (err) {
                     console.error(err.stack);
                     return Builder.util.error(subtag, context, 'Failed to delete role: no perms');

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:26:54
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:19:06
+ * @Last Modified time: 2018-07-05 15:19:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,13 +17,13 @@ module.exports =
             a.optional('reason'),
             a.optional('noperms')
         ]).withDesc('Kicks `user`. ' +
-            'This functions the same as the kick command. ' +
-            'If the kick is successful, `Success` will be returned, otherwise the error will be given. ' +
-            'If `noperms` is provided, do not check if the command executor is actually able to kick people. ' +
-            'Only provide this if you know what you\'re doing.'
+        'This functions the same as the kick command. ' +
+        'If the kick is successful, `Success` will be returned, otherwise the error will be given. ' +
+        'If `noperms` is provided, do not check if the command executor is actually able to kick people. ' +
+        'Only provide this if you know what you\'re doing.'
         ).withExample(
-            '{kick;stupid cat;because I can} @stupid cat was kicked!',
-            'Success @stupid cat was kicked!'
+        '{kick;stupid cat;because I can} @stupid cat was kicked!',
+        'Success @stupid cat was kicked!'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
@@ -39,7 +39,7 @@ module.exports =
             let state = await CommandManager.built['kick'].kick(
                 context.msg,
                 user,
-                args[1],
+                args[1] || context.scope.reason || undefined,
                 true,
                 noPerms
             );
