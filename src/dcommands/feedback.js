@@ -156,14 +156,13 @@ class FeedbackCommand extends BaseCommand {
                     } else return bu.send(msg, 'There was no case with the provided ID.');
                 } else {
                     let username = msg.author.username + '#' + msg.author.discriminator;
-                    let u = await at('Suggestors').find(msg.author.id);
+                    let u = await this.find('Suggestors', msg.author.id);
                     if (u.length === 0) {
                         u = await at('Suggestors').create({
                             ID: msg.author.id,
                             Username: username
                         }, { typecast: true });
                     } else {
-                        u = u[0];
                         if (u.fields.Username !== username)
                             await at('Suggestors').update(u.id, {
                                 Username: username
