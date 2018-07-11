@@ -177,7 +177,7 @@ class FeedbackCommand extends BaseCommand {
                     };
                     let data = await at('Suggestions').create(payload);
 
-                    let url = 'https://airtable.com/shrEUdEv4NM04Wi7O/tblyFuWE6fEAbaOfo/viwDg5WovcwMA9NIL/' + data.id;
+                    let url = 'https://blargbot.xyz/feedback/' + data.id;
 
                     await bu.send(channel, {
                         embed: {

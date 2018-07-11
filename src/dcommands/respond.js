@@ -29,7 +29,7 @@ class RespondCommand extends BaseCommand {
                     let author = await at('Suggestors').find(suggestion.fields.Author[0]);
 
                     let response = words.slice(2).join(' ');
-                    let url = 'https://airtable.com/shrEUdEv4NM04Wi7O/tblyFuWE6fEAbaOfo/viwDg5WovcwMA9NIL/' + suggestion.id;
+                    let url = 'https://blargbot.xyz/feedback/' + suggestion.id;
 
                     await at('Suggestions').update(suggestion.id, {
                         Notes: `${response} (${msg.author.username}#${msg.author.discriminator})` + (suggestion.fields.Note ? '\n\n' + suggestion.fields.Note : '')

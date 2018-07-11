@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-26 13:01:47
+ * @Last Modified time: 2018-07-11 10:22:09
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -23,17 +23,22 @@ const types = [{
 }];
 
 router.get('/', (req, res) => {
-    res.locals.user = req.user;
-    req.session.returnTo = '/logs' + req.path;
-
     res.render('logsfirst');
 });
 
+router.get('/:id', async (req, res) => {
+    await render(req.params.id, req, res);
+});
+
 router.post('/', async (req, res) => {
+    let hash = req.body.hash;
+
+    await render(hash, req, res);
+});
+
+async function render(hash, req, res) {
     res.locals.user = req.user;
     req.session.returnTo = '/logs' + req.path;
-
-    let hash = req.body.hash;
     let db = 'blargdb';
     if (hash.startsWith('beta')) {
         res.locals.beta = true;
@@ -41,6 +46,7 @@ router.post('/', async (req, res) => {
         hash = hash.replace('beta', '');
     }
     res.locals.hash = hash;
+
     let logsSpecs = await r.db(db).table('logs').get(parseInt(hash)).run();
     if (!logsSpecs) {
         res.locals.continue = false;
@@ -156,5 +162,5 @@ router.post('/', async (req, res) => {
         }
     }
     res.render('logs');
-});
+}
 module.exports = router;
