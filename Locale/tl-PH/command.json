@@ -28,8 +28,8 @@
             "flags": {
                 "p": "Ipapakita ang listahan ng pointers pagkatapos pairalin.",
                 "i": "Tutukuyin ang input para sa `,` operator.",
-                "pointers": "",
-                "input": ""
+                "pointers": "Tinutukoy ang nagreresultang pointers ay dapat ipinapalabas.",
+                "input": "Tinutukoy ang input parameters."
             }
         },
         "ship": {
@@ -51,7 +51,7 @@
             "subcommand": {
                 "set": {
                     "usage": "",
-                    "info": ""
+                    "info": "Gumagawa o nagiiba ng tag gamit ang ibinigay na pangalan at nilalaman. Hindi ito magiiba ng mga tag na ginawa ng iba."
                 },
                 "delete": {
                     "usage": "",
@@ -168,25 +168,25 @@
             "subcommand": "",
             "command": "",
             "nosubcommand": "",
-            "subcommands": ""
+            "subcommands": "**Subcommands**: {{subcommands}}\n\nGawin ang `help <command> <subcommand>` para makakuha ng karagdagang impormasyon tungkol sa subcommand!"
         },
         "gamatoto": {
-            "info": "",
+            "info": "Pumunta sa isang mahiwagang ekspedisyon gamit ang Gamatoto! Gamitin itong command para icheck ang iyong stats, o gumamit ng subcommand para pumunta sa isang adventure!",
             "subcommand": {
                 "start": {
                     "usage": "",
-                    "info": ""
+                    "info": "Magsisimula ng ekspedisyon!"
                 },
                 "end": {
-                    "info": ""
+                    "info": "Nagtatapos ng ekspedisyon!"
                 },
                 "locations": {
-                    "info": ""
+                    "info": "Ipinapakita ang lahat ng lokasyon ng mga ekspedisyon."
                 }
             },
-            "stats": "",
-            "alreadystarted": "",
-            "notstarted": "",
+            "stats": "<:bc_cat:345081695990710272> Eto ang iyong mga gamit!\n\n{{stats}}",
+            "alreadystarted": "May nagaganap nang ekspedisyon!",
+            "notstarted": "Hindi ka pa nagsisimula ng ekspedisyon!",
             "nolocation": "",
             "invalidlocation": "",
             "expeditionbeings": "",
