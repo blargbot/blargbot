@@ -1,5 +1,17 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const Airtable = require('airtable');
+Airtable.configure({
+    endpointUrl: 'https://api.airtable.com',
+    apiKey: config.airtable.key
+});
+const at = Airtable.base(config.airtable.base);
+
+let types = [
+    "Command",
+    "BBTag",
+    "Other Functionality"
+];
 
 class FeedbackCommand extends BaseCommand {
     constructor() {
@@ -8,11 +20,18 @@ class FeedbackCommand extends BaseCommand {
             aliases: ['suggest', 'report'],
             category: bu.CommandType.GENERAL,
             usage: 'feedback <feedback>',
-            info: 'This command has three different functions for varying purposes. Please do not abuse it.\n\n**__feedback__** - give me feedback about the bot\n**__suggest__** - tell me something you want to be added or changed\n**__report__** - let me know about a bug you found\n\nThank you for your support. It means a lot to me!'
+            info: 'This command has three different functions for varying purposes. Please do not abuse it.\n\n**__feedback__** - give me feedback about the bot\n**__suggest__** - tell me something you want to be added or changed\n**__report__** - let me know about a bug you found\n\nThank you for your support. It means a lot to me!',
+            flags: [
+                { flag: 'd', word: 'desc', desc: 'The description for your suggestion' },
+                { flag: 'c', word: 'command', desc: 'Signify your suggestion is for a command' },
+                { flag: 'b', word: 'bbtag', desc: 'Signify your suggestion is for BBTag' },
+                { flag: 'o', word: 'other', desc: 'Signify your suggestion is for other functionality' }
+            ]
         });
     }
 
     async execute(msg, words, text) {
+        let input = bu.parseInput(this.flags, words);
         if (words.length > 1) {
             let blacklist = await r.table('vars').get('blacklist');
             if (blacklist.users.indexOf(msg.author.id) > -1) {
@@ -55,61 +74,79 @@ class FeedbackCommand extends BaseCommand {
                         return;
                 }
             }
-            let i = 0;
-            let lastSuggestion = await r.table('suggestion').orderBy({
-                index: r.desc('id')
-            }).limit(1).run();
-            if (lastSuggestion.length > 0) i = lastSuggestion[0].id + 1;
-            console.debug(i, lastSuggestion);
-            if (isNaN(i)) i = 0;
-            let type, colour, channel, list;
+            let type, colour, channel, bug = false;
+            let subTypes = [];
             switch (words[0].toLowerCase()) {
                 case 'suggest':
                     type = 'Suggestion';
                     colour = 0x1faf0c;
                     channel = '195716879237644292';
-                    list = '57ef25d2ba874bf651e96fc1';
                     break;
                 case 'report':
                     type = 'Bug Report';
                     colour = 0xaf0c0c;
                     channel = '229137183234064384';
-                    list = '57ef25d5d777b8b35192eff2';
+                    bug = true;
                     break;
                 default:
                     type = 'Feedback';
                     colour = 0xaaaf0c;
                     channel = '268859677326966784';
-                    list = '5876a95f090e7f5189cd089b';
+                    subTypes.push('Feedback');
                     break;
             }
-            if (words[0].toLowerCase() == 'suggest') type = 'Suggestion';
-            else if (words[0].toLowerCase() == 'report') type = 'Bug Report';
-
-            function trelloPost() {
-                return new Promise((f, r) => {
-                    bu.trello.post('1/cards', {
-                        name: words.slice(1).join(' '),
-                        desc: `Automated ${type} added by ${bot.user.username} - CASE ${i}.\n\nAuthor: ${msg.author.username}#${msg.author.discriminator} (${msg.author.id})`,
-                        due: null,
-                        idList: list,
-                        idLabels: '58025f0184e677fd36dbd756' + (config.general.isbeta ? ',5888db5bced82109fff170af' : '')
-                    }, (err, data) => {
-                        if (err) {
-                            r(err);
-                            return;
-                        }
-                        f(data);
-                    });
-                });
+            if (input.c) subTypes.push('Command');
+            if (input.b) subTypes.push('BBTag');
+            if (input.o) subTypes.push('Other Functionality');
+            if (subTypes.length === 0) {
+                let t = [];
+                for (let i = 0; i < types.length; i++)
+                    t.push((i + 1) + '. ' + types[i]);
+                let m = await bu.awaitQuery(msg, 'Please type the numbers of the types that apply to your suggestion, separated by spaces:\n' + t.join('\n'));
+                let c = m.content.split(/\s+/);
+                for (const _i of c) {
+                    let i = parseInt(_i);
+                    if (!isNaN(i) && types[i - 1])
+                        subTypes.push(types[i - 1]);
+                }
+                if (subTypes.length === 0)
+                    return await bu.send(msg, 'Sorry, you didn\'t provide any valid suggestion types. Try again later.');
             }
+
             try {
-                let data = await trelloPost();
+                let username = msg.author.username + '#' + msg.author.discriminator;
+                let u = await at('Suggestors').select({
+                    maxRecords: 1,
+                    filterByFormula: '{ID} = \'' + msg.author.id + '\''
+                }).firstPage();
+                if (u.length === 0) {
+                    u = await at('Suggestors').create({
+                        ID: msg.author.id,
+                        Username: username
+                    }, { typecast: true });
+                } else {
+                    u = u[0];
+                    if (u.fields.Username !== username)
+                        await at('Suggestors').update(u.id, {
+                            Username: username
+                        });
+                }
+
+                let payload = {
+                    AA: true,
+                    Bug: bug, Type: subTypes, Title: input.undefined.join(' '),
+                    Description: input.d ? input.d.join(' ') : undefined,
+                    Message: msg.id, Channel: msg.channel.id, Author: [u.id]
+                };
+                let data = await at('Suggestions').create(payload);
+
+                let url = 'https://airtable.com/shrEUdEv4NM04Wi7O/tblyFuWE6fEAbaOfo/viwDg5WovcwMA9NIL/' + data.id;
 
                 await bu.send(channel, {
                     embed: {
                         title: type,
-                        description: words.slice(1).join(' ') + `\n\n[Trello Card](${data.shortUrl})`,
+                        url,
+                        description: '**' + payload.Title + '**\n\n' + (payload.Description || ''),
                         color: colour,
                         author: {
                             name: bu.getFullName(msg.author),
@@ -118,9 +155,9 @@ class FeedbackCommand extends BaseCommand {
                         },
                         timestamp: moment(msg.timestamp),
                         footer: {
-                            text: 'Case ' + i + ' | ' + msg.id
+                            text: 'Case ' + data.fields.ID + ' | ' + msg.id
                         },
-                        fields: [{
+                        fields: [{ name: 'Types', value: subTypes.join('\n') }, {
                             name: msg.guild ? msg.guild.name : 'DM',
                             value: msg.guild ? msg.guild.id : 'DM',
                             inline: true
@@ -132,21 +169,10 @@ class FeedbackCommand extends BaseCommand {
                     }
                 });
 
-
-                await r.table('suggestion').insert({
-                    id: i,
-                    author: msg.author.id,
-                    channel: msg.channel.id,
-                    message: words.slice(1).join(' '),
-                    messageid: msg.id,
-                    date: r.epochTime(moment().unix()),
-                    cardId: data.id,
-                    cardUrl: data.shortUrl
-                }).run();
-                await bu.send(msg, `${type} has been sent, and has been assigned an ID ${i}! :ok_hand:\n\nYou can view your ${type.toLowerCase()} here: <${data.shortUrl}>`);
+                await bu.send(msg, `${type} has been sent with the ID ${data.fields.ID}! :ok_hand:\n\nYou can view your ${type.toLowerCase()} here: <${url}>`);
             } catch (err) {
                 console.error(err);
-                await bu.send(msg, 'An error occured posting to trello. Please try again.');
+                await bu.send(msg, 'An error occured posting to airtable. Please try again.');
             }
         }
     }
