@@ -157,7 +157,7 @@ class FeedbackCommand extends BaseCommand {
                 } else {
                     let username = msg.author.username + '#' + msg.author.discriminator;
                     let u = await this.find('Suggestors', msg.author.id);
-                    if (u.length === 0) {
+                    if (!u) {
                         u = await at('Suggestors').create({
                             ID: msg.author.id,
                             Username: username
