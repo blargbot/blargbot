@@ -14,11 +14,11 @@
                 "Bakit ngayon ka lang dumating sa buhay ko?",
                 "Lalim ng hugot mo, day!",
                 "Buto't balat, lumilipad.",
-                "",
-                "",
-                "",
-                "",
-                ""
+                "Ang katakutan ay kalayaan.",
+                "Ang pagsupil ay liberasyon.",
+                "Ang pagkakasalungat ay ang katotohanan.",
+                "Gusto mo ba gumawa ng kontrata?",
+                "Pabayaan mo na, at mag magpatuloy."
             ],
             "final": ""
         },
@@ -102,7 +102,7 @@
                 },
                 "help": {
                     "usage": "",
-                    "info": "Ipakita ito!"
+                    "info": "Ipinapakita ito!"
                 },
                 "docs": {
                     "usage": "",
@@ -120,7 +120,7 @@
             "subcommandnotfound": "",
             "transferprompt": "",
             "nobots": "",
-            "transfercancelled": "[[emote.x]] The transfer has been cancelled.",
+            "transfercancelled": "[[emote.x]] Ang paglipat ay nakansela.",
             "transfercomplete": "",
             "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
             "descupdate": "",
@@ -131,7 +131,7 @@
             "tagauthor": "",
             "favouriteadd": "The tag `{{tag}}` has been added to your favourites list.",
             "favouriteremove": "The tag `{{tag}}` has been removed from your favourites list.",
-            "favourites": "You have {{count}} tags on your favourites list.\n```fix\n{{tags}}\n```"
+            "favourites": "Meron kang {{count}} tags sa listahan ng iyong mga paborito.\n```fix\n{{tags}}\n```"
         },
         "locale": {
             "info": "",
