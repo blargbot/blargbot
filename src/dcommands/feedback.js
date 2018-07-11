@@ -10,6 +10,7 @@ const at = Airtable.base(config.airtable.base);
 let types = {
     Command: 'Relating to blargbot\'s base commands',
     BBTag: 'Relating to BBTag and its components (subtags, tags, and custom commands)',
+    Documentation: 'Relating to blargbot\'s documentation, both in commands and on the website',
     'Other Functionality': 'Anything that doesn\'t fit the other categories'
 }
 
@@ -25,6 +26,7 @@ class FeedbackCommand extends BaseCommand {
                 { flag: 'd', word: 'desc', desc: 'The description for your suggestion' },
                 { flag: 'c', word: 'command', desc: 'Signify your suggestion is for a command' },
                 { flag: 'b', word: 'bbtag', desc: 'Signify your suggestion is for BBTag' },
+                { flag: 'a', word: 'docs', desc: 'Signify your suggestion is for documentation' },
                 { flag: 'o', word: 'other', desc: 'Signify your suggestion is for other functionality' },
                 { flag: 'e', word: 'edit', desc: 'Edits an existing suggestion with the provided case number' }
             ]
@@ -112,6 +114,7 @@ class FeedbackCommand extends BaseCommand {
             }
             if (input.c) subTypes.push('Command');
             if (input.b) subTypes.push('BBTag');
+            if (input.a) subTypes.push('Documentation');
             if (input.o) subTypes.push('Other Functionality');
             if (subTypes.length === 0) {
                 let t = [];
