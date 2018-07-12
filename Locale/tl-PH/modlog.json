@@ -3,8 +3,8 @@
         "kick": "Paalisin",
         "ban": "I-Ban",
         "unban": "Ibalik",
-        "mute": "",
-        "unmute": "",
+        "mute": "I-mute",
+        "unmute": "I-unmute",
         "warn": "Babala",
         "pardon": "Ipagpatawad",
         "rename": "Ibahin ang Pangalan",
@@ -12,15 +12,15 @@
         "specialroleremove": "Ang espesyal na tungkulin ay naitanggal na"
     },
     "case": "{{icon}} ika-{{number}} na kaso: {{event}}",
-    "setreason": "",
+    "setreason": "Responsableng moderator, paki gawa ang `reason {{number}}` para mailagay ang rason.",
     "warnings": {
-        "given": "",
-        "removed": "",
-        "total": ""
+        "given": "Ang mga babala ay naibigay",
+        "removed": "Ang mga babala ay pinatawad",
+        "total": "Ang bagong kabuuan"
     },
     "rename": {
-        "old": "",
-        "new": ""
+        "old": "Lumang Pangalan",
+        "new": "Bagong Pangalan"
     },
-    "duration": ""
+    "duration": "Tagal"
 }
