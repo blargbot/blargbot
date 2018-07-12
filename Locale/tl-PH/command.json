@@ -20,11 +20,11 @@
                 "Gusto mo ba gumawa ng kontrata?",
                 "Pabayaan mo na, at mag magpatuloy."
             ],
-            "final": ""
+            "final": "Pong! ({{time}}ms)"
         },
         "brainfuck": {
             "info": "Papairalin ang brainfuck code.",
-            "usage": "",
+            "usage": "<code>",
             "flags": {
                 "p": "Ipapakita ang listahan ng pointers pagkatapos pairalin.",
                 "i": "Tutukuyin ang input para sa `,` operator.",
@@ -34,27 +34,27 @@
         },
         "ship": {
             "info": "Ibibigay sa'yo ang ship name ng dalawang user.",
-            "usage": "",
+            "usage": "<user1> <user2>",
             "final": "Ang iyong shipname ay **{{name}}**!",
             "notenough": "Kailangan mong sabihin kung sino ang i-shi-ship!"
         },
         "tag": {
             "info": "Ang Tags ay isang sistema ng publikong commands na kayang gawin o gamitin ng kahit na sino gamit ang BBTag language.\n\n**Subcommands**:\n{{subcommands}}\n\nPara sa dagdag na kaalaman tungkol sa subcommand, gamitin ang `b!t help <subcommand>`\nPara sa dagdag na kaalaman tungkol sa BBTag, pumunta sa <https://blargbot.xyz/tags>\nSa paggawa ng tag, tinatanggap mo na ikaw ay sumasang-ayon sa Terms of Service (<http://blargbot.xyz/tags/tos>).",
-            "usage": "",
+            "usage": "<name | subcommand> [args]",
             "dontown": "[[emote.x]] Hindi ikaw ang may-ari ng tag!",
             "alreadyexists": "[[emote.x]] Mayroon nang tag na may gantong pangalan!",
             "notag": "[[emote.x]] Walang tag ang may ganyan pangalan.",
-            "tagset": "",
+            "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
             "tagrename": "[[emote.check]] Ang pangalan ng tag na `{{old}}` ay napalitan ng `{{new}}`.",
             "raw": "Ang code para sa {{name}} ay:\n```{{code}}```",
-            "testoutput": "",
+            "testoutput": "Test Output:\n\n{{output}}",
             "subcommand": {
                 "set": {
-                    "usage": "",
+                    "usage": "<name> <content>",
                     "info": "Gumagawa o nagiiba ng tag gamit ang ibinigay na pangalan at nilalaman. Hindi ito magiiba ng mga tag na ginawa ng iba."
                 },
                 "delete": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": "Tatanggalin ang tag na iyong pagmamay-ari."
                 },
                 "rename": {
