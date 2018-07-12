@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-28 15:32:47
+ * @Last Modified time: 2018-07-12 10:11:43
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -106,9 +106,10 @@ class DiscordClient extends Client {
 
         console.addPostHook(({ text, level, timestamp }) => {
             try {
-                this.sender.send('log', {
-                    text, level, timestamp
-                });
+                if (this.process.connected)
+                    this.sender.send('log', {
+                        text, level, timestamp
+                    }).catch(() => { });
             } catch (err) { }
         })
     }

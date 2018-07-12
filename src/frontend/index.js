@@ -2,6 +2,7 @@ const Koa = require('koa');
 const Router = require('koa-router');
 const { Nuxt, Builder } = require('nuxt');
 const config = require('../../config.json');
+const bodyParser = require('koa-bodyparser');
 
 module.exports = class Frontend {
     constructor(client) {
@@ -13,24 +14,25 @@ module.exports = class Frontend {
         let conf = require('../../nuxt.config.js');
         conf.dev = config.general.isbeta === true;
         this.nuxt = new Nuxt(conf);
-        if (conf.dev) {
-            const builder = new Builder(this.nuxt);
-            builder.build();
+        if (this.nuxt.options.dev) {
+            new Builder(this.nuxt).build();
         }
+        this.app.use(bodyParser());
 
         const ApiRoute = require('./routes/api');
         new ApiRoute(this);
 
-        this.app.use((ctx, next) => {
+        this.app.use(async (ctx, next) => {
+            ctx.status = 200;
             if (!ctx.path.startsWith('/api'))
-                return new Promise((resolve, reject) => {
+                return await (new Promise((resolve, reject) => {
                     ctx.res.on('close', resolve);
                     ctx.res.on('finish', resolve);
 
                     this.nuxt.render(ctx.req, ctx.res, promise => {
                         promise.then(resolve).catch(reject)
                     });
-                });
+                }))
         });
 
         this.app.listen(8085);

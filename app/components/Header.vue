@@ -4,7 +4,7 @@
             <nuxt-link to='/' class='child title primary-text'>blargbot</nuxt-link>
             <div class='child container'>
                 <div class='flexbox row'>
-                    <div class='child'>One</div>
+                    <div class='child'><nuxt-link to='login'>Login</nuxt-link></div>
                     <div class='child'>Two</div>
                     <div class='child'>Three</div>
                 </div>
