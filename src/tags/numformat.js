@@ -13,7 +13,7 @@ module.exports =
     Builder.AutoTag('numformat')
         .withArgs(a => [
             a.require('number'),
-            a.require('roundTo'),
+            a.optional('roundTo'),
             a.optional('decimal'),
             a.optional('thousands')
         ]).withDesc('Rounds `number` to `roundTo` digits. Also you can specify `decimal` and `thousands` delimitors. To skip `roundTo` or `decimal` leave them empty.')
