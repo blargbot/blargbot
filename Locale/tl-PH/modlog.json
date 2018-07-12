@@ -1,17 +1,17 @@
 {
     "events": {
-        "kick": "",
-        "ban": "",
-        "unban": "",
+        "kick": "Paalisin",
+        "ban": "I-Ban",
+        "unban": "Ibalik",
         "mute": "",
         "unmute": "",
-        "warn": "",
-        "pardon": "",
-        "rename": "",
-        "specialroleadd": "",
-        "specialroleremove": ""
+        "warn": "Babala",
+        "pardon": "Ipagpatawad",
+        "rename": "Ibahin ang Pangalan",
+        "specialroleadd": "Ang espesyal na tungkulin ay naibigay na",
+        "specialroleremove": "Ang espesyal na tungkulin ay naitanggal na"
     },
-    "case": "",
+    "case": "{{icon}} ika-{{number}} na kaso: {{event}}",
     "setreason": "",
     "warnings": {
         "given": "",
