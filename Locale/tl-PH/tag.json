@@ -221,7 +221,7 @@
             "desc": "Itakda ang palayaw ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "status": {
-            "desc": "Ibalik ang kalagayan ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit. Pwede itong gawing \"online\", \"away\". \"dnd\", o \"offline\"."
+            "desc": "Ibinabalik ang kalagayan ng tinukoy na user, nakadefault ito sa user na sumasagawa ng command. Maaaring ibalik ang \"online\", \"away\". \"dnd\", o \"offline\"."
         }
     }
 }
