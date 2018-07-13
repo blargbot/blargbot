@@ -1,7 +1,7 @@
 {
     "array": {
         "filter": {
-            "desc": "Umuulit sa isang array, habang tinatakda ang kasalukuyang element sa isang pansamantalang variable `i`. Kung ang `varName` ay nakatukoy, itatakda na lamang sa variable na iyon.\n\nMagbabalik ng bagong array na naglalaman lamang ng mga elemento kung saan ang resulta ng pag-ulit ay `true` o` 1`."
+            "desc": "Umuulit sa isang array, habang tinatakda ang kasalukuyang element sa isang pansamantalang variable `i`. Kung ang `varName` ay nakatukoy, itatakda na lamang sa variable na iyon.\n\nNagbabalik ng bagong array na naglalaman lamang ng mga elemento kung saan ang resulta ng pag-ulit ay `true` o` 1`."
         },
         "foreach": {
             "desc": "Umuulit sa isang array, ang pansamantalang variable `i` ay tinatakda ang kasalukuyang element. Kung ang `varName` ay nakatukoy, itatakda na lamang sa variable na iyon."
@@ -10,16 +10,16 @@
             "desc": "Kumukuha ng element galing sa array na nasa posisyon na `index`."
         },
         "isarray": {
-            "desc": "Magbabalik ng true kung ang binigay na element ay nasa array, at false kung hindi. Hindi ka pwede gumamit ng variable names."
+            "desc": "Nagbabalik ng true kung ang binigay na element ay nasa array, at false kung hindi. Hindi ka pwede gumamit ng variable names."
         },
         "join": {
-            "desc": "Sumali sa talaan kasama sa naibigay na `delimiter`."
+            "desc": "Nagsasama ng array gamit ang binigay na `delimiter`."
         },
         "length": {
-            "desc": "Ibalik ang haba ng nasabing talaan."
+            "desc": "Nagbabalik ng haba ng nasabing array."
         },
         "map": {
-            "desc": "Umuulit sa isang array, habang tinatakda ang kasalukuyang element sa isang pansamantalang variable `i`. Kung ang `varName` ay nakatukoy, itatakda na lamang sa variable na iyon.\n\nMagbabalik ng bagong array kung saan ang mga element ay ang resulta ng paguulit."
+            "desc": "Umuulit sa isang array, habang tinatakda ang kasalukuyang element sa isang pansamantalang variable `i`. Kung ang `varName` ay nakatukoy, itatakda na lamang sa variable na iyon.\n\nNagbabalik ng bagong array kung saan ang mga element ay ang resulta ng paguulit."
         },
         "pop": {
             "desc": "Tangalin at ibalik ang huling elemento ng talaan."
