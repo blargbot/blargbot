@@ -450,12 +450,12 @@
             "usage": "<utente>",
             "info": "Muta un utente.",
             "flags": {
-                "reason": "",
-                "duration": "",
-                "time": ""
+                "reason": "Il motivo per il quale è stato mutato.",
+                "duration": "Per quanto tempo dovrebbe essere mutato.",
+                "time": "Per quanto tempo dovrebbe essere mutato."
             },
-            "muted": "",
-            "invaliduser": "",
+            "muted": ":ok_hand: **{{user}}** è stato mutato.",
+            "invaliduser": "Non è stato possibile trovare l'utente.",
             "norole": "",
             "unmutein": ""
         },
