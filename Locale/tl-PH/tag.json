@@ -7,10 +7,10 @@
             "desc": "Umuulit sa isang array, ang pansamantalang variable `i` ay tinatakda ang kasalukuyang element. Kung ang `varName` ay nakatukoy, itatakda na lamang sa variable na iyon."
         },
         "get": {
-            "desc": "Kumuwa ng elemento na galing sa pagutli ng posisyon ng `talaturuan`."
+            "desc": "Kumukuha ng element galing sa array na nasa posisyon na `index`."
         },
         "isarray": {
-            "desc": "Bumalik sa totoo kung ang naibigay na elemento ay nasa talaan, at kung hindi totoo. Ikaw ay hindi pwedeng gumamit ng magkaibang pangalan."
+            "desc": "Magbabalik ng true kung ang binigay na element ay nasa array, at false kung hindi. Hindi ka pwede gumamit ng variable names."
         },
         "join": {
             "desc": "Sumali sa talaan kasama sa naibigay na `delimiter`."
@@ -37,7 +37,7 @@
             "desc": "Ibalik ang isang seksyon ng talaan, kasama ang `simula` ng index at hindi kasama ang `huli` huli ng index. Kung ang `end` ay hindi matukoy, ang lahat ng natitirang elemento ay i-default."
         },
         "sort": {
-            "desc": ""
+            "desc": "Inaayos at binabalik ang array, by default nasa pataas na order\n\nKung ang `function` ay ibinigay, ang pagaayos ay nakabase sa resulta pag isinagawa ang nasabing function. Ito ay magtatakda ng dalawang pansamantalang variable: `a` (o `varNameOne`) at `b` (o `varNameTwo`).\n\nAng function ay dapat magbalik ng numero. Kung ay numero ay mas malaki sa 0, ang `a` ay ituturing mas marami kaysa sa `b`. Kung ang numero ay mas mababa sa 0, ang `b` ay ituturing mas marami kaysa sa `a`. Ang resulta ay magiging 0 kung ito ay hindi isang numero, kung saan ang parehong element ay pantay."
         },
         "splice": {
             "desc": "Nagsisimula ito sa posisyon ng `simula`, tanggalin ang `bilang ng nabura` Ang elemento na galing sa talaan at ang dagdag na natitirang `gamit` sa position na ito. Ibalik ang tinanggal na mga elemento."
