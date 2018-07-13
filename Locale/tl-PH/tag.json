@@ -22,7 +22,7 @@
             "desc": "Umuulit sa isang array, habang tinatakda ang kasalukuyang element sa isang pansamantalang variable `i`. Kung ang `varName` ay nakatukoy, itatakda na lamang sa variable na iyon.\n\nNagbabalik ng bagong array kung saan ang mga element ay ang resulta ng paguulit."
         },
         "pop": {
-            "desc": "Tangalin at ibalik ang huling elemento ng talaan."
+            "desc": "Tinatanggal at binabalik ang huling element ng array."
         },
         "push": {
             "desc": "Itulak ang elemento sa huli ng talaan. Ibalik ang binagong talaan."
