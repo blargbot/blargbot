@@ -456,86 +456,86 @@
             },
             "muted": ":ok_hand: **{{user}}** è stato mutato.",
             "invaliduser": "Non è stato possibile trovare l'utente.",
-            "norole": "",
-            "unmutein": ""
+            "norole": "Non è stato impostato un ruolo muto! Utilizza il comando `setup mute` per configurarlo.",
+            "unmutein": "Sarà smutato tra **{{seconds}}** secondi."
         },
         "unmute": {
-            "usage": "",
-            "info": "",
+            "usage": "<utente>",
+            "info": "Smuta un utente.",
             "flags": {
-                "reason": ""
+                "reason": "Il motivo per il quale è stato smutato."
             },
-            "unmuted": "",
-            "invaliduser": "",
-            "unmutedafter": ""
+            "unmuted": ":ok_hand: **{{user}}** è stato smutato.",
+            "invaliduser": "Non è stato possibile trovare l'utente.",
+            "unmutedafter": "Smuta automaticamente dopo {{seconds}} secondi."
         },
         "ban": {
-            "usage": "",
-            "info": "",
+            "usage": "<utente>",
+            "info": "Bandisci un utente.",
             "flags": {
-                "reason": "",
-                "days": "",
-                "time": ""
+                "reason": "Il motivo del ban.",
+                "days": "Il numero di giorni passati in cui verranno eliminati i messaggi dell'utente bandito (default 1).",
+                "time": "Per quanto tempo dovrebbe essere bandito."
             },
-            "banned": "",
-            "invaliduser": "",
-            "unbunin": ""
+            "banned": ":ok_hand: **{{user}}** è stato bandito.",
+            "invaliduser": "Non è stato possibile trovare l'utente.",
+            "unbunin": "Sarà sbandito tra **{{seconds}}** secondi."
         },
         "unban": {
-            "usage": "",
-            "info": "",
+            "usage": "<utente>",
+            "info": "Sbandisci un utente.",
             "flags": {
-                "reason": ""
+                "reason": "Il motivo del ban."
             },
-            "banned": "",
-            "invaliduser": "",
-            "unbannedafter": ""
+            "banned": ":ok_hand: **{{user}}** è stato sbandito.",
+            "invaliduser": "Non è stato possibile trovare l'utente.",
+            "unbannedafter": "Sbandisci automaticamente dopo {{seconds}} secondi."
         },
         "cc": {
-            "usage": "",
-            "info": "",
+            "usage": "<nome | sottocomando> [args]",
+            "info": "I CCommands sono un sistema di comandi personalizzati che i moderatori possono creare per i loro utenti, usando il linguaggio BBTag.\n\n**Sottocomandi**:\n{{subcommands}}\n\nPer maggiori informazioni riguardo un sottocomando, scrivi `b!cc help <sottocomando>`\nPer maggiori informazioni riguardo BBTag, visita <https://blargbot.xyz/tags>.",
             "subcommand": {
                 "set": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<nome><contenuto>",
+                    "info": "Crea o modifica un comando personalizzato con il nome e contenuto forniti. Non rimpiazzerà tag create da qualcun altro."
                 },
                 "delete": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<nome>",
+                    "info": "Elimina un comando personalizzato che possiedi."
                 },
                 "rename": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<nome><nuovo nome>",
+                    "info": "Rinomina un comando personalizzato che possiedi."
                 },
                 "raw": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<nome>",
+                    "info": "Ottieni il codice BBTag di un comando personalizzato."
                 },
                 "transfer": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<nome><utente>",
+                    "info": "Trasferisce un comando personalizzato all'utente specificato. Le variabili non verranno trasferite."
                 },
                 "author": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<nome>",
+                    "info": "Visualizza l'autore di un comando personalizzato."
                 },
                 "list": {
-                    "info": ""
+                    "info": "Elenca tutti i comandi personalizzati."
                 },
                 "test": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<codice>",
+                    "info": "Esegue il comando in un ambiente di test."
                 },
                 "help": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[sottocomando]",
+                    "info": "Visualizza questo!"
                 },
                 "setdesc": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<nome> <descrizione>",
+                    "info": "Inserisce le informazioni di utilizzo di un comando personalizzato."
                 },
                 "setusage": {
-                    "usage": "",
+                    "usage": "<nome> <utilizzo>",
                     "info": ""
                 }
             },
