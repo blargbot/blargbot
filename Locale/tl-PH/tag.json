@@ -1,10 +1,10 @@
 {
     "array": {
         "filter": {
-            "desc": ""
+            "desc": "Umuulit sa isang array, habang tinatakda ang kasalukuyang element sa isang pansamantalang variable `i`. Kung ang `varName` ay nakatukoy, itatakda na lamang sa variable na iyon.\n\nMagbabalik ng bagong array na naglalaman lamang ng mga elemento kung saan ang resulta ng pag-ulit ay `true` o` 1`."
         },
         "foreach": {
-            "desc": ""
+            "desc": "Umuulit sa isang array, ang pansamantalang variable `i` ay tinatakda ang kasalukuyang element. Kung ang `varName` ay nakatukoy, itatakda na lamang sa variable na iyon."
         },
         "get": {
             "desc": "Kumuwa ng elemento na galing sa pagutli ng posisyon ng `talaturuan`."
@@ -19,7 +19,7 @@
             "desc": "Ibalik ang haba ng nasabing talaan."
         },
         "map": {
-            "desc": ""
+            "desc": "Umuulit sa isang array, habang tinatakda ang kasalukuyang element sa isang pansamantalang variable `i`. Kung ang `varName` ay nakatukoy, itatakda na lamang sa variable na iyon.\n\nMagbabalik ng bagong array kung saan ang mga element ay ang resulta ng paguulit."
         },
         "pop": {
             "desc": "Tangalin at ibalik ang huling elemento ng talaan."
@@ -218,10 +218,10 @@
             "desc": "Ibalik ang talaan ng mga ginagampanan ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
         },
         "setnick": {
-            "desc": "Itakda ang palayaw ng tinutukoy na gumagamit, i-default ito sa ginagawa ng gumagamit."
+            "desc": "Nagtatakda ng palayaw ng tinutukoy na user, nakadefault ito sa user na sumasagawa ng command."
         },
         "status": {
-            "desc": "Ibinabalik ang kalagayan ng tinukoy na user, nakadefault ito sa user na sumasagawa ng command. Maaaring ibalik ang \"online\", \"away\". \"dnd\", o \"offline\"."
+            "desc": "Ibinabalik ang kalagayan ng tinutukoy na user, nakadefault ito sa user na sumasagawa ng command. Maaaring ibalik ang \"online\", \"away\". \"dnd\", o \"offline\"."
         }
     }
 }
