@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-12 22:12:39
+ * @Last Modified time: 2018-07-12 22:18:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -57,11 +57,11 @@ bot.on('guildMemberUpdate', async (guild, member, oldMember) => {
                     name: 'Role',
                     value: `<@&${r.id}> (${r.id})`
                 }];
-                if (e.user.id !== member.user.id) fields.push({
+                if (e && e.user.id !== member.user.id) fields.push({
                     name: 'Updated By',
                     value: `${bu.getFullName(e.user)} (${e.user.id})`
                 });
-                if (e.reason) fields.push({
+                if (e && e.reason) fields.push({
                     name: 'Reason',
                     value: e.reason
                 });
