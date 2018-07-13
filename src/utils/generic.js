@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-12 22:17:37
+ * @Last Modified time: 2018-07-12 22:43:44
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1136,7 +1136,7 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
         }
         let channel = storedGuild.log[event];
         if (!embed) embed = {};
-        embed.title = `:information_source: ${eventName}`;
+        embed.title = `ℹ ${eventName}`;
         embed.timestamp = moment();
         embed.fields = fields;
         embed.color = color;
