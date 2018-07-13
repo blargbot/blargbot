@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-19 15:48:37
+ * @Last Modified time: 2018-07-11 10:21:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -136,6 +136,10 @@ e.init = () => {
             console.error(err);
             res.send('heck off');
         }
+    });
+    app.get('/feedback/:id', async function (req, res) {
+        let url = 'https://airtable.com/shrEUdEv4NM04Wi7O/tblyFuWE6fEAbaOfo/viwDg5WovcwMA9NIL/' + req.params.id;
+        res.redirect(url);
     })
 
     app.use('/', require('./routes/index'));

@@ -7,11 +7,12 @@ Airtable.configure({
 });
 const at = Airtable.base(config.airtable.base);
 
-let types = [
-    "Command",
-    "BBTag",
-    "Other Functionality"
-];
+let types = {
+    Command: 'Relating to blargbot\'s base commands',
+    BBTag: 'Relating to BBTag and its components (subtags, tags, and custom commands)',
+    Documentation: 'Relating to blargbot\'s documentation, both in commands and on the website',
+    'Other Functionality': 'Anything that doesn\'t fit the other categories'
+}
 
 class FeedbackCommand extends BaseCommand {
     constructor() {
@@ -25,9 +26,20 @@ class FeedbackCommand extends BaseCommand {
                 { flag: 'd', word: 'desc', desc: 'The description for your suggestion' },
                 { flag: 'c', word: 'command', desc: 'Signify your suggestion is for a command' },
                 { flag: 'b', word: 'bbtag', desc: 'Signify your suggestion is for BBTag' },
-                { flag: 'o', word: 'other', desc: 'Signify your suggestion is for other functionality' }
+                { flag: 'a', word: 'docs', desc: 'Signify your suggestion is for documentation' },
+                { flag: 'o', word: 'other', desc: 'Signify your suggestion is for other functionality' },
+                { flag: 'e', word: 'edit', desc: 'Edits an existing suggestion with the provided case number' }
             ]
         });
+    }
+
+    async find(table, id) {
+        let data = await at(table).select({
+            maxRecords: 1,
+            filterByFormula: `{ID} = '${id}'`
+        }).firstPage();
+        if (Array.isArray(data)) return data[0];
+        else return null;
     }
 
     async execute(msg, words, text) {
@@ -76,6 +88,11 @@ class FeedbackCommand extends BaseCommand {
             }
             let type, colour, channel, bug = false;
             let subTypes = [];
+
+            let title = input.undefined.join(' ').replace(/ +/g, ' ');
+            if (title.length > 64 || /\n/.test(title))
+                return await bu.send(msg, 'Sorry, your title cannot include newlines and must be under 64 characters. To include more information, use the description (-d, --desc) flag.');
+
             switch (words[0].toLowerCase()) {
                 case 'suggest':
                     type = 'Suggestion';
@@ -97,79 +114,100 @@ class FeedbackCommand extends BaseCommand {
             }
             if (input.c) subTypes.push('Command');
             if (input.b) subTypes.push('BBTag');
+            if (input.a) subTypes.push('Documentation');
             if (input.o) subTypes.push('Other Functionality');
             if (subTypes.length === 0) {
                 let t = [];
-                for (let i = 0; i < types.length; i++)
-                    t.push((i + 1) + '. ' + types[i]);
+                let keys = Object.keys(types);
+                for (let i = 0; i < keys.length; i++) {
+                    let key = keys[i];
+                    t.push((i + 1) + '. ' + key + ' - ' + types[key]);
+                }
                 let m = await bu.awaitQuery(msg, 'Please type the numbers of the types that apply to your suggestion, separated by spaces:\n' + t.join('\n'));
                 let c = m.content.split(/\s+/);
                 for (const _i of c) {
                     let i = parseInt(_i);
-                    if (!isNaN(i) && types[i - 1])
-                        subTypes.push(types[i - 1]);
+                    if (!isNaN(i) && keys[i - 1])
+                        subTypes.push(keys[i - 1]);
                 }
                 if (subTypes.length === 0)
                     return await bu.send(msg, 'Sorry, you didn\'t provide any valid suggestion types. Try again later.');
             }
 
             try {
-                let username = msg.author.username + '#' + msg.author.discriminator;
-                let u = await at('Suggestors').select({
-                    maxRecords: 1,
-                    filterByFormula: '{ID} = \'' + msg.author.id + '\''
-                }).firstPage();
-                if (u.length === 0) {
-                    u = await at('Suggestors').create({
-                        ID: msg.author.id,
-                        Username: username
-                    }, { typecast: true });
+                if (input.e) {
+                    let caseNum = parseInt(input.e[0]);
+                    if (isNaN(caseNum)) return bu.send(msg, 'You must provide a valid case number.');
+                    let data = await this.find('Suggestions', caseNum);
+                    if (data) {
+                        console.log(data);
+                        let author = await at('Suggestors').find(data.fields.Author[0]);
+                        console.log(author);
+                        if (author.fields.ID === msg.author.id) {
+                            let payload = {
+                                Bug: bug, Type: subTypes, Title: title,
+                                Description: input.d ? input.d.join(' ') : undefined,
+                                Message: msg.id, Channel: msg.channel.id, Edits: data.fields.Edited + 1,
+                                'Last Edited': moment().valueOf()
+                            };
+                            await at('Suggestions').update(data.id, payload);
+                            await bu.send(msg, 'Your case has been updated.');
+                        } else return bu.send(msg, 'You are not the author of this case.');
+                    } else return bu.send(msg, 'There was no case with the provided ID.');
                 } else {
-                    u = u[0];
-                    if (u.fields.Username !== username)
-                        await at('Suggestors').update(u.id, {
+                    let username = msg.author.username + '#' + msg.author.discriminator;
+                    let u = await this.find('Suggestors', msg.author.id);
+                    if (!u) {
+                        u = await at('Suggestors').create({
+                            ID: msg.author.id,
                             Username: username
-                        });
-                }
-
-                let payload = {
-                    AA: true,
-                    Bug: bug, Type: subTypes, Title: input.undefined.join(' '),
-                    Description: input.d ? input.d.join(' ') : undefined,
-                    Message: msg.id, Channel: msg.channel.id, Author: [u.id]
-                };
-                let data = await at('Suggestions').create(payload);
-
-                let url = 'https://airtable.com/shrEUdEv4NM04Wi7O/tblyFuWE6fEAbaOfo/viwDg5WovcwMA9NIL/' + data.id;
-
-                await bu.send(channel, {
-                    embed: {
-                        title: type,
-                        url,
-                        description: '**' + payload.Title + '**\n\n' + (payload.Description || ''),
-                        color: colour,
-                        author: {
-                            name: bu.getFullName(msg.author),
-                            icon_url: msg.author.avatarURL,
-                            url: `https://blargbot.xyz/user/${msg.author.id}`
-                        },
-                        timestamp: moment(msg.timestamp),
-                        footer: {
-                            text: 'Case ' + data.fields.ID + ' | ' + msg.id
-                        },
-                        fields: [{ name: 'Types', value: subTypes.join('\n') }, {
-                            name: msg.guild ? msg.guild.name : 'DM',
-                            value: msg.guild ? msg.guild.id : 'DM',
-                            inline: true
-                        }, {
-                            name: msg.channel.name || 'DM',
-                            value: msg.channel.id,
-                            inline: true
-                        }]
+                        }, { typecast: true });
+                    } else {
+                        if (u.fields.Username !== username)
+                            await at('Suggestors').update(u.id, {
+                                Username: username
+                            });
                     }
-                });
 
-                await bu.send(msg, `${type} has been sent with the ID ${data.fields.ID}! :ok_hand:\n\nYou can view your ${type.toLowerCase()} here: <${url}>`);
+                    let payload = {
+                        AA: true,
+                        Bug: bug, Type: subTypes, Title: title,
+                        Description: input.d ? input.d.join(' ') : undefined,
+                        Message: msg.id, Channel: msg.channel.id, Author: [u.id]
+                    };
+                    let data = await at('Suggestions').create(payload);
+
+                    let url = 'https://blargbot.xyz/feedback/' + data.id;
+
+                    await bu.send(channel, {
+                        embed: {
+                            title: type,
+                            url,
+                            description: '**' + payload.Title + '**\n\n' + (payload.Description || ''),
+                            color: colour,
+                            author: {
+                                name: bu.getFullName(msg.author),
+                                icon_url: msg.author.avatarURL,
+                                url: `https://blargbot.xyz/user/${msg.author.id}`
+                            },
+                            timestamp: moment(msg.timestamp),
+                            footer: {
+                                text: 'Case ' + data.fields.ID + ' | ' + msg.id
+                            },
+                            fields: [{ name: 'Types', value: subTypes.join('\n') }, {
+                                name: msg.guild ? msg.guild.name : 'DM',
+                                value: msg.guild ? msg.guild.id : 'DM',
+                                inline: true
+                            }, {
+                                name: msg.channel.name || 'DM',
+                                value: msg.channel.id,
+                                inline: true
+                            }]
+                        }
+                    });
+
+                    await bu.send(msg, `${type} has been sent with the ID ${data.fields.ID}! :ok_hand:\n\nYou can view your ${type.toLowerCase()} here: <${url}>`);
+                }
             } catch (err) {
                 console.error(err);
                 await bu.send(msg, 'An error occured posting to airtable. Please try again.');

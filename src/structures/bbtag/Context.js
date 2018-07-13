@@ -58,6 +58,7 @@ class Context {
 
         /** @type {bbError[]} */
         this.errors = [];
+        this.debug = [];
         this.scopes = new ScopeCollection();
         this.variables = new VariableCache(this);
         this.execTimer = new Timer();
