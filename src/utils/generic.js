@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-12 21:56:29
+ * @Last Modified time: 2018-07-12 22:17:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1153,15 +1153,20 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
 };
 
 bu.getAudit = async function (guildId, targetId, type) {
-    let guild = bot.guilds.get(guildId);
-    let user = bot.users.get(targetId);
-    let al = await bot.getGuildAuditLogs(guild.id, 50, null, type);
-    for (const e of al.entries) {
-        if (e.targetID === targetId) {
-            return e;
+    try {
+        let guild = bot.guilds.get(guildId);
+        let user = bot.users.get(targetId);
+        let al = await bot.getGuildAuditLogs(guild.id, 50, null, type);
+        for (const e of al.entries) {
+            if (e.targetID === targetId) {
+                return e;
+            }
         }
+        return null;
+    } catch (err) {
+        // may not have audit log perms
+        return null;
     }
-    return null;
 };
 
 bu.getFullName = function (user) {
