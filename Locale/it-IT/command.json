@@ -532,30 +532,30 @@
                 },
                 "setdesc": {
                     "usage": "<nome> <descrizione>",
-                    "info": "Inserisce le informazioni di utilizzo di un comando personalizzato."
+                    "info": "Inserisce le informazioni di un comando personalizzato."
                 },
                 "setusage": {
                     "usage": "<nome> <utilizzo>",
-                    "info": ""
+                    "info": "Inserisce le informazioni di utilizzo di un comando personalizzato."
                 }
             },
-            "dontown": "",
-            "notag": "",
-            "tagset": "",
-            "tagrename": "",
-            "raw": "",
-            "alreadyexists": "",
-            "testoutput": "",
-            "subcommandnotfound": "",
-            "transferprompt": "",
-            "nobots": "",
-            "transfercancelled": "",
-            "transfercomplete": "",
-            "descupdate": "",
-            "descreset": "",
-            "subcommandconflict": "",
-            "tagauthor": "",
-            "list": ""
+            "dontown": "[[emote.x]] Non puoi modificare questo comando di sistema.",
+            "notag": "[[emote.x]] Non c'è alcun comando personalizzato con quel nome.",
+            "tagset": "[[emote.check]] Comando personalizzato `{{name}}` {{process}}!",
+            "tagrename": "[[emote.check]] Il comando personalizzato `{{old}}` è stato rinominato come `{{new}}`.",
+            "raw": "Il codice per {{name}} è:\n```{{code}}```",
+            "alreadyexists": "[[emote.x]] Esiste già un comando personalizzato con quel nome!",
+            "testoutput": "Test Output:\n\n{{output}}",
+            "subcommandnotfound": "Non ho trovato alcun sottocomando con il nome `{{subcommand}}`.",
+            "transferprompt": "{{target}}, {{user}} vuole trasferirti la proprietà del comando `{{tag}}`. Accetti?\nNon verranno trasferite le variabili.",
+            "nobots": "[[emote.x]] Non puoi trasferire la proprietà del comando ad un bot!",
+            "transfercancelled": "[[emote.x]] Il trasferimento è stato annullato.",
+            "transfercomplete": "[[emote.check]] {{user}} ora possiede il comando `{{tag}}`.",
+            "descupdate": "La descrizione per `{{tag}}` è stata aggiornata.",
+            "descreset": "La descrizione per `{{tag}}` è stata resettata.",
+            "subcommandconflict": "Non puoi usare il nome `{{name}}` perchè esiste già un sottocomando con quel nome!",
+            "tagauthor": "Il comando personalizzato `{{tag}}` è stato creato da **{{author}}**",
+            "list": "Ecco i comandi personalizzati della gilda:\n```\n{{commands}}\n```"
         }
     }
 }
