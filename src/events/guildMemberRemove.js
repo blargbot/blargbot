@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:21
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-12 22:05:33
+ * @Last Modified time: 2018-07-12 22:15:06
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -42,7 +42,7 @@ bot.on('guildMemberRemove', async function (guild, member) {
     }]);
 
     let e = await bu.getAudit(guild.id, member.user.id, 20);
-    if (Date.now() - bu.unmakeSnowflake(e.id) <= 1000) {
+    if (e && Date.now() - bu.unmakeSnowflake(e.id) <= 1000) {
         let mod = bot.users.get(e.user.id);
         bu.logAction(
             guild,
