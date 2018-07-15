@@ -226,7 +226,7 @@ async function switchGame(forced) {
                 }
         }
 
-        shard[1].editStatus(null, {
+        shard.editStatus(null, {
             name, type
         });
     }
