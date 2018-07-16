@@ -48,15 +48,17 @@ module.exports =
                 }
 
                 args = await Promise.all(subtag.children.slice(1).map(arg => this.executeArg(subtag, arg, context)));
-                context.override('params', parameters.call(this, args));
-                context.override('paramsarray', () => JSON.stringify(args));
-                context.override('paramslength', () => args.length);
+                let overrides = [];
+                overrides.push(context.override('params', parameters.call(this, args)));
+                overrides.push(context.override('paramsarray', () => JSON.stringify(args)));
+                overrides.push(context.override('paramslength', () => args.length));
 
                 context.state.stackSize++;
                 try {
                     return await this.executeArg(subtag, code, context);
                 } finally {
                     context.state.stackSize--;
+                    overrides.forEach(override => override.revert());
                 }
             }).bind(this));
         })
