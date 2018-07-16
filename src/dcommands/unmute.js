@@ -39,7 +39,7 @@ class UnmuteCommand extends BaseCommand {
                             await bot.editGuildMember(msg.channel.guild.id, user.id, {
                                 roles: roles,
                                 mute: voiceMute ? false : undefined
-                            });
+                            }, `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`);
                             let input = bu.parseInput(this.flags, words);
                             bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', input.r, bu.ModLogColour.UNMUTE);
                             bu.send(msg, ':ok_hand:');
