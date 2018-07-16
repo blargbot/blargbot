@@ -13,10 +13,10 @@ router.get('/', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = req.path;
     let date = new Date(Date.now());
-    if (date.getMonth() === 6 && date.getDate() === 12)
-        res.render('bsod-netneut')
-    else
-        res.render('index');
+    // if (date.getMonth() === 6 && date.getDate() === 12)
+    //     res.render('bsod-netneut')
+    // else
+    res.render('index');
 });
 
 router.get('/shards', (req, res) => {

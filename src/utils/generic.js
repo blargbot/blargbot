@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-18 11:01:51
+ * @Last Modified time: 2018-07-12 22:43:44
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1074,10 +1074,21 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
     // I.e. if all the users are contained in the ignore list
     if (!userids.find(id => !storedGuild.logIgnore.includes(id)))
         return;
+    event = event.toLowerCase();
+
+    let roleAdd = false;
+    let roleId;
+    if (event.startsWith('role:')) {
+        let c = event.split(':');
+        roleId = c[1];
+        roleAdd = c[2] === 'add';
+        event = c.slice(0, 2).join(':');
+    }
+
     if (storedGuild.log.hasOwnProperty(event)) {
         let color;
         let eventName;
-        switch (event.toLowerCase()) {
+        switch (event) {
             case 'messagedelete':
                 color = 0xaf1d1d;
                 eventName = 'Message Deleted';
@@ -1114,10 +1125,18 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
                 color = 0xcc0c1c;
                 eventName = 'User Was Banned';
                 break;
+            case 'kick':
+                color = 0xe8b022;
+                eventName = 'User Was Kicked';
+            default:
+                if (event.startsWith('role:')) {
+                    eventName = `Special Role ${roleAdd ? 'Added' : 'Removed'}`;
+                }
+                break;
         }
         let channel = storedGuild.log[event];
         if (!embed) embed = {};
-        embed.title = `:information_source: ${eventName}`;
+        embed.title = `ℹ ${eventName}`;
         embed.timestamp = moment();
         embed.fields = fields;
         embed.color = color;
@@ -1130,6 +1149,23 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
             await r.table('guild').get(guildid).replace(storedGuild);
             await bu.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.`);
         }
+    }
+};
+
+bu.getAudit = async function (guildId, targetId, type) {
+    try {
+        let guild = bot.guilds.get(guildId);
+        let user = bot.users.get(targetId);
+        let al = await bot.getGuildAuditLogs(guild.id, 50, null, type);
+        for (const e of al.entries) {
+            if (e.targetID === targetId) {
+                return e;
+            }
+        }
+        return null;
+    } catch (err) {
+        // may not have audit log perms
+        return null;
     }
 };
 

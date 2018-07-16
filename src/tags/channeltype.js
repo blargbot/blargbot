@@ -1,29 +1,31 @@
 /*
- * @Author: stupid cat
- * @Date: 2017-05-07 18:30:19
+ * @Author: zoomah
+ * @Date: 2018-07-10 7:08:15
  * @Last Modified by: zoomah
- * @Last Modified time: 2018-07-10 12:42:05
+ * @Last Modified time: 2018-07-10 12:53:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const Builder = require('../structures/TagBuilder');
 
+const types = ['text', 'dm', 'voice', 'group-dm', 'category'];
+
 module.exports =
-    Builder.APITag('channelname')
-        .withAlias('categoryname')
+    Builder.APITag('channeltype')
         .withArgs(a => [a.optional('channelid'), a.optional('quiet')])
-        .withDesc('Returns the name of the given channel. If no channelid is given, the current channels name will be returned.')
+        .withDesc('Returns the type of a given channel. If no channelid is given, the current channels type will be returned.\n'
+            + 'Possible results: ' + types.map(t => '`' + t + '`').join(', '))
         .withExample(
-            'This channel\'s name is {channelname}',
-            'This channel\'s name is test-channel'
+            'This channel is {channeltype} channel',
+            'This channel is text channel'
         )
-        .whenArgs(0, async (_, context) => context.channel.name)
+        .whenArgs(0, async (_, context) => types[context.channel.type])
         .whenArgs('1-2', async (subtag, context, args) => {
             let channel = Builder.util.parseChannel(context, args[0]);
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
             if (typeof channel === 'function') return quiet ? '' : channel(subtag, context);
-            return channel.name;
+            return types[channel.type];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

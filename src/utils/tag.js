@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 14:42:11
+ * @Last Modified time: 2018-07-12 21:37:32
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -82,7 +82,7 @@ bu.getArray = async function (context, arrName) {
 function getQuery(name, key, type, guildId) {
     let query = {
         type: null, name: key.substring(0, 255), scope: null
-    }
+    };
 
     switch (type) {
         case bu.TagVariableType.GUILD:
@@ -157,7 +157,7 @@ bu.getVariable = async function (name, key, type, guildId) {
         // try parsing to a json value
         try {
             result = JSON.parse(result);
-        } catch { /* no-op */ }
+        } catch (err) { /* no-op */ }
 
         return result;
     }

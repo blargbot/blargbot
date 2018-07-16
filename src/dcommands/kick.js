@@ -69,13 +69,7 @@ class KickCommand extends BaseCommand {
                 target.id,
                 'Kicked by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason : '')
             );
-            bu.logAction(
-                msg.channel.guild,
-                target,
-                msg.author,
-                tag ? 'Tag Kick' : 'Kick',
-                reason,
-                bu.ModLogColour.KICK);
+
             return 0;
         }
         catch (err) {
