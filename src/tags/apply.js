@@ -22,7 +22,7 @@ module.exports =
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
             let definition = TagManager.get(args[0].toLowerCase());
-            if (!definition == null)
+            if (definition == null)
                 return Builder.util.error(subtag, context, 'No subtag found');
 
             let tagArgs = Builder.util.flattenArgArrays(args.slice(1));
