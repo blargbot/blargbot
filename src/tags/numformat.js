@@ -1,8 +1,8 @@
 /*
  * @Author: zoomah
  * @Date: 2018-07-11 18:02:57
- * @Last Modified by: zoomah
- * @Last Modified time: 2018-07-11 18:03:46
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2018-07-16 08:59:33
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -40,7 +40,7 @@ module.exports =
             }
 
             return number.toLocaleString('en-US', options)                // format number
-                .replace('.', ':').replace(',', ';')                      // prepare seperators
-                .replace(':', args[2] || '.').replace(';', args[3] || '') // replace seperators
+                .replace('.', ':').replace(/,/g, ';')                      // prepare seperators
+                .replace(':', args[2] || '.').replace(/;/g, args[3] || '') // replace seperators
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();
