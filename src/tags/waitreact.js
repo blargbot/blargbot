@@ -35,9 +35,10 @@ module.exports =
             '\n`condition` must return `true` or `false` and defaults to `true`' +
             '\n`timeout` is a number of seconds. This defaults to 60 and is limited to 300' +
             '\n\n While inside the `condition` parameter, none of the following subtags may be used: `' + waitMessage.overrideSubtags.join(', ') + '`' +
-            '\nAlso, the current message becomes the message the reaction was added to, and the user becomes the person who added the reaction. ' +
+            '\nAlso, the current message becomes the message the reaction was added to, and the user becomes the person who sent the message. ' +
             'This means that `{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.' +
-            '\nFinally, while inside the `condition` parameter, you can use the temporary subtag `{reaction}` to get the current reaction.')
+            '\nFinally, while inside the `condition` parameter, you can use the temporary subtag `{reaction}` to get the current reaction ' +
+            'and the `{reactuser}` temporary subtag to get the user who reacted.')
         .withExample(
             '{waitreaction;{messageid};{userid};;{if;{reaction};startswith;<;false;true};300}',
             '(Reaction is added)',
@@ -93,9 +94,10 @@ module.exports =
             }
 
             let reactionSubtag = context.override('reaction', undefined);
-            let checkFunc = waitMessage.createCheck(subtag, context, checkBBTag, (message, user, emoji) => {
+            let checkFunc = waitMessage.createCheck(subtag, context, checkBBTag, (msg, user, emoji) => {
                 context.override('reaction', () => padEmoji(emoji));
-                return context.makeChild({ message, author: user });
+                context.override('reactuser', () => user.id);
+                return context.makeChild({ msg });
             });
 
             try {

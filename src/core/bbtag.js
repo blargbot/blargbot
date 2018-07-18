@@ -36,6 +36,7 @@ Reason: ${tag.reason}`);
             isCC: false,
             tagName: tagName,
             author: tag.author,
+            authorizer: tag.authorizer,
             cooldown: tag.cooldown,
             modResult: function (context, text) {
                 return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
@@ -69,7 +70,8 @@ e.executeCC = async function (msg, ccName, command) {
             input: command.map(c => '"' + c + '"').join(' '),
             isCC: true,
             tagName: ccName,
-            author: ccommand.author
+            author: ccommand.author,
+            authorizer: ccommand.authorizer
         });
         /** @type {string} */
         result.code = ccommand.content;
