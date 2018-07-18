@@ -20,8 +20,9 @@ class Context {
     get user() { return this.message.author; }
     get scope() { return this.scopes.local; }
     /** @type {Promise<boolean>} */
-    get isStaff() { return this['_isStaff'] || (this['_isStaff'] = bu.isUserStaff(this.author, this.guild.id)); }
+    get isStaff() { return this['_isStaff'] || (this['_isStaff'] = bu.isUserStaff(this.authorizer, this.guild.id)); }
     get author() { return this._author || this.guild.id; }
+    get authorizer() { return this._authorizer || this.author; }
 
     /**
      * Creates a new BBTagExecContext instance
@@ -43,6 +44,7 @@ class Context {
                 this.flaggedInput[key] = this.flaggedInput[key].join(' ');
         this.isCC = options.isCC;
         this._author = options.author;
+        this._authorizer = options.authorizer;
         this.tagName = options.tagName;
         this.cooldown = options.cooldown;
         this.locks = options.locks || {};
@@ -96,6 +98,8 @@ class Context {
             overrides: {},
             cache: {}
         };
+
+        console.debug(this);
     }
 
     ownsMessage(messageId) {
@@ -249,7 +253,13 @@ class Context {
                 embeds: obj.msg.embeds
             };
         }
-        let result = new Context({ msg, isCC: obj.isCC, tagName: obj.tagName, author: obj.author });
+        let result = new Context({
+            msg,
+            isCC: obj.isCC,
+            tagName: obj.tagName,
+            author: obj.author,
+            authorizer: obj.authorizer
+        });
         result.scopes._scopes = [obj.scope];
         result.state = obj.state;
         result.input = obj.input;

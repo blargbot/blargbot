@@ -277,16 +277,16 @@ TagBuilder.util = {
         return channel;
     },
     getRoleEditPosition(context) {
-        if (context.guild.ownerID == context.author || context.guild.id == context.author)
+        if (context.guild.ownerID == context.authorizer || context.guild.id == context.authorizer)
             return Number.MAX_SAFE_INTEGER;
         let permission = this.getPerms(context);
         if (!permission.has('manageRoles') && !permission.has('administrator'))
             return 0;
-        let author = context.guild.members.get(context.author);
+        let author = context.guild.members.get(context.authorizer);
         return Math.max(author.roles.map(id => (context.guild.roles.get(id) || { position: 0 }).position));
     },
     getPerms(context) {
-        return (context.guild.members.get(context.author) ||
+        return (context.guild.members.get(context.authorizer) ||
             { permission: new Permission(0, 0) }).permission;
     }
 };
