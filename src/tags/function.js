@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:28
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-26 14:55:44
+ * @Last Modified by: SarahShmarah
+ * @Last Modified time: 2018-07-18 20:21:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -48,15 +48,17 @@ module.exports =
                 }
 
                 args = await Promise.all(subtag.children.slice(1).map(arg => this.executeArg(subtag, arg, context)));
-                context.override('params', parameters.call(this, args));
-                context.override('paramsarray', () => JSON.stringify(args));
-                context.override('paramslength', () => args.length);
+                let overrides = [];
+                overrides.push(context.override('params', parameters.call(this, args)));
+                overrides.push(context.override('paramsarray', () => JSON.stringify(args)));
+                overrides.push(context.override('paramslength', () => args.length));
 
                 context.state.stackSize++;
                 try {
                     return await this.executeArg(subtag, code, context);
                 } finally {
                     context.state.stackSize--;
+                    overrides.forEach(override => override.revert());
                 }
             }).bind(this));
         })

@@ -191,7 +191,7 @@ class TagCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         let page = 0;
-        let title, content, tag, author, originalTagList;
+        let title, content, tag, author, authorizer, originalTagList;
         if (words[1]) {
             switch (words[1].toLowerCase()) {
                 case 'cooldown':
@@ -247,6 +247,7 @@ class TagCommand extends BaseCommand {
                     await r.table('tag').insert({
                         name: title,
                         author: msg.author.id,
+                        authorizer: msg.author.id,
                         content: content,
                         lastmodified: r.epochTime(moment() / 1000),
                         uses: 0
@@ -364,6 +365,7 @@ class TagCommand extends BaseCommand {
                     await r.table('tag').get(title).replace({
                         name: title,
                         author: msg.author.id,
+                        authorizer: (tag ? tag.authorizer : undefined) || msg.author.id,
                         content: content,
                         lastmodified: r.epochTime(moment() / 1000),
                         uses: tag ? tag.uses : 0,
@@ -525,7 +527,12 @@ ${content}
                         break;
                     }
                     author = await r.table('user').get(tag.author).run();
-                    bu.send(msg, `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`);
+                    let toSend = `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`;
+                    if (tag.authorizer && tag.authorizer != author.id) {
+                        authorizer = await r.table('user').get(tag.authorizer).run();
+                        toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}`;
+                    }
+                    bu.send(msg, toSend);
                     break;
                 case 'top':
                     let topTags = await r.table('tag').orderBy(r.desc(r.row('uses'))).limit(10).run();
@@ -549,10 +556,12 @@ ${content}
                         break;
                     }
                     author = await r.table('user').get(tag.author).run();
+                    authorizer = await r.table('user').get(tag.authorizer || tag.author).run();
                     let count = await r.table('user').getAll(tag.name, { index: 'favourite_tag' }).count();
 
                     let output = `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
+Authorizer: **${authorizer.username}#${authorizer.discriminator}**
 Cooldown: ${tag.cooldown || 0}ms
 It was last modified **${moment(tag.lastmodified).format('LLLL')}**.
 It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!
@@ -615,6 +624,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                             input: '',
                             tagName: 'test',
                             author: msg.author.id,
+                            authorizer: msg.author.id,
                             modResult(context, text) {
                                 function formatDuration(duration) {
                                     return duration.asSeconds() >= 5 ?
@@ -805,7 +815,8 @@ ${Object.keys(user.favourites).join(', ')}
                 scope: {},
                 input: args.params.words,
                 tagName: args.params.tagName,
-                author: args.params.author
+                author: args.params.author,
+                authorizer: args.params.author
             };
             let channel = bot.getChannel(args.channel);
             args.context.msg.channel = {

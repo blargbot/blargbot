@@ -107,7 +107,8 @@ class CcommandCommand extends BaseCommand {
                         content = bu.splitInput(text, true).slice(3).join(' ');
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
-                            author: msg.author.id
+                            author: msg.author.id,
+                            authorizer: msg.author.id
                         });
                         bu.send(msg, `✅ Custom command \`${title}\` created. ✅`);
                     } else {
@@ -192,7 +193,8 @@ class CcommandCommand extends BaseCommand {
                         content = bu.splitInput(text, true).slice(3).join(' ');
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
-                            author: msg.author.id
+                            author: msg.author.id,
+                            authorizer: (tag ? tag.authorizer : undefined) || msg.author.id
                         });
                         bu.send(msg, `✅ Custom command \`${title}\` edited. ✅`);
                     } else {
@@ -207,9 +209,11 @@ class CcommandCommand extends BaseCommand {
                             break;
                         }
                         content = bu.splitInput(text, true).slice(3).join(' ');
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
-                            author: msg.author.id
+                            author: msg.author.id,
+                            authorizer: (tag ? tag.authorizer : undefined) || msg.author.id
                         });
                         bu.send(msg, `✅ Custom command \`${title}\` set. ✅`);
                     } else {
@@ -233,9 +237,11 @@ class CcommandCommand extends BaseCommand {
                         if (tag) {
                             let author = await r.table('user').get(tag.author).run();
                             await bu.ccommand.set(msg.channel.guild.id, title, {
-                                alias: tag.name
+                                alias: tag.name,
+                                authorizer: msg.author.id
                             });
-                            bu.send(msg, `✅ The tag \`${tag.name}\` by **${author.username}#${author.discriminator}** has been imported as \`${title}\`. ✅`);
+                            bu.send(msg, `✅ The tag \`${tag.name}\` by **${author.username}#${author.discriminator}** ` +
+                                `has been imported as \`${title}\` and is authorized by **${msg.author.username}#${msg.author.discriminator}**. ✅`);
                         } else {
                             bu.send(msg, `A tag with the name of \`${words[2]}\` could not be found.`);
                         }
@@ -359,6 +365,7 @@ class CcommandCommand extends BaseCommand {
                             tagName: 'test',
                             isCC: true,
                             author: msg.author.id,
+                            authorizer: msg.author.id,
                             modResult(context, text) {
                                 function formatDuration(duration) {
                                     return duration.asSeconds() >= 5 ?
