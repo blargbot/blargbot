@@ -6,6 +6,9 @@
         "jest": false,
         "jquery": false
     },
+    "extends": [
+        "plugin:vue/essential"
+    ],
     "parserOptions": {
         "ecmaVersion": 8,
         "sourceType": "module",
@@ -30,8 +33,7 @@
             "superInFunctions": true,
             "templateStrings": true,
             "unicodeCodePointEscapes": true,
-            "globalReturn": true,
-            "experimentalObjectRestSpread": true
+            "globalReturn": true
         }
     },
     "plugins": [],
