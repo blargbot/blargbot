@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('emojis')
-        .withDesc('Returns an array of channel IDs on the current guild or within a given category.')
+        .withDesc('Returns an array of IDs of the emojis in the server.')
         .withExample(
         'This guild has {length;{emojis}} emojis.',
         'This guild has 23 emojis.'
