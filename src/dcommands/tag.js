@@ -527,12 +527,12 @@ ${content}
                         break;
                     }
                     author = await r.table('user').get(tag.author).run();
-                    let text = `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`;
+                    let toSend = `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`;
                     if (tag.authorizer && tag.authorizer != author.id) {
                         authorizer = await r.table('user').get(tag.authorizer).run();
-                        text += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}`;
+                        toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}`;
                     }
-                    bu.send(msg, text);
+                    bu.send(msg, toSend);
                     break;
                 case 'top':
                     let topTags = await r.table('tag').orderBy(r.desc(r.row('uses'))).limit(10).run();
