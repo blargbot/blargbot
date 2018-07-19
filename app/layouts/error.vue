@@ -5,15 +5,12 @@
         oops, {{ error.statusCode }}
       </h1>
       <p class='center'>{{ error.message }}</p>
-      <div class='flex-row'>
-        <nuxt-link class="flex-row-item button flat" to="/">
+        <nuxt-link class=" button flat" to="/">
           Home
         </nuxt-link>
-        <div class='flex-row-separator'></div>
-        <a class="flex-row-item button flat" @click.prevent="$router.go(-1);">
+        <a class=" button flat" @click.prevent="$router.go(-1);">
           Back
         </a>
-      </div>
     </section>
   </div>
 </template>
