@@ -36,6 +36,7 @@ Reason: ${tag.reason}`);
             isCC: false,
             tagName: tagName,
             author: tag.author,
+            authorizer: tag.authorizer,
             cooldown: tag.cooldown,
             modResult: function (context, text) {
                 return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
@@ -69,7 +70,8 @@ e.executeCC = async function (msg, ccName, command) {
             input: command.map(c => '"' + c + '"').join(' '),
             isCC: true,
             tagName: ccName,
-            author: ccommand.author
+            author: ccommand.author,
+            authorizer: ccommand.authorizer
         });
         /** @type {string} */
         result.code = ccommand.content;
@@ -284,6 +286,7 @@ e.generateDebug = function (code, context) {
         return (context) => this.generateDebug(code, context);
 
     let errors = viewErrors(...context.errors);
+    let debug = (context.debug || []).map(entry => `[${entry.tag.range.start}]${entry.text}`).join('\n');
     let variables = Object.keys(context.variables.cache)
         .map(key => {
             let offset = ''.padStart(key.length + 2, ' ');
@@ -304,6 +307,7 @@ e.generateDebug = function (code, context) {
         name: 'BBTag.debug.txt',
         file: 'User input:\n' + JSON.stringify(context.input.length > 0 ? context.input : 'No input.') + '\n\n' +
             'Code Executed:\n' + code + '\n\n' +
+            (debug.length > 0 ? 'Debug:\n' + debug + '\n\n' : '') +
             'Errors:\n' + (errors.length > 0 ? errors.join('\n') : 'No errors') + '\n\n' +
             'Variables:\n' + (variables.length > 0 ? variables.join('\n') : 'No variables') + '\n\n' +
             'Subtag Breakdown:\n' + subtags.join('\n\n')

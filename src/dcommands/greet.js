@@ -35,7 +35,7 @@ class GreetCommand extends BaseCommand {
             });
             return;
         }
-        var greeting = { content: input.undefined.join(' '), author: msg.author.id };
+        var greeting = { content: input.undefined.join(' '), author: msg.author.id, authorizer: msg.author.id };
         await bu.guildSettings.set(msg.channel.guild.id, 'greeting', greeting);
         let suffix = '';
         let channelStr = input.c ? input.c.join(' ') : msg.channel.id;
@@ -56,6 +56,7 @@ class GreetCommand extends BaseCommand {
             input: '',
             isCC: true,
             author: msg.author.id,
+            authorizer: msg.author.id,
             modResult(context, result) { return 'Greeting set. ' + suffix + 'Simulation:\n' + result; }
         });
     }

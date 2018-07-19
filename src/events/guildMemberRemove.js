@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:21
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-15 14:39:37
+ * @Last Modified time: 2018-07-12 22:15:06
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,10 +14,11 @@ bot.on('guildMemberRemove', async function (guild, member) {
     let chan = await bu.guildSettings.get(guild.id, 'farewellchan');
     if (chan && val) {
         let ccommandContent;
-        let author;
+        let author, authorizer;
         if (typeof val == "object") {
             ccommandContent = val.content;
             author = val.author;
+            authorizer = val.authorizer;
         } else {
             ccommandContent = val;
         }
@@ -32,7 +33,8 @@ bot.on('guildMemberRemove', async function (guild, member) {
             input: '',
             isCC: true,
             tagName: 'farewell',
-            author
+            author,
+            authorizer
         });
     }
     bu.logEvent(guild.id, member.user.id, 'memberleave', [{
@@ -40,4 +42,16 @@ bot.on('guildMemberRemove', async function (guild, member) {
         value: bu.getFullName(member.user) + ` (${member.user.id})`,
         inline: true
     }]);
+
+    let e = await bu.getAudit(guild.id, member.user.id, 20);
+    if (e && Date.now() - bu.unmakeSnowflake(e.id) <= 1000) {
+        let mod = bot.users.get(e.user.id);
+        bu.logAction(
+            guild,
+            member,
+            mod,
+            'Kick',
+            e.reason,
+            bu.ModLogColour.KICK);
+    }
 });

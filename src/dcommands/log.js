@@ -28,6 +28,7 @@ class LogCommand extends BaseCommand {
                 '\n- nameupdate - when a user changes their username' +
                 '\n- avatarupdate - when a user changes their avatar' +
                 '\n- nickupdate - when a user changes their nickname' +
+                '\n- role:<id> - when a role gets added or removed' +
                 '\n- all - enables all of the events' +
                 '\n\n`ignore` adds a list of users to ignore from logging. Useful for ignoring bots.' +
                 '\n`track` removes users from the ignore list'
@@ -69,13 +70,15 @@ class LogCommand extends BaseCommand {
                         args = words.slice(2);
                         if (args.map(m => m.toLowerCase()).includes('all')) {
                             for (let event of events) {
-                                if (events.indexOf(event.toLowerCase()) > -1)
-                                    storedGuild.log[event.toLowerCase()] = channel;
+                                event = event.toLowerCase();
+                                if (events.indexOf(event) > -1)
+                                    storedGuild.log[event] = channel;
                             }
                         } else
                             for (let event of args) {
-                                if (events.indexOf(event.toLowerCase()) > -1)
-                                    storedGuild.log[event.toLowerCase()] = channel;
+                                event = event.toLowerCase();
+                                if (events.indexOf(event) > -1 || event.startsWith('role:'))
+                                    storedGuild.log[event] = channel;
                             }
                         await r.table('guild').get(msg.channel.guild.id).replace(storedGuild);
                         bu.send(msg, 'Done!');
@@ -91,9 +94,11 @@ class LogCommand extends BaseCommand {
                         }
                     else
                         for (let event of args) {
-                            storedGuild.log[event.toLowerCase()] = undefined;
+                            delete storedGuild.log[event.toLowerCase()];
                         }
-                    await r.table('guild').get(msg.channel.guild.id).replace(storedGuild);
+                    await r.table('guild').get(msg.channel.guild.id).update({
+                        log: r.literal(storedGuild.log)
+                    });
                     bu.send(msg, 'Done!');
                     break;
                 case 'ignore':

@@ -36,12 +36,14 @@ class UnmuteCommand extends BaseCommand {
                         roles.splice(roles.indexOf(mutedrole), 1);
                         let voiceMute = msg.guild.members.get(bot.user.id).permission.json.voiceMuteMembers;
                         try {
+                            let reason;
+                            let input = bu.parseInput(this.flags, words);
+                            if (input.r) reason = input.r.join(' ');
                             await bot.editGuildMember(msg.channel.guild.id, user.id, {
                                 roles: roles,
                                 mute: voiceMute ? false : undefined
-                            });
-                            let input = bu.parseInput(this.flags, words);
-                            bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', input.r, bu.ModLogColour.UNMUTE);
+                            }, `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`);
+                            bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', reason, bu.ModLogColour.UNMUTE);
                             bu.send(msg, ':ok_hand:');
                         } catch (err) {
                             bu.send(msg, `Failed to remove the muted role! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``);

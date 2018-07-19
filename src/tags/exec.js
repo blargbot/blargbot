@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:16
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 11:39:28
+ * @Last Modified time: 2018-07-11 11:34:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,8 +15,8 @@ module.exports =
         .withArgs(a => [a.require('tag'), a.optional('args')])
         .withDesc('Executes another `tag`, giving it `args` as the input. Useful for modules.')
         .withExample(
-            'Let me do a tag for you. {exec;f}',
-            'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
+        'Let me do a tag for you. {exec;f}',
+        'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
@@ -68,7 +68,7 @@ module.exports =
             context.state.stackSize += 1;
             let childContext = context.makeChild({ input });
             if (tagContent != null)
-                result = this.executeArg(subtag, tagContent, childContext);
+                result = await this.executeArg(subtag, tagContent, childContext);
             context.state.stackSize -= 1;
 
             context.errors.push({

@@ -36,7 +36,7 @@ class FarewellCommand extends BaseCommand {
             });
             return;
         }
-        var farewell = { content: input.undefined.join(' '), author: msg.author.id };
+        var farewell = { content: input.undefined.join(' '), author: msg.author.id, authorizer: msg.author.id };
         await bu.guildSettings.set(msg.channel.guild.id, 'farewell', farewell);
         let suffix = '';
         let channelStr = input.c ? input.c.join(' ') : msg.channel.id;
@@ -56,7 +56,8 @@ class FarewellCommand extends BaseCommand {
             tagContent: farewell.content,
             input: '',
             isCC: true,
-            author: msg.author,
+            author: msg.author.id,
+            authorizer: msg.author.id,
             modResult(context, result) { return 'Farewell set. ' + suffix + 'Simulation:\n' + result; }
         });
     }

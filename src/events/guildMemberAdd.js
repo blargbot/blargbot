@@ -15,10 +15,11 @@ bot.on('guildMemberAdd', async function (guild, member) {
     let chan = await bu.guildSettings.get(guild.id, 'greetchan');
     if (chan && val) {
         let ccommandContent;
-        let author;
+        let author, authorizer;
         if (typeof val == "object") {
             ccommandContent = val.content;
             author = val.author;
+            authorizer = val.authorizer;
         } else {
             ccommandContent = val;
         }
@@ -33,7 +34,8 @@ bot.on('guildMemberAdd', async function (guild, member) {
             input: '',
             isCC: true,
             tagName: 'greet',
-            author
+            author,
+            authorizer
         });
     }
     bu.logEvent(guild.id, member.user.id, 'memberjoin', [{
