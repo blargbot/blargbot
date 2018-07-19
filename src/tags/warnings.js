@@ -15,14 +15,14 @@ module.exports =
         .withArgs(a => a.optional('user'))
         .withDesc('Gets the number of warnings `user` has. `user` defaults to the user who executed the containing tag.')
         .withExample(
-        'You have {warnings} warning(s)!',
-        'You have 0 warning(s)!'
+            'You have {warnings} warning(s)!',
+            'You have 0 warning(s)!'
         )
         .whenArgs("0-1", async function (subtag, context, args) {
             let user = context.user;
 
             if (args[0])
-                user = await bu.getUser(context.msg, args[0], {
+                user = await context.getUser(args[0], {
                     suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });

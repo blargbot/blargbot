@@ -7,6 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const moment = require('moment-timezone');
+
 bot.on('guildBanRemove', async function (guild, user) {
     let storedGuild = await bu.getGuild(guild.id);
     let modlog = storedGuild.modlog || [];
@@ -24,10 +26,10 @@ bot.on('guildBanRemove', async function (guild, user) {
         let msg2 = await bot.getMessage(val, lastCase.msgid);
         let embed = msg2.embeds[0];
 
-        if (embed && (Date.now() - Date.now() - dep.moment(embed.timestamp).format('x')) <= 60000) {
+        if (embed && (Date.now() - Date.now() - moment(embed.timestamp).format('x')) <= 60000) {
             embed.fields[0].value = 'Softban';
             embed.color = bu.ModLogColour.SOFTBAN;
-            embed.timestamp = dep.moment(embed.timestamp);
+            embed.timestamp = moment(embed.timestamp);
 
             msg2.edit({
                 content: ' ',
@@ -39,9 +41,10 @@ bot.on('guildBanRemove', async function (guild, user) {
     } else {
         bu.logAction(guild, user, mod, type || 'Unban', reason, bu.ModLogColour.UNBAN);
     }
-    bu.logEvent(guild.id, 'memberunban', [{
+    bu.logEvent(guild.id, user.id, 'memberunban', [{
         name: 'User',
         value: bu.getFullName(user) + ` (${user.id})`,
         inline: true
     }]);
+    r.table('events').filter({ user: user.id, type: 'unban', source: guild.id }).delete().run();
 });

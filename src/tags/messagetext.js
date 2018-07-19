@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('messagetext')
+    Builder.APITag('messagetext')
         .withAlias('text')
         .withArgs(a => a.optional([a.optional('channel'), a.require('messageid')]))
         .withDesc('Returns the text of the given message in the given channel.' +

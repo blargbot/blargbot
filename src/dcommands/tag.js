@@ -1,7 +1,9 @@
-const BaseCommand = require('../structures/BaseCommand'),
-    bbtag = require('../core/bbtag'),
-    bbEngine = require('../structures/BBTagEngine'),
-    { Message } = require('eris');
+const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
+const bbtag = require('../core/bbtag');
+const bbEngine = require('../structures/bbtag/Engine');
+const Context = require('../structures/bbtag/Context');
+const { Message } = require('eris');
 
 const results = 100;
 const reportChannel = '290890240011534337';
@@ -189,7 +191,7 @@ class TagCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         let page = 0;
-        let title, content, tag, author, originalTagList;
+        let title, content, tag, author, authorizer, originalTagList;
         if (words[1]) {
             switch (words[1].toLowerCase()) {
                 case 'cooldown':
@@ -218,7 +220,7 @@ class TagCommand extends BaseCommand {
                     await r.table('tag').get(title).update({
                         cooldown: r.literal(cooldown)
                     });
-                    bu.send(msg, `✅ The cooldown for Tag \`${title}\` has been set to \`${cooldown || 500}ms\`. ✅`);
+                    bu.send(msg, `✅ The cooldown for Tag \`${title}\` has been set to \`${cooldown || 0}ms\`. ✅`);
                     break;
                 case 'add':
                 case 'create':
@@ -245,8 +247,9 @@ class TagCommand extends BaseCommand {
                     await r.table('tag').insert({
                         name: title,
                         author: msg.author.id,
+                        authorizer: msg.author.id,
                         content: content,
-                        lastmodified: r.epochTime(dep.moment() / 1000),
+                        lastmodified: r.epochTime(moment() / 1000),
                         uses: 0
                     }).run();
                     bu.send(msg, `✅ Tag \`${title}\` created. ✅`);
@@ -324,7 +327,7 @@ class TagCommand extends BaseCommand {
 
                     await r.table('tag').get(title).update({
                         content: content,
-                        lastmodified: r.epochTime(dep.moment() / 1000)
+                        lastmodified: r.epochTime(moment() / 1000)
                     }).run();
                     bu.send(msg, `✅ Tag \`${title}\` edited. ✅`);
                     logChange('Edit', msg, {
@@ -362,8 +365,9 @@ class TagCommand extends BaseCommand {
                     await r.table('tag').get(title).replace({
                         name: title,
                         author: msg.author.id,
+                        authorizer: (tag ? tag.authorizer : undefined) || msg.author.id,
                         content: content,
-                        lastmodified: r.epochTime(dep.moment() / 1000),
+                        lastmodified: r.epochTime(moment() / 1000),
                         uses: tag ? tag.uses : 0,
                         flags: []
                     }).run();
@@ -449,7 +453,7 @@ ${command[0].desc}`);
                                 }
                                 await r.table('tag').get(title).update({
                                     flags: tag.flags,
-                                    lastmodified: r.epochTime(dep.moment() / 1000)
+                                    lastmodified: r.epochTime(moment() / 1000)
                                 });
                                 bu.send(msg, 'The flags have been modified.');
                                 break;
@@ -459,7 +463,7 @@ ${command[0].desc}`);
                                 tag.flags = tag.flags.filter(f => !keys.includes(f.flag));
                                 await r.table('tag').get(title).update({
                                     flags: tag.flags,
-                                    lastmodified: r.epochTime(dep.moment() / 1000)
+                                    lastmodified: r.epochTime(moment() / 1000)
                                 });
                                 bu.send(msg, 'The flags have been modified.');
                                 break;
@@ -523,7 +527,12 @@ ${content}
                         break;
                     }
                     author = await r.table('user').get(tag.author).run();
-                    bu.send(msg, `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`);
+                    let toSend = `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`;
+                    if (tag.authorizer && tag.authorizer != author.id) {
+                        authorizer = await r.table('user').get(tag.authorizer).run();
+                        toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}`;
+                    }
+                    bu.send(msg, toSend);
                     break;
                 case 'top':
                     let topTags = await r.table('tag').orderBy(r.desc(r.row('uses'))).limit(10).run();
@@ -547,12 +556,16 @@ ${content}
                         break;
                     }
                     author = await r.table('user').get(tag.author).run();
+                    authorizer = await r.table('user').get(tag.authorizer || tag.author).run();
+                    let count = await r.table('user').getAll(tag.name, { index: 'favourite_tag' }).count();
+
                     let output = `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
-Cooldown: ${tag.cooldown || 500}ms
-It was last modified **${dep.moment(tag.lastmodified).format('LLLL')}**.
+Authorizer: **${authorizer.username}#${authorizer.discriminator}**
+Cooldown: ${tag.cooldown || 0}ms
+It was last modified **${moment(tag.lastmodified).format('LLLL')}**.
 It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!
-It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1 ? '' : 's'}**!`;
+It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                     if (tag.reports && tag.reports > 0)
                         output += `\n:warning: It has been reported ${tag.reports || 0} **time${(tag.reports == 1 || 0) ? '' : 's'}**!`;
                     if (Array.isArray(tag.flags) && tag.flags.length > 0) {
@@ -611,6 +624,7 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                             input: '',
                             tagName: 'test',
                             author: msg.author.id,
+                            authorizer: msg.author.id,
                             modResult(context, text) {
                                 function formatDuration(duration) {
                                     return duration.asSeconds() >= 5 ?
@@ -639,14 +653,14 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                     if (result.context.author != result.context.user.id)
                         await bu.send(dmChannel.id, "Oops! I cant send a debug output for someone elses tag!");
                     else
-                        await bu.send(dmChannel.id, null, bbtag.generateDebug(result.code, result.context, result.result));
+                        await bu.send(dmChannel.id, undefined, bbtag.generateDebug(result.code, result.context));
 
                     break;
                 case 'favourite':
                 case 'favorite':
                     if (words.length > 2) {
                         title = filterTitle(words[2]);
-                        tag = await r.table('tag').get(words[2]).run();
+                        tag = await r.table('tag').get(title).run();
                         if (!tag) {
                             bu.send(msg, `❌ That tag doesn't exist! ❌`);
                             break;
@@ -662,17 +676,19 @@ It has been favourited **${tag.favourites || 0} time${(tag.favourites || 0) == 1
                         if (!user.favourites[title]) {
                             user.favourites[title] = true;
                             tag.favourites++;
-                            output = `The tag \`${title}\` is now on your favourites list!`;
+                            output = `The tag \`${title}\` is now on your favourites list!\n\nNote: there is no way for a tag to tell if you've favourited it, and thus it's impossible to give rewards for favouriting. Any tag that claims otherwise is lying, and should be reported.`;
                         } else {
                             user.favourites[title] = undefined;
                             tag.favourites--;
                             output = `The tag \`${title}\` is no longer on your favourites list!`;
                         }
-                        await r.table('tag').get(title).update({
-                            favourites: r.literal(tag.favourites)
-                        });
                         await r.table('user').get(msg.author.id).update({
                             favourites: r.literal(user.favourites)
+                        });
+                        let count = await r.table('user').getAll(tag.name, { index: 'favourite_tag' }).count();
+                        console.log(count);
+                        await r.table('tag').get(title).update({
+                            favourites: r.literal(count)
                         });
                         await bu.send(msg, output);
                     } else {
@@ -771,19 +787,27 @@ ${Object.keys(user.favourites).join(', ')}
 
     async event(args) {
         // Migrate from the old version of timer structure
-        if (args.version !== 2) {
+        if (typeof args.version !== 'number' || args.version < 2) {
             args.context = {
                 msg: JSON.parse(args.msg),
                 isCC: args.params.ccommand,
                 state: {
+                    count: {
+                        dm: 0,
+                        send: 0,
+                        edit: 0,
+                        delete: 0,
+                        react: 0,
+                        reactRemove: 0,
+                        timer: 0,
+                        loop: 0,
+                        foreach: 0
+                    },
                     return: 0,
                     stackSize: 0,
-                    repeats: 0,
                     embed: null,
                     reactions: args.params.reactions,
                     nsfw: null,
-                    dmCount: 0,
-                    timerCount: 0,
                     replace: null,
                     break: 0,
                     continue: 0
@@ -791,7 +815,8 @@ ${Object.keys(user.favourites).join(', ')}
                 scope: {},
                 input: args.params.words,
                 tagName: args.params.tagName,
-                author: args.params.author
+                author: args.params.author,
+                authorizer: args.params.author
             };
             let channel = bot.getChannel(args.channel);
             args.context.msg.channel = {
@@ -807,12 +832,29 @@ ${Object.keys(user.favourites).join(', ')}
             args.tempVars = args.params.vars;
         }
 
-        let context = await bbEngine.Context.deserialize(args.context),
+        let context = await Context.deserialize(args.context),
             content = args.content;
 
-        context.state.timerCount = -1;
+        if (!context.state.count) context.state.count = {};
+
+        context.state.count.timer = -1;
         context.state.embed = null;
         context.state.reactions = [];
+
+        console.debug(context.state);
+
+        if (args.version == 2) {
+            context.state.count.loop = context.state.repeats;
+            context.state.count.foreach = context.state.foreach;
+            context.state.count.dm = context.state.dm;
+            delete context.state.timerCount;
+            delete context.state.dmCount;
+            delete context.state.repeats;
+            delete context.state.foreach;
+        }
+
+        console.debug(context.state);
+
         try {
             await bbEngine.runTag(content, context);
         } catch (err) {
@@ -874,7 +916,7 @@ function logChange(action, msg, actionObj) {
                 icon_url: msg.author.avatarURL,
                 url: `https://blargbot.xyz/user/${msg.author.id}`
             },
-            timestamp: dep.moment(msg.timestamp),
+            timestamp: moment(msg.timestamp),
             footer: {
                 text: `MsgID: ${msg.id}`
             }

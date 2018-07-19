@@ -1,4 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
+const request = require('request');
 
 var part = {
     verb: 'v',
@@ -23,12 +25,12 @@ class DefineCommand extends BaseCommand {
         let vars = await r.table('vars').get('wordapis');
         if (!vars)
             vars = {
-                day: dep.moment().format('D'),
+                day: moment().format('D'),
                 uses: 0
             };
 
-        if (vars.day != dep.moment().format('D')) {
-            vars.day = dep.moment().format('D');
+        if (vars.day != moment().format('D')) {
+            vars.day = moment().format('D');
             vars.uses = 0;
         }
         var max = config.general.isbeta ? 250 : 1500;
@@ -38,7 +40,7 @@ class DefineCommand extends BaseCommand {
         }
         vars.uses++;
         await r.table('vars').get('wordapis').update(vars);
-        dep.request({
+        request({
             url: `https://wordsapiv1.p.mashape.com/words/${args}`,
             headers: {
                 'X-Mashape-Key': config.general.mashape,

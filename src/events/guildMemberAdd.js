@@ -6,18 +6,20 @@
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
-const bbEngine = require('../structures/BBTagEngine');
+const bbEngine = require('../structures/bbtag/Engine');
+const moment = require('moment-timezone');
 
 bot.on('guildMemberAdd', async function (guild, member) {
-    bu.processUser(member.user);
+    await bu.processUser(member.user);
     let val = await bu.guildSettings.get(guild.id, 'greeting');
     let chan = await bu.guildSettings.get(guild.id, 'greetchan');
     if (chan && val) {
         let ccommandContent;
-        let author;
+        let author, authorizer;
         if (typeof val == "object") {
             ccommandContent = val.content;
             author = val.author;
+            authorizer = val.authorizer;
         } else {
             ccommandContent = val;
         }
@@ -32,17 +34,18 @@ bot.on('guildMemberAdd', async function (guild, member) {
             input: '',
             isCC: true,
             tagName: 'greet',
-            author
+            author,
+            authorizer
         });
     }
-    bu.logEvent(guild.id, 'memberjoin', [{
+    bu.logEvent(guild.id, member.user.id, 'memberjoin', [{
         name: 'User',
         value: bu.getFullName(member.user) + ` (${member.user.id})\nMember #${guild.memberCount}`,
         inline: true
     }, {
         name: 'Created',
-        value: dep.moment(member.user.createdAt).tz('Etc/GMT').format('llll') +
-            ` GMT\n(${dep.moment.duration(-1 * (dep.moment() - dep.moment(member.user.createdAt))).humanize(true)})`,
+        value: moment(member.user.createdAt).tz('Etc/GMT').format('llll') +
+            ` GMT\n(${moment.duration(-1 * (moment() - moment(member.user.createdAt))).humanize(true)})`,
         inline: false
     }]);
 });

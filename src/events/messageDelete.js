@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-01 22:14:55
+ * @Last Modified time: 2018-06-28 09:47:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,11 +17,10 @@ async function handleDelete(msg, quiet) {
     const storedGuild = await bu.getGuild(msg.channel.guild.id);
     if (!msg.author || !msg.channel) {
         let storedMsg = await bu.getChatlog(msg.id);
-        if (storedMsg.length > 0) {
+        if (storedMsg) {
 
             console.debug('Somebody deleted an uncached message, but we found it in the DB.');
 
-            storedMsg = storedMsg[0];
             msg.content = storedMsg.content;
             msg.author = bot.users.get(storedMsg.userid) || {
                 id: storedMsg.userid
@@ -36,6 +35,8 @@ async function handleDelete(msg, quiet) {
             if (storedMsg.attachment) msg.attachments = [{
                 url: storedMsg.attachment
             }];
+            msg.embeds = storedMsg.embeds;
+
             //   msg.channel = bot.getChannel(msg.channelID);
 
         } else {
@@ -69,7 +70,7 @@ async function handleDelete(msg, quiet) {
         newMsg = 'uncached :(\nPlease enable chatlogging to use this functionality (`b!settings makelogs true`)';
     if (newMsg.length > 1900) newMsg = newMsg.substring(0, 1900) + '... (too long to display)';
     if (!quiet)
-        bu.logEvent(msg.channel.guild.id, 'messagedelete', [{
+        bu.logEvent(msg.channel.guild.id, msg.author.id, 'messagedelete', [{
             name: 'User',
             value: bu.getFullName(msg.author) + ` (${msg.author.id})`,
             inline: true
@@ -93,7 +94,8 @@ bot.on('messageDeleteBulk', function (msgs) {
     for (const msg of msgs) {
         handleDelete(msg, true);
     }
-    bu.logEvent(msgs[0].channel.guild.id, 'messagedelete', [{
+
+    bu.logEvent(msgs[0].channel.guild.id, msgs.map(m => m.author ? m.author.id : '1'), 'messagedelete', [{
         name: 'Count',
         value: msgs.length,
         inline: true

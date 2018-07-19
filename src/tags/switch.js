@@ -7,8 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/BBTagEngine');
+const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('switch')
@@ -40,12 +39,12 @@ module.exports =
             if (indexes.length % 2 == 1) elseDo = indexes.shift();
 
             for (let i = 0; i < indexes.length; i += 2) {
-                let caseValue = await bbEngine.execute(args[indexes[i + 1]], context);
+                let caseValue = await this.executeArg(subtag, args[indexes[i + 1]], context);
                 for (const key of Builder.util.flattenArgArrays([caseValue]))
                     cases[key] = indexes[i];
             }
 
             let result = cases[value] || elseDo;
             if (result != -1)
-                return await bbEngine.execute(args[result], context);
+                return await this.executeArg(subtag, args[result], context);
         }).build();

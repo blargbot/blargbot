@@ -15,21 +15,21 @@ const Builder = require('../structures/TagBuilder'),
     };
 
 module.exports =
-    Builder.AutoTag('usergametype')
+    Builder.APITag('usergametype')
         .withArgs(a => [a.optional('user'), a.optional('quiet')])
         .withDesc('Returns how `user` is playing the game (playing, streaming). ' +
-        '`user` defaults to the user who executed the containing tag. ' +
-        'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.')
+            '`user` defaults to the user who executed the containing tag. ' +
+            'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.')
         .withExample(
-        'You are {usergametype} right now!',
-        'You are playing right now!'
+            'You are {usergametype} right now!',
+            'You are playing right now!'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
                 user = context.user;
 
             if (args[0])
-                user = await bu.getUser(context.msg, args[0], {
+                user = await context.getUser(args[0], {
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });

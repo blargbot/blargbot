@@ -7,8 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/BBTagEngine');
+const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.ArrayTag('foreach')
@@ -19,8 +18,8 @@ module.exports =
         ])
         .withDesc('For every element in `array`, `variable` will be set and then `code` will be run.')
         .withExample(
-        '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
-        'I like apples\nI like oranges\nI like c#'
+            '{set;~array;apples;oranges;c#}\n{foreach;~element;~array;I like {get;~element}{newline}}',
+            'I like apples\nI like oranges\nI like c#'
         ).resolveArgs(0, 1)
         .whenArgs('0-2', Builder.errors.notEnoughArguments)
         .whenArgs(3, async function (subtag, context, args) {
@@ -29,12 +28,12 @@ module.exports =
                 result = '';
             let array = Array.from(arr.v);
             for (const item of array) {
-                if (++context.state.foreach > 3000) {
+                if (++context.state.count.foreach > 3000) {
                     result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }
                 await context.variables.set(varName, item);
-                result += await bbEngine.execute(args[2], context);
+                result += await this.executeArg(subtag, args[2], context);
                 if (context.state.return)
                     break;
             }

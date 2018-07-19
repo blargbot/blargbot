@@ -7,47 +7,25 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const bbEngine = require('../structures/BBTagEngine');
+const moment = require('moment-timezone');
+const bbEngine = require('../structures/bbtag/Engine');
 const Timer = require('../structures/Timer');
-const cleverbotIo = new dep.cleverbotIo({
+const util = require('util');
+const request = require('request');
+const cleverbotIo = require('better-cleverbot-io');
+const cleverbot = new cleverbotIo({
     user: config.cleverbot.ioid,
     key: config.cleverbot.iokey,
     nick: 'blargbot' + bu.makeSnowflake()
 });
 
-cleverbotIo.create().then(function (session) {
+cleverbot.create().then(function (session) {
     console.init('Cleverbot.io initialized with session', session);
-});
-
-/*
-dep.cleverbotIoIo.prototype.askPromise = function (input) {
-    return new Promise((resolve, reject) => {
-        this.ask(input, function (err, res) {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve(res);
-        });
-    });
-};
-
-const cleverbotIo = new dep.cleverbotIoIo(config.cleverbot.ioid, config.cleverbot.iokey);
-cleverbotIo.setNick('blargbot' + bu.makeSnowflake());
-cleverbotIo.create(function (err, session) {
-    if (err) console.error('Cleverbot error', err);
-    else
-        console.info('Created a cleverbot instance with session ' + session);
-});
-*/
-
-const cleverbot = new dep.cleverbot({
-    key: config.cleverbot.key
 });
 
 bot.on('messageCreate', async function (msg) {
     bu.Metrics.messageCounter.inc();
-    bu.processUser(msg.author);
+    await bu.processUser(msg.author);
     let isDm = msg.channel.guild == undefined;
     let storedGuild;
     if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
@@ -185,15 +163,18 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
     let alias = false;
     if (val && val.alias) {
         alias = val.alias;
+        let auth = val.authorizer;
         val = await r.table('tag').get(alias);
+        val.authorizer = auth;
     }
     if (val && val.content) {
         let ccommandName = words[0].toLowerCase();
         let ccommandContent;
-        let author;
+        let author, authorizer;
         if (typeof val == "object") {
             ccommandContent = val.content;
             author = val.author;
+            authorizer = val.authorizer;
         } else {
             ccommandContent = val;
             await bu.ccommand.set(msg.guild.id, ccommandName, {
@@ -219,7 +200,8 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
                 isCC: true,
                 tagName: ccommandName,
                 cooldown: val.cooldown,
-                author
+                author,
+                authorizer
             });
             bu.Metrics.commandCounter.labels('custom', 'custom').inc();
 
@@ -300,7 +282,7 @@ function handleIRCMessage(msg) {
         console.output(message);
         var attachUrl = '';
         if (msg.attachments.length > 0) {
-            console.debug(dep.util.inspect(msg.attachments[0]));
+            console.debug(util.inspect(msg.attachments[0]));
             attachUrl += ` ${msg.attachments[0].url}`;
         }
         sendMessageToIrc(message + attachUrl);
@@ -464,7 +446,7 @@ function logCommand(msg) {
                 icon_url: msg.author.avatarURL,
                 url: `https://blargbot.xyz/user/${msg.author.id}`
             },
-            timestamp: dep.moment(msg.timestamp),
+            timestamp: moment(msg.timestamp),
             footer: {
                 text: `MsgID: ${msg.id}`
             }
@@ -489,7 +471,7 @@ const cleverCache = {};
 
 function query(input) {
     return new Promise((res, rej) => {
-        dep.request.post(config.cleverbot.endpoint, {
+        request.post(config.cleverbot.endpoint, {
             form: { input }
         }, (err, re, bod) => {
             if (err) rej(err);
@@ -517,8 +499,8 @@ async function handleCleverbot(msg) {
         await bu.send(msg, response);
     } catch (err) {
         try {
-            //cleverbotIo.setNick('blargbot' + msg.channel.id);
-            let response = await cleverbotIo.ask(msgToSend);
+            //cleverbot.setNick('blargbot' + msg.channel.id);
+            let response = await cleverbot.ask(msgToSend);
             await bu.sleep(1500);
             await bu.send(msg, response);
         } catch (err) {
@@ -530,7 +512,7 @@ async function handleCleverbot(msg) {
 }
 
 async function updateStats() {
-    let today = dep.moment().format('YYYY-MM-DD');
+    let today = moment().format('YYYY-MM-DD');
     if (!bu.cleverStats[today]) {
         let storedStats = await r.table('vars').get('cleverstats');
         if (!storedStats) {

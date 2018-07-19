@@ -7,141 +7,143 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    fields = [
-        {
-            key: 'title',
-            error: (e, v) => v.length > 256
-                ? 'Title too long'
+const Builder = require('../structures/TagBuilder');
+const url = require('url');
+
+const fields = [
+    {
+        key: 'title',
+        error: (e, v) => v.length > 256
+            ? 'Title too long'
+            : false,
+        parse: v => v,
+        setter: (e, v) => e.title = v
+    },
+    {
+        key: 'description',
+        error: (e, v) => v.length > 2048
+            ? 'Description too long'
+            : false,
+        parse: v => v,
+        setter: (e, v) => e.description = v
+    },
+    {
+        key: 'url',
+        error: (e, v) => v.host == null
+            ? 'Invalid url'
+            : false,
+        parse: v => url.parse(v),
+        setter: (e, v) => e.url = v.href
+    },
+    {
+        key: 'color',
+        desc: 'can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number.',
+        error: (e, v) => v == null
+            ? 'Invalid color'
+            : false,
+        parse: bu.parseColor,
+        setter: (e, v) => e.color = v
+    },
+    {
+        key: 'timestamp',
+        error: (e, v) => typeof v == 'string'
+            ? v
+            : !v.isValid()
+                ? 'Invalid timestamp'
                 : false,
-            parse: v => v,
-            setter: (e, v) => e.title = v
-        },
-        {
-            key: 'description',
-            error: (e, v) => v.length > 2048
-                ? 'Description too long'
+        parse: v => bu.parseTime(v),
+        setter: (e, v) => e.timestamp = v
+    },
+    {
+        key: 'footer.icon_url',
+        error: (e, v) => v.host == null
+            ? 'Invalid footer.icon_url'
+            : false,
+        parse: v => url.parse(v),
+        setter: (e, v) => getObj(e, 'footer').icon_url = v.href
+    },
+    {
+        key: 'footer.text',
+        error: (e, v) => v.length > 2048
+            ? 'Footer text too long'
+            : false,
+        parse: v => v,
+        setter: (e, v) => getObj(e, 'footer').text = v
+    },
+    {
+        key: 'thumbnail.url',
+        error: (e, v) => v.host == null
+            ? 'Invalid thumbnail.url'
+            : false,
+        parse: v => url.parse(v),
+        setter: (e, v) => getObj(e, 'thumbnail').url = v.href
+    },
+    {
+        key: 'image.url',
+        error: (e, v) => v.host == null
+            ? 'Invalid image.url'
+            : false,
+        parse: v => url.parse(v),
+        setter: (e, v) => getObj(e, 'image').url = v.href
+    },
+    {
+        key: 'author.name',
+        error: (e, v) => v.length > 256
+            ? 'Author name too long'
+            : false,
+        parse: v => v,
+        setter: (e, v) => getObj(e, 'author').name = v
+    },
+    {
+        key: 'author.url',
+        error: (e, v) => v.host == null
+            ? 'Invalid author.url'
+            : false,
+        parse: v => url.parse(v),
+        setter: (e, v) => getObj(e, 'author').url = v.href
+    },
+    {
+        key: 'author.icon_url',
+        error: (e, v) => v.host == null
+            ? 'Invalid author.icon_url'
+            : false,
+        parse: v => url.parse(v),
+        setter: (e, v) => getObj(e, 'author').icon_url = v.href
+    },
+    {
+        key: 'fields.name',
+        desc: 'Must have `fields.value` after. Cannot be empty.',
+        error: (e, v) => getObj(e, 'fields', []).length >= 25
+            ? 'Too many fields'
+            : v.length > 256
+                ? 'Field name too long' :
+                false,
+        parse: v => v,
+        setter: (e, v) => lastElem(getObj(e, 'fields', []), true).name = v
+    },
+    {
+        key: 'fields.value',
+        desc: 'Must come after a `fields.name`. Cannot be empty',
+        error: (e, v) => getObj(e, 'fields', []).length == 0
+            ? 'Field name not specified'
+            : v.length > 1024
+                ? 'Field value too long' :
+                false,
+        parse: v => v,
+        setter: (e, v) => lastElem(getObj(e, 'fields', [])).value = v
+    },
+    {
+        key: 'fields.inline',
+        desc: 'Must come after a `fields.name`',
+        error: (e, v) => getObj(e, 'fields', []).length == 0
+            ? 'Field name not specified'
+            : !bu.isBoolean(v)
+                ? 'Inline must be a boolean'
                 : false,
-            parse: v => v,
-            setter: (e, v) => e.description = v
-        },
-        {
-            key: 'url',
-            error: (e, v) => v.host == null
-                ? 'Invalid url'
-                : false,
-            parse: v => dep.url.parse(v),
-            setter: (e, v) => e.url = v.href
-        },
-        {
-            key: 'color',
-            desc: 'can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number.',
-            error: (e, v) => v == null
-                ? 'Invalid color'
-                : false,
-            parse: bu.parseColor,
-            setter: (e, v) => e.color = v
-        },
-        {
-            key: 'timestamp',
-            error: (e, v) => typeof v == 'string'
-                ? v
-                : !v.isValid()
-                    ? 'Invalid timestamp'
-                    : false,
-            parse: v => bu.parseTime(v),
-            setter: (e, v) => e.timestamp = v
-        },
-        {
-            key: 'footer.icon_url',
-            error: (e, v) => v.host == null
-                ? 'Invalid footer.icon_url'
-                : false,
-            parse: v => dep.url.parse(v),
-            setter: (e, v) => getObj(e, 'footer').icon_url = v.href
-        },
-        {
-            key: 'footer.text',
-            error: (e, v) => v.length > 2048
-                ? 'Footer text too long'
-                : false,
-            parse: v => v,
-            setter: (e, v) => getObj(e, 'footer').text = v
-        },
-        {
-            key: 'thumbnail.url',
-            error: (e, v) => v.host == null
-                ? 'Invalid thumbnail.url'
-                : false,
-            parse: v => dep.url.parse(v),
-            setter: (e, v) => getObj(e, 'thumbnail').url = v.href
-        },
-        {
-            key: 'image.url',
-            error: (e, v) => v.host == null
-                ? 'Invalid image.url'
-                : false,
-            parse: v => dep.url.parse(v),
-            setter: (e, v) => getObj(e, 'image').url = v.href
-        },
-        {
-            key: 'author.name',
-            error: (e, v) => v.length > 256
-                ? 'Author name too long'
-                : false,
-            parse: v => v,
-            setter: (e, v) => getObj(e, 'author').name = v
-        },
-        {
-            key: 'author.url',
-            error: (e, v) => v.host == null
-                ? 'Invalid author.url'
-                : false,
-            parse: v => dep.url.parse(v),
-            setter: (e, v) => getObj(e, 'author').url = v.href
-        },
-        {
-            key: 'author.icon_url',
-            error: (e, v) => v.host == null
-                ? 'Invalid author.icon_url'
-                : false,
-            parse: v => dep.url.parse(v),
-            setter: (e, v) => getObj(e, 'author').icon_url = v.href
-        },
-        {
-            key: 'fields.name',
-            desc: 'Must have `fields.value` after. Cannot be empty.',
-            error: (e, v) => getObj(e, 'fields', []).length >= 25
-                ? 'Too many fields'
-                : v.length > 256
-                    ? 'Field name too long' :
-                    false,
-            parse: v => v,
-            setter: (e, v) => lastElem(getObj(e, 'fields', []), true).name = v
-        },
-        {
-            key: 'fields.value',
-            desc: 'Must come after a `fields.name`. Cannot be empty',
-            error: (e, v) => getObj(e, 'fields', []).length == 0
-                ? 'Field name not specified'
-                : v.length > 1024
-                    ? 'Field value too long' :
-                    false,
-            parse: v => v,
-            setter: (e, v) => lastElem(getObj(e, 'fields', [])).value = v
-        },
-        {
-            key: 'fields.inline',
-            desc: 'Must come after a `fields.name`',
-            error: (e, v) => getObj(e, 'fields', []).length == 0
-                ? 'Field name not specified'
-                : !bu.isBoolean(v)
-                    ? 'Inline must be a boolean'
-                    : false,
-            parse: bu.parseBoolean,
-            setter: (e, v) => lastElem(getObj(e, 'fields', [])).inline = v
-        }
-    ];
+        parse: bu.parseBoolean,
+        setter: (e, v) => lastElem(getObj(e, 'fields', [])).inline = v
+    }
+];
 
 function getObj(embed, objName, defVal) {
     if (embed[objName])

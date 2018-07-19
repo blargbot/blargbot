@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:50
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:15:41
+ * @Last Modified time: 2018-07-05 15:15:24
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -22,7 +22,7 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
-            let user = await bu.getUser(context.msg, args[0], {
+            let user = await context.getUser(args[0], {
                 quiet: false,
                 suppress: context.scope.suppressLookup,
                 label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
@@ -31,7 +31,7 @@ module.exports =
                 noPerms = args[2] != null;
 
             if (user == null) return Builder.errors.noUserFound(subtag, context);
-            let response = await CommandManager.built['unban'].unban(context.msg, user, reason, true, noPerms);
+            let response = await CommandManager.built['unban'].unban(context.msg, user, reason || context.scope.reason || undefined, true, noPerms);
 
             if (typeof response[1] == 'string' && response[1].startsWith('`')) {
                 return Builder.util.error(subtag, context, response[1]);

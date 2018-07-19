@@ -8,9 +8,11 @@
  */
 
 const showdown = require('showdown');
-const converter = new showdown.Converter({ backslashEscapesHTMLTags: true });
+const hbs = require('hbs');
+const argumentFactory = require('../structures/ArgumentFactory');
+const path = require('path');
 
-const argumentFactory = require('../structures/ArgumentFactory')
+const converter = new showdown.Converter({ backslashEscapesHTMLTags: true });
 let e = module.exports = {};
 let TagManager = {
     list: {}
@@ -53,19 +55,20 @@ const tagType = {
 };
 
 function mdToHtml(text) {
+    text = text.replace(/([,;/])(?=\S)/g, '$1\u200b');
     return converter.makeHtml(text).replace(/\n/g, '<br>');
 }
 
 function addSubtagReferences(text) {
     return text.replace(/\{([a-z]+)\}/ig, function (match, subtag) {
         return `<a href='#${subtag}'>${match}</a>`;
-    })
+    });
 }
 
 e.init = () => {
-    dep.hbs.registerPartials(dep.path.join(__dirname, 'views', 'partials'));
+    hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
-    dep.hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
+    hbs.registerHelper('ifCond', function (v1, operator, v2, options) {
 
         switch (operator) {
             case '==':
@@ -93,7 +96,7 @@ e.init = () => {
         }
     });
 
-    dep.hbs.registerHelper('listcommands', function () {
+    hbs.registerHelper('listcommands', function () {
         let sidebar = '';
         let commands = CommandManager.list;
         let lastType = -10;
@@ -113,7 +116,7 @@ e.init = () => {
         return sidebar;
     });
 
-    dep.hbs.registerHelper('listtags', function () {
+    hbs.registerHelper('listtags', function () {
         let sidebar = '';
         let lastType = -10;
         let tags = TagManager.list;
@@ -132,7 +135,7 @@ e.init = () => {
         return sidebar;
     });
 
-    dep.hbs.registerHelper('tags', function (text, url) {
+    hbs.registerHelper('tags', function (text, url) {
         let toReturn = '';
         let lastType = -10;
         let tags = TagManager.list;
@@ -224,7 +227,7 @@ e.init = () => {
         return toReturn;
     });
 
-    dep.hbs.registerHelper('tagseditor', (text, url) => {
+    hbs.registerHelper('tagseditor', (text, url) => {
         let tags = Object.keys(TagManager.list).map(m => {
             return {
                 text: m,
@@ -238,7 +241,7 @@ e.init = () => {
 
 
 
-    dep.hbs.registerHelper('commands', function (text, url) {
+    hbs.registerHelper('commands', function (text, url) {
         let toReturn = '';
         let lastType = -10;
         let commands = CommandManager.list;

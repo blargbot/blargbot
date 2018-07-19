@@ -23,9 +23,10 @@ module.exports =
             try {
                 regex = bu.createRegExp(args[1].content);
             } catch (e) {
-                return Builder.util.error(subtag, context, e);
+                return Builder.util.error(subtag, context, e.message);
             }
 
             return JSON.stringify(args[0].split(regex));
         }).whenDefault(Builder.errors.tooManyArguments)
+        .withProp('argLimit', 50000)
         .build();

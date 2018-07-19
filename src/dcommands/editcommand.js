@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const util = require('util');
 
 class EditcommandCommand extends BaseCommand {
     constructor() {
@@ -119,7 +120,7 @@ class EditcommandCommand extends BaseCommand {
                     await r.table('guild').get(msg.channel.guild.id).update({
                         commandperms: commandperms
                     }).run();
-                    bu.send(msg, dep.util.format('Commands enabled:\n```\n%s \n```\nCommands disabled:\n```\n%s \n```', enabledList.join(', '), disabledList.join(', ')));
+                    bu.send(msg, util.format('Commands enabled:\n```\n%s \n```\nCommands disabled:\n```\n%s \n```', enabledList.join(', '), disabledList.join(', ')));
                     break;
                 case 'setperm':
                     if (!words[2]) {

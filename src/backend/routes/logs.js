@@ -2,12 +2,14 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:49
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-15 20:32:24
+ * @Last Modified time: 2018-07-11 10:22:09
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const router = dep.express.Router();
+const router = require('express').Router();
+const hbs = require('hbs');
+const moment = require('moment-timezone');
 
 const types = [{
     name: 'Create',
@@ -21,17 +23,22 @@ const types = [{
 }];
 
 router.get('/', (req, res) => {
-    res.locals.user = req.user;
-    req.session.returnTo = '/logs' + req.path;
-
     res.render('logsfirst');
 });
 
+router.get('/:id', async (req, res) => {
+    await render(req.params.id, req, res);
+});
+
 router.post('/', async (req, res) => {
+    let hash = req.body.hash;
+
+    await render(hash, req, res);
+});
+
+async function render(hash, req, res) {
     res.locals.user = req.user;
     req.session.returnTo = '/logs' + req.path;
-
-    let hash = req.body.hash;
     let db = 'blargdb';
     if (hash.startsWith('beta')) {
         res.locals.beta = true;
@@ -39,6 +46,7 @@ router.post('/', async (req, res) => {
         hash = hash.replace('beta', '');
     }
     res.locals.hash = hash;
+
     let logsSpecs = await r.db(db).table('logs').get(parseInt(hash)).run();
     if (!logsSpecs) {
         res.locals.continue = false;
@@ -46,8 +54,8 @@ router.post('/', async (req, res) => {
         let messages = [];
         try {
             for (const id of logsSpecs.ids) {
-                let r = await bu.cclient.execute(`SELECT * FROM ${res.locals.beta ? 'blargbot_beta' : 'blargbot'}.chatlogs2 WHERE id = ?`,
-                    [id], { prepare: true, readTimeout: 200000 });
+                let r = await bu.cclient.execute(`SELECT * FROM ${res.locals.beta ? 'blargbot_beta' : 'blargbot'}.chatlogs WHERE channelid = :channelid and id = :id`,
+                    { id, channelid: logsSpecs.channel }, { prepare: true, readTimeout: 200000 });
                 messages.push(bu.normalize(r.rows[0]));
             }
         } catch (err) {
@@ -66,7 +74,13 @@ router.post('/', async (req, res) => {
             if (temp) {
                 userCache[id] = { username: temp.username, discriminator: temp.discriminator, bot: temp.isbot, avatarURL: temp.avatarURL };
             } else if (!userCache[id])
-                userCache[id] = await bot.getRESTUser(id);
+                try {
+                    userCache[id] = await bot.getRESTUser(id);
+                } catch (err) {
+                    userCache[id] = {
+                        id, username: 'unknown', discriminator: '0000'
+                    }
+                }
             return userCache[id];
         }
         if (messages.length > 0) {
@@ -100,10 +114,10 @@ router.post('/', async (req, res) => {
                             embed.separateFooter = true;
                     }
 
-                m.msgtime = dep.moment(bu.unmakeSnowflake(m.id)).unix();
+                m.msgtime = moment(bu.unmakeSnowflake(m.id)).unix();
                 let text = m.content;
 
-                text = dep.hbs.handlebars.Utils.escapeExpression(text);
+                text = hbs.handlebars.Utils.escapeExpression(text);
 
                 text = text.replace(/(\r\n|\n|\r)/gm, '<br>');
                 while (/&lt;@!?(\d+)&gt;/.test(text)) {
@@ -128,7 +142,7 @@ router.post('/', async (req, res) => {
                     data-user-id='${id}'
                     data-clipboard-text='${id}'>@${user.username}#${user.discriminator}</span>`);
                 }
-                m.content = new dep.hbs.handlebars.SafeString(text);
+                m.content = new hbs.handlebars.SafeString(text);
                 m.type = types[m.type];
                 messages2.push(m);
             }
@@ -148,5 +162,5 @@ router.post('/', async (req, res) => {
         }
     }
     res.render('logs');
-});
+}
 module.exports = router;

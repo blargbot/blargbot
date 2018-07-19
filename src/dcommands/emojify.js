@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const request = require('request');
 
 class EmojifyCommand extends BaseCommand {
     constructor() {
@@ -18,7 +19,7 @@ class EmojifyCommand extends BaseCommand {
                 'User-Agent': 'blargbot/1.0 (ratismal)'
             }
         };
-        dep.request(options, (err, res, body) => {
+        request(options, (err, res, body) => {
             if (!err && res.statusCode == 200) {
                 var emojis = JSON.parse(body);
                 var toSend = '';

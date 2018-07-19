@@ -10,18 +10,18 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('rolemembers')
+    Builder.APITag('rolemembers')
         .withArgs(a => [a.require('role'), a.optional('quiet')])
         .withDesc('Returns an array of members in `role`. ' +
-        'If `quiet` is specified, if `role` can\'t be found it will simply return nothing.')
+            'If `quiet` is specified, if `role` can\'t be found it will simply return nothing.')
         .withExample(
-        'The admins are: {rolemembers;Admin}.',
-        'The admins are: ["11111111111111111","22222222222222222"].'
+            'The admins are: {rolemembers;Admin}.',
+            'The admins are: ["11111111111111111","22222222222222222"].'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
-                role = await bu.getRole(context.msg, args[0], {
+                role = await context.getRole(args[0], {
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });

@@ -2,14 +2,15 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:37:01
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-11 09:02:49
+ * @Last Modified time: 2018-07-04 13:13:41
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var bu = module.exports = {};
-
 const EventEmitter = require('eventemitter3');
+const Trello = require('node-trello');
+
+var bu = module.exports = {};
 
 global.cluster = require('./cluster.js');
 
@@ -25,7 +26,7 @@ bu.init = () => {
         buffer: 5,
         timeoutError: 10000
     });
-    bu.trello = new dep.Trello(config.general.trellokey, config.general.trellotoken);
+    bu.trello = new Trello(config.general.trellokey, config.general.trellotoken);
     const Manager = require('./Manager.js');
     global.UtilManager = new Manager('utils');
     bu.registerChangefeed();
@@ -37,30 +38,7 @@ bu.registerChangefeed = async () => {
     registerSubChangefeed('guild', 'guildid', bu.guildCache);
     registerSubChangefeed('user', 'userid', bu.userCache);
     registerSubChangefeed('tag', 'name', bu.tagCache);
-    registerGlobalChangefeed();
 };
-
-async function registerGlobalChangefeed() {
-    try {
-        console.info('Registering a global changefeed!');
-        changefeed = await r.table('vars').changes({
-            squash: true
-        }).run((err, cursor) => {
-            if (err) return console.error(err);
-            cursor.on('error', err => {
-                console.error(err);
-            });
-            cursor.on('data', data => {
-                if (data.new_val && data.new_val.varname == 'tagVars')
-                    bu.globalVars = data.new_val.values;
-            });
-        });
-        changefeed.on('end', registerGlobalChangefeed);
-    } catch (err) {
-        console.warn(`Failed to register a global changefeed, will try again in 10 seconds.`);
-        setTimeout(registerGlobalChangefeed, 10000);
-    }
-}
 
 async function registerSubChangefeed(type, idName, cache) {
     try {

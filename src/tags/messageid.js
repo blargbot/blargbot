@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('messageid')
+    Builder.APITag('messageid')
         .withDesc('Returns the ID of the invoking message.')
         .withExample(
             'The message id was {messageid}',

@@ -1,4 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const Airtable = require('airtable');
+Airtable.configure({
+    endpointUrl: 'https://api.airtable.com',
+    apiKey: config.airtable.key
+});
+const at = Airtable.base(config.airtable.base);
+
 
 class RespondCommand extends BaseCommand {
     constructor() {
@@ -11,32 +18,25 @@ class RespondCommand extends BaseCommand {
     async execute(msg, words, text) {
         if (msg.author.id == bu.CAT_ID) {
             if (words.length >= 3) {
-                let suggestion;
-                if (words[1].toLowerCase() == 'latest' || words[1].toLowerCase() == 'l') {
-                    suggestion = (await r.table('suggestion').orderBy({
-                        index: r.desc('id')
-                    }).limit(1).run())[0];
-                } else {
-                    let i = parseInt(words[1]);
-                    if (isNaN(i)) {
-                        bu.send(msg, 'You suck');
-                        return;
-                    }
-                    suggestion = await r.table('suggestion').get(i).run();
-                    if (!suggestion) {
-                        bu.send(msg, 'Invalid ID');
-                        return;
-                    }
-                }
-                let response = words.slice(2).join(' ');
-                bu.trello.post('1/cards/' + suggestion.cardId + '/actions/comments', {
-                    text: 'Response:\n\n' + response
-                }, (err) => {
-                    if (err) throw err;
-                });
-                let message = `**Hi, ${bot.users.get(suggestion.author).mention}!** You recently made this suggestion:
+                try {
+                    let suggestion = await at('Suggestions').select({
+                        maxRecords: 1,
+                        filterByFormula: '{ID} = \'' + words[1] + '\''
+                    }).firstPage();
+                    suggestion = suggestion[0];
+                    console.log(suggestion);
 
-${suggestion.message}
+                    let author = await at('Suggestors').find(suggestion.fields.Author[0]);
+
+                    let response = words.slice(2).join(' ');
+                    let url = 'https://blargbot.xyz/feedback/' + suggestion.id;
+
+                    await at('Suggestions').update(suggestion.id, {
+                        Notes: `${response} (${msg.author.username}#${msg.author.discriminator})` + (suggestion.fields.Note ? '\n\n' + suggestion.fields.Note : '')
+                    });
+                    let message = `**Hi, <@${author.fields.ID}>!** You recently made this suggestion:
+
+**${suggestion.fields.Title}**${suggestion.fields.Description ? '\n\n' + suggestion.fields.Description : ''}
 
 **${msg.author.username}#${msg.author.discriminator}** has responded to your feedback with this:
 
@@ -44,11 +44,12 @@ ${response}
 
 If you have any further questions or concerns, please join my support guild so that they can talk to you directly. You can get a link by doing \`b!invite\`. Thanks for your time!
 
-Your card has been updated here: <${suggestion.cardUrl}>`;
-                try {
-                    await bu.send(suggestion.channel, message);
+Your card has been updated here: <${url}>`;
+                    console.log(suggestion.fields.Channel);
+                    await bu.send(suggestion.fields.Channel, message);
                     bu.send(msg, 'Response successfully sent.');
                 } catch (err) {
+                    console.error(err);
                     bu.send(msg, 'An error has occured.');
                 }
             }

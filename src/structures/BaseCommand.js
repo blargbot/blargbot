@@ -1,3 +1,5 @@
+const moment = require('moment-timezone');
+
 class BaseCommand {
     constructor(params = {}) {
         this.name = params.name || '';
@@ -21,6 +23,26 @@ class BaseCommand {
 
     execute(msg, words, text) {
 
+    }
+
+    static stringify(embed) {
+        let result = '';
+        if (typeof embed !== 'object')
+            return result;
+        if (embed.title)
+            result += `**${embed.title.replace(/\*/, '\\*')}**\n`;
+        if (embed.description)
+            result += `${embed.description}\n`;
+        if (embed.fields)
+            for (const field of embed.fields)
+                result += `\n**${field.name.replace(/\*/, '')}**\n${field.value}`;
+        if (embed.footer)
+            result += `*${embed.footer.text.replace(/\*/, '')}*`;
+        if (embed.footer && embed.timestamp)
+            result += ' | ';
+        if (embed.timestamp)
+            result += `${moment(embed.timestamp).format('ddd Do MMM, YYYY [at] h:mm A')}`;
+        return result;
     }
 }
 

@@ -1,5 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand'),
-    bbEngine = require('../structures/BBTagEngine'),
+    bbEngine = require('../structures/bbtag/Engine'),
     bbtag = require('../core/bbtag');
 
 function filterTitle(title) {
@@ -69,7 +69,7 @@ class CcommandCommand extends BaseCommand {
                     await r.table('guild').get(msg.guild.id).update({
                         ccommands: { [title]: { cooldown: r.literal(cooldown) } }
                     });
-                    bu.send(msg, `✅ The cooldown for Custom Command \`${title}\` has been set to \`${cooldown || 500}ms\`. ✅`);
+                    bu.send(msg, `✅ The cooldown for Custom Command \`${title}\` has been set to \`${cooldown || 0}ms\`. ✅`);
                     break;
                 case 'setrole':
                     if (words.length > 2) {
@@ -107,7 +107,8 @@ class CcommandCommand extends BaseCommand {
                         content = bu.splitInput(text, true).slice(3).join(' ');
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
-                            author: msg.author.id
+                            author: msg.author.id,
+                            authorizer: msg.author.id
                         });
                         bu.send(msg, `✅ Custom command \`${title}\` created. ✅`);
                     } else {
@@ -192,7 +193,8 @@ class CcommandCommand extends BaseCommand {
                         content = bu.splitInput(text, true).slice(3).join(' ');
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
-                            author: msg.author.id
+                            author: msg.author.id,
+                            authorizer: (tag ? tag.authorizer : undefined) || msg.author.id
                         });
                         bu.send(msg, `✅ Custom command \`${title}\` edited. ✅`);
                     } else {
@@ -207,9 +209,11 @@ class CcommandCommand extends BaseCommand {
                             break;
                         }
                         content = bu.splitInput(text, true).slice(3).join(' ');
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
-                            author: msg.author.id
+                            author: msg.author.id,
+                            authorizer: (tag ? tag.authorizer : undefined) || msg.author.id
                         });
                         bu.send(msg, `✅ Custom command \`${title}\` set. ✅`);
                     } else {
@@ -233,9 +237,11 @@ class CcommandCommand extends BaseCommand {
                         if (tag) {
                             let author = await r.table('user').get(tag.author).run();
                             await bu.ccommand.set(msg.channel.guild.id, title, {
-                                alias: tag.name
+                                alias: tag.name,
+                                authorizer: msg.author.id
                             });
-                            bu.send(msg, `✅ The tag \`${tag.name}\` by **${author.username}#${author.discriminator}** has been imported as \`${title}\`. ✅`);
+                            bu.send(msg, `✅ The tag \`${tag.name}\` by **${author.username}#${author.discriminator}** ` +
+                                `has been imported as \`${title}\` and is authorized by **${msg.author.username}#${msg.author.discriminator}**. ✅`);
                         } else {
                             bu.send(msg, `A tag with the name of \`${words[2]}\` could not be found.`);
                         }
@@ -308,9 +314,9 @@ class CcommandCommand extends BaseCommand {
                     let storedGuild = await bu.getGuild(msg.guild.id);
                     let ccommands = Object.keys(storedGuild.ccommands);
                     let output = (ccommands && ccommands.length > 0)
-                                    ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` `
-                                    : `There are no custom commands on this guild.`;
-                    bu.send(msg,output);
+                        ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` `
+                        : `There are no custom commands on this guild.`;
+                    bu.send(msg, output);
                 case 'sethelp':
                     if (words.length > 3) {
                         title = filterTitle(words[2]);
@@ -359,6 +365,7 @@ class CcommandCommand extends BaseCommand {
                             tagName: 'test',
                             isCC: true,
                             author: msg.author.id,
+                            authorizer: msg.author.id,
                             modResult(context, text) {
                                 function formatDuration(duration) {
                                     return duration.asSeconds() >= 5 ?
@@ -381,7 +388,7 @@ class CcommandCommand extends BaseCommand {
                     break;
                 case 'debug':
                     let result = await bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3));
-                    await bu.send(result.context.msg, null, bbtag.generateDebug(result.code, result.context, result.result));
+                    await bu.send(result.context.msg, undefined, bbtag.generateDebug(result.code, result.context));
 
                     break;
                 default:

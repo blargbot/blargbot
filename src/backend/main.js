@@ -2,32 +2,37 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-19 15:48:37
+ * @Last Modified time: 2018-07-11 10:21:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 var e = module.exports = {};
 
-const router = dep.express.Router();
-const app = dep.express();
-
-const Strategy = dep.Strategy;
-
+const express = require('express');
+const router = express.Router();
+const app = express();
+const { Strategy } = require('passport-discord');
 const helpers = require('./helpers');
-app.use(dep.bodyParser.json());
-app.use(dep.bodyParser.urlencoded({ // to support URL-encoded bodies
+const path = require('path');
+const passport = require('passport');
+const session = require('express-session');
+const http = require('http');
+const bodyParser = require('body-parser');
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
     limit: '50mb',
     extended: true
 }));
 
 app.set('view engine', 'hbs');
-app.set('views', dep.path.join(__dirname, 'views'));
-app.use(dep.express.static(dep.path.join(__dirname, 'public')));
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 helpers.init();
 
-const server = app.server = dep.http.createServer(app);
+const server = app.server = http.createServer(app);
 require('./websocket.js').init(server);
 
 var scopes = ['identify', 'guilds'];
@@ -44,13 +49,13 @@ e.init = () => {
         return sessionUserMap[sessionId];
     };
 
-    dep.passport.serializeUser(function (user, done) {
+    passport.serializeUser(function (user, done) {
         done(null, user);
     });
-    dep.passport.deserializeUser(function (obj, done) {
+    passport.deserializeUser(function (obj, done) {
         done(null, obj);
     });
-    dep.passport.use(new Strategy({
+    passport.use(new Strategy({
         clientID: config.website.clientid,
         clientSecret: config.website.secret,
         callbackURL: config.website.callback,
@@ -60,7 +65,7 @@ e.init = () => {
             return done(null, profile);
         });
     }));
-    app.use(dep.session({
+    app.use(session({
         secret: config.website.sessionsecret,
         resave: false,
         saveUninitialized: true,
@@ -71,13 +76,13 @@ e.init = () => {
         }
     }));
 
-    app.use(dep.passport.initialize());
-    app.use(dep.passport.session());
-    app.get('/login', dep.passport.authenticate('discord', {
+    app.use(passport.initialize());
+    app.use(passport.session());
+    app.get('/login', passport.authenticate('discord', {
         scope: scopes
     }), function (req, res) { });
     app.get('/callback',
-        dep.passport.authenticate('discord', {
+        passport.authenticate('discord', {
             failureRedirect: '/'
         }),
         function (req, res) {
@@ -131,6 +136,10 @@ e.init = () => {
             console.error(err);
             res.send('heck off');
         }
+    });
+    app.get('/feedback/:id', async function (req, res) {
+        let url = 'https://airtable.com/shrEUdEv4NM04Wi7O/tblyFuWE6fEAbaOfo/viwDg5WovcwMA9NIL/' + req.params.id;
+        res.redirect(url);
     })
 
     app.use('/', require('./routes/index'));

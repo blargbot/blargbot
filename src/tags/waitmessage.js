@@ -8,11 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    bbengine = require('../structures/BBTagEngine');
-
-function quickErr(text) {
-    return (subtag, context) => Builder.util.error(subtag, context, text);
-}
+    bbengine = require('../structures/bbtag/Engine');
 
 const overrideSubtags = [
     // API subtags
@@ -43,7 +39,7 @@ const overrideSubtags = [
 ];
 
 module.exports =
-    Builder.AutoTag('waitmessage')
+    Builder.APITag('waitmessage')
         .withArgs(a => [
             a.optional('channels'),
             a.optional('users'),
@@ -84,7 +80,7 @@ module.exports =
             // parse users
             if (args[1]) {
                 users = Builder.util.flattenArgArrays([args[1]]);
-                users = await Promise.all(users.map(async input => await bu.getUser(context.msg, input, { quiet: true, suppress: true })));
+                users = await Promise.all(users.map(async input => await context.getUser(input, { quiet: true, suppress: true })));
                 if (users.find(user => user == null))
                     return Builder.errors.noUserFound(subtag, context);
                 users = users.map(user => user.id);
@@ -140,7 +136,7 @@ module.exports =
                         }));
                     }
                     let childContext = makeChild(...args);
-                    let result = await bbengine.execute(checkBBtag, childContext);
+                    let result = await this.executeArg(subtag, checkBBtag, childContext);
                     context.errors.push(...childContext.errors);
                     let bool = bu.parseBoolean(result.trim());
                     if (bool == null)
@@ -156,6 +152,6 @@ module.exports =
                         override.revert();
                     }
                 }
-            };
+            }.bind(this);
         })
         .build();

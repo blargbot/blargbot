@@ -2,14 +2,14 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-10-25 16:38:38
+ * @Last Modified time: 2018-07-12 22:18:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-bot.on('guildMemberUpdate', (guild, member, oldMember) => {
+bot.on('guildMemberUpdate', async (guild, member, oldMember) => {
     if (member && oldMember) {
-        if (member.user.id != bot.user.id) {
+        if (member.user.id !== bot.user.id) {
             bu.processUser(member.user);
             if (member.nick != oldMember.nick) {
                 let fields = [];
@@ -30,12 +30,42 @@ bot.on('guildMemberUpdate', (guild, member, oldMember) => {
                     inline: true
                 });
 
-                bu.logEvent(guild.id, 'nickupdate', fields, {
+                bu.logEvent(guild.id, member.user.id, 'nickupdate', fields, {
                     thumbnail: {
                         url: member.user.avatarURL
                     },
                     description
                 });
+            }
+
+            let newRoles = member.roles.filter(r => !oldMember.roles.includes(r)).map(r => ({ id: r, s: 'role:' + r + ':add' }));
+
+            let remRoles = oldMember.roles.filter(r => !member.roles.includes(r)).map(r => ({ id: r, s: 'role:' + r + ':remove' }));
+
+            let roles = [].concat(newRoles, remRoles);
+
+            console.log(roles);
+
+            let e = await bu.getAudit(guild.id, member.user.id, 25);
+
+            for (const role of roles) {
+                let r = guild.roles.get(role.id);
+                let fields = [{
+                    name: 'User',
+                    value: `${member.user.username}#${member.user.discriminator} (${member.user.id})`
+                }, {
+                    name: 'Role',
+                    value: `<@&${r.id}> (${r.id})`
+                }];
+                if (e && e.user.id !== member.user.id) fields.push({
+                    name: 'Updated By',
+                    value: `${bu.getFullName(e.user)} (${e.user.id})`
+                });
+                if (e && e.reason) fields.push({
+                    name: 'Reason',
+                    value: e.reason
+                });
+                bu.logEvent(guild.id, member.user.id, role.s, fields);
             }
         }
     }

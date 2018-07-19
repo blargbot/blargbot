@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class UnbanCommand extends BaseCommand {
     constructor() {
@@ -40,7 +41,7 @@ class UnbanCommand extends BaseCommand {
                 };
 
                 try {
-                    await bot.unbanGuildMember(msg.channel.guild.id, user, 'Unbanned by ' + bu.getFullName(msg.author) + (reason ? ' with reason: ' + reason : ''));
+                    await bot.unbanGuildMember(msg.channel.guild.id, user, `[ ${bu.getFullName(msg.author)} ]` + (reason ? ' ' + reason : ''));
                     return [':ok_hand:', true];
                 } catch (err) {
                     return [`Failed to unban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, false];
@@ -57,7 +58,7 @@ class UnbanCommand extends BaseCommand {
         if (!bu.unbans[args.guild]) bu.unbans[args.guild] = {};
         bu.unbans[args.guild][args.user] = {
             mod: bot.user.id,
-            reason: `Automatically unbanned after ${dep.moment.duration(args.duration).humanize()}.`
+            reason: `Automatically unbanned after ${moment.duration(args.duration).humanize()}.`
         };
         await bot.unbanGuildMember(args.guild, args.user, 'Automatic unban after time');
     }

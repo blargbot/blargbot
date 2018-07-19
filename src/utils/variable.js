@@ -24,6 +24,8 @@ bu.messageStats = 0;
 bu.awaitMessages = {};
 // A map of reactions to wait for
 bu.awaitReactions = {};
+// A map containing the rwlocks for tags
+bu.tagLocks = {};
 bu.stats = {};
 bu.cleverStats = {};
 

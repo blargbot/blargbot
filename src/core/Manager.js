@@ -7,6 +7,10 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const path = require('path');
+const fs = require('fs');
+const reload = require('require-reload')(require);
+
 class Manager {
 
     constructor(type, removeListeners, init = true) {
@@ -18,16 +22,23 @@ class Manager {
             this.init();
     }
 
+    log(id, ...text) {
+        if (id === null || id === undefined)
+            id = '';
+        id = '' + id;
+        console.module(id.padStart(6, ' '), ...text);
+    }
+
     init() {
-        var fileArray = dep.fs.readdirSync(dep.path.join(__dirname, '..', this.type));
+        var fileArray = fs.readdirSync(path.join(__dirname, '..', this.type));
         for (var i = 0; i < fileArray.length; i++) {
             var file = fileArray[i];
             if (/.+\.js$/.test(file)) {
                 var name = file.match(/(.+)\.js$/)[1];
+                this.log(`${i}.`, 'Loading', this.type, 'module', name);
                 this.load(name);
-                console.module(`${i < 10 ? ' ' : ''}${i}.`, 'Loading', this.type, ' module ', name);
             } else {
-                console.module('     Skipping non-script ', file);
+                this.log('', 'Skipping non-script', file);
             }
         }
     }
@@ -48,12 +59,14 @@ class Manager {
             if (typeof mod.init == 'function') mod.init();
             else if (!mod.prototype && mod.name !== undefined) name = mod.name;
             this.list[name] = mod;
-            for (const alias of mod.aliases || [])
+            for (const alias of mod.aliases || []) {
+                this.log('', 'Loading alias', alias, 'for', name);
                 this.aliases[alias] = name;
+            }
             return true;
         } catch (err) {
             console.error(err.stack);
-            console.module('Failed to load' + this.type, name);
+            this.log('', 'Failed to load' + this.type, name);
         }
         return false;
     }
@@ -68,7 +81,7 @@ class Manager {
             delete this.list[name];
             for (const alias of mod.aliases || [])
                 delete this.aliases[alias];
-            console.module('Unloaded', this.type, name);
+            this.log('', 'Unloaded', this.type, name);
             return true;
         }
         return false;
@@ -79,7 +92,7 @@ class Manager {
             if (this.list.hasOwnProperty(name)) {
                 if (this.removeListeners)
                     bot.removeAllListeners(name);
-                this.list[name] = dep.reload(this.constructPath(name));
+                this.list[name] = reload(this.constructPath(name));
                 if (typeof this.list[name].init == 'function') this.list[name].init();
 
                 return true;

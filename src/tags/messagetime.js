@@ -8,9 +8,10 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const moment = require('moment-timezone');
 
 module.exports =
-    Builder.AutoTag('messagetime')
+    Builder.APITag('messagetime')
         .withAlias('timestamp')
         .withArgs(a => [a.optional([a.optional('channel'), a.require('messageid')]), a.optional('format')])
         .withDesc('Returns the send time of the given message in the given channel using the given format.' +
@@ -52,7 +53,7 @@ module.exports =
             }
             if (message == null)
                 return Builder.errors.noMessageFound(subtag, context);
-            return dep.moment(message.timestamp).format(format);
+            return moment(message.timestamp).format(format);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

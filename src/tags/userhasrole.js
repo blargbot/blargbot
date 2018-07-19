@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('userhasrole')
+    Builder.APITag('userhasrole')
         .withAlias('hasrole')
         .acceptsArrays()
         .withArgs(a => [a.require('roleids'), a.optional('user'), a.optional('quiet')])
@@ -47,7 +47,7 @@ module.exports =
 
             roleText = [roleText];
             if (userText) {
-                result.user = await bu.getUser(context.msg, userText, {
+                result.user = await context.getUser(userText, {
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });

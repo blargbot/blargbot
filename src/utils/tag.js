@@ -2,12 +2,13 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-04-01 22:30:18
+ * @Last Modified time: 2018-07-12 21:37:32
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const bbEngine = require('../structures/BBTagEngine');
+const bbEngine = require('../structures/bbtag/Engine'),
+    ReadWriteLock = require('rwlock');
 
 bu.serializeTagArray = function (array, varName) {
     if (!varName)
@@ -78,107 +79,89 @@ bu.getArray = async function (context, arrName) {
     }
 };
 
+function getQuery(name, key, type, guildId) {
+    let query = {
+        type: null, name: key.substring(0, 255), scope: null
+    };
+
+    switch (type) {
+        case bu.TagVariableType.GUILD:
+            query.type = 'GUILD_CC';
+            query.scope = name;
+            break;
+        case bu.TagVariableType.GUILDLOCAL:
+            query.type = 'LOCAL_CC';
+            query.scope = guildId + '_' + name;
+            break;
+        case bu.TagVariableType.TAGGUILD:
+            query.type = 'GUILD_TAG';
+            query.scope = name;
+            break;
+        case bu.TagVariableType.AUTHOR:
+            query.type = 'AUTHOR';
+            query.scope = name;
+            break;
+        case bu.TagVariableType.LOCAL:
+            query.type = 'LOCAL_TAG';
+            query.scope = name;
+            break;
+        case bu.TagVariableType.GLOBAL:
+            query.type = 'GLOBAL';
+            query.scope = '';
+            break;
+    }
+    if (query.scope === null) {
+        query.scope = '';
+        console.info(type, key, name, guildId);
+    }
+    if (typeof query.scope === 'string')
+        query.scope = query.scope.substring(0, 255);
+    return query;
+}
+
 bu.setVariable = async function (name, values, type, guildId) {
     let vars = values;
     let updateObj = {};
     let storedThing;
 
-    switch (type) {
-        case bu.TagVariableType.GUILDLOCAL:
-            updateObj.ccommands = {};
-            updateObj.ccommands[name] = {};
-            updateObj.ccommands[name].vars = vars;
-            await r.table('guild').get(guildId).update(updateObj);
-            storedThing = await bu.getGuild(guildId);
-            if (!storedThing.ccommands) storedThing.ccommands = {};
-            if (!storedThing.ccommands[name]) storedThing.ccommands[name] = {};
-            if (!storedThing.ccommands[name].vars) storedThing.ccommands[name].vars = {};
-            for (const key in vars) {
-                storedThing.ccommands[name].vars[key] = vars[key];
+    let vals = [];
+    let trans = await bot.database.sequelize.transaction();
+    for (const key in values) {
+        let query = getQuery(name, key, type, guildId);
+        let val = values[key];
+        val = JSON.stringify(val);
+        query.content = val;
+        try {
+            await bot.models.BBTagVariable.upsert(query);
+        } catch (err) {
+            console.error(err);
+            if (err.errors) {
+                for (const e of err.errors)
+                    console.error(e.path, e.validatorKey, e.value);
             }
-            break;
-        case bu.TagVariableType.TAGGUILD:
-            updateObj.tagVars = vars;
-            await r.table('guild').get(name).update(updateObj);
-            storedThing = await bu.getGuild(name);
-            if (!storedThing.tagVars) storedThing.tagVars = {};
-            for (const key in vars) {
-                storedThing.tagVars[key] = vars[key];
-            }
-            break;
-        case bu.TagVariableType.GLOBAL:
-            await r.table('vars').update({
-                varname: 'tagVars',
-                values
-            });
-            for (const key in vars) {
-                bu.globalVars[key] = vars[key];
-
-            }
-            break;
-        default:
-            updateObj.vars = vars;
-            await r.table(bu.TagVariableType.properties[type].table).get(name).update(updateObj);
-            switch (type) {
-                case bu.TagVariableType.GUILD:
-                    storedThing = await bu.getGuild(name);
-                    break;
-                case bu.TagVariableType.LOCAL:
-                    storedThing = await bu.getCachedTag(name);
-                    break;
-                case bu.TagVariableType.AUTHOR:
-                    storedThing = await bu.getCachedUser(name);
-                    break;
-            }
-            if (!storedThing.vars) storedThing.vars = {};
-            for (const key in vars) {
-                storedThing.vars[key] = vars[key];
-            }
-            break;
+            console.info(query);
+        }
     }
+    return await trans.commit();
 };
 
 bu.getVariable = async function (name, key, type, guildId) {
-    let storedThing;
-    let returnVar;
-    switch (type) {
-        case bu.TagVariableType.GUILD:
-            storedThing = await bu.getGuild(name);
-            if (!storedThing.vars) storedThing.vars = {};
-            returnVar = storedThing.vars[key];
-            break;
-        case bu.TagVariableType.GUILDLOCAL:
-            storedThing = await bu.getGuild(guildId);
-            if (!storedThing.ccommands[name]) storedThing.ccommands[name] = {};
-            if (!storedThing.ccommands[name].vars) storedThing.ccommands[name].vars = {};
-            returnVar = storedThing.ccommands[name].vars[key];
-            break;
-        case bu.TagVariableType.TAGGUILD:
-            storedThing = await bu.getGuild(name);
-            if (!storedThing.tagVars) storedThing.tagVars = {};
-            returnVar = storedThing.tagVars[key];
-            break;
-        case bu.TagVariableType.AUTHOR:
-            storedThing = await bu.getCachedUser(name);
-            if (!storedThing.vars) storedThing.vars = {};
-            returnVar = storedThing.vars[key];
-            break;
-        case bu.TagVariableType.LOCAL:
-            storedThing = await bu.getCachedTag(name);
-            if (!storedThing.vars) storedThing.vars = {};
-            returnVar = storedThing.vars[key];
-            break;
-        case bu.TagVariableType.GLOBAL:
-            returnVar = await bu.getCachedGlobal(key);
-            break;
-        default:
-            storedThing = await r.table(bu.TagVariableType.properties[type].table).get(name);
-            if (!storedThing.vars)
-                storedThing.vars = {};
-            returnVar = storedThing.vars[key];
-            break;
+    let query = getQuery(name, key, type, guildId);
+
+    let v = await bot.models.BBTagVariable.findOne({
+        where: query
+    });
+    let result;
+    if (v) {
+        result = v.get('content');
+        // try parsing to a json value
+        try {
+            result = JSON.parse(result);
+        } catch (err) { /* no-op */ }
+
+        return result;
     }
-    return returnVar;
+    else return null;
 };
 
 bu.tagVariableScopes = [
@@ -193,7 +176,8 @@ bu.tagVariableScopes = [
                 context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
         getter: async (context, name) =>
             await bu.getVariable(context.guild.id, name,
-                context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD)
+                context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
+        getLock: (context, key) => bu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
     },
     {
         name: 'Author',
@@ -209,7 +193,8 @@ bu.tagVariableScopes = [
             if (context.author)
                 return await bu.getVariable(context.author, name, bu.TagVariableType.AUTHOR);
             return bbEngine.addError({}, context, '`No author found`');
-        }
+        },
+        getLock: (context, key) => bu.getLock(...['AUTHOR', context.author.id, key])
     },
     {
         name: 'Global',
@@ -219,7 +204,8 @@ bu.tagVariableScopes = [
         setter: async (context, values) =>
             await bu.setVariable(undefined, values, bu.TagVariableType.GLOBAL),
         getter: async (context, name) =>
-            await bu.getVariable(undefined, name, bu.TagVariableType.GLOBAL)
+            await bu.getVariable(undefined, name, bu.TagVariableType.GLOBAL),
+        getLock: (context, key) => bu.getLock(...['GLOBAL', key])
     },
     {
         name: 'Temporary',
@@ -227,7 +213,8 @@ bu.tagVariableScopes = [
         description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
             'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type',
         setter: async (context, values) => { return ''; }, //Temporary is never persisted to the database
-        getter: async (context, name) => { } //Temporary is never persisted to the database
+        getter: async (context, name) => { }, //Temporary is never persisted to the database
+        getLock: (context, key) => context.getLock(key)
     },
     {
         name: 'Local',
@@ -244,6 +231,19 @@ bu.tagVariableScopes = [
             if (context.isCC)
                 return await bu.getVariable(context.tagName, name, bu.TagVariableType.GUILDLOCAL, context.guild.id);
             return await bu.getVariable(context.tagName, name, bu.TagVariableType.LOCAL);
-        }
+        },
+        getLock: (context, key) => bu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', context.tagName])
     }
 ];
+
+bu.getLock = function (...path) {
+    let key = path.slice(-1)[0];
+    path = path.slice(0, -1);
+
+    let node = bu.tagLocks || (bu.tagLocks = {});
+
+    for (const entry of path)
+        node = node[entry] || (node[entry] = {});
+
+    return node[key] || (node[key] = new ReadWriteLock());
+};

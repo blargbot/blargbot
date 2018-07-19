@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class MuteCommand extends BaseCommand {
     constructor() {
@@ -90,13 +91,14 @@ class MuteCommand extends BaseCommand {
                         try {
                             var roles = member.roles;
                             roles.push(mutedrole);
+                            let reason;
+                            let input = bu.parseInput(this.flags, words);
+                            if (input.r) reason = input.r.join(' ');
                             await bot.editGuildMember(msg.channel.guild.id, user.id, {
                                 roles: roles,
                                 mute: voiceMute ? true : undefined
-                            });
-                            let input = bu.parseInput(this.flags, words);
-                            let reason;
-                            if (input.r) reason = input.r.join(' ');
+                            }, `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`);
+
                             bu.logAction(msg.channel.guild, user, msg.author, 'Mute', reason, bu.ModLogColour.MUTE);
                             let suffix = '';
                             if (input.t) {
@@ -104,11 +106,14 @@ class MuteCommand extends BaseCommand {
                                 if (duration.asMilliseconds() > 0) {
                                     await r.table('events').insert({
                                         type: 'unmute',
+                                        source: msg.guild.id,
                                         user: user.id,
+                                        content: `${user.username}#${user.discriminator}`,
                                         guild: msg.guild.id,
                                         duration: duration.toJSON(),
                                         role: mutedrole,
-                                        endtime: r.epochTime(dep.moment().add(duration).unix())
+                                        endtime: r.epochTime(moment().add(duration).unix()),
+                                        starttime: r.epochTime(moment().unix())
                                     });
                                     suffix = `The user will be unmuted ${duration.humanize(true)}.`;
                                 } else {

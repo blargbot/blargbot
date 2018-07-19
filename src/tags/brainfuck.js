@@ -8,6 +8,8 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const Brainfuck = require('brainfuck-node');
+const bfClient = new Brainfuck();
 
 module.exports =
     Builder.AutoTag('brainfuck')
@@ -20,7 +22,7 @@ module.exports =
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             try {
-                return await bu.filterMentions((dep.brainfuck.execute(...args)).output);
+                return await bu.filterMentions((bfClient.execute(...args)).output);
             } catch (e) {
                 return Builder.util.error(subtag, context, e.message);
             }

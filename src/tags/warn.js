@@ -14,21 +14,25 @@ module.exports =
         .requireStaff()
         .withArgs(a => [a.optional('user'), a.optional('count'), a.optional('reason')])
         .withDesc('Gives `user` the specified number of warnings with the given reason, and returns their new warning count. ' +
-        '`user` defaults to the user who executed the containing tag. `count` defaults to 1.')
+            '`user` defaults to the authorizer of the tag. `count` defaults to 1.')
         .withExample(
-        'Be warned! {warn}',
-        'Be warned! 1'
+            'Be warned! {warn}',
+            'Be warned! 1'
         )
         .whenArgs('0-3', async function (subtag, context, args) {
-            let user = context.user,
+            let user = context.authorizer,
                 count = bu.parseInt(args[1] || 1),
                 reason = args[2];
 
             if (args[0])
-                user = await bu.getUser(context.msg, args[0], {
+                user = await context.getUser(args[0], {
                     suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });
+
+            if (typeof user === 'number') {
+                user = bot.users.get(user);
+            }
 
             if (user == null)
                 return Builder.errors.noUserFound(subtag, context);

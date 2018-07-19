@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('rolesize')
+    Builder.APITag('rolesize')
         .withAlias('inrole')
         .withArgs(a => a.require('roleId'))
         .withDesc('Returns how many people have the `roleId` role.')

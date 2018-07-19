@@ -2,17 +2,21 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-14 12:20:59
+ * @Last Modified time: 2018-07-16 09:16:50
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const colors = require('../../res/colors') || {},
-    snekfetch = require('snekfetch'),
-    unorm = require('unorm'),
-    limax = require('limax'),
-    User = require('eris/lib/structures/User'),
-    emojiRegex = `👁|${require('emoji-regex')().source}|<a?:\\w+:\\d{17,23}>`;
+const colors = require('../../res/colors') || {};
+const moment = require('moment-timezone');
+const snekfetch = require('snekfetch');
+const unorm = require('unorm');
+const limax = require('limax');
+const { User, Channel, Member, Message, Permission } = require('eris');
+const twemoji = require('twemoji');
+const request = require('request');
+const isSafeRegex = require('safe-regex');
+const { emojify } = require('node-emoji');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -30,7 +34,7 @@ bu.awaitQuery = async function (msg, content, check, timeout, label) {
 bu.createQuery = async function (msg, content, check, timeout, label) {
     if (timeout == null || typeof timeout != "number")
         timeout = 300000;
-    let timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${dep.moment.duration(timeout).humanize()}.`;
+    let timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${moment.duration(timeout).humanize()}.`;
     return bu.createPrompt(msg, content, check, timeout, timeoutMessage);
 };
 
@@ -195,7 +199,7 @@ function getId(text) {
  */
 bu.hasPerm = async (msg, perm, quiet, override = true) => {
     let member;
-    if (msg instanceof dep.Eris.Member) {
+    if (msg instanceof Member) {
         member = msg;
     } else {
         if (!msg.channel.guild) return true;
@@ -248,7 +252,7 @@ bu.hasPerm = async (msg, perm, quiet, override = true) => {
 
 bu.hasRole = (msg, roles, override = true) => {
     let member;
-    if (msg instanceof dep.Eris.Member) {
+    if (msg instanceof Member) {
         member = msg;
     } else {
         if (!msg.channel.guild) return true;
@@ -270,20 +274,20 @@ bu.hasRole = (msg, roles, override = true) => {
     return false;
 };
 
-bu.addReactions = async function addReactions(channelId, messageId, reactions) {
-    let errored = [];
+bu.addReactions = async function (channelId, messageId, reactions) {
+    let errors = [];
     for (const reaction of new Set(reactions || [])) {
         try {
             await bot.addMessageReaction(channelId, messageId, reaction);
         } catch (e) {
-            if (e.message == 'Unknown Emoji')
-                errored.push(reaction);
-            else
-                throw e;
+            errors.push({ error: e, reaction });
         }
     }
 
-    return errored;
+    let failure;
+    if (failure = errors.find(e => e.error.message != 'Unknown Emoji'))
+        throw failure;
+    return errors.map(e => e.reaction);
 };
 
 /**
@@ -301,7 +305,7 @@ bu.send = async function (context, payload, files) {
         case "string":
             channel = await bot.getChannel(context);
             if (!channel)
-                channel = { id: context };
+                channel = new Channel({ id: context });
             break;
         case "object":
             // Probably a message provided
@@ -319,12 +323,18 @@ bu.send = async function (context, payload, files) {
     }
 
     if (channel == null) throw new Error("Channel not found");
-
-
     switch (typeof payload) {
         case "string": payload = { content: payload }; break;
         case "object": break;
         default: payload = {};
+    }
+
+    if ('permissionsOf' in channel &&
+        payload.embed &&
+        'asString' in payload.embed &&
+        !channel.permissionsOf(bot.user.id).has('embedLinks')) {
+        payload.content = (payload.content || '') + payload.embed.asString;
+        delete payload.embed;
     }
 
     if (files != null && !Array.isArray(files))
@@ -359,7 +369,7 @@ bu.send = async function (context, payload, files) {
         if (!bu.send.catch.hasOwnProperty(response.code))
             return console.error(error.response, error.stack);
 
-        let result = await bu.send.catch[response.code](channel, payload);
+        let result = await bu.send.catch[response.code](channel, payload, files);
         if (typeof result === 'string' && message && await bu.canDmErrors(message.author.id)) {
             if (message.guild) result += `\nGuild: ${message.guild.name} (${message.guild.id})`;
             result += `\nChannel: ${message.channel.name} (${message.channel.id})`;
@@ -368,6 +378,8 @@ bu.send = async function (context, payload, files) {
             result += '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.';
 
             await bu.sendDM(message.author.id, result);
+        } else if (typeof result === 'object' && 'id' in result) {
+            return result;
         }
     });
 };
@@ -416,7 +428,7 @@ bu.canDmErrors = async function (userId) {
  */
 bu.sendDM = async function (user, message, file) {
     let userid = user;
-    if (user instanceof dep.Eris.Message) {
+    if (user instanceof Message) {
         userid = user.author.id;
     }
     if (message.length == 0) {
@@ -424,7 +436,7 @@ bu.sendDM = async function (user, message, file) {
         return Error('No content');
     }
     bu.messageStats++;
-    message = dep.emoji.emojify(message);
+    message = emojify(message);
 
     if (message.length > 2000) {
         message = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
@@ -541,8 +553,10 @@ bu.getUser = async function (msg, name, args = {}) {
     if (userList.length == 1) {
         return userList[0].user;
     } else if (userList.length == 0) {
-        if (!args.quiet && !args.suppress)
+        if (!args.quiet && !args.suppress) {
+            if (args.onSendCallback) args.onSendCallback();
             bu.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
+        }
         return null;
     } else {
         if (!args.quiet) {
@@ -556,6 +570,7 @@ bu.getUser = async function (msg, name, args = {}) {
             }
             let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
             try {
+                if (args.onSendCallback) args.onSendCallback();
                 let query = await bu.createQuery(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
 ${userListString}${moreUserString}--------------------
 C.cancel query
@@ -570,8 +585,10 @@ C.cancel query
                 let response = await query.response;
                 if (response.content.toLowerCase() == 'c') {
                     await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
-                    if (!args.suppress)
+                    if (!args.suppress) {
+                        if (args.onSendCallback) args.onSendCallback();
                         bu.send(msg, `Query canceled${args.label ? ' in ' + args.label : ''}.`);
+                    }
                     return null;
                 } else {
                     await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
@@ -709,7 +726,7 @@ bu.sendFile = (channelid, message, url) => {
     var i = url.lastIndexOf('/');
     if (i != -1) {
         var filename = url.substring(i + 1, url.length);
-        dep.request({
+        request({
             uri: url,
             encoding: null
         }, function (err, res, body) {
@@ -728,7 +745,7 @@ bu.sendFile = (channelid, message, url) => {
  * @returns {string}
  */
 bu.createTimeDiffString = (moment1, moment2) => {
-    var diff = dep.moment.duration(moment1.diff(moment2));
+    var diff = moment.duration(moment1.diff(moment2));
     return `${diff.days() > 0 ? diff.days() + ' days, ' : ''}${diff.hours() > 0 ? diff.hours() + ' hours, ' : ''}${diff.minutes()} minutes, and ${diff.seconds()} seconds`;
 };
 
@@ -783,7 +800,7 @@ bu.logAction = async function (guild, user, mod, type, reason, color = 0x17c484,
                 value: reason,
                 inline: true
             }],
-            timestamp: dep.moment()
+            timestamp: moment()
         };
         if (fields != undefined && Array.isArray(fields)) {
             for (const field of fields) {
@@ -855,12 +872,12 @@ bu.issueWarning = async function (user, guild, count, params) {
                 type: 'Auto-Ban',
                 reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`
             };
-            await guild.banMember(user.id);
+            await guild.banMember(user.id, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
             storedGuild.warnings.users[user.id] = undefined;
             type = 1;
         } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
-            await bu.logAction(guild, user, bot.user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`, bu.ModLogColour.KICK);
-            await guild.kickMember(user.id);
+            // await bu.logAction(guild, user, bot.user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`, bu.ModLogColour.KICK);
+            await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
             type = 2;
         }
     await r.table('guild').get(guild.id).update({
@@ -891,7 +908,7 @@ bu.issuePardon = async function (user, guild, count, params) {
 
 bu.comparePerms = (m, allow) => {
     if (!allow) allow = bu.defaultStaff;
-    let newPerm = new dep.Eris.Permission(allow);
+    let newPerm = new Permission(allow);
     for (let key in newPerm.json) {
         if (m.permission.has(key)) {
             return true;
@@ -1048,14 +1065,30 @@ bu.padRight = (value, length) => {
     return (value.toString().length < length) ? bu.padRight(value + ' ', length) : value;
 };
 
-bu.logEvent = async function (guildid, event, fields, embed) {
+bu.logEvent = async function (guildid, userids, event, fields, embed) {
     let storedGuild = await bu.getGuild(guildid);
-    if (!storedGuild.hasOwnProperty('log'))
-        storedGuild.log = {};
+    if (!storedGuild.hasOwnProperty('log')) storedGuild.log = {};
+    if (!storedGuild.hasOwnProperty('logIgnore')) storedGuild.logIgnore = [];
+    if (!Array.isArray(userids)) userids = [userids];
+    // If there are not any userId's that are not contained in the ignore, then return
+    // I.e. if all the users are contained in the ignore list
+    if (!userids.find(id => !storedGuild.logIgnore.includes(id)))
+        return;
+    event = event.toLowerCase();
+
+    let roleAdd = false;
+    let roleId;
+    if (event.startsWith('role:')) {
+        let c = event.split(':');
+        roleId = c[1];
+        roleAdd = c[2] === 'add';
+        event = c.slice(0, 2).join(':');
+    }
+
     if (storedGuild.log.hasOwnProperty(event)) {
         let color;
         let eventName;
-        switch (event.toLowerCase()) {
+        switch (event) {
             case 'messagedelete':
                 color = 0xaf1d1d;
                 eventName = 'Message Deleted';
@@ -1092,11 +1125,19 @@ bu.logEvent = async function (guildid, event, fields, embed) {
                 color = 0xcc0c1c;
                 eventName = 'User Was Banned';
                 break;
+            case 'kick':
+                color = 0xe8b022;
+                eventName = 'User Was Kicked';
+            default:
+                if (event.startsWith('role:')) {
+                    eventName = `Special Role ${roleAdd ? 'Added' : 'Removed'}`;
+                }
+                break;
         }
         let channel = storedGuild.log[event];
         if (!embed) embed = {};
-        embed.title = `:information_source: ${eventName}`;
-        embed.timestamp = dep.moment();
+        embed.title = `ℹ ${eventName}`;
+        embed.timestamp = moment();
         embed.fields = fields;
         embed.color = color;
         try {
@@ -1108,6 +1149,23 @@ bu.logEvent = async function (guildid, event, fields, embed) {
             await r.table('guild').get(guildid).replace(storedGuild);
             await bu.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.`);
         }
+    }
+};
+
+bu.getAudit = async function (guildId, targetId, type) {
+    try {
+        let guild = bot.guilds.get(guildId);
+        let user = bot.users.get(targetId);
+        let al = await bot.getGuildAuditLogs(guild.id, 50, null, type);
+        for (const e of al.entries) {
+            if (e.targetID === targetId) {
+                return e;
+            }
+        }
+        return null;
+    } catch (err) {
+        // may not have audit log perms
+        return null;
     }
 };
 
@@ -1155,7 +1213,7 @@ const timeKeywords = {
 };
 
 bu.parseDuration = function (text) {
-    let duration = dep.moment.duration();
+    let duration = moment.duration();
     if (/([0-9]+) ?(day|days|d)/i.test(text))
         duration.add(parseInt(text.match(/([0-9]+) ?(day|days|d)/i)[1]) || 0, 'd');
     if (/([0-9]+) ?(hours|hour|h)/i.test(text))
@@ -1225,7 +1283,7 @@ bu.getPerms = function (channelid) {
 
 bu.request = function (options) {
     return new Promise((fulfill, reject) => {
-        dep.request(options, (err, res, body) => {
+        request(options, (err, res, body) => {
             if (err) {
                 reject(err);
                 return;
@@ -1292,15 +1350,10 @@ bu.isUserStaff = async function (userId, guildId) {
     return false;
 };
 
-bu.makeSnowflake = function (date = Date.now()) {
-    return dep.BigNumber(date).minus(1420070400000).multiply(4194304).toString();
-};
-
-bu.unmakeSnowflake = function (snowflake) {
-    return (snowflake / 4194304) + 1420070400000;
-};
 
 bu.createRegExp = function (term) {
+    if (term.length > 2000)
+        throw new Error('Regex too long');
     if (/^\/?.*\/.*/.test(term)) {
         let regexList = term.match(/^\/?(.*)\/(.*)/);
 
@@ -1308,7 +1361,7 @@ bu.createRegExp = function (term) {
             throw new Error('Unsafe Regex');
 
         let temp = new RegExp(regexList[1], regexList[2]);
-        if (!dep.safe(temp)) {
+        if (!isSafeRegex(temp)) {
             throw new Error('Unsafe Regex');
         }
         return temp;
@@ -1321,9 +1374,9 @@ bu.postStats = function () {
     var stats = {
         server_count: bot.guilds.size,
         shard_count: config.discord.shards,
-        shard_id: process.env.SHARD_ID
+        shard_id: process.env.CLUSTER_ID
     };
-    dep.request.post({
+    request.post({
         'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
         'headers': {
             'content-type': 'application/json',
@@ -1339,7 +1392,7 @@ bu.postStats = function () {
     if (!config.general.isbeta) {
         console.info('Posting to matt');
 
-        dep.request.post({
+        request.post({
             'url': 'https://www.carbonitex.net/discord/data/botdata.php',
             'headers': {
                 'content-type': 'application/json'
@@ -1356,7 +1409,7 @@ bu.postStats = function () {
             if (err) console.error(err);
         });
 
-        dep.request.post({
+        request.post({
             url: `https://discordbots.org/api/bots/${bot.user.id}/stats`,
             json: true,
             headers: {
@@ -1369,7 +1422,7 @@ bu.postStats = function () {
     }
 };
 async function updateStats() {
-    let yesterday = dep.moment().subtract(1, 'day').format('YYYY-MM-DD');
+    let yesterday = moment().subtract(1, 'day').format('YYYY-MM-DD');
     if (!bu.stats[yesterday]) {
         let storedStats = await r.table('vars').get('stats');
         if (!storedStats) {
@@ -1389,7 +1442,7 @@ async function updateStats() {
             };
         }
     }
-    let day = dep.moment().format('YYYY-MM-DD');
+    let day = moment().format('YYYY-MM-DD');
     if (!bu.stats[day]) bu.stats[day] = {};
     bu.stats[day].guilds = bot.guilds.size;
     bu.stats[day].change = bu.stats[day].guilds - bu.stats[yesterday].guilds;
@@ -1576,7 +1629,7 @@ const prettyTimeMagnitudes = {
 };
 
 bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
-    let now = dep.moment.tz(timezone);
+    let now = moment.tz(timezone);
     if (!text) return now;
     switch (text.toLowerCase()) {
         case 'now': return now;
@@ -1595,7 +1648,7 @@ bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
         return now.add(magnitude, quantity);
     }
 
-    return dep.moment.tz(text, format, timezone).utcOffset(0);
+    return moment.tz(text, format, timezone).utcOffset(0);
 };
 
 bu.parseInt = function (s, radix = 10) {
@@ -1615,14 +1668,29 @@ bu.findEmoji = function (text, distinct) {
     let match;
     let result = [];
 
-    let regex = new RegExp(emojiRegex, "gi");
+    // Find custom emotes
+    let regex = /<(a?:\w+:\d{17,23})>/gi;
     while (match = regex.exec(text))
-        result.push(match[0].replace(/[<>]/g, ''));
+        result.push(match[1]);
+
+    // Find twemoji defined emotes
+    twemoji.replace(text, function (match) {
+        result.push(match);
+        return match;
+    });
 
     if (distinct)
         result = [...new Set(result)];
 
-    return result;
+    // Sort by order of appearance
+    result = result.map(r => {
+        return {
+            value: r,
+            index: text.indexOf(r)
+        };
+    });
+
+    return result.sort((a, b) => a.index - b.index).map(r => r.value);
 };
 
 /**

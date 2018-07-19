@@ -6,24 +6,28 @@
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+
+const { Constants } = require('eris');
+
 bu.CAT_ID = config.ownerId;
 
 bu.avatarColours = [
     0x2df952, 0x2df9eb, 0x2d6ef9, 0x852df9, 0xf92dd3, 0xf92d3b, 0xf9b82d, 0xa0f92d
 ];
 
-bu.defaultStaff = dep.Eris.Constants.Permissions.kickMembers +
-    dep.Eris.Constants.Permissions.banMembers +
-    dep.Eris.Constants.Permissions.administrator +
-    dep.Eris.Constants.Permissions.manageChannels +
-    dep.Eris.Constants.Permissions.manageGuild +
-    dep.Eris.Constants.Permissions.manageMessages;
+bu.defaultStaff = Constants.Permissions.kickMembers +
+    Constants.Permissions.banMembers +
+    Constants.Permissions.administrator +
+    Constants.Permissions.manageChannels +
+    Constants.Permissions.manageGuild +
+    Constants.Permissions.manageMessages;
 
 bu.TagType = {
     SIMPLE: 1,
     COMPLEX: 2,
     ARRAY: 3,
     CCOMMAND: 4,
+    API: 5,
     properties: {
         1: {
             name: 'Simple',
@@ -40,6 +44,10 @@ bu.TagType = {
         4: {
             name: 'Custom Command',
             desc: 'Subtags that only work in custom commands.'
+        },
+        5: {
+            name: 'API',
+            desc: 'Subtags that access the discord API to perform operations'
         }
     }
 };

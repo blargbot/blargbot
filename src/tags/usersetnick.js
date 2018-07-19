@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:25:36
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:17:59
+ * @Last Modified time: 2018-07-05 15:15:48
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,7 +25,7 @@ module.exports =
                 user = context.user;
 
             if (args[1])
-                user = await bu.getUser(context.msg, args[1], {
+                user = await context.getUser(args[1], {
                     quiet: false, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });
@@ -39,7 +39,7 @@ module.exports =
                 else
                     await user.edit({
                         nick: nick
-                    });
+                    }, context.scope.reason || undefined);
             } catch (err) {
                 return Builder.util.error(subtag, context, 'Could not change nickname');
             }

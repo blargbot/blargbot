@@ -14,7 +14,7 @@ module.exports =
         .withArgs(a => [a.require('text'), a.require('length'), a.optional('filler'), a.optional('direction')])
         .withDesc('Pads `text` using `filler` until it has `length` characters. `filler` is applied to the `direction` of `text` ' +
             '`filler` defaults to space, `direction` defaults to right.\n\n' +
-            'This is how padding <em>should</em> be implemented, and the {pad} subtag is a sucks. ' +
+            'This is how padding *should* be implemented, and the {pad} subtag is a sucks. ' +
             'The past me who thought it would be a good idea is also a sucks.')
         .withExample(
             '{realpad;ABC;6;0;left}',

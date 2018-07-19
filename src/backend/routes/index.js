@@ -7,16 +7,16 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const router = dep.express.Router();
+const router = require('express').Router();
 
 router.get('/', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = req.path;
     let date = new Date(Date.now());
-    if (date.getMonth() === 6 && date.getDate() === 12)
-        res.render('bsod-netneut')
-    else
-        res.render('index');
+    // if (date.getMonth() === 6 && date.getDate() === 12)
+    //     res.render('bsod-netneut')
+    // else
+    res.render('index');
 });
 
 router.get('/shards', (req, res) => {

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:18:57
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-01 21:55:48
+ * @Last Modified time: 2018-06-28 09:42:30
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -24,11 +24,10 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
         if (!oldmsg) {
 
             let storedMsg = await bu.getChatlog(msg.id);
-            if (storedMsg.length > 0) {
+            if (storedMsg) {
 
                 // console.debug('Somebody deleted an uncached message, but we found it in the DB.', storedMsg);
                 oldmsg = {};
-                storedMsg = storedMsg[0];
                 oldmsg.content = storedMsg.content;
                 oldmsg.author = bot.users.get(storedMsg.userid) || {
                     id: storedMsg.userid
@@ -42,10 +41,11 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
                 if (storedMsg.attachment) oldmsg.attachments = [{
                     url: storedMsg.attachment
                 }];
+                msg.embeds = storedMsg.embeds;
                 oldmsg.channel = bot.getChannel(msg.channel.id);
 
             } else {
-                console.debug('Somebody deleted an uncached message and unstored message.');
+                console.debug('Somebody updated an uncached message and unstored message.');
                 return;
             }
         }
@@ -69,7 +69,7 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
             if (newMsg.length > 900) newMsg = newMsg.substring(0, 900) + '... (too long to display)';
         }
         if (msg.guild) {
-            await bu.logEvent(msg.guild.id, 'messageupdate', [{
+            await bu.logEvent(msg.guild.id, msg.author.id, 'messageupdate', [{
                 name: 'User',
                 value: msg.author ? bu.getFullName(msg.author) + ` (${msg.author.id})` : 'Undefined',
                 inline: true

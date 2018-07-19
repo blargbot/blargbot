@@ -2,13 +2,13 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-03 23:01:03
+ * @Last Modified time: 2018-07-16 08:48:26
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const blacklist = require('../../blacklist.json');
-
+const moment = require('moment-timezone');
 
 bot.on('ready', async function () {
     bot.sender.send('ready', bot.guilds.map(g => g.id));
@@ -32,10 +32,10 @@ bot.on('ready', async function () {
         });
     }
 
-    if (process.env.SHARD_ID == 0) {
+    if (process.env.CLUSTER_ID == 0) {
         let restart = await r.table('vars').get('restart').run();
         if (restart && restart.varvalue) {
-            bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(dep.moment(), dep.moment(restart.varvalue.time)) + '.');
+            bu.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + bu.createTimeDiffString(moment(), moment(restart.varvalue.time)) + '.');
             r.table('vars').get('restart').delete().run();
         }
     }
@@ -76,7 +76,7 @@ bot.on('ready', async function () {
     else
         bu.avatarId = 0;
     switchGame();
-    if (process.env.SHARD_ID == 0)
+    if (process.env.CLUSTER_ID == 0)
         switchAvatar();
     bu.postStats();
     if (eventTimer == undefined) {
@@ -120,116 +120,114 @@ var gameId;
  * @param forced - if true, will not set a timeout (Boolean)
  */
 async function switchGame(forced) {
-    for (const shard of bot.shards) {
-        var name = '', type = 0;
-        var oldId = gameId;
-        while (oldId == gameId) {
-            gameId = bu.getRandomInt(0, 11);
-        }
-        switch (dep.moment().format('MM-DD')) {
-            case '04-16':
-                name = 'Happy age++, stupid cat!';
-                break;
-            case '12-25':
-                name = 'Merry Christmas!';
-                break;
-            case '03-17':
-                name = 'Happy St. Patrick\'s day!';
-                break;
-            case '01-01':
-                name = 'Happy New Year\'s!';
-                break;
-            case '07-01':
-                name = 'Happy Canada Day!';
-                break;
-            case '07-04':
-                name = 'Happy Independence Day!';
-                break;
-            case '10-31':
-                name = 'Happy Halloween!';
-                break;
-            case '03-08':
-                name = 'Happy Women\'s Day!';
-                break;
-            case '11-19':
-                name = 'Happy Men\'s Day!';
-                break;
-            case '09-21':
-                name = 'Happy Peace Day!';
-                break;
-            case '05-01':
-                name = 'Happy Labour Day!';
-                break;
-            case '03-14':
-                name = 'Happy Pi Day!';
-                break;
-            case '04-01':
-                name = '👀';
-                break;
-            case '01-25':
-                name = '!yaD etisoppO yppaH';
-                break;
-            case '05-29':
-                name = 'Happy Put-A-Pillow-On-Your-Fridge Day!';
-                break;
-            case '07-27':
-                name = 'Happy Take-Your-Houseplants-For-A-Walk Day!';
-                break;
-            case '05-04':
-                name = 'May the Fourth be with you.';
-                break;
-            case '12-23':
-                name = 'Happy Festivus!';
-                break;
-            default:
-                switch (gameId) {
-                    case 0:
-                        name = `with ${bot.users.size} users!`;
-                        break;
-                    case 1:
-                        type = 2;
-                        name = `${bot.guilds.size} guilds!`;
-                        break;
-                    case 2:
-                        type = 2;
-                        name = `${Object.keys(bot.channelGuildMap).length} channels!`;
-                        break;
-                    case 3:
-                        name = `with tiny bits of string!`;
-                        break;
-                    case 4:
-                        name = `on version ${await bu.getVersion()}!`;
-                        break;
-                    case 5:
-                        name = `type 'b!help'!`;
-                        break;
-                    case 6:
-                        type = 3;
-                        name = `a laser pointer!`;
-                        break;
-                    case 7:
-                        name = `with a mouse!`;
-                        break;
-                    case 8:
-                        name = `with a ball of yarn!`;
-                        break;
-                    case 9:
-                        name = `in a box!`;
-                        break;
-                    case 10:
-                        type = 3;
-                        name = `you on shard ${shard[1].id}!`;
-                        break;
-                    case 11:
-                        type = 2;
-                        name = 'the pitter-patter of tiny feet.';
-                }
-        }
-
-        shard[1].editStatus(null, {
-            name, type
-        });
+    var name = '', type = 0;
+    var oldId = gameId;
+    while (oldId == gameId) {
+        gameId = bu.getRandomInt(0, 11);
     }
+    switch (moment().format('MM-DD')) {
+        case '04-16':
+            name = 'Happy age++, stupid cat!';
+            break;
+        case '12-25':
+            name = 'Merry Christmas!';
+            break;
+        case '03-17':
+            name = 'Happy St. Patrick\'s day!';
+            break;
+        case '01-01':
+            name = 'Happy New Year\'s!';
+            break;
+        case '07-01':
+            name = 'Happy Canada Day!';
+            break;
+        case '07-04':
+            name = 'Happy Independence Day!';
+            break;
+        case '10-31':
+            name = 'Happy Halloween!';
+            break;
+        case '03-08':
+            name = 'Happy Women\'s Day!';
+            break;
+        case '11-19':
+            name = 'Happy Men\'s Day!';
+            break;
+        case '09-21':
+            name = 'Happy Peace Day!';
+            break;
+        case '05-01':
+            name = 'Happy Labour Day!';
+            break;
+        case '03-14':
+            name = 'Happy Pi Day!';
+            break;
+        case '04-01':
+            name = '👀';
+            break;
+        case '01-25':
+            name = '!yaD etisoppO yppaH';
+            break;
+        case '05-29':
+            name = 'Happy Put-A-Pillow-On-Your-Fridge Day!';
+            break;
+        case '07-27':
+            name = 'Happy Take-Your-Houseplants-For-A-Walk Day!';
+            break;
+        case '05-04':
+            name = 'May the Fourth be with you.';
+            break;
+        case '12-23':
+            name = 'Happy Festivus!';
+            break;
+        default:
+            switch (gameId) {
+                case 0:
+                    name = `with ${bot.users.size} users!`;
+                    break;
+                case 1:
+                    type = 2;
+                    name = `${bot.guilds.size} guilds!`;
+                    break;
+                case 2:
+                    type = 2;
+                    name = `${Object.keys(bot.channelGuildMap).length} channels!`;
+                    break;
+                case 3:
+                    name = `with tiny bits of string!`;
+                    break;
+                case 4:
+                    name = `on version ${await bu.getVersion()}!`;
+                    break;
+                case 5:
+                    name = `type 'b!help'!`;
+                    break;
+                case 6:
+                    type = 3;
+                    name = `a laser pointer!`;
+                    break;
+                case 7:
+                    name = `with a mouse!`;
+                    break;
+                case 8:
+                    name = `with a ball of yarn!`;
+                    break;
+                case 9:
+                    name = `in a box!`;
+                    break;
+                case 10:
+                    type = 3;
+                    name = `you on cluster ${process.env.CLUSTER_ID}!`;
+                    break;
+                case 11:
+                    type = 2;
+                    name = 'the pitter-patter of tiny feet.';
+            }
+    }
+
+    bot.editStatus(null, {
+        name, type
+    });
     if (!forced)
         setTimeout(function () {
             switchGame();
@@ -247,8 +245,8 @@ function initEvents() {
         for (let event of events) {
             if (event.channel && !bot.getChannel(event.channel)) continue;
             else if (event.guild && !bot.guilds.get(event.guild)) continue;
-            else if (!event.channel && !event.guild && event.user && process.env.SHARD_ID != 0) continue;
-            else if (event.type === 'purgelogs' && process.env.SHARD_ID != 0) continue;
+            else if (!event.channel && !event.guild && event.user && process.env.CLUSTER_ID != 0) continue;
+            else if (event.type === 'purgelogs' && process.env.CLUSTER_ID != 0) continue;
             let type = event.type;
             CommandManager.built[type].event(event);
             r.table('events').get(event.id).delete().run();

@@ -9,13 +9,22 @@ class Shard extends Sender {
         this.file = file || this.manager.file;
         this.respawn = true;
 
+        let firstShard = Math.min(this.manager.max - 1, this.manager.shardsPerCluster * this.id);
+        let lastShard = Math.min(this.manager.max - 1,
+            (this.manager.shardsPerCluster * this.id) + this.manager.shardsPerCluster - 1)
+        let shardCount = lastShard - firstShard + 1;
         this.env = Object.assign({}, process.env, this.manager.env, {
-            SHARD_ID: this.id
+            CLUSTER_ID: this.id,
+            SHARDS_MAX: this.manager.max,
+            SHARDS_FIRST: firstShard,
+            SHARDS_LAST: lastShard,
+            SHARDS_COUNT: shardCount
         });
 
         let execArgv = process.execArgv.filter(a => {
             return !/debug-brk/.test(a);
         });
+        execArgv.push('--max-old-space-size=4096'); // 4GB max ram
 
         this.process = childProcess.fork(this.file, process.argv, {
             env: this.env,
@@ -35,7 +44,7 @@ class Shard extends Sender {
         this.process.once('disconnect', () => {
             if (this.respawn) {
                 console.warn('The shard disconnected, respawning');
-                this.manager.respawnShard(this.id);
+                this.manager.respawnShard(this.id, true);
             }
         });
 

@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const moment = require('moment-timezone');
 
 class ReasonCommand extends BaseCommand {
     constructor() {
@@ -40,7 +41,7 @@ class ReasonCommand extends BaseCommand {
                     let embed = msg2.embeds[0];
                     if (embed) {
                         embed.fields[1].value = words.join(' ');
-                        embed.timestamp = dep.moment(embed.timestamp);
+                        embed.timestamp = moment(embed.timestamp);
                         embed.footer = {
                             text: `${bu.getFullName(msg.author)} (${msg.author.id})`,
                             icon_url: msg.author.avatarURL
