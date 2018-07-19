@@ -98,7 +98,7 @@
                 },
                 "test": {
                     "usage": "",
-                    "info": ""
+                    "info": "Ginagawa ang binigay na code sa loob ng test environment."
                 },
                 "help": {
                     "usage": "",
@@ -106,22 +106,22 @@
                 },
                 "docs": {
                     "usage": "",
-                    "info": ""
+                    "info": "Nagbibigay ng link sa dokumentasyon ng BBTag, o nagbibigay impormasyon tungkol sa isang partikular na subtag."
                 },
                 "setdesc": {
-                    "info": "",
+                    "info": "Nagtatakda ng info docs para sa tinukoy na tag.",
                     "usage": ""
                 },
                 "setusage": {
-                    "info": "",
+                    "info": "Nagtatakda ng usage docs para sa tinukoy na tag.",
                     "usage": ""
                 }
             },
-            "subcommandnotfound": "",
-            "transferprompt": "",
-            "nobots": "",
+            "subcommandnotfound": "Hindi ako makahanap ng subcommand na may pangalang `{{subcommand}}`.",
+            "transferprompt": "{{target}}, si {{user}} ay gustong ilipat ang pagmamay-ari ng `{{tag}}` sa iyo. Tinatanggap mo ba?\nHindi ito maglilipat ng mga variable.",
+            "nobots": "[[emote.x]] Hindi mo pwede ilipat ang tag sa isang bot!",
             "transfercancelled": "[[emote.x]] Ang paglipat ay nakansela.",
-            "transfercomplete": "",
+            "transfercomplete": "[[emote.check]] Ngayon, si {{user}} na ang mayari ng tag `{{tag}}`.",
             "taginfo": "__**Tag | {{name}}**__\nAuthor: **{{author}}**\nLast Modified: **{{lastModified}}**\nIt has been used a total of **{{uses}} times**!\nIt has been favourited **{{favourites}} times**!",
             "descupdate": "",
             "descreset": "",
