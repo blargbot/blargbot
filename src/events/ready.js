@@ -30,6 +30,10 @@ bot.on('ready', async function () {
         await r.table('vars').get('police').replace({
             value: police, varname: 'police'
         });
+        let support = g.members.filter(m => m.roles.includes('263066486636019712')).map(m => m.id);
+        await r.table('vars').get('support').replace({
+            value: support, varname: 'support'
+        });
     }
 
     if (process.env.CLUSTER_ID == 0) {
