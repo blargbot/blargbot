@@ -285,6 +285,12 @@ TagBuilder.util = {
         let author = context.guild.members.get(context.authorizer);
         return Math.max(author.roles.map(id => (context.guild.roles.get(id) || { position: 0 }).position));
     },
+    canAccessChannel(context, channel) {
+        if (channel.guild.id != context.guild.id) {
+            return false;
+        }
+        return channel.permissionsOf(context.authorizer).has('readMessages');
+    },
     getPerms(context) {
         return (context.guild.members.get(context.authorizer) ||
             { permission: new Permission(0, 0) }).permission;
@@ -306,6 +312,7 @@ TagBuilder.errors = {
     channelNotInGuild(subtag, context) { return TagBuilder.util.error(subtag, context, 'Channel not in guild'); },
     tooManyLoops(subtag, context) { return TagBuilder.util.error(subtag, context, 'Too many loops'); },
     unsafeRegex(subtag, context) { return TagBuilder.util.error(subtag, context, 'Unsafe regex detected'); },
+    cannotAccessChannel(subtag, context, channel) { return TagBuilder.util.error(subtag, context, `Cannot access channel ${channel}`); },
     invalidEmbed(subtag, context, issue) { return TagBuilder.util.error(subtag, context, 'Invalid embed: ' + issue); }
 };
 
