@@ -25,7 +25,7 @@ module.exports =
         })
         .whenArgs(1, async (subtag, context, args) => {
             let emojis = context.guild.emojis.map(e => {
-                if (e.roles.includes(args[1])) `${e.animated ? 'a' : ''}:${e.name}:${e.id}`;
+                if (e.roles === undefined || e.roles.includes(args[1])) `${e.animated ? 'a' : ''}:${e.name}:${e.id}`;
             });
             return JSON.stringify(emojis);
         })
