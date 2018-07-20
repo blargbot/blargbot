@@ -314,6 +314,77 @@ e.generateDebug = function (code, context) {
     };
 };
 
+e.analyze = function (code) {
+    let parsed = bbEngine.parse(code);
+    if (!parsed.success) {
+        return parsed.error;
+    }
+    let subtags = getSubTags(parsed.bbtag);
+    let result = [];
+
+    for (const subtag of subtags) {
+        let name = (subtag.children || [])[0];
+        if (!name || !name.content) {
+            result.push({
+                subtag,
+                error: 'Unnamed subtag'
+            })
+        } else if (name.children.length > 0) {
+            result.push({
+                subtag,
+                warning: 'Dynamic subtag'
+            });
+        } else {
+            let definition = TagManager.get(name.content);
+            if (!definition) {
+                result.push({
+                    subtag,
+                    error: `Unknown subtag {${name.content}}`
+                });
+            } else if (definition.deprecated) {
+                result.push({
+                    subtag,
+                    warning: `{${name.content}} is deprecated` + (typeof definition.deprecated === 'string'
+                        ? `. Please use {${definition.deprecated}} instead`
+                        : '')
+                })
+            }
+        }
+    }
+
+    return result;
+}
+
+e.addAnalysis = function (code, baseText) {
+    let analysis = bbtag.analyze(code);
+    if (typeof analysis === 'string') {
+        baseText += `\n${analysis}`;
+    } else {
+        for (const entry of analysis) {
+            if (entry.error) {
+                baseText += `\n🚫 [${entry.subtag.range.start}] ${entry.error}`
+            }
+            if (entry.warning) {
+                baseText += `\n⚠ [${entry.subtag.range.start}] ${entry.warning}`
+            }
+        }
+    }
+
+    return baseText;
+}
+
+function getSubTags(bbstring) {
+    return bbstring.children.reduce(function (accumulator, part) {
+        if (typeof part !== 'string') {
+            accumulator.push(part);
+            for (arg of part.children) {
+                accumulator.push(...getSubTags(arg));
+            }
+        }
+        return accumulator
+    }, []);
+}
+
 function viewErrors(...errors) {
     let result = [];
     for (const e of errors) {
