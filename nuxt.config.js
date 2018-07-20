@@ -16,7 +16,8 @@ module.exports = {
             { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
         ],
         script: [
-            { src: 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js', body: true }
+            { src: 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js', body: true },
+            { src: 'https://unpkg.com/eventemitter3@latest/umd/eventemitter3.min.js', body: true }
         ]
     },
     env: {
@@ -32,34 +33,34 @@ module.exports = {
     */
     loading: { color: '#3B8070' },
 
-    // modules: [
-    //     ["@nuxtjs/axios", {
-    //         prefix: "/api",
-    //         proxy: true,
-    //         port: 8085
-    //     }]
-    // ],
-    // plugins: [{ src: '@/plugins/websocket.js', ssr: false }],
-    // proxy: {
-    //     "/api/": config.origin || "https://blargbot.xyz"
-    // },
+    modules: [
+        ["@nuxtjs/axios", {
+            prefix: "/api",
+            proxy: true,
+            port: 8085
+        }]
+    ],
+    plugins: [{ src: '@/plugins/websocket.js', ssr: false }],
+    proxy: {
+        "/api/": config.origin || "https://blargbot.xyz"
+    },
     css: [{ src: '@/assets/scss/base.scss', type: 'scss' }],
     /*
      ** Build configuration
      */
-    // build: {
-    //     /*
-    //      ** Run ESLINT on save
-    //      */
-    //     extend(config, ctx) {
-    //         if (ctx.isClient) {
-    //             config.module.rules.push({
-    //                 enforce: 'pre',
-    //                 test: /\.(js|vue)$/,
-    //                 loader: 'eslint-loader',
-    //                 exclude: /(node_modules)/
-    //             });
-    //         }
-    //     }
-    // }
+    build: {
+        /*
+         ** Run ESLINT on save
+         */
+        extend(config, ctx) {
+            if (ctx.isClient) {
+                config.module.rules.push({
+                    enforce: 'pre',
+                    test: /\.(js|vue)$/,
+                    loader: 'eslint-loader',
+                    exclude: /(node_modules)/
+                });
+            }
+        }
+    }
 };

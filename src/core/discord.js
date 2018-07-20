@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-19 09:20:39
+ * @Last Modified time: 2018-07-20 09:56:42
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -227,6 +227,7 @@ process.on('message', async msg => {
                         if (ls[key].isTag) {
                             let t = ls[key];
                             tags[key] = {
+                                key,
                                 category: t.category,
                                 name: t.name,
                                 args: t.args,
@@ -253,11 +254,13 @@ process.on('message', async msg => {
                         let c = ls[key];
                         if (c.isCommand && !c.hidden) {
                             commands[key] = {
+                                key,
+                                name: c.name,
                                 usage: c.usage,
                                 info: c.info,
                                 longinfo: c.longinfo,
                                 category: c.category,
-                                alias: c.alias,
+                                aliases: c.aliases,
                                 flags: c.flags,
                                 onlyOn: c.onlyOn
                             };

@@ -37,7 +37,7 @@
               <h2>Customization</h2>
               <p>The primary philosophy that blargbot follows is customizability. Nearly everything blargbot has to offer can be tweaked, right down to the prefixes that you can use!</p>
               <p>blargbot offers both guild prefixes and personal prefixes, so you can use whatever you want wherever you are!</p>
-              <p>Almost every command can be restricted, toggled, or completely overwritten.</p> 
+              <p>Almost every command can be restricted, toggled, or completely overwritten.</p>
             </div>
             <div class='child-large card shadow-2'>
               <h2>BBTag</h2>

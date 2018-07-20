@@ -4,8 +4,8 @@
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
     "main": "blargbot.js",
     "dependencies": {
-        "airtable": "^0.5.6",
         "@nuxtjs/axios": "^5.3.1",
+        "airtable": "^0.5.6",
         "babel-polyfill": "^6.22.0",
         "babel-register": "^6.26.0",
         "better-cleverbot-io": "^1.0.2",
@@ -59,6 +59,7 @@
         "twemoji": "^11.0.0",
         "unorm": "^1.4.1",
         "usage": "^0.7.1",
+        "vue-markdown": "^2.2.4",
         "wolken": "^0.2.0",
         "ws": "^1.1.1",
         "xml2js": "^0.4.19"
@@ -66,7 +67,7 @@
     "devDependencies": {
         "eslint": "^5.0.1",
         "eslint-loader": "^2.0.0",
-        "node-sass": "^4.9.0",
+        "node-sass": "^4.9.2",
         "sass-loader": "^7.0.3"
     },
     "scripts": {

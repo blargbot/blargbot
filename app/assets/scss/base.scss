@@ -106,6 +106,9 @@ h1 {
     text-transform: uppercase;
     margin: 5px;
 
+    outline: none;
+    border: none;
+
     &.flat {
         background: none;
         margin: 1px;
