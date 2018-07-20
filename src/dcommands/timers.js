@@ -71,24 +71,31 @@ class TimersCommand extends BaseCommand {
                     let getUserString = user => typeof user === 'object' ? `${user.username}#${user.discriminator}` : user;
                     let records = [];
                     for (const timer of selected) {
-                        console.debug(timer);
                         let id = timer.id.substring(0, 5);
                         let type = timer.type;
                         let user = getUserString(bot.users.get(timer.user) || timer.user);
                         let elapsed = timer.starttime.humanize();
                         let remain = moment.duration(now.diff(timer.endtime)).humanize();
-                        let content = timer.content || '';
+                        let content = Array.from(timer.content || '');
                         if (content.length > 40)
-                            content = content.substring(0, 37) + '...';
-                        content = content.replace(/[\n\t\r]/g, '');
-                        records.push([id, elapsed, remain, user, type, content]);
+                            content = content.slice(0, 37).concat(['...']);
+                        content = content.join('').replace(/[\n\t\r]/g, '');
+                        records.push([id, elapsed, remain, Array.from(user), type, content]);
                     }
                     let headers = ['Id', 'Elapsed', 'Remain', 'User', 'Type', 'Content'];
                     let colSizes = records.concat([headers]).reduce((p, c) => {
                         c.forEach((v, i) => p[i] = Math.max(p[i], v.length));
                         return p;
                     }, records[0].map(() => 0));
-                    let mapLine = l => l.map((v, i) => v.padEnd(colSizes[i])).join(' | ');
+                    console.debug(colSizes);
+                    let mapLine = l =>
+                        l.map((v, i) => {
+                            if (typeof v === 'string')
+                                return v.padEnd(colSizes[i]);
+                            for (let j = v.length; j < colSizes[i]; j++)
+                                v.push(' ');
+                            return v.join('');
+                        }).join(' | ');
                     message += mapLine(headers) + '\n';
                     message += ''.padEnd(colSizes.reduce((p, c) => p + c, 0) + (colSizes.length - 1) * 3, '-') + '\n';
                     message += records.map(mapLine).join('\n');
