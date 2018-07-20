@@ -190,7 +190,7 @@ async function runTag(content, context) {
     if (result != null && context.state.replace != null)
         result = result.replace(context.state.replace.regex, context.state.replace.with);
 
-    result = (config.modResult || ((c, r) => r))(context, result);
+    result = (config.modResult || ((_, r) => r))(context, result);
 
     if (typeof result == 'object')
         result = await result;

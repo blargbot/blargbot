@@ -38,25 +38,27 @@ Reason: ${tag.reason}`);
             author: tag.author,
             authorizer: tag.authorizer,
             cooldown: tag.cooldown,
-            modResult: function (context, text) {
-                return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
-                    let user = msg.guild.members.get(id);
-                    if (user == null)
-                        return '@' + id;
-                    return '@' + user.username + '#' + user.discriminator;
-                }).replace(/<@&(\d{17,21})>/g, function (match, id) {
-                    let role = msg.guild.roles.get(id);
-                    if (role == null)
-                        return '@Unknown Role';
-                    return '@' + role.name;
-                }).replace(/@(everyone|here)/g, (match, type) => '@\u200b' + type);
-            }
+            modResult: e.escapeMentions
         });
         /** @type {string} */
         result.code = tag.content;
         return result;
     }
 };
+
+e.escapeMentions = function (context, text) {
+    return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
+        let user = context.guild.members.get(id);
+        if (user == null)
+            return '@' + id;
+        return '@' + user.username + '#' + user.discriminator;
+    }).replace(/<@&(\d{17,21})>/g, function (match, id) {
+        let role = context.guild.roles.get(id);
+        if (role == null)
+            return '@Unknown Role';
+        return '@' + role.name;
+    }).replace(/@(everyone|here)/g, (_match, type) => '@\u200b' + type);
+}
 
 e.executeCC = async function (msg, ccName, command) {
     let ccommand = (await bu.getGuild(msg.guild.id)).ccommands[ccName.toLowerCase()];

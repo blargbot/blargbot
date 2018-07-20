@@ -650,7 +650,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                                     '```',
                                     `${text}`
                                 ];
-                                return lines.join('\n');
+                                return bbtag.escapeMentions(context, lines.join('\n'));
                             }, attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                         });
                     }
@@ -890,7 +890,6 @@ ${Object.keys(user.favourites).join(', ')}
         }
     };
 }
-
 
 function escapeRegex(str) {
     return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
