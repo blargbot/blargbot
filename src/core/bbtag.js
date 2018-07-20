@@ -117,7 +117,7 @@ e.docs = async function (msg, command, topic) {
                     };
                 }).concat({
                     name: 'Other useful topics',
-                    value: '```\nvariables, argTypes, terminology```'
+                    value: '```\nvariables, argTypes, terminology, dynamic```'
                 }).filter(f => f.value.length > 0);
             return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);
         case 'variables':
@@ -227,6 +227,13 @@ e.docs = async function (msg, command, topic) {
                     value: terms[k] + '\n\u200B'
                 };
             });
+            return await help.sendHelp(msg, { embed }, 'BBTag documentation');
+        case 'dynamic':
+            embed.description = 'In bbtag, even the names of subtags can be dynamic. This can be achieved simply by placing subtags before the ' +
+                'first `;` of a subtag. \n e.g. ```{user{get;~action};{userid}}``` If `~action` is set to `name`, then this will run the `username` subtag, ' +
+                'if it is set to `avatar` then it will run the `useravatar` subtag, and so on. Because dynamic subtags are by definition not set in ' +
+                'stone, it is reccommended not to use them, and as such you will recieve warnings when editing/creating a tag/cc which contains a ' +
+                'dynamic subtag. Your tag will function correctly, however some optimisations employed by bbtag will be unable to run on any such tag.'
             return await help.sendHelp(msg, { embed }, 'BBTag documentation');
         default:
             topic = topic.replace(/[\{\}]/g, '');
