@@ -13,19 +13,21 @@ module.exports =
     Builder.APITag('emojis')
         .withArgs(a => [a.optional('roleid')])
         .withDesc('Returns an array of emoji IDs of the current guild.' +
-            'If `roleid` is specified, returns all the emojis whitelisted for the provided role.'
+            'If `roleid` is specified, returns all the emojis whitelisted for the provided role.\n'+
+            'Please note that Discord will remove all the emojis from a message which contains an emoji that blargbot can\'t use. '+
+            'For example, blargbot can\'t use a role-restricted emoji if it doesn\'t have the role. Learn more [here](https://discordapp.com/developers/docs/resources/emoji).'
         )
         .withExample(
             'This guild has {length;{emojis}} emojis.',
             'This guild has 23 emojis.'
         )
         .whenArgs(0, async (subtag, context, args) => {
-            let emojis = context.guild.emojis.map(e => `${e.animated ? 'a' : ''}:${e.name}:${e.id}`);
+            let emojis = context.guild.emojis.map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
             return JSON.stringify(emojis);
         })
         .whenArgs(1, async (subtag, context, args) => {
             let emojis = context.guild.emojis.map(e => {
-                if (e.roles === undefined || e.roles.includes(args[1])) `${e.animated ? 'a' : ''}:${e.name}:${e.id}`;
+                if (e.roles !== undefined && e.roles.includes(args[1])) `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`;
             });
             return JSON.stringify(emojis);
         })
