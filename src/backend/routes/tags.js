@@ -33,6 +33,7 @@ router.get('/json', async (req, res) => {
     res.json((await getTags()).map(t => {
         return {
             name: t.name,
+            aliases: t.aliases,
             category: t.category,
             description: t.desc,
             staffOnly: t.staff === true,
