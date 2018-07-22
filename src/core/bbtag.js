@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-22 15:51:22
+ * @Last Modified time: 2018-07-22 16:20:20
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -315,6 +315,9 @@ function limitToSring(scope, subtag) {
                 }
                 if (limit.loops !== undefined) {
                     limitText += `- Maximum ${limit.loops} loops\n`;
+                }
+                if (limit.max !== undefined) {
+                    limitText += ` Maximum Duration: ${limit.max}\n`;
                 }
             }
             return limitText.trim();
