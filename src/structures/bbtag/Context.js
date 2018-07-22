@@ -98,10 +98,10 @@ class Context {
         };
 
         let limits = options.limits || {};
-        for (const subtag of Object.key(limits)) {
+        for (const subtag of Object.keys(limits)) {
             let cloned = {};
             let limit = limits[subtag];
-            for (const key of Object.key(limits[subtag])) {
+            for (const key of Object.keys(limits[subtag])) {
                 cloned[key] = limit[key];
             }
 
