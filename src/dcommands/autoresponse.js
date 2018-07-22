@@ -81,8 +81,8 @@ class autoresponseCommand extends BaseCommand {
         }
         if (input.e && guild.autoresponse.everything !== null)
             return await bu.send(msg, `An autoresponse that responds to everything already exists! It executes the following ccommand: \`${guild.autoresponse.everything.executes}\``);
-        if (guild.autoresponse.list.length >= 10)
-            return await bu.send(msg, `You already have 10 autoresponses!`);
+        if (guild.autoresponse.list.length >= 20)
+            return await bu.send(msg, `You already have 20 autoresponses!`);
 
         if (input.R && !input.e) {
             try {
