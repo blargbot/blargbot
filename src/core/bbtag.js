@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 10:36:20
+ * @Last Modified time: 2018-07-22 13:37:20
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -524,9 +524,42 @@ const limits = {
         foreach: { loops: 3000 },
         get repeat() { return this.for; }
     },
-    autoresponse: {
-        _name: 'autoresponse'
-        // ToDo: add limits here
+    autoresponse_general: {
+        _name: 'general autoresponse',
+
+        ban: { staff: true },
+        unban: { staff: true },
+
+        kick: { staff: true },
+
+        modlog: { staff: true },
+        pardon: { staff: true },
+        warn: { staff: true },
+        warnings: { staff: true },
+        reason: { staff: true },
+
+        roleadd: { staff: true },
+        rolecreate: { staff: true },
+        roledelete: { staff: true },
+        rolemention: { staff: true },
+        roleremove: { staff: true },
+        rolesetmentionable: { staff: true },
+
+        dm: { staff: true },
+        send: { staff: true, count: 1 },
+        edit: { count: 1 },
+        delete: { count: 2 },
+
+        timer: { disabled: true },
+
+        usersetnick: { staff: true },
+
+        waitmessage: { disabled: true },
+        waitreact: { disabled: true },
+
+        for: { loops: 1000 },
+        foreach: { loops: 2000 },
+        get repeat() { return this.for; }
     }
 };
 
