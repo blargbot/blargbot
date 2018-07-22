@@ -1,13 +1,17 @@
 const ArgFactory = require('./ArgumentFactory'),
     bbEngine = require('../structures/bbtag/Engine'),
     Timer = require('./Timer'),
-    Permission = require('eris/lib/structures/Permission');
+    Permission = require('eris/lib/structures/Permission'),
+    Context = require('./bbtag/Context'),
+    { SubTag, BBTag } = require('./bbtag/Tag');
+
+(Context, SubTag, BBTag);
 
 class TagBuilder {
     static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
     static ComplexTag(name) { return new TagBuilder().withCategory(bu.TagType.COMPLEX).withName(name); }
     static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name).acceptsArrays(true); }
-    static CCommandTag(name) { return new TagBuilder().withCategory(bu.TagType.CCOMMAND).withName(name); }
+    static BotTag(name) { return new TagBuilder().withCategory(bu.TagType.BOT).withName(name); }
     static APITag(name) { return new TagBuilder().withCategory(bu.TagType.API).withName(name); }
     static AutoTag(name) { return new TagBuilder().withCategory(0).withName(name); }
 
@@ -16,7 +20,7 @@ class TagBuilder {
         this.execute = {
             /** @type {number[]} */
             resolveArgs: null,
-            /** @type {{ contition: subtagCondition, action: subtagAction }} */
+            /** @type {{ contition: subtagCondition, action: subtagAction }[]} */
             conditional: [],
             /** @type {subtagAction} */
             default: null
@@ -43,12 +47,6 @@ class TagBuilder {
         tag.execute = function (definition, resolveArgs, execConditional, execDefault) {
             return async function (subtag, context) {
                 try {
-                    if (definition.category === bu.TagType.CCOMMAND && !context.isCC)
-                        return TagBuilder.util.error(subtag, context, 'Can only use {' + definition.name + '} in CCommands');
-
-                    if (definition.staff && !await context.isStaff)
-                        return TagBuilder.util.error(subtag, context, 'Author must be staff');
-
                     let subtagArgs = subtag.children.slice(1);
 
                     let execArgs = resolveArgs != null
@@ -100,10 +98,6 @@ class TagBuilder {
     withProp(key, value) {
         this.properties[key] = value;
         return this;
-    }
-
-    requireStaff(staff = true) {
-        return this.withProp('staff', true);
     }
 
     acceptsArrays(array = true) {
@@ -358,21 +352,6 @@ module.exports = TagBuilder;
 console.info('TagBuilder loaded');
 
 /**
- * @param {SubTag} subtag The subtag content to be executed
- * @param {Context} context The context within which execution will take place
- * @param {(string|BBTag)[]} args The arguments given to the subtag. If `resolveArgs` is null, this will all be string
+ * @typedef {(subtag: SubTag, context: Context, args: (string | BBTag)[]) => any} subtagAction
+ * @typedef {(subtag: SubTag, context: Context, args: (string | BBTag)[]) => boolean | Promise<boolean>} subtagCondition
  */
-function subtagAction(subtag, context, args) {
-    //Dummy function, purely for JSDoc
-    return '';
-}
-
-/**
- * @param {SubTag} subtag The subtag content to be executed
- * @param {Context} context The context within which execution will take place
- * @param {(string|BBTag)[]} args The arguments given to the subtag. If `resolveArgs` is null, this will all be string
- */
-function subtagCondition(subtag, context, args) {
-    //Dummy function, purely for JSDoc
-    return false;
-}

@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('nsfw')
+    Builder.BotTag('nsfw')
         .withArgs(a => a.optional('message'))
         .withDesc('Marks the output as being NSFW, and only to be sent in NSFW channels. A requirement for any tag with NSFW content. ' +
             '`message` is the error to show, defaults to "❌ This contains NSFW content! Go to a NSFW channel. ❌"')

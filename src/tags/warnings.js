@@ -10,8 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('warnings')
-        .requireStaff()
+    Builder.BotTag('warnings')
         .withArgs(a => a.optional('user'))
         .withDesc('Gets the number of warnings `user` has. `user` defaults to the user who executed the containing tag.')
         .withExample(

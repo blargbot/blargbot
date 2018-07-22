@@ -18,7 +18,7 @@ function padEmoji(emoji) {
 }
 
 module.exports =
-    Builder.APITag('waitreaction')
+    Builder.BotTag('waitreaction')
         .withAlias('waitreact')
         .withArgs(a => [
             a.require('messages'),

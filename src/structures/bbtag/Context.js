@@ -74,17 +74,8 @@ class Context {
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
         this.state = {
-            count: {
-                dm: 0,
-                send: 0,
-                edit: 0,
-                delete: 0,
-                react: 0, // Not implemented, potential for the future
-                reactRemove: 0, // Not implemented, potential for the future
-                timer: 0,
-                loop: 0,
-                foreach: 0
-            },
+            /** @type {{[key:string]: limit}} */
+            limits: { ...(options.limits || {}) },
             query: {
                 count: 0,
                 user: {},
@@ -310,3 +301,11 @@ class Context {
 }
 
 module.exports = Context;
+
+/**
+ * @typedef {Object} limit
+ * @property {number} [limit.count] The remaining uses a subtag has. Leave undefined for unlimited
+ * @property {string} [limit.check] The function name inside the engine.checks property to use as a check
+ * @property {boolean} [limit.disabled] The subtag is disabled and cannot be used at all
+ * @property {boolean} [limit.staff] The context.isStaff promise must return true
+ */
