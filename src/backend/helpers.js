@@ -217,29 +217,13 @@ e.init = () => {
             toReturn += `<div class="tagdescription">${addSubtagReferences(mdToHtml(subtag.desc))}</div><div class="taglimits">`;
 
             for (const key of Object.keys(bbtag.limits)) {
-                let limit = bbtag.limits[key][subtag.name];
-                if (limit !== undefined) {
-                    let limitText = '';
-                    if (limit.disabled) {
-                        limitText += '- Disabled<br />';
-                    } else {
-                        if (limit.staff) {
-                            limitText += '- Author must be staff<br />';
-                        }
-                        if (limit.count !== undefined) {
-                            limitText += `- Maximum ${limit.count} uses<br />`;
-                        }
-                        if (limit.loops !== undefined) {
-                            limitText += `- Maximum ${limit.loops} loops<br />`;
-                        }
-                    }
-                    if (limitText) {
-                        toReturn += `<div class="taglimit"><h5>Limits for ${
-                            bbtag.limits[key]._name
-                            }s</h5><blockquote>${
-                            limitText.substr(0, limitText.length - 6)
-                            }</blockquote></div>`;
-                    }
+                let text = bbtag.limitToSring(key, subtag.name);
+                if (text) {
+                    toReturn += `<div class="taglimit"><h5>Limits for ${
+                        bbtag.limits[key]._name
+                        }s</h5><blockquote>${
+                        text.replace(/\n/g, '<br />')
+                        }</blockquote></div>`;
                 }
             }
 

@@ -261,7 +261,7 @@ ul.collapsible.collapsible-accordion .collapsible-header {
 }
 
 .taglimits:empty {
-    margin: 0;
+    display: none;
 }
 
 .taglimit {

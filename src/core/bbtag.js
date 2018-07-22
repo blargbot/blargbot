@@ -263,29 +263,13 @@ async function docs(msg, command, topic) {
                 embed.description += '\u200B';
 
             for (const key of Object.keys(limits)) {
-                let limit = limits[key][tag.name];
-                if (limit !== undefined) {
-                    let limitText = '';
-                    if (limit.disabled) {
-                        limitText += '- Disabled\n';
-                    } else {
-                        if (limit.staff) {
-                            limitText += '- Author must be staff\n';
-                        }
-                        if (limit.count !== undefined) {
-                            limitText += `- Maximum ${limit.count} uses\n`;
-                        }
-                        if (limit.loops !== undefined) {
-                            limitText += `- Maximum ${limit.loops} loops\n`;
-                        }
-                    }
-                    if (limitText) {
-                        embed.fields.push({
-                            name: `Limits for ${limits[key]._name}s`,
-                            value: limitText,
-                            inline: true
-                        });
-                    }
+                let text = limitToSring(key, tag.name);
+                if (text) {
+                    embed.fields.push({
+                        name: `Limits for ${limits[key]._name}s`,
+                        value: text,
+                        inline: true
+                    });
                 }
             }
 
@@ -314,6 +298,29 @@ async function docs(msg, command, topic) {
 
     return await bu.send(msg, 'Oops, I didnt recognise that topic! Try using `' + prefix + command + ' docs` for a list of all topics');
 };
+
+function limitToSring(scope, subtag) {
+    if (limits[scope]) {
+        let limit = limits[scope][subtag];
+        if (limit !== undefined) {
+            let limitText = '';
+            if (limit.disabled) {
+                limitText += `- {${subtag}} is disabled\n`;
+            } else {
+                if (limit.staff) {
+                    limitText += '- Author must be staff\n';
+                }
+                if (limit.count !== undefined) {
+                    limitText += `- Maximum ${limit.count} uses\n`;
+                }
+                if (limit.loops !== undefined) {
+                    limitText += `- Maximum ${limit.loops} loops\n`;
+                }
+            }
+            return limitText.trim();
+        }
+    }
+}
 
 function generateDebug(code, context) {
     if (arguments.length == 1)
@@ -530,6 +537,7 @@ module.exports = {
     docs,
     generateDebug,
     limits,
+    limitToSring,
     analyze,
     addAnalysis
 };
