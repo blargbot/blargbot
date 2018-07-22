@@ -199,7 +199,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             }
             await bbEngine.runTag({
                 msg,
-                limits: bbtag.limits.ccommand,
+                limits: new bbtag.limits.ccommand(),
                 tagContent: ccommandContent,
                 flags: val.flags,
                 input: command,
@@ -371,7 +371,7 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                     }
                     await bbEngine.runTag({
                         msg,
-                        limits: bbtag.limits.ccommand,
+                        limits: new bbtag.limits.ccommand(),
                         tagContent: content,
                         input: msg.content,
                         isCC: true,
@@ -413,7 +413,7 @@ async function handleRoleme(msg, storedGuild) {
                         console.verbose(roleme[i].output);
                         await bbEngine.runTag({
                             msg,
-                            limits: bbtag.limits.ccommand,
+                            limits: new bbtag.limits.ccommand(),
                             tagContent: roleme[i].output || 'Your roles have been edited!',
                             input: '',
                             isCC: true,
@@ -439,7 +439,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
         if (everything && ars.everything) {
             await bbEngine.runTag({
                 msg,
-                limits: bbtag.limits.autoresponse,
+                limits: new bbtag.limits.autoresponse(),
                 tagContent: storedGuild.ccommands[ars.everything.executes].content,
                 author: storedGuild.ccommands[ars.everything.executes].author,
                 input: msg.content,
@@ -472,7 +472,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                 if (cont && storedGuild.ccommands[ar.executes]) {
                     await bbEngine.runTag({
                         msg,
-                        limits: bbtag.limits.autoresponse,
+                        limits: new bbtag.limits.autoresponse(),
                         tagContent: storedGuild.ccommands[ar.executes].content,
                         author: storedGuild.ccommands[ar.executes].author,
                         input: matches || msg.content,

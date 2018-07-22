@@ -53,7 +53,7 @@ class FarewellCommand extends BaseCommand {
         }
         await bbEngine.runTag({
             msg,
-            limits: bbtag.limits.ccommand,
+            limits: new bbtag.limits.ccommand(),
             tagContent: farewell.content,
             input: '',
             isCC: true,

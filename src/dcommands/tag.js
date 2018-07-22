@@ -631,7 +631,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                             await r.table('tag').get('test').replace(systemTag('test')).run();
                         await bbEngine.runTag({
                             msg,
-                            limits: bbtag.limits.tag,
+                            limits: new bbtag.limits.tag(),
                             tagContent: args.join(' '),
                             input: '',
                             tagName: 'test',
@@ -858,6 +858,7 @@ ${Object.keys(user.favourites).join(', ')}
 
             args.content = args.params.args[1];
             args.tempVars = args.params.vars;
+            args.version = 2;
         }
 
         let context = await Context.deserialize(args.context),
@@ -865,7 +866,6 @@ ${Object.keys(user.favourites).join(', ')}
 
         if (!context.state.count) context.state.count = {};
 
-        context.state.count.timer = -1;
         context.state.embed = null;
         context.state.reactions = [];
 
@@ -877,9 +877,29 @@ ${Object.keys(user.favourites).join(', ')}
             delete context.state.dmCount;
             delete context.state.repeats;
             delete context.state.foreach;
+
+            args.version = 3;
         }
 
-        // TODO: Add migration for new limit system
+        if (args.version < 4) {
+            function reduceLimit(key, count, attribute = 'count') {
+                if (context.state.limits[key] && attribute in context.state.limits[key]) {
+                    context.state.limits[key][attribute] -= count;
+                }
+            }
+
+            context.state.limits = context.isCC ? new bbtag.limits.ccommand() : new bbtag.limits.tag();
+            reduceLimit('dm', context.state.count.dm || 0);
+            reduceLimit('send', context.state.count.send || 0);
+            reduceLimit('edit', context.state.count.edit || 0);
+            reduceLimit('delete', context.state.count.delete || 0);
+            (context.state.limits.timer || (context.state.limits.timer = {})).disabled = true;
+            reduceLimit('for', context.state.count.loop || 0, 'loops');
+            reduceLimit('foreach', context.state.count.foreach || 0, 'loops');
+            (context.state.limits.output || (context.state.limits.output = {})).disabled = true;
+
+            args.version = 4;
+        }
 
         try {
             await bbEngine.runTag(content, context);

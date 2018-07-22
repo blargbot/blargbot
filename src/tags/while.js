@@ -45,8 +45,10 @@ module.exports =
 
             code = args.shift();
 
-            while (context.state.count.loop <= 1500) {
-                context.state.count.loop += 1;
+            let remaining = context.state.limits.for || { loops: NaN };
+
+            while (!(remaining.loops < 0)) {
+                remaining.loops++;
 
                 val1 = await this.executeArg(subtag, val1Raw, context);
                 val2 = await this.executeArg(subtag, val2Raw, context);

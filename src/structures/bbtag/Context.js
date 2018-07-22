@@ -75,7 +75,7 @@ class Context {
         this.dbObjectsCommitted = 0;
         this.state = {
             /** @type {{[key:string]: limit}} */
-            limits: { ...(options.limits || {}) },
+            limits: options.limits || {},
             query: {
                 count: 0,
                 user: {},
