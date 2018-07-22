@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-22 16:34:12
+ * @Last Modified time: 2018-07-22 16:40:23
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -555,7 +555,7 @@ const limits = {
             this.roleremove = { staff: true };
             this.rolesetmentionable = { staff: true };
 
-            this.dm = { staff: true };
+            this.dm = { staff: true, count: 1 };
             this.send = { staff: true, count: 1 };
             this.edit = { count: 1 };
             this.delete = { count: 2 };
@@ -595,7 +595,7 @@ const limits = {
             this.roleremove = { staff: true };
             this.rolesetmentionable = { staff: true };
 
-            this.dm = { staff: true };
+            this.dm = { staff: true, count: 1 };
             this.send = { staff: true, count: 1 };
             this.edit = { count: 1 };
             this.delete = { count: 2 };
