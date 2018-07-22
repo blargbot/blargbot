@@ -869,7 +869,7 @@ ${Object.keys(user.favourites).join(', ')}
         context.state.embed = null;
         context.state.reactions = [];
 
-        if (args.version < 3) {
+        if (args.version == 2) {
             context.state.count.loop = context.state.repeats;
             context.state.count.foreach = context.state.foreach;
             context.state.count.dm = context.state.dm;
@@ -893,7 +893,7 @@ ${Object.keys(user.favourites).join(', ')}
             reduceLimit('send', context.state.count.send || 0);
             reduceLimit('edit', context.state.count.edit || 0);
             reduceLimit('delete', context.state.count.delete || 0);
-            (context.state.limits.timer || (context.state.limits.timer = {})).count = 0;
+            (context.state.limits.timer || (context.state.limits.timer = {})).disabled = true;
             reduceLimit('for', context.state.count.loop || 0, 'loops');
             reduceLimit('foreach', context.state.count.foreach || 0, 'loops');
             (context.state.limits.output || (context.state.limits.output = {})).disabled = true;
