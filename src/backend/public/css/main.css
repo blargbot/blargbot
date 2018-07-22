@@ -259,6 +259,10 @@ ul.collapsible.collapsible-accordion .collapsible-header {
     margin-top: 10px;
 }
 
+.taglimits:empty {
+    margin: 0;
+}
+
 .taglimit {
     padding: 0 15px;
 }
