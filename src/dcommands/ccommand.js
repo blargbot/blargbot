@@ -18,21 +18,22 @@ class CcommandCommand extends BaseCommand {
                 + 'disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output '
                 + 'whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the \'ccommand\' command. '
                 + 'For more in-depth command customization, see the `editcommand` command.\n\n__**Usage:**__\n'
+                + '  **cc cooldown <name> [time]** - sets the cooldown of a tag, in milliseconds. Cooldowns must be greater than 500ms.\n'    
                 + '  **cc create <name> <content>** - creates a ccommand with given name and content\n'
-                + '  **cc edit <name> <content>** - edits an existing ccommand with given content\n'
-                + '  **cc set <name> <content>** - provides the functionality of `create` and `edit` in a single command\n'
-                + '  **cc delete <name>** - deletes the ccommand with given name, provided that you own it\n'
-                + '  **cc rename <tag1> <tag2>** - renames the ccommand by the name of `ccommand1` to `ccommand2`\n'
-                + '  **cc flag <name> | <add|remove> <name> <flags>** - Retrieves or sets the flags for a custom command. Flags are added in the format `-x <name> <desc>`. For example, `-f flag This is a flag!`\n'
-                + '  **cc cooldown <name> [time]** - Sets the cooldown of a tag, in milliseconds. Cooldowns must be greater than 500ms.\n'
-                + '  **cc raw <name>** - displays the raw code of a ccommand\n'
-                + '  **cc setrole <name> [role names...]** - sets the roles required to execute the ccommand\n'
-                + '  **cc import <tag> [name]** - imports a tag as a custom command, retaining all data such as author variables\n'
-                + '  **cc help** - shows this message\n'
-                + '  **cc sethelp** <name> [help text] - set the help message for a custom command\n'
-                + '  **cc setlang** <name> [lang] - set the language to use when returning the raw text of your cc\n'
                 + '  **cc debug <name>** - executes the specified custom command and sends a file containing all the debug information\n'
-                + '  **cc docs** [topic] - view help docuentation for BBTag, specific to ccommands\n'
+                + '  **cc delete <name>** - deletes the ccommand with given name, provided that you own it\n'
+                + '  **cc docs** [topic] - view help documentation for BBTag, specific to ccommands\n'
+                + '  **cc edit <name> <content>** - edits an existing ccommand with given content\n'
+                + '  **cc flag <name> | <add|remove> <name> <flags>** - retrieves or sets the flags for a custom command. Flags are added in the format `-x <name> <desc>`. For example, `-f flag This is a flag!`\n'
+                + '  **cc help** - shows this message\n'
+                + '  **cc import <tag> [name]** - imports a tag as a custom command, retaining all data such as author variables\n'
+                + '  **cc list** - displays the list of ccommands on the guild\n'    
+                + '  **cc raw <name>** - displays the raw code of a ccommand\n'
+                + '  **cc rename <tag1> <tag2>** - renames the ccommand by the name of `ccommand1` to `ccommand2`\n'
+                + '  **cc set <name> <content>** - provides the functionality of `create` and `edit` in a single command\n'
+                + '  **cc sethelp** <name> [help text] - set the help message for a custom command\n'
+                + '  **cc setlang** <name> [lang] - set the language to use when returning the raw text of your cc\n'   
+                + '  **cc setrole <name> [role names...]** - sets the roles required to execute the ccommand\n' 
                 + '  \nFor more information about BBTag, visit https://blargbot.xyz/tags'
         });
     }
@@ -381,7 +382,7 @@ class CcommandCommand extends BaseCommand {
                     if (args.length > 0) {
                         await bbEngine.runTag({
                             msg,
-                            limits: bbtag.limits.ccommand,
+                            limits: new bbtag.limits.ccommand(),
                             tagContent: args.join(' '),
                             input: '',
                             tagName: 'test',

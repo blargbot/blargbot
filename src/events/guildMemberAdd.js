@@ -30,7 +30,7 @@ bot.on('guildMemberAdd', async function (guild, member) {
                 member: member,
                 guild: guild
             },
-            limits: bbtag.limits.ccommand,
+            limits: new bbtag.limits.ccommand(),
             tagContent: ccommandContent,
             input: '',
             isCC: true,

@@ -52,7 +52,7 @@ class GreetCommand extends BaseCommand {
         }
         await bbEngine.runTag({
             msg,
-            limits: bbtag.limits.ccommand,
+            limits: new bbtag.limits.ccommand(),
             tagContent: greeting.content,
             input: '',
             isCC: true,

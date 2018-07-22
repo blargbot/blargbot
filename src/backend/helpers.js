@@ -220,7 +220,7 @@ e.init = () => {
                 let text = bbtag.limitToSring(key, subtag.name);
                 if (text) {
                     toReturn += `<div class="taglimit"><h5>Limits for ${
-                        bbtag.limits[key]._name
+                        bbtag.limits[key].instance._name
                         }s</h5><blockquote>${
                         text.replace(/\n/g, '<br />')
                         }</blockquote></div>`;

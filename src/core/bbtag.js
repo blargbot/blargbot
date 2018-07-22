@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-22 13:37:20
+ * @Last Modified time: 2018-07-22 15:51:22
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -28,7 +28,7 @@ Reason: ${tag.reason}`);
         }).run();
         let result = await bbEngine.runTag({
             msg,
-            limits: bbtag.limits.tag,
+            limits: new bbtag.limits.tag(),
             tagContent: tag.content,
             flags: tag.flags,
             input: command.map(c => '"' + c + '"').join(' '),
@@ -66,7 +66,7 @@ async function executeCC(msg, ccName, command) {
     else {
         let result = await bbEngine.runTag({
             msg,
-            limits: bbtag.limits.ccommand,
+            limits: new bbtag.limits.ccommand(),
             tagContent: ccommand.content,
             flags: ccommand.flags,
             input: command.map(c => '"' + c + '"').join(' '),
@@ -266,7 +266,7 @@ async function docs(msg, command, topic) {
                 let text = limitToSring(key, tag.name);
                 if (text) {
                     embed.fields.push({
-                        name: `Limits for ${limits[key]._name}s`,
+                        name: `Limits for ${limits[key].instance._name}s`,
                         value: text,
                         inline: true
                     });
@@ -301,7 +301,7 @@ async function docs(msg, command, topic) {
 
 function limitToSring(scope, subtag) {
     if (limits[scope]) {
-        let limit = limits[scope][subtag];
+        let limit = limits[scope].instance[subtag];
         if (limit !== undefined) {
             let limitText = '';
             if (limit.disabled) {
@@ -450,118 +450,172 @@ function viewErrors(...errors) {
 }
 
 const limits = {
-    /** @type {subtagLimit} */
-    tag: {
-        _name: 'tag',
-        ban: { disabled: true },
-        unban: { disabled: true },
+    tag: class TagLimits {
+        constructor() {
+            this._name = 'tag';
+            this.ban = { disabled: true };
+            this.unban = { disabled: true };
 
-        kick: { disabled: true },
+            this.kick = { disabled: true };
 
-        modlog: { disabled: true },
-        pardon: { disabled: true },
-        warn: { disabled: true },
-        warnings: { disabled: true },
-        reason: { disabled: true },
+            this.modlog = { disabled: true };
+            this.pardon = { disabled: true };
+            this.warn = { disabled: true };
+            this.warnings = { disabled: true };
+            this.reason = { disabled: true };
 
-        roleadd: { disabled: true },
-        rolecreate: { disabled: true },
-        roledelete: { disabled: true },
-        rolemention: { disabled: true },
-        roleremove: { disabled: true },
-        rolesetmentionable: { disabled: true },
+            this.roleadd = { disabled: true };
+            this.rolecreate = { disabled: true };
+            this.roledelete = { disabled: true };
+            this.rolemention = { disabled: true };
+            this.roleremove = { disabled: true };
+            this.rolesetmentionable = { disabled: true };
 
-        dm: { disabled: true },
-        send: { disabled: true },
-        edit: { count: 10 },
-        delete: { count: 11 },
+            this.dm = { disabled: true };
+            this.send = { disabled: true };
+            this.edit = { count: 10 };
+            this.delete = { count: 11 };
 
-        timer: { disabled: true },
+            this.timer = { disabled: true };
 
-        usersetnick: { disabled: true },
+            this.usersetnick = { disabled: true };
 
-        waitmessage: { count: 5 },
-        waitreact: { count: 20 },
+            this.waitmessage = { count: 5 };
+            this.waitreact = { count: 20 };
 
-        for: { loops: 1500 },
-        foreach: { loops: 3000 },
+            this.for = { loops: 1500 };
+            this.foreach = { loops: 3000 };
+        }
+
         get repeat() { return this.for; }
+        get while() { return this.for; }
     },
-    ccommand: {
-        _name: 'custom command',
+    ccommand: class CCLimits {
+        constructor() {
+            this._name = 'custom command';
+            this.ban = { staff: true };
+            this.unban = { staff: true };
 
-        ban: { staff: true },
-        unban: { staff: true },
+            this.kick = { staff: true };
 
-        kick: { staff: true },
+            this.modlog = { staff: true };
+            this.pardon = { staff: true };
+            this.warn = { staff: true };
+            this.warnings = { staff: true };
+            this.reason = { staff: true };
 
-        modlog: { staff: true },
-        pardon: { staff: true },
-        warn: { staff: true },
-        warnings: { staff: true },
-        reason: { staff: true },
+            this.roleadd = { staff: true };
+            this.rolecreate = { staff: true };
+            this.roledelete = { staff: true };
+            this.rolemention = { staff: true };
+            this.roleremove = { staff: true };
+            this.rolesetmentionable = { staff: true };
 
-        roleadd: { staff: true },
-        rolecreate: { staff: true },
-        roledelete: { staff: true },
-        rolemention: { staff: true },
-        roleremove: { staff: true },
-        rolesetmentionable: { staff: true },
+            this.dm = { staff: true, count: 1 };
+            this.send = { staff: true, count: 10 };
+            this.edit = { count: 10 };
+            this.delete = { count: 11 };
 
-        dm: { staff: true },
-        send: { staff: true, count: 10 },
-        edit: { count: 10 },
-        delete: { count: 11 },
+            this.timer = { staff: true, count: 3 };
 
-        timer: { staff: true },
+            this.usersetnick = { staff: true };
 
-        usersetnick: { staff: true },
+            this.waitmessage = { count: 10 };
+            this.waitreact = { count: 20 };
 
-        waitmessage: { count: 10 },
-        waitreact: { count: 20 },
+            this.for = { loops: 1500 };
+            this.foreach = { loops: 3000 };
+        }
 
-        for: { loops: 1500 },
-        foreach: { loops: 3000 },
         get repeat() { return this.for; }
+        get while() { return this.for; }
     },
-    autoresponse_general: {
-        _name: 'general autoresponse',
+    autoresponse_general: class GeneralARLimits {
+        constructor() {
+            this._name = 'general autoresponse';
 
-        ban: { staff: true },
-        unban: { staff: true },
+            this.ban = { staff: true };
+            this.unban = { staff: true };
 
-        kick: { staff: true },
+            this.kick = { staff: true };
 
-        modlog: { staff: true },
-        pardon: { staff: true },
-        warn: { staff: true },
-        warnings: { staff: true },
-        reason: { staff: true },
+            this.modlog = { staff: true };
+            this.pardon = { staff: true };
+            this.warn = { staff: true };
+            this.warnings = { staff: true };
+            this.reason = { staff: true };
 
-        roleadd: { staff: true },
-        rolecreate: { staff: true },
-        roledelete: { staff: true },
-        rolemention: { staff: true },
-        roleremove: { staff: true },
-        rolesetmentionable: { staff: true },
+            this.roleadd = { staff: true };
+            this.rolecreate = { staff: true };
+            this.roledelete = { staff: true };
+            this.rolemention = { staff: true };
+            this.roleremove = { staff: true };
+            this.rolesetmentionable = { staff: true };
 
-        dm: { staff: true },
-        send: { staff: true, count: 1 },
-        edit: { count: 1 },
-        delete: { count: 2 },
+            this.dm = { staff: true };
+            this.send = { staff: true, count: 1 };
+            this.edit = { count: 1 };
+            this.delete = { count: 2 };
 
-        timer: { disabled: true },
+            this.timer = { disabled: true };
+            this.sleep = { max: 5000 };
 
-        usersetnick: { staff: true },
+            this.usersetnick = { staff: true };
 
-        waitmessage: { disabled: true },
-        waitreact: { disabled: true },
+            this.waitmessage = { disabled: true };
+            this.waitreact = { disabled: true };
 
-        for: { loops: 1000 },
-        foreach: { loops: 2000 },
+            this.for = { loops: 1000 };
+            this.foreach = { loops: 2000 };
+        }
         get repeat() { return this.for; }
+        get while() { return this.for; }
+    }, autoresponse_everything: class EverythingARLimits {
+        constructor() {
+            this._name = 'everything autoresponse';
+
+            this.ban = { staff: true };
+            this.unban = { staff: true };
+
+            this.kick = { staff: true };
+
+            this.modlog = { staff: true };
+            this.pardon = { staff: true };
+            this.warn = { staff: true };
+            this.warnings = { staff: true };
+            this.reason = { staff: true };
+
+            this.roleadd = { staff: true };
+            this.rolecreate = { staff: true };
+            this.roledelete = { staff: true };
+            this.rolemention = { staff: true };
+            this.roleremove = { staff: true };
+            this.rolesetmentionable = { staff: true };
+
+            this.dm = { staff: true };
+            this.send = { staff: true, count: 1 };
+            this.edit = { count: 1 };
+            this.delete = { count: 2 };
+
+            this.timer = { disabled: true };
+            this.sleep = { max: 5000 };
+
+            this.usersetnick = { staff: true };
+
+            this.waitmessage = { disabled: true };
+            this.waitreact = { disabled: true };
+
+            this.for = { loops: 500 };
+            this.foreach = { loops: 1000 };
+        }
+        get repeat() { return this.for; }
+        get while() { return this.for; }
     }
 };
+
+for (const key of Object.keys(limits)) {
+    limits[key].instance = new limits[key]();
+}
 
 module.exports = {
     executeTag,

@@ -22,8 +22,6 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
-            if (context.state.count.dm > 0)
-                return Builder.util.error(subtag, context, 'Already have DMed');
 
             let user = await context.getUser(args[0], {
                 suppress: context.scope.suppressLookup,
@@ -62,7 +60,6 @@ module.exports =
                     nsfw: context.state.nsfw
                 });
                 DMCache[user.id].count++;
-                context.state.count.dm += 1;
             } catch (e) {
                 return Builder.util.error(subtag, context, 'Could not send DM');
             }
