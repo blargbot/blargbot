@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-22 11:08:03
+ * @Last Modified time: 2018-07-22 15:52:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -439,7 +439,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
         if (everything && ars.everything) {
             await bbEngine.runTag({
                 msg,
-                limits: new bbtag.limits.autoresponse(),
+                limits: new bbtag.limits.autoresponse_everything(),
                 tagContent: storedGuild.ccommands[ars.everything.executes].content,
                 author: storedGuild.ccommands[ars.everything.executes].author,
                 input: msg.content,
@@ -472,7 +472,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                 if (cont && storedGuild.ccommands[ar.executes]) {
                     await bbEngine.runTag({
                         msg,
-                        limits: new bbtag.limits.autoresponse(),
+                        limits: new bbtag.limits.autoresponse_general(),
                         tagContent: storedGuild.ccommands[ar.executes].content,
                         author: storedGuild.ccommands[ar.executes].author,
                         input: matches || msg.content,

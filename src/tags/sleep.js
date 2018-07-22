@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:14
  * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-21 11:30:13
+ * @Last Modified time: 2018-07-22 15:55:48
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -22,10 +22,11 @@ module.exports =
         .whenArgs(1, async function (subtag, context, args) {
             let duration = bu.parseDuration(args[0]);
 
+            let { max } = context.state.limits.sleep || { max: 300000 };
             if (duration.asMilliseconds() <= 0)
                 return Builder.util.error(subtag, context, 'Invalid duration');
-            if (duration.asMilliseconds() > 300000)
-                duration = moment(300000);
+            if (duration.asMilliseconds() > max)
+                duration = moment(max);
 
             await new Promise(function (resolve) {
                 setTimeout(() => resolve(), duration.asMilliseconds());
