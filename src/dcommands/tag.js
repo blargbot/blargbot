@@ -896,6 +896,7 @@ ${Object.keys(user.favourites).join(', ')}
             (context.state.limits.timer || (context.state.limits.timer = {})).count = 0;
             reduceLimit('for', context.state.count.loop || 0, 'loops');
             reduceLimit('foreach', context.state.count.foreach || 0, 'loops');
+            (context.state.limits.output || (context.state.limits.output = {})).disabled = true;
 
             args.version = 4;
         }

@@ -488,6 +488,7 @@ const limits = {
         }
 
         get repeat() { return this.for; }
+        get while() { return this.for; }
     },
     ccommand: class CCLimits {
         constructor() {
@@ -510,7 +511,7 @@ const limits = {
             this.roleremove = { staff: true };
             this.rolesetmentionable = { staff: true };
 
-            this.dm = { staff: true };
+            this.dm = { staff: true, count: 1 };
             this.send = { staff: true, count: 10 };
             this.edit = { count: 10 };
             this.delete = { count: 11 };
@@ -527,6 +528,7 @@ const limits = {
         }
 
         get repeat() { return this.for; }
+        get while() { return this.for; }
     },
     autoresponse: class AutoLimits {
         constructor() {
