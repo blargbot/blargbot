@@ -1,7 +1,7 @@
 'use strict';
 
 const Context = require('./Context');
-const { BBTag } = require('./Tag');
+const { BBTag, SubTag } = require('./Tag');
 const Timer = require('../Timer');
 
 /**
@@ -63,6 +63,27 @@ async function execute(bbtag, context) {
             if (runSubtag == null) {
                 result.push(addError(subtag, context, 'Unknown subtag ' + name));
                 continue;
+            }
+
+            if (definition.name in context.state.limits) {
+                let limit = context.state.limits[definition.name];
+                if (limit && limit.count !== undefined) {
+                    if (limit.count === 0) {
+                        result.push(addError(subtag, context, 'Usage limit reached for ' + definition.name));
+                        continue;
+                    } else {
+                        limit.count--;
+                    }
+                }
+                if (limit && limit.check !== undefined) {
+                    if (limit.check in checks) {
+                        let check = checks[limit.check];
+                        if (!await check(context, subtag)) {
+                            result.push(addError(subtag, context, 'Usage limit reached for ' + definition.name));
+                            continue;
+                        }
+                    }
+                }
             }
 
             subtag.name = name;
@@ -206,12 +227,16 @@ async function runTag(content, context) {
     return { context, result, response };
 };
 
+/** @type {{[key:string]: (context: Context, subtag: SubTag) => boolean}} */
+const checks = {};
+
 module.exports = {
     parse,
     execute,
     execString,
     addError,
-    runTag
+    runTag,
+    checks
 };
 
 /**

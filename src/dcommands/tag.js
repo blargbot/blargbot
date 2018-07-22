@@ -631,6 +631,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                             await r.table('tag').get('test').replace(systemTag('test')).run();
                         await bbEngine.runTag({
                             msg,
+                            limits: bbtag.limits.tag,
                             tagContent: args.join(' '),
                             input: '',
                             tagName: 'test',
@@ -868,8 +869,6 @@ ${Object.keys(user.favourites).join(', ')}
         context.state.embed = null;
         context.state.reactions = [];
 
-        console.debug(context.state);
-
         if (args.version == 2) {
             context.state.count.loop = context.state.repeats;
             context.state.count.foreach = context.state.foreach;
@@ -880,7 +879,7 @@ ${Object.keys(user.favourites).join(', ')}
             delete context.state.foreach;
         }
 
-        console.debug(context.state);
+        // TODO: Add migration for new limit system
 
         try {
             await bbEngine.runTag(content, context);

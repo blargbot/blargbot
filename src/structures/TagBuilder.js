@@ -1,7 +1,11 @@
 const ArgFactory = require('./ArgumentFactory'),
     bbEngine = require('../structures/bbtag/Engine'),
     Timer = require('./Timer'),
-    Permission = require('eris/lib/structures/Permission');
+    Permission = require('eris/lib/structures/Permission'),
+    Context = require('./bbtag/Context'),
+    { SubTag, BBTag } = require('./bbtag/Tag');
+
+(Context, SubTag, BBTag);
 
 class TagBuilder {
     static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
@@ -16,7 +20,7 @@ class TagBuilder {
         this.execute = {
             /** @type {number[]} */
             resolveArgs: null,
-            /** @type {{ contition: subtagCondition, action: subtagAction }} */
+            /** @type {{ contition: subtagCondition, action: subtagAction }[]} */
             conditional: [],
             /** @type {subtagAction} */
             default: null
@@ -358,21 +362,6 @@ module.exports = TagBuilder;
 console.info('TagBuilder loaded');
 
 /**
- * @param {SubTag} subtag The subtag content to be executed
- * @param {Context} context The context within which execution will take place
- * @param {(string|BBTag)[]} args The arguments given to the subtag. If `resolveArgs` is null, this will all be string
+ * @typedef {(subtag: SubTag, context: Context, args: (string | BBTag)[]) => any} subtagAction
+ * @typedef {(subtag: SubTag, context: Context, args: (string | BBTag)[]) => boolean | Promise<boolean>} subtagCondition
  */
-function subtagAction(subtag, context, args) {
-    //Dummy function, purely for JSDoc
-    return '';
-}
-
-/**
- * @param {SubTag} subtag The subtag content to be executed
- * @param {Context} context The context within which execution will take place
- * @param {(string|BBTag)[]} args The arguments given to the subtag. If `resolveArgs` is null, this will all be string
- */
-function subtagCondition(subtag, context, args) {
-    //Dummy function, purely for JSDoc
-    return false;
-}

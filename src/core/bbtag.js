@@ -11,9 +11,7 @@ const argFactory = require('../structures/ArgumentFactory'),
     af = argFactory,
     bbEngine = require('../structures/bbtag/Engine');
 
-var e = module.exports = {};
-
-e.executeTag = async function (msg, tagName, command) {
+async function executeTag(msg, tagName, command) {
     let tag = await r.table('tag').get(tagName).run();
     if (!tag)
         bu.send(msg, `❌ That tag doesn't exist! ❌`);
@@ -30,6 +28,7 @@ Reason: ${tag.reason}`);
         }).run();
         let result = await bbEngine.runTag({
             msg,
+            limits: bbtag.limits.tag,
             tagContent: tag.content,
             flags: tag.flags,
             input: command.map(c => '"' + c + '"').join(' '),
@@ -38,7 +37,7 @@ Reason: ${tag.reason}`);
             author: tag.author,
             authorizer: tag.authorizer,
             cooldown: tag.cooldown,
-            modResult: e.escapeMentions
+            modResult: escapeMentions
         });
         /** @type {string} */
         result.code = tag.content;
@@ -46,7 +45,7 @@ Reason: ${tag.reason}`);
     }
 };
 
-e.escapeMentions = function (context, text) {
+function escapeMentions(context, text) {
     return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
         let user = context.guild.members.get(id);
         if (user == null)
@@ -60,13 +59,14 @@ e.escapeMentions = function (context, text) {
     }).replace(/@(everyone|here)/g, (_match, type) => '@\u200b' + type);
 }
 
-e.executeCC = async function (msg, ccName, command) {
+async function executeCC(msg, ccName, command) {
     let ccommand = (await bu.getGuild(msg.guild.id)).ccommands[ccName.toLowerCase()];
     if (!ccommand)
         bu.send(msg, `❌ That CCommand doesn't exist! ❌`);
     else {
         let result = await bbEngine.runTag({
             msg,
+            limits: bbtag.limits.ccommand,
             tagContent: ccommand.content,
             flags: ccommand.flags,
             input: command.map(c => '"' + c + '"').join(' '),
@@ -81,7 +81,7 @@ e.executeCC = async function (msg, ccName, command) {
     }
 };
 
-e.docs = async function (msg, command, topic) {
+async function docs(msg, command, topic) {
     let help = CommandManager.built['help'],
         argsOptions = { separator: { default: ';' } },
         tags = Object.keys(TagManager.list).map(k => TagManager.list[k]),
@@ -233,7 +233,7 @@ e.docs = async function (msg, command, topic) {
                 'first `;` of a subtag. \n e.g. ```{user{get;~action};{userid}}``` If `~action` is set to `name`, then this will run the `username` subtag, ' +
                 'if it is set to `avatar` then it will run the `useravatar` subtag, and so on. Because dynamic subtags are by definition not set in ' +
                 'stone, it is reccommended not to use them, and as such you will recieve warnings when editing/creating a tag/cc which contains a ' +
-                'dynamic subtag. Your tag will function correctly, however some optimisations employed by bbtag will be unable to run on any such tag.'
+                'dynamic subtag. Your tag will function correctly, however some optimisations employed by bbtag will be unable to run on any such tag.';
             return await help.sendHelp(msg, { embed }, 'BBTag documentation');
         default:
             topic = topic.replace(/[\{\}]/g, '');
@@ -290,7 +290,7 @@ e.docs = async function (msg, command, topic) {
     return await bu.send(msg, 'Oops, I didnt recognise that topic! Try using `' + prefix + command + ' docs` for a list of all topics');
 };
 
-e.generateDebug = function (code, context) {
+function generateDebug(code, context) {
     if (arguments.length == 1)
         return (context) => this.generateDebug(code, context);
 
@@ -323,7 +323,26 @@ e.generateDebug = function (code, context) {
     };
 };
 
-e.analyze = function (code) {
+const limits = {
+    tag: {
+        edit: { count: 10 },
+        delete: { count: 11 },
+        waitmessage: { count: 5 },
+        waitreact: { count: 20 }
+    },
+    ccommand: {
+        send: { count: 10 },
+        edit: { count: 10 },
+        delete: { count: 11 },
+        waitmessage: { count: 10 },
+        waitreact: { count: 20 }
+    },
+    autoresponse: {
+        // ToDo: add limits here
+    }
+};
+
+function analyze(code) {
     let parsed = bbEngine.parse(code);
     if (!parsed.success) {
         return parsed.error;
@@ -337,7 +356,7 @@ e.analyze = function (code) {
             result.push({
                 subtag,
                 error: 'Unnamed subtag'
-            })
+            });
         } else if (name.children.length > 0) {
             result.push({
                 subtag,
@@ -356,7 +375,7 @@ e.analyze = function (code) {
                     warning: `{${name.content}} is deprecated` + (typeof definition.deprecated === 'string'
                         ? `. Please use {${definition.deprecated}} instead`
                         : '')
-                })
+                });
             }
         }
     }
@@ -364,17 +383,17 @@ e.analyze = function (code) {
     return result;
 }
 
-e.addAnalysis = function (code, baseText) {
+function addAnalysis(code, baseText) {
     let analysis = bbtag.analyze(code);
     if (typeof analysis === 'string') {
         baseText += `\n${analysis}`;
     } else {
         for (const entry of analysis) {
             if (entry.error) {
-                baseText += `\n🚫 [${entry.subtag.range.start}] ${entry.error}`
+                baseText += `\n🚫 [${entry.subtag.range.start}] ${entry.error}`;
             }
             if (entry.warning) {
-                baseText += `\n⚠ [${entry.subtag.range.start}] ${entry.warning}`
+                baseText += `\n⚠ [${entry.subtag.range.start}] ${entry.warning}`;
             }
         }
     }
@@ -386,11 +405,11 @@ function getSubTags(bbstring) {
     return bbstring.children.reduce(function (accumulator, part) {
         if (typeof part !== 'string') {
             accumulator.push(part);
-            for (arg of part.children) {
+            for (const arg of part.children) {
                 accumulator.push(...getSubTags(arg));
             }
         }
-        return accumulator
+        return accumulator;
     }, []);
 }
 
@@ -415,4 +434,15 @@ function viewErrors(...errors) {
         result.push(...lines);
     }
     return result;
+}
+
+module.exports = {
+    executeTag,
+    executeCC,
+    escapeMentions,
+    docs,
+    generateDebug,
+    limits,
+    analyze,
+    addAnalysis
 }
