@@ -45,7 +45,7 @@ const loggr = new CatLoggr({
 
 loggr.addArgHook(({ arg }) => {
     if (arg instanceof seqErrors.BaseError && Array.isArray(arg.errors)) {
-        let text = [arg.stack]
+        let text = [arg.stack];
         for (const err of arg.errors) {
             text.push(`\n - ${err.message}\n   - ${err.path} ${err.validatorKey} ${err.value}`);
         }
@@ -125,7 +125,7 @@ class DiscordClient extends Client {
             }).catch(err => {
                 // failed to send message to master
             });
-        })
+        });
     }
 
     async eval(msg, text, send = true) {

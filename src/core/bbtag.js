@@ -240,7 +240,6 @@ async function docs(msg, command, topic) {
             let tag = TagManager.get(topic.toLowerCase());
             if (tag == null)
                 break;
-            let category = bu.TagType.properties[tag.category];
             embed.title += ' - ' + tag.name[0].toUpperCase() + tag.name.substring(1);
 
             embed.description = '';
@@ -262,6 +261,34 @@ async function docs(msg, command, topic) {
                 });
             else
                 embed.description += '\u200B';
+
+            for (const key of Object.keys(limits)) {
+                let limit = limits[key][tag.name];
+                if (limit !== undefined) {
+                    let limitText = '';
+                    if (limit.disabled) {
+                        limitText += '- Disabled\n';
+                    } else {
+                        if (limit.staff) {
+                            limitText += '- Author must be staff\n';
+                        }
+                        if (limit.count !== undefined) {
+                            limitText += `- Maximum ${limit.count} uses\n`;
+                        }
+                        if (limit.loops !== undefined) {
+                            limitText += `- Maximum ${limit.loops} loops\n`;
+                        }
+                    }
+                    if (limitText) {
+                        embed.fields.push({
+                            name: `Limits for ${limits[key]._name}s`,
+                            value: limitText,
+                            inline: true
+                        });
+                    }
+                }
+            }
+
             if (tag.exampleCode)
                 embed.fields.push({
                     name: 'Example code',
