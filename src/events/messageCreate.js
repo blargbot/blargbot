@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-21 23:52:52
+ * @Last Modified time: 2018-07-22 11:08:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -425,7 +425,7 @@ async function handleRoleme(msg, storedGuild) {
 }
 
 async function handleAutoresponse(msg, storedGuild, everything = false) {
-    if (!['194232473931087872', '197529405659021322', '110373943822540800'].includes(msg.guild.id)) return; // selective whitelist for now
+    if (!['194232473931087872', '197529405659021322', '110373943822540800', '272410239947767808'].includes(msg.guild.id)) return; // selective whitelist for now
 
     // todo: impose limits
 
