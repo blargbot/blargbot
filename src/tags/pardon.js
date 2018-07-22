@@ -10,8 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('pardon')
-        .requireStaff()
+    Builder.BotTag('pardon')
         .withArgs(a => [
             a.optional('user'),
             a.optional('count'),

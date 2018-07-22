@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('lang')
+    Builder.BotTag('lang')
         .withArgs(a => a.require('language'))
         .isDeprecated(true)
         .withDesc('Specifies which `language` should be used when viewing the raw of this tag')

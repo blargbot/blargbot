@@ -108,7 +108,7 @@ class DiscordClient extends Client {
             ' | Simple: ' + tags.filter(t => t == bu.TagType.SIMPLE).length +
             ' | Complex: ' + tags.filter(t => t == bu.TagType.COMPLEX).length +
             ' | Array: ' + tags.filter(t => t == bu.TagType.ARRAY).length +
-            ' | CCommand: ' + tags.filter(t => t == bu.TagType.CCOMMAND).length);
+            ' | CCommand: ' + tags.filter(t => t == bu.TagType.BOT).length);
 
         const CommandManagerClass = require('./CommandManager.js');
         global.CommandManager = new CommandManagerClass();

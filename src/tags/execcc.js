@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('execcc')
+    Builder.BotTag('execcc')
         .withArgs(a => [a.require('ccommand'), a.optional('args')])
         .withDesc('Executes `ccommand` using `args` as the input. Useful for modules.')
         .withExample(

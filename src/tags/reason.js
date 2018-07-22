@@ -10,12 +10,12 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('reason')
+    Builder.BotTag('reason')
         .withArgs(a => [a.require('reason')])
         .withDesc('Sets the reason for the next API call (ex. roleadd, roleremove, ban, etc.)')
         .withExample(
-        '{reason;This will show up in the audit logs!}{roleadd;111111111111}',
-        ''
+            '{reason;This will show up in the audit logs!}{roleadd;111111111111}',
+            ''
         )
         .whenArgs('0', async function (subtag, context, args) {
             context.scope.reason = undefined;

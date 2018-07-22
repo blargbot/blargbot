@@ -26,7 +26,7 @@ bu.TagType = {
     SIMPLE: 1,
     COMPLEX: 2,
     ARRAY: 3,
-    CCOMMAND: 4,
+    BOT: 4,
     API: 5,
     properties: {
         1: {
@@ -42,8 +42,8 @@ bu.TagType = {
             desc: 'Subtags designed specifically for arrays.'
         },
         4: {
-            name: 'Custom Command',
-            desc: 'Subtags that only work in custom commands.'
+            name: 'Blargbot',
+            desc: 'Subtags that integrate with blargbots custom functions.'
         },
         5: {
             name: 'API',

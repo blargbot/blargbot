@@ -64,29 +64,14 @@ async function execute(bbtag, context) {
                 result.push(addError(subtag, context, 'Unknown subtag ' + name));
                 continue;
             }
+            subtag.name = name;
 
-            if (definition.name in context.state.limits) {
-                let limit = context.state.limits[definition.name];
-                if (limit && limit.count !== undefined) {
-                    if (limit.count === 0) {
-                        result.push(addError(subtag, context, 'Usage limit reached for ' + definition.name));
-                        continue;
-                    } else {
-                        limit.count--;
-                    }
-                }
-                if (limit && limit.check !== undefined) {
-                    if (limit.check in checks) {
-                        let check = checks[limit.check];
-                        if (!await check(context, subtag)) {
-                            result.push(addError(subtag, context, 'Usage limit reached for ' + definition.name));
-                            continue;
-                        }
-                    }
-                }
+            let limitError = await checkLimits(context, subtag, definition);
+            if (limitError) {
+                result.push(limitError);
+                continue;
             }
 
-            subtag.name = name;
             try {
                 result.push(await runSubtag(subtag, context));
             } catch (err) {
@@ -121,6 +106,41 @@ async function execute(bbtag, context) {
         result.push(content.slice(prevIndex, Math.max(prevIndex, bbtag.end - endOffset)));
     context.scopes.finishScope();
     return result.join('');
+}
+
+async function checkLimits(context, subtag, definition) {
+    let limit = context.state.limits[definition.name];
+    if (limit) {
+        if (limit.disabled) {
+            let scope = context.state.limits._name
+                ? `in ${context.state.limits._name}s`
+                : `for this trigger`;
+            return addError(subtag, context, `{${definition.name}} is disabled ${scope}`);
+        }
+        if (limit.staff) {
+            let isStaff = await context.isStaff;
+            if (!isStaff) {
+                return addError(subtag, context, 'Author must be staff');
+            }
+        }
+        if (limit.count !== undefined) {
+            if (limit.count === 0) {
+                return addError(subtag, context, 'Usage limit reached for ' + definition.name);
+            } else {
+                limit.count--;
+            }
+        }
+        if (limit.check !== undefined) {
+            if (limit.check in checks) {
+                let result = await checks[limit.check](context, subtag);
+                if (typeof result === 'boolean' && result) {
+                    return addError(subtag, context, 'Usage limit reached for ' + definition.name);
+                } else if (result) {
+                    return addError(subtag, context, result);
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -227,7 +247,7 @@ async function runTag(content, context) {
     return { context, result, response };
 };
 
-/** @type {{[key:string]: (context: Context, subtag: SubTag) => boolean}} */
+/** @type {{[key:string]: (context: Context, subtag: SubTag) => boolean | string | Promise<boolean | string>}} */
 const checks = {};
 
 module.exports = {

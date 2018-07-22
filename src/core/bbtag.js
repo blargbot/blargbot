@@ -250,8 +250,6 @@ async function docs(msg, command, topic) {
                     ? ' and has been replaced by `{' + tag.deprecated + '}`'
                     : '') + '**\n';
             }
-            if (tag.staff) embed.description += '**This subtag may only be used by staff members**\n';
-            if (tag.category == bu.TagType.CCOMMAND) embed.description += '**This subtag may only be used within custom commands**\n';
             embed.description += '```\n{' + [tag.name, argFactory.toString(tag.args, argsOptions)].filter(t => t.length > 0).join(';') + '}```';
             embed.description += tag.desc + '\n';
 
@@ -321,25 +319,6 @@ function generateDebug(code, context) {
             'Variables:\n' + (variables.length > 0 ? variables.join('\n') : 'No variables') + '\n\n' +
             'Subtag Breakdown:\n' + subtags.join('\n\n')
     };
-};
-
-const limits = {
-    tag: {
-        edit: { count: 10 },
-        delete: { count: 11 },
-        waitmessage: { count: 5 },
-        waitreact: { count: 20 }
-    },
-    ccommand: {
-        send: { count: 10 },
-        edit: { count: 10 },
-        delete: { count: 11 },
-        waitmessage: { count: 10 },
-        waitreact: { count: 20 }
-    },
-    autoresponse: {
-        // ToDo: add limits here
-    }
 };
 
 function analyze(code) {
@@ -436,6 +415,87 @@ function viewErrors(...errors) {
     return result;
 }
 
+const limits = {
+    /** @type {subtagLimit} */
+    tag: {
+        _name: 'tag',
+        ban: { disabled: true },
+        unban: { disabled: true },
+
+        kick: { disabled: true },
+
+        modlog: { disabled: true },
+        pardon: { disabled: true },
+        warn: { disabled: true },
+        warnings: { disabled: true },
+        reason: { disabled: true },
+
+        roleadd: { disabled: true },
+        rolecreate: { disabled: true },
+        roledelete: { disabled: true },
+        rolemention: { disabled: true },
+        roleremove: { disabled: true },
+        rolesetmentionable: { disabled: true },
+
+        dm: { disabled: true },
+        send: { disabled: true },
+        edit: { count: 10 },
+        delete: { count: 11 },
+
+        timer: { disabled: true },
+
+        usersetnick: { disabled: true },
+
+        waitmessage: { count: 5 },
+        waitreact: { count: 20 },
+
+        for: { loops: 1500 },
+        foreach: { loops: 3000 },
+        get repeat() { return this.for; }
+    },
+    ccommand: {
+        _name: 'custom command',
+
+        ban: { staff: true },
+        unban: { staff: true },
+
+        kick: { staff: true },
+
+        modlog: { staff: true },
+        pardon: { staff: true },
+        warn: { staff: true },
+        warnings: { staff: true },
+        reason: { staff: true },
+
+        roleadd: { staff: true },
+        rolecreate: { staff: true },
+        roledelete: { staff: true },
+        rolemention: { staff: true },
+        roleremove: { staff: true },
+        rolesetmentionable: { staff: true },
+
+        dm: { staff: true },
+        send: { staff: true, count: 10 },
+        edit: { count: 10 },
+        delete: { count: 11 },
+
+        timer: { staff: true },
+
+        usersetnick: { staff: true },
+
+        waitmessage: { count: 10 },
+        waitreact: { count: 20 },
+
+        for: { loops: 1500 },
+        foreach: { loops: 3000 },
+        get repeat() { return this.for; }
+    },
+    autoresponse: {
+        _name: 'autoresponse'
+        // ToDo: add limits here
+    }
+};
+
 module.exports = {
     executeTag,
     executeCC,
@@ -445,4 +505,4 @@ module.exports = {
     limits,
     analyze,
     addAnalysis
-}
+};

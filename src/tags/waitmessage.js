@@ -39,7 +39,7 @@ const overrideSubtags = [
 ];
 
 module.exports =
-    Builder.APITag('waitmessage')
+    Builder.BotTag('waitmessage')
         .withArgs(a => [
             a.optional('channels'),
             a.optional('users'),

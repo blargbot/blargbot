@@ -11,12 +11,12 @@ const Builder = require('../structures/TagBuilder'),
     bbEngine = require('../structures/bbtag/Engine');
 
 module.exports =
-    Builder.AutoTag('exec')
+    Builder.BotTag('exec')
         .withArgs(a => [a.require('tag'), a.optional('args')])
         .withDesc('Executes another `tag`, giving it `args` as the input. Useful for modules.')
         .withExample(
-        'Let me do a tag for you. {exec;f}',
-        'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
+            'Let me do a tag for you. {exec;f}',
+            'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {

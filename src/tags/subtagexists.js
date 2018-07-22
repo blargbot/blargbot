@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('subtagexists')
+    Builder.BotTag('subtagexists')
         .withArgs(a => a.require('subTag'))
         .withDesc('Checks to see if `subTag` exists.')
         .withExample(
