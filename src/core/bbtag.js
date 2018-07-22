@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-22 16:20:20
+ * @Last Modified time: 2018-07-22 16:34:12
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -484,7 +484,7 @@ const limits = {
             this.usersetnick = { disabled: true };
 
             this.waitmessage = { count: 5 };
-            this.waitreact = { count: 20 };
+            this.waitreaction = { count: 20 };
 
             this.for = { loops: 1500 };
             this.foreach = { loops: 3000 };
@@ -524,7 +524,7 @@ const limits = {
             this.usersetnick = { staff: true };
 
             this.waitmessage = { count: 10 };
-            this.waitreact = { count: 20 };
+            this.waitreaction = { count: 20 };
 
             this.for = { loops: 1500 };
             this.foreach = { loops: 3000 };
@@ -566,7 +566,7 @@ const limits = {
             this.usersetnick = { staff: true };
 
             this.waitmessage = { disabled: true };
-            this.waitreact = { disabled: true };
+            this.waitreaction = { disabled: true };
 
             this.for = { loops: 1000 };
             this.foreach = { loops: 2000 };
@@ -606,7 +606,7 @@ const limits = {
             this.usersetnick = { staff: true };
 
             this.waitmessage = { disabled: true };
-            this.waitreact = { disabled: true };
+            this.waitreaction = { disabled: true };
 
             this.for = { loops: 500 };
             this.foreach = { loops: 1000 };
