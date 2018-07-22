@@ -62,6 +62,9 @@ class CcommandCommand extends BaseCommand {
                         bu.send(msg, `❌ That custom command doesn't exist! ❌`);
                         break;
                     }
+                    if (tag.hidden) {
+                        return await bu.send(msg, `❌ You can't put a cooldown on a hidden ccommand! ❌`);
+                    }
                     if (tag && tag.author != msg.author.id) {
                         bu.send(msg, `❌ You don't own this custom command! ❌`);
                         break;
@@ -122,6 +125,9 @@ class CcommandCommand extends BaseCommand {
                         if (!tag) {
                             bu.send(msg, `❌ That custom command doesn't exist! ❌`);
                             break;
+                        }
+                        if (tag.hidden) {
+                            return await bu.send(msg, `❌ You can't put flags on a hidden ccommand! ❌`);
                         }
                         if (tag.alias) {
                             bu.send(msg, 'That ccommand is imported, and cannot be edited.');
@@ -251,6 +257,9 @@ class CcommandCommand extends BaseCommand {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             break;
                         }
+                        if (tag.hidden) {
+                            return await bu.send(msg, `❌ You can't delete a hidden ccommand! Delete it from the autoresponse command instead. ❌`);
+                        }
                         await bu.ccommand.remove(msg.channel.guild.id, title);
                         bu.send(msg, `✅ Custom command \`${title}\` deleted. ✅`);
                     } else {
@@ -268,6 +277,9 @@ class CcommandCommand extends BaseCommand {
                                 bu.send(msg, `The ccommand ${title} doesn\'t exist!`);
                                 break;
                             }
+                        }
+                        if (tag.hidden) {
+                            return await bu.send(msg, `❌ You can't rename a hidden ccommand! ❌`);
                         }
                         let newTitle = filterTitle(words[3]);
                         let newTag = await bu.ccommand.get(msg.channel.guild.id, newTitle);
@@ -318,6 +330,9 @@ class CcommandCommand extends BaseCommand {
                         if (!tag) {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             break;
+                        }
+                        if (tag.hidden) {
+                            return await bu.send(msg, `❌ You can't set help on a hidden ccommand! ❌`);
                         }
                         content = bu.splitInput(text, true).slice(3).join(' ');
                         var message = "";

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 10:37:19
+ * @Last Modified time: 2018-07-21 21:38:44
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -51,6 +51,7 @@ async function handleUserMessage(msg, storedGuild) {
         handleAntiMention(msg, storedGuild);
         bu.handleCensor(msg, storedGuild);
         handleRoleme(msg, storedGuild);
+        handleAutoresponse(msg, storedGuild);
         handleTableflip(msg);
         if (Array.isArray(storedGuild.settings.prefix)) {
             prefixes.push(...storedGuild.settings.prefix);
@@ -410,6 +411,61 @@ async function handleRoleme(msg, storedGuild) {
                     } catch (err) {
                         bu.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
                     }
+                }
+            }
+        }
+    }
+}
+
+async function handleAutoresponse(msg, storedGuild) {
+    if (!['194232473931087872', '197529405659021322'].includes(msg.guild.id)) return; // selective whitelist for now
+
+    // todo: impose limits
+
+    if (storedGuild && storedGuild.autoresponse) {
+        let ars = storedGuild.autoresponse;
+
+
+        if (ars.everything) {
+            await bbEngine.runTag({
+                msg,
+                tagContent: storedGuild.ccommands[ars.everything.executes].content,
+                author: storedGuild.ccommands[ars.everything.executes].author,
+                input: msg.content,
+                isCC: true,
+                tagName: ars.everything,
+                silent: true
+            });
+        }
+        if (ars.list.length > 0) {
+            for (const ar of ars.list) {
+                let cont = false;
+                let matches = [msg.content];
+                if (ar.regex) {
+                    try {
+                        let exp = bu.createRegExp(ar.term);
+
+                        matches = msg.content.match(exp);
+                        if (matches !== null) {
+                            cont = true;
+                            matches.map(m => '"' + m.replace(/"/g, '\\"') + '"');
+                        }
+                    } catch (err) {
+                        console.log(err);
+                        bu.send(msg, 'Unsafe or invalid regex! Terminating.');
+                        return;
+                    }
+                } else cont = msg.content.includes(ar.term);
+
+                if (cont && storedGuild.ccommands[ar.executes]) {
+                    await bbEngine.runTag({
+                        msg,
+                        tagContent: storedGuild.ccommands[ar.executes].content,
+                        author: storedGuild.ccommands[ar.executes].author,
+                        input: matches.join(' '),
+                        isCC: true,
+                        tagName: ar.executes
+                    });
                 }
             }
         }

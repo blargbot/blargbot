@@ -56,6 +56,9 @@ class Context {
         this.cooldowns = cooldowns[this.msg.guild.id][this.isCC][this.msg.author.id];
         this._cooldowns = cooldowns;
 
+        // prevents output
+        this.silent = options.silent;
+
         /** @type {bbError[]} */
         this.errors = [];
         this.debug = [];
@@ -186,6 +189,7 @@ class Context {
     }
 
     async sendOutput(text, files) {
+        if (this.silent) return this.state.outputMessage;
         if (!this.state.outputMessage) {
             this.state.outputMessage = new Promise(async function (resolve, reject) {
                 try {
