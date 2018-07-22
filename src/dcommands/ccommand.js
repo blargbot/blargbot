@@ -18,7 +18,7 @@ class CcommandCommand extends BaseCommand {
                 + 'disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output '
                 + 'whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the \'ccommand\' command. '
                 + 'For more in-depth command customization, see the `editcommand` command.\n\n__**Usage:**__\n'
-                + '  **cc cooldown <name> [time]** - sets the cooldown of a tag, in milliseconds. Cooldowns must be greater than 500ms.\n'    
+                + '  **cc cooldown <name> [time]** - sets the cooldown of a tag, in milliseconds. Cooldowns must be greater than 500ms.\n'
                 + '  **cc create <name> <content>** - creates a ccommand with given name and content\n'
                 + '  **cc debug <name>** - executes the specified custom command and sends a file containing all the debug information\n'
                 + '  **cc delete <name>** - deletes the ccommand with given name, provided that you own it\n'
@@ -27,13 +27,13 @@ class CcommandCommand extends BaseCommand {
                 + '  **cc flag <name> | <add|remove> <name> <flags>** - retrieves or sets the flags for a custom command. Flags are added in the format `-x <name> <desc>`. For example, `-f flag This is a flag!`\n'
                 + '  **cc help** - shows this message\n'
                 + '  **cc import <tag> [name]** - imports a tag as a custom command, retaining all data such as author variables\n'
-                + '  **cc list** - displays the list of ccommands on the guild\n'    
+                + '  **cc list** - displays the list of ccommands on the guild\n'
                 + '  **cc raw <name>** - displays the raw code of a ccommand\n'
                 + '  **cc rename <tag1> <tag2>** - renames the ccommand by the name of `ccommand1` to `ccommand2`\n'
                 + '  **cc set <name> <content>** - provides the functionality of `create` and `edit` in a single command\n'
                 + '  **cc sethelp** <name> [help text] - set the help message for a custom command\n'
-                + '  **cc setlang** <name> [lang] - set the language to use when returning the raw text of your cc\n'   
-                + '  **cc setrole <name> [role names...]** - sets the roles required to execute the ccommand\n' 
+                + '  **cc setlang** <name> [lang] - set the language to use when returning the raw text of your cc\n'
+                + '  **cc setrole <name> [role names...]** - sets the roles required to execute the ccommand\n'
                 + '  \nFor more information about BBTag, visit https://blargbot.xyz/tags'
         });
     }
@@ -41,7 +41,7 @@ class CcommandCommand extends BaseCommand {
     async execute(msg, words, text) {
         console.debug('Text:', text);
         if (words[1]) {
-            let tag, content, title, lang;
+            let tag, content, title, lang, result;
             switch (words[1].toLowerCase()) {
                 case 'cooldown':
                     title = filterTitle(words[2]);
@@ -317,7 +317,7 @@ class CcommandCommand extends BaseCommand {
                         lang = tag.lang || '';
                         if (typeof tag === 'string') tag = { content: tag };
                         content = `The raw code for ${title} is\`\`\`${lang}\n${tag.content}\n\`\`\``;
-                        if (content.length > 2000 || tag.match(/`{3}/g)) {
+                        if (content.length > 2000 || tag.content.match(/`{3}/g)) {
                             bu.send(msg, `The raw code for ${title} is attached`, {
                                 name: title + '.bbtag',
                                 file: tag.content
@@ -410,7 +410,7 @@ class CcommandCommand extends BaseCommand {
                     }
                     break;
                 case 'debug':
-                    let result = await bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3));
+                    result = await bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3));
                     await bu.send(result.context.msg, undefined, bbtag.generateDebug(result.code, result.context));
 
                     break;
