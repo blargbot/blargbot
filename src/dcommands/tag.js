@@ -631,7 +631,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                             await r.table('tag').get('test').replace(systemTag('test')).run();
                         await bbEngine.runTag({
                             msg,
-                            limits: bbtag.limits.tag,
+                            limits: new bbtag.limits.tag(),
                             tagContent: args.join(' '),
                             input: '',
                             tagName: 'test',

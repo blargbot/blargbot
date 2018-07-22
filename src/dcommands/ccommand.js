@@ -381,7 +381,7 @@ class CcommandCommand extends BaseCommand {
                     if (args.length > 0) {
                         await bbEngine.runTag({
                             msg,
-                            limits: bbtag.limits.ccommand,
+                            limits: new bbtag.limits.ccommand(),
                             tagContent: args.join(' '),
                             input: '',
                             tagName: 'test',

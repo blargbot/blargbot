@@ -75,7 +75,7 @@ class Context {
         this.dbObjectsCommitted = 0;
         this.state = {
             /** @type {{[key:string]: limit}} */
-            limits: {},
+            limits: options.limits || {},
             query: {
                 count: 0,
                 user: {},
@@ -96,17 +96,6 @@ class Context {
             overrides: {},
             cache: {}
         };
-
-        let limits = options.limits || {};
-        for (const subtag of Object.keys(limits)) {
-            let cloned = {};
-            let limit = limits[subtag];
-            for (const key of Object.keys(limits[subtag])) {
-                cloned[key] = limit[key];
-            }
-
-            this.state.limits[subtag] = cloned;
-        }
     }
 
     ownsMessage(messageId) {
