@@ -515,7 +515,7 @@ const limits = {
             this.edit = { count: 10 };
             this.delete = { count: 11 };
 
-            this.timer = { staff: true };
+            this.timer = { staff: true, count: 3 };
 
             this.usersetnick = { staff: true };
 

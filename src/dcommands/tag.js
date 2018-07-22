@@ -858,6 +858,7 @@ ${Object.keys(user.favourites).join(', ')}
 
             args.content = args.params.args[1];
             args.tempVars = args.params.vars;
+            args.version = 2;
         }
 
         let context = await Context.deserialize(args.context),
@@ -865,11 +866,10 @@ ${Object.keys(user.favourites).join(', ')}
 
         if (!context.state.count) context.state.count = {};
 
-        context.state.count.timer = -1;
         context.state.embed = null;
         context.state.reactions = [];
 
-        if (args.version == 2) {
+        if (args.version < 3) {
             context.state.count.loop = context.state.repeats;
             context.state.count.foreach = context.state.foreach;
             context.state.count.dm = context.state.dm;
@@ -877,9 +877,28 @@ ${Object.keys(user.favourites).join(', ')}
             delete context.state.dmCount;
             delete context.state.repeats;
             delete context.state.foreach;
+
+            args.version = 3;
         }
 
-        // TODO: Add migration for new limit system
+        if (args.version < 4) {
+            function reduceLimit(key, count, attribute = 'count') {
+                if (context.state.limits[key] && attribute in context.state.limits[key]) {
+                    context.state.limits[key][attribute] -= count;
+                }
+            }
+
+            context.state.limits = context.isCC ? new bbtag.limits.ccommand() : new bbtag.limits.tag();
+            reduceLimit('dm', context.state.count.dm || 0);
+            reduceLimit('send', context.state.count.send || 0);
+            reduceLimit('edit', context.state.count.edit || 0);
+            reduceLimit('delete', context.state.count.delete || 0);
+            (context.state.limits.timer || (context.state.limits.timer = {})).count = 0;
+            reduceLimit('for', context.state.count.loop || 0, 'loops');
+            reduceLimit('foreach', context.state.count.foreach || 0, 'loops');
+
+            args.version = 4;
+        }
 
         try {
             await bbEngine.runTag(content, context);
