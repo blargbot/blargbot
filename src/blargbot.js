@@ -2,13 +2,14 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-28 10:43:53
+ * @Last Modified time: 2018-07-19 14:12:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 global.config = require('../config.json');
 const CatLoggr = require('cat-loggr');
+
 const loggr = new CatLoggr({
     shardId: 'MS',
     level: config.general.isbeta ? 'debug' : 'info',
@@ -45,8 +46,7 @@ global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
 const Spawner = require('./core/Spawner');
 const Eris = require('eris');
-
-var irc = require('./core/irc.js');
+const irc = require('./core/irc.js');
 
 /** CONFIG STUFF **/
 
@@ -54,27 +54,28 @@ global.bu = require('./core/util.js');
 bu.init();
 
 /** LOGGING STUFF **/
-
-
 var VERSION = config.version;
 
-global.bot = new Eris(config.discord.token, { restMode: true, defaultImageFormat: 'png' });
-var spawner = new Spawner({
-    discord: bot,
-    irc
-});
-global.spawner = spawner;
 
 /**
  * Time to init the bots
  */
-async function init() {
-    console.init('Initializing discord.');
-    await spawner.spawnAll();
-    irc.init(VERSION, botEmitter);
-    console.verbose('IRC finished?');
-    const website = require('./backend/main');
-    await website.init();
+class BlargbotClient {
+    constructor() {
+        // todo: make these not global because ew
+        this.bot = global.bot = new Eris(config.discord.token, { restMode: true, defaultImageFormat: 'png' });
+        this.spawner = global.spawner = new Spawner({
+            discord: bot,
+            irc
+        });
+
+        console.init('Initializing discord.');
+        spawner.spawnAll();
+        irc.init(VERSION, botEmitter);
+        console.verbose('IRC finished?');
+        this.backend = require('./backend/main');
+        this.backend.init();
+    }
 }
 
 botEmitter.on('ircInit', () => {
@@ -120,4 +121,5 @@ if (config.cassandra) {
             console.error(err.message, err.stack);
         });
 }
-init();
+
+const client = new BlargbotClient();

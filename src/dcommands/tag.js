@@ -103,6 +103,11 @@ const subcommands = [
         name: 'flag',
         args: '<tag> | <add|remove> <name> <flags>',
         desc: 'Retrieves or sets the flags for a tag.'
+    },
+    {
+        name: 'setlang',
+        args: '<tag> <lang>',
+        desc: 'Sets the language to use when returning the raw text of your tag'
     }
 ];
 const tagNameMsg = 'Enter the name of the tag:';
@@ -191,7 +196,7 @@ class TagCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         let page = 0;
-        let title, content, tag, author, originalTagList;
+        let title, content, tag, author, authorizer, originalTagList, lang, result;
         if (words[1]) {
             switch (words[1].toLowerCase()) {
                 case 'cooldown':
@@ -247,11 +252,13 @@ class TagCommand extends BaseCommand {
                     await r.table('tag').insert({
                         name: title,
                         author: msg.author.id,
+                        authorizer: msg.author.id,
                         content: content,
                         lastmodified: r.epochTime(moment() / 1000),
                         uses: 0
                     }).run();
-                    bu.send(msg, `✅ Tag \`${title}\` created. ✅`);
+                    result = bbtag.addAnalysis(content, `✅ Tag \`${title}\` created. ✅`);
+                    bu.send(msg, result);
                     logChange('Create', msg, {
                         tag: title,
                         content: content
@@ -328,7 +335,8 @@ class TagCommand extends BaseCommand {
                         content: content,
                         lastmodified: r.epochTime(moment() / 1000)
                     }).run();
-                    bu.send(msg, `✅ Tag \`${title}\` edited. ✅`);
+                    result = bbtag.addAnalysis(content, `✅ Tag \`${title}\` edited. ✅`);
+                    bu.send(msg, result);
                     logChange('Edit', msg, {
                         tag: title,
                         content: content
@@ -364,12 +372,15 @@ class TagCommand extends BaseCommand {
                     await r.table('tag').get(title).replace({
                         name: title,
                         author: msg.author.id,
+                        authorizer: (tag ? tag.authorizer : undefined) || msg.author.id,
                         content: content,
                         lastmodified: r.epochTime(moment() / 1000),
                         uses: tag ? tag.uses : 0,
-                        flags: []
+                        flags: [],
+                        lang: tag.lang
                     }).run();
-                    bu.send(msg, `✅ Tag \`${title}\` ${tag ? 'edited' : 'created'}. ✅`);
+                    result = bbtag.addAnalysis(content, `✅ Tag \`${title}\` set. ✅`);
+                    bu.send(msg, result);
                     logChange(tag ? 'Edit' : 'Create', msg, {
                         tag: title,
                         content: content
@@ -501,15 +512,17 @@ ${command[0].desc}`);
                         bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
                         break;
                     }
-                    let lang = '';
-                    if (/\{lang;.*?}/i.test(tag.content)) {
-                        lang = tag.content.match(/\{lang;(.*?)}/i)[1];
+                    lang = tag.lang || '';
+                    content = `The raw code for ${words[2]} is:\n\`\`\`${lang}\n${tag.content}\n\`\`\``;
+                    if (content.length > 2000 || tag.content.match(/`{3}/)) {
+                        bu.send(msg, `The raw code for ${title} is attached`, {
+                            name: title + '.bbtag',
+                            file: tag.content
+                        });
+                    } else {
+                        bu.send(msg, content);
                     }
-                    content = tag.content.replace(/`/g, '`\u200B');
-                    bu.send(msg, `The code for ${words[2]} is:
-\`\`\`${lang}
-${content}
-\`\`\``);
+
                     break;
                 case 'author':
                     if (words[2]) title = words[2];
@@ -525,7 +538,12 @@ ${content}
                         break;
                     }
                     author = await r.table('user').get(tag.author).run();
-                    bu.send(msg, `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`);
+                    let toSend = `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`;
+                    if (tag.authorizer && tag.authorizer != author.id) {
+                        authorizer = await r.table('user').get(tag.authorizer).run();
+                        toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}`;
+                    }
+                    bu.send(msg, toSend);
                     break;
                 case 'top':
                     let topTags = await r.table('tag').orderBy(r.desc(r.row('uses'))).limit(10).run();
@@ -549,10 +567,12 @@ ${content}
                         break;
                     }
                     author = await r.table('user').get(tag.author).run();
+                    authorizer = await r.table('user').get(tag.authorizer || tag.author).run();
                     let count = await r.table('user').getAll(tag.name, { index: 'favourite_tag' }).count();
 
                     let output = `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
+Authorizer: **${authorizer.username}#${authorizer.discriminator}**
 Cooldown: ${tag.cooldown || 0}ms
 It was last modified **${moment(tag.lastmodified).format('LLLL')}**.
 It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!
@@ -615,6 +635,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                             input: '',
                             tagName: 'test',
                             author: msg.author.id,
+                            authorizer: msg.author.id,
                             modResult(context, text) {
                                 function formatDuration(duration) {
                                     return duration.asSeconds() >= 5 ?
@@ -629,13 +650,13 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                                     '```',
                                     `${text}`
                                 ];
-                                return lines.join('\n');
+                                return bbtag.escapeMentions(context, lines.join('\n'));
                             }, attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                         });
                     }
                     break;
                 case 'debug':
-                    let result = await bbtag.executeTag(msg, filterTitle(words[2]), words.slice(3));
+                    result = await bbtag.executeTag(msg, filterTitle(words[2]), words.slice(3));
                     let dmChannel = await result.context.user.getDMChannel();
 
                     if (dmChannel == null)
@@ -766,6 +787,22 @@ ${Object.keys(user.favourites).join(', ')}
                 case 'docs':
                     bbtag.docs(msg, words[0], words.slice(2).join(' '));
                     break;
+                case 'setlang':
+                    if (words.length == 3 || words.length == 4) {
+                        title = filterTitle(words[2]);
+                        tag = await r.table('tag').get(words[2]).run();
+                        if (!tag) {
+                            bu.send(msg, 'That tag doesn\'t exist!');
+                            break;
+                        }
+                        await r.table('tag').get(title).update({ lang: words[3] }).run();
+                        bu.send(msg, `✅ Lang for tag \`${title}\` set. ✅`);
+                    } else if (words.length > 4) {
+                        bu.send(msg, 'Too many arguments! Do `help tag` for more information.');
+                    } else {
+                        bu.send(msg, 'Not enough arguments! Do `help tag` for more information.');
+                    }
+                    break;
                 default:
                     await bbtag.executeTag(msg, filterTitle(words[1]), words.slice(2));
                     break;
@@ -805,7 +842,8 @@ ${Object.keys(user.favourites).join(', ')}
                 scope: {},
                 input: args.params.words,
                 tagName: args.params.tagName,
-                author: args.params.author
+                author: args.params.author,
+                authorizer: args.params.author
             };
             let channel = bot.getChannel(args.channel);
             args.context.msg.channel = {
@@ -852,7 +890,6 @@ ${Object.keys(user.favourites).join(', ')}
         }
     };
 }
-
 
 function escapeRegex(str) {
     return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");

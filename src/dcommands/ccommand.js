@@ -30,6 +30,7 @@ class CcommandCommand extends BaseCommand {
                 + '  **cc import <tag> [name]** - imports a tag as a custom command, retaining all data such as author variables\n'
                 + '  **cc help** - shows this message\n'
                 + '  **cc sethelp** <name> [help text] - set the help message for a custom command\n'
+                + '  **cc setlang** <name> [lang] - set the language to use when returning the raw text of your cc\n'
                 + '  **cc debug <name>** - executes the specified custom command and sends a file containing all the debug information\n'
                 + '  **cc docs** [topic] - view help docuentation for BBTag, specific to ccommands\n'
                 + '  \nFor more information about BBTag, visit https://blargbot.xyz/tags'
@@ -39,9 +40,7 @@ class CcommandCommand extends BaseCommand {
     async execute(msg, words, text) {
         console.debug('Text:', text);
         if (words[1]) {
-            let tag;
-            let content;
-            let title;
+            let tag, content, title, lang;
             switch (words[1].toLowerCase()) {
                 case 'cooldown':
                     title = filterTitle(words[2]);
@@ -110,9 +109,11 @@ class CcommandCommand extends BaseCommand {
                         content = bu.splitInput(text, true).slice(3).join(' ');
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
-                            author: msg.author.id
+                            author: msg.author.id,
+                            authorizer: msg.author.id
                         });
-                        bu.send(msg, `✅ Custom command \`${title}\` created. ✅`);
+                        result = bbtag.addAnalysis(content, `✅ Custom command \`${title}\` created. ✅`);
+                        bu.send(msg, result);
                     } else {
                         bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                     }
@@ -198,9 +199,12 @@ class CcommandCommand extends BaseCommand {
                         content = bu.splitInput(text, true).slice(3).join(' ');
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
-                            author: msg.author.id
+                            author: msg.author.id,
+                            authorizer: (tag ? tag.authorizer : undefined) || msg.author.id,
+                            lang: tag.lang
                         });
-                        bu.send(msg, `✅ Custom command \`${title}\` edited. ✅`);
+                        result = bbtag.addAnalysis(content, `✅ Custom command \`${title}\` edited. ✅`);
+                        bu.send(msg, result);
                     } else {
                         bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                     }
@@ -213,11 +217,14 @@ class CcommandCommand extends BaseCommand {
                             break;
                         }
                         content = bu.splitInput(text, true).slice(3).join(' ');
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
-                            author: msg.author.id
+                            author: msg.author.id,
+                            authorizer: (tag ? tag.authorizer : undefined) || msg.author.id
                         });
-                        bu.send(msg, `✅ Custom command \`${title}\` set. ✅`);
+                        result = bbtag.addAnalysis(content, `✅ Custom command \`${title}\` set. ✅`);
+                        bu.send(msg, result);
                     } else {
                         bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                     }
@@ -239,9 +246,11 @@ class CcommandCommand extends BaseCommand {
                         if (tag) {
                             let author = await r.table('user').get(tag.author).run();
                             await bu.ccommand.set(msg.channel.guild.id, title, {
-                                alias: tag.name
+                                alias: tag.name,
+                                authorizer: msg.author.id
                             });
-                            bu.send(msg, `✅ The tag \`${tag.name}\` by **${author.username}#${author.discriminator}** has been imported as \`${title}\`. ✅`);
+                            bu.send(msg, `✅ The tag \`${tag.name}\` by **${author.username}#${author.discriminator}** ` +
+                                `has been imported as \`${title}\` and is authorized by **${msg.author.username}#${msg.author.discriminator}**. ✅`);
                         } else {
                             bu.send(msg, `A tag with the name of \`${words[2]}\` could not be found.`);
                         }
@@ -304,14 +313,17 @@ class CcommandCommand extends BaseCommand {
                             bu.send(msg, `That ccommand is imported. The raw source is available from the \`${tag.alias}\` tag.`);
                             break;
                         }
-                        let lang = '';
-                        if (tag.content) tag = tag.content;
-                        if (/\{lang;.*?}/i.test(tag)) {
-                            lang = tag.match(/\{lang;(.*?)}/i)[1];
+                        lang = tag.lang || '';
+                        if (typeof tag === 'string') tag = { content: tag };
+                        content = `The raw code for ${title} is\`\`\`${lang}\n${tag.content}\n\`\`\``;
+                        if (content.length > 2000 || tag.match(/`{3}/g)) {
+                            bu.send(msg, `The raw code for ${title} is attached`, {
+                                name: title + '.bbtag',
+                                file: tag.content
+                            });
+                        } else {
+                            bu.send(msg, content);
                         }
-                        content = tag.replace(/`/g, '`\u200B');
-
-                        bu.send(msg, `The raw code for ${title} is\`\`\`${lang}\n${content}\n\`\`\``);
                     } else {
                         bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                     }
@@ -334,7 +346,7 @@ class CcommandCommand extends BaseCommand {
                         if (tag.hidden) {
                             return await bu.send(msg, `❌ You can't set help on a hidden ccommand! ❌`);
                         }
-                        content = bu.splitInput(text, true).slice(3).join(' ');
+                        content = words.slice(3).join(' ');
                         var message = "";
                         if (await bu.ccommand.sethelp(msg.channel.guild.id, title, content)) {
                             message = `✅ Help for custom command \`${title}\` set. ✅`;
@@ -374,6 +386,7 @@ class CcommandCommand extends BaseCommand {
                             tagName: 'test',
                             isCC: true,
                             author: msg.author.id,
+                            authorizer: msg.author.id,
                             modResult(context, text) {
                                 function formatDuration(duration) {
                                     return duration.asSeconds() >= 5 ?
@@ -398,6 +411,22 @@ class CcommandCommand extends BaseCommand {
                     let result = await bbtag.executeCC(msg, filterTitle(words[2]), words.slice(3));
                     await bu.send(result.context.msg, undefined, bbtag.generateDebug(result.code, result.context));
 
+                    break;
+                case 'setlang':
+                    if (words.length == 3 || words.length == 4) {
+                        title = filterTitle(words[2]);
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (!tag) {
+                            bu.send(msg, 'That ccommand doesn\'t exist!');
+                            break;
+                        }
+                        await bu.ccommand.setlang(msg.channel.guild.id, title, words[3]);
+                        bu.send(msg, `✅ Lang for custom command \`${title}\` set. ✅`);
+                    } else if (words.length > 4) {
+                        bu.send(msg, 'Too many arguments! Do `help ccommand` for more information.');
+                    } else {
+                        bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
+                    }
                     break;
                 default:
                     bu.send(msg, 'Improper usage. Do \`help ccommand\` for more details.');

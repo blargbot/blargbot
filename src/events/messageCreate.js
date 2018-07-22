@@ -164,15 +164,18 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
     let alias = false;
     if (val && val.alias) {
         alias = val.alias;
+        let auth = val.authorizer;
         val = await r.table('tag').get(alias);
+        val.authorizer = auth;
     }
     if (val && val.content) {
         let ccommandName = words[0].toLowerCase();
         let ccommandContent;
-        let author;
+        let author, authorizer;
         if (typeof val == "object") {
             ccommandContent = val.content;
             author = val.author;
+            authorizer = val.authorizer;
         } else {
             ccommandContent = val;
             await bu.ccommand.set(msg.guild.id, ccommandName, {
@@ -198,7 +201,8 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
                 isCC: true,
                 tagName: ccommandName,
                 cooldown: val.cooldown,
-                author
+                author,
+                authorizer
             });
             bu.Metrics.commandCounter.labels('custom', 'custom').inc();
 

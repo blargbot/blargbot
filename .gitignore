@@ -1,4 +1,5 @@
 logs/*
+.nuxt/
 node_modules/*
 userdata/*
 .idea/*
@@ -41,3 +42,4 @@ processwhite.js
 kek
 jsondiff.js
 !colors.json
+.nuxt/

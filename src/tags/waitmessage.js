@@ -71,10 +71,13 @@ module.exports =
                 channels = await Promise.all(channels.map(async input => await Builder.util.parseChannel(context, input)));
                 if (failure = channels.find(channel => typeof channel == "function"))
                     return failure(subtag, context);
-                channels = channels.map(channel => channel.id);
+                channels = channels.map(channel => channel);
             }
             else {
-                channels = [context.channel.id];
+                channels = [context.channel];
+            }
+            if (failure = channels.find(channel => !Builder.util.canAccessChannel(context, channel))) {
+                return Builder.errors.cannotAccessChannel(subtag, context, failure.id);
             }
 
             // parse users
@@ -111,7 +114,7 @@ module.exports =
             let checkFunc = this.createCheck(subtag, context, checkBBTag, msg => context.makeChild({ msg }));
 
             try {
-                let result = await bu.awaitMessage(channels, users, checkFunc, timeout * 1000);
+                let result = await bu.awaitMessage(channels.map(c => c.id), users, checkFunc, timeout * 1000);
                 return JSON.stringify([result.channel.id, result.id]);
             } catch (err) {
                 if (typeof err == "function") {

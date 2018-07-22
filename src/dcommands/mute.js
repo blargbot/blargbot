@@ -91,13 +91,14 @@ class MuteCommand extends BaseCommand {
                         try {
                             var roles = member.roles;
                             roles.push(mutedrole);
+                            let reason;
+                            let input = bu.parseInput(this.flags, words);
+                            if (input.r) reason = input.r.join(' ');
                             await bot.editGuildMember(msg.channel.guild.id, user.id, {
                                 roles: roles,
                                 mute: voiceMute ? true : undefined
-                            });
-                            let input = bu.parseInput(this.flags, words);
-                            let reason;
-                            if (input.r) reason = input.r.join(' ');
+                            }, `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`);
+
                             bu.logAction(msg.channel.guild, user, msg.author, 'Mute', reason, bu.ModLogColour.MUTE);
                             let suffix = '';
                             if (input.t) {

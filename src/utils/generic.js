@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-21 21:40:11
+ * @Last Modified time: 2018-07-21 21:59:08
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -872,12 +872,12 @@ bu.issueWarning = async function (user, guild, count, params) {
                 type: 'Auto-Ban',
                 reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`
             };
-            await guild.banMember(user.id);
+            await guild.banMember(user.id, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
             storedGuild.warnings.users[user.id] = undefined;
             type = 1;
         } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
-            await bu.logAction(guild, user, bot.user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`, bu.ModLogColour.KICK);
-            await guild.kickMember(user.id);
+            // await bu.logAction(guild, user, bot.user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`, bu.ModLogColour.KICK);
+            await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
             type = 2;
         }
     await r.table('guild').get(guild.id).update({
