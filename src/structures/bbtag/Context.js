@@ -31,9 +31,13 @@ class Context {
      */
     constructor(options) {
         this.message = this.msg = options.msg;
-        this.input = bu.splitInput(options.input || '');
-        if (this.input.length == 1 && this.input[0] == '')
-            this.input = [];
+        if (Array.isArray(options.input)) {
+            this.input = options.input;
+        } else {
+            this.input = bu.splitInput(options.input || '');
+            if (this.input.length == 1 && this.input[0] == '')
+                this.input = [];
+        }
 
         let flags = Array.isArray(options.flags) ? options.flags : [];
         this.flaggedInput = bu.parseInput(flags, [].concat([''], this.input));

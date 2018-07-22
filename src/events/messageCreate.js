@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-21 21:38:44
+ * @Last Modified time: 2018-07-21 23:52:52
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -51,7 +51,7 @@ async function handleUserMessage(msg, storedGuild) {
         handleAntiMention(msg, storedGuild);
         bu.handleCensor(msg, storedGuild);
         handleRoleme(msg, storedGuild);
-        handleAutoresponse(msg, storedGuild);
+        handleAutoresponse(msg, storedGuild, true);
         handleTableflip(msg);
         if (Array.isArray(storedGuild.settings.prefix)) {
             prefixes.push(...storedGuild.settings.prefix);
@@ -76,6 +76,7 @@ async function handleUserMessage(msg, storedGuild) {
             }
         }
     }
+    let wasCommand = false;
     if (prefix != undefined && msg.content.toLowerCase().startsWith(prefix.toLowerCase())) {
         if (storedUser && storedUser.blacklisted) {
             await bu.send(msg, 'You have been blacklisted from the bot for the following reason: ' + storedUser.blacklisted);
@@ -83,7 +84,7 @@ async function handleUserMessage(msg, storedGuild) {
         }
         var command = msg.content.substring(prefix.length).trim();
         try {
-            let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
+            wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
             if (wasCommand) {
                 // logCommand(msg);
 
@@ -103,6 +104,8 @@ async function handleUserMessage(msg, storedGuild) {
     } else {
         handleAwaitMessage(msg);
     }
+    if (!wasCommand)
+        handleAutoresponse(msg, storedGuild, false);
 }
 
 /**
@@ -421,16 +424,15 @@ async function handleRoleme(msg, storedGuild) {
     }
 }
 
-async function handleAutoresponse(msg, storedGuild) {
-    if (!['194232473931087872', '197529405659021322'].includes(msg.guild.id)) return; // selective whitelist for now
+async function handleAutoresponse(msg, storedGuild, everything = false) {
+    if (!['194232473931087872', '197529405659021322', '110373943822540800'].includes(msg.guild.id)) return; // selective whitelist for now
 
     // todo: impose limits
 
     if (storedGuild && storedGuild.autoresponse) {
         let ars = storedGuild.autoresponse;
 
-
-        if (ars.everything) {
+        if (everything && ars.everything) {
             await bbEngine.runTag({
                 msg,
                 tagContent: storedGuild.ccommands[ars.everything.executes].content,
@@ -441,10 +443,10 @@ async function handleAutoresponse(msg, storedGuild) {
                 silent: true
             });
         }
-        if (ars.list.length > 0) {
+        if (!everything && ars.list.length > 0) {
             for (const ar of ars.list) {
                 let cont = false;
-                let matches = [msg.content];
+                let matches;
                 if (ar.regex) {
                     try {
                         let exp = bu.createRegExp(ar.term);
@@ -453,6 +455,7 @@ async function handleAutoresponse(msg, storedGuild) {
                         if (matches !== null) {
                             cont = true;
                             matches.map(m => '"' + m.replace(/"/g, '\\"') + '"');
+                            if (matches.length === 1) matches = null;
                         }
                     } catch (err) {
                         console.log(err);
@@ -466,7 +469,7 @@ async function handleAutoresponse(msg, storedGuild) {
                         msg,
                         tagContent: storedGuild.ccommands[ar.executes].content,
                         author: storedGuild.ccommands[ar.executes].author,
-                        input: matches.join(' '),
+                        input: matches || msg.content,
                         isCC: true,
                         tagName: ar.executes
                     });
