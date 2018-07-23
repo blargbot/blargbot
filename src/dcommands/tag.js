@@ -16,7 +16,8 @@ const subcommands = [
     {
         name: 'create',
         args: '<name> <content>',
-        desc: 'Creates a new tag with the given name and content. The `add` keyword is an alias'
+        desc: 'Creates a new tag with the given name and content',
+        aliases: [ 'add' ]
     },
     {
         name: 'edit',
@@ -26,7 +27,8 @@ const subcommands = [
     {
         name: 'delete',
         args: '<name>',
-        desc: 'Deletes the tag with the given name, provided that you were the one who created it. The `remove` keyword is an alias'
+        desc: 'Deletes the tag with the given name, provided that you were the one who created it',
+        aliases: [ 'remove' ]
     },
     {
         name: 'rename',
@@ -108,6 +110,12 @@ const subcommands = [
         name: 'setlang',
         args: '<tag> <lang>',
         desc: 'Sets the language to use when returning the raw text of your tag'
+    },
+    {
+        name: 'test',
+        args: '<content>',
+        desc: 'Uses the BBTag engine to execute the content as it was a tag',
+        aliases: [ 'eval', 'exec' ]
     }
 ];
 const tagNameMsg = 'Enter the name of the tag:';
@@ -421,7 +429,7 @@ class TagCommand extends BaseCommand {
                 case 'help':
                     if (words.length > 2) {
                         let command = subcommands.filter(s => {
-                            return s.name == words[2].toLowerCase() || s.alias == words[2].toLowerCase();
+                            return s.name == words[2].toLowerCase() || s.aliases.includes(words[2].toLowerCase());
                         });
                         if (command.length > 0) {
                             await bu.send(msg, `Subcommand: **${command[0].name}**
