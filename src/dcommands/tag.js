@@ -189,7 +189,7 @@ class TagCommand extends BaseCommand {
             name: 'tag',
             aliases: ['t'],
             category: bu.CommandType.GENERAL,
-            usage: `tag [${subcommands.map(x => x.name).join(' | ')}]`,
+            usage: `tag [${subcommands.map(x => `${x.name}${x.args ? ' '+x.args : ''}`).join(' | ')}]`,
             info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n' 
                 + '\n__**Subcommands:**__\n'
                 + `${subcommands.map(x => `**${x.name}**`).join(', ')}`
