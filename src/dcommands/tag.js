@@ -189,11 +189,12 @@ class TagCommand extends BaseCommand {
             name: 'tag',
             aliases: ['t'],
             category: bu.CommandType.GENERAL,
-            usage: 'tag [<name> | create | edit | delete | rename | flag | cooldown | raw | info | top | author | search | list | favorite | report | test | debug | help | docs]',
+            usage: `tag [${subcommands.map(x => x.name).join(' | ')}]`,
             info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n' 
-                + '\n**Subcommands**:\n**<name>**, **create**, **edit**, **delete**, **rename**, **flag**, **cooldown**, **raw**, **info**, **top**, **author**, **search**, **list**, **favorite**, **report**, **test**, **debug**, **help**, **docs**\n'
-                + '\nFor more information about a subcommand, do `b!tag help <subcommand>`'
-                + '\nFor more information about BBTag, visit <https://blargbot.xyz/tags>\n'
+                + '\n__**Subcommands:**__\n'
+                + `${subcommands.map(x => `**${x.name}**`).join(', ')}`
+                + '\nFor more information about a subcommand, do `b!tag help <subcommand>`.\n'
+                + '\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\n'
                 + 'By creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)'
         });
     }
