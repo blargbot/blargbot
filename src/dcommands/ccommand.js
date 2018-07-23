@@ -110,7 +110,7 @@ class CcommandCommand extends BaseCommand {
                 + 'disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output '
                 + 'whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the \'ccommand\' command. '
                 + 'For more in-depth command customization, see the `editcommand` command.\n' 
-                + '\n__**Subcommands:**__\n'
+                + '\n**Subcommands:**\n'
                 + `${subcommands.map(x => `**${x.name}**`).join(', ')}`
                 + '\nFor more information about a subcommand, do `b!cc help <subcommand>.`\n'
                 + '\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\n'
