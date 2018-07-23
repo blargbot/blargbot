@@ -10,8 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('warn')
-        .requireStaff()
+    Builder.BotTag('warn')
         .withArgs(a => [a.optional('user'), a.optional('count'), a.optional('reason')])
         .withDesc('Gives `user` the specified number of warnings with the given reason, and returns their new warning count. ' +
             '`user` defaults to the authorizer of the tag. `count` defaults to 1.')

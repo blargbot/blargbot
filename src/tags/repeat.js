@@ -30,9 +30,11 @@ module.exports =
 
             if (amount < 0) return Builder.util.error(subtag, context, 'Cant be negative');
 
+            let remaining = context.state.limits.repeat || { loops: NaN };
+
             for (let i = 0; i < amount; i++) {
-                context.state.count.loop += 1;
-                if (context.state.count.loop > 1500) {
+                remaining.loops--;
+                if (!(remaining.loops >= 0)) { // (remaining.loops < 0) would not work due to the comparison behaviours of NaN
                     result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }

@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-16 09:16:50
+ * @Last Modified time: 2018-07-21 21:59:08
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -968,6 +968,7 @@ bu.splitInput = (content, noTrim) => {
 bu.canExecuteCcommand = async function (msg, commandName, quiet) {
     let val = await bu.ccommand.get(msg.guild ? msg.guild.id : '', commandName);
     if (val && typeof val == "object") {
+        if (val.hidden) return false;
         let roles = val.roles;
         if (roles && roles.length > 0) {
             for (let role of roles) {

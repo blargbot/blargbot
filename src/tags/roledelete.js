@@ -10,13 +10,12 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('roledelete')
-        .requireStaff()
+    Builder.APITag('roledelete')
         .withArgs(a => [a.require('role'), a.optional('quiet')])
         .withDesc('Deletes `role`. If `quiet` is specified, if `role` can\'t be found it will return nothing')
         .withExample(
-        '{roledelete;Super Cool Role!}',
-        '(rip no more super cool roles for anyone)'
+            '{roledelete;Super Cool Role!}',
+            '(rip no more super cool roles for anyone)'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {

@@ -11,6 +11,7 @@ const showdown = require('showdown');
 const hbs = require('hbs');
 const argumentFactory = require('../structures/ArgumentFactory');
 const path = require('path');
+const bbtag = require('../core/bbtag');
 
 const converter = new showdown.Converter({ backslashEscapesHTMLTags: true });
 let e = module.exports = {};
@@ -56,7 +57,12 @@ const tagType = {
 
 function mdToHtml(text) {
     text = text.replace(/([,;/])(?=\S)/g, '$1\u200b');
-    return converter.makeHtml(text).replace(/\n/g, '<br>');
+    let result = converter.makeHtml(text).replace(/\n/g, '<br>');
+
+    // if (result.startsWith('<p>'))
+    //     result = result.substr(3, result.length - 7);
+
+    return result;
 }
 
 function addSubtagReferences(text) {
@@ -200,17 +206,28 @@ e.init = () => {
             let aliasBlock = subtag.aliases ? ` <small>(${subtag.aliases.join(', ')})</small>` : '';
             toReturn += `<h4 id='${keys[i]}'>${keys[i]}${aliasBlock}</h4>`;
             if (subtag.deprecated) {
-                toReturn += `<p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${
+                toReturn += `<div class="tagdeprecated"><p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${
                     typeof subtag.deprecated === 'string' ? 'Please use ' + subtag.deprecated + ' instead' : ''
-                    }</p>`;
+                    }</p></div>`;
             }
-            if (lastType != 1) {
-                console.log(argumentFactory.toString(subtag.args));
-                console.log(mdToHtml(argumentFactory.toString(subtag.args)));
-                toReturn += mdToHtml('Arguments: `' + argumentFactory.toString(subtag.args) + '`');
+            if (subtag.args) {
+                toReturn += `<div class="tagargs">${mdToHtml('`' + argumentFactory.toString(subtag.args) + '`')}</div>`;
             }
-            if (subtag.array) toReturn += `<p>Array compatible</p>`;
-            toReturn += `<p>${addSubtagReferences(mdToHtml(subtag.desc))}</p>`;
+            if (subtag.array) toReturn += `<div class="tagarray"><p>Array compatible</p></div>`;
+            toReturn += `<div class="tagdescription">${addSubtagReferences(mdToHtml(subtag.desc))}</div><div class="taglimits">`;
+
+            for (const key of Object.keys(bbtag.limits)) {
+                let text = bbtag.limitToSring(key, subtag.name);
+                if (text) {
+                    toReturn += `<div class="taglimit"><h5>Limits for ${
+                        bbtag.limits[key].instance._name
+                        }s</h5><blockquote>${
+                        text.replace(/\n/g, '<br />')
+                        }</blockquote></div>`;
+                }
+            }
+
+            toReturn += '</div><div class="tagexamples">';
 
             if (subtag.exampleCode)
                 toReturn += `<h5>Example Code:</h5><blockquote>${mdToHtml(subtag.exampleCode)}</blockquote>`;
@@ -218,7 +235,7 @@ e.init = () => {
                 toReturn += `<h5>Example Input:</h5><blockquote>${mdToHtml(subtag.exampleIn)}</blockquote>`;
             if (subtag.exampleOut)
                 toReturn += `<h5>Example Output:</h5><blockquote>${mdToHtml(subtag.exampleOut)}</blockquote>`;
-            toReturn += ' </div></div>';
+            toReturn += ' </div></div></div>';
         }
         toReturn += `
                    

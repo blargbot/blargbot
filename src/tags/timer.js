@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 const moment = require('moment-timezone');
 
 module.exports =
-    Builder.CCommandTag('timer')
+    Builder.BotTag('timer')
         .withArgs(a => [a.require('code'), a.require('duration')])
         .withDesc('Executes `code` after `duration`. ' +
             'Three timers are allowed per custom command, with no recursive timers.')
@@ -21,16 +21,10 @@ module.exports =
         ).resolveArgs(1)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs(2, async function (subtag, context, args) {
-            if (context.state.count.timer == -1)
-                return Builder.util.error(subtag, context, 'Nested timers are not allowed');
-
             let duration = bu.parseDuration(args[1]);
 
             if (duration.asMilliseconds() <= 0) return Builder.util.error(subtag, context, 'Invalid duration');
 
-            if (context.state.count.timer > 2) return Builder.util.error(subtag, context, 'Max 3 timers per tag');
-
-            context.state.count.timer += 1;
             await r.table('events').insert({
                 type: 'tag',
                 version: 3,

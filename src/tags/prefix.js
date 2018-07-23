@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('prefix')
+    Builder.BotTag('prefix')
         .withDesc('Gets the current guild\'s prefix.')
         .withExample(
             'Your prefix is {prefix}',

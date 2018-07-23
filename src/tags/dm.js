@@ -11,8 +11,7 @@ const Builder = require('../structures/TagBuilder'),
     DMCache = {};
 
 module.exports =
-    Builder.CCommandTag('dm')
-        .requireStaff()
+    Builder.APITag('dm')
         .withArgs(a => [a.require('user'), a.require([a.optional('message'), a.optional('embed')])])
         .withDesc('DMs `user` the given `message` and `embed`. At least one of `message` and `embed` must be provided. ' +
             'You may only send one DM per execution. Requires author to be staff, and the user to be on the current guild.\n' +
@@ -23,8 +22,6 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
-            if (context.state.count.dm > 0)
-                return Builder.util.error(subtag, context, 'Already have DMed');
 
             let user = await context.getUser(args[0], {
                 suppress: context.scope.suppressLookup,
@@ -63,7 +60,6 @@ module.exports =
                     nsfw: context.state.nsfw
                 });
                 DMCache[user.id].count++;
-                context.state.count.dm += 1;
             } catch (e) {
                 return Builder.util.error(subtag, context, 'Could not send DM');
             }

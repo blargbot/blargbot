@@ -10,20 +10,19 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('kick')
-        .requireStaff()
+    Builder.APITag('kick')
         .withArgs(a => [
             a.require('user'),
             a.optional('reason'),
             a.optional('noperms')
         ]).withDesc('Kicks `user`. ' +
-        'This functions the same as the kick command. ' +
-        'If the kick is successful, `Success` will be returned, otherwise the error will be given. ' +
-        'If `noperms` is provided, do not check if the command executor is actually able to kick people. ' +
-        'Only provide this if you know what you\'re doing.'
+            'This functions the same as the kick command. ' +
+            'If the kick is successful, `Success` will be returned, otherwise the error will be given. ' +
+            'If `noperms` is provided, do not check if the command executor is actually able to kick people. ' +
+            'Only provide this if you know what you\'re doing.'
         ).withExample(
-        '{kick;stupid cat;because I can} @stupid cat was kicked!',
-        'Success @stupid cat was kicked!'
+            '{kick;stupid cat;because I can} @stupid cat was kicked!',
+            'Success @stupid cat was kicked!'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {

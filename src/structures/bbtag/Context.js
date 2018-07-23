@@ -31,9 +31,13 @@ class Context {
      */
     constructor(options) {
         this.message = this.msg = options.msg;
-        this.input = bu.splitInput(options.input || '');
-        if (this.input.length == 1 && this.input[0] == '')
-            this.input = [];
+        if (Array.isArray(options.input)) {
+            this.input = options.input;
+        } else {
+            this.input = bu.splitInput(options.input || '');
+            if (this.input.length == 1 && this.input[0] == '')
+                this.input = [];
+        }
 
         let flags = Array.isArray(options.flags) ? options.flags : [];
         this.flaggedInput = bu.parseInput(flags, [].concat([''], this.input));
@@ -58,6 +62,9 @@ class Context {
         this.cooldowns = cooldowns[this.msg.guild.id][this.isCC][this.msg.author.id];
         this._cooldowns = cooldowns;
 
+        // prevents output
+        this.silent = options.silent;
+
         /** @type {bbError[]} */
         this.errors = [];
         this.debug = [];
@@ -67,17 +74,8 @@ class Context {
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
         this.state = {
-            count: {
-                dm: 0,
-                send: 0,
-                edit: 0,
-                delete: 0,
-                react: 0, // Not implemented, potential for the future
-                reactRemove: 0, // Not implemented, potential for the future
-                timer: 0,
-                loop: 0,
-                foreach: 0
-            },
+            /** @type {{[key:string]: limit}} */
+            limits: options.limits || {},
             query: {
                 count: 0,
                 user: {},
@@ -98,8 +96,6 @@ class Context {
             overrides: {},
             cache: {}
         };
-
-        console.debug(this);
     }
 
     ownsMessage(messageId) {
@@ -190,6 +186,7 @@ class Context {
     }
 
     async sendOutput(text, files) {
+        if (this.silent) return this.state.outputMessage;
         if (!this.state.outputMessage) {
             this.state.outputMessage = new Promise(async function (resolve, reject) {
                 try {
@@ -304,3 +301,11 @@ class Context {
 }
 
 module.exports = Context;
+
+/**
+ * @typedef {Object} limit
+ * @property {number} [limit.count] The remaining uses a subtag has. Leave undefined for unlimited
+ * @property {string} [limit.check] The function name inside the engine.checks property to use as a check
+ * @property {boolean} [limit.disabled] The subtag is disabled and cannot be used at all
+ * @property {boolean} [limit.staff] The context.isStaff promise must return true
+ */

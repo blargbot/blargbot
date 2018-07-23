@@ -16,7 +16,8 @@ class RespondCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id == bu.CAT_ID) {
+        let support = (await r.table('vars').get('support')).value;
+        if (support.includes(msg.author.id)) {
             if (words.length >= 3) {
                 try {
                     let suggestion = await at('Suggestions').select({

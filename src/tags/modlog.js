@@ -10,8 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('modlog')
-        .requireStaff()
+    Builder.BotTag('modlog')
         .withArgs(a => [
             a.require('action'),
             a.require('user'),

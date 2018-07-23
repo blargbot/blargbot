@@ -10,12 +10,12 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('suppresslookup')
+    Builder.BotTag('suppresslookup')
         .withArgs(a => [a.optional('value')])
         .withDesc('Sets whether error messages in the lookup system (query canceled, nothing found) should be suppressed. `value` must be a boolean, and defaults to `true`.')
         .withExample(
-        '{suppresslookup}',
-        ''
+            '{suppresslookup}',
+            ''
         )
         .whenArgs('0-1', async function (subtag, context, args) {
             let suppress = true;

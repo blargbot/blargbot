@@ -10,8 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('send')
-        .requireStaff()
+    Builder.APITag('send')
         .withArgs(a => [a.require('channel'), a.require([a.optional('message'), a.optional('embed')])])
         .withDesc('Sends `message` and `embed` to `channel`, and returns the message ID. `channel` is either an ID or channel mention. ' +
             'At least one out of `message` and `embed` must be supplied.\n' +
@@ -22,9 +21,6 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
-            if (++context.state.count.send > 10)
-                return Builder.util.error(subtag, context, 'Send limit reached (10)');
-
             let channel = bu.parseChannel(args[0], true),
                 message = args[1],
                 embed = bu.parseEmbed(args[1]);
