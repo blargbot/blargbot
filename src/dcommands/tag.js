@@ -433,8 +433,8 @@ class TagCommand extends BaseCommand {
                         });
                         if (command.length > 0) {
                             await bu.send(msg, `Subcommand: **${command[0].name}**
-Args: \`${command[0].args}\`
 Aliases: **${command[0].aliases.join('**, **')}**
+Args: \`${command[0].args}\`
 
 ${command[0].desc}`);
                         } else {
