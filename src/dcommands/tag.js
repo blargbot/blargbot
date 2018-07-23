@@ -16,7 +16,7 @@ const subcommands = [
     {
         name: 'create',
         args: '<name> <content>',
-        desc: 'Creates a new tag with the given name and content'
+        desc: 'Creates a new tag with the given name and content. The `add` keyword is an alias'
     },
     {
         name: 'edit',
@@ -26,7 +26,7 @@ const subcommands = [
     {
         name: 'delete',
         args: '<name>',
-        desc: 'Deletes the tag with the given name, provided that you were the one who created it'
+        desc: 'Deletes the tag with the given name, provided that you were the one who created it. The `remove` keyword is an alias'
     },
     {
         name: 'rename',
