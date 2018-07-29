@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-21 21:59:08
+ * @Last Modified time: 2018-07-28 18:52:05
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1228,7 +1228,9 @@ bu.parseDuration = function (text) {
 
 bu.parseInput = function (map, text, noTrim) {
     let words;
-    if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
+    // if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
+    // else words = bu.splitInput(text, noTrim);
+    if (Array.isArray(text)) words = text.slice(1);
     else words = bu.splitInput(text, noTrim);
     let output = {
         undefined: []
