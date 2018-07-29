@@ -52,7 +52,7 @@ async function execute(bbtag, context) {
             if (!context.state.overrides)
                 context.state.overrides = {};
 
-            if (context.state.overrides.hasOwnProperty(name)) {
+            if (context.state.overrides.hasOwnProperty(name.toLowerCase())) {
                 runSubtag = context.state.overrides[name.toLowerCase()];
                 definition = { name: name.toLowerCase() };
             } else {

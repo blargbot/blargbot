@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-22 16:40:23
+ * @Last Modified time: 2018-07-26 09:22:41
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -381,10 +381,11 @@ function analyze(code) {
         } else {
             let definition = TagManager.get(name.content);
             if (!definition) {
-                result.push({
-                    subtag,
-                    error: `Unknown subtag {${name.content}}`
-                });
+                if (!name.content.toLowerCase().startsWith('func.'))
+                    result.push({
+                        subtag,
+                        error: `Unknown subtag {${name.content}}`
+                    });
             } else if (definition.deprecated) {
                 result.push({
                     subtag,

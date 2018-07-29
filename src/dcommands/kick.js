@@ -67,7 +67,7 @@ class KickCommand extends BaseCommand {
             await bot.kickGuildMember(
                 msg.channel.guild.id,
                 target.id,
-                `[ ${bu.getFullName(msg.author)} ]` + (reason ? ' ' + reason : '')
+                (tag ? '' : `[ ${bu.getFullName(msg.author)} ]`) + (reason ? ' ' + reason : '')
             );
 
             return 0;
