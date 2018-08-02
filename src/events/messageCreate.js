@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-22 15:52:35
+ * @Last Modified time: 2018-07-26 09:09:49
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -427,11 +427,17 @@ async function handleRoleme(msg, storedGuild) {
         }
     }
 }
+let arWhitelist = [];
+
+async function checkWhitelist() {
+    let { values } = await r.table('vars').get('arwhitelist');
+    arWhitelist = values;
+}
+setInterval(checkWhitelist, 1000 * 60 * 15);
+checkWhitelist();
 
 async function handleAutoresponse(msg, storedGuild, everything = false) {
-    if (!['194232473931087872', '197529405659021322', '110373943822540800', '272410239947767808'].includes(msg.guild.id)) return; // selective whitelist for now
-
-    // todo: impose limits
+    if (!arWhitelist.includes(msg.guild.id)) return; // selective whitelist for now
 
     if (storedGuild && storedGuild.autoresponse) {
         let ars = storedGuild.autoresponse;

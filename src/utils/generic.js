@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-21 21:59:08
+ * @Last Modified time: 2018-07-30 08:56:16
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -461,11 +461,9 @@ bu.getUserById = async function (userId) {
         if (user) {
             return user;
         } else {
-            user = (await bot.sender.awaitMessage({ message: 'retrieveUser', id: match[0] })).user;
-            if (user) {
-                user = new User(user, bot);
-                return user;
-            }
+            try {
+                return await bot.getRESTUser(match[0]);
+            } catch (err) { return null; }
         }
     }
     return null;
