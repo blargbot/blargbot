@@ -28,7 +28,7 @@
         "id3": "333333333333333333"
     },
     "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
-    "querycancelled": "The query has been cancelled.",
+    "querycancelled": "La richiesta è stata cancellata.",
     "user": "Utente",
     "role": "Ruolo",
     "channel": "Canale"
