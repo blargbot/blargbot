@@ -24,7 +24,7 @@ class ThesearchCommand extends BaseCommand {
                 name: 'color.png'
             });
         } catch (err) {
-            bu.send(msg, undefined, 'Whoops, something went wrong: `' + err.message + '`');
+            bu.send(msg, 'Whoops, something went wrong: `' + err.message + '`');
         }
     }
 }
