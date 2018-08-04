@@ -16,7 +16,7 @@ class ThesearchCommand extends BaseCommand {
         text = await bu.filterMentions(text);
         bot.sendChannelTyping(msg.channel.id);
         let buffer = await bu.blargbotApi('color', {
-            color: words.slice(1).map(c => c.replace(/[^\da-f]/g, ''))
+            color: words.slice(1)
         });
         bu.send(msg, undefined, {
             file: buffer,
