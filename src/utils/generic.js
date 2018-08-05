@@ -863,6 +863,7 @@ bu.issueWarning = async function (user, guild, count, params) {
     if (!storedGuild.warnings.users) storedGuild.warnings.users = {};
     if (!storedGuild.warnings.users[user.id]) storedGuild.warnings.users[user.id] = 0;
     let type = 0;
+    let error = undefined;
     storedGuild.warnings.users[user.id] += count;
     if (storedGuild.warnings.users[user.id] < 0) storedGuild.warnings.users[user.id] = 0;
     let warningCount = storedGuild.warnings.users[user.id];
@@ -875,12 +876,15 @@ bu.issueWarning = async function (user, guild, count, params) {
                 type: 'Auto-Ban',
                 reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`
             };
-            await guild.banMember(user.id, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
+            try {
+                await guild.banMember(user.id, 0, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`);
+            } catch (e) { error = e; }
             storedGuild.warnings.users[user.id] = undefined;
             type = 1;
         } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
-            // await bu.logAction(guild, user, bot.user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`, bu.ModLogColour.KICK);
-            await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
+            try {
+                await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
+            } catch (e) { error = e; }
             type = 2;
         }
     await r.table('guild').get(guild.id).update({
@@ -888,7 +892,8 @@ bu.issueWarning = async function (user, guild, count, params) {
     });
     return {
         type,
-        count: warningCount
+        count: warningCount,
+        error
     };
 };
 
