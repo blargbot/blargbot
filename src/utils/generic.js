@@ -1783,3 +1783,21 @@ bu.decancer = function (text) {
     });
     return text;
 };
+
+bu.findMessages = async function (channelId, count, filter, before, after) {
+    let result = [];
+    filter = filter || (() => true);
+
+    while (result.length < count) {
+        let batchSize = Math.min(100, count - result.length);
+        let batch = await bot.getMessages(channelId, batchSize, before, after);
+        result.push(...batch);
+
+        if (batch.length != batchSize)
+            break;
+
+        before = result[result.length - 1].id;
+    }
+
+    return result.filter(filter);
+};
