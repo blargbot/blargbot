@@ -1672,6 +1672,8 @@ bu.findEmoji = function (text, distinct) {
     let match;
     let result = [];
 
+    text = text.replace(/\ufe0f/g, '');
+
     // Find custom emotes
     let regex = /<(a?:\w+:\d{17,23})>/gi;
     while (match = regex.exec(text))
