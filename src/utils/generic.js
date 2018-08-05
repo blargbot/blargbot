@@ -275,19 +275,24 @@ bu.hasRole = (msg, roles, override = true) => {
 };
 
 bu.addReactions = async function (channelId, messageId, reactions) {
-    let errors = [];
+    let errors = {};
     for (const reaction of new Set(reactions || [])) {
         try {
             await bot.addMessageReaction(channelId, messageId, reaction);
         } catch (e) {
-            errors.push({ error: e, reaction });
+            if (!errors[e.code]) errors[e.code] = { error: e, reactions: [] };
+            switch (e.code) {
+                case 50013:
+                    errors[e.code].reactions.push(...new Set(reactions));
+                    return errors;
+                default:
+                    errors[e.code].reactions.push(reaction);
+                    break;
+            }
         }
     }
 
-    let failure;
-    if (failure = errors.find(e => e.error.message != 'Unknown Emoji'))
-        throw failure;
-    return errors.map(e => e.reaction);
+    return errors;
 };
 
 /**

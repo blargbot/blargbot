@@ -88,11 +88,15 @@ module.exports =
                         await message.removeReaction(reaction, user.id);
                     }
                     catch (err) {
-                        if (err.message == 'Unknown Emoji') {
-                            errored.push(reaction);
-                            break;
-                        } else
-                            throw (err);
+                        switch (err.code) {
+                            case 10014:
+                                errored.push(reaction);
+                                break;
+                            case 50013:
+                                return Builder.util.error(subtag, context, 'I need to be able to Manage Messages to remove reactions');
+                            default:
+                                throw err;
+                        }
                     }
                 }
             }
