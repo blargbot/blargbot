@@ -13,10 +13,10 @@ module.exports =
     Builder.APITag('channelcategory')
         .withAlias('category')
         .withArgs(a => [a.optional('channelid'), a.optional('quiet')])
-        .withDesc('Returns the category of the given channel. If no channelid is given, the current channels category will be returned.')
+        .withDesc('Returns the category id of the given channel. If no channelid is given, the current channels category id will be returned.')
         .withExample(
             'This channel\'s category is "{category}"',
-            'This channel\'s category is "some fancy category"'
+            'This channel\'s category is "111111111111111"'
         )
         .whenArgs(0, async (_, context) => (context.channel.parentID || ''))
         .whenArgs('1-2', async (subtag, context, args) => {
