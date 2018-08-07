@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-30 08:56:16
+ * @Last Modified time: 2018-08-07 09:36:40
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -358,11 +358,19 @@ bu.send = async function (context, payload, files) {
     }
 
     if (payload.content.length > 2000) {
-        (files || (files = [])).push({
-            file: Buffer.from(payload.content.toString()),
-            name: 'output.txt'
-        });
-        payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+        // (files || (files = [])).push({
+        //     file: Buffer.from(payload.content.toString()),
+        //     name: 'output.txt'
+        // });
+        id = bu.makeSnowflake();
+        await bu.cclient.execute(`INSERT INTO message_outputs (id, content, embeds, channelid) VALUES (:id, :content, :embeds, :channelid)`, {
+            id,
+            content: payload.content.toString(),
+            embeds: JSON.stringify([payload.embed]),
+            channelid: channel.id
+        }, { prepare: true });
+        payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n\nTo see what I would have said, please visit ' +
+            (config.general.isbeta ? 'http://localhost:8085/output/' : 'https://blargbot.xyz/output/') + id;
     }
 
     console.debug('Sending content: ', JSON.stringify(payload));

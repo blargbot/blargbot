@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-19 14:12:02
+ * @Last Modified time: 2018-08-07 09:43:11
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -116,7 +116,16 @@ if (config.cassandra) {
                 channelid BIGINT,
                 PRIMARY KEY ((msgid), id)
             ) WITH CLUSTERING ORDER BY (id DESC);
-        `);
+            `);
+        })
+        .then(res => {
+            return cclient.execute(`
+            CREATE TABLE IF NOT EXISTS message_outputs (
+                id BIGINT PRIMARY KEY,
+                content TEXT,
+                embeds TEXT,
+                channelid BIGINT,
+            )`)
         }).catch(err => {
             console.error(err.message, err.stack);
         });
