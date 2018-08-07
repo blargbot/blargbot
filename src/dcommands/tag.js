@@ -16,7 +16,8 @@ const subcommands = [
     {
         name: 'create',
         args: '<name> <content>',
-        desc: 'Creates a new tag with the given name and content'
+        desc: 'Creates a new tag with the given name and content',
+        aliases: [ 'add' ]
     },
     {
         name: 'edit',
@@ -26,7 +27,8 @@ const subcommands = [
     {
         name: 'delete',
         args: '<name>',
-        desc: 'Deletes the tag with the given name, provided that you were the one who created it'
+        desc: 'Deletes the tag with the given name, provided that you were the one who created it',
+        aliases: [ 'remove' ]
     },
     {
         name: 'rename',
@@ -108,6 +110,12 @@ const subcommands = [
         name: 'setlang',
         args: '<tag> <lang>',
         desc: 'Sets the language to use when returning the raw text of your tag'
+    },
+    {
+        name: 'test',
+        args: '<content>',
+        desc: 'Uses the BBTag engine to execute the content as it was a tag',
+        aliases: [ 'eval', 'exec' ]
     }
 ];
 const tagNameMsg = 'Enter the name of the tag:';
@@ -189,8 +197,13 @@ class TagCommand extends BaseCommand {
             name: 'tag',
             aliases: ['t'],
             category: bu.CommandType.GENERAL,
-            usage: 'tag [<name> | create | edit | delete | rename | flag | cooldown | raw | info | top | author | search | list | favorite | report | test | debug | help | docs]',
-            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n**Subcommands**:\n**<name>**, **create**, **edit**, **delete**, **rename**, **flag**, **cooldown**, **raw**, **info**, **top**, **author**, **search**, **list**, **favorite**, **report**, **test**, **debug**, **help**, **docs**\n\nFor more information about a subcommand, do `b!tag help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)'
+            usage: `tag [${subcommands.map(x => `${x.name}${x.args ? ' '+x.args : ''}`).join(' | ')}]`,
+            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n' 
+                + '\n__**Subcommands:**__\n'
+                + `${subcommands.map(x => `**${x.name}**`).join(', ')}`
+                + '\nFor more information about a subcommand, do `b!tag help <subcommand>`.\n'
+                + '\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\n'
+                + 'By creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)'
         });
     }
 
@@ -416,10 +429,11 @@ class TagCommand extends BaseCommand {
                 case 'help':
                     if (words.length > 2) {
                         let command = subcommands.filter(s => {
-                            return s.name == words[2].toLowerCase() || s.alias == words[2].toLowerCase();
+                            return s.name == words[2].toLowerCase() || s.aliases.includes(words[2].toLowerCase());
                         });
                         if (command.length > 0) {
                             await bu.send(msg, `Subcommand: **${command[0].name}**
+Aliases: **${command[0].aliases.join('**, **')}**
 Args: \`${command[0].args}\`
 
 ${command[0].desc}`);
