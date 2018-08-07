@@ -275,19 +275,24 @@ bu.hasRole = (msg, roles, override = true) => {
 };
 
 bu.addReactions = async function (channelId, messageId, reactions) {
-    let errors = [];
+    let errors = {};
     for (const reaction of new Set(reactions || [])) {
         try {
             await bot.addMessageReaction(channelId, messageId, reaction);
         } catch (e) {
-            errors.push({ error: e, reaction });
+            if (!errors[e.code]) errors[e.code] = { error: e, reactions: [] };
+            switch (e.code) {
+                case 50013:
+                    errors[e.code].reactions.push(...new Set(reactions));
+                    return errors;
+                default:
+                    errors[e.code].reactions.push(reaction);
+                    break;
+            }
         }
     }
 
-    let failure;
-    if (failure = errors.find(e => e.error.message != 'Unknown Emoji'))
-        throw failure;
-    return errors.map(e => e.reaction);
+    return errors;
 };
 
 /**
@@ -858,6 +863,7 @@ bu.issueWarning = async function (user, guild, count, params) {
     if (!storedGuild.warnings.users) storedGuild.warnings.users = {};
     if (!storedGuild.warnings.users[user.id]) storedGuild.warnings.users[user.id] = 0;
     let type = 0;
+    let error = undefined;
     storedGuild.warnings.users[user.id] += count;
     if (storedGuild.warnings.users[user.id] < 0) storedGuild.warnings.users[user.id] = 0;
     let warningCount = storedGuild.warnings.users[user.id];
@@ -870,12 +876,15 @@ bu.issueWarning = async function (user, guild, count, params) {
                 type: 'Auto-Ban',
                 reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`
             };
-            await guild.banMember(user.id, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
+            try {
+                await guild.banMember(user.id, 0, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`);
+            } catch (e) { error = e; }
             storedGuild.warnings.users[user.id] = undefined;
             type = 1;
         } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
-            // await bu.logAction(guild, user, bot.user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`, bu.ModLogColour.KICK);
-            await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
+            try {
+                await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
+            } catch (e) { error = e; }
             type = 2;
         }
     await r.table('guild').get(guild.id).update({
@@ -883,7 +892,8 @@ bu.issueWarning = async function (user, guild, count, params) {
     });
     return {
         type,
-        count: warningCount
+        count: warningCount,
+        error
     };
 };
 
@@ -1667,6 +1677,8 @@ bu.findEmoji = function (text, distinct) {
     let match;
     let result = [];
 
+    text = text.replace(/\ufe0f/g, '');
+
     // Find custom emotes
     let regex = /<(a?:\w+:\d{17,23})>/gi;
     while (match = regex.exec(text))
@@ -1782,4 +1794,22 @@ bu.decancer = function (text) {
         custom: ['.', ',', ' ', '!', '\'', '"', '?']
     });
     return text;
+};
+
+bu.findMessages = async function (channelId, count, filter, before, after) {
+    let result = [];
+    filter = filter || (() => true);
+
+    while (result.length < count) {
+        let batchSize = Math.min(100, count - result.length);
+        let batch = await bot.getMessages(channelId, batchSize, before, after);
+        result.push(...batch);
+
+        if (batch.length != batchSize)
+            break;
+
+        before = result[result.length - 1].id;
+    }
+
+    return result.filter(filter);
 };
