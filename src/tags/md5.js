@@ -22,8 +22,8 @@ module.exports =
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1', async function (subtag, context, args) {
             let text = args[0];
-            let md5 = md5(text);
-            return md5;
+            let hashed = md5(text);
+            return hashed;
 
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();
