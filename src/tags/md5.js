@@ -11,12 +11,12 @@ var md5 = require('md5');
 
 module.exports =
     Builder.AutoTag('md5')
-        .withAlias('btoa')
+        .withAlias('md5encode')
         .withArgs(a => [
             a.require('text')
         ]).withDesc('Converts the provided text to md5.')
         .withExample(
-        '{base64encode;Woosh whap phew!}',
+        '{md5;Woosh whap phew!}',
         '71d97a11f770a34d7f8cf1f1d8749d85'
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
