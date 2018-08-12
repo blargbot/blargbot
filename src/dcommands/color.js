@@ -17,7 +17,7 @@ class ColorCommand extends BaseCommand {
             if (colors.length == 0) return await bu.send(msg, 'Whoops, you did not provide any color!');
             if (colors.length > 64) return await bu.send(msg, 'Whoops, you provided too many colors!');
             let buffer = await bu.blargbotApi('color', {
-                color: colors 
+                color: colors.map(c => c.replace(/[^\da-f]/g, ''))
             });
             if (!buffer) {
                 return await bu.send(msg, 'Whoops, one of the things you provided was not a color!');
