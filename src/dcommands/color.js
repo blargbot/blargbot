@@ -13,11 +13,11 @@ class ColorCommand extends BaseCommand {
     async execute(msg, words) {
         bot.sendChannelTyping(msg.channel.id);
         try {
-            const colors = words.slice(1);
-            if (colors.length == 0) return await bu.send(msg, 'Whoops, you did not provide any color!');
-            if (colors.length > 64) return await bu.send(msg, 'Whoops, you provided too many colors!');
+            const colors = words.slice(1).join(' ');
+            if (colors.split(' ').length == 0) return await bu.send(msg, 'Whoops, you did not provide any color!');
+            if (colors.split(' ').length > 64) return await bu.send(msg, 'Whoops, you provided too many colors!');
             let buffer = await bu.blargbotApi('color', {
-                color: colors.map(c => c.replace(/[^\da-f]/g, ''))
+                color: [ colors ]
             });
             if (!buffer) {
                 return await bu.send(msg, 'Whoops, one of the things you provided was not a color!');
