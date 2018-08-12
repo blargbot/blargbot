@@ -1,10 +1,16 @@
 // Perform all prototype modifications here
 
-const { Message } = require('eris');
+const { Message, User } = require('eris');
 
 Object.defineProperty(Message.prototype, "guild", {
     get: function guild() {
         return this.channel.guild;
+    }
+});
+
+Object.defineProperty(User.prototype, "toString", {
+    value: function tostring() {
+        return this.username + '#' + this.discriminator;
     }
 });
 

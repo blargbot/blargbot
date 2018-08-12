@@ -242,11 +242,10 @@ var executeCommand = async function (commandName, msg, words, text) {
     try {
         await CommandManager.built[commandName].execute(msg, words, text);
     } catch (err) {
-        if (err.response) {
-            let response = JSON.parse(err.response);
-            console.debug(response);
+        console.error(err);
+        if (err.code !== undefined) {
             let dmMsg;
-            switch (response.code) {
+            switch (err.code) {
                 case 50001:
                     dmMsg = `Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.`;
                     break;

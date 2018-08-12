@@ -39,7 +39,34 @@ class WarnCommand extends BaseCommand {
             value: `Assigned: ${count}\nNew Total: ${res.count || 0}`,
             inline: true
         }]);
-        bu.send(msg, `:ok_hand: **${bu.getFullName(user)}** has been given ${count == 1 ? 'a warning' : count + ' warnings'}. They now have ${res.count} warning${res.count == 1 ? '' : 's'}.`);
+
+        let furtherAction = '';
+        if (res.error) {
+            furtherAction = `⛔ This should have resulted in a ${res.type == 1 ? 'ban' : 'kick'} however `;
+            switch (res.error.code) {
+                case 50013: // Missing Permissions
+                    furtherAction += 'I do not have permission to do that.';
+                    break;
+                default:
+                    furtherAction += `Discord returned a ${res.error.code} error when I attempted to do that.`;
+                    break;
+            }
+        } else {
+            switch (res.type) {
+                case 1: furtherAction = `**${user}** went over the warning limit for bans and so was banned from the server.`; break;
+                case 2: furtherAction = `**${user}** went over the warning limit for kicks and so was kicked from the server.`; break;
+            }
+        }
+
+        bu.send(msg, `:ok_hand: **${
+            bu.getFullName(user)
+            }** has been given ${
+            count == 1 ? 'a warning' : count + ' warnings'
+            }. They now have ${
+            res.count
+            } warning${
+            res.count == 1 ? '' : 's'
+            }.\n${furtherAction}`);
     }
 }
 

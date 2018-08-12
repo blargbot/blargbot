@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:35
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-08 20:32:12
+ * @Last Modified time: 2018-08-07 09:53:39
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -72,6 +72,12 @@ function addSubtagReferences(text) {
 }
 
 e.init = () => {
+    hbs.registerHelper('markdown', function (body) {
+        let ret = mdToHtml(body.fn(this));
+        console.log(ret);
+        return ret;
+    });
+
     hbs.registerPartials(path.join(__dirname, 'views', 'partials'));
 
     hbs.registerHelper('ifCond', function (v1, operator, v2, options) {

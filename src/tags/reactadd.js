@@ -61,12 +61,13 @@ module.exports =
             if (messageid != null) {
                 // Perform add of each reaction
                 var errors = await bu.addReactions(channel.id, messageid, parsed);
-                if (errors.length > 0)
-                    return Builder.util.error(subtag, context, 'Unknown Emoji: ' + errors.join(', '));
-                return;
+                if (errors[50013])
+                    return Builder.util.error(subtag, context, 'I dont have permission to Add Reactions');
+                if (errors[10014])
+                    return Builder.util.error(subtag, context, `I cannot add '${errors[10014].reactions}' as reactions`);
+            } else {
+                // Defer reactions to output message
+                context.state.reactions.push(...parsed);
             }
-
-            // Defer reactions to output message
-            context.state.reactions.push(...parsed);
         })
         .build();
