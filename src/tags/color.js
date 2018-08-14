@@ -12,7 +12,7 @@ module.exports =
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
-            if (!args[0]) return Builder.errors.notEnoughArguments(subtag, context);
+            if (!args[0]) return 'Invalid color';
 
             let arr = await bu.getArray(context, args[0]);
             let input = undefined;
@@ -33,7 +33,7 @@ module.exports =
                 } catch (e) {}
             }
 
-            if (typeof color === 'undefined') return 'Failed to parse color';
+            if (typeof color === 'undefined') return 'Invalid color';
             if (typeof color[method] !== 'function') return 'Invalid method';
 
             let converted = color[method]();
