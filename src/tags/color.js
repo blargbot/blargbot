@@ -7,12 +7,12 @@ module.exports =
             a.require('text')
         ]).withDesc('Convert colors. Default output `hex`. It converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).')
         .withExample(
-        '{color;#4286f4;RGB}',
-        '[66,134,244]'
+            '{color;#4286f4;RGB}',
+            '[66,134,244]'
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
-            if (!args[0]) return 'Invalid color';
+            if (!args[0]) return Builder.util.error(subtag, context, 'Invalid color');
 
             let arr = await bu.getArray(context, args[0]);
             let input = undefined;
@@ -27,14 +27,14 @@ module.exports =
             let color = undefined;
             try {
                 color = Color(input);
-            } catch(e) {
+            } catch (e) {
                 try {
                     color = Color('#' + input);
-                } catch (e) {}
+                } catch (e) { }
             }
 
-            if (typeof color === 'undefined') return 'Invalid color';
-            if (typeof color[method] !== 'function') return 'Invalid method';
+            if (typeof color === 'undefined') return Builder.util.error(subtag, context, 'Invalid color');
+            if (typeof color[method] !== 'function') return Builder.util.error(subtag, context, 'Invalid method');
 
             let converted = color[method]();
 
