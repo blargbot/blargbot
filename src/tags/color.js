@@ -20,16 +20,18 @@ module.exports =
 			if (arr == null || !Array.isArray(arr.v)) input = args[0];
 			else input = arr.v;
 
-			let match = input.match(/^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/);
-			if (match != null) {
-				let r = parseInt(match[1]);
-				let g = parseInt(match[2]);
-				let b = parseInt(match[3]);
-				input = [ r, g, b ];
+			if (typeof input === 'string') {
+				let match = input.match(/^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/);
+				if (match != null) {
+					let r = parseInt(match[1]);
+					let g = parseInt(match[2]);
+					let b = parseInt(match[3]);
+					input = [ r, g, b ];
+				}
 			}
 
 			let method = undefined;
-			if (typeof args[1] === 'undefined') method = 'hex';
+			if (typeof args[1] === 'undefined' || !args[1]) method = 'hex';
 			else method = args[1].toLowerCase();
 
 			let color = undefined;
