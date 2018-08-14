@@ -26,7 +26,9 @@ module.exports =
             try {
                 color = Color(input);
             } catch(e) {
-                color = Color('#' + input);
+                try {
+                    color = Color('#' + input);
+                } catch (e) {}
             }
 
             if (typeof color === 'undefined') return 'Failed to parse color';
