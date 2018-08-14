@@ -20,11 +20,7 @@ module.exports =
 			if (arr == null || !Array.isArray(arr.v)) input = args[0];
 			else {
 				input = arr.v;
-				input = input.map((s) => {
-					if (typeof s === 'string') {
-						return parseInt(s);
-					}
-				});
+				input = input.map(elem => elem.toString()).join(',');
 			}
 
 			if (typeof input === 'string') {
