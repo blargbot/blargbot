@@ -11,7 +11,7 @@ module.exports =
 		'[66,134,244]'
 		)
 		.whenArgs('0', Builder.errors.notEnoughArguments)
-		.whenArgs('1-2', async function (subtag, context, args) {
+		.whenArgs('1-3', async function (subtag, context, args) {
 			if (!args[0]) return '`Invalid color`';
 
 			let arr = await bu.getArray(context, args[0]);
@@ -39,15 +39,19 @@ module.exports =
 
 			let color = undefined;
 			try {
-				color = Color(input);
+				color = Color(input, (args[2] || ''));
 			} catch(e) {
 				try {
-					color = Color('#' + input);
-				} catch (e) {}
+					color = Color('#' + input, (args[2] || ''));
+				} catch (e) {
+					if (e.toString().includes('Unknown model')) {
+						return '`Invalid input method`';
+					}
+				}
 			}
 
 			if (typeof color === 'undefined') return '`Invalid color`';
-			if (typeof color[method] !== 'function') return '`Invalid method`';
+			if (typeof color[method] !== 'function') return '`Invalid output method`';
 
 			let converted = color[method]();
 
