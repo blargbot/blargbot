@@ -12,7 +12,7 @@ module.exports =
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
-            let arr = await bu.getArray(args[0]);
+            let arr = await bu.getArray(context, args[0]);
             let input = undefined;
 
             if (arr == null || !Array.isArray(arr.v)) input = args[0];
