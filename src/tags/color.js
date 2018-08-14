@@ -18,7 +18,14 @@ module.exports =
 			let input = undefined;
 
 			if (arr == null || !Array.isArray(arr.v)) input = args[0];
-			else input = arr.v;
+			else {
+				input = arr.v;
+				input = input.map((s) => {
+					if (typeof s === 'string') {
+						return parseInt(s);
+					}
+				});
+			}
 
 			if (typeof input === 'string') {
 				let match = input.match(/^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/);
