@@ -59,9 +59,11 @@ module.exports =
 				if (typeof converted.color === 'object') {
 					return JSON.stringify(converted.color);
 				} else {
+					if (converted.color.indexOf('#') === 0) converted.color = converted.color.replace('#', '');
 					return converted.color;
 				}
 			} else {
+				if (converted.color.indexOf('#') === 0) converted.color = converted.color.replace('#', '');
 				return converted;
 			}
 		}).whenDefault(Builder.errors.tooManyArguments)
