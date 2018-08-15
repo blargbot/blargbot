@@ -4,7 +4,7 @@ var Color = require('color');
 module.exports =
 	Builder.AutoTag('color')
 		.withArgs(a =>[a.require('color'), a.optional('outputFormat'), a.optional('inputFormat')])
-		.withDesc('Convert colors. Default outputFormat is `hex`. Default inputFormat is automatically calculated, but might be inaccurate.\nIt converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).')
+		.withDesc('Convert colors. Default outputFormat is `hex`. Default inputFormat is automatically calculated, but might be inaccurate.\n\nIt converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).')
 		.withExample(
 		'{color;#4286f4;RGB}',
 		'[66,134,244]'
@@ -62,7 +62,7 @@ module.exports =
 					return converted.color;
 				}
 			} else {
-				if (converted.color.indexOf('#') === 0) converted.color = converted.color.replace('#', '');
+				if (converted.indexOf('#') === 0) converted = converted.replace('#', '');
 				return converted;
 			}
 		}).whenDefault(Builder.errors.tooManyArguments)
