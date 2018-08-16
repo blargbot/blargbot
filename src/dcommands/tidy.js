@@ -149,6 +149,7 @@ class TidyCommand extends BaseCommand {
                     `'${msg.content}' by ${msg.author.username}#${msg.author.discriminator}`);
                 await bu.send(msg, `Deleted ${messages.length} messages by \n**${summary}**`);
             } catch (err) {
+                console.error(err);
                 await bu.send(msg, 'I need to be able to Manage Messages to do that!');
             }
         } else {
