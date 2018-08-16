@@ -1,5 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const isSafeRegex = require('safe-regex');
+const moment = require('moment');
 
 class TidyCommand extends BaseCommand {
     constructor() {
@@ -122,6 +123,10 @@ class TidyCommand extends BaseCommand {
         }
 
         let messages = (await bu.findMessages(msg.channel.id, 200, filter, msg.id)).slice(0, limit);
+        messages = messages.filter(m => {
+            let diff = moment.duration(moment() - m.timestamp);
+            return diff.asDays() < 14;
+        });
         let summary = messages.reduce((accumulator, message) => {
             if (!accumulator[message.author.id]) {
                 accumulator[message.author.id] = {
