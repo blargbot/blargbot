@@ -4,7 +4,7 @@ var Color = require('color');
 module.exports =
 	Builder.AutoTag('color')
 		.withArgs(a =>[a.require('color'), a.optional('outputFormat'), a.optional('inputFormat')])
-		.withDesc('Convert colors. Default outputFormat is `hex`. Default inputFormat is automatically calculated, but might be inaccurate.\n\nIt converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).')
+		.withDesc('Convert colors. Default outputFormat is `hex`. Default inputFormat is automatically calculated, but might be inaccurate.\nIt converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).')
 		.withExample(
 		'{color;#4286f4;RGB}',
 		'[66,134,244]'
@@ -29,6 +29,11 @@ module.exports =
 					let g = parseInt(match[2]);
 					let b = parseInt(match[3]);
 					input = [ r, g, b ];
+				} else if (args[2] && args[2].toLowerCase() === 'hsl') {
+					input = input.split(',');
+					for (let i in input) {
+						input[i] = parseFloat(input[i]);
+					}
 				}
 			}
 
@@ -55,6 +60,12 @@ module.exports =
 			let converted = color[method]();
 
 			if (typeof converted === 'object') {
+				if (converted.model === 'rgb' && typeof converted.color !== 'undefined') {
+					for (let i in converted.color) {
+						converted.color[i] = parseInt(converted.color[i]);
+					}
+				}
+
 				if (typeof converted.color === 'object') {
 					return JSON.stringify(converted.color);
 				} else {
