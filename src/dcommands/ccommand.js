@@ -4,6 +4,11 @@ const BaseCommand = require('../structures/BaseCommand'),
 
 const subcommands = [
     {
+	name:'author',
+	args:'<name>',
+	desc:'Displays the name of the custom command\'s author'
+    },
+    {
         name:'cooldown',
         args:'<name> [time]',
         desc:'Sets the cooldown of a ccommand, in milliseconds. Cooldowns must be greater than 500ms'
@@ -434,7 +439,6 @@ class CcommandCommand extends BaseCommand {
                         } else {
                             message = `Custom command \`${title}\` not found. Do \`help\` for a list of all commands, including ccommands`;
                         }
-
                         bu.send(msg, message);
                     } else if (words.length == 2) {
                         title = filterTitle(words[2]);
@@ -461,6 +465,26 @@ ${command[0].desc}`);
                     } else {
                         bu.send(msg, this.info);
                     }
+                    break;
+		case 'author':
+		case 'owner':
+		case 'authorizer':
+                    if (words[2]) {
+			title = filterTitle(words[2]);
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+			if (!tag) {
+				bu.send(msg, `❌ That ccommand doesn't exist! ❌`);
+				break;
+			}
+			author = await r.table('user').get(tag.author).run();
+			let toSend = `The ccommand \`${title}\` is owned by **${author.username}#${author.discriminator}**`;
+			if (tag.authorizer && tag.authorizer != author.id) {
+			    let authorizer = await r.table('user').get(tag.authorizer).run();
+			    toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}`;
+			}
+			toSend += '.';
+			bu.send(msg, toSend);
+		    }
                     break;
                 case 'docs':
                     bbtag.docs(msg, words[0], words.slice(2).join(' '));
