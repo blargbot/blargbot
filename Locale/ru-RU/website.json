@@ -1,20 +1,20 @@
 {
-    "language": "",
+    "language": "Английский",
     "header": {
-        "login": "",
-        "logout": "",
-        "commands": "",
-        "bbtag": "",
-        "subtags": "",
-        "dashboard": ""
+        "login": "Войти",
+        "logout": "Выйти",
+        "commands": "Команды",
+        "bbtag": "BBTag",
+        "subtags": "Подтеги",
+        "dashboard": "Панель состояния"
     },
     "generic": {
-        "loading": "",
+        "loading": "Загрузка",
         "collapse": "Скрыть всё",
         "expand": "Раскрыть всё",
-        "search": "",
+        "search": "Поиск...",
         "noresults": "Упс! Ничего не найдено.",
-        "resultsfound": ""
+        "resultsfound": "Результаты поиска:"
     },
     "index": {
         "desc": "",
