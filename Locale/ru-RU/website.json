@@ -32,7 +32,7 @@
         },
         "moderation": {
             "title": "Модерация",
-            "desc": "Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
+            "desc": "Нужно что-то для модерирования чата? blargbot имеет множество команд для модерирования, от простых операций, как бан и мут, до продвинутых вещей, таких как логи чата и автоматическое цензурирование."
         },
         "opensource": {
             "title": "Открытый исходный код",
@@ -62,10 +62,10 @@
         "components": {
             "argument": "Параметры:",
             "named": "Поддерживает параметры с именем",
-            "unnamed": "**Не** поддерживает именованные аргументы",
+            "unnamed": "**Не** поддерживает параметры с именем",
             "array": "Поддерживает массивы",
             "staff": "Требует, чтобы автор был персоналом сервера",
-            "noimplicit": "Не поддерживает неявное классицирование"
+            "noimplicit": "Не поддерживает неявное классифицирование"
         },
         "referdocs": "Пожалуйста ознакомьтесь с [документацией](/bbtag) для инструкций по использованию."
     },
