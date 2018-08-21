@@ -17,25 +17,25 @@
         "resultsfound": "Результаты поиска:"
     },
     "index": {
-        "desc": "",
+        "desc": "blargbot это многофунциональный бот Дискорда, призванный предоставлять качественные команды и сервисы, включая логи чата и глубокую систему пользовательских команд.",
         "commands": {
-            "title": "",
-            "desc": ""
+            "title": "Команды",
+            "desc": "blargbot снабжен многочисленными командами, которые задокументированы и собраны в категории для Вашего удобства."
         },
         "bbtag": {
-            "title": "",
-            "desc": ""
+            "title": "BBTag",
+            "desc": "blargbot имеет сложную систему тегов BBTag, которую вы можете использовать для создания своих команд."
         },
         "customization": {
-            "title": "",
-            "desc": ""
+            "title": "Настройка",
+            "desc": "Мы понимаем, что не каждая гильдия является одинаковой, поэтому blargbot имеет обширные настройки. Вы можете точно контролировать, какие роли могут использовать те или иные команды, назначать пользовательские префиксы, и даже сменить язык отображения!"
         },
         "moderation": {
-            "title": "",
+            "title": "Модерация",
             "desc": "Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
         },
         "opensource": {
-            "title": "",
+            "title": "Открытый исходный код",
             "desc": ""
         },
         "suggestions": {
