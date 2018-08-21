@@ -1,4 +1,4 @@
 {
-    "icu": "",
-    "placeholder": ""
+    "icu": "ваш {ItemCount, plural,=0 {нет проектов}one {есть # проектов}other {есть # проектов}}",
+    "placeholder": "у вас есть %s проектов"
 }
