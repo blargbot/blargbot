@@ -279,7 +279,7 @@ class autoresponseCommand extends BaseCommand {
                 await r.table('vars').get('arwhitelist').update({
                     values: whitelist.values
                 });
-                if (index > -1)
+                if (index == -1)
                     await bu.send(channel, 'Congratz, your guild has been whitelisted for autoresponses! 🎉');
                 return await bu.send(msg, `${c.guild.name} is ${index > -1 ? 'no longer' : 'now'} whitelisted.`);
                 break;
