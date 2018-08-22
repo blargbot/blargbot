@@ -4,98 +4,98 @@ const BaseCommand = require('../structures/BaseCommand'),
 
 const subcommands = [
     {
-	name:'author',
-	args:'<name>',
-	desc:'Displays the name of the custom command\'s author'
+        name: 'author',
+        args: '<name>',
+        desc: 'Displays the name of the custom command\'s author'
     },
     {
-        name:'cooldown',
-        args:'<name> [time]',
-        desc:'Sets the cooldown of a ccommand, in milliseconds. Cooldowns must be greater than 500ms'
+        name: 'cooldown',
+        args: '<name> [time]',
+        desc: 'Sets the cooldown of a ccommand, in milliseconds. Cooldowns must be greater than 500ms'
     },
     {
-        name:'create',
-        args:'<name> <content>',
-        desc:'Creates a ccommand with the given name and content',
-        aliases: [ 'add' ]
-    },
-	{
-        name:'debug',
-        args:'<name>',
-        desc:'Executes the specified ccommand and sends a file containing all the debug information'
+        name: 'create',
+        args: '<name> <content>',
+        desc: 'Creates a ccommand with the given name and content',
+        aliases: ['add']
     },
     {
-        name:'delete',
-        args:'<name>',
-        desc:'Deletes the ccommand with the given name',
-        aliases: [ 'remove' ]
+        name: 'debug',
+        args: '<name>',
+        desc: 'Executes the specified ccommand and sends a file containing all the debug information'
     },
     {
-        name:'docs',
-        args:'[topic]',
-        desc:'Displays help documentation for BBTag, specific to ccommands'
+        name: 'delete',
+        args: '<name>',
+        desc: 'Deletes the ccommand with the given name',
+        aliases: ['remove']
     },
     {
-        name:'edit',
-        args:'<name> <content>',
-        desc:'Edits an existing ccommand with the given content'
+        name: 'docs',
+        args: '[topic]',
+        desc: 'Displays help documentation for BBTag, specific to ccommands'
     },
     {
-        name:'flag',
-        args:'<name> | <add|remove> <name> <flags>',
-        desc:'Retrieves or sets the flags for a custom command.\n'       
+        name: 'edit',
+        args: '<name> <content>',
+        desc: 'Edits an existing ccommand with the given content'
+    },
+    {
+        name: 'flag',
+        args: '<name> | <add|remove> <name> <flags>',
+        desc: 'Retrieves or sets the flags for a custom command.\n'
             + 'Flags are added in the format `-x <name> <desc>`. For example, `-f flag This is a flag!`'
     },
-	{
-        name:'help',
-        args:'',
-        desc:'Shows this message'
+    {
+        name: 'help',
+        args: '',
+        desc: 'Shows this message'
     },
     {
-        name:'import',
-        args:'<tag> [name]',
-        desc:'Imports a tag as a ccommand, retaining all data such as author variables'
-    },
-	    {
-        name:'list',
-        args:'',
-        desc:'Displays the list of ccommands on the guild'
+        name: 'import',
+        args: '<tag> [name]',
+        desc: 'Imports a tag as a ccommand, retaining all data such as author variables'
     },
     {
-        name:'raw',
-        args:'<name>',
-        desc:'Displays the raw code of a ccommand'
+        name: 'list',
+        args: '',
+        desc: 'Displays the list of ccommands on the guild'
     },
     {
-        name:'rename',
-        args:'<ccommand1> <ccommand2>',
-        desc:'Renames the ccommand `ccommand1` to `ccommand2`'
+        name: 'raw',
+        args: '<name>',
+        desc: 'Displays the raw code of a ccommand'
     },
     {
-        name:'set',
-        args:'<name> <content>',
-        desc:'Provides the functionnality of `create` and `edit` in a single command'
-    },
-	{
-        name:'sethelp',
-        args:'<name> [help text]',
-        desc:'Sets the help message for a custom command'
+        name: 'rename',
+        args: '<ccommand1> <ccommand2>',
+        desc: 'Renames the ccommand `ccommand1` to `ccommand2`'
     },
     {
-        name:'setlang',
-        args:'<name> [lang]',
-        desc:'Sets the language to use when returning the raw text of your ccommand'
+        name: 'set',
+        args: '<name> <content>',
+        desc: 'Provides the functionnality of `create` and `edit` in a single command'
     },
     {
-        name:'setrole',
-        args:'<name> [rolenames...]',
-        desc:'Sets the roles required to execute the ccommand'
+        name: 'sethelp',
+        args: '<name> [help text]',
+        desc: 'Sets the help message for a custom command'
     },
     {
-        name:'test',
-        args:'<content>',
-        desc:'Uses the BBTag engine to execute the content as it was a ccommand.',
-        aliases: [ 'eval', 'exec' ]
+        name: 'setlang',
+        args: '<name> [lang]',
+        desc: 'Sets the language to use when returning the raw text of your ccommand'
+    },
+    {
+        name: 'setrole',
+        args: '<name> [rolenames...]',
+        desc: 'Sets the roles required to execute the ccommand'
+    },
+    {
+        name: 'test',
+        args: '<content>',
+        desc: 'Uses the BBTag engine to execute the content as it was a ccommand.',
+        aliases: ['eval', 'exec']
     }
 ];
 
@@ -114,12 +114,11 @@ class CcommandCommand extends BaseCommand {
                 + 'Custom commands take precedent over all other commands. As such, you can use it to overwrite commands, or '
                 + 'disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output '
                 + 'whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the \'ccommand\' command. '
-                + 'For more in-depth command customization, see the `editcommand` command.\n' 
+                + 'For more in-depth command customization, see the `editcommand` command.\n'
                 + '\n**Subcommands:**\n'
                 + `${subcommands.map(x => `**${x.name}**`).join(', ')}`
                 + '\nFor more information about a subcommand, do `b!cc help <subcommand>.`\n'
-                + '\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\n'
-                + 'By creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)'
+                + '\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.'
         });
     }
 
@@ -249,7 +248,7 @@ class CcommandCommand extends BaseCommand {
                                 bu.send(msg, 'The flags have been modified.');
                                 break;
                             default:
-                                bu.send(msg, 'Usage: `tag flag add|delete [flags]`');
+                                bu.send(msg, 'Usage: `cc flag add|delete [flags]`');
                                 break;
                         }
                     } else if (input.undefined.length === 2) {
@@ -460,31 +459,31 @@ Args:\`${command[0].args}\`
 
 ${command[0].desc}`);
                         } else {
-                            await bu.send(msg, 'That subcommand was not found!');   
+                            await bu.send(msg, 'That subcommand was not found!');
                         }
                     } else {
                         bu.send(msg, this.info);
                     }
                     break;
-		case 'author':
-		case 'owner':
-		case 'authorizer':
+                case 'author':
+                case 'owner':
+                case 'authorizer':
                     if (words[2]) {
-			title = filterTitle(words[2]);
+                        title = filterTitle(words[2]);
                         tag = await bu.ccommand.get(msg.channel.guild.id, title);
-			if (!tag) {
-				bu.send(msg, `❌ That ccommand doesn't exist! ❌`);
-				break;
-			}
-			author = await r.table('user').get(tag.author).run();
-			let toSend = `The ccommand \`${title}\` is owned by **${author.username}#${author.discriminator}**`;
-			if (tag.authorizer && tag.authorizer != author.id) {
-			    let authorizer = await r.table('user').get(tag.authorizer).run();
-			    toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}`;
-			}
-			toSend += '.';
-			bu.send(msg, toSend);
-		    }
+                        if (!tag) {
+                            bu.send(msg, `❌ That ccommand doesn't exist! ❌`);
+                            break;
+                        }
+                        author = await r.table('user').get(tag.author).run();
+                        let toSend = `The ccommand \`${title}\` is owned by **${author.username}#${author.discriminator}**`;
+                        if (tag.authorizer && tag.authorizer != author.id) {
+                            let authorizer = await r.table('user').get(tag.authorizer).run();
+                            toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}`;
+                        }
+                        toSend += '.';
+                        bu.send(msg, toSend);
+                    }
                     break;
                 case 'docs':
                     bbtag.docs(msg, words[0], words.slice(2).join(' '));
