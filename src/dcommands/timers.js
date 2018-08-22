@@ -58,7 +58,7 @@ class TimersCommand extends BaseCommand {
                     let timer = timers.find(t => t.id.startsWith(id));
                     if (timer && timer.source == source) {
                         if (timer.content) {
-                            bu.send(msg, 'Here is the content of the timer you selected :\n```prolog'+timer.content+"\n```");
+                            bu.send(msg, 'Here is the content of the timer you selected :\n```prolog\n' + timer.content + "\n```");
                         } else {
                             bu.send(msg, "I couldn't display the content of that timer.");
                         }
