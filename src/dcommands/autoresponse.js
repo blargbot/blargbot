@@ -6,8 +6,8 @@ class autoresponseCommand extends BaseCommand {
             name: 'autoresponse',
             aliases: ['ar'],
             category: bu.CommandType.ADMIN,
-            usage: 'autoresponse < add | remove | list>',
-            info: 'Creates autoresponses. You can create up to 10 autoresponses to certain phrases, and 1 autoresponse that responds to everything.\n\nAutoresponses will be checked in the order they\'re added, and only one will be executed (excluding the everything autoresponse). Rather than specifying the code in this command, autoresponses will execute a hidden custom command that you can modify on the IDE. The everything autoresponse will not automatically output the execution result.\nCommands:\n   ADD <text> [flags] - Adds a autoresponse with for the provided text.\n   REMOVE - Brings up a menu to remove a autoresponse\n   INFO - Displays information about autoresponses.',
+            usage: 'autoresponse < add | remove | edit | list>',
+            info: 'Creates autoresponses. You can create up to 20 autoresponses to certain phrases, and 1 autoresponse that responds to everything.\n\nAutoresponses will be checked in the order they\'re added, and only one will be executed (excluding the everything autoresponse). Rather than specifying the code in this command, autoresponses will execute a hidden custom command that you can modify on the IDE. The everything autoresponse will not automatically output the execution result.\nCommands:\n   ADD <text> [flags] - Adds a autoresponse with for the provided text.\n   REMOVE - Brings up a menu to remove a autoresponse\n   INFO - Displays information about autoresponses.',
             flags: [{
                 flag: 'R',
                 word: 'regex',
@@ -132,6 +132,51 @@ class autoresponseCommand extends BaseCommand {
         return autoresponseList + suffix;
     }
 
+    async edit(msg, input, guild) {
+        if (!guild.autoresponse.list || guild.autoresponse.list.length == 0) {
+            bu.send(msg, `There are no autoresponses on this guild!`);
+            return;
+        }
+        if (!input.e) {
+            let autoresponseList = this.generateList(guild, "```\nPlease type the number of the autoresponse you wish to remove, or type 'c' to cancel. This prompt will expire in 5 minutes.");
+            let response = await bu.awaitQuery(msg, autoresponseList, m => {
+                if (m.content.toLowerCase() == 'c') return true;
+                let choice = parseInt(m.content);
+                return !isNaN(choice) && choice > 0 && choice <= guild.autoresponse.list.length;
+            });
+            if (response.content.toLowerCase() == 'c') {
+                bu.send(msg, 'Query canceled.');
+                return;
+            }
+
+            let ar = guild.autoresponse.list[parseInt(response.content) - 1];
+            if (!ar) {
+                return await bu.send(msg, `You didn't select a valid autoresponse.`);
+            }
+            let term = input.undefined.slice(1).join(' ');
+            if (term !== '') {
+                if (input.R) {
+                    try {
+                        let exp = bu.createRegExp(term);
+                        if (!await this.regexTest(exp))
+                            return await bu.send(msg, 'Your regex cannot match everything!');
+                    } catch (err) {
+                        bu.send(msg, 'Unsafe or invalid regex! Terminating.');
+                        return;
+                    }
+                }
+                ar.term = term;
+            }
+            ar.regex = !!input.R
+
+            await this.save(guild);
+
+            bu.send(msg, `Autoresponse \`${ar.term}\` has been edited!`);
+        } else {
+            bu.send(msg, `You can't edit the everything autoresponse.`);
+        }
+    }
+
     async remove(msg, input, guild) {
         if (!guild.autoresponse.list || guild.autoresponse.list.length == 0) {
             bu.send(msg, `There are no autoresponses on this guild!`);
@@ -184,6 +229,8 @@ class autoresponseCommand extends BaseCommand {
         }
         let storedGuild = await bu.getGuild(msg.guild.id);
 
+        let whitelist = await r.table('vars').get('arwhitelist');
+
         if (!storedGuild.autoresponse) {
             storedGuild.autoresponse = {
                 index: 0,
@@ -195,12 +242,48 @@ class autoresponseCommand extends BaseCommand {
         switch (input.undefined[0].toLowerCase()) {
             case 'create':
             case 'add':
+                if (!whitelist.values.includes(msg.guild.id))
+                    return await bu.send(msg, 'Sorry, autoresponses are currently whitelisted. To request access, do `b!ar request [reason]`');
                 await this.add(msg, input, storedGuild);
                 break;
             case 'delete':
             case 'remove':
+                if (!whitelist.values.includes(msg.guild.id))
+                    return await bu.send(msg, 'Sorry, autoresponses are currently whitelisted. To request access, do `b!ar request [reason]`');
                 await this.remove(msg, input, storedGuild);
                 break;
+            case 'edit':
+                if (!whitelist.values.includes(msg.guild.id))
+                    return await bu.send(msg, 'Sorry, autoresponses are currently whitelisted. To request access, do `b!ar request [reason]`');
+                await this.edit(msg, input, storedGuild);
+                break;
+            case 'request': {
+                if (whitelist.values.includes(msg.guild.id))
+                    return await bu.send(msg, 'You are already whitelisted!');
+                let reason = input.undefined.slice(1).join(' ');
+                let code = Buffer.from(msg.channel.id).toString('base64');
+                await bu.send('481857751891443722', `New AR request from **${bu.getFullName(msg.author)}** (${msg.author.id}):\n**Guild**: ${msg.guild.name} (${msg.guild.id})\n**Channel**: ${msg.channel.id}\n**Members**: ${msg.guild.memberCount}${reason ? '\n\n' + reason : ''}\n\n\`b!ar whitelist ${code}\``);
+                await bu.send(msg, 'Your request has been sent. Please don\'t spam this command.');
+                break;
+            }
+            case 'whitelist': {
+                if (msg.author.id !== bu.CAT_ID) break;
+                let channel = Buffer.from(input.undefined[1], 'base64').toString('utf8');
+                let c = await bot.getRESTChannel(channel);
+                let guild = c.guild.id;
+                if (!channel) await bu.send(msg, 'Please specify the channel as the second argument so I know where to send the confirmation message.');
+                let index = whitelist.values.indexOf(guild);
+                if (index > -1)
+                    whitelist.values.splice(index, 1);
+                else whitelist.values.push(guild);
+                await r.table('vars').get('arwhitelist').update({
+                    values: whitelist.values
+                });
+                if (index > -1)
+                    await bu.send(channel, 'Congratz, your guild has been whitelisted for autoresponses! 🎉');
+                return await bu.send(msg, 'They are now whitelisted.');
+                break;
+            }
             case 'info':
             case 'list':
                 await this.list(msg, input, storedGuild);
