@@ -281,7 +281,7 @@ class autoresponseCommand extends BaseCommand {
                 });
                 if (index > -1)
                     await bu.send(channel, 'Congratz, your guild has been whitelisted for autoresponses! 🎉');
-                return await bu.send(msg, 'They are now whitelisted.');
+                return await bu.send(msg, `${c.guild.name} is ${index > -1 ? 'no longer' : 'now'} whitelisted.`);
                 break;
             }
             case 'info':
