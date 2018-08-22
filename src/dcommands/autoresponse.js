@@ -271,6 +271,7 @@ class autoresponseCommand extends BaseCommand {
                 let channel = Buffer.from(input.undefined[1], 'base64').toString('utf8');
                 let c = await bot.getRESTChannel(channel);
                 let guild = c.guild.id;
+                let g = await bot.getRESTGuild(guild);
                 if (!channel) await bu.send(msg, 'Please specify the channel as the second argument so I know where to send the confirmation message.');
                 let index = whitelist.values.indexOf(guild);
                 if (index > -1)
@@ -281,7 +282,7 @@ class autoresponseCommand extends BaseCommand {
                 });
                 if (index == -1)
                     await bu.send(channel, 'Congratz, your guild has been whitelisted for autoresponses! 🎉');
-                return await bu.send(msg, `${c.guild.name} is ${index > -1 ? 'no longer' : 'now'} whitelisted.`);
+                return await bu.send(msg, `${g.name} is ${index > -1 ? 'no longer' : 'now'} whitelisted.`);
                 break;
             }
             case 'info':
