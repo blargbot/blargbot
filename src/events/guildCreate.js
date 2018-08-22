@@ -46,7 +46,7 @@ bot.on('guildCreate', async function (guild) {
 - 🛠 For Admin commands, please make sure you have a role titled \`Admin\`.
 If you are the owner of this server, here are a few things to know.
 - 🗨 To enable modlogging, please create a channel for me to log in and do \`${config.discord.defaultPrefix}modlog\`
-- ❗ To change my command prefix, please do \`${config.discord.defaultPrefix}setprefix <anything>\`.
+- ❗ To change my command prefix for your guild, please do \`${config.discord.defaultPrefix}prefix add <anything>\`. I also have a personnal prefix feature! Check it out with \`${config.discord.defaultPrefix}help personalprefix\`.
 - 🗄 To enable chatlogs, please do \`${config.discord.defaultPrefix}settings makelogs true\`.
 - ⚙ To receive messages whenever there's an update, do \`${config.discord.defaultPrefix}changelog\` in the desired channel. I need the \`embed links\` permission for this.
 - ⚙ Check out my web interface! <https://blargbot.xyz/dashboard/>

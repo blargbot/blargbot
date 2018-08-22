@@ -6,7 +6,7 @@ class TimersCommand extends BaseCommand {
         super({
             name: 'timers',
             category: bu.CommandType.ADMIN,
-            usage: 'timers <[page] | cancel <ids...> | clear>',
+            usage: 'timers <[page] | cancel <ids...> | clear | raw <id>>',
             info: 'Lists all the timers currently active here. You can also cancel any of them by using the cancel subcommand'
         });
         this.pageSize = 15;
@@ -46,7 +46,27 @@ class TimersCommand extends BaseCommand {
                         bu.send(msg, `Successfully cancelled ${success.length} timer${success.length != 1 ? 's' : ''} \`${success.join(', ')}\`.` +
                             (failed.length == 0 ? '' : ` Could not find id${failed.length != 1 ? 's' : ''} \`${failed.join(', ')}\``));
                 } else {
-                    bu.send(msg, 'You must give me the id of the timer to cancel');
+                    bu.send(msg, 'You must give me the id of the timer to cancel.');
+                }
+                break;
+            case 'content':
+            case 'info':
+            case 'raw':
+                if (words[2]) {
+                    let id = (words.slice(2) || '').map(s => s.toLowerCase())[0];
+                    let timers = await r.table('events').filter({ source }).run();
+                    let timer = timers.find(t => t.id.startsWith(id));
+                    if (timer && timer.source == source) {
+                        if (timer.content) {
+                            bu.send(msg, 'Here is the content of the timer you selected :\n```prolog'+timer.content+"\n```");
+                        } else {
+                            bu.send(msg, "I couldn't display the content of that timer.");
+                        }
+                    } else {
+                        bu.send(msg, "I couldn't find the id you gave.");
+                    }
+                } else {
+                    bu.send(msg, 'You must give me the id of the timer to cancel.');
                 }
                 break;
             default:
