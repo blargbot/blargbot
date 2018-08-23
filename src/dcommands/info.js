@@ -58,7 +58,7 @@ Special huge thanks to the awesome **${titan}** for massive contributions to the
 
 Additional credits to Aurieh#0258! :thumbsup:
 
-For commands, do \`help\`. For information about supporting me, do \`donate\`. For any additional information, such as command documentation, please visit my website: <https://blargbot.xyz>`);
+For commands, do \`help\`. For information about supporting me, do \`donate\`. For any additional information, such as command documentation, please visit my website: <https://blargbot.xyz>\n\nWant to support the bot? Consider donating to <https://patreon.com/blargbot> - all donations go directly towards recouping hosting costs.`);
         } catch (err) {
             console.error(err);
         }
