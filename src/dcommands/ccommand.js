@@ -1,6 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand'),
     bbEngine = require('../structures/bbtag/Engine'),
-    bbtag = require('../core/bbtag');
+    bbtag = require('../core/bbtag'),
+    snekfetch = require('snekfetch');
 
 const subcommands = [
     {
@@ -127,6 +128,140 @@ class CcommandCommand extends BaseCommand {
         if (words[1]) {
             let tag, content, title, lang, result;
             switch (words[1].toLowerCase()) {
+                case 'shrinkwrap': {
+                    let output = 'Salutations! You have discovered the super handy ShrinkWrapper9000!\n\nIf you decide to proceed, this will:\n';
+                    let storedGuild = await r.table('guild').get(msg.guild.id);
+                    let commands = {};
+                    let autoresponses = [];
+                    let are = null;
+                    for (let key of words.slice(2)) {
+                        key = key.toLowerCase();
+                        let command = storedGuild.ccommands[key];
+                        if (command) {
+                            delete command.authorizer;
+                            delete command.author;
+                            delete command.vars;
+
+                            output += ` - Export the custom command \`${key}\`\n`;
+                            if (command.hidden) {
+                                let ar = storedGuild.autoresponse.list.find(a => {
+                                    return a.executes === key;
+                                });
+                                if (ar) {
+                                    output += `   - Export the associated autoresponse to \`${ar.term}\`${ar.regex ? ' (regex)' : ''}\n`
+                                    ar.executes = command;
+                                    autoresponses.push(ar);
+                                } else if (storedGuild.autoresponse.everything.executes === key) {
+                                    output += `   - Export the associated everything autoresponse\n`
+
+                                    are = storedGuild.autoresponse.everything;
+                                    are.executes = command;
+                                }
+                            } else {
+                                commands[key] = command;
+                            }
+                        }
+                    }
+                    let key = 'thanks, shrinkwrapper!';
+                    output += `\nThis will not:\n - Export variables\n - Export authors or authorizers\n - Export depedencies\n\nIf you wish to continue, please say \`${key}\`.`;
+                    let response = await bu.awaitQuery(msg, output);
+                    if (response.content.toLowerCase() === key) {
+                        let res = {
+                            cc: commands,
+                            ar: autoresponses,
+                            are
+                        }
+                        await bu.send(msg, 'No problem, my job here is done.', { file: JSON.stringify(res), name: 'shrinkwrap.json' });
+                    } else {
+                        await bu.send(msg, 'Maybe next time then.');
+                    }
+                    break;
+                }
+                case 'install': {
+                    let url;
+                    if (msg.attachments.length > 0) {
+                        url = msg.attachments[0].url;
+                    } else if (words.length > 2) {
+                        url = words[2];
+                    }
+                    if (!url) {
+                        return await bu.send('You have to upload the installation file, or give me a URL to one.');
+                    }
+                    let res;
+                    try {
+                        res = await snekfetch.get(url);
+                    } catch (err) {
+                        return await bu.send('Sorry, I had trouble downloading that file. Try again.');
+                    }
+                    let output = 'Salutations! You have discovered the super handy CommandInstaller9000!\n\nIf you decide to proceed, this will:\n';
+                    let storedGuild = await r.table('guild').get(msg.guild.id);
+                    let ccommands = {};
+                    for (const key in res.body.cc) {
+                        let command = res.body.cc[key];
+                        if (storedGuild.ccommands[key]) {
+                            output += `❌ Ignore the command \`${key}\` as a command with that name already exists\n`
+                        } else {
+                            command.author = msg.author.id;
+                            delete command.authorizer;
+                            delete command.vars;
+                            delete command.hidden;
+                            ccommands[key] = command;
+                            output += `✅ Import the command \`${key}\`\n`
+                        }
+                    }
+                    for (const ar of res.body.ar) {
+                        if (storedGuild.autoresponse.list.length >= 20) {
+                            output += `❌ Ignore the autoresponse to \`${ar.term}\`${ar.regex ? ' (regex)' : ''} as the limit has been reached.\n`
+                        } else {
+                            let key;
+                            do {
+                                key = `_autoresponse_${storedGuild.autoresponse.index++}`;
+                            } while (storedGuild.ccommands[key]);
+                            let command = ar.executes;
+                            command.author = msg.author.id;
+                            delete command.authorizer;
+                            delete command.vars;
+                            command.hidden = true;
+                            ccommands[key] = command;
+                            ar.executes = key;
+                            storedGuild.autoresponse.list.push(ar);
+                            output += `✅ Import the autoresponse to \`${ar.term}\`${ar.regex ? ' (regex)' : ''}\n`;
+                            output += `<:blank:275482460358180865> ✅ Export the associated command as \`${key}\`\n`;
+                        }
+                    }
+                    if (res.body.are) {
+                        if (storedGuild.autoresponse.everything) {
+                            output += `❌ Ignore everything autoresponse as one already exists\n`
+                        } else {
+                            let key;
+                            do {
+                                key = `_autoresponse_${storedGuild.autoresponse.index++}`;
+                            } while (storedGuild.ccommands[key]);
+                            let command = res.body.are.executes;
+                            command.author = msg.author.id;
+                            delete command.authorizer;
+                            delete command.vars;
+                            command.hidden = true;
+                            ccommands[key] = command;
+                            res.body.are.executes = key;
+                            storedGuild.autoresponse.everything = res.body.are;
+                            output += `✅ Import the autoresponse to everything\n`;
+                            output += `<:blank:275482460358180865> ✅ Export the associated command as \`${key}\`\n`;
+                        }
+                    }
+                    let key = 'thanks, commandinstaller!';
+                    output += `\nThis will also:\n - Set you as the author for all imported commands\n\nIf you wish to continue, please say \`${key}\`.`;
+                    let response = await bu.awaitQuery(msg, output);
+                    if (response.content.toLowerCase() === key) {
+                        await r.table('guild').get(msg.guild.id).update({
+                            ccommands, autoresponse: storedGuild.autoresponse
+                        });
+                        await bu.send(msg, 'No problem, my job here is done.');
+                    } else {
+                        await bu.send(msg, 'Maybe next time then.');
+                    }
+                    break;
+                }
                 case 'cooldown':
                     title = filterTitle(words[2]);
                     let cooldown;
