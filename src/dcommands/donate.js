@@ -20,7 +20,7 @@ Thank you for your time. I really appreciate all of my users! :3
 
 ---------------------------------------------
 Paypal: <https://paypal.me/stupidcat>
-Patreon: <https://www.patreon.com/stupidcat>
+Patreon: <https://www.patreon.com/blargbot>
 ---------------------------------------------
 `);
         });
