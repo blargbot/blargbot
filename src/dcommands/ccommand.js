@@ -1,7 +1,8 @@
 const BaseCommand = require('../structures/BaseCommand'),
     bbEngine = require('../structures/bbtag/Engine'),
     bbtag = require('../core/bbtag'),
-    snekfetch = require('snekfetch');
+    snekfetch = require('snekfetch'),
+    crypto = require('crypto');
 
 const subcommands = [
     {
@@ -148,11 +149,11 @@ class CcommandCommand extends BaseCommand {
                                     return a.executes === key;
                                 });
                                 if (ar) {
-                                    output += `   - Export the associated autoresponse to \`${ar.term}\`${ar.regex ? ' (regex)' : ''}\n`
+                                    output += `   - Export the associated autoresponse to \`${ar.term}\`${ar.regex ? ' (regex)' : ''}\n`;
                                     ar.executes = command;
                                     autoresponses.push(ar);
                                 } else if (storedGuild.autoresponse.everything.executes === key) {
-                                    output += `   - Export the associated everything autoresponse\n`
+                                    output += `   - Export the associated everything autoresponse\n`;
 
                                     are = storedGuild.autoresponse.everything;
                                     are.executes = command;
@@ -170,8 +171,15 @@ class CcommandCommand extends BaseCommand {
                             cc: commands,
                             ar: autoresponses,
                             are
-                        }
-                        await bu.send(msg, 'No problem, my job here is done.', { file: JSON.stringify(res), name: 'shrinkwrap.json' });
+                        };
+                        let resStr = JSON.stringify(res);
+                        let hash = crypto.createHmac('sha256', config.general.interface_key).update(resStr).digest('hex');
+                        await bu.send(msg, 'No problem, my job here is done.', {
+                            file: JSON.stringify({
+                                signature: hash,
+                                payload: res
+                            }, null, 2), name: 'shrinkwrap.json'
+                        });
                     } else {
                         await bu.send(msg, 'Maybe next time then.');
                     }
@@ -193,25 +201,44 @@ class CcommandCommand extends BaseCommand {
                     } catch (err) {
                         return await bu.send('Sorry, I had trouble downloading that file. Try again.');
                     }
-                    let output = 'Salutations! You have discovered the super handy CommandInstaller9000!\n\nIf you decide to proceed, this will:\n';
+                    let body = res.body;
+                    let signedType = 'signed';
+                    if (body.payload && body.signature) {
+                        let hash = crypto.createHmac('sha256', config.general.interface_key).update(JSON.stringify(body.payload)).digest('hex');
+                        if (hash !== body.signature) signedType = 'invalid';
+                        body = body.payload;
+                    } else signedType = 'unsigned';
+                    if (body.cc === undefined || body.ar === undefined || body.are === undefined) {
+                        return await bu.send(msg, 'Your installation file was malformed.');
+                    }
+                    let output = '';
+                    switch (signedType) {
+                        case 'unsigned':
+                            output += '⚠ **Warning**: This installation file is **unsigned**. It did not come from me. Please double check to make sure you want to go through with this.\n\n';
+                            break;
+                        case 'invalid':
+                            output += '🛑 **Warning**: This installation file\'s signature is **incorrect**. There is a 100% chance that it has been tampered with. Please double check to make sure you want to go through with this.\n\n';
+                            break;
+                    }
+                    output += 'Salutations! You have discovered the super handy CommandInstaller9000!\n\nIf you decide to proceed, this will:\n';
                     let storedGuild = await r.table('guild').get(msg.guild.id);
                     let ccommands = {};
-                    for (const key in res.body.cc) {
-                        let command = res.body.cc[key];
+                    for (const key in body.cc) {
+                        let command = body.cc[key];
                         if (storedGuild.ccommands[key]) {
-                            output += `❌ Ignore the command \`${key}\` as a command with that name already exists\n`
+                            output += `❌ Ignore the command \`${key}\` as a command with that name already exists\n`;
                         } else {
                             command.author = msg.author.id;
                             delete command.authorizer;
                             delete command.vars;
                             delete command.hidden;
                             ccommands[key] = command;
-                            output += `✅ Import the command \`${key}\`\n`
+                            output += `✅ Import the command \`${key}\`\n`;
                         }
                     }
-                    for (const ar of res.body.ar) {
+                    for (const ar of body.ar) {
                         if (storedGuild.autoresponse.list.length >= 20) {
-                            output += `❌ Ignore the autoresponse to \`${ar.term}\`${ar.regex ? ' (regex)' : ''} as the limit has been reached.\n`
+                            output += `❌ Ignore the autoresponse to \`${ar.term}\`${ar.regex ? ' (regex)' : ''} as the limit has been reached.\n`;
                         } else {
                             let key;
                             do {
@@ -226,25 +253,25 @@ class CcommandCommand extends BaseCommand {
                             ar.executes = key;
                             storedGuild.autoresponse.list.push(ar);
                             output += `✅ Import the autoresponse to \`${ar.term}\`${ar.regex ? ' (regex)' : ''}\n`;
-                            output += `<:blank:275482460358180865> ✅ Export the associated command as \`${key}\`\n`;
+                            output += `<:blank:275482460358180865>✅ Import the associated command as \`${key}\`\n`;
                         }
                     }
-                    if (res.body.are) {
+                    if (body.are) {
                         if (storedGuild.autoresponse.everything) {
-                            output += `❌ Ignore everything autoresponse as one already exists\n`
+                            output += `❌ Ignore everything autoresponse as one already exists\n`;
                         } else {
                             let key;
                             do {
                                 key = `_autoresponse_${storedGuild.autoresponse.index++}`;
                             } while (storedGuild.ccommands[key]);
-                            let command = res.body.are.executes;
+                            let command = body.are.executes;
                             command.author = msg.author.id;
                             delete command.authorizer;
                             delete command.vars;
                             command.hidden = true;
                             ccommands[key] = command;
-                            res.body.are.executes = key;
-                            storedGuild.autoresponse.everything = res.body.are;
+                            body.are.executes = key;
+                            storedGuild.autoresponse.everything = body.are;
                             output += `✅ Import the autoresponse to everything\n`;
                             output += `<:blank:275482460358180865> ✅ Export the associated command as \`${key}\`\n`;
                         }

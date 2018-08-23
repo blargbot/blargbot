@@ -167,7 +167,7 @@ class autoresponseCommand extends BaseCommand {
                 }
                 ar.term = term;
             }
-            ar.regex = !!input.R
+            ar.regex = !!input.R;
 
             await this.save(guild);
 
@@ -201,7 +201,9 @@ class autoresponseCommand extends BaseCommand {
             await this.save(guild);
             bu.send(msg, `Autoresponse \`${removed[0].term}\` removed!`);
         } else {
+            delete guild.ccommands[guild.autoresponse.everything.executes];
             guild.autoresponse.everything = null;
+            await this.save(guild);
             bu.send(msg, `The everything autoresponse has been removed!`);
         }
     }
