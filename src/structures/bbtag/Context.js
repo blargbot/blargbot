@@ -130,8 +130,6 @@ class Context {
         else
             args.onSendCallback = () => didSend = true;
 
-        console.log(name, this.state.query.user[name]);
-
         if (name in this.state.query.user) {
             let user = bot.users.get(this.state.query.user[name]);
             if (user) return user;
