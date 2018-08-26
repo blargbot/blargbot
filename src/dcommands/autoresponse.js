@@ -121,7 +121,7 @@ class autoresponseCommand extends BaseCommand {
     generateList(guild, suffix) {
         let autoresponseList = "Autoresponses:\n```prolog\n";
         for (let i = 0; i < guild.autoresponse.list.length; i++) {
-            let phrase = `${i + 1}. ${guild.autoresponse.list[i].term}${guild.autoresponse.list[i].regex ? ' (regex)' : ''} - \`${guild.autoresponse.list[i].executes}\`\n`;
+            let phrase = `${i + 1}. ${guild.autoresponse.list[i].term}${guild.autoresponse.list[i].regex ? ' (regex)' : ''} - ${guild.autoresponse.list[i].executes}\n`;
             if (autoresponseList.length + phrase.length + suffix.length > 1500) {
                 autoresponseList += `...and ${guild.autoresponse.list.length - i} more.\n`;
                 break;
