@@ -615,13 +615,13 @@ class CcommandCommand extends BaseCommand {
                             return s.name == words[2].toLowerCase() || s.aliases.includes(words[2].toLowerCase());
                         });
                         if (command.length > 0) {
-                            await bu.send(msg, `Subcommand: **${command[0].name}**
+                            bu.send(msg, `Subcommand: **${command[0].name}**
 Aliases: **${command[0].aliases.join('**, **')}**
 Args:\`${command[0].args}\`
 
 ${command[0].desc}`);
                         } else {
-                            await bu.send(msg, 'That subcommand was not found!');
+                            bu.send(msg, 'That subcommand was not found!');
                         }
                     } else {
                         bu.send(msg, this.info);
@@ -645,6 +645,8 @@ ${command[0].desc}`);
                         }
                         toSend += '.';
                         bu.send(msg, toSend);
+                    } else {
+                        bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                     }
                     break;
                 case 'docs':
