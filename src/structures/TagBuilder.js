@@ -277,7 +277,7 @@ TagBuilder.util = {
         if (!permission.has('manageRoles') && !permission.has('administrator'))
             return 0;
         let author = context.guild.members.get(context.authorizer);
-        return Math.max(author.roles.map(id => (context.guild.roles.get(id) || { position: 0 }).position));
+        return Math.max(...author.roles.map(id => (context.guild.roles.get(id) || { position: 0 }).position));
     },
     canAccessChannel(context, channel) {
         if (channel.guild.id != context.guild.id) {
