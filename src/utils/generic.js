@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-07 09:36:40
+ * @Last Modified time: 2018-08-29 12:19:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -295,6 +295,20 @@ bu.addReactions = async function (channelId, messageId, reactions) {
     return errors;
 };
 
+bu.generateOutputPage = async function (payload, channel) {
+    if (typeof payload === 'string') payload = {
+        content: payload
+    }
+    id = bu.makeSnowflake();
+    await bu.cclient.execute(`INSERT INTO message_outputs (id, content, embeds, channelid) VALUES (:id, :content, :embeds, :channelid)`, {
+        id,
+        content: payload.content.toString(),
+        embeds: JSON.stringify([payload.embed]),
+        channelid: channel ? channel.id : null
+    }, { prepare: true });
+    return id;
+}
+
 /**
  * @param {*} context The context to send. Can be a channelId, Message or Channel object
  * @param {String|Object} payload The payload to send. Can be a string or an object
@@ -362,13 +376,7 @@ bu.send = async function (context, payload, files) {
         //     file: Buffer.from(payload.content.toString()),
         //     name: 'output.txt'
         // });
-        id = bu.makeSnowflake();
-        await bu.cclient.execute(`INSERT INTO message_outputs (id, content, embeds, channelid) VALUES (:id, :content, :embeds, :channelid)`, {
-            id,
-            content: payload.content.toString(),
-            embeds: JSON.stringify([payload.embed]),
-            channelid: channel.id
-        }, { prepare: true });
+        let id = await bu.generateOutputPage(payload, channel);
         payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n\nTo see what I would have said, please visit ' +
             (config.general.isbeta ? 'http://localhost:8085/output/' : 'https://blargbot.xyz/output/') + id;
     }

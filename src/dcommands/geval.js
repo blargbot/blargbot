@@ -16,9 +16,18 @@ class GevalCommand extends BaseCommand {
                 code: code
             });
             console.log(code, res);
+            res.result = res.result.filter(s => s.result !== undefined);
             res.result.sort((a, b) => a.shard > b.shard);
             res.result = res.result.map(shard => `====[ ${shard.shard} ]====\n\n${shard.result}`);
-            await bu.send(msg, 'Global eval result of input:\n```js\n' + code + '\n```', { name: 'eval.txt', file: res.result.join('\n\n') });
+            let output = res.result.join('\n\n');
+            let start = 'Global eval result of input:\n```js\n' + code + '\n```';
+            if (output.length === 0) {
+                await bu.send(msg, start + '\n```js\nundefined\n```');
+            } else if (output.length > 1500) {
+                let id = await bu.generateOutputPage(output, msg.channel);
+                await bu.send(msg, start + '\n' + (config.general.isbeta ? 'http://localhost:8085/output/' : 'https://blargbot.xyz/output/') + id);
+            } else
+                await bu.send(msg, start + '\n```js\n' + output + '\n```');
         }
     }
 }
