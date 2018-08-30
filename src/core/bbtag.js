@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-26 09:22:41
+ * @Last Modified time: 2018-08-30 11:15:44
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -489,6 +489,8 @@ const limits = {
 
             this.for = { loops: 1500 };
             this.foreach = { loops: 3000 };
+
+            this.dump = { count: 5 };
         }
 
         get repeat() { return this.for; }
@@ -529,6 +531,8 @@ const limits = {
 
             this.for = { loops: 1500 };
             this.foreach = { loops: 3000 };
+
+            this.dump = { count: 5 };
         }
 
         get repeat() { return this.for; }
@@ -571,6 +575,8 @@ const limits = {
 
             this.for = { loops: 1000 };
             this.foreach = { loops: 2000 };
+
+            this.dump = { count: 5 };
         }
         get repeat() { return this.for; }
         get while() { return this.for; }
@@ -611,6 +617,8 @@ const limits = {
 
             this.for = { loops: 500 };
             this.foreach = { loops: 1000 };
+
+            this.dump = { count: 5 };
         }
         get repeat() { return this.for; }
         get while() { return this.for; }
