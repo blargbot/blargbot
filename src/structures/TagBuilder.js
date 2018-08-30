@@ -294,6 +294,7 @@ TagBuilder.util = {
 TagBuilder.errors = {
     notEnoughArguments(subtag, context) { return TagBuilder.util.error(subtag, context, 'Not enough arguments'); },
     tooManyArguments(subtag, context) { return TagBuilder.util.error(subtag, context, 'Too many arguments'); },
+    missingPermissions(subtag, context) { return TagBuilder.util.error(subtag, context, 'Missing required permissions'); },
     noUserFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No user found'); },
     noRoleFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No role found'); },
     noChannelFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No channel found'); },

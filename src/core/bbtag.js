@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-30 11:15:44
+ * @Last Modified time: 2018-08-30 14:07:54
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -459,6 +459,7 @@ const limits = {
             this._name = 'tag';
             this.ban = { disabled: true };
             this.unban = { disabled: true };
+            this.guildbans = { disabled: true };
 
             this.kick = { disabled: true };
 
@@ -501,6 +502,7 @@ const limits = {
             this._name = 'custom command';
             this.ban = { staff: true };
             this.unban = { staff: true };
+            this.guildbans = { staff: true };
 
             this.kick = { staff: true };
 
@@ -544,6 +546,7 @@ const limits = {
 
             this.ban = { staff: true };
             this.unban = { staff: true };
+            this.guildbans = { staff: true };
 
             this.kick = { staff: true };
 
@@ -586,6 +589,7 @@ const limits = {
 
             this.ban = { staff: true };
             this.unban = { staff: true };
+            this.guildbans = { staff: true };
 
             this.kick = { staff: true };
 
