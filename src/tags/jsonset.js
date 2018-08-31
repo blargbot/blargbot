@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:49:14
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-30 19:37:44
+ * @Last Modified time: 2018-08-31 08:25:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -11,13 +11,14 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.ArrayTag('jsonset')
+        .withAlias('jset')
         .withArgs(a => [a.require('input'), a.require('path'), a.require('value'), a.optional('create')])
         .withDesc('Using the `input` as a base, navigates the provided dot-notated `path` and assigns the `value`.' +
-            '`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.' +
-            'If `create` is specified, will create/convert any missing keys.')
+        '`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.' +
+        'If `create` is specified, will create/convert any missing keys.')
         .withExample(
-            '{jsonset;;path.to.key;value;create}',
-            '{"path":{"to":{"key":"value"}}}'
+        '{jsonset;;path.to.key;value;create}',
+        '{"path":{"to":{"key":"value"}}}'
         )
         .whenArgs('0-2', Builder.errors.notEnoughArguments)
         .whenArgs('3-4', async function (subtag, context, args) {
@@ -84,8 +85,8 @@ module.exports =
                     obj = obj[p];
                 }
                 obj[comps[comps.length - 1]] = value;
-            } catch (e) {
-                return e.message;
+            } catch (err) {
+                return Builder.errors.customError(subtag, context, err.message);
             }
 
             if (arr && arr.n != null) {

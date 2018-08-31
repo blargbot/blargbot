@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:50:03
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-30 15:11:12
+ * @Last Modified time: 2018-08-31 08:33:16
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,10 +10,11 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.APITag('jsonnavigate')
-        .withAlias('navigate')
+    Builder.APITag('jsonget')
+        .withAlias('jget')
         .withArgs(a => [a.require('input'), a.require('path')])
         .withDesc('Navigates the path of a JSON object. Works with arrays too!\n' +
+        '`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.' +
         '`path` is a dot-noted series of properties.'
         )
         .withExample(
@@ -25,16 +26,34 @@ module.exports =
             let obj = args[0],
                 path = args[1];
 
-            let arr = await bu.deserializeTagArray(obj);
-            if (arr && Array.isArray(arr.v))
+            if (!obj)
+                obj = '{}';
+
+            let varname = undefined;
+
+            let arr = await bu.getArray(obj);
+            if (arr && Array.isArray(arr.v)) {
                 obj = arr.v;
-            else {
+            } else {
                 try {
                     obj = JSON.parse(obj);
                 } catch (err) {
-                    return Builder.errors.invalidJSON(subtag, context);
+                    varname = obj;
+                    let v = await context.variables.get(varname);
+                    if (v) {
+                        if (typeof v === 'object') obj = v;
+                        else {
+                            try {
+                                obj = JSON.parse(v);
+                            } catch (err2) {
+                                obj = {};
+                            }
+                        }
+                    } else obj = {};
                 }
             }
+            if (typeof obj !== 'object' || obj === null)
+                obj = {};
 
             path = path.split('.');
             try {
