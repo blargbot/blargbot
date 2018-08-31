@@ -37,7 +37,7 @@ Reason: ${tag.reason}`);
             author: tag.author,
             authorizer: tag.authorizer,
             cooldown: tag.cooldown,
-            modResult: escapeMentions
+            outputModify: escapeMentions
         });
         /** @type {string} */
         result.code = tag.content;

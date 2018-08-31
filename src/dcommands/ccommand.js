@@ -637,7 +637,7 @@ ${command[0].desc}`);
                             bu.send(msg, `❌ That ccommand doesn't exist! ❌`);
                             break;
                         }
-                        author = await r.table('user').get(tag.author).run();
+                        let author = await r.table('user').get(tag.author).run();
                         let toSend = `The ccommand \`${title}\` is owned by **${author.username}#${author.discriminator}**`;
                         if (tag.authorizer && tag.authorizer != author.id) {
                             let authorizer = await r.table('user').get(tag.authorizer).run();
@@ -671,7 +671,7 @@ ${command[0].desc}`);
                             isCC: true,
                             author: msg.author.id,
                             authorizer: msg.author.id,
-                            modResult(context, text) {
+                            outputModify(context, text) {
                                 function formatDuration(duration) {
                                     return duration.asSeconds() >= 5 ?
                                         duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
