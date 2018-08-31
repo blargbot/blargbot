@@ -295,6 +295,7 @@ TagBuilder.errors = {
     notEnoughArguments(subtag, context) { return TagBuilder.util.error(subtag, context, 'Not enough arguments'); },
     tooManyArguments(subtag, context) { return TagBuilder.util.error(subtag, context, 'Too many arguments'); },
     missingPermissions(subtag, context) { return TagBuilder.util.error(subtag, context, 'Missing required permissions'); },
+    invalidJSON(subtag, context) { return TagBuilder.util.error(subtag, context, 'Invalid JSON provided'); },
     noUserFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No user found'); },
     noRoleFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No role found'); },
     noChannelFound(subtag, context) { return TagBuilder.util.error(subtag, context, 'No channel found'); },
@@ -308,7 +309,8 @@ TagBuilder.errors = {
     tooManyLoops(subtag, context) { return TagBuilder.util.error(subtag, context, 'Too many loops'); },
     unsafeRegex(subtag, context) { return TagBuilder.util.error(subtag, context, 'Unsafe regex detected'); },
     cannotAccessChannel(subtag, context, channel) { return TagBuilder.util.error(subtag, context, `Cannot access channel ${channel}`); },
-    invalidEmbed(subtag, context, issue) { return TagBuilder.util.error(subtag, context, 'Invalid embed: ' + issue); }
+    invalidEmbed(subtag, context, issue) { return TagBuilder.util.error(subtag, context, 'Invalid embed: ' + issue); },
+    customError(subtag, context, message) { return TagBuilder.util.error(subtag, context, message); }
 };
 
 function buildLengthEmbed(definition, subtag, context) {
