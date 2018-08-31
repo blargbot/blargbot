@@ -58,7 +58,7 @@ class GreetCommand extends BaseCommand {
             isCC: true,
             author: msg.author.id,
             authorizer: msg.author.id,
-            modResult(context, result) { return 'Greeting set. ' + suffix + 'Simulation:\n' + result; }
+            outputModify(_, result) { return 'Greeting set. ' + suffix + 'Simulation:\n' + result; }
         });
     }
 }

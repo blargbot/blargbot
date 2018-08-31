@@ -59,7 +59,7 @@ class FarewellCommand extends BaseCommand {
             isCC: true,
             author: msg.author.id,
             authorizer: msg.author.id,
-            modResult(context, result) { return 'Farewell set. ' + suffix + 'Simulation:\n' + result; }
+            outputModify(_, result) { return 'Farewell set. ' + suffix + 'Simulation:\n' + result; }
         });
     }
 }
