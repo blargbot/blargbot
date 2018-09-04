@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-30 14:07:54
+ * @Last Modified time: 2018-09-04 11:27:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -466,7 +466,6 @@ const limits = {
             this.modlog = { disabled: true };
             this.pardon = { disabled: true };
             this.warn = { disabled: true };
-            this.warnings = { disabled: true };
             this.reason = { disabled: true };
 
             this.roleadd = { disabled: true };
@@ -509,7 +508,6 @@ const limits = {
             this.modlog = { staff: true };
             this.pardon = { staff: true };
             this.warn = { staff: true };
-            this.warnings = { staff: true };
             this.reason = { staff: true };
 
             this.roleadd = { staff: true };
@@ -553,7 +551,6 @@ const limits = {
             this.modlog = { staff: true };
             this.pardon = { staff: true };
             this.warn = { staff: true };
-            this.warnings = { staff: true };
             this.reason = { staff: true };
 
             this.roleadd = { staff: true };
@@ -596,7 +593,6 @@ const limits = {
             this.modlog = { staff: true };
             this.pardon = { staff: true };
             this.warn = { staff: true };
-            this.warnings = { staff: true };
             this.reason = { staff: true };
 
             this.roleadd = { staff: true };
