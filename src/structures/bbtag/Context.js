@@ -290,6 +290,7 @@ class Context {
             flaggedInput: this.flaggedInput,
             tagName: this.tagName,
             author: this.author,
+            authorizer: this.authorizer,
             tempVars: this.variables.list
                 .filter(v => v.key.startsWith('~'))
                 .reduce((p, v) => {
