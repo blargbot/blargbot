@@ -270,7 +270,8 @@ class autoresponseCommand extends BaseCommand {
             }
             case 'whitelist': {
                 if (msg.author.id !== bu.CAT_ID) break;
-                let channel = Buffer.from(input.undefined[1], 'base64').toString('utf8');
+                let b64 = input.undefined[1];
+                let channel = Buffer.from(b64, 'base64').toString('utf8');
                 let c = await bot.getRESTChannel(channel);
                 let guild = c.guild.id;
                 let g = await bot.getRESTGuild(guild);
@@ -282,8 +283,20 @@ class autoresponseCommand extends BaseCommand {
                 await r.table('vars').get('arwhitelist').update({
                     values: whitelist.values
                 });
-                if (index == -1)
+                if (index == -1) {
                     await bu.send(channel, 'Congratz, your guild has been whitelisted for autoresponses! 🎉');
+                    let msgs = await bot.getMessages('481857751891443722');
+                    for (const m of msgs) {
+                        if (m.author.id === bot.user.id) {
+                            if (m.content.includes(b64)) {
+                                let c = m.content.split('\n');
+                                c.pop();
+                                c.push('✅ Approved');
+                                await m.edit(c.join('\n'));
+                            }
+                        }
+                    }
+                }
                 return await bu.send(msg, `${g.name} is ${index > -1 ? 'no longer' : 'now'} whitelisted.`);
                 break;
             }

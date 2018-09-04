@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:50:03
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-31 08:33:16
+ * @Last Modified time: 2018-08-31 17:05:46
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,12 +14,12 @@ module.exports =
         .withAlias('jget')
         .withArgs(a => [a.require('input'), a.require('path')])
         .withDesc('Navigates the path of a JSON object. Works with arrays too!\n' +
-        '`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.' +
-        '`path` is a dot-noted series of properties.'
+            '`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.' +
+            '`path` is a dot-noted series of properties.'
         )
         .withExample(
-        '{jsonnavigate;["one","two","three"];1}',
-        'two'
+            '{jsonnavigate;["one","two","three"];1}',
+            'two'
         )
         .whenArgs('0-1', async (_, context) => getUrls(context.msg))
         .whenArgs(2, async function (subtag, context, args) {
@@ -68,6 +68,8 @@ module.exports =
                         obj = obj[part];
                     else obj = undefined;
                 }
+                if (typeof obj === 'object')
+                    obj = JSON.stringify(obj);
                 return obj;
             } catch (err) {
                 return Builder.errors.customError(subtag, context, err.message);

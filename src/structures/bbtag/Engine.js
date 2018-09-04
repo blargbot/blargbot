@@ -178,7 +178,7 @@ function addError(tag, context, message) {
  * @property {string} runArgs.tagContent The content of the tag to be run
  * @property {string} runArgs.input The input provided to the tag
  * @property {boolean} runArgs.isCC Is the context a custom command context
- * @property {function(string):(Promise<string>|string)} runArgs.modResult Modifies the result before it is sent
+ * @property {function(string):(Promise<string>|string)} runArgs.outputModify Modifies the result before it is sent
  * @property {string} [runArgs.tagName] The name of the tag being run
  * @property {string} [runArgs.author] The ID of the author of the tag being run
  * @property {function(Context,string):{name:string,file:string}} [runArgs.attach] A function to generate an attachment
@@ -228,13 +228,11 @@ async function runTag(content, context) {
 
     console.bbtag('Saved variables in', timer.poll(true), 'ms');
 
-    if (result != null && context.state.replace != null)
-        result = result.replace(context.state.replace.regex, context.state.replace.with);
-
-    result = (config.modResult || ((_, r) => r))(context, result);
-
     if (typeof result == 'object')
         result = await result;
+
+    if (result != null && context.state.replace != null)
+        result = result.replace(context.state.replace.regex, context.state.replace.with);
 
     if (context.state.embed == null && (result == null || result.trim() == '')) {
         return { context, result, response: null };

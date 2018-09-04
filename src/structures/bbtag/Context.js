@@ -52,6 +52,7 @@ class Context {
         this.tagName = options.tagName;
         this.cooldown = options.cooldown;
         this.locks = options.locks || {};
+        this.outputModify = options.outputModify || ((_, r) => r);
 
         if (!cooldowns[this.msg.guild.id])
             cooldowns[this.msg.guild.id] = {};
@@ -112,6 +113,7 @@ class Context {
         if (options.tagName === undefined) options.tagName = this.tagName;
         if (options.author === undefined) options.author = this.author;
         if (options.locks === undefined) options.locks = this.locks;
+        if (options.outputModify === undefined) options.outputModify = this.outputModify;
 
         let context = new Context(options, this);
         context.state = this.state;
@@ -200,7 +202,7 @@ class Context {
                     }
                     let response = await bu.send(this.msg,
                         {
-                            content: text,
+                            content: this.outputModify(this, text),
                             embed: this.state.embed,
                             nsfw: this.state.nsfw,
                             disableEveryone: disableEveryone

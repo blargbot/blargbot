@@ -17,7 +17,7 @@ const subcommands = [
         name: 'create',
         args: '<name> <content>',
         desc: 'Creates a new tag with the given name and content',
-        aliases: [ 'add' ]
+        aliases: ['add']
     },
     {
         name: 'edit',
@@ -28,7 +28,7 @@ const subcommands = [
         name: 'delete',
         args: '<name>',
         desc: 'Deletes the tag with the given name, provided that you were the one who created it',
-        aliases: [ 'remove' ]
+        aliases: ['remove']
     },
     {
         name: 'rename',
@@ -115,7 +115,7 @@ const subcommands = [
         name: 'test',
         args: '<content>',
         desc: 'Uses the BBTag engine to execute the content as it was a tag',
-        aliases: [ 'eval', 'exec' ]
+        aliases: ['eval', 'exec']
     }
 ];
 const tagNameMsg = 'Enter the name of the tag:';
@@ -197,8 +197,8 @@ class TagCommand extends BaseCommand {
             name: 'tag',
             aliases: ['t'],
             category: bu.CommandType.GENERAL,
-            usage: `tag [${subcommands.map(x => `${x.name}${x.args ? ' '+x.args : ''}`).join(' | ')}]`,
-            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n' 
+            usage: `tag [${subcommands.map(x => `${x.name}${x.args ? ' ' + x.args : ''}`).join(' | ')}]`,
+            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n'
                 + '\n__**Subcommands:**__\n'
                 + `${subcommands.map(x => `**${x.name}**`).join(', ')}`
                 + '\nFor more information about a subcommand, do `b!tag help <subcommand>`.\n'
@@ -651,7 +651,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                             tagName: 'test',
                             author: msg.author.id,
                             authorizer: msg.author.id,
-                            modResult(context, text) {
+                            outputModify(context, text) {
                                 function formatDuration(duration) {
                                     return duration.asSeconds() >= 5 ?
                                         duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
