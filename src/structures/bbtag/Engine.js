@@ -120,7 +120,7 @@ async function checkLimits(context, subtag, definition) {
         if (limit.staff) {
             let isStaff = await context.isStaff;
             if (!isStaff) {
-                return addError(subtag, context, 'Author must be staff');
+                return addError(subtag, context, 'Authorizer must be staff');
             }
         }
         if (limit.count !== undefined) {
