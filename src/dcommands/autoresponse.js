@@ -43,6 +43,14 @@ class autoresponseCommand extends BaseCommand {
         return this.hss;
     }
 
+    get approved() {
+        return '✅';
+    }
+
+    get rejected() {
+        return '❌';
+    }
+
     getRandomInt(min = 0, max = 10) {
         return Math.floor(Math.random() * max) + min;
     }
@@ -223,6 +231,34 @@ class autoresponseCommand extends BaseCommand {
         });
     }
 
+    async whitelist(msg, enable) {
+        let b64 = msg.content.match(/```js\n(.+)\n```$/)[1];
+        let { channel, guild } = JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
+        let g = await bot.getRESTGuild(guild);
+        let whitelist = await r.table('vars').get('arwhitelist');
+        let index = whitelist.values.indexOf(guild);
+        if (index > -1 && enable === false)
+            whitelist.values.splice(index, 1);
+        else if (index === -1 && enable === true) whitelist.values.push(guild);
+        else if (enable === true) return await bu.send(msg, 'Nothing was changed.');
+        await r.table('vars').get('arwhitelist').update({
+            values: whitelist.values
+        });
+        await bu.send(channel, enable ? 'Congratz, your guild has been whitelisted for autoresponses! 🎉' : 'Sorry, your guild has been rejected for autoresponses. 😿');
+        let msgs = await bot.getMessages('481857751891443722');
+        for (const m of msgs) {
+            if (m.author.id === bot.user.id) {
+                if (m.content.includes(b64)) {
+                    let c = m.content.split('\n');
+                    c[0] = (enable ? this.approved : this.rejected) + ' ' + c[0];
+                    await m.edit(c.join('\n'));
+                    await m.removeReactions();
+                }
+            }
+        }
+        return await bu.send(msg, `${g.name} is ${enable ? 'now' : 'no longer'} whitelisted.`);
+    }
+
     async execute(msg, words) {
         let input = bu.parseInput(this.flags, words, true);
         if (!msg.guild) return;
@@ -230,8 +266,8 @@ class autoresponseCommand extends BaseCommand {
             input.undefined[0] = '';
         }
         let storedGuild = await bu.getGuild(msg.guild.id);
-
         let whitelist = await r.table('vars').get('arwhitelist');
+
 
         if (!storedGuild.autoresponse) {
             storedGuild.autoresponse = {
@@ -263,41 +299,11 @@ class autoresponseCommand extends BaseCommand {
                 if (whitelist.values.includes(msg.guild.id))
                     return await bu.send(msg, 'You are already whitelisted!');
                 let reason = input.undefined.slice(1).join(' ');
-                let code = Buffer.from(msg.channel.id).toString('base64');
-                await bu.send('481857751891443722', `New AR request from **${bu.getFullName(msg.author)}** (${msg.author.id}):\n**Guild**: ${msg.guild.name} (${msg.guild.id})\n**Channel**: ${msg.channel.id}\n**Members**: ${msg.guild.memberCount}${reason ? '\n\n' + reason : ''}\n\n\`b!ar whitelist ${code}\``);
-                await bu.send(msg, 'Your request has been sent. Please don\'t spam this command.');
-                break;
-            }
-            case 'whitelist': {
-                if (msg.author.id !== bu.CAT_ID) break;
-                let b64 = input.undefined[1];
-                let channel = Buffer.from(b64, 'base64').toString('utf8');
-                let c = await bot.getRESTChannel(channel);
-                let guild = c.guild.id;
-                let g = await bot.getRESTGuild(guild);
-                if (!channel) await bu.send(msg, 'Please specify the channel as the second argument so I know where to send the confirmation message.');
-                let index = whitelist.values.indexOf(guild);
-                if (index > -1)
-                    whitelist.values.splice(index, 1);
-                else whitelist.values.push(guild);
-                await r.table('vars').get('arwhitelist').update({
-                    values: whitelist.values
-                });
-                if (index == -1) {
-                    await bu.send(channel, 'Congratz, your guild has been whitelisted for autoresponses! 🎉');
-                    let msgs = await bot.getMessages('481857751891443722');
-                    for (const m of msgs) {
-                        if (m.author.id === bot.user.id) {
-                            if (m.content.includes(b64)) {
-                                let c = m.content.split('\n');
-                                c.pop();
-                                c.push('✅ Approved');
-                                await m.edit(c.join('\n'));
-                            }
-                        }
-                    }
-                }
-                return await bu.send(msg, `${g.name} is ${index > -1 ? 'no longer' : 'now'} whitelisted.`);
+                let code = Buffer.from(JSON.stringify({ channel: msg.channel.id, guild: msg.guild.id })).toString('base64');
+                let msg2 = await bu.send('481857751891443722', `New AR request from **${bu.getFullName(msg.author)}** (${msg.author.id}):\n**Guild**: ${msg.guild.name} (${msg.guild.id})\n**Channel**: ${msg.channel.id}\n**Members**: ${msg.guild.memberCount}${reason ? '\n\n' + reason : ''}\n\n\`\`\`js\n${code}\n\`\`\``);
+                await msg2.addReaction(this.approved);
+                await msg2.addReaction(this.rejected);
+                await bu.send(msg, 'Your request has been sent. Please don\'t spam this command.\n\nYou will hear back in this channel if you were accepted or rejected.');
                 break;
             }
             case 'info':
