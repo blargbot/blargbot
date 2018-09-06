@@ -310,6 +310,9 @@ TagBuilder.errors = {
     unsafeRegex(subtag, context) { return TagBuilder.util.error(subtag, context, 'Unsafe regex detected'); },
     cannotAccessChannel(subtag, context, channel) { return TagBuilder.util.error(subtag, context, `Cannot access channel ${channel}`); },
     invalidEmbed(subtag, context, issue) { return TagBuilder.util.error(subtag, context, 'Invalid embed: ' + issue); },
+    invalidDomain(subtag, context, url) { return TagBuilder.util.error(subtag, context, `A domain could not be extracted from url: ${url}`); },
+    domainNotWhitelisted(subtag, context, domain) { return TagBuilder.util.error(subtag, context, `Domain is not whitelisted: ${domain}`); },
+    invalidRequestMethod(subtag, context, method) { return TagBuilder.util.error(subtag, context, `Request method must be one of 'GET', 'PUT', 'PATCH', 'POST', or 'DELETE'`); },
     customError(subtag, context, message) { return TagBuilder.util.error(subtag, context, message); }
 };
 

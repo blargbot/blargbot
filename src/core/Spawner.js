@@ -43,6 +43,9 @@ class Spawner extends EventEmitter {
         this.metricsInterval = setInterval(async () => {
             await this.retrieveMetrics();
         }, 15000);
+
+        this.domainCache = {};
+        this.domainTTL = 0;
     }
 
     respawnAll() {
@@ -254,6 +257,14 @@ class Spawner extends EventEmitter {
                         let shard0 = this.client.spawner.shards.get(0);
                         let res = await shard0.awaitMessage('commandList');
                         shard.send(eventKey, res);
+                        break;
+                    }
+                    case 'whitelistedDomain': {
+                        if (moment().valueOf() - this.domainTTL >= 1000 * 60 * 15) {// recache every 15 minutes 
+                            this.domainTTL = moment().valueOf();
+                            this.domainCache = (await r.table('vars').get('whitelistedDomains')).values;
+                        }
+                        shard.send(eventKey, { result: this.domainCache[data.domain] === true });
                         break;
                     }
                     default:
