@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-07 12:29:26
+ * @Last Modified time: 2018-09-07 14:43:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -19,6 +19,7 @@ const passport = require('passport');
 const session = require('express-session');
 const http = require('http');
 const bodyParser = require('body-parser');
+const enableDestroy = require('server-destroy');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
@@ -33,6 +34,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 helpers.init();
 
 const server = app.server = http.createServer(app);
+enableDestroy(server);
 require('./websocket.js').init(server);
 
 var scopes = ['identify', 'guilds'];
@@ -164,7 +166,7 @@ e.init = () => {
 
 e.stop = function () {
     return new Promise(res => {
-        server.close(() => {
+        server.destroy(() => {
             console.website('Old site is down.');
             res();
         });

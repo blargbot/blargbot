@@ -20,6 +20,9 @@ class RestartCommand extends BaseCommand {
                     }
                 }).run();
                 bot.sender.send('KILLEVERYTHING', msg.channel.id);
+            } else if (words[1] === 'frontend') {
+                await bot.sender.awaitMessage('respawnFrontend', {});
+                await bu.send(msg, 'Frontend has been respawned.');
             } else {
                 await bu.send(msg, 'Ah! You\'ve killed me but in a way that minimizes downtime! D:');
                 bot.sender.send('respawnAll', msg.channel.id);

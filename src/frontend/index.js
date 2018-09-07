@@ -3,6 +3,7 @@ const Router = require('koa-router');
 const { Nuxt, Builder } = require('nuxt');
 const config = require('../../config.json');
 const bodyParser = require('koa-bodyparser');
+const enableDestroy = require('server-destroy');
 
 module.exports = class Frontend {
     constructor(client) {
@@ -36,6 +37,7 @@ module.exports = class Frontend {
         });
 
         this._server = this.app.listen(8086);
+        enableDestroy(this._server);
         console.website('NEW SITE Listening on port', 8086);
     }
 
@@ -43,7 +45,7 @@ module.exports = class Frontend {
         return new Promise(res => {
             this.nuxt.close(() => {
                 console.website('New site:nuxt is down.');
-                this._server.close(() => {
+                this._server.destroy(() => {
                     console.website('New site is down.');
                     res();
                 });

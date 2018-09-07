@@ -271,6 +271,12 @@ class Spawner extends EventEmitter {
                         shard.send(eventKey, { result: this.domainCache[data.domain] === true });
                         break;
                     }
+                    case 'respawnFrontend': {
+                        console.log('Respawning the frontend');
+                        await this.client.restartWebsite();
+                        shard.send(eventKey, {});
+                        break;
+                    }
                     default:
                         await shard.send(eventKey, 'Unknown await key: ' + data.message);
                         break;
@@ -318,11 +324,6 @@ class Spawner extends EventEmitter {
                 await this.respawnShard(sId);
                 timer.end();
                 await this.client.discord.createMessage(data.channel, `The shard has been successfully respawned! It only took me ${timer.format()}`);
-                break;
-            }
-            case 'respawnFrontend': {
-                console.log('Respawning the frontend');
-                this.client.restartWebsite();
                 break;
             }
             case 'respawnAll': {
