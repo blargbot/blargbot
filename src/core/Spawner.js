@@ -323,6 +323,7 @@ class Spawner extends EventEmitter {
             case 'respawnFrontend': {
                 console.log('Respawning the frontend');
                 this.client.restartWebsite();
+                break;
             }
             case 'respawnAll': {
                 console.log('Respawning all shards');
