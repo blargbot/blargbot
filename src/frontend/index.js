@@ -41,9 +41,12 @@ module.exports = class Frontend {
 
     stop() {
         return new Promise(res => {
-            this._server.close(() => {
-                console.website('New site is down.');
-                res();
+            this.nuxt.close(() => {
+                console.website('New site:nuxt is down.');
+                this._server.close(() => {
+                    console.website('New site is down.');
+                    res();
+                });
             });
         });
     }

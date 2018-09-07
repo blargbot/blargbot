@@ -22,7 +22,7 @@
                         <div class='collapsible shadow-1' v-for='obj in filtered(category.name)' :key='obj.key'>
                             <div class='title' v-on:click='clickCollapse'><h3>{{obj.title}}</h3></div>
                             <div class='content'>
-                                <vue-markdown :source='obj.message'/>
+                                <vue-markdown :source='obj.message' :emoji="false" table-class="collapse-page-table"/>
                             </div>
                         </div>
                     </div>

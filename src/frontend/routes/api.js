@@ -1,5 +1,7 @@
 const Router = require('koa-router');
 const Security = require('../security');
+const argumentFactory = require('../../structures/ArgumentFactory');
+const bbtag = require('../../core/bbtag');
 
 module.exports = class ApiRoute {
     constructor(frontend) {
@@ -44,6 +46,8 @@ module.exports = class ApiRoute {
         let st = JSON.parse(t.message);
         for (const key in st) {
             let subtag = st[key];
+            subtag.usage = argumentFactory.toString(subtag.args);
+
             let category = bu.TagType.properties[subtag.category];
             if (!this.subtags[category.name]) this.subtags[category.name] = {
                 name: category.name,
@@ -51,6 +55,16 @@ module.exports = class ApiRoute {
                 id: subtag.category,
                 el: []
             };;
+            subtag.limits = [];
+            for (const key of Object.keys(bbtag.limits)) {
+                let text = bbtag.limitToSring(key, subtag.name);
+                if (text) {
+                    subtag.limits.push({
+                        type: bbtag.limits[key].instance._name, text: text
+                    });
+                }
+            }
+
             this.subtags[category.name].el.push(subtag);
         }
         for (const value of Object.values(this.subtags)) {

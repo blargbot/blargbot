@@ -29,3 +29,13 @@ code {
     background: rgba(0, 0, 0, 0.2);
   }
 }
+
+blockquote {
+  margin: 10px 0;
+  padding: 5px 10px;
+  border-left: 4px solid $accent-color;
+
+  p {
+    margin: 0;
+  }
+}
