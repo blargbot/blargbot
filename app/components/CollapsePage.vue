@@ -6,7 +6,7 @@
       </div>
     </div>
     <div v-else>
-        <input type='text' v-model='filter'>
+        <input type='text' class='textbox' v-model='filter'>
 
         <div class='button-flex'>
             <button class='button' v-on:click='collapseAll'>Collapse All</button>
@@ -62,7 +62,7 @@ export default {
         return (
           o.keywords.filter(k =>
             (o.category.name.toLowerCase() + "." + k.toLowerCase()).includes(
-              this.filter.toLowerCase()
+              (this.filter || "").toLowerCase()
             )
           ).length > 0
         );

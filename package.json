@@ -70,6 +70,7 @@
         "eslint": "^5.0.1",
         "eslint-loader": "^2.0.0",
         "node-sass": "^4.9.2",
+        "sass-lint": "^1.12.1",
         "sass-loader": "^7.0.3"
     },
     "scripts": {

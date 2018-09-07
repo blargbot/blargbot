@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Ubuntu');
+@import url("https://fonts.googleapis.com/css?family=Ubuntu");
 
 // Colors
 $primary-color: #475d68;
@@ -6,31 +6,35 @@ $primary-text: #f9f9f9;
 $secondary-color: #384952;
 $accent-color: #00d3d3;
 $secondary-accent-color: #65ecec;
-
 $colors: (
-    "teal": #06b1b1 #37d3d3,
-    "green": #28cc19 #43e730,
-    "gold": #b1a500 #d3c319,
-    "red": #ad0a0a #da2020,
-    "orange": #d15108 #f36d24
+  "teal": #06b1b1 #37d3d3, 
+  "green": #28cc19 #43e730, 
+  "gold": #b1a500 #d3c319, 
+  "red": #ad0a0a #da2020, 
+  "orange": #d15108 #f36d24
 );
 
 $colors-aliases: (
-    "primary": map-get($colors, "teal"),
-    "warning": map-get($colors, "orange"),
-    "danger": map-get($colors, "red"),
-    "ok": map-get($colors, "green")
+  "primary": map-get($colors, "teal"), 
+  "warning": map-get($colors, "orange"),
+  "danger": map-get($colors, "red"), 
+  "ok": map-get($colors, "green")
 );
 
 $colors: map-merge($colors, $colors-aliases);
 
 // Shadows
-$shadow-transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-$shadow-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
-$shadow-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-$shadow-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-$shadow-4: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-$shadow-5: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+$shadow-transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+$shadow-1: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+
+$shadow-2: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+
+$shadow-3: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+
+$shadow-4: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+
+$shadow-5: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22);
 
 // Typefaces
-$primary-typeface: 'Ubuntu', sans-serif;
+$primary-typeface: "Ubuntu", sans-serif;

@@ -1,0 +1,16 @@
+input.textbox {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 1.3em;
+  color: $primary-text;
+  border-bottom: rgba(0, 0, 0, 0.3) 1px solid;
+  padding: 5px 0;
+  transition-duration: 0.2s;
+
+  &:focus {
+    border-bottom-color: $accent-color; 
+  }
+}
