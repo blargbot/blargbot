@@ -37,7 +37,7 @@ module.exports = {
         ["@nuxtjs/axios", {
             prefix: "/api",
             proxy: true,
-            port: 8085
+            port: 8086
         }]
     ],
     plugins: [{ src: '@/plugins/websocket.js', ssr: false }],
