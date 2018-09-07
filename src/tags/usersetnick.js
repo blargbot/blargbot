@@ -15,8 +15,8 @@ module.exports =
         .withArgs(a => [a.require('nick'), a.optional('user')])
         .withDesc('Sets `user`\'s nickname to `nick`. Leave `nick` blank to reset their nickname.')
         .withExample(
-            '{usersetnick;super cool nickname}',
-            ''
+        '{usersetnick;super cool nickname}',
+        ''
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {

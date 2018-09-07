@@ -227,6 +227,7 @@ process.on('message', async msg => {
                         if (ls[key].isTag) {
                             let t = ls[key];
                             tags[key] = {
+                                key,
                                 category: t.category,
                                 name: t.name,
                                 args: t.args,
@@ -253,11 +254,13 @@ process.on('message', async msg => {
                         let c = ls[key];
                         if (c.isCommand && !c.hidden) {
                             commands[key] = {
+                                key,
+                                name: c.name,
                                 usage: c.usage,
                                 info: c.info,
                                 longinfo: c.longinfo,
                                 category: c.category,
-                                alias: c.alias,
+                                aliases: c.aliases,
                                 flags: c.flags,
                                 onlyOn: c.onlyOn
                             };

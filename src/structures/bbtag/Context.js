@@ -98,6 +98,8 @@ class Context {
             overrides: {},
             cache: {}
         };
+
+        console.debug(this);
     }
 
     ownsMessage(messageId) {
