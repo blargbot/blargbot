@@ -44,6 +44,7 @@ module.exports = class ApiRoute {
         let shard = spawner.shards.get(0);
         let t = await shard.awaitMessage('tagList');
         let st = JSON.parse(t.message);
+        this.subtags = {};
         for (const key in st) {
             let subtag = st[key];
             subtag.usage = argumentFactory.toString(subtag.args);
