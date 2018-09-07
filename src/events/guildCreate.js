@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:21:21
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-06 19:01:13
+ * @Last Modified time: 2018-09-06 19:06:06
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,8 +17,9 @@ bot.on('guildCreate', async function (guild) {
         let owner = guild.members.get(guild.ownerID).user;
         let pc = await owner.getDMChannel();
 
-        await pc.createMessage(`Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
-
+        try {
+            await pc.createMessage(`Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
+        } catch (err) { }
         return await guild.leave();
     }
 
