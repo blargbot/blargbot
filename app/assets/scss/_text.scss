@@ -1,0 +1,31 @@
+.primary-text {
+  color: $primary-text;
+}
+
+p {
+  font-size: 1.1em;
+  line-height: 1.3em;
+}
+
+a {
+  color: $accent-color;
+  text-decoration: none;
+}
+
+a:hover {
+  color: $secondary-accent-color;
+}
+
+code {
+  display: inline-block;
+  padding: 2px 5px;
+  background: rgba(0, 0, 0, 0.1);
+  margin: 0 3px;
+  border-radius: 5px;
+  transition-duration: 0.2s;
+
+  &:hover {
+    color: $accent-color;
+    background: rgba(0, 0, 0, 0.2);
+  }
+}

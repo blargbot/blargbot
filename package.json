@@ -61,6 +61,7 @@
         "twemoji": "^11.0.0",
         "unorm": "^1.4.1",
         "usage": "^0.7.1",
+        "vue-markdown": "^2.2.4",
         "wolken": "^0.2.0",
         "ws": "^1.1.1",
         "xml2js": "^0.4.19"
@@ -68,7 +69,8 @@
     "devDependencies": {
         "eslint": "^5.0.1",
         "eslint-loader": "^2.0.0",
-        "node-sass": "^4.9.0",
+        "node-sass": "^4.9.2",
+        "sass-lint": "^1.12.1",
         "sass-loader": "^7.0.3"
     },
     "scripts": {
