@@ -2,17 +2,18 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:21:21
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-03 23:01:01
+ * @Last Modified time: 2018-09-06 19:01:13
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const blacklist = require('../../blacklist.json');
 
 bot.on('guildCreate', async function (guild) {
     bu.Metrics.guildGauge.inc();
 
-    if (blacklist.includes(guild.id)) {
+    let blacklist = await r.table('vars').get('guildBlacklist');
+
+    if (blacklist.values.includes(guild.id)) {
         let owner = guild.members.get(guild.ownerID).user;
         let pc = await owner.getDMChannel();
 
