@@ -18,11 +18,10 @@ export default {
     let retObj = {};
 
     let res = await app.$axios.$get("/subtags");
-    console.log(res);
     for (const key in res) {
       res[key].el = res[key].el.map(c => {
         let out = [];
-        console.log(c);
+        // console.log(c);
         // out.push(`${c.info}`);
 
         return {

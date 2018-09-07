@@ -35,7 +35,16 @@ module.exports = class Frontend {
                 }))
         });
 
-        this.app.listen(8086);
+        this._server = this.app.listen(8086);
         console.website('NEW SITE Listening on port', 8086);
+    }
+
+    stop() {
+        return new Promise(res => {
+            this._server.close(() => {
+                console.website('New site is down.');
+                res();
+            });
+        });
     }
 }

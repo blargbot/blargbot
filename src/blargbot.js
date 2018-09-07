@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-07 11:44:36
+ * @Last Modified time: 2018-09-07 12:28:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -46,6 +46,7 @@ global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
 const Spawner = require('./core/Spawner');
 const Eris = require('eris');
+const Frontend = require('./frontend');
 const irc = require('./core/irc.js');
 
 /** CONFIG STUFF **/
@@ -63,20 +64,29 @@ var VERSION = config.version;
 class BlargbotClient {
     constructor() {
         // todo: make these not global because ew
-        this.bot = global.bot = new Eris(config.discord.token, { restMode: true, defaultImageFormat: 'png' });
-        this.spawner = global.spawner = new Spawner({
-            discord: bot,
-            irc
-        });
+        this.discord = this.bot = global.bot = new Eris(config.discord.token, { restMode: true, defaultImageFormat: 'png' });
+        this.irc = irc;
+        this.spawner = global.spawner = new Spawner(this);
 
         console.init('Initializing discord.');
         spawner.spawnAll();
         irc.init(VERSION, botEmitter);
         console.verbose('IRC finished?');
-        this.frontend = new (require('./frontend'))(this);
 
+        this.spawnWebsite();
+    }
+
+    spawnWebsite() {
+        this.frontend = new Frontend(this);
         this.backend = require('./backend/main.js');
         this.backend.init();
+    }
+
+    async restartWebsite() {
+        console.website('Websites are GOING DOWN!');
+        await Promise.all([this.frontend.stop(), this.backend.stop()]);
+        console.website('Starting sites back up...')
+        this.spawnWebsite();
     }
 }
 

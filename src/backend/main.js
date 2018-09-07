@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-06 17:49:50
+ * @Last Modified time: 2018-09-07 12:29:26
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -161,3 +161,12 @@ e.init = () => {
     });
     return app;
 };
+
+e.stop = function () {
+    return new Promise(res => {
+        server.close(() => {
+            console.website('Old site is down.');
+            res();
+        });
+    });
+}

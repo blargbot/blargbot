@@ -322,12 +322,7 @@ class Spawner extends EventEmitter {
             }
             case 'respawnFrontend': {
                 console.log('Respawning the frontend');
-                let timer = new Timer().start();
-                let shard = this.shards.get('FE');
-                await shard.kill();
-                await this.spawnFrontend();
-                timer.end();
-                await this.client.discord.createMessage(data.message, `The frontend has been successfully respawned! It only took me ${timer.format()}`);
+                this.client.restartWebsite();
             }
             case 'respawnAll': {
                 console.log('Respawning all shards');
