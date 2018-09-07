@@ -61,6 +61,8 @@ module.exports = {
                     exclude: /(node_modules)/
                 });
             }
-        }
-    }
+        },
+        vendor: ['axios', 'vue-markdown']
+    },
+    plugins: ['~/plugins/vue-markdown']
 };
