@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-06 19:33:18
+ * @Last Modified time: 2018-09-07 00:11:20
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -89,7 +89,7 @@ bot.on('ready', async function () {
     let blacklist = await r.table('vars').get('guildBlacklist');
 
     for (const g of Object.keys(blacklist.values)) {
-        if (bot.guilds.get(g)) {
+        if (blacklist.values[g] && bot.guilds.get(g)) {
             let guild = bot.guilds.get(g);
             try {
                 let owner = guild.members.get(guild.ownerID).user;
