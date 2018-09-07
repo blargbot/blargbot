@@ -10,6 +10,7 @@ class AddDomainCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
+        if (msg.author.id !== bu.CAT_ID) return;
         let whitelist = await r.table('vars').get('whitelistedDomains');
         let res = { a: [], r: [] };
         for (let domain of words.slice(1)) {
