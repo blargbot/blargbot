@@ -44,6 +44,10 @@ class TidyCommand extends BaseCommand {
                 flag: 'I',
                 word: 'invert',
                 desc: 'Reverses the effects of all the flag filters.'
+            }, {
+                flag: 'y',
+                word: 'yes',
+                desc: 'Bypasses the confirmation'
             }]
         });
     }
@@ -142,11 +146,13 @@ class TidyCommand extends BaseCommand {
             .map(entry => `${entry.user.username}#${entry.user.discriminator} - ${entry.count}`)
             .join('\n');
 
-        let prompt = await bu.createPrompt(msg,
-            `You are about to delete ${messages.length} messages by\n**${summary}**\n\n Type \`yes\` to confirm or anything else to cancel.`,
-            null, 60000);
-        let response = await prompt.response || {};
-
+        let response;
+        if (!input.y) {
+            let prompt = await bu.createPrompt(msg,
+                `You are about to delete ${messages.length} messages by\n**${summary}**\n\n Type \`yes\` to confirm or anything else to cancel.`,
+                null, 60000);
+            let response = await prompt.response || {};
+        } else response = { content: true };
         if (bu.parseBoolean(response.content)) {
             try {
                 await bot.deleteMessages(msg.channel.id,
