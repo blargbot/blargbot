@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-07 09:32:10
+ * @Last Modified time: 2018-09-07 11:44:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -74,6 +74,9 @@ class BlargbotClient {
         irc.init(VERSION, botEmitter);
         console.verbose('IRC finished?');
         this.frontend = new (require('./frontend'))(this);
+
+        this.backend = require('./backend/main.js');
+        this.backend.init();
     }
 }
 

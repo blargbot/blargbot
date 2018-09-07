@@ -35,7 +35,7 @@ module.exports = class Frontend {
                 }))
         });
 
-        this.app.listen(8085);
-        console.website('Listening on port', 8085);
+        this.app.listen(8086);
+        console.website('NEW SITE Listening on port', 8086);
     }
 }
