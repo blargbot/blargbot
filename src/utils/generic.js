@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-29 12:19:35
+ * @Last Modified time: 2018-09-06 18:32:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -298,7 +298,7 @@ bu.addReactions = async function (channelId, messageId, reactions) {
 bu.generateOutputPage = async function (payload, channel) {
     if (typeof payload === 'string') payload = {
         content: payload
-    }
+    };
     id = bu.makeSnowflake();
     await bu.cclient.execute(`INSERT INTO message_outputs (id, content, embeds, channelid) VALUES (:id, :content, :embeds, :channelid)`, {
         id,
@@ -307,7 +307,7 @@ bu.generateOutputPage = async function (payload, channel) {
         channelid: channel ? channel.id : null
     }, { prepare: true });
     return id;
-}
+};
 
 /**
  * @param {*} context The context to send. Can be a channelId, Message or Channel object
@@ -323,8 +323,10 @@ bu.send = async function (context, payload, files) {
         // Id provided, get channel object
         case "string":
             channel = await bot.getChannel(context);
-            if (!channel)
+            if (!channel) {
+                context = context.match(/(\d+)/)[1];
                 channel = new Channel({ id: context });
+            }
             break;
         case "object":
             // Probably a message provided

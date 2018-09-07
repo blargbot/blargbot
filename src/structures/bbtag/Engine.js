@@ -219,7 +219,7 @@ async function runTag(content, context) {
     console.bbtag('Checked cooldowns in', timer.poll(true), 'ms');
 
     context.execTimer.start();
-    let result = (await execString(content.trim(), context)).trim();
+    let result = (await execString(content.trim(), context) || '').trim();
     context.execTimer.end();
 
     console.bbtag('Tag run complete in', timer.poll(true), 'ms');
