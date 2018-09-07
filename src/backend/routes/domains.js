@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-07 00:06:02
+ * @Last Modified time: 2018-09-07 00:07:52
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -22,6 +22,7 @@ router.get('/json', async function (req, res) {
     domains.sort();
     res.locals.domains = domains;
 
+    res.type('json');
     res.send(JSON.stringify(domains, null, 2));
 });
 
