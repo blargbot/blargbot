@@ -220,7 +220,7 @@ async function runTag(content, context) {
 
     context.execTimer.start();
     if (content === undefined) {
-        console.log(context.guild.id);
+        console.info(context.guild.id);
     }
     let result = (await execString((content || '').trim(), context) || '').trim();
     context.execTimer.end();
