@@ -146,17 +146,19 @@ class TidyCommand extends BaseCommand {
             .map(entry => `${entry.user.username}#${entry.user.discriminator} - ${entry.count}`)
             .join('\n');
 
-        let response;
+        let response, prompt;
         if (!input.y) {
-            let prompt = await bu.createPrompt(msg,
+            prompt = await bu.createPrompt(msg,
                 `You are about to delete ${messages.length} messages by\n**${summary}**\n\n Type \`yes\` to confirm or anything else to cancel.`,
                 null, 60000);
-            let response = await prompt.response || {};
-        } else response = { content: true };
-        if (bu.parseBoolean(response.content)) {
+            response = await prompt.response || {};
+        };
+        if (!response || bu.parseBoolean(response.content)) {
             try {
+                messages.push(msg);
+                if (prompt && response) messages.push(prompt, response);
                 await bot.deleteMessages(msg.channel.id,
-                    [...messages, msg, prompt.prompt, response].map(m => m.id),
+                    messages.map(m => m.id),
                     `'${msg.content}' by ${msg.author.username}#${msg.author.discriminator}`);
                 await bu.send(msg, `Deleted ${messages.length} messages by \n**${summary}**`);
             } catch (err) {
