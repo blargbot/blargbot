@@ -2,12 +2,11 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-16 08:48:26
+ * @Last Modified time: 2018-09-06 19:02:52
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const blacklist = require('../../blacklist.json');
 const moment = require('moment-timezone');
 
 bot.on('ready', async function () {
@@ -87,7 +86,9 @@ bot.on('ready', async function () {
         initEvents();
     }
 
-    for (const g of blacklist) {
+    let blacklist = await r.table('vars').get('guildBlacklist');
+
+    for (const g of blacklist.values) {
         if (bot.guilds.get(g)) {
             let guild = bot.guilds.get(g);
             let owner = guild.members.get(guild.ownerID).user;
