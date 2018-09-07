@@ -156,7 +156,7 @@ class TidyCommand extends BaseCommand {
         if (!response || bu.parseBoolean(response.content)) {
             try {
                 messages.push(msg);
-                if (prompt && response) messages.push(prompt, response);
+                if (prompt && response) messages.push(prompt.prompt, response);
                 await bot.deleteMessages(msg.channel.id,
                     messages.map(m => m.id),
                     `'${msg.content}' by ${msg.author.username}#${msg.author.discriminator}`);
