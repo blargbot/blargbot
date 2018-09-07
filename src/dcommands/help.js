@@ -139,9 +139,11 @@ class HelpCommand extends BaseCommand {
                 let finalText = ''
                 if (!msg.channel.guild)
                     finalText += 'Not all of these commands will work in DM\'s\n';
-                else
-                    prefix = await bu.guildSettings.get(msg.channel.guild.id, 'prefix') || config.discord.defaultPrefix;
-                finalText += 'For more information about commands, do `' + prefix + 'help <commandname>` or visit <https://blargbot.xyz/commands>';
+                else {
+                    let prefixes = await bu.guildSettings.get(msg.channel.guild.id, 'prefix')
+                    prefix = prefixes ? prefixes[0] : config.discord.defaultPrefix;
+                }
+                finalText += 'For more information about commands, do `' + prefix + 'help <commandname>` or visit <https://blargbot.xyz/commands>.\nWant to support the bot? Consider donating to <https://patreon.com/blargbot> - all donations go directly towards recouping hosting costs.';
 
                 embed.fields.push({
                     name: '\u200B',

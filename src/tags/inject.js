@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder'),
     exec = require('./exec');
 
 module.exports =
-    Builder.ComplexTag('inject')
+    Builder.BotTag('inject')
         .withArgs(a => a.require('code'))
         .withDesc('Executes any arbitrary BBTag that is within `code` and returns the result. Useful for making dynamic code, or as a testing tool (`{inject;{args}}`)')
         .withExample(

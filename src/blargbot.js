@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-29 09:12:46
+ * @Last Modified time: 2018-09-06 17:46:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -45,7 +45,6 @@ const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
 const Spawner = require('./core/Spawner');
-const Frontend = require('./frontend/index');
 const Eris = require('eris');
 const irc = require('./core/irc.js');
 
@@ -74,7 +73,8 @@ class BlargbotClient {
         spawner.spawnAll();
         irc.init(VERSION, botEmitter);
         console.verbose('IRC finished?');
-        this.frontend = new Frontend();
+        this.backend = require('./backend/main');
+        this.backend.init();
     }
 }
 
@@ -116,7 +116,16 @@ if (config.cassandra) {
                 channelid BIGINT,
                 PRIMARY KEY ((msgid), id)
             ) WITH CLUSTERING ORDER BY (id DESC);
-        `);
+            `);
+        })
+        .then(res => {
+            return cclient.execute(`
+            CREATE TABLE IF NOT EXISTS message_outputs (
+                id BIGINT PRIMARY KEY,
+                content TEXT,
+                embeds TEXT,
+                channelid BIGINT,
+            )`);
         }).catch(err => {
             console.error(err.message, err.stack);
         });

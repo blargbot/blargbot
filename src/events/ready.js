@@ -2,12 +2,11 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-16 08:48:26
+ * @Last Modified time: 2018-09-07 00:11:20
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const blacklist = require('../../blacklist.json');
 const moment = require('moment-timezone');
 
 bot.on('ready', async function () {
@@ -29,6 +28,10 @@ bot.on('ready', async function () {
         let police = g.members.filter(m => m.roles.includes('280159905825161216')).map(m => m.id);
         await r.table('vars').get('police').replace({
             value: police, varname: 'police'
+        });
+        let support = g.members.filter(m => m.roles.includes('263066486636019712')).map(m => m.id);
+        await r.table('vars').get('support').replace({
+            value: support, varname: 'support'
         });
     }
 
@@ -83,14 +86,17 @@ bot.on('ready', async function () {
         initEvents();
     }
 
-    for (const g of blacklist) {
-        if (bot.guilds.get(g)) {
+    let blacklist = await r.table('vars').get('guildBlacklist');
+
+    for (const g of Object.keys(blacklist.values)) {
+        if (blacklist.values[g] && bot.guilds.get(g)) {
             let guild = bot.guilds.get(g);
-            let owner = guild.members.get(guild.ownerID).user;
-            let pc = await owner.getDMChannel();
+            try {
+                let owner = guild.members.get(guild.ownerID).user;
+                let pc = await owner.getDMChannel();
 
-            await pc.createMessage(`Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
-
+                await pc.createMessage(`Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
+            } catch (err) { }
             return await guild.leave();
         }
     }

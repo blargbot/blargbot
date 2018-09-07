@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder'),
     bbEngine = require('../structures/bbtag/Engine');
 
 module.exports =
-    Builder.AutoTag('exec')
+    Builder.BotTag('exec')
         .withArgs(a => [a.require('tag'), a.optional('args')])
         .withDesc('Executes another `tag`, giving it `args` as the input. Useful for modules.')
         .withExample(

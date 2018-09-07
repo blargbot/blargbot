@@ -10,8 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('roleremove')
-        .requireStaff()
+    Builder.APITag('roleremove')
         .withAlias('removerole')
         .withArgs(a => [a.require('role'), a.optional('user'), a.optional('quiet')])
         .withDesc('Removes `role` from `user`, where `role` is a role ID or mention. ' +

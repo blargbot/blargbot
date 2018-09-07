@@ -7,7 +7,7 @@ class BanCommand extends BaseCommand {
             name: 'ban',
             category: bu.CommandType.ADMIN,
             usage: 'ban <user> [days] [flags]',
-            info: 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.',
+            info: 'Bans a user, where `days` is the number of days to delete messages for (defaults to 0).\nIf mod-logging is enabled, the ban will be logged.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the ban.' },
             {
                 flag: 't',
@@ -23,14 +23,15 @@ class BanCommand extends BaseCommand {
 
             var user = await bu.getUser(msg, input.undefined[0]);
             if (!user) {
-                bu.send(msg, `I couldn't find that user. Try using \`hackban\` with their ID or a mention instead.`);
-                return;
+                return await bu.send(msg, `I couldn't find that user. Try again with their ID or a mention instead.`);
+                // bu.send(msg, `I couldn't find that user. Try using \`hackban\` with their ID or a mention instead.`);
+                // return;
             }
-            let member = msg.guild.members.get(user.id);
-            if (!member) {
-                bu.send(msg, `That user isn't on this guild. Try using \`hackban\` with their ID or a mention instead.`);
-                return;
-            }
+            // let member = msg.guild.members.get(user.id);
+            // if (!member) {
+            //     bu.send(msg, `That user isn't on this guild. Try using \`hackban\` with their ID or a mention instead.`);
+            //     return;
+            // }
             let duration;
             if (input.t && input.t.length > 0) {
                 duration = bu.parseDuration(input.t.join(' '));
@@ -71,7 +72,7 @@ class BanCommand extends BaseCommand {
             reason: reason
         };
         try {
-            await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, `[ ${bu.getFullName(msg.author)} ]` + (reason ? ' ' + reason : ''));
+            await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, (tag ? '' : `[ ${bu.getFullName(msg.author)} ]`) + (reason ? ' ' + reason : ''));
             let suffix = '';
             if (duration) {
                 await r.table('events').insert({

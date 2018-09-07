@@ -2,13 +2,14 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 10:37:19
+ * @Last Modified time: 2018-07-26 09:09:49
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const moment = require('moment-timezone');
 const bbEngine = require('../structures/bbtag/Engine');
+const bbtag = require('../core/bbtag');
 const Timer = require('../structures/Timer');
 const util = require('util');
 const request = require('request');
@@ -51,6 +52,7 @@ async function handleUserMessage(msg, storedGuild) {
         handleAntiMention(msg, storedGuild);
         bu.handleCensor(msg, storedGuild);
         handleRoleme(msg, storedGuild);
+        handleAutoresponse(msg, storedGuild, true);
         handleTableflip(msg);
         if (Array.isArray(storedGuild.settings.prefix)) {
             prefixes.push(...storedGuild.settings.prefix);
@@ -75,6 +77,7 @@ async function handleUserMessage(msg, storedGuild) {
             }
         }
     }
+    let wasCommand = false;
     if (prefix != undefined && msg.content.toLowerCase().startsWith(prefix.toLowerCase())) {
         if (storedUser && storedUser.blacklisted) {
             await bu.send(msg, 'You have been blacklisted from the bot for the following reason: ' + storedUser.blacklisted);
@@ -82,7 +85,7 @@ async function handleUserMessage(msg, storedGuild) {
         }
         var command = msg.content.substring(prefix.length).trim();
         try {
-            let wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
+            wasCommand = await handleDiscordCommand(msg.channel, msg.author, command, msg);
             if (wasCommand) {
                 // logCommand(msg);
 
@@ -102,6 +105,8 @@ async function handleUserMessage(msg, storedGuild) {
     } else {
         handleAwaitMessage(msg);
     }
+    if (!wasCommand)
+        handleAutoresponse(msg, storedGuild, false);
 }
 
 /**
@@ -194,6 +199,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             }
             await bbEngine.runTag({
                 msg,
+                limits: new bbtag.limits.ccommand(),
                 tagContent: ccommandContent,
                 flags: val.flags,
                 input: command,
@@ -236,11 +242,10 @@ var executeCommand = async function (commandName, msg, words, text) {
     try {
         await CommandManager.built[commandName].execute(msg, words, text);
     } catch (err) {
-        if (err.response) {
-            let response = JSON.parse(err.response);
-            console.debug(response);
+        console.error(err);
+        if (err.code !== undefined) {
             let dmMsg;
-            switch (response.code) {
+            switch (err.code) {
                 case 50001:
                     dmMsg = `Hi! You asked me to do something, but I didn't have permission to do it! Please make sure I have permissions to do what you asked.`;
                     break;
@@ -365,6 +370,7 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                     }
                     await bbEngine.runTag({
                         msg,
+                        limits: new bbtag.limits.ccommand(),
                         tagContent: content,
                         input: msg.content,
                         isCC: true,
@@ -406,6 +412,7 @@ async function handleRoleme(msg, storedGuild) {
                         console.verbose(roleme[i].output);
                         await bbEngine.runTag({
                             msg,
+                            limits: new bbtag.limits.ccommand(),
                             tagContent: roleme[i].output || 'Your roles have been edited!',
                             input: '',
                             isCC: true,
@@ -414,6 +421,69 @@ async function handleRoleme(msg, storedGuild) {
                     } catch (err) {
                         bu.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
                     }
+                }
+            }
+        }
+    }
+}
+let arWhitelist = [];
+
+async function checkWhitelist() {
+    let { values } = await r.table('vars').get('arwhitelist');
+    arWhitelist = values;
+}
+setInterval(checkWhitelist, 1000 * 60 * 15);
+checkWhitelist();
+
+async function handleAutoresponse(msg, storedGuild, everything = false) {
+    if (!arWhitelist.includes(msg.guild.id)) return; // selective whitelist for now
+
+    if (storedGuild && storedGuild.autoresponse) {
+        let ars = storedGuild.autoresponse;
+
+        if (everything && ars.everything) {
+            await bbEngine.runTag({
+                msg,
+                limits: new bbtag.limits.autoresponse_everything(),
+                tagContent: storedGuild.ccommands[ars.everything.executes].content,
+                author: storedGuild.ccommands[ars.everything.executes].author,
+                input: msg.content,
+                isCC: true,
+                tagName: ars.everything,
+                silent: true
+            });
+        }
+        if (!everything && ars.list.length > 0) {
+            for (const ar of ars.list) {
+                let cont = false;
+                let matches;
+                if (ar.regex) {
+                    try {
+                        let exp = bu.createRegExp(ar.term);
+
+                        matches = msg.content.match(exp);
+                        if (matches !== null) {
+                            cont = true;
+                            matches.map(m => '"' + m.replace(/"/g, '\\"') + '"');
+                            if (matches.length === 1) matches = null;
+                        }
+                    } catch (err) {
+                        console.log(err);
+                        bu.send(msg, 'Unsafe or invalid regex! Terminating.');
+                        return;
+                    }
+                } else cont = msg.content.includes(ar.term);
+
+                if (cont && storedGuild.ccommands[ar.executes]) {
+                    await bbEngine.runTag({
+                        msg,
+                        limits: new bbtag.limits.autoresponse_general(),
+                        tagContent: storedGuild.ccommands[ar.executes].content,
+                        author: storedGuild.ccommands[ar.executes].author,
+                        input: matches || msg.content,
+                        isCC: true,
+                        tagName: ar.executes
+                    });
                 }
             }
         }

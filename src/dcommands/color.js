@@ -15,13 +15,20 @@ class ThesearchCommand extends BaseCommand {
         if (words[1]) text = words.slice(1).join(' ');
         text = await bu.filterMentions(text);
         bot.sendChannelTyping(msg.channel.id);
-        let buffer = await bu.blargbotApi('color', {
-            color: words.slice(1).map(c => c.replace(/[^\da-f]/g, ''))
-        });
-        bu.send(msg, undefined, {
-            file: buffer,
-            name: 'color.png'
-        });
+        try {
+            let buffer = await bu.blargbotApi('color', {
+                color: words.slice(1)
+            });
+            if (!buffer) {
+                return await bu.send(msg, 'Whoops, one of the things you provided was not a color!');
+            }
+            bu.send(msg, undefined, {
+                file: buffer,
+                name: 'color.png'
+            });
+        } catch (err) {
+            bu.send(msg, 'Whoops, something went wrong: `' + err.message + '`');
+        }
     }
 }
 

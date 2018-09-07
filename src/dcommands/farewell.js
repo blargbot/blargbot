@@ -53,12 +53,13 @@ class FarewellCommand extends BaseCommand {
         }
         await bbEngine.runTag({
             msg,
+            limits: new bbtag.limits.ccommand(),
             tagContent: farewell.content,
             input: '',
             isCC: true,
             author: msg.author.id,
             authorizer: msg.author.id,
-            modResult(context, result) { return 'Farewell set. ' + suffix + 'Simulation:\n' + result; }
+            outputModify(_, result) { return 'Farewell set. ' + suffix + 'Simulation:\n' + result; }
         });
     }
 }

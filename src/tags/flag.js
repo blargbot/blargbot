@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.AutoTag('flag')
+    Builder.BotTag('flag')
         .withArgs(a => [a.require('code')])
         .withDesc('Returns the value of the specified case-sensitive flag code. Use `_` to get the values without a flag.')
         .withExample(

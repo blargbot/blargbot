@@ -137,7 +137,6 @@ bu.ccommand = {
 
         if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return false;
         storedGuild.ccommands[key.toLowerCase()].help = help;
-        console.debug(storedGuild.ccommands[key.toLowerCase()]);
         r.table('guild').get(guildid).replace(storedGuild).run();
         return true;
     },
@@ -146,6 +145,20 @@ bu.ccommand = {
 
         if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return undefined;
         return storedGuild.ccommands[key.toLowerCase()].help;
+    },
+    setlang: async function (guildid, key, lang) {
+        let storedGuild = await bu.getGuild(guildid);
+
+        if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return false;
+        storedGuild.ccommands[key.toLowerCase()].lang = lang;
+        r.table('guild').get(guildid).replace(storedGuild).run();
+        return true;
+    },
+    getlang: async function (guildid, key) {
+        let storedGuild = await bu.getGuild(guildid);
+
+        if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return undefined;
+        return storedGuild.ccommands[key.toLowerCase()].lang;
     }
 };
 

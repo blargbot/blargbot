@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:47:48
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 16:18:00
+ * @Last Modified time: 2018-07-22 16:04:05
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -45,8 +45,10 @@ module.exports =
 
             code = args.shift();
 
-            while (context.state.count.loop <= 1500) {
-                context.state.count.loop += 1;
+            let remaining = context.state.limits.for || { loops: NaN };
+
+            while (!(remaining.loops < 0)) {
+                remaining.loops--;
 
                 val1 = await this.executeArg(subtag, val1Raw, context);
                 val2 = await this.executeArg(subtag, val2Raw, context);

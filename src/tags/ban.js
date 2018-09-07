@@ -10,8 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('ban')
-        .requireStaff()
+    Builder.APITag('ban')
         .withArgs(a => [
             a.require('user'),
             a.optional('daysToDelete'),

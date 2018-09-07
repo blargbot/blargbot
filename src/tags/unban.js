@@ -10,8 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('unban')
-        .requireStaff()
+    Builder.APITag('unban')
         .withArgs(a => [a.require('user'), a.optional('reason'), a.optional('noperms')])
         .withDesc('Unbans `user` with the given `reason`. This functions the same as the unban command. ' +
         'If `noperms` is provided, do not check if the command executor is actually able to ban people. ' +

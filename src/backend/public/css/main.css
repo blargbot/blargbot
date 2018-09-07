@@ -249,3 +249,23 @@ main {
 ul.collapsible.collapsible-accordion .collapsible-header {
     padding: 0 32px;
 }
+
+.tagargs {
+    margin: 10px 0;
+}
+
+.taglimits {
+    margin-top: 10px;
+    max-width: 100%;
+    display: inline-block;
+}
+
+.taglimits:empty {
+    display: none;
+}
+
+.taglimit {
+    padding: 0 30px 0 0;
+    min-width: fit-content;
+    float: left;
+}

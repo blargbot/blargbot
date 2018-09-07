@@ -6,7 +6,7 @@ class TimersCommand extends BaseCommand {
         super({
             name: 'timers',
             category: bu.CommandType.ADMIN,
-            usage: 'timers <[page] | cancel <ids...> | clear>',
+            usage: 'timers <[page] | cancel <ids...> | clear | raw <id>>',
             info: 'Lists all the timers currently active here. You can also cancel any of them by using the cancel subcommand'
         });
         this.pageSize = 15;
@@ -46,7 +46,27 @@ class TimersCommand extends BaseCommand {
                         bu.send(msg, `Successfully cancelled ${success.length} timer${success.length != 1 ? 's' : ''} \`${success.join(', ')}\`.` +
                             (failed.length == 0 ? '' : ` Could not find id${failed.length != 1 ? 's' : ''} \`${failed.join(', ')}\``));
                 } else {
-                    bu.send(msg, 'You must give me the id of the timer to cancel');
+                    bu.send(msg, 'You must give me the id of the timer to cancel.');
+                }
+                break;
+            case 'content':
+            case 'info':
+            case 'raw':
+                if (words[2]) {
+                    let id = (words.slice(2) || '').map(s => s.toLowerCase())[0];
+                    let timers = await r.table('events').filter({ source }).run();
+                    let timer = timers.find(t => t.id.startsWith(id));
+                    if (timer && timer.source == source) {
+                        if (timer.content) {
+                            bu.send(msg, 'Here is the content of the timer you selected :\n```prolog\n' + timer.content + "\n```");
+                        } else {
+                            bu.send(msg, "I couldn't display the content of that timer.");
+                        }
+                    } else {
+                        bu.send(msg, "I couldn't find the id you gave.");
+                    }
+                } else {
+                    bu.send(msg, 'You must give me the id of the timer to cancel.');
                 }
                 break;
             default:
@@ -71,24 +91,31 @@ class TimersCommand extends BaseCommand {
                     let getUserString = user => typeof user === 'object' ? `${user.username}#${user.discriminator}` : user;
                     let records = [];
                     for (const timer of selected) {
-                        console.debug(timer);
                         let id = timer.id.substring(0, 5);
                         let type = timer.type;
                         let user = getUserString(bot.users.get(timer.user) || timer.user);
                         let elapsed = timer.starttime.humanize();
                         let remain = moment.duration(now.diff(timer.endtime)).humanize();
-                        let content = timer.content || '';
+                        let content = Array.from(timer.content || '');
                         if (content.length > 40)
-                            content = content.substring(0, 37) + '...';
-                        content = content.replace(/[\n\t\r]/g, '');
-                        records.push([id, elapsed, remain, user, type, content]);
+                            content = content.slice(0, 37).concat(['...']);
+                        content = content.join('').replace(/[\n\t\r]/g, '');
+                        records.push([id, elapsed, remain, Array.from(user), type, content]);
                     }
                     let headers = ['Id', 'Elapsed', 'Remain', 'User', 'Type', 'Content'];
                     let colSizes = records.concat([headers]).reduce((p, c) => {
                         c.forEach((v, i) => p[i] = Math.max(p[i], v.length));
                         return p;
                     }, records[0].map(() => 0));
-                    let mapLine = l => l.map((v, i) => v.padEnd(colSizes[i])).join(' | ');
+                    console.debug(colSizes);
+                    let mapLine = l =>
+                        l.map((v, i) => {
+                            if (typeof v === 'string')
+                                return v.padEnd(colSizes[i]);
+                            for (let j = v.length; j < colSizes[i]; j++)
+                                v.push(' ');
+                            return v.join('');
+                        }).join(' | ');
                     message += mapLine(headers) + '\n';
                     message += ''.padEnd(colSizes.reduce((p, c) => p + c, 0) + (colSizes.length - 1) * 3, '-') + '\n';
                     message += records.map(mapLine).join('\n');

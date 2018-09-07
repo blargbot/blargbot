@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:34:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 10:36:20
+ * @Last Modified time: 2018-09-04 11:27:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -11,9 +11,7 @@ const argFactory = require('../structures/ArgumentFactory'),
     af = argFactory,
     bbEngine = require('../structures/bbtag/Engine');
 
-var e = module.exports = {};
-
-e.executeTag = async function (msg, tagName, command) {
+async function executeTag(msg, tagName, command) {
     let tag = await r.table('tag').get(tagName).run();
     if (!tag)
         bu.send(msg, `❌ That tag doesn't exist! ❌`);
@@ -30,6 +28,7 @@ Reason: ${tag.reason}`);
         }).run();
         let result = await bbEngine.runTag({
             msg,
+            limits: new bbtag.limits.tag(),
             tagContent: tag.content,
             flags: tag.flags,
             input: command.map(c => '"' + c + '"').join(' '),
@@ -38,19 +37,7 @@ Reason: ${tag.reason}`);
             author: tag.author,
             authorizer: tag.authorizer,
             cooldown: tag.cooldown,
-            modResult: function (context, text) {
-                return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
-                    let user = msg.guild.members.get(id);
-                    if (user == null)
-                        return '@' + id;
-                    return '@' + user.username + '#' + user.discriminator;
-                }).replace(/<@&(\d{17,21})>/g, function (match, id) {
-                    let role = msg.guild.roles.get(id);
-                    if (role == null)
-                        return '@Unknown Role';
-                    return '@' + role.name;
-                }).replace(/@(everyone|here)/g, (match, type) => '@\u200b' + type);
-            }
+            outputModify: escapeMentions
         });
         /** @type {string} */
         result.code = tag.content;
@@ -58,13 +45,28 @@ Reason: ${tag.reason}`);
     }
 };
 
-e.executeCC = async function (msg, ccName, command) {
+function escapeMentions(context, text) {
+    return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
+        let user = context.guild.members.get(id);
+        if (user == null)
+            return '@' + id;
+        return '@' + user.username + '#' + user.discriminator;
+    }).replace(/<@&(\d{17,21})>/g, function (match, id) {
+        let role = context.guild.roles.get(id);
+        if (role == null)
+            return '@Unknown Role';
+        return '@' + role.name;
+    }).replace(/@(everyone|here)/g, (_match, type) => '@\u200b' + type);
+}
+
+async function executeCC(msg, ccName, command) {
     let ccommand = (await bu.getGuild(msg.guild.id)).ccommands[ccName.toLowerCase()];
     if (!ccommand)
         bu.send(msg, `❌ That CCommand doesn't exist! ❌`);
     else {
         let result = await bbEngine.runTag({
             msg,
+            limits: new bbtag.limits.ccommand(),
             tagContent: ccommand.content,
             flags: ccommand.flags,
             input: command.map(c => '"' + c + '"').join(' '),
@@ -79,7 +81,7 @@ e.executeCC = async function (msg, ccName, command) {
     }
 };
 
-e.docs = async function (msg, command, topic) {
+async function docs(msg, command, topic) {
     let help = CommandManager.built['help'],
         argsOptions = { separator: { default: ';' } },
         tags = Object.keys(TagManager.list).map(k => TagManager.list[k]),
@@ -115,7 +117,7 @@ e.docs = async function (msg, command, topic) {
                     };
                 }).concat({
                     name: 'Other useful topics',
-                    value: '```\nvariables, argTypes, terminology```'
+                    value: '```\nvariables, argTypes, terminology, dynamic```'
                 }).filter(f => f.value.length > 0);
             return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);
         case 'variables':
@@ -226,12 +228,18 @@ e.docs = async function (msg, command, topic) {
                 };
             });
             return await help.sendHelp(msg, { embed }, 'BBTag documentation');
+        case 'dynamic':
+            embed.description = 'In bbtag, even the names of subtags can be dynamic. This can be achieved simply by placing subtags before the ' +
+                'first `;` of a subtag. \n e.g. ```{user{get;~action};{userid}}``` If `~action` is set to `name`, then this will run the `username` subtag, ' +
+                'if it is set to `avatar` then it will run the `useravatar` subtag, and so on. Because dynamic subtags are by definition not set in ' +
+                'stone, it is reccommended not to use them, and as such you will recieve warnings when editing/creating a tag/cc which contains a ' +
+                'dynamic subtag. Your tag will function correctly, however some optimisations employed by bbtag will be unable to run on any such tag.';
+            return await help.sendHelp(msg, { embed }, 'BBTag documentation');
         default:
             topic = topic.replace(/[\{\}]/g, '');
             let tag = TagManager.get(topic.toLowerCase());
             if (tag == null)
                 break;
-            let category = bu.TagType.properties[tag.category];
             embed.title += ' - ' + tag.name[0].toUpperCase() + tag.name.substring(1);
 
             embed.description = '';
@@ -241,8 +249,6 @@ e.docs = async function (msg, command, topic) {
                     ? ' and has been replaced by `{' + tag.deprecated + '}`'
                     : '') + '**\n';
             }
-            if (tag.staff) embed.description += '**This subtag may only be used by staff members**\n';
-            if (tag.category == bu.TagType.CCOMMAND) embed.description += '**This subtag may only be used within custom commands**\n';
             embed.description += '```\n{' + [tag.name, argFactory.toString(tag.args, argsOptions)].filter(t => t.length > 0).join(';') + '}```';
             embed.description += tag.desc + '\n';
 
@@ -255,6 +261,18 @@ e.docs = async function (msg, command, topic) {
                 });
             else
                 embed.description += '\u200B';
+
+            for (const key of Object.keys(limits)) {
+                let text = limitToSring(key, tag.name);
+                if (text) {
+                    embed.fields.push({
+                        name: `Limits for ${limits[key].instance._name}s`,
+                        value: text,
+                        inline: true
+                    });
+                }
+            }
+
             if (tag.exampleCode)
                 embed.fields.push({
                     name: 'Example code',
@@ -281,7 +299,33 @@ e.docs = async function (msg, command, topic) {
     return await bu.send(msg, 'Oops, I didnt recognise that topic! Try using `' + prefix + command + ' docs` for a list of all topics');
 };
 
-e.generateDebug = function (code, context) {
+function limitToSring(scope, subtag) {
+    if (limits[scope]) {
+        let limit = limits[scope].instance[subtag];
+        if (limit !== undefined) {
+            let limitText = '';
+            if (limit.disabled) {
+                limitText += `- {${subtag}} is disabled\n`;
+            } else {
+                if (limit.staff) {
+                    limitText += '- Author must be staff\n';
+                }
+                if (limit.count !== undefined) {
+                    limitText += `- Maximum ${limit.count} uses\n`;
+                }
+                if (limit.loops !== undefined) {
+                    limitText += `- Maximum ${limit.loops} loops\n`;
+                }
+                if (limit.max !== undefined) {
+                    limitText += ` Maximum Duration: ${limit.max}\n`;
+                }
+            }
+            return limitText.trim();
+        }
+    }
+}
+
+function generateDebug(code, context) {
     if (arguments.length == 1)
         return (context) => this.generateDebug(code, context);
 
@@ -314,6 +358,78 @@ e.generateDebug = function (code, context) {
     };
 };
 
+function analyze(code) {
+    let parsed = bbEngine.parse(code);
+    if (!parsed.success) {
+        return parsed.error;
+    }
+    let subtags = getSubTags(parsed.bbtag);
+    let result = [];
+
+    for (const subtag of subtags) {
+        let name = (subtag.children || [])[0];
+        if (!name || !name.content) {
+            result.push({
+                subtag,
+                error: 'Unnamed subtag'
+            });
+        } else if (name.children.length > 0) {
+            result.push({
+                subtag,
+                warning: 'Dynamic subtag'
+            });
+        } else {
+            let definition = TagManager.get(name.content);
+            if (!definition) {
+                if (!name.content.toLowerCase().startsWith('func.'))
+                    result.push({
+                        subtag,
+                        error: `Unknown subtag {${name.content}}`
+                    });
+            } else if (definition.deprecated) {
+                result.push({
+                    subtag,
+                    warning: `{${name.content}} is deprecated` + (typeof definition.deprecated === 'string'
+                        ? `. Please use {${definition.deprecated}} instead`
+                        : '')
+                });
+            }
+        }
+    }
+
+    return result;
+}
+
+function addAnalysis(code, baseText) {
+    let analysis = bbtag.analyze(code);
+    if (typeof analysis === 'string') {
+        baseText += `\n${analysis}`;
+    } else {
+        for (const entry of analysis) {
+            if (entry.error) {
+                baseText += `\n🚫 [${entry.subtag.range.start}] ${entry.error}`;
+            }
+            if (entry.warning) {
+                baseText += `\n⚠ [${entry.subtag.range.start}] ${entry.warning}`;
+            }
+        }
+    }
+
+    return baseText;
+}
+
+function getSubTags(bbstring) {
+    return bbstring.children.reduce(function (accumulator, part) {
+        if (typeof part !== 'string') {
+            accumulator.push(part);
+            for (const arg of part.children) {
+                accumulator.push(...getSubTags(arg));
+            }
+        }
+        return accumulator;
+    }, []);
+}
+
 function viewErrors(...errors) {
     let result = [];
     for (const e of errors) {
@@ -336,3 +452,191 @@ function viewErrors(...errors) {
     }
     return result;
 }
+
+const limits = {
+    tag: class TagLimits {
+        constructor() {
+            this._name = 'tag';
+            this.ban = { disabled: true };
+            this.unban = { disabled: true };
+            this.guildbans = { disabled: true };
+
+            this.kick = { disabled: true };
+
+            this.modlog = { disabled: true };
+            this.pardon = { disabled: true };
+            this.warn = { disabled: true };
+            this.reason = { disabled: true };
+
+            this.roleadd = { disabled: true };
+            this.rolecreate = { disabled: true };
+            this.roledelete = { disabled: true };
+            this.rolemention = { disabled: true };
+            this.roleremove = { disabled: true };
+            this.rolesetmentionable = { disabled: true };
+
+            this.dm = { disabled: true };
+            this.send = { disabled: true };
+            this.edit = { count: 10 };
+            this.delete = { count: 11 };
+
+            this.timer = { disabled: true };
+
+            this.usersetnick = { disabled: true };
+
+            this.waitmessage = { count: 5 };
+            this.waitreaction = { count: 20 };
+
+            this.for = { loops: 1500 };
+            this.foreach = { loops: 3000 };
+
+            this.dump = { count: 5 };
+        }
+
+        get repeat() { return this.for; }
+        get while() { return this.for; }
+    },
+    ccommand: class CCLimits {
+        constructor() {
+            this._name = 'custom command';
+            this.ban = { staff: true };
+            this.unban = { staff: true };
+            this.guildbans = { staff: true };
+
+            this.kick = { staff: true };
+
+            this.modlog = { staff: true };
+            this.pardon = { staff: true };
+            this.warn = { staff: true };
+            this.reason = { staff: true };
+
+            this.roleadd = { staff: true };
+            this.rolecreate = { staff: true };
+            this.roledelete = { staff: true };
+            this.rolemention = { staff: true };
+            this.roleremove = { staff: true };
+            this.rolesetmentionable = { staff: true };
+
+            this.dm = { staff: true, count: 1 };
+            this.send = { staff: true, count: 10 };
+            this.edit = { count: 10 };
+            this.delete = { count: 11 };
+
+            this.timer = { staff: true, count: 3 };
+
+            this.usersetnick = { staff: true };
+
+            this.waitmessage = { count: 10 };
+            this.waitreaction = { count: 20 };
+
+            this.for = { loops: 1500 };
+            this.foreach = { loops: 3000 };
+
+            this.dump = { count: 5 };
+        }
+
+        get repeat() { return this.for; }
+        get while() { return this.for; }
+    },
+    autoresponse_general: class GeneralARLimits {
+        constructor() {
+            this._name = 'general autoresponse';
+
+            this.ban = { staff: true };
+            this.unban = { staff: true };
+            this.guildbans = { staff: true };
+
+            this.kick = { staff: true };
+
+            this.modlog = { staff: true };
+            this.pardon = { staff: true };
+            this.warn = { staff: true };
+            this.reason = { staff: true };
+
+            this.roleadd = { staff: true };
+            this.rolecreate = { staff: true };
+            this.roledelete = { staff: true };
+            this.rolemention = { staff: true };
+            this.roleremove = { staff: true };
+            this.rolesetmentionable = { staff: true };
+
+            this.dm = { staff: true, count: 1 };
+            this.send = { staff: true, count: 1 };
+            this.edit = { count: 1 };
+            this.delete = { count: 2 };
+
+            this.timer = { disabled: true };
+            this.sleep = { max: 5000 };
+
+            this.usersetnick = { staff: true };
+
+            this.waitmessage = { disabled: true };
+            this.waitreaction = { disabled: true };
+
+            this.for = { loops: 1000 };
+            this.foreach = { loops: 2000 };
+
+            this.dump = { count: 5 };
+        }
+        get repeat() { return this.for; }
+        get while() { return this.for; }
+    }, autoresponse_everything: class EverythingARLimits {
+        constructor() {
+            this._name = 'everything autoresponse';
+
+            this.ban = { staff: true };
+            this.unban = { staff: true };
+            this.guildbans = { staff: true };
+
+            this.kick = { staff: true };
+
+            this.modlog = { staff: true };
+            this.pardon = { staff: true };
+            this.warn = { staff: true };
+            this.reason = { staff: true };
+
+            this.roleadd = { staff: true };
+            this.rolecreate = { staff: true };
+            this.roledelete = { staff: true };
+            this.rolemention = { staff: true };
+            this.roleremove = { staff: true };
+            this.rolesetmentionable = { staff: true };
+
+            this.dm = { staff: true, count: 1 };
+            this.send = { staff: true, count: 1 };
+            this.edit = { count: 1 };
+            this.delete = { count: 2 };
+
+            this.timer = { disabled: true };
+            this.sleep = { max: 5000 };
+
+            this.usersetnick = { staff: true };
+
+            this.waitmessage = { disabled: true };
+            this.waitreaction = { disabled: true };
+
+            this.for = { loops: 500 };
+            this.foreach = { loops: 1000 };
+
+            this.dump = { count: 5 };
+        }
+        get repeat() { return this.for; }
+        get while() { return this.for; }
+    }
+};
+
+for (const key of Object.keys(limits)) {
+    limits[key].instance = new limits[key]();
+}
+
+module.exports = {
+    executeTag,
+    executeCC,
+    escapeMentions,
+    docs,
+    generateDebug,
+    limits,
+    limitToSring,
+    analyze,
+    addAnalysis
+};

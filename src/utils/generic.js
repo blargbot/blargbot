@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-16 09:16:50
+ * @Last Modified time: 2018-09-07 09:24:46
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -275,19 +275,38 @@ bu.hasRole = (msg, roles, override = true) => {
 };
 
 bu.addReactions = async function (channelId, messageId, reactions) {
-    let errors = [];
+    let errors = {};
     for (const reaction of new Set(reactions || [])) {
         try {
             await bot.addMessageReaction(channelId, messageId, reaction);
         } catch (e) {
-            errors.push({ error: e, reaction });
+            if (!errors[e.code]) errors[e.code] = { error: e, reactions: [] };
+            switch (e.code) {
+                case 50013:
+                    errors[e.code].reactions.push(...new Set(reactions));
+                    return errors;
+                default:
+                    errors[e.code].reactions.push(reaction);
+                    break;
+            }
         }
     }
 
-    let failure;
-    if (failure = errors.find(e => e.error.message != 'Unknown Emoji'))
-        throw failure;
-    return errors.map(e => e.reaction);
+    return errors;
+};
+
+bu.generateOutputPage = async function (payload, channel) {
+    if (typeof payload === 'string') payload = {
+        content: payload
+    };
+    id = bu.makeSnowflake();
+    await bu.cclient.execute(`INSERT INTO message_outputs (id, content, embeds, channelid) VALUES (:id, :content, :embeds, :channelid)`, {
+        id,
+        content: payload.content.toString(),
+        embeds: JSON.stringify([payload.embed]),
+        channelid: channel ? channel.id : null
+    }, { prepare: true });
+    return id;
 };
 
 /**
@@ -304,8 +323,10 @@ bu.send = async function (context, payload, files) {
         // Id provided, get channel object
         case "string":
             channel = await bot.getChannel(context);
-            if (!channel)
+            if (!channel) {
+                context = context.match(/(\d+)/)[1];
                 channel = new Channel({ id: context });
+            }
             break;
         case "object":
             // Probably a message provided
@@ -353,11 +374,13 @@ bu.send = async function (context, payload, files) {
     }
 
     if (payload.content.length > 2000) {
-        (files || (files = [])).push({
-            file: Buffer.from(payload.content.toString()),
-            name: 'output.txt'
-        });
-        payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!';
+        // (files || (files = [])).push({
+        //     file: Buffer.from(payload.content.toString()),
+        //     name: 'output.txt'
+        // });
+        let id = await bu.generateOutputPage(payload, channel);
+        payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n\nTo see what I would have said, please visit ' +
+            (config.general.isbeta ? 'http://localhost:8085/output/' : 'https://blargbot.xyz/output/') + id;
     }
 
     console.debug('Sending content: ', JSON.stringify(payload));
@@ -461,11 +484,9 @@ bu.getUserById = async function (userId) {
         if (user) {
             return user;
         } else {
-            user = (await bot.sender.awaitMessage({ message: 'retrieveUser', id: match[0] })).user;
-            if (user) {
-                user = new User(user, bot);
-                return user;
-            }
+            try {
+                return await bot.getRESTUser(match[0]);
+            } catch (err) { return null; }
         }
     }
     return null;
@@ -860,6 +881,7 @@ bu.issueWarning = async function (user, guild, count, params) {
     if (!storedGuild.warnings.users) storedGuild.warnings.users = {};
     if (!storedGuild.warnings.users[user.id]) storedGuild.warnings.users[user.id] = 0;
     let type = 0;
+    let error = undefined;
     storedGuild.warnings.users[user.id] += count;
     if (storedGuild.warnings.users[user.id] < 0) storedGuild.warnings.users[user.id] = 0;
     let warningCount = storedGuild.warnings.users[user.id];
@@ -872,12 +894,15 @@ bu.issueWarning = async function (user, guild, count, params) {
                 type: 'Auto-Ban',
                 reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`
             };
-            await guild.banMember(user.id, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
+            try {
+                await guild.banMember(user.id, 0, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`);
+            } catch (e) { error = e; }
             storedGuild.warnings.users[user.id] = undefined;
             type = 1;
         } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
-            // await bu.logAction(guild, user, bot.user, 'Auto-Kick', `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.kickat})`, bu.ModLogColour.KICK);
-            await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
+            try {
+                await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
+            } catch (e) { error = e; }
             type = 2;
         }
     await r.table('guild').get(guild.id).update({
@@ -885,7 +910,8 @@ bu.issueWarning = async function (user, guild, count, params) {
     });
     return {
         type,
-        count: warningCount
+        count: warningCount,
+        error
     };
 };
 
@@ -968,6 +994,7 @@ bu.splitInput = (content, noTrim) => {
 bu.canExecuteCcommand = async function (msg, commandName, quiet) {
     let val = await bu.ccommand.get(msg.guild ? msg.guild.id : '', commandName);
     if (val && typeof val == "object") {
+        if (val.hidden) return false;
         let roles = val.roles;
         if (roles && roles.length > 0) {
             for (let role of roles) {
@@ -1668,6 +1695,8 @@ bu.findEmoji = function (text, distinct) {
     let match;
     let result = [];
 
+    text = text.replace(/\ufe0f/g, '');
+
     // Find custom emotes
     let regex = /<(a?:\w+:\d{17,23})>/gi;
     while (match = regex.exec(text))
@@ -1783,4 +1812,22 @@ bu.decancer = function (text) {
         custom: ['.', ',', ' ', '!', '\'', '"', '?']
     });
     return text;
+};
+
+bu.findMessages = async function (channelId, count, filter, before, after) {
+    let result = [];
+    filter = filter || (() => true);
+
+    while (result.length < count) {
+        let batchSize = Math.min(100, count - result.length);
+        let batch = await bot.getMessages(channelId, batchSize, before, after);
+        result.push(...batch);
+
+        if (batch.length != batchSize)
+            break;
+
+        before = result[result.length - 1].id;
+    }
+
+    return result.filter(filter);
 };

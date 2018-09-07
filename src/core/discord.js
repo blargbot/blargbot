@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-20 09:56:42
+ * @Last Modified time: 2018-07-19 09:20:39
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -45,7 +45,7 @@ const loggr = new CatLoggr({
 
 loggr.addArgHook(({ arg }) => {
     if (arg instanceof seqErrors.BaseError && Array.isArray(arg.errors)) {
-        let text = [arg.stack]
+        let text = [arg.stack];
         for (const err of arg.errors) {
             text.push(`\n - ${err.message}\n   - ${err.path} ${err.validatorKey} ${err.value}`);
         }
@@ -108,7 +108,7 @@ class DiscordClient extends Client {
             ' | Simple: ' + tags.filter(t => t == bu.TagType.SIMPLE).length +
             ' | Complex: ' + tags.filter(t => t == bu.TagType.COMPLEX).length +
             ' | Array: ' + tags.filter(t => t == bu.TagType.ARRAY).length +
-            ' | CCommand: ' + tags.filter(t => t == bu.TagType.CCOMMAND).length);
+            ' | CCommand: ' + tags.filter(t => t == bu.TagType.BOT).length);
 
         const CommandManagerClass = require('./CommandManager.js');
         global.CommandManager = new CommandManagerClass();
@@ -125,7 +125,7 @@ class DiscordClient extends Client {
             }).catch(err => {
                 // failed to send message to master
             });
-        })
+        });
     }
 
     async eval(msg, text, send = true) {

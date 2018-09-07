@@ -31,9 +31,13 @@ class Context {
      */
     constructor(options) {
         this.message = this.msg = options.msg;
-        this.input = bu.splitInput(options.input || '');
-        if (this.input.length == 1 && this.input[0] == '')
-            this.input = [];
+        if (Array.isArray(options.input)) {
+            this.input = options.input;
+        } else {
+            this.input = bu.splitInput(options.input || '');
+            if (this.input.length == 1 && this.input[0] == '')
+                this.input = [];
+        }
 
         let flags = Array.isArray(options.flags) ? options.flags : [];
         this.flaggedInput = bu.parseInput(flags, [].concat([''], this.input));
@@ -48,6 +52,7 @@ class Context {
         this.tagName = options.tagName;
         this.cooldown = options.cooldown;
         this.locks = options.locks || {};
+        this.outputModify = options.outputModify || ((_, r) => r);
 
         if (!cooldowns[this.msg.guild.id])
             cooldowns[this.msg.guild.id] = {};
@@ -58,6 +63,9 @@ class Context {
         this.cooldowns = cooldowns[this.msg.guild.id][this.isCC][this.msg.author.id];
         this._cooldowns = cooldowns;
 
+        // prevents output
+        this.silent = options.silent;
+
         /** @type {bbError[]} */
         this.errors = [];
         this.debug = [];
@@ -67,17 +75,8 @@ class Context {
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
         this.state = {
-            count: {
-                dm: 0,
-                send: 0,
-                edit: 0,
-                delete: 0,
-                react: 0, // Not implemented, potential for the future
-                reactRemove: 0, // Not implemented, potential for the future
-                timer: 0,
-                loop: 0,
-                foreach: 0
-            },
+            /** @type {{[key:string]: limit}} */
+            limits: options.limits || {},
             query: {
                 count: 0,
                 user: {},
@@ -88,6 +87,7 @@ class Context {
             return: 0,
             stackSize: 0,
             embed: null,
+            file: null,
             reactions: [],
             nsfw: null,
             /** @type {{regex: RegExp|string, with: string}} */
@@ -116,6 +116,7 @@ class Context {
         if (options.tagName === undefined) options.tagName = this.tagName;
         if (options.author === undefined) options.author = this.author;
         if (options.locks === undefined) options.locks = this.locks;
+        if (options.outputModify === undefined) options.outputModify = this.outputModify;
 
         let context = new Context(options, this);
         context.state = this.state;
@@ -134,8 +135,11 @@ class Context {
         else
             args.onSendCallback = () => didSend = true;
 
-        if (name in this.state.query.user)
-            return bot.users.get(this.state.query.user[name]);
+        if (name in this.state.query.user) {
+            let user = bot.users.get(this.state.query.user[name]);
+            if (user) return user;
+            name = this.state.query.user[name];
+        }
 
         let result;
         try {
@@ -190,6 +194,7 @@ class Context {
     }
 
     async sendOutput(text, files) {
+        if (this.silent) return this.state.outputMessage;
         if (!this.state.outputMessage) {
             this.state.outputMessage = new Promise(async function (resolve, reject) {
                 try {
@@ -200,11 +205,11 @@ class Context {
                     }
                     let response = await bu.send(this.msg,
                         {
-                            content: text,
+                            content: this.outputModify(this, text),
                             embed: this.state.embed,
                             nsfw: this.state.nsfw,
                             disableEveryone: disableEveryone
-                        }, files);
+                        }, files || this.state.file);
 
                     if (response != null && response.channel != null) {
                         await bu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
@@ -290,6 +295,7 @@ class Context {
             flaggedInput: this.flaggedInput,
             tagName: this.tagName,
             author: this.author,
+            authorizer: this.authorizer,
             tempVars: this.variables.list
                 .filter(v => v.key.startsWith('~'))
                 .reduce((p, v) => {
@@ -304,3 +310,11 @@ class Context {
 }
 
 module.exports = Context;
+
+/**
+ * @typedef {Object} limit
+ * @property {number} [limit.count] The remaining uses a subtag has. Leave undefined for unlimited
+ * @property {string} [limit.check] The function name inside the engine.checks property to use as a check
+ * @property {boolean} [limit.disabled] The subtag is disabled and cannot be used at all
+ * @property {boolean} [limit.staff] The context.isStaff promise must return true
+ */

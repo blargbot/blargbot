@@ -1,7 +1,7 @@
 'use strict';
 
 const Context = require('./Context');
-const { BBTag } = require('./Tag');
+const { BBTag, SubTag } = require('./Tag');
 const Timer = require('../Timer');
 
 /**
@@ -52,7 +52,7 @@ async function execute(bbtag, context) {
             if (!context.state.overrides)
                 context.state.overrides = {};
 
-            if (context.state.overrides.hasOwnProperty(name)) {
+            if (context.state.overrides.hasOwnProperty(name.toLowerCase())) {
                 runSubtag = context.state.overrides[name.toLowerCase()];
                 definition = { name: name.toLowerCase() };
             } else {
@@ -64,8 +64,14 @@ async function execute(bbtag, context) {
                 result.push(addError(subtag, context, 'Unknown subtag ' + name));
                 continue;
             }
-
             subtag.name = name;
+
+            let limitError = await checkLimits(context, subtag, definition);
+            if (limitError) {
+                result.push(limitError);
+                continue;
+            }
+
             try {
                 result.push(await runSubtag(subtag, context));
             } catch (err) {
@@ -100,6 +106,41 @@ async function execute(bbtag, context) {
         result.push(content.slice(prevIndex, Math.max(prevIndex, bbtag.end - endOffset)));
     context.scopes.finishScope();
     return result.join('');
+}
+
+async function checkLimits(context, subtag, definition) {
+    let limit = context.state.limits[definition.name];
+    if (limit) {
+        if (limit.disabled) {
+            let scope = context.state.limits._name
+                ? `in ${context.state.limits._name}s`
+                : `for this trigger`;
+            return addError(subtag, context, `{${definition.name}} is disabled ${scope}`);
+        }
+        if (limit.staff) {
+            let isStaff = await context.isStaff;
+            if (!isStaff) {
+                return addError(subtag, context, 'Authorizer must be staff');
+            }
+        }
+        if (limit.count !== undefined) {
+            if (limit.count === 0) {
+                return addError(subtag, context, 'Usage limit reached for ' + definition.name);
+            } else {
+                limit.count--;
+            }
+        }
+        if (limit.check !== undefined) {
+            if (limit.check in checks) {
+                let result = await checks[limit.check](context, subtag);
+                if (typeof result === 'boolean' && result) {
+                    return addError(subtag, context, 'Usage limit reached for ' + definition.name);
+                } else if (result) {
+                    return addError(subtag, context, result);
+                }
+            }
+        }
+    }
 }
 
 /**
@@ -137,7 +178,7 @@ function addError(tag, context, message) {
  * @property {string} runArgs.tagContent The content of the tag to be run
  * @property {string} runArgs.input The input provided to the tag
  * @property {boolean} runArgs.isCC Is the context a custom command context
- * @property {function(string):(Promise<string>|string)} runArgs.modResult Modifies the result before it is sent
+ * @property {function(string):(Promise<string>|string)} runArgs.outputModify Modifies the result before it is sent
  * @property {string} [runArgs.tagName] The name of the tag being run
  * @property {string} [runArgs.author] The ID of the author of the tag being run
  * @property {function(Context,string):{name:string,file:string}} [runArgs.attach] A function to generate an attachment
@@ -178,7 +219,7 @@ async function runTag(content, context) {
     console.bbtag('Checked cooldowns in', timer.poll(true), 'ms');
 
     context.execTimer.start();
-    let result = (await execString(content.trim(), context)).trim();
+    let result = (await execString((content || '').trim(), context) || '').trim();
     context.execTimer.end();
 
     console.bbtag('Tag run complete in', timer.poll(true), 'ms');
@@ -187,13 +228,11 @@ async function runTag(content, context) {
 
     console.bbtag('Saved variables in', timer.poll(true), 'ms');
 
-    if (result != null && context.state.replace != null)
-        result = result.replace(context.state.replace.regex, context.state.replace.with);
-
-    result = (config.modResult || ((c, r) => r))(context, result);
-
     if (typeof result == 'object')
         result = await result;
+
+    if (result != null && context.state.replace != null)
+        result = result.replace(context.state.replace.regex, context.state.replace.with);
 
     if (context.state.embed == null && (result == null || result.trim() == '')) {
         return { context, result, response: null };
@@ -206,12 +245,16 @@ async function runTag(content, context) {
     return { context, result, response };
 };
 
+/** @type {{[key:string]: (context: Context, subtag: SubTag) => boolean | string | Promise<boolean | string>}} */
+const checks = {};
+
 module.exports = {
     parse,
     execute,
     execString,
     addError,
-    runTag
+    runTag,
+    checks
 };
 
 /**

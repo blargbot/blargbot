@@ -27,8 +27,12 @@ module.exports =
                 arr = await bu.getArray(context, args[1]) || { v: args[1].split('') },
                 result = '';
             let array = Array.from(arr.v);
+
+            let remaining = context.state.limits.foreach || { loops: NaN };
+
             for (const item of array) {
-                if (++context.state.count.foreach > 3000) {
+                remaining.loops--;
+                if (!(remaining.loops >= 0)) { // (remaining.loops < 0) would not work due to the comparison behaviours of NaN
                     result += Builder.errors.tooManyLoops(subtag, context);
                     break;
                 }

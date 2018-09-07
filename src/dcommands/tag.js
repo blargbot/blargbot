@@ -16,7 +16,8 @@ const subcommands = [
     {
         name: 'create',
         args: '<name> <content>',
-        desc: 'Creates a new tag with the given name and content'
+        desc: 'Creates a new tag with the given name and content',
+        aliases: ['add']
     },
     {
         name: 'edit',
@@ -26,7 +27,8 @@ const subcommands = [
     {
         name: 'delete',
         args: '<name>',
-        desc: 'Deletes the tag with the given name, provided that you were the one who created it'
+        desc: 'Deletes the tag with the given name, provided that you were the one who created it',
+        aliases: ['remove']
     },
     {
         name: 'rename',
@@ -103,6 +105,17 @@ const subcommands = [
         name: 'flag',
         args: '<tag> | <add|remove> <name> <flags>',
         desc: 'Retrieves or sets the flags for a tag.'
+    },
+    {
+        name: 'setlang',
+        args: '<tag> <lang>',
+        desc: 'Sets the language to use when returning the raw text of your tag'
+    },
+    {
+        name: 'test',
+        args: '<content>',
+        desc: 'Uses the BBTag engine to execute the content as it was a tag',
+        aliases: ['eval', 'exec']
     }
 ];
 const tagNameMsg = 'Enter the name of the tag:';
@@ -184,14 +197,19 @@ class TagCommand extends BaseCommand {
             name: 'tag',
             aliases: ['t'],
             category: bu.CommandType.GENERAL,
-            usage: 'tag [<name> | create | edit | delete | rename | flag | cooldown | raw | info | top | author | search | list | favorite | report | test | debug | help | docs]',
-            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n**Subcommands**:\n**<name>**, **create**, **edit**, **delete**, **rename**, **flag**, **cooldown**, **raw**, **info**, **top**, **author**, **search**, **list**, **favorite**, **report**, **test**, **debug**, **help**, **docs**\n\nFor more information about a subcommand, do `b!tag help <subcommand>`\nFor more information about BBTag, visit <https://blargbot.xyz/tags>\nBy creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)'
+            usage: `tag [${subcommands.map(x => `${x.name}${x.args ? ' ' + x.args : ''}`).join(' | ')}]`,
+            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n'
+                + '\n__**Subcommands:**__\n'
+                + `${subcommands.map(x => `**${x.name}**`).join(', ')}`
+                + '\nFor more information about a subcommand, do `b!tag help <subcommand>`.\n'
+                + '\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.\n'
+                + 'By creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)'
         });
     }
 
     async execute(msg, words, text) {
         let page = 0;
-        let title, content, tag, author, authorizer, originalTagList;
+        let title, content, tag, author, authorizer, originalTagList, lang, result;
         if (words[1]) {
             switch (words[1].toLowerCase()) {
                 case 'cooldown':
@@ -252,7 +270,8 @@ class TagCommand extends BaseCommand {
                         lastmodified: r.epochTime(moment() / 1000),
                         uses: 0
                     }).run();
-                    bu.send(msg, `✅ Tag \`${title}\` created. ✅`);
+                    result = bbtag.addAnalysis(content, `✅ Tag \`${title}\` created. ✅`);
+                    bu.send(msg, result);
                     logChange('Create', msg, {
                         tag: title,
                         content: content
@@ -329,7 +348,8 @@ class TagCommand extends BaseCommand {
                         content: content,
                         lastmodified: r.epochTime(moment() / 1000)
                     }).run();
-                    bu.send(msg, `✅ Tag \`${title}\` edited. ✅`);
+                    result = bbtag.addAnalysis(content, `✅ Tag \`${title}\` edited. ✅`);
+                    bu.send(msg, result);
                     logChange('Edit', msg, {
                         tag: title,
                         content: content
@@ -369,9 +389,11 @@ class TagCommand extends BaseCommand {
                         content: content,
                         lastmodified: r.epochTime(moment() / 1000),
                         uses: tag ? tag.uses : 0,
-                        flags: []
+                        flags: [],
+                        lang: tag ? tag.lang : ''
                     }).run();
-                    bu.send(msg, `✅ Tag \`${title}\` ${tag ? 'edited' : 'created'}. ✅`);
+                    result = bbtag.addAnalysis(content, `✅ Tag \`${title}\` set. ✅`);
+                    bu.send(msg, result);
                     logChange(tag ? 'Edit' : 'Create', msg, {
                         tag: title,
                         content: content
@@ -407,10 +429,11 @@ class TagCommand extends BaseCommand {
                 case 'help':
                     if (words.length > 2) {
                         let command = subcommands.filter(s => {
-                            return s.name == words[2].toLowerCase() || s.alias == words[2].toLowerCase();
+                            return s.name == words[2].toLowerCase() || s.aliases.includes(words[2].toLowerCase());
                         });
                         if (command.length > 0) {
                             await bu.send(msg, `Subcommand: **${command[0].name}**
+Aliases: **${command[0].aliases.join('**, **')}**
 Args: \`${command[0].args}\`
 
 ${command[0].desc}`);
@@ -503,15 +526,17 @@ ${command[0].desc}`);
                         bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
                         break;
                     }
-                    let lang = '';
-                    if (/\{lang;.*?}/i.test(tag.content)) {
-                        lang = tag.content.match(/\{lang;(.*?)}/i)[1];
+                    lang = tag.lang || '';
+                    content = `The raw code for ${words[2]} is:\n\`\`\`${lang}\n${tag.content}\n\`\`\``;
+                    if (content.length > 2000 || tag.content.match(/`{3}/)) {
+                        bu.send(msg, `The raw code for ${title} is attached`, {
+                            name: title + '.bbtag',
+                            file: tag.content
+                        });
+                    } else {
+                        bu.send(msg, content);
                     }
-                    content = tag.content.replace(/`/g, '`\u200B');
-                    bu.send(msg, `The code for ${words[2]} is:
-\`\`\`${lang}
-${content}
-\`\`\``);
+
                     break;
                 case 'author':
                     if (words[2]) title = words[2];
@@ -620,12 +645,13 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                             await r.table('tag').get('test').replace(systemTag('test')).run();
                         await bbEngine.runTag({
                             msg,
+                            limits: new bbtag.limits.tag(),
                             tagContent: args.join(' '),
                             input: '',
                             tagName: 'test',
                             author: msg.author.id,
                             authorizer: msg.author.id,
-                            modResult(context, text) {
+                            outputModify(context, text) {
                                 function formatDuration(duration) {
                                     return duration.asSeconds() >= 5 ?
                                         duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
@@ -639,13 +665,13 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                                     '```',
                                     `${text}`
                                 ];
-                                return lines.join('\n');
+                                return bbtag.escapeMentions(context, lines.join('\n'));
                             }, attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                         });
                     }
                     break;
                 case 'debug':
-                    let result = await bbtag.executeTag(msg, filterTitle(words[2]), words.slice(3));
+                    result = await bbtag.executeTag(msg, filterTitle(words[2]), words.slice(3));
                     let dmChannel = await result.context.user.getDMChannel();
 
                     if (dmChannel == null)
@@ -776,6 +802,22 @@ ${Object.keys(user.favourites).join(', ')}
                 case 'docs':
                     bbtag.docs(msg, words[0], words.slice(2).join(' '));
                     break;
+                case 'setlang':
+                    if (words.length == 3 || words.length == 4) {
+                        title = filterTitle(words[2]);
+                        tag = await r.table('tag').get(words[2]).run();
+                        if (!tag) {
+                            bu.send(msg, 'That tag doesn\'t exist!');
+                            break;
+                        }
+                        await r.table('tag').get(title).update({ lang: words[3] }).run();
+                        bu.send(msg, `✅ Lang for tag \`${title}\` set. ✅`);
+                    } else if (words.length > 4) {
+                        bu.send(msg, 'Too many arguments! Do `help tag` for more information.');
+                    } else {
+                        bu.send(msg, 'Not enough arguments! Do `help tag` for more information.');
+                    }
+                    break;
                 default:
                     await bbtag.executeTag(msg, filterTitle(words[1]), words.slice(2));
                     break;
@@ -830,6 +872,7 @@ ${Object.keys(user.favourites).join(', ')}
 
             args.content = args.params.args[1];
             args.tempVars = args.params.vars;
+            args.version = 2;
         }
 
         let context = await Context.deserialize(args.context),
@@ -837,11 +880,8 @@ ${Object.keys(user.favourites).join(', ')}
 
         if (!context.state.count) context.state.count = {};
 
-        context.state.count.timer = -1;
         context.state.embed = null;
         context.state.reactions = [];
-
-        console.debug(context.state);
 
         if (args.version == 2) {
             context.state.count.loop = context.state.repeats;
@@ -851,9 +891,29 @@ ${Object.keys(user.favourites).join(', ')}
             delete context.state.dmCount;
             delete context.state.repeats;
             delete context.state.foreach;
+
+            args.version = 3;
         }
 
-        console.debug(context.state);
+        if (args.version < 4) {
+            function reduceLimit(key, count, attribute = 'count') {
+                if (context.state.limits[key] && attribute in context.state.limits[key]) {
+                    context.state.limits[key][attribute] -= count;
+                }
+            }
+
+            context.state.limits = context.isCC ? new bbtag.limits.ccommand() : new bbtag.limits.tag();
+            reduceLimit('dm', context.state.count.dm || 0);
+            reduceLimit('send', context.state.count.send || 0);
+            reduceLimit('edit', context.state.count.edit || 0);
+            reduceLimit('delete', context.state.count.delete || 0);
+            (context.state.limits.timer || (context.state.limits.timer = {})).disabled = true;
+            reduceLimit('for', context.state.count.loop || 0, 'loops');
+            reduceLimit('foreach', context.state.count.foreach || 0, 'loops');
+            (context.state.limits.output || (context.state.limits.output = {})).disabled = true;
+
+            args.version = 4;
+        }
 
         try {
             await bbEngine.runTag(content, context);
@@ -863,7 +923,6 @@ ${Object.keys(user.favourites).join(', ')}
         }
     };
 }
-
 
 function escapeRegex(str) {
     return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");

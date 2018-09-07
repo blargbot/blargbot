@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:26:54
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-05 15:19:02
+ * @Last Modified time: 2018-07-25 10:18:50
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,8 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.CCommandTag('kick')
-        .requireStaff()
+    Builder.APITag('kick')
         .withArgs(a => [
             a.require('user'),
             a.optional('reason'),
