@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:54:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-06 18:08:42
+ * @Last Modified time: 2018-09-06 18:24:30
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -22,7 +22,8 @@ module.exports = Builder.AutoTag('request')
         + 'If the method is GET and a JSON object is provided for `data`, it will be formatted as query strings.\n\n'
         + 'The output is a JSON object with the following structure. It is recommended to use {jsonget} to navigate it.\n'
         + '```json\n{\n  "body": {}, // the body of the request\n  "status": 200, // the HTTP status code\n  "statusText": "OK", // the human readable translation of the status code\n'
-        + '  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json" // the content type of the response\n}\n```')
+        + '  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n'
+        + '  "url": "https://fancy.url/here" // the url that was requested\n}\n```')
     .withExample(
         '{jget;{request;https://blargbot.xyz/output/1111111111111111.txt};body}',
         'Hello, world!'
