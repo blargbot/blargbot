@@ -42,7 +42,7 @@ module.exports = {
     ],
     plugins: [{ src: '@/plugins/websocket.js', ssr: false }],
     proxy: {
-        "/api/": config.origin || "https://blargbot.xyz"
+        "/api/": config.origin || "https://beta.blargbot.xyz"
     },
     css: [{ src: '@/assets/scss/base.scss', type: 'scss' }],
     /*
