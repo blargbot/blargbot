@@ -219,9 +219,6 @@ async function runTag(content, context) {
     console.bbtag('Checked cooldowns in', timer.poll(true), 'ms');
 
     context.execTimer.start();
-    if (content === undefined) {
-        console.info(context.guild.id);
-    }
     let result = (await execString((content || '').trim(), context) || '').trim();
     context.execTimer.end();
 
