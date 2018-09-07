@@ -73,6 +73,8 @@ class TagBuilder {
                     let result = callback.apply(definition, [subtag, context, subtagArgs]);
                     if (typeof result != 'string')
                         result = await result;
+                    if (typeof result === 'object')
+                        result = JSON.stringify(result);
                     timer.end();
                     bu.Metrics.subtagLatency
                         .labels(subtag.name).observe(timer.elapsed);
