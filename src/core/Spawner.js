@@ -60,7 +60,7 @@ class Spawner extends EventEmitter {
                     this.logCache[id].slice(0, 5).reverse().map(m => {
                         return `[${m.timestamp}][${m.level}] ${m.text}`;
                     }).join('\n')
-                    }\n\`\`\` `
+                    }\n\`\`\` `;
             }
             let shard = await this.spawn(id, false);
             shard.on('shardReady', async (data) => {
@@ -189,6 +189,13 @@ class Spawner extends EventEmitter {
         return [].concat(...res.map(g => JSON.parse(g.message)));
     }
 
+    async recacheDomains() {
+        if (moment().valueOf() - this.domainTTL >= 1000 * 60 * 15) {// recache every 15 minutes
+            this.domainTTL = moment().valueOf();
+            this.domainCache = (await r.table('vars').get('whitelistedDomains')).values;
+        }
+    }
+
     async handleMessage(shard, code, data) {
         switch (code) {
             case 'await':
@@ -260,10 +267,7 @@ class Spawner extends EventEmitter {
                         break;
                     }
                     case 'whitelistedDomain': {
-                        if (moment().valueOf() - this.domainTTL >= 1000 * 60 * 15) {// recache every 15 minutes 
-                            this.domainTTL = moment().valueOf();
-                            this.domainCache = (await r.table('vars').get('whitelistedDomains')).values;
-                        }
+                        this.recacheDomains();
                         shard.send(eventKey, { result: this.domainCache[data.domain] === true });
                         break;
                     }

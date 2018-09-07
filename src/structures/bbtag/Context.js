@@ -87,6 +87,7 @@ class Context {
             return: 0,
             stackSize: 0,
             embed: null,
+            file: null,
             reactions: [],
             nsfw: null,
             /** @type {{regex: RegExp|string, with: string}} */
@@ -206,7 +207,7 @@ class Context {
                             embed: this.state.embed,
                             nsfw: this.state.nsfw,
                             disableEveryone: disableEveryone
-                        }, files);
+                        }, files || this.state.file);
 
                     if (response != null && response.channel != null) {
                         await bu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);

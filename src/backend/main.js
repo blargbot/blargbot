@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-07 09:44:31
+ * @Last Modified time: 2018-09-06 17:49:50
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -112,8 +112,8 @@ e.init = () => {
 
     app.get('/metrics', function (req, res) {
         let register = bu.Metrics.aggregated;
-        res.set('Content-Type', register.contentType)
-        res.end(register.metrics())
+        res.set('Content-Type', register.contentType);
+        res.end(register.metrics());
     });
 
     let avatarInvalidation = {};
@@ -122,7 +122,7 @@ e.init = () => {
         try {
             let u = bot.users.get(id);
             if (!u) {
-                console.website('Avatar Endpoint: Retrieving user', id)
+                console.website('Avatar Endpoint: Retrieving user', id);
                 u = await bot.getRESTUser(id);
                 bot.users.add(u);
                 if (avatarInvalidation[id])
@@ -140,7 +140,7 @@ e.init = () => {
     app.get('/feedback/:id', async function (req, res) {
         let url = 'https://airtable.com/shrEUdEv4NM04Wi7O/tblyFuWE6fEAbaOfo/viwDg5WovcwMA9NIL/' + req.params.id;
         res.redirect(url);
-    })
+    });
 
     app.use('/', require('./routes/index'));
     app.use('/commands', require('./routes/commands'));
@@ -152,6 +152,7 @@ e.init = () => {
     app.use('/colour', require('./routes/colour'));
     app.use('/color', require('./routes/colour'));
     app.use('/output', require('./routes/output'));
+    app.use('/domains', require('./routes/domains'));
 
     app.use(router);
     console.website('Website listening on :8085');

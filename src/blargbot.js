@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-07 09:43:11
+ * @Last Modified time: 2018-09-06 17:46:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -125,7 +125,7 @@ if (config.cassandra) {
                 content TEXT,
                 embeds TEXT,
                 channelid BIGINT,
-            )`)
+            )`);
         }).catch(err => {
             console.error(err.message, err.stack);
         });

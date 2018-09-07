@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:04
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-28 19:21:33
+ * @Last Modified time: 2018-09-06 17:34:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -40,6 +40,10 @@ module.exports =
             if (file) {
                 if (!filename) filename = 'file.txt';
                 file = { file, name: filename };
+
+                if (file.file.startsWith('buffer:')) {
+                    file.file = Buffer.from(file.file.substring(7), 'base64');
+                }
             }
             try {
                 let sent = await bu.send(channel.id, {
