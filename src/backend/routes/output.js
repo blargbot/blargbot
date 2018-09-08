@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-08 13:48:03
+ * @Last Modified time: 2018-09-08 13:51:01
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,7 +14,7 @@ async function getOutput(id) {
         id: id[0]
     }, { prepare: true });
 
-    return id[1];
+    return m.rows[0];
 }
 
 router.get('/:id/raw', async function (req, res) {
