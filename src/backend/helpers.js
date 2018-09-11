@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:35
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-07 12:44:20
+ * @Last Modified time: 2018-09-11 14:42:12
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -73,8 +73,7 @@ function addSubtagReferences(text) {
 
 e.init = () => {
     hbs.registerHelper('markdown', function (body) {
-        let ret = mdToHtml(body.fn(this));
-        console.log(ret);
+        let ret = mdToHtml(body.fn(this).replace(/&#x60;/g, '`').trim());
         return ret;
     });
 

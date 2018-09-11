@@ -59,6 +59,28 @@
             .btn {
                 margin-bottom: 20px;
             }
+
+            strong {
+                font-weight: bold;
+            }
+
+            pre,
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            p {
+                margin: 0;
+            }
+
+            h1 {
+                border-bottom: rgba(255, 255, 255, 0.1) 1px solid;
+            }
+
+            h2 {
+                color: white;
+            }
         </style>
         <div class="section">
 
@@ -67,7 +89,9 @@
                     <div class='card blue-grey darken-3 z-depth-2'>
                         <div class='card-content'>
                             <a class='btn btn-primary full waves-effect waves-light z-depth-2' href="{{msg.id}}.txt" download>Download</a>
-                            <p class='flow-text msg-content'>{{msg.content}}</p>
+                            <p class='flow-text'>
+                                {{#markdown}} {{msg.content}} {{/markdown}}
+                            </p>
                         </div>
                     </div>
                 </div>
