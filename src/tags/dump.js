@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:04
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-30 11:17:20
+ * @Last Modified time: 2018-09-11 08:47:29
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.APITag('dump')
+    Builder.BotTag('dump')
         .withArgs(a => [
             a.require('text')
         ])
