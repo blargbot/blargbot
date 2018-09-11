@@ -64,16 +64,6 @@
                 font-weight: bold;
             }
 
-            pre,
-            h1,
-            h2,
-            h3,
-            h4,
-            h5,
-            p {
-                margin: 0;
-            }
-
             h1 {
                 border-bottom: rgba(255, 255, 255, 0.1) 1px solid;
             }
@@ -90,7 +80,7 @@
                         <div class='card-content'>
                             <a class='btn btn-primary full waves-effect waves-light z-depth-2' href="{{msg.id}}.txt" download>Download</a>
                             <p class='flow-text'>
-                                {{#markdown}} {{msg.content}} {{/markdown}}
+                                {{{msg.content}}}
                             </p>
                         </div>
                     </div>

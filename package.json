@@ -65,7 +65,8 @@
         "vue-markdown": "^2.2.4",
         "wolken": "^0.2.0",
         "ws": "^1.1.1",
-        "xml2js": "^0.4.19"
+        "xml2js": "^0.4.19",
+        "xss": "^1.0.3"
     },
     "devDependencies": {
         "eslint": "^5.0.1",
