@@ -234,7 +234,7 @@ async function runTag(content, context) {
     if (result != null && context.state.replace != null)
         result = result.replace(context.state.replace.regex, context.state.replace.with);
 
-    if (context.state.embed == null && (result == null || result.trim() == '') && context.state.file == null) {
+    if (context.state.embed == null && (result == null || result.trim() == '') && context.state.file == null && context.tagName !== 'test') {
         return { context, result, response: null };
     }
 
