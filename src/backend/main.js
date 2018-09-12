@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-07 14:43:34
+ * @Last Modified time: 2018-09-12 08:51:08
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -172,3 +172,5 @@ e.stop = function () {
         });
     });
 }
+
+e.requireCtx = require;

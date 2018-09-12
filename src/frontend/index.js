@@ -52,4 +52,8 @@ module.exports = class Frontend {
             });
         });
     }
+
+    get requireCtx() {
+        return require;
+    }
 }

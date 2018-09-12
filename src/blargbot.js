@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-07 12:28:35
+ * @Last Modified time: 2018-09-12 08:52:22
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -46,7 +46,6 @@ global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
 const Spawner = require('./core/Spawner');
 const Eris = require('eris');
-const Frontend = require('./frontend');
 const irc = require('./core/irc.js');
 
 /** CONFIG STUFF **/
@@ -77,12 +76,15 @@ class BlargbotClient {
     }
 
     spawnWebsite() {
-        this.frontend = new Frontend(this);
-        this.backend = require('./backend/main.js');
+        this.Frontend = reload('./frontend');
+        this.frontend = new this.Frontend(this);
+        this.backend = reload('./backend/main.js');
         this.backend.init();
     }
 
     async restartWebsite() {
+        reload.emptyCache(this.frontend.requireCtx);
+        reload.emptyCache(this.backend.requireCtx);
         console.website('Websites are GOING DOWN!');
         await Promise.all([this.frontend.stop(), this.backend.stop()]);
         console.website('Starting sites back up...')
