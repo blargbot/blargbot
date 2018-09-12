@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:04
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-11 08:47:29
+ * @Last Modified time: 2018-09-12 08:32:58
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,7 +14,7 @@ module.exports =
         .withArgs(a => [
             a.require('text')
         ])
-        .withDesc('Dumps the provided text to a blargbot output page.')
+        .withDesc('Dumps the provided text to a blargbot output page. These expire after 7 days.')
         .withExample(
         '{dump;Hello, world!}',
         'https://blargbot.xyz/output/1111111111111111'
