@@ -11,7 +11,7 @@ class autoresponseCommand extends BaseCommand {
             flags: [{
                 flag: 'R',
                 word: 'regex',
-                desc: 'If specified, parse as /regex/ rather than plaintext.'
+                desc: 'If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.'
             }, {
                 flag: 'e',
                 word: 'everything',
