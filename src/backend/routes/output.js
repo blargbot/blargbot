@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-11 15:25:46
+ * @Last Modified time: 2018-09-12 09:02:27
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -29,6 +29,11 @@ router.get('/:id/raw', async function (req, res) {
     res.send(output.content);
 });
 
+let whiteList = xss.whiteList;
+for (let i = 1; i < 7; i++) {
+    whiteList['h' + i].push('id');
+}
+
 router.get('/:id', async function (req, res) {
     res.locals.user = req.user;
 
@@ -42,7 +47,9 @@ router.get('/:id', async function (req, res) {
     } else {
         if (output.content) {
             let html = converter.makeHtml(output.content);
-            html = xss(html);
+            html = xss(html, {
+                whiteList
+            });
             output.content = html;
         }
 
