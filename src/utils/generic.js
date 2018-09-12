@@ -1384,9 +1384,6 @@ bu.createRegExp = function (term) {
     if (/^\/?.*\/.*/.test(term)) {
         let regexList = term.match(/^\/?(.*)\/(.*)/);
 
-        if (regexList[1].match(/\(.*[*+].*\)[+*]/))
-            throw new Error('Unsafe Regex');
-
         let temp = new RegExp(regexList[1], regexList[2]);
         if (!isSafeRegex(temp)) {
             throw new Error('Unsafe Regex');
