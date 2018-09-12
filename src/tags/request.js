@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:54:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-07 10:41:23
+ * @Last Modified time: 2018-09-11 08:49:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,7 +25,7 @@ module.exports = Builder.AutoTag('request')
     + '  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n'
     + '  "url": "https://fancy.url/here" // the url that was requested\n}\n```')
     .withExample(
-    '{jget;{request;https://blargbot.xyz/output/1111111111111111.txt};body}',
+    '{jget;{request;https://blargbot.xyz/output/1111111111111111/raw};body}',
     'Hello, world!'
     )
     .whenArgs(0, Builder.errors.notEnoughArguments)
