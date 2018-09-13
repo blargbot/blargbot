@@ -702,7 +702,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                             tag.favourites[msg.author.id] = true;
                             output = `The tag \`${title}\` is now on your favourites list!\n\nNote: there is no way for a tag to tell if you've favourited it, and thus it's impossible to give rewards for favouriting. Any tag that claims otherwise is lying, and should be reported.`;
                         } else {
-                            tag.favourites[title] = false;
+                            tag.favourites[msg.author.id] = false;
                             output = `The tag \`${title}\` is no longer on your favourites list!`;
                         }
                         await r.table('tag').get(tag.name).update({
