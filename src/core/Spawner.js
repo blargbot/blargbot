@@ -19,6 +19,7 @@ class Spawner extends EventEmitter {
         this.guildShardMap = {};
 
         this.logCache = {};
+        this.shardsSpawned = null;
 
         process.on('exit', code => {
             this.killAll();
@@ -49,6 +50,7 @@ class Spawner extends EventEmitter {
     }
 
     respawnAll() {
+        this.shardsSpawned = 0;
         return Promise.all(Array.from(this.shards.values()).filter(s => !isNaN(parseInt(s.id))).map(s => this.respawnShard(s.id)));
     }
 
@@ -110,6 +112,7 @@ class Spawner extends EventEmitter {
 
     async spawnAll() {
         let spawned = [];
+        this.shardsSpawned = 0;
         // let spawned = [await this.spawnFrontend(), await this.spawnEventTimer()];
         for (let i = 0; i < this.clusterCount; i++) {
             spawned.push(await this.spawn(i));
@@ -314,6 +317,14 @@ class Spawner extends EventEmitter {
                     this.guildShardMap[guild] = shard.id;
                 break;
             case 'shardReady':
+                if (this.shardsSpawned !== null) {
+                    this.shardsSpawned++;
+                    console.shardi(`[${data.id}] Ready! G:${data.guilds} P:${data.latency}ms | Shards spawned: [${this.shardsSpawned}/${this.max}]`);
+                    if (this.shardsSpawned === this.max) {
+                        console.init(`The bot is fully connected!`);
+                        this.shardsSpawned = null;
+                    }
+                }
                 shard.emit('shardReady', data.id);
                 break;
             case 'respawn': {

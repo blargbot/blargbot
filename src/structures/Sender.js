@@ -25,7 +25,7 @@ class Sender extends EventEmitter {
                 if (!err) fulfill();
                 else reject(err);
             });
-            if (!didSend) {
+            if (message.code !== 'log' && !didSend) {
                 console.error('Shard failed to send message. Connected: ' + this.process.connected);
                 if (!this.process.connected) process.exit();
                 reject(Error('Shard failed to send message'));
