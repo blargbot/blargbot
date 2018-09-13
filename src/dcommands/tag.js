@@ -582,7 +582,8 @@ ${command[0].desc}`);
                     }
                     author = await r.table('user').get(tag.author).run();
                     authorizer = await r.table('user').get(tag.authorizer || tag.author).run();
-                    let count = await r.table('user').getAll(tag.name, { index: 'favourite_tag' }).count();
+                    let count = Object.keys(tag.favourites || {}).filter(id => tag.favourites[id]).length;
+                    // let count = await r.table('user').getAll(tag.name, { index: 'favourite_tag' }).count();
 
                     let output = `__**Tag | ${title}** __
 Author: **${author.username}#${author.discriminator}**
@@ -695,33 +696,24 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                             bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
                             break;
                         }
-                        if (!tag.favourites) tag.favourites = 0;
-                        let user = await r.table('user').get(msg.author.id).run();
-                        if (!user.favourites) user.favourites = {};
+                        if (!tag.favourites) tag.favourites = {};
                         let output;
-                        if (!user.favourites[title]) {
-                            user.favourites[title] = true;
-                            tag.favourites++;
+                        if (!tag.favourites[msg.author.id]) {
+                            tag.favourites[msg.author.id] = true;
                             output = `The tag \`${title}\` is now on your favourites list!\n\nNote: there is no way for a tag to tell if you've favourited it, and thus it's impossible to give rewards for favouriting. Any tag that claims otherwise is lying, and should be reported.`;
                         } else {
-                            user.favourites[title] = undefined;
-                            tag.favourites--;
+                            tag.favourites[title] = false;
                             output = `The tag \`${title}\` is no longer on your favourites list!`;
                         }
-                        await r.table('user').get(msg.author.id).update({
-                            favourites: r.literal(user.favourites)
-                        });
-                        let count = await r.table('user').getAll(tag.name, { index: 'favourite_tag' }).count();
-                        console.log(count);
-                        await r.table('tag').get(title).update({
-                            favourites: r.literal(count)
+                        await r.table('tag').get(tag.name).update({
+                            favourites: tag.favourites
                         });
                         await bu.send(msg, output);
                     } else {
                         let user = await r.table('user').get(msg.author.id);
-                        if (!user.favourites) user.favourites = {};
-                        let output = `You have ${Object.keys(user.favourites).length} favourite tags. \`\`\`fix
-${Object.keys(user.favourites).join(', ')}              
+                        let tags = await r.table('tag').getAll(msg.author.id, { index: 'user_favourite' });
+                        let output = `You have ${tags.length} favourite tags. \`\`\`fix
+${tags.map(t => t.name).join(', ')}              
 \`\`\` `;
                         await bu.send(msg, output);
                     }
@@ -792,7 +784,7 @@ ${Object.keys(user.favourites).join(', ')}
                             tag.reason = words.slice(3).join(' ');
                             tag.deleted = true;
                             tag.uses = 0;
-                            tag.favourites = 0;
+                            tag.favourites = {};
                             await r.table('tag').get(title).replace(tag);
                             await bu.send(msg, 'The tag has been deleted.');
                         } else {
