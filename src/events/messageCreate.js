@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-13 10:45:11
+ * @Last Modified time: 2018-09-13 10:56:46
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,7 +25,7 @@ cleverbot.create().then(function (session) {
 });
 
 bot.on('messageCreate', async function (msg) {
-    if (!msg.guild.shard.ready) return;
+    if (msg.guild && !msg.guild.shard.ready) return;
     bu.Metrics.messageCounter.inc();
     await bu.processUser(msg.author);
     let isDm = msg.channel.guild == undefined;
