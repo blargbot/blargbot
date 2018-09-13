@@ -71,6 +71,44 @@
             h2 {
                 color: white;
             }
+
+            hr {
+                border: none;
+                border-bottom: rgba(255, 255, 255, 0.1) 1px solid;
+            }
+
+            .card-content footer {
+                padding: 0px;
+                font-size: 0.65em;
+            }
+
+            .card-content ul {
+                margin-left: 40px;
+            }
+
+            .card-content ul>li {
+                list-style-type: disc !important;
+            }
+
+            .card-content li ul>li {
+                list-style-type: circle !important;
+            }
+
+            .card-content li li ul>li {
+                list-style-type: square !important;
+            }
+
+            .card-content ol>li {
+                list-style-type: decimal;
+            }
+
+            .card-content li ol>li {
+                list-style-type: lower-roman;
+            }
+
+            .card-content li li ol>li {
+                list-style-type: lower-alpha;
+            }
         </style>
         <div class="section">
 
@@ -82,6 +120,9 @@
                             <p class='flow-text'>
                                 {{{msg.content}}}
                             </p>
+
+                            <hr>
+                            <footer> This page will expire {{msg.expiry}} ({{msg.diff}})</footer>
                         </div>
                     </div>
                 </div>

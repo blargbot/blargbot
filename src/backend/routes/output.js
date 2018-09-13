@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-12 09:02:27
+ * @Last Modified time: 2018-09-13 08:48:14
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -11,8 +11,10 @@ const router = require('express').Router();
 const showdown = require('showdown');
 const converter = new showdown.Converter();
 converter.setFlavor('github');
+converter.setOption('disableForced4SpacesIndentedSublists', true);
 const xss = require('xss');
 const hbs = require('hbs');
+const moment = require('moment-timezone');
 
 async function getOutput(id) {
     let m = await bu.cclient.execute(`SELECT * FROM message_outputs WHERE id = :id`, {
@@ -45,6 +47,11 @@ router.get('/:id', async function (req, res) {
         res.set('content-type', 'text/plain');
         res.end(output.content, 'utf8');
     } else {
+        let date = moment(bu.unmakeSnowflake(output.id)).add(7, 'days');
+        let diff = moment.duration(-1 * (moment() - date));
+        output.expiry = date.tz('etc/utc').format('MMMM Do, YYYY')
+        output.diff = diff.humanize(true);
+
         if (output.content) {
             let html = converter.makeHtml(output.content);
             html = xss(html, {
