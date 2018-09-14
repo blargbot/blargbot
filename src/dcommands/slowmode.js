@@ -8,7 +8,7 @@ class SlowmodeCommand extends BaseCommand {
             name: 'slowmode',
             category: bu.CommandType.ADMIN,
             usage: 'slowmode [time]',
-            info: 'Sets the channel\'s slowmode to 1 message every `time` seconds. Leave empty to disable slowmode.',
+            info: 'Sets the channel\'s slowmode to 1 message every `time` seconds, with a max of 120. Leave empty to disable slowmode.',
             flags: [{ flag: 'c', word: 'channel', desc: 'The channel to put under slowmode' }]
         });
     }
@@ -19,6 +19,8 @@ class SlowmodeCommand extends BaseCommand {
 
         let time = parseInt(input.undefined[0]);
         if (isNaN(time)) time = 0;
+
+        time = Math.min(time, 120);
 
         let channel = msg.channel.id;
         if (input.c && /(\d+)/.test(input.c[0])) {
