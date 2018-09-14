@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-13 19:18:09
+ * @Last Modified time: 2018-09-13 19:30:31
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -32,9 +32,13 @@ module.exports =
             let endpoint = Endpoints.CHANNEL(channel.id);
             time = Math.min(time, 120);
 
-            await bot.requestHandler.request('PATCH', endpoint, true, {
-                rate_limit_per_user: time
-            });
+            try {
+                await bot.requestHandler.request('PATCH', endpoint, true, {
+                    rate_limit_per_user: time
+                });
+            } catch (err) {
+                return Builder.errors.missingPermissions(subtag, context);
+            }
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

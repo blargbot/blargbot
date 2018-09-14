@@ -31,14 +31,18 @@ class SlowmodeCommand extends BaseCommand {
 
         let endpoint = Endpoints.CHANNEL(channel);
 
-        await bot.requestHandler.request('PATCH', endpoint, true, {
-            rate_limit_per_user: time
-        });
+        try {
+            await bot.requestHandler.request('PATCH', endpoint, true, {
+                rate_limit_per_user: time
+            });
 
-        let out = ':ok_hand: ';
-        if (time === 0) out += 'Slowmode has been disabled.';
-        else out += `Slowmode has been set to 1 message every **${time} seconds**.`;
-        return await bu.send(msg, out);
+            let out = ':ok_hand: ';
+            if (time === 0) out += 'Slowmode has been disabled.';
+            else out += `Slowmode has been set to 1 message every **${time} seconds**.`;
+            return await bu.send(msg, out);
+        } catch (err) {
+            return await bu.send(msg, 'I wasn\'t able to manage slowmode.');
+        }
     }
 }
 
