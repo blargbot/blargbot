@@ -144,7 +144,7 @@ class CcommandCommand extends BaseCommand {
                             delete command.vars;
 
                             output += ` - Export the custom command \`${key}\`\n`;
-                            if (command.hidden) {
+                            if (command.managed) {
                                 let ar = storedGuild.autoresponse.list.find(a => {
                                     return a.executes === key;
                                 });
@@ -232,6 +232,7 @@ class CcommandCommand extends BaseCommand {
                             delete command.authorizer;
                             delete command.vars;
                             delete command.hidden;
+                            delete command.managed;
                             ccommands[key] = command;
                             output += `✅ Import the command \`${key}\`\n`;
                         }
@@ -249,6 +250,7 @@ class CcommandCommand extends BaseCommand {
                             delete command.authorizer;
                             delete command.vars;
                             command.hidden = true;
+                            command.managed = true;
                             ccommands[key] = command;
                             ar.executes = key;
                             storedGuild.autoresponse.list.push(ar);
@@ -269,6 +271,7 @@ class CcommandCommand extends BaseCommand {
                             delete command.authorizer;
                             delete command.vars;
                             command.hidden = true;
+                            command.managed = true;
                             ccommands[key] = command;
                             body.are.executes = key;
                             storedGuild.autoresponse.everything = body.are;
@@ -308,8 +311,8 @@ class CcommandCommand extends BaseCommand {
                         bu.send(msg, `❌ That custom command doesn't exist! ❌`);
                         break;
                     }
-                    if (tag.hidden) {
-                        return await bu.send(msg, `❌ You can't put a cooldown on a hidden ccommand! ❌`);
+                    if (tag.managed) {
+                        return await bu.send(msg, `❌ You can't put a cooldown on a managed ccommand! ❌`);
                     }
                     if (tag && tag.author != msg.author.id) {
                         bu.send(msg, `❌ You don't own this custom command! ❌`);
@@ -376,6 +379,9 @@ class CcommandCommand extends BaseCommand {
                         }
                         if (tag.hidden) {
                             return await bu.send(msg, `❌ You can't put flags on a hidden ccommand! ❌`);
+                        }
+                        if (tag.managed) {
+                            return await bu.send(msg, `❌ You can't put flags on a managed ccommand! ❌`);
                         }
                         if (tag.alias) {
                             bu.send(msg, 'That ccommand is imported, and cannot be edited.');
@@ -513,8 +519,8 @@ class CcommandCommand extends BaseCommand {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             break;
                         }
-                        if (tag.hidden) {
-                            return await bu.send(msg, `❌ You can't delete a hidden ccommand! Delete it from the autoresponse command instead. ❌`);
+                        if (tag.managed) {
+                            return await bu.send(msg, `❌ You can't delete a managed ccommand! ❌`);
                         }
                         await bu.ccommand.remove(msg.channel.guild.id, title);
                         bu.send(msg, `✅ Custom command \`${title}\` deleted. ✅`);
@@ -534,8 +540,8 @@ class CcommandCommand extends BaseCommand {
                                 break;
                             }
                         }
-                        if (tag.hidden) {
-                            return await bu.send(msg, `❌ You can't rename a hidden ccommand! ❌`);
+                        if (tag.managed) {
+                            return await bu.send(msg, `❌ You can't rename a managed ccommand! ❌`);
                         }
                         let newTitle = filterTitle(words[3]);
                         let newTag = await bu.ccommand.get(msg.channel.guild.id, newTitle);
@@ -589,6 +595,9 @@ class CcommandCommand extends BaseCommand {
                         if (!tag) {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             break;
+                        }
+                        if (tag.managed) {
+                            return await bu.send(msg, `❌ You can't set help on a managed ccommand! ❌`);
                         }
                         if (tag.hidden) {
                             return await bu.send(msg, `❌ You can't set help on a hidden ccommand! ❌`);
