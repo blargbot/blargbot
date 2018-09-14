@@ -27,7 +27,6 @@ module.exports =
             }
             if (channel.guild.id != context.guild.id)
                 return Builder.errors.channelNotInGuild(subtag, context);
-            console.log(channel, time);
             if (isNaN(time)) time = 0;
 
             let endpoint = Endpoints.CHANNEL(channel.id);
