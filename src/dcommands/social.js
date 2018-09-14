@@ -180,10 +180,10 @@ for (const key in actions) {
                     message = `**${bu.getFullName(msg.author)}**  ${action.text}!`;
                     break;
                 case 2:
-                    let u2 = 'themself';;
-                    if (words.length === 1) {
+                    let u2 = 'themself';
+                    if (words.length > 1) {
                         let user = await bu.getUser(msg, words.slice(1).join(' '));
-                        if (user) u2 = b.getFullName(user);
+                        if (user) u2 = bu.getFullName(user);
                     }
                     message = `**${bu.getFullName(msg.author)}** ${action.text} **${u2}**!`;
                     break;
