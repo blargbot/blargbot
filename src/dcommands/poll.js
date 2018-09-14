@@ -83,7 +83,7 @@ class PollCommand extends BaseCommand {
             if (input.a) {
                 let storedGuild = await bu.getGuild(msg.guild.id);
                 if (storedGuild.hasOwnProperty('announce')) {
-                    if ((await bu.canExecuteCommand(msg, 'announce', true))[0]) {
+                    if ((await bu.canExecuteCommand(msg, 'announce', true)).executable) {
                         channel = storedGuild.announce.channel;
                         roleId = storedGuild.announce.role;
                         role = msg.guild.roles.get(roleId);

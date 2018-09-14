@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-12 08:32:40
+ * @Last Modified time: 2018-09-14 10:21:49
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1008,66 +1008,78 @@ bu.canExecuteCcommand = async function (msg, commandName, quiet) {
     return false;
 };
 
-bu.canExecuteCommand = async function (msg, commandName, quiet) {
-    if (msg.author.id == bu.CAT_ID && bu.catOverrides) return [true, commandName];
+bu.canExecuteCommand = async function (msg, name, quiet, options = {}) {
+    if (msg.author.id == bu.CAT_ID && bu.catOverrides) return { executable: true, name };
     if (msg.channel.guild) {
-        let permoverride, staffperms, storedGuild, adminrole;
-        storedGuild = await bu.getGuild(msg.guild.id);
-        let val = storedGuild.settings.permoverride,
-            val1 = storedGuild.settings.staffperms;
-        //console.debug(storedGuild.settings.adminrole);
+        let { storedGuild, permOverride, staffPerms } = options;
+        let adminrole;
 
-        let command = storedGuild.commandperms[commandName];
-        let commandObj = CommandManager.list[commandName];
-        if (storedGuild.settings.adminrole !== undefined && storedGuild.settings.adminrole !== "")
-            adminrole = storedGuild.settings.adminrole;
-        if (command && command.disabled && commandObj.cannotDisable !== true) {
-            return [false, commandName];
+        if (!storedGuild) {
+            storedGuild = await bu.getGuild(msg.guild.id);
+            permOverride = storedGuild.settings.permoverride;
+            staffPerms = storedGuild.settings.staffperms;
+            if (storedGuild.settings.adminrole !== undefined && storedGuild.settings.adminrole !== "")
+                adminrole = storedGuild.settings.adminrole;
         }
-        if (val && val != 0)
-            if (val1) {
-                let allow = parseInt(val1);
+
+        let Command = CommandManager.commandList[name], category;
+        if (Command)
+            category = bu.CommandType.properties[CommandManager.commandList[name].category]
+
+        let command = storedGuild.commandperms[name];
+        let commandObj = CommandManager.list[name];
+
+        if (command && command.disabled && commandObj.cannotDisable !== true) {
+            return { executable: false, name };
+        }
+
+        if (category && category.requirement) {
+            if (!await category.requirement(msg, storedGuild))
+                return { executable: false, name };
+        }
+
+        if (permOverride && permOverride != 0)
+            if (staffPerms) {
+                let allow = parseInt(staffPerms);
                 if (!isNaN(allow)) {
                     if (bu.comparePerms(msg.member, allow)) {
-                        return [true, commandName];
+                        return { executable: true, name };
                     }
                 }
             } else {
                 if (bu.comparePerms(msg.member)) {
-                    return [true, commandName];
+                    return { executable: true, name };
                 }
             }
         if (storedGuild) {
             if (command) {
                 if (command.permission && bu.comparePerms(msg.member, command.permission)) {
-                    return [true, commandName];
+                    return { executable: true, name };
                 } else if (command.rolename) {
-                    if (await bu.hasPerm(msg, command.rolename, quiet))
-                        return [true, commandName];
-                    else return [false, commandName];
-                } else if (!command.rolename) {
-                    if (bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
-                        if (!await bu.hasPerm(msg, adminrole || bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
-                            return [false, commandName, 1];
+                    return { executable: await bu.hasPerm(msg, command.rolename, quiet), name };
+                } else {
+                    if (category.perm) {
+                        if (!await bu.hasPerm(msg, adminrole || category.perm, quiet)) {
+                            return { executable: false, name };
                         }
                     }
-                    return [true, commandName];
+                    return { executable: true, name };
                 }
             }
         }
-        if (CommandManager.commandList[commandName] && bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
-            if (!await bu.hasPerm(msg, adminrole || bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
-                return [false, commandName, 3];
+        if (category && category.perm) {
+            if (!await bu.hasPerm(msg, adminrole || category.perm, quiet)) {
+                return { executable: false, name };
             }
         }
-        return [true, commandName];
+        return { executable: true, name };
     } else {
-        if (bu.CommandType.properties[CommandManager.commandList[commandName].category].perm) {
-            if (!await bu.hasPerm(msg, bu.CommandType.properties[CommandManager.commandList[commandName].category].perm, quiet)) {
-                return [false, commandName, 3];
+        if (category.perm) {
+            if (!await bu.hasPerm(msg, category.perm, quiet)) {
+                return { executable: false, name };
             }
         }
-        return [true, commandName];
+        return { executable: true, name };
     }
 };
 

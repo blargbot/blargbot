@@ -101,7 +101,7 @@ class HelpCommand extends BaseCommand {
                 if (modifiedCommands.indexOf(command) == -1)
                     if (!CommandManager.built[command].hidden && (!CommandManager.built[command].onlyOn || (msg.guild && CommandManager.built[command].onlyOn === msg.guild.id))) {
                         if (CommandManager.built[command].category == bu.CommandType.GENERAL) {
-                            if ((await bu.canExecuteCommand(msg, command, true))[0])
+                            if ((await bu.canExecuteCommand(msg, command, true, { storedGuild, permOverride, staffPerms })).executable)
                                 generalCommands.push(command);
                         } else {
                             let category = CommandManager.built[command].category;
@@ -155,7 +155,7 @@ class HelpCommand extends BaseCommand {
 
             function nextCommand(category, completeCommandList) {
                 if (!bu.CommandType.properties.hasOwnProperty(category) ||
-                    bu.CommandType.properties[category].requirement(msg)) {
+                    bu.CommandType.properties[category].requirement(msg, storedGuild)) {
                     if (completeCommandList.length > 0) {
                         completeCommandList.sort();
                         let categoryString = '';
@@ -178,9 +178,9 @@ class HelpCommand extends BaseCommand {
                 category, counter, i = 0,
                 ii;
 
-            function doThing(val) {
-                if (val[0]) {
-                    completeCommandList.push(val[1]);
+            function doThing({ executable, name }) {
+                if (executable) {
+                    completeCommandList.push(name);
                 }
                 if (--counter == 0) {
                     nextCommand(category, completeCommandList);
@@ -196,7 +196,7 @@ class HelpCommand extends BaseCommand {
                     //otherCommands[category].sort();
                     counter = otherCommands[category].length;
                     for (ii = 0; ii < otherCommands[category].length; ii++) {
-                        bu.canExecuteCommand(msg, otherCommands[category][ii], true, storedGuild, permOverride, staffPerms).then(doThing);
+                        bu.canExecuteCommand(msg, otherCommands[category][ii], true, { storedGuild, permOverride, staffPerms }).then(doThing);
                     }
                     //    }
                 }

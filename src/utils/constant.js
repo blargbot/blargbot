@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:22
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-10 18:13:16
+ * @Last Modified time: 2018-09-14 09:36:17
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -59,6 +59,7 @@ bu.CommandType = {
     IMAGE: 4,
     MUSIC: 5,
     ADMIN: 6,
+    SOCIAL: 7,
     properties: {
         1: {
             name: 'General',
@@ -82,13 +83,20 @@ bu.CommandType = {
         },
         5: {
             name: 'Music',
-            requirement: msg => !msg.channel.guild ? false : config.discord.musicGuilds[msg.channel.guild.id]
+            requirement: () => false
         },
         6: {
             name: 'Admin',
             requirement: () => true,
             perm: 'Admin',
             description: 'Powerful commands that require an `admin` role or special permissions.'
+        },
+        7: {
+            name: 'Social',
+            requirement: async (msg, storedGuild) => {
+                return storedGuild.settings.social;
+            },
+            description: 'Social commands for interacting with other people'
         }
     }
 };

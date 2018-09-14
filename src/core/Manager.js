@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:33:36
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-07 11:15:36
+ * @Last Modified time: 2018-09-14 10:54:04
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -51,11 +51,18 @@ class Manager {
         return undefined;
     }
 
-    load(name) {
+    load(name, mod) {
         try {
             if (this.removeListeners)
                 bot.removeAllListeners(name);
-            const mod = require(this.constructPath(name));
+            if (!mod)
+                mod = require(this.constructPath(name));
+            if (Array.isArray(mod)) {
+                for (const m of mod) {
+                    this.load(m.name, m);
+                }
+                return false;
+            }
             if (typeof mod.init == 'function') mod.init();
             else if (!mod.prototype && mod.name !== undefined) name = mod.name;
             this.list[name] = mod;

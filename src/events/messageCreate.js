@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-13 10:56:46
+ * @Last Modified time: 2018-09-14 09:50:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -219,8 +219,8 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
         if (_command) {
             let commandName = _command.name;
             let _built = CommandManager.built[commandName];
-            let val2 = await bu.canExecuteCommand(msg, commandName);
-            if (val2[0]) {
+            let { executable } = await bu.canExecuteCommand(msg, commandName);
+            if (executable) {
                 try {
                     console.command(outputLog);
                     let timer = new Timer().start();
@@ -233,7 +233,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
                     bu.Metrics.commandError.labels(commandName).inc();
                 }
             }
-            return val2[0];
+            return executable;
         } else {
             return false;
         }

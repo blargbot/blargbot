@@ -100,6 +100,11 @@ bu.settings = {
         name: 'Disable No Perms',
         desc: 'Disables the \'You need the role to use this command\' message.',
         type: 'bool'
+    },
+    social: {
+        name: 'Enable Social Commands',
+        desc: 'Enables social commands.',
+        type: 'bool'
     }
 };
 
@@ -200,6 +205,7 @@ class SettingsCommand extends BaseCommand {
             let cleverbot = settings.nocleverbot || false;
             let kickAt = settings.kickat || 'Disabled';
             let banAt = settings.banat || 'Disabled';
+            let social = settings.social || 'Disabled';
             let adminRoleName = settings.adminrole || 'Admin';
             let embed = {
                 fields: [
@@ -210,6 +216,7 @@ class SettingsCommand extends BaseCommand {
      CAH is NSFW : ${cahNsfw}
          DM Help : ${dmHelp}
 Disable No Perms : ${disableNoPerms}
+ Social Commands : ${social}
 \`\`\``,
                         inline: true
                     },

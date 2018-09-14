@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:28:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-07 11:15:50
+ * @Last Modified time: 2018-09-14 10:51:16
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -23,8 +23,8 @@ class CommandManager extends Manager {
         super.init();
     }
 
-    load(name) {
-        if (super.load(name)) {
+    load(name, mod) {
+        if (super.load(name, mod)) {
             if (this.list.hasOwnProperty(name) && this.list[name].prototype instanceof BaseCommand) {
                 this.build(name);
                 return true;

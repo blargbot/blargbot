@@ -21,7 +21,7 @@ class CatCommand extends BaseCommand {
                     url: res.url
                 },
                 footer: {
-                    text: 'Powered by Weeb.sh'
+                    text: 'Powered by weeb.sh'
                 },
                 color: bu.getRandomInt(0x1, 0xffffff)
             }
