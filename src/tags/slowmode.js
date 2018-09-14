@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-14 11:26:10
+ * @Last Modified time: 2018-09-14 12:44:06
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -34,7 +34,8 @@ module.exports =
 
             try {
                 await bot.requestHandler.request('PATCH', endpoint, true, {
-                    rate_limit_per_user: time
+                    rate_limit_per_user: time,
+                    reason: context.scope.reason || 'Initiated from BBTag by ' + bu.getFullName(ctx.author)
                 });
             } catch (err) {
                 return Builder.errors.missingPermissions(subtag, context);

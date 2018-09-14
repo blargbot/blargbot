@@ -9,7 +9,8 @@ class SlowmodeCommand extends BaseCommand {
             category: bu.CommandType.ADMIN,
             usage: 'slowmode [time]',
             info: 'Sets the channel\'s slowmode to 1 message every `time` seconds, with a max of 120. Leave empty to disable slowmode.',
-            flags: [{ flag: 'c', word: 'channel', desc: 'The channel to put under slowmode' }]
+            flags: [{ flag: 'c', word: 'channel', desc: 'The channel to put under slowmode' },
+            { flag: 'r', word: 'reason', desc: 'The reason for the slowmode' }]
         });
     }
 
@@ -33,7 +34,8 @@ class SlowmodeCommand extends BaseCommand {
 
         try {
             await bot.requestHandler.request('PATCH', endpoint, true, {
-                rate_limit_per_user: time
+                rate_limit_per_user: time,
+                reason: `[${bu.getFullName(msg.author)}] ${input.r ? input.r.join(' ') : ''}`
             });
 
             let out = ':ok_hand: ';
