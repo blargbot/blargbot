@@ -56,7 +56,7 @@
         "sequelize": "^4.38.0",
         "server-destroy": "^1.0.1",
         "showdown": "^1.8.6",
-        "snekfetch": "^4.0.4",
+        "snekfetch": "github:ratismal/snekfetch",
         "strip-ansi": "^4.0.0",
         "svg2png": "^4.1.1",
         "table": "^4.0.3",

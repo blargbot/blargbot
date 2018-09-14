@@ -270,7 +270,7 @@ class Spawner extends EventEmitter {
                         break;
                     }
                     case 'whitelistedDomain': {
-                        this.recacheDomains();
+                        await this.recacheDomains();
                         shard.send(eventKey, { result: this.domainCache[data.domain] === true });
                         break;
                     }

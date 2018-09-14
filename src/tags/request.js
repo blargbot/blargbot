@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:54:15
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-11 08:49:00
+ * @Last Modified time: 2018-09-13 18:01:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -12,21 +12,30 @@ const snekfetch = require('snekfetch');
 const { parse: UrlParse } = require('url');
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
+function makeRequest(request) {
+    return new Promise((resolve, reject) => {
+        request.then(resolve).catch(err => {
+            if (err instanceof Error) reject(err);
+            else resolve(err);
+        });
+    });
+}
+
 module.exports = Builder.AutoTag('request')
     .withArgs(a => [a.require('url'), a.optional('options'), a.optional('data')])
     .withDesc('Performs an HTTP request to `url`, with provided `options` and `data`.\n'
-    + 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.\n\n'
-    + '`options` is a JSON object with the following structure. It is recommended to use {jsonset} to create it.\n'
-    + '```json\n{\n  "method": "GET|POST|PUT|PATCH|DELETE", // defaults to GET\n'
-    + '  "headers": { "key": "value" }\n}\n```'
-    + 'If the method is GET and a JSON object is provided for `data`, it will be formatted as query strings.\n\n'
-    + 'The output is a JSON object with the following structure. It is recommended to use {jsonget} to navigate it.\n'
-    + '```json\n{\n  "body": {}, // the body of the request\n  "status": 200, // the HTTP status code\n  "statusText": "OK", // the human readable translation of the status code\n'
-    + '  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n'
-    + '  "url": "https://fancy.url/here" // the url that was requested\n}\n```')
+        + 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.\n\n'
+        + '`options` is a JSON object with the following structure. It is recommended to use {jsonset} to create it.\n'
+        + '```json\n{\n  "method": "GET|POST|PUT|PATCH|DELETE", // defaults to GET\n'
+        + '  "headers": { "key": "value" }\n}\n```'
+        + 'If the method is GET and a JSON object is provided for `data`, it will be formatted as query strings.\n\n'
+        + 'The output is a JSON object with the following structure. It is recommended to use {jsonget} to navigate it.\n'
+        + '```json\n{\n  "body": {}, // the body of the request\n  "status": 200, // the HTTP status code\n  "statusText": "OK", // the human readable translation of the status code\n'
+        + '  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n'
+        + '  "url": "https://fancy.url/here" // the url that was requested\n}\n```')
     .withExample(
-    '{jget;{request;https://blargbot.xyz/output/1111111111111111/raw};body}',
-    'Hello, world!'
+        '{jget;{request;https://blargbot.xyz/output/1111111111111111/raw};body}',
+        'Hello, world!'
     )
     .whenArgs(0, Builder.errors.notEnoughArguments)
     .whenArgs('1-3', async function (subtag, context, args) {
@@ -80,7 +89,8 @@ module.exports = Builder.AutoTag('request')
         }
 
         let requestOptions = {
-            headers: options.headers
+            headers: options.headers,
+            maxBytes: 500000
         };
 
         if (data) {
@@ -91,13 +101,18 @@ module.exports = Builder.AutoTag('request')
         }
 
         const Request = new snekfetch(options.method, url, requestOptions);
+        Request.send(data);
 
         let res;
         try {
-            res = await Request.send(data);
+            res = await makeRequest(Request);
         } catch (err) {
-            res = err;
+            console.error(err);
+            return Builder.errors.customError(subtag, context, err.message);
         }
+
+        console.log(res);
+
 
         let response = {
             body: res.body,
