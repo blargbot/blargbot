@@ -49,6 +49,11 @@ const subcommands = [
             + 'Flags are added in the format `-x <name> <desc>`. For example, `-f flag This is a flag!`'
     },
     {
+        name: 'hide',
+        args: '<name>',
+        desc: 'Toggles the visibility of a custom command. Hidden commands cannot be executed directly.'
+    },
+    {
         name: 'help',
         args: '',
         desc: 'Shows this message'
@@ -127,7 +132,7 @@ class CcommandCommand extends BaseCommand {
     async execute(msg, words, text) {
         console.debug('Text:', text);
         if (words[1]) {
-            let tag, content, title, lang, result;
+            let tag, content, title, lang, result, hidden;
             switch (words[1].toLowerCase()) {
                 case 'shrinkwrap': {
                     let output = 'Salutations! You have discovered the super handy ShrinkWrapper9000!\n\nIf you decide to proceed, this will:\n';
@@ -292,6 +297,25 @@ class CcommandCommand extends BaseCommand {
                     }
                     break;
                 }
+                case 'hide':
+                    title = filterTitle(words[2]);
+                    tag = await bu.ccommand.get(msg.guild.id, title);
+                    if (!tag) {
+                        bu.send(msg, 'That ccommand doesn\'t exist!');
+                        return;
+                    }
+                    if (tag.managed) {
+                        return await bu.send(msg, `❌ You can't hide/unhide a managed ccommand! ❌`);
+                    }
+                    if (tag && tag.author != msg.author.id) {
+                        bu.send(msg, `❌ You don't own this custom command! ❌`);
+                        break;
+                    }
+                    await r.table('guild').get(msg.guild.id).update({
+                        ccommands: { [title]: { hidden: !tag.hidden } }
+                    });
+                    return await bu.send(msg, `✅ The custom command \`${title}\` is now ${tag.hidden ? 'visible' : 'hidden'}. ✅`);
+                    break;
                 case 'cooldown':
                     title = filterTitle(words[2]);
                     let cooldown;
@@ -357,12 +381,14 @@ class CcommandCommand extends BaseCommand {
                             break;
                         }
                         content = bu.splitInput(text, true).slice(3).join(' ');
+                        hidden = title.startsWith('_');
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
                             author: msg.author.id,
-                            authorizer: msg.author.id
+                            authorizer: msg.author.id,
+                            hidden
                         });
-                        result = bbtag.addAnalysis(content, `✅ Custom command \`${title}\` created. ✅`);
+                        result = bbtag.addAnalysis(content, `✅ Custom command \`${title}\`${hidden ? ' (hidden)' : ''} created. ✅`);
                         bu.send(msg, result);
                     } else {
                         bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
@@ -471,12 +497,16 @@ class CcommandCommand extends BaseCommand {
                         }
                         content = bu.splitInput(text, true).slice(3).join(' ');
                         tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        hidden = title.startsWith('_');
+                        if (tag && tag.hidden !== undefined) hidden = tag.hidden;
+
                         await bu.ccommand.set(msg.channel.guild.id, title, {
                             content,
                             author: msg.author.id,
-                            authorizer: (tag ? tag.authorizer : undefined) || msg.author.id
+                            authorizer: (tag ? tag.authorizer : undefined) || msg.author.id,
+                            hidden
                         });
-                        result = bbtag.addAnalysis(content, `✅ Custom command \`${title}\` set. ✅`);
+                        result = bbtag.addAnalysis(content, `✅ Custom command \`${title}\`${hidden ? ' (hidden)' : ''} set. ✅`);
                         bu.send(msg, result);
                     } else {
                         bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
