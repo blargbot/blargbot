@@ -48,7 +48,7 @@ class PrefixCommand extends BaseCommand {
             if (prefixes.length === 0)
                 await bu.send(msg, `${msg.guild.name} has no custom prefixes.`);
             else
-                await bu.send(msg, `${msg.guild.name} has the following personal prefixes:\n${prefixes.map(p => ' - ' + p).join('\n')}`);
+                await bu.send(msg, `${msg.guild.name} has the following prefixes:\n${prefixes.map(p => ' - ' + p).join('\n')}`);
         }
         //   }
     }
