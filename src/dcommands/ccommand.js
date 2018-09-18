@@ -687,7 +687,7 @@ ${command[0].desc}`);
                                         duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
                                 }
                                 let lines = [text];
-                                if (args[0] === 'vtest') {
+                                if (words[1] === 'vtest') {
                                     lines.push('```js',
                                         `         Execution Time: ${formatDuration(context.execTimer.duration)}`,
                                         `    Variables Committed: ${context.dbObjectsCommitted}`,
