@@ -102,7 +102,7 @@ const subcommands = [
         name: 'test',
         args: '<content>',
         desc: 'Uses the BBTag engine to execute the content as it was a ccommand.',
-        aliases: ['eval', 'exec']
+        aliases: ['eval', 'exec', 'vtest']
     }
 ];
 
@@ -694,6 +694,7 @@ ${command[0].desc}`);
                 case 'exec':
                 case 'eval':
                 case 'test':
+                case 'vtest':
                     let args = words.slice(2), debug = false;
                     if (args.length == 0) break;
                     if (args[0].toLowerCase() == 'debug') {
@@ -715,15 +716,16 @@ ${command[0].desc}`);
                                     return duration.asSeconds() >= 5 ?
                                         duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
                                 }
-                                let lines = [
-                                    '```js',
-                                    `         Execution Time: ${formatDuration(context.execTimer.duration)}`,
-                                    `    Variables Committed: ${context.dbObjectsCommitted}`,
-                                    `Database Execution Time: ${formatDuration(context.dbTimer.duration)}`,
-                                    `   Total Execution Time: ${formatDuration(context.totalDuration)}`,
-                                    '```',
-                                    `${text}`
-                                ];
+                                let lines = [text];
+                                if (words[1] === 'vtest') {
+                                    lines.push('```js',
+                                        `         Execution Time: ${formatDuration(context.execTimer.duration)}`,
+                                        `    Variables Committed: ${context.dbObjectsCommitted}`,
+                                        `Database Execution Time: ${formatDuration(context.dbTimer.duration)}`,
+                                        `   Total Execution Time: ${formatDuration(context.totalDuration)}`,
+                                        '```'
+                                    );
+                                }
                                 return lines.join('\n');
                             },
                             attach: debug ? bbtag.generateDebug(args.join(' ')) : null

@@ -115,7 +115,7 @@ const subcommands = [
         name: 'test',
         args: '<content>',
         desc: 'Uses the BBTag engine to execute the content as it was a tag',
-        aliases: ['eval', 'exec']
+        aliases: ['eval', 'exec', 'vtest']
     }
 ];
 const tagNameMsg = 'Enter the name of the tag:';
@@ -635,6 +635,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                 case 'eval':
                 case 'exec':
                 case 'test':
+                case 'vtest':
                     let args = words.slice(2), debug = false;
                     if (args.length == 0) break;
                     if (args[0].toLowerCase() == 'debug') {
@@ -657,15 +658,16 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                                     return duration.asSeconds() >= 5 ?
                                         duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
                                 }
-                                let lines = [
-                                    '```js',
-                                    `         Execution Time: ${formatDuration(context.execTimer.duration)}`,
-                                    `    Variables Committed: ${context.dbObjectsCommitted}`,
-                                    `Database Execution Time: ${formatDuration(context.dbTimer.duration)}`,
-                                    `   Total Execution Time: ${formatDuration(context.totalDuration)}`,
-                                    '```',
-                                    `${text}`
-                                ];
+                                let lines = [text];
+                                if (words[1] === 'vtest') {
+                                    lines.push('```js',
+                                        `         Execution Time: ${formatDuration(context.execTimer.duration)}`,
+                                        `    Variables Committed: ${context.dbObjectsCommitted}`,
+                                        `Database Execution Time: ${formatDuration(context.dbTimer.duration)}`,
+                                        `   Total Execution Time: ${formatDuration(context.totalDuration)}`,
+                                        '```'
+                                    );
+                                }
                                 return bbtag.escapeMentions(context, lines.join('\n'));
                             }, attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                         });
