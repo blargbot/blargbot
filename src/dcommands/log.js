@@ -67,6 +67,8 @@ class LogCommand extends BaseCommand {
                         if (msg.channelMentions.length > 0) {
                             channel = msg.channelMentions[0];
                         } else channel = msg.channel.id;
+                        if (!msg.guild.channels.get(channel))
+                            return await bu.send(msg, 'The channel must be on this guild!');
                         args = words.slice(2);
                         if (args.map(m => m.toLowerCase()).includes('all')) {
                             for (let event of events) {
