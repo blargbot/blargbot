@@ -2,22 +2,22 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:25:58
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-01-16 11:52:11
+ * @Last Modified time: 2018-09-18 14:01:30
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
 const Builder = require('../structures/TagBuilder'),
-    exec = require('./exec');
+    { SubTag, BBTag } = require('../structures/bbtag/Tag');
 
 module.exports =
     Builder.ArrayTag('apply')
         .withArgs(a => [a.require('subtag'), a.optional('args', true)])
         .withDesc('Executes `subtag`, using the `args` as parameters. ' +
-            'If `args` is an array, it will get deconstructed to it\'s individual elements.'
+        'If `args` is an array, it will get deconstructed to it\'s individual elements.'
         ).withExample(
-            '{apply;randint;[1,4]}',
-            '3'
+        '{apply;randint;[1,4]}',
+        '3'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
@@ -25,9 +25,20 @@ module.exports =
             if (definition == null)
                 return Builder.util.error(subtag, context, 'No subtag found');
 
-            let tagArgs = Builder.util.flattenArgArrays(args.slice(1));
-            let code = '{' + [args[0], ...tagArgs].join(';') + '}';
+            let st = new SubTag(subtag);
 
-            return exec.execTag(definition.name, context, code, undefined);
+            let tagArgs = Builder.util.flattenArgArrays(args.slice(1));
+            st._protected.children = [new BBTag(args[0])];
+
+            for (const arg of tagArgs) {
+                let a = new BBTag(arg);
+                a._protected.start = 0;
+                a._protected.end = arg.length;
+                st._protected.children.push(a);
+            }
+
+            let result = await definition.execute(st, context);
+
+            return result;
         })
         .build();
