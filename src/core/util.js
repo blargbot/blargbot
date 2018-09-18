@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:37:01
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-04 13:13:41
+ * @Last Modified time: 2018-09-18 08:53:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -29,16 +29,25 @@ bu.init = () => {
     bu.trello = new Trello(config.general.trellokey, config.general.trellotoken);
     const Manager = require('./Manager.js');
     global.UtilManager = new Manager('utils');
-    bu.registerChangefeed();
+    bu.registerChangefeed().then(bu.registerIndexes);
+
+
 };
 
 var changefeed;
 
 bu.registerChangefeed = async () => {
-    registerSubChangefeed('guild', 'guildid', bu.guildCache);
-    registerSubChangefeed('user', 'userid', bu.userCache);
-    registerSubChangefeed('tag', 'name', bu.tagCache);
+    await registerSubChangefeed('guild', 'guildid', bu.guildCache);
+    await registerSubChangefeed('user', 'userid', bu.userCache);
+    await registerSubChangefeed('tag', 'name', bu.tagCache);
 };
+
+bu.registerIndexes = async () => {
+    let indexes = await r.table('guild').indexList();
+    if (!indexes.includes('interval')) {
+        await r.table('guild').indexCreate('interval', r.row('ccommands').hasFields('_interval'));
+    }
+}
 
 async function registerSubChangefeed(type, idName, cache) {
     try {

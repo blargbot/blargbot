@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-19 09:20:39
+ * @Last Modified time: 2018-09-18 09:37:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,6 +15,8 @@ const fs = require('fs');
 const { Client } = require('eris');
 const Database = require('./Database');
 const seqErrors = require('sequelize/lib/errors');
+const cron = require('node-cron');
+const bbEngine = require('../structures/bbtag/Engine');
 
 const loggr = new CatLoggr({
     shardId: process.env.CLUSTER_ID,
@@ -126,6 +128,42 @@ class DiscordClient extends Client {
                 // failed to send message to master
             });
         });
+
+        this.intervalTask = cron.schedule('00,15,30,45 * * * *', this.autoresponseInterval.bind(this));
+    }
+
+    async autoresponseInterval() {
+        console.info('Performing the interval');
+        let guilds = await r.table('guild').getAll(true, { index: 'interval' });
+        guilds = guilds.filter(g => this.guilds.get(g.guildid));
+        for (const guild of guilds) {
+            let interval = guild.ccommands._interval;
+            let g = this.guilds.get(guild.guildid);
+            let m = g.members.get(interval.authorizer);
+            let u = this.users.get(interval.authorizer);
+            if (!u) u = await this.getRESTUser(interval.authorizer);
+            let c;
+            for (const channel of g.channels.values()) {
+                if (channel.type === 0) { c = channel; break; }
+            }
+            console.log(u);
+            await bbEngine.runTag({
+                msg: {
+                    channel: c,
+                    author: u,
+                    member: m,
+                    guild: g
+                },
+                limits: new bbtag.limits.autoresponse_everything(),
+                tagContent: interval.content,
+                input: '',
+                isCC: true,
+                tagName: '_interval',
+                author: interval.author,
+                authorizer: interval.authorizer,
+                silent: false
+            });
+        }
     }
 
     async eval(msg, text, send = true) {
