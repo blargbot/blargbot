@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-18 09:47:52
+ * @Last Modified time: 2018-09-18 09:49:49
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -133,7 +133,6 @@ class DiscordClient extends Client {
     }
 
     async autoresponseInterval() {
-        console.info('Performing the interval');
         let guilds = await r.table('guild').getAll(true, { index: 'interval' });
         guilds = guilds.filter(g => this.guilds.get(g.guildid));
         for (const guild of guilds) {
@@ -146,7 +145,6 @@ class DiscordClient extends Client {
             for (const channel of g.channels.values()) {
                 if (channel.type === 0) { c = channel; break; }
             }
-            console.log(u);
             await bbEngine.runTag({
                 msg: {
                     channel: c,
