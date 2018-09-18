@@ -659,7 +659,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                                         duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
                                 }
                                 let lines = [text];
-                                if (args[0] === 'vtest') {
+                                if (words[1] === 'vtest') {
                                     lines.push('```js',
                                         `         Execution Time: ${formatDuration(context.execTimer.duration)}`,
                                         `    Variables Committed: ${context.dbObjectsCommitted}`,
