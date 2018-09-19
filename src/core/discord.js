@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-18 09:49:49
+ * @Last Modified time: 2018-09-19 09:31:54
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -129,7 +129,7 @@ class DiscordClient extends Client {
             });
         });
 
-        this.intervalTask = cron.schedule('00,15,30,45 * * * *', this.autoresponseInterval.bind(this));
+        this.intervalTask = cron.schedule('*/15 * * * *', this.autoresponseInterval.bind(this));
     }
 
     async autoresponseInterval() {
