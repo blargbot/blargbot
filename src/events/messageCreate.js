@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-14 09:50:36
+ * @Last Modified time: 2018-09-19 09:07:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -205,6 +205,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
                 flags: val.flags,
                 input: command,
                 isCC: true,
+                tagVars: alias !== false,
                 tagName: ccommandName,
                 cooldown: val.cooldown,
                 author,

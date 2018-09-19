@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-12 21:37:32
+ * @Last Modified time: 2018-09-19 09:11:13
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -173,10 +173,10 @@ bu.tagVariableScopes = [
             'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.',
         setter: async (context, values) =>
             await bu.setVariable(context.guild.id, values,
-                context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
+                context.isCC && !context.tagVars ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
         getter: async (context, name) =>
             await bu.getVariable(context.guild.id, name,
-                context.isCC ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
+                context.isCC && !context.tagVars ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
         getLock: (context, key) => bu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
     },
     {
@@ -223,12 +223,12 @@ bu.tagVariableScopes = [
             'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
             'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
         setter: async (context, values) => {
-            if (context.isCC)
+            if (context.isCC && !context.tagVars)
                 return await bu.setVariable(context.tagName, values, bu.TagVariableType.GUILDLOCAL, context.guild.id);
             return await bu.setVariable(context.tagName, values, bu.TagVariableType.LOCAL);
         },
         getter: async (context, name) => {
-            if (context.isCC)
+            if (context.isCC && !context.tagVars)
                 return await bu.getVariable(context.tagName, name, bu.TagVariableType.GUILDLOCAL, context.guild.id);
             return await bu.getVariable(context.tagName, name, bu.TagVariableType.LOCAL);
         },
