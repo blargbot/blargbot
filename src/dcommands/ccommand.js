@@ -716,7 +716,7 @@ ${command[0].desc}`);
                                     return duration.asSeconds() >= 5 ?
                                         duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
                                 }
-                                let lines = [text];
+                                let lines = [];
                                 if (words[1] === 'vtest') {
                                     lines.push('```js',
                                         `         Execution Time: ${formatDuration(context.execTimer.duration)}`,
@@ -726,6 +726,7 @@ ${command[0].desc}`);
                                         '```'
                                     );
                                 }
+                                lines.push(text);
                                 return lines.join('\n');
                             },
                             attach: debug ? bbtag.generateDebug(args.join(' ')) : null
