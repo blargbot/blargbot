@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:41
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-12 22:18:04
+ * @Last Modified time: 2018-09-21 09:54:15
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -50,6 +50,7 @@ bot.on('guildMemberUpdate', async (guild, member, oldMember) => {
 
             for (const role of roles) {
                 let r = guild.roles.get(role.id);
+                if (!r) continue;
                 let fields = [{
                     name: 'User',
                     value: `${member.user.username}#${member.user.discriminator} (${member.user.id})`
