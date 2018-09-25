@@ -29,6 +29,7 @@
         "hbs": "^4.0.1",
         "heapdump": "^0.3.9",
         "highlight.js": "^9.12.0",
+        "html-entities": "^1.2.1",
         "irc": "^0.5.0",
         "jimp": "^0.2.28",
         "jsonwebtoken": "^8.3.0",
