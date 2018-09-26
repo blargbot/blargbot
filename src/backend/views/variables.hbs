@@ -125,7 +125,7 @@
 								<th>Variable type</th>
 								<th>Prefix</th>
 								<th>Persistent</th>
-								<th>Access</th>
+								<th style="text-align:left">Access</th>
 								<th>Information</th>
 							</tr>
 						</thead>
@@ -216,6 +216,22 @@
 								</td>
 								<td class="informationStyle">
 									<p>These variables are in a public pool, meaning that anybody is able to access or modify them. As a general rule of thumb, if you don't want somebody using your variables, don't use global ones!</p>
+								</td>
+							</tr>
+							
+							<tr>
+								<td>Commit</td>
+								<td>
+									<code>!</code>
+								</td>
+								<td>
+									none
+								</td>
+									none
+								</td>
+								<td class="informationStyle">
+									<p>This is an additional prefix for <code>{set}</code> and <code>{get}</code>. This prefix can be combined with the other prefixes and will act the same as if you have called <code>{set}</code> and then <code>{commit}</code> immediately after.
+									More at <a>https://blargbot.xyz/tags#commit</a>.</p>
 								</td>
 							</tr>
 						</tbody>
