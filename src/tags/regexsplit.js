@@ -12,7 +12,9 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('regexsplit')
         .withArgs(a => [a.require('text'), a.require('regex')])
-        .withDesc('Splits the given text using the given `regex` as the split rule')
+        .withDesc('Splits the given text using the given `regex` as the split rule. ' +
+            '`regex` will only succeed to compile if it is deemed a safe regular expression ' +
+            '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.')
         .withExample(
             '{regexsplit;Hello      there, I       am hungry;/[\\s,]+/}',
             '["Hello","there","I","am","hungry"]'

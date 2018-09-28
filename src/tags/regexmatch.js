@@ -13,7 +13,9 @@ module.exports =
     Builder.ArrayTag('regexmatch')
         .withAlias('match')
         .withArgs(a => [a.require('text'), a.require('regex')])
-        .withDesc('Returns an array of everything in `text` that matches `regex`.')
+        .withDesc('Returns an array of everything in `text` that matches `regex`. ' +
+            '`regex` will only succeed to compile if it is deemed a safe regular expression ' +
+            '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.')
         .withExample(
             '{regexmatch;I have $1 and 25 cents;/\\d+/g}',
             '["1", "25"]'
