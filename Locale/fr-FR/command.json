@@ -24,7 +24,7 @@
         },
         "brainfuck": {
             "info": "Exécute le code \"brainfuck\".",
-            "usage": "",
+            "usage": "<code>",
             "flags": {
                 "p": "Montre une liste de pointeurs après exécution.",
                 "i": "Spécifie les données apportées pour l'opérateur `,`.",
@@ -34,7 +34,7 @@
         },
         "ship": {
             "info": "Génère un surnom pour deux utilisateurs.",
-            "usage": "",
+            "usage": "<user1> <user2>",
             "final": "Votre surnom est **{{name}}**!",
             "notenough": "Vous devez choisir deux membres!"
         },
