@@ -125,7 +125,7 @@ class CcommandCommand extends BaseCommand {
                 + '\n**Subcommands:**\n'
                 + `${subcommands.map(x => `**${x.name}**`).join(', ')}`
                 + '\nFor more information about a subcommand, do `b!cc help <subcommand>`.\n'
-                + '\nFor more information about BBTag, visit https://blargbot.xyz/tags.'
+                + '\nFor more information about BBTag, visit \<https://blargbot.xyz/tags\>.'
         });
     }
 
@@ -655,7 +655,7 @@ class CcommandCommand extends BaseCommand {
                         });
                         if (command.length > 0) {
                             bu.send(msg, `Subcommand: **${command[0].name}**
-Aliases: **${command[0].aliases ? command.aliases.join("**, **") : "none"}**
+Aliases: **${command[0].aliases ? command[0].aliases.join("**, **") : "none"}**
 Args:\`${command[0].args}\`
 
 ${command[0].desc}`);
