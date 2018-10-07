@@ -202,7 +202,7 @@ class TagCommand extends BaseCommand {
                 + '\n__**Subcommands:**__\n'
                 + `${subcommands.map(x => `**${x.name}**`).join(', ')}`
                 + '\nFor more information about a subcommand, do `b!tag help <subcommand>`.\n'
-                + '\nFor more information about BBTag, visit <<https://blargbot.xyz/tags\>.\n'
+                + '\nFor more information about BBTag, visit \<https://blargbot.xyz/tags\>.\n'
                 + 'By creating a tag, you acknowledge that you agree to the Terms of Service (\<https://blargbot.xyz/tags/tos\>)'
         });
     }
