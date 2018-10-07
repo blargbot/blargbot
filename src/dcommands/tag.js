@@ -658,8 +658,8 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                                     return duration.asSeconds() >= 5 ?
                                         duration.asSeconds() + 's' : duration.asMilliseconds() + 'ms';
                                 }
-                                let lines = [text];
-                                if (args[0] === 'vtest') {
+                                let lines = [];
+                                if (words[1] === 'vtest') {
                                     lines.push('```js',
                                         `         Execution Time: ${formatDuration(context.execTimer.duration)}`,
                                         `    Variables Committed: ${context.dbObjectsCommitted}`,
@@ -668,6 +668,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                                         '```'
                                     );
                                 }
+                                lines.push(text);
                                 return bbtag.escapeMentions(context, lines.join('\n'));
                             }, attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                         });

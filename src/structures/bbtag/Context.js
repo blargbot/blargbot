@@ -47,6 +47,7 @@ class Context {
             if (Array.isArray(this.flaggedInput[key]))
                 this.flaggedInput[key] = this.flaggedInput[key].join(' ');
         this.isCC = options.isCC;
+        this.tagVars = options.tagVars;
         this._author = options.author;
         this._authorizer = options.authorizer;
         this.tagName = options.tagName;

@@ -23,7 +23,11 @@ class Sender extends EventEmitter {
         return new Promise((fulfill, reject) => {
             const didSend = this.process.send(JSON.stringify(message), err => {
                 if (!err) fulfill();
-                else reject(err);
+                else {
+                    console.error(err);
+                    if (!this.process.connected) process.exit();
+                    reject(err);
+                }
             });
             if (message.code !== 'log' && !didSend) {
                 console.error('Shard failed to send message.\n  Connected: ' + this.process.connected + '\n  Code: ' + message.code);

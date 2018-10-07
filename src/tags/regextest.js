@@ -12,7 +12,9 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('regextest')
         .withArgs(a => [a.require('text'), a.require('regex')])
-        .withDesc('Tests if the `regex` phrase matches the `text`, and returns a boolean (true/false).')
+        .withDesc('Tests if the `regex` phrase matches the `text`, and returns a boolean (true/false). ' +
+            '`regex` will only succeed to compile if it is deemed a safe regular expression ' +
+            '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.')
         .withExample(
             '{regextest;apple;/p+/i} {regextest;banana;/p+/i}',
             'true false'

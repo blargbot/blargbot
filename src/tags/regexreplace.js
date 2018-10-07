@@ -14,7 +14,9 @@ module.exports =
         .withArgs(a => [a.optional('text'), a.require('regex'), a.require('replaceWith')])
         .withDesc('Replaces the `regex` phrase with `replacewith`. ' +
             'If `text` is specified, the tag is replaced with the new `toreplace`. ' +
-            'If not, it is run on the output from the containing tag.')
+            'If not, it is run on the output from the containing tag. ' +
+            '`regex` will only succeed to compile if it is deemed a safe regular expression ' +
+            '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.')
         .withExample(
             'I like {regexreplace;to consume;/o/gi;a} cheese. {regexreplace;/e/gi;n}',
             'I likn ta cansumn chnnsn.'
