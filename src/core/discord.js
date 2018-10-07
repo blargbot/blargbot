@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-07 16:26:36
+ * @Last Modified time: 2018-10-07 16:37:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -98,8 +98,10 @@ class DiscordClient extends Client {
         bu.init();
         bu.startTime = startTime;
 
-        if (process.env.CLUSTER_ID == 0)
+        if (process.env.CLUSTER_ID == 0) {
             bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
+            this.avatarTask = new CronJob('*/15 * * * *', this.avatarInterval.bind(this));
+        }
 
         const Manager = require('./Manager.js');
         global.EventManager = new Manager('events', true);
@@ -133,6 +135,16 @@ class DiscordClient extends Client {
         this.nonce = (Math.floor(Math.random() * 0xffffffff)).toString('16').padStart(8, '0').toUpperCase();
 
         this.intervalTask.start();
+    }
+
+    async avatarInterval() {
+        if (config.general.isbeta) return;
+        let time = moment();
+        let h = (parseInt(time.display('H')) % 2);
+        let id = (h ? 0 : 4) + (parseInt(time.format('m')) / 15);
+        await bot.editSelf({
+            avatar: bu.avatars[id]
+        });
     }
 
     async autoresponseInterval() {
