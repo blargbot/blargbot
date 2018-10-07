@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-07 00:11:20
+ * @Last Modified time: 2018-10-07 17:36:29
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -79,8 +79,6 @@ bot.on('ready', async function () {
     else
         bu.avatarId = 0;
     switchGame();
-    if (process.env.CLUSTER_ID == 0)
-        switchAvatar();
     bu.postStats();
     if (eventTimer == undefined) {
         initEvents();
@@ -102,23 +100,7 @@ bot.on('ready', async function () {
     }
 });
 
-/**
- * Switches the avatar
- * @param forced - if true, will not set a timeout (Boolean)
- */
-function switchAvatar(forced) {
-    if (config.general.isbeta) return;
-    bot.editSelf({
-        avatar: bu.avatars[bu.avatarId]
-    });
-    bu.avatarId++;
-    if (bu.avatarId == 8)
-        bu.avatarId = 0;
-    if (!forced)
-        setTimeout(function () {
-            switchAvatar();
-        }, 600000);
-}
+
 
 var gameId;
 /**
