@@ -432,8 +432,11 @@ class TagCommand extends BaseCommand {
                             return s.name == words[2].toLowerCase() || s.aliases.includes(words[2].toLowerCase());
                         });
                         if (command.length > 0) {
-                            await bu.send(msg, `Subcommand: **${command[0].name}**
-Aliases: **${command[0].aliases.join('**, **')}**
+                            await bu.send(msg, `Subcommand: **${command[0].name}**${
+                                command[0].aliases && command[0].aliases.length > 0 ?
+                                    `\nAliases: **${(command[0].aliases || []).join('**, **')
+                                    }**\n` : ''
+                                }
 Args: \`${command[0].args}\`
 
 ${command[0].desc}`);

@@ -124,7 +124,7 @@ class CcommandCommand extends BaseCommand {
                 + 'For more in-depth command customization, see the `editcommand` command.\n'
                 + '\n**Subcommands:**\n'
                 + `${subcommands.map(x => `**${x.name}**`).join(', ')}`
-                + '\nFor more information about a subcommand, do `b!cc help <subcommand>.`\n'
+                + '\nFor more information about a subcommand, do `b!cc help <subcommand>`.\n'
                 + '\nFor more information about BBTag, visit <https://blargbot.xyz/tags>.'
         });
     }
@@ -654,8 +654,11 @@ class CcommandCommand extends BaseCommand {
                             return s.name == words[2].toLowerCase() || s.aliases.includes(words[2].toLowerCase());
                         });
                         if (command.length > 0) {
-                            bu.send(msg, `Subcommand: **${command[0].name}**
-Aliases: **${command[0].aliases.join('**, **')}**
+                            bu.send(msg, `Subcommand: **${command[0].name}**${
+                                command[0].aliases && command[0].aliases.length > 0 ?
+                                    `\nAliases: **${(command[0].aliases || []).join('**, **')
+                                    }**\n` : ''
+                                }
 Args:\`${command[0].args}\`
 
 ${command[0].desc}`);
@@ -680,7 +683,7 @@ ${command[0].desc}`);
                         let toSend = `The ccommand \`${title}\` is owned by **${author.username}#${author.discriminator}**`;
                         if (tag.authorizer && tag.authorizer != author.id) {
                             let authorizer = await r.table('user').get(tag.authorizer).run();
-                            toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}`;
+                            toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}**`;
                         }
                         toSend += '.';
                         bu.send(msg, toSend);
