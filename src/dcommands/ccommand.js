@@ -55,7 +55,7 @@ const subcommands = [
     },
     {
         name: 'help',
-        args: '',
+        args: '[command]',
         desc: 'Shows this message'
     },
     {
@@ -651,16 +651,17 @@ class CcommandCommand extends BaseCommand {
                 case 'help':
                     if (words.length > 2) {
                         let command = subcommands.filter(s => {
-                            return s.name == words[2].toLowerCase() || s.aliases.includes(words[2].toLowerCase());
+                            return s.name == words[2].toLowerCase() || (s.aliases || []).includes(words[2].toLowerCase());
                         });
                         if (command.length > 0) {
                             bu.send(msg, `Subcommand: **${command[0].name}**${
                                 command[0].aliases && command[0].aliases.length > 0 ?
                                     `\nAliases: **${(command[0].aliases || []).join('**, **')
                                     }**\n` : ''
+                                }${
+                                command[0].args ? `\nArgs: \`${command[0].args}\`` : ''
                                 }
-Args:\`${command[0].args}\`
-
+                                
 ${command[0].desc}`);
                         } else {
                             bu.send(msg, 'That subcommand was not found!');
