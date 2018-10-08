@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-07 19:04:09
+ * @Last Modified time: 2018-10-07 19:36:56
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -142,13 +142,13 @@ class DiscordClient extends Client {
         let time = moment();
         let h = (parseInt(time.format('H')) % 2);
         let id = (h ? 0 : 4) + (parseInt(time.format('m')) / 15);
-        await this.createMessage('492698595447930881', 'Switching avatar to #' + id);
         await this.editSelf({
             avatar: bu.avatars[id]
         });
         await this.editGuild('194232473931087872', {
             icon: bu.avatars[id]
         });
+        await this.createMessage('492698595447930881', 'Switched avatar to #' + id);
     }
 
     async autoresponseInterval() {
