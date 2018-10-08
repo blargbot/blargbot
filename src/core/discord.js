@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-07 18:32:30
+ * @Last Modified time: 2018-10-07 18:32:59
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -129,6 +129,7 @@ class DiscordClient extends Client {
         if (process.env.CLUSTER_ID == 0) {
             bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
             this.avatarTask = new CronJob('*/15 * * * *', this.avatarInterval.bind(this));
+            this.avatarTask.start();
         }
         this.intervalTask = new CronJob('*/15 * * * *', this.autoresponseInterval.bind(this));
         this.nonce = (Math.floor(Math.random() * 0xffffffff)).toString('16').padStart(8, '0').toUpperCase();
@@ -137,7 +138,6 @@ class DiscordClient extends Client {
     }
 
     async avatarInterval() {
-        console.info('Performing avatar swap');
         if (config.general.isbeta) return;
         let time = moment();
         let h = (parseInt(time.display('H')) % 2);
