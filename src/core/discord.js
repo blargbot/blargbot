@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-07 19:36:56
+ * @Last Modified time: 2018-10-08 11:23:01
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -140,8 +140,11 @@ class DiscordClient extends Client {
     async avatarInterval() {
         if (config.general.isbeta) return;
         let time = moment();
-        let h = (parseInt(time.format('H')) % 2);
-        let id = (h ? 0 : 4) + (parseInt(time.format('m')) / 15);
+        let h = parseInt(time.format('H'));
+        // account for any number of possible avatars
+        let m = Math.floor((parseInt(time.format('m')) / 15));
+        let c = (h * 4) + m;
+        let id = c % bu.avatars.length;
         await this.editSelf({
             avatar: bu.avatars[id]
         });
