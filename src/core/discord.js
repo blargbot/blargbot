@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-21 09:56:37
+ * @Last Modified time: 2018-10-08 11:23:01
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -98,9 +98,6 @@ class DiscordClient extends Client {
         bu.init();
         bu.startTime = startTime;
 
-        if (process.env.CLUSTER_ID == 0)
-            bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
-
         const Manager = require('./Manager.js');
         global.EventManager = new Manager('events', true);
         global.TagManager = new Manager('tags', undefined, false);
@@ -129,19 +126,37 @@ class DiscordClient extends Client {
             });
         });
 
+        if (process.env.CLUSTER_ID == 0) {
+            bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
+            this.avatarTask = new CronJob('*/15 * * * *', this.avatarInterval.bind(this));
+            this.avatarTask.start();
+        }
         this.intervalTask = new CronJob('*/15 * * * *', this.autoresponseInterval.bind(this));
         this.nonce = (Math.floor(Math.random() * 0xffffffff)).toString('16').padStart(8, '0').toUpperCase();
 
         this.intervalTask.start();
     }
 
+    async avatarInterval() {
+        if (config.general.isbeta) return;
+        let time = moment();
+        let h = parseInt(time.format('H'));
+        // account for any number of possible avatars
+        let m = Math.floor((parseInt(time.format('m')) / 15));
+        let c = (h * 4) + m;
+        let id = c % bu.avatars.length;
+        await this.editSelf({
+            avatar: bu.avatars[id]
+        });
+        await this.editGuild('194232473931087872', {
+            icon: bu.avatars[id]
+        });
+        await this.createMessage('492698595447930881', 'Switched avatar to #' + id);
+    }
+
     async autoresponseInterval() {
         let nonce = (Math.floor(Math.random() * 0xffffffff)).toString('16').padStart(8, '0').toUpperCase();
         let timestamp = moment().format('HH:mm:ss');
-        setTimeout(() => {
-            bu.send('492698595447930881', 'Cron Interval in Cluser: ' + process.env.CLUSTER_ID
-                + ' | `0x' + nonce + '` | `0x' + this.nonce + '` ' + timestamp);
-        }, parseInt(process.env.CLUSTER_ID) * 1000); // stagger logs
 
         let guilds = await r.table('guild').getAll(true, { index: 'interval' });
         guilds = guilds.filter(g => this.guilds.get(g.guildid));
