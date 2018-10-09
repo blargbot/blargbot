@@ -1,6 +1,8 @@
 # blargbot
 blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.
 
+Excuse the mess! blargbot is currently undergoing a rolling rewrite.
+
 ### Commands
 blargbot is equipped with numerous commands, which are detailed [here](https://blargbot.xyz/commands).
 
