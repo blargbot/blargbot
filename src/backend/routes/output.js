@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-12 14:15:44
+ * @Last Modified time: 2018-10-12 14:22:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -90,9 +90,11 @@ router.get('/:id/perm', async function (req, res) {
 
     let output = await getOutput(id[0]);
 
-    let m = await bu.cclient.execute(`UPDATE message_outputs USING TTL 0 WHERE id = :id`, {
-        id
-    }, { prepare: true });
+    let m = await bu.cclient.execute(`UPDATE message_outputs USING TTL 0 
+        SET content = :content, embeds = :embeds, channelid = :channelid
+    WHERE id = :id`, {
+            id, content: output.content, embeds: output.embeds, channelid: output.channelid
+        }, { prepare: true });
 
     res.send('ok');
 });
