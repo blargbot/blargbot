@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-12 14:14:12
+ * @Last Modified time: 2018-10-12 14:15:44
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -80,7 +80,7 @@ router.get('/:id', async function (req, res) {
 router.get('/:id/perm', async function (req, res) {
     res.locals.user = req.user;
 
-    if (req.user.id !== '103347843934212096') {
+    if (!req.user || req.user.id !== '103347843934212096') {
         res.status(401);
         res.send('You do not have permission to do this.');
         return;
