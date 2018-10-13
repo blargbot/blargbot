@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-14 10:21:49
+ * @Last Modified time: 2018-10-13 11:12:06
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -346,9 +346,12 @@ bu.send = async function (context, payload, files) {
     if (channel == null) throw new Error("Channel not found");
     switch (typeof payload) {
         case "string": payload = { content: payload }; break;
+        case 'boolean': case 'number': payload = { content: payload.toString() }; break;
         case "object": break;
         default: payload = {};
     }
+
+    console.log(payload);
 
     if ('permissionsOf' in channel &&
         payload.embed &&
@@ -1024,7 +1027,7 @@ bu.canExecuteCommand = async function (msg, name, quiet, options = {}) {
 
         let Command = CommandManager.commandList[name], category;
         if (Command)
-            category = bu.CommandType.properties[CommandManager.commandList[name].category]
+            category = bu.CommandType.properties[CommandManager.commandList[name].category];
 
         let command = storedGuild.commandperms[name];
         let commandObj = CommandManager.list[name];
@@ -1643,7 +1646,9 @@ bu.parseEmbed = function (embedText) {
         return undefined;
 
     try {
-        return JSON.parse(embedText);
+        let parsed = JSON.parse(embedText);
+        if (typeof parsed !== 'object') return null;
+        else return parsed;
     } catch (e) {
         return { fields: [{ name: 'Malformed JSON', value: embedText + '' }], malformed: true };
     }

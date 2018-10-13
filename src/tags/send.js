@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:04
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-13 10:58:26
+ * @Last Modified time: 2018-10-13 11:14:44
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -53,11 +53,13 @@ module.exports =
                     disableEveryone: false
                 }, file);
 
+                if (!sent) throw new Error('Send unsuccessful');
+
                 context.state.ownedMsgs.push(sent.id);
 
                 return sent.id;
             } catch (err) {
-                return Builder.util.error(subtag, context, 'Failed to send:' + err.message);
+                return Builder.util.error(subtag, context, 'Failed to send: ' + err.message);
             }
         })
         .whenDefault(Builder.errors.tooManyArguments)
