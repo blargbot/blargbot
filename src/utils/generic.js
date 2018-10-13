@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-13 11:12:06
+ * @Last Modified time: 2018-10-13 11:26:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1647,7 +1647,7 @@ bu.parseEmbed = function (embedText) {
 
     try {
         let parsed = JSON.parse(embedText);
-        if (typeof parsed !== 'object') return null;
+        if (typeof parsed !== 'object' || Array.isArray(parsed)) return null;
         else return parsed;
     } catch (e) {
         return { fields: [{ name: 'Malformed JSON', value: embedText + '' }], malformed: true };
