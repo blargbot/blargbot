@@ -107,7 +107,7 @@ const subcommands = [
 ];
 
 function filterTitle(title) {
-    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()<>]/gi, '');
+    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()<>]/gi, '').toLowerCase();
 }
 
 class CcommandCommand extends BaseCommand {
@@ -614,6 +614,19 @@ class CcommandCommand extends BaseCommand {
                 case 'list':
                     let storedGuild = await bu.getGuild(msg.guild.id);
                     let ccommands = Object.keys(storedGuild.ccommands);
+                    let modified = false;
+                    for (const key of ccommands) {
+                        if (/[A-Z]/.test(key)) {
+                            modified = true;
+                            delete storedGuild.ccommands;
+                        }
+                    }
+                    if (modified) {
+                        ccommands = Object.keys(storedGuild.ccommands);
+                        await r.table('guild').get(msg.guild.id).update({
+                            ccommands: storedGuild.ccommands
+                        });
+                    }
                     let output = (ccommands && ccommands.length > 0)
                         ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` `
                         : `There are no custom commands on this guild.`;
