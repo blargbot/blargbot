@@ -618,7 +618,7 @@ class CcommandCommand extends BaseCommand {
                     for (const key of ccommands) {
                         if (/[A-Z]/.test(key)) {
                             modified = true;
-                            delete storedGuild.ccommands;
+                            delete storedGuild.ccommands[key];
                         }
                     }
                     if (modified) {
