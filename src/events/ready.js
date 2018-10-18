@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:23:02
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-07 17:36:29
+ * @Last Modified time: 2018-10-18 12:10:59
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -13,15 +13,15 @@ bot.on('ready', async function () {
     bot.sender.send('ready', bot.guilds.map(g => g.id));
     console.init('Ready! Logged in as ' + bot.user.username + '#' + bot.user.discriminator);
 
-    bot.sender.awaitMessage({ message: 'requestMetrics' }).then(m => {
-        let registry = JSON.parse(m.metric);
-        if (registry !== null) {
-            for (let i = 0; i < registry.length; i++)
-                if (['bot_guild_gauge', 'bot_user_gauge'].includes(registry[i].name))
-                    registry[i].values = [];
-            bu.Metrics.registryCache = [registry];
-        }
-    });
+    // bot.sender.awaitMessage({ message: 'requestMetrics' }).then(m => {
+    //     let registry = JSON.parse(m.metric);
+    //     if (registry !== null) {
+    //         for (let i = 0; i < registry.length; i++)
+    //             if (['bot_guild_gauge', 'bot_user_gauge'].includes(registry[i].name))
+    //                 registry[i].values = [];
+    //         bu.Metrics.registryCache = [registry];
+    //     }
+    // });
 
     let g;
     if (g = bot.guilds.get('194232473931087872')) {

@@ -30,13 +30,15 @@ class Spawner extends EventEmitter {
         this.uptimeInterval = setInterval(async () => {
             bu.Metrics.shardStatus.reset();
             for (const key of Object.keys(this.shardCache)) {
-                const shard = this.shardCache[key];
-                bu.Metrics.shardStatus.labels(shard.status).inc();
-                let diff = moment.duration(moment() - shard.time);
-                if (!shard.respawning && diff.asMilliseconds() > 60000) {
-                    shard.respawning = true;
+                const cluster = this.shardCache[key];
+                for (const shard of cluster.shards) {
+                    bu.Metrics.shardStatus.labels(shard.status).inc();
+                }
+                let diff = moment.duration(moment() - cluster.time);
+                if (!cluster.respawning && diff.asMilliseconds() > 60000) {
+                    cluster.respawning = true;
                     await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${shard.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
-                    this.respawnShard(parseInt(shard.id), true);
+                    this.respawnShard(parseInt(cluster.id), true);
                 }
             }
         }, 10000);
