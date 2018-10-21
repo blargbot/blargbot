@@ -54,6 +54,19 @@
 
     <main>
 
+        <style>
+            .grid {
+                display: grid;
+                grid-template-columns: fit-content(50%) auto;
+            }
+
+            .subdomain {
+                text-align: right;
+                border-right: 1px solid rgba(0, 0, 0, 0.3);
+                margin-right: 2px;
+                padding-right: 2px;
+            }
+        </style>
         <div class="section">
 
             <div class="row">
@@ -62,11 +75,15 @@
                         <div class='card-content'>
                             <p>The following domains are whitelisted, and can be used with the {request} subtag:</p>
 
-                            <ul class='collection'>
+                            <div class='grid'>
                                 {{#each domains}}
-                                <li class='collection-item blue-grey darken-3'>{{this}}</li>
-                                {{/each}}
-                            </ul>
+                                <span class='grid-item subdomain'>
+                                    {{this.[0]}}
+                                </span>
+                                <span class='grid-item domain'>
+                                    {{this.[1]}}
+                                </span> {{/each}}
+                            </div>
 
                             <p>Please join the <a href="https://support.blargbot.xyz">support guild</a> to suggest more whitelisted
                                 domains.
