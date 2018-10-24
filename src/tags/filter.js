@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:54:06
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-23 20:30:08
+ * @Last Modified time: 2018-10-23 20:37:44
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -35,6 +35,7 @@ module.exports =
             });
 
             let processed = {};
+            let i = 0;
 
             for (const item of array) {
                 if (processed[item]) continue;
@@ -48,6 +49,8 @@ module.exports =
                         processed[item] = true;
                         result.push(...array.filter(e => e === item));
                     }
+                    if (i++ % 1000 === 0)
+                        await this.sleep();
                 } catch (err) {
                     if (typeof err == "function") {
                         return err(subtag, context);
@@ -58,4 +61,9 @@ module.exports =
             context.variables.reset(varName);
             return JSON.stringify(result);
         }).whenDefault(Builder.errors.tooManyArguments)
+        .withProp('sleep', function (time = 100) {
+            return new Promise(res => {
+                setTimeout(res, time);
+            });
+        })
         .build();
