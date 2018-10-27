@@ -1,9 +1,13 @@
 <ul id="slide-out" class="side-nav fixed blue-grey darken-1 z-depth-1">
 	<li>
-		{{#if user}}
+		{{#if user && user.avatar}}
 		<ul class='collection blue-grey darken-3 z-depth-2' style='border: 0'>
 			<li class='collection-item avatar blue-grey darken-2'>
+				{{#if user.avatar}}
 				<img src='https://cdn.discordapp.com/avatars/{{user.id}}/{{user.avatar}}.jpg' class='circle'>
+				{{else}}
+				<img src='/img/default.png' class='circle'>
+				{{/if}}
 				<span class='title'>{{user.username}}#{{user.discriminator}}</span>
 
 				<a href='/logout' class='btn btn-primary waves-effect waves-light z-depth-2 white-text userbutton'>log out</a>
