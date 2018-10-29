@@ -6,9 +6,9 @@
     "roleundef": "Nobena takšna vloga ni bil najden: '{{role}}'.",
     "pleasereport": "Če menite, da je to napaka, prosimo, da to prijavite!",
     "generic": "Nekaj je šlo narobe! \n```\n{{message}}\n```\n[[error.pleasereport]]",
-    "invalidduration": "",
+    "invalidduration": "Izbrali ste neveljavno trajanje! Poskusite formatirati vaš čas kot '5m30s' ali 'čez 5 minut in 30 sekund'.",
     "moderation": {
-        "position": "",
+        "position": "{{target}} je na višjem položaju kot vi!",
         "owner": ""
     },
     "couldnotsend": "Živjo! To je nekako neprijetno, vendar nisem mogel odgovoriti na vaš ukaz v {{channel}}!\n\nTukaj je, kar je šlo narobe: '{{error}}\"\n\nUkaz, ki je bil uporabljen: {{command}}\n\nČe ste osebje, prosimo, da preverite, da imam potrebna dovoljenja za pošiljanje in branje sporočil v tem kanalu. Če nimam, prosim, da obvestite osebje združbe, kaj se je zgodilo.\n\nLahko onemogočite prejemanje direktnih sporočil za napake če napišete `b!settings dmerrors false`.",
