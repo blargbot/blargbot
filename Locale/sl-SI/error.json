@@ -9,14 +9,14 @@
     "invalidduration": "Izbrali ste neveljavno trajanje! Poskusite formatirati vaš čas kot '5m30s' ali 'čez 5 minut in 30 sekund'.",
     "moderation": {
         "position": "{{target}} je na višjem položaju kot vi!",
-        "owner": ""
+        "owner": "Ne morete narediti ničesar lastniku serverja!"
     },
     "couldnotsend": "Živjo! To je nekako neprijetno, vendar nisem mogel odgovoriti na vaš ukaz v {{channel}}!\n\nTukaj je, kar je šlo narobe: '{{error}}\"\n\nUkaz, ki je bil uporabljen: {{command}}\n\nČe ste osebje, prosimo, da preverite, da imam potrebna dovoljenja za pošiljanje in branje sporočil v tem kanalu. Če nimam, prosim, da obvestite osebje združbe, kaj se je zgodilo.\n\nLahko onemogočite prejemanje direktnih sporočil za napake če napišete `b!settings dmerrors false`.",
     "messagetoolong": "Uuups! Potrudil sem se poslati poslati sporočilo, ki je bilo predolgo. [[error.pleasereport]]",
     "notenoughparams": "Premalo parametrov! Napišite '{{prefix}}pomoč {{name}}\" za več podrobnosti.\n\nPričakovani '{{expected}}\" parametri, vendar so '{{received}}\" namesto tega.",
     "tag": {
-        "restricted": "",
-        "notfound": "",
+        "restricted": "Poseben lastni ukaz '{{name}}' ne more biti izvajana normalno",
+        "notfound": "Podoznaka '{{tag}}' ne obstaja",
         "toomanyargs": "Preveč argumentov (r:{{received}} e:{{expected}})",
         "toofewargs": "Premalo argumentov (r:{{received}} e:{{expected}})",
         "isnan": "Pričakovano, da bo '{{arg}}\" številka, vendar je bila prejeta \"{{value}}\"",
