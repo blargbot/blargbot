@@ -71,7 +71,7 @@
     },
     "commands": {
         "title": "Ukazi",
-        "desc": "",
+        "desc": "blargbot je opremljen s številnimi ukazi. Standardno se blargbot odziva na predpono `b!`, `blargbot` ali z omenjanjem. Sami lahko dodajate predpone zase ali skupino.\n\nNekatere ukaze lahko uporabljajo le ljudje, ki so definirani kot osebje. Lahko tudi prilagodite omejitve uporabe za vsak ukaz posebej.\n\nNekateri ukazi imajo posebne pogoje glede dovoljenja za to, da so lahko sploh izvajani, primer tega je nalaganje slik. Prosimo, da poskrbite, da ima robot pravilna dovoljenja za izvajanja le-tega ukaza.\n\n## Argumenti\n- `<>` - označuje potrebovani argument\n- `[]` - označuje izbirni argument\n- `...` - označuje ponavljajoči se argument\n\n### Označbe\n\nNekateri ukazi so zmožni uporabljati parametre podobne ukazni liniji (ang. commandline). Vse oznake so razdeljene v oznake kod (s predpono `-`) in besed (s predpono `--`). Oznake so lahko razdeljene v katerem koli zaporedju, vendar mora biti za normalnimi arugmenti.\n\nNa primer, če ukaz vzame uporabniški vhod oz. input, bi smeli uporabljati `-u` ali `--user`.\n```\nb!command --user @user#1234\nb!command -u @user#1234\n```\nLahko tudi verižite kode oznak skupaj. Na primer, `-flag test` bi aktiviralo oznake `-f`, `-l`, `-a` in bi dalo vsebino 'test' oznaki `-g`.",
         "components": {
             "usage": "Uporaba:",
             "flags": "Zastave:",
