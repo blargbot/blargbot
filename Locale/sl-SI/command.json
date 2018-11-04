@@ -168,10 +168,10 @@
             "subcommand": "Podukaz",
             "command": "Ukaz",
             "nosubcommand": "Žal, ni podukaza za \"{{command}}\" z imenom \"{{name}}\"!",
-            "subcommands": ""
+            "subcommands": "**Podukazi**: {{subcommands}}\n\nNapišite \"help <command><subcommand>\" za več informacij o podukazu!"
         },
         "gamatoto": {
-            "info": "",
+            "info": "Pojdite na čarobno ekspedicijo z Gamatoto-tom! Uporabite ta ukaz, da preverite vašo statistiko ali pa uporabite podukaz za pohod na pustolovščino!",
             "subcommand": {
                 "start": {
                     "usage": "<lokacija>",
@@ -251,7 +251,7 @@
             "usage": "[bullets]",
             "flags": {
                 "capacity": "Nastavi, koliko metkov lahko vaš revolver drži.",
-                "emote": ""
+                "emote": "Določi, kateri emoji (ali besedilo) naj bo tisti, ki bo igral rusko ruleto."
             },
             "capacitylow": "",
             "bulletslow": "",
