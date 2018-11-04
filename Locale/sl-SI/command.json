@@ -253,7 +253,7 @@
                 "capacity": "Nastavi, koliko metkov lahko vaš revolver drži.",
                 "emote": "Določi, kateri emoji (ali besedilo) naj bo tisti, ki bo igral rusko ruleto."
             },
-            "capacitylow": "",
+            "capacitylow": "Vaš revolver mora biti zmožen hraniti najmanj dve krogli, manj kot to, bi bila zagotovljena smrt!",
             "bulletslow": "",
             "bulletshigh": "",
             "begin": "",
