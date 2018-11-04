@@ -114,7 +114,7 @@
                 },
                 "setusage": {
                     "info": "",
-                    "usage": ""
+                    "usage": "<name> <usage>"
                 }
             },
             "subcommandnotfound": "Ni bilo možno najti podukaz z imenom `{{subcommand}}`.",
@@ -122,7 +122,7 @@
             "nobots": "[[emote.x]] Oznako ne morete prenesti na bot-a!",
             "transfercancelled": "[[emote.x]] Prenos je bil preklican.",
             "transfercomplete": "[[emote.check]] {{user}} je sedaj lastnik oznake '{{tag}}\".",
-            "taginfo": "",
+            "taginfo": "__ **Oznaka | {{name}}** __\nAvtor: **{{author}}**\nZadnja sprememba: **{{lastModified}}**\nUporabe: **{{uses}}*\nPriljubljene: **{{favourites}}**\n\nUporaba: `{{usage}}`\n\n{{desc}}",
             "descupdate": "Opis za '{{tag}}« je bila posodobljena.",
             "descreset": "Opis za '{{tag}}« je bila ponastavljena.",
             "subcommandconflict": "Ne morete uporabljati ime \"{{name}}\" ker ni podukaza s tem imenom!",
@@ -163,11 +163,11 @@
             "info": "",
             "allcommands": "Tukaj so vsi ukazi, ki jih lahko izvršite v **{{guild}}**.\n```markdown\n{{commands}}\n```\n\nZa več informacij o ukazih, napišite `pomoč <ime ukaza>` ali obiščite <https://blargbot.xyz/commands>.",
             "nocommand": "Žal ni nobenega ukaza z imenom '{{name}}'!",
-            "commandinfo": "",
-            "aliases": "",
-            "subcommand": "",
-            "command": "",
-            "nosubcommand": "",
+            "commandinfo": "**{{type}}: {{name}}**\n\n**Vzdevki**: {{aliases}}\n**Uporaba **: {{usage}}\n\n{{description}}",
+            "aliases": "Ni vzdevkov",
+            "subcommand": "Podukaz",
+            "command": "Ukaz",
+            "nosubcommand": "Žal, ni podukaza za \"{{command}}\" z imenom \"{{name}}\"!",
             "subcommands": ""
         },
         "gamatoto": {
