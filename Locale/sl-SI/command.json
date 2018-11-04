@@ -90,10 +90,10 @@
                 },
                 "favorite": {
                     "usage": "[name]",
-                    "info": ""
+                    "info": "Določeno oznako doda med priljubljene ali prikaže seznam vaših priljubljenih oznak."
                 },
                 "report": {
-                    "usage": "",
+                    "usage": "<name> <reason>",
                     "info": "Prijavi oznak, ki krši ToS (Terms of Service). Prosimo uporabljajte odgovorno."
                 },
                 "test": {
@@ -110,7 +110,7 @@
                 },
                 "setdesc": {
                     "info": "",
-                    "usage": ""
+                    "usage": "<name> <description>"
                 },
                 "setusage": {
                     "info": "",
