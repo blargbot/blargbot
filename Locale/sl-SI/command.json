@@ -85,11 +85,11 @@
                     "info": "Poišče oznako z imenom, ki vsebuje vaše vprašanje."
                 },
                 "list": {
-                    "usage": "",
+                    "usage": "[user]",
                     "info": "Seznam vseh oznak ali po izbiri vseh oznak ustvarjenih od določenega uporabnika."
                 },
                 "favorite": {
-                    "usage": "",
+                    "usage": "[name]",
                     "info": ""
                 },
                 "report": {
