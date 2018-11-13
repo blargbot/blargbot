@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-11-13 08:17:55
+ * @Last Modified time: 2018-11-13 08:53:15
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1452,6 +1452,10 @@ bu.postStats = function () {
             if (err) console.error(err);
         });
 
+        let shards = [];
+        for (const shardId of bot.shards.map(s => s.id)) {
+            shards[shardId] = bot.guilds.filter(g => g.shard.id === shardId);
+        }
         request.post({
             url: `https://discordbots.org/api/bots/${bot.user.id}/stats`,
             json: true,
@@ -1460,7 +1464,9 @@ bu.postStats = function () {
                 'Authorization': config.general.botlistorgtoken,
                 'User-Agent': 'blargbot/1.0 (ratismal)'
             },
-            body: stats
+            body: {
+                shards
+            }
         });
     }
 };
