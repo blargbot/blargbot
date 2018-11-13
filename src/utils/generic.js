@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-11-13 08:53:15
+ * @Last Modified time: 2018-11-13 10:46:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1467,6 +1467,8 @@ bu.postStats = function () {
             body: {
                 shards
             }
+        }, err => {
+            if (err) console.error(err);
         });
     }
 };
