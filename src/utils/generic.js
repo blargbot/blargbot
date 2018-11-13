@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-13 11:26:34
+ * @Last Modified time: 2018-11-13 08:12:49
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1412,7 +1412,7 @@ bu.postStats = function () {
     // updateStats();
     var stats = {
         server_count: bot.guilds.size,
-        shard_count: config.discord.shards,
+        shard_count: config.shards.max,
         shard_id: process.env.CLUSTER_ID
     };
     request.post({
@@ -1439,7 +1439,7 @@ bu.postStats = function () {
             'json': true,
             body: {
                 'key': config.general.carbontoken,
-                'servercount': bot.guilds.size,
+                'servercount': stats.server_count,
                 shard_count: stats.shard_count,
                 shard_id: stats.shard_id,
                 'logoid': bot.user.avatar
