@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-11-13 08:12:49
+ * @Last Modified time: 2018-11-13 08:17:55
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1413,8 +1413,12 @@ bu.postStats = function () {
     var stats = {
         server_count: bot.guilds.size,
         shard_count: config.shards.max,
-        shard_id: process.env.CLUSTER_ID
+        shard_id: parseInt(process.env.CLUSTER_ID)
     };
+    bot.executeWebhook('511922345099919360', config.shards.shardToken, {
+        content: JSON.stringify(stats)
+    });
+    console.log(stats);
     request.post({
         'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
         'headers': {
