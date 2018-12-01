@@ -22,7 +22,7 @@
         "isnan": "Gaidīju, ka '{{arg}}' būs cipars, bet iegūtu '{{value}}'",
         "maxlessthanmin": "",
         "ccommandonly": "\"{{tag}}\" var izmantot tikai pielāgotas komandās",
-        "authorstaff": "",
+        "authorstaff": "Autoram {{author}} jābūt par personāli, lai lietot '{{tag}}'",
         "noperms": "",
         "toolow": "",
         "unclosed": "",
