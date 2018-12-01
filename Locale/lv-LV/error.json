@@ -4,7 +4,7 @@
     "userundef": "",
     "channelundef": "",
     "roleundef": "",
-    "pleasereport": "",
+    "pleasereport": "Ja tu domā, ka tas ir kļūda, lūdzu, dod ziņu par to!",
     "generic": "Kaut kas nogāja greizi!\n```\n{{message}}\n```\n[[error.pleasereport]]",
     "invalidduration": "",
     "moderation": {
