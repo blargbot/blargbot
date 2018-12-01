@@ -1,4 +1,4 @@
 {
-    "icu": "",
-    "placeholder": ""
+    "icu": "Tev {ItemCount, plural,=0 {nav projektu}one {ir # projekts}other {ir # projekti}}",
+    "placeholder": "Tev ir %s projektu"
 }
