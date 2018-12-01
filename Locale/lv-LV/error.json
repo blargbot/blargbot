@@ -8,8 +8,8 @@
     "generic": "Kaut kas nogāja greizi!\n```\n{{message}}\n```\n[[error.pleasereport]]",
     "invalidduration": "",
     "moderation": {
-        "position": "",
-        "owner": ""
+        "position": "{{target}} ir augstāk ranks par Tevi!",
+        "owner": "Tu neko nevari izdarīt ģildes īpašniekam!"
     },
     "couldnotsend": "",
     "messagetoolong": "Ups! Es mēģināju nosūtīt ziņu, kas bija pārāk gara. [[error.pleasereport]]",
@@ -18,10 +18,10 @@
         "restricted": "",
         "notfound": "",
         "toomanyargs": "",
-        "toofewargs": "",
-        "isnan": "",
+        "toofewargs": "Nepietiek argumentu (r:{{received}} e:{{expected}})",
+        "isnan": "Gaidīju, ka '{{arg}}' būs cipars, bet iegūtu '{{value}}'",
         "maxlessthanmin": "",
-        "ccommandonly": "",
+        "ccommandonly": "\"{{tag}}\" var izmantot tikai pielāgotas komandās",
         "authorstaff": "",
         "noperms": "",
         "toolow": "",
