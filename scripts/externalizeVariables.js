@@ -14,33 +14,33 @@ global.r = require('rethinkdbdash')({
 
 console.database = console.module = console.init = () => { };
 
-const client = {
-    models: {},
-    database: null
-};
+// const client = {
+//     models: {},
+//     database: null
+// };
 
-const Database = require('../src/core/Database');
-client.database = new Database(client);
+// const Database = require('../src/core/Database');
+// client.database = new Database(client);
 
-const s = client.database.sequelize;
+// const s = client.database.sequelize;
 
-let values = [];
-async function prepare(type, name, scope, content) {
-    if (content && name.length < 256) {
-        if (typeof content === 'object')
-            content = JSON.stringify(content);
-        if (typeof content !== 'string')
-            content = content.toString();
+// let values = [];
+// async function prepare(type, name, scope, content) {
+//     if (content && name.length < 256) {
+//         if (typeof content === 'object')
+//             content = JSON.stringify(content);
+//         if (typeof content !== 'string')
+//             content = content.toString();
 
-        values.push({
-            name: name, type, scope: scope, content
-        });
-    }
-}
-async function bulkInsert() {
-    await client.models.BBTagVariable.bulkCreate(values);
-    values = [];
-}
+//         values.push({
+//             name: name, type, scope: scope, content
+//         });
+//     }
+// }
+// async function bulkInsert() {
+//     await client.models.BBTagVariable.bulkCreate(values);
+//     values = [];
+// }
 
 async function error(err) {
     console.error(err.stack);
@@ -49,7 +49,6 @@ async function error(err) {
             console.error(e.path, e.validatorKey, e.value);
         }
     }
-    values = [];
 }
 
 async function externalize() {
@@ -72,13 +71,13 @@ async function externalize() {
             if (guild.vars) {
                 for (const key in guild.vars) {
                     let v = guild.vars[key];
-                    await prepare('GUILD_CC', key, guild.guildid, v);
+                    // await prepare('GUILD_CC', key, guild.guildid, v);
                 }
             }
             if (guild.tagVars) {
                 for (const key in guild.tagVars) {
                     let v = guild.tagVars[key];
-                    await prepare('GUILD_TAG', key, guild.guildid, v);
+                    // await prepare('GUILD_TAG', key, guild.guildid, v);
                 }
             }
             if (guild.ccommands) {
@@ -89,15 +88,15 @@ async function externalize() {
                         toSet.ccommands[cckey].vars = null;
                         for (const key in cc.vars) {
                             let v = cc.vars[key];
-                            await prepare('LOCAL_CC', key, guild.guildid + '_' + cckey, v);
+                            // await prepare('LOCAL_CC', key, guild.guildid + '_' + cckey, v);
                         }
                     }
                 }
             }
-            if (values.length > 0) {
-                await bulkInsert();
-                // await r.table('guild').get(guild.guildid).update(toSet);
-            }
+            // if (values.length > 0) {
+            //     await bulkInsert();
+            await r.table('guild').get(guild.guildid).update(toSet);
+            // }
             if (++i % 100000 === 0)
                 console.log('Processed', i, 'guilds.');
         }
@@ -121,13 +120,13 @@ async function externalize() {
             if (user.vars) {
                 for (const key in user.vars) {
                     let v = user.vars[key];
-                    await prepare('AUTHOR', key, user.userid, v);
+                    // await prepare('AUTHOR', key, user.userid, v);
                 }
             }
-            if (values.length > 0) {
-                await bulkInsert();
-                // await r.table('user').get(user.userid).update(toSet);
-            }
+            // if (values.length > 0) {
+            //     await bulkInsert();
+            await r.table('user').get(user.userid).update(toSet);
+            // }
             if (++i % 100000 === 0)
                 console.log('Processed', i, 'users.');
         }
@@ -151,13 +150,13 @@ async function externalize() {
             if (tag.vars) {
                 for (const key in tag.vars) {
                     let v = tag.vars[key];
-                    await prepare('LOCAL_TAG', key, tag.name, v);
+                    // await prepare('LOCAL_TAG', key, tag.name, v);
                 }
             }
-            if (values.length > 0) {
-                await bulkInsert();
-                // await r.table('tag').get(tag.name).update(toSet);
-            }
+            // if (values.length > 0) {
+            //     await bulkInsert();
+            await r.table('tag').get(tag.name).update(toSet);
+            // }
             if (++i % 100000 === 0)
                 console.log('Processed', i, 'tags.');
         }
@@ -174,15 +173,15 @@ async function externalize() {
         if (globs.values) {
             for (const key in globs.values) {
                 let v = globs.values[key];
-                await prepare('GLOBAL', key, '', v);
+                // await prepare('GLOBAL', key, '', v);
             }
         }
-        if (values.length > 0) {
-            await bulkInsert();
-            // await r.table('vars').get('tagVars').update({
-            //     values: null
-            // });
-        }
+        // if (values.length > 0) {
+        //     await bulkInsert();
+        await r.table('vars').get('tagVars').update({
+            values: null
+        });
+        // }
         console.log('Finished tags.');
     } catch (err) {
         await error(err);
@@ -191,8 +190,8 @@ async function externalize() {
 }
 
 async function main() {
-    await client.database.authenticate();
+    // await client.database.authenticate();
     await externalize();
 }
 
-main().then(() => { console.log('Done!'); process.exit() }).catch(err => { console.error(err); process.exit() });
+main().then(() => { console.log('Done!'); process.exit(); }).catch(err => { console.error(err); process.exit(); });
