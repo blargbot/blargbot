@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-11-13 10:46:03
+ * @Last Modified time: 2018-12-10 11:05:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1420,7 +1420,7 @@ bu.postStats = function () {
     });
     console.log(stats);
     request.post({
-        'url': `https://bots.discord.pw/api/bots/${bot.user.id}/stats`,
+        'url': `https://discord.bots.gg/api/v1/bots/${bot.user.id}/stats`,
         'headers': {
             'content-type': 'application/json',
             'Authorization': config.general.botlisttoken,
