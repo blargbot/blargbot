@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-12-14 19:56:32
+ * @Last Modified time: 2018-12-14 19:58:54
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -36,13 +36,15 @@ router.get('/:id/raw', async function (req, res) {
 });
 
 let whiteList = xss.whiteList;
-for (let i = 1; i < 7; i++) {
-    whiteList['h' + i].push('id');
+whiteList.marquee = ['behavior', 'direction', 'hspace', 'loop', 'scrollamount', 'scrolldelay', 'truespeed', 'vspace']; // Allow marquees
+whiteList.style = []; // Allow style without attributes
+whiteList.link = ['rel', 'href']; // Allow link tags for external CSS.
+
+// add class and id attributes to all whitelisted elements
+for (const key in whiteList) {
+    whiteList[key].push('class', 'id');
 }
-whiteList.span.push('class');
-whiteList.pre.push('class');
-whiteList.code.push('class');
-whiteList.style = [];
+
 
 router.get('/:id', async function (req, res) {
     res.locals.user = req.user;
