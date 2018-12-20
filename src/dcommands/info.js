@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
 const reload = require('require-reload')(require);
-const { patrons, donators } = reload('../../res/donators.json');
+let patrons, donators;
 
 const startDate = 1444708800000;
 var patronStr, donatorStr;
 async function reloadStrings() {
+    ({ patrons, donators } = reload('../../res/donators.json'));
     patronStr = (await Promise.map(patrons, async p => {
         if (/^[0-9]{17,23}$/.test(p)) {
             return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
