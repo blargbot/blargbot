@@ -178,13 +178,13 @@
                     "info": ""
                 },
                 "end": {
-                    "info": ""
+                    "info": "Beëindigt een expeditie!"
                 },
                 "locations": {
                     "info": ""
                 }
             },
-            "stats": "",
+            "stats": "<:bc_cat:345081695990710272> Hier zijn jouw items!\n\n{{stats}}",
             "alreadystarted": "",
             "notstarted": "",
             "nolocation": "",
@@ -198,7 +198,7 @@
             "itemincrease": "",
             "locations": "",
             "wronglevel": "",
-            "gamatotoitems": "",
+            "gamatotoitems": "Hier zijn jouw items:\n{{items}}",
             "gamatotostats": "",
             "gamatotocurrent": "",
             "gamatotoidle": ""
@@ -258,13 +258,13 @@
             "bulletshigh": "",
             "begin": "",
             "death": "",
-            "life": "",
+            "life": "{{content}}\n\n*Klik!* [[command.general.rr.livemessages]]",
             "livemessages": [
-                "",
-                "",
-                "",
-                "",
-                "",
+                "Het geweer klikt, leeg. Je hebt nog een dag te leven.",
+                "Je slaakt een zucht van opluchting wanneer je realiseert dat je vandaag niet doodgaat.",
+                "Alsof het nooit afgaat! Geluk is aan jouw kant.",
+                "Je bedankt RNGesus terwijl je het geweer laat zakken.",
+                ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
                 ""
             ],
             "deathmessages": [
