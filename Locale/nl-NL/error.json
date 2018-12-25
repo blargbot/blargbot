@@ -8,7 +8,7 @@
     "generic": "Er ging iets mis!\n```\n{{message}}\n```\n[[error.pleasereport]]",
     "invalidduration": "",
     "moderation": {
-        "position": "",
+        "position": "{{target}} heeft een hogere rang dan jij!",
         "owner": ""
     },
     "couldnotsend": "",
