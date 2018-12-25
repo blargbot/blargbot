@@ -269,35 +269,35 @@
             ],
             "deathmessages": [
                 "",
+                ":skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:",
+                "Voordat je het weet, is het voorbij.",
+                "Je had op z'n minst een kip!",
+                "Ik ga dat ***niet*** opruimen.",
+                "Geweren zijn geen speelgoed!",
+                "Nou, je kan niet alles winnen!",
                 "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                ""
+                "Geef de schuld aan het tijdsverschil!",
+                "Vandaag was gewoon niet jouw geluksdag.",
+                "Pssh, vooruitblikken zijn voor losers."
             ]
         },
         "user": {
-            "usage": "",
+            "usage": "[user]",
             "info": "",
             "description": "",
             "guildinfoheader": "",
             "guildinfo": "",
             "status": [
+                "Speelt",
                 "",
-                "",
-                "",
-                ""
+                "Aan het luisteren naar",
+                "Aan het kijken naar"
             ]
         }
     },
     "image": {
         "cat": {
-            "info": ""
+            "info": "Geeft je een enig lief zoet kostbaar kitten.\nAwww!"
         },
         "delete": {
             "info": ""
@@ -307,7 +307,7 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": "",
+            "info": "Vertelt iedereen dat wat jij denkt schijt is.",
             "usage": "",
             "flags": {
                 "plural": ""
@@ -315,12 +315,12 @@
         },
         "writepoem": {
             "usage": "",
-            "info": "",
+            "info": "Schrijft een heel enig gedicht.",
             "flags": {
-                "monika": "",
-                "sayori": "",
-                "yuri": "",
-                "natsuki": ""
+                "monika": "Gewoon Monika.",
+                "sayori": "Gewoon Monika.",
+                "yuri": "Gewoon Monika.",
+                "natsuki": "Gewoon Monika."
             }
         }
     },
