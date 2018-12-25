@@ -50,7 +50,7 @@
             "testoutput": "",
             "subcommand": {
                 "set": {
-                    "usage": "",
+                    "usage": "<naam> <inhoud>",
                     "info": "Maakt of bewerkt een tag met de gegeven name en inhoud. Tags gemaakt bij anderen zouden niet worden vervangen."
                 },
                 "delete": {
@@ -58,7 +58,7 @@
                     "info": "Verwijderd een tag dat u bezit."
                 },
                 "rename": {
-                    "usage": "",
+                    "usage": "<naam> <nieuwe naam>",
                     "info": "Wijzigt de naam van een tag die u bezit."
                 },
                 "raw": {
@@ -70,7 +70,7 @@
                     "info": "Gegevens van een tag weergeven."
                 },
                 "transfer": {
-                    "usage": "",
+                    "usage": "<naam> <gebruiker>",
                     "info": ""
                 },
                 "top": {
