@@ -29,7 +29,7 @@
         "unopened": "",
         "invalidradix": "",
         "notanarray": "",
-        "notbool": "",
+        "notbool": "Променливата '{{name}}' не е булеън (Получени: \"{{value}}\")",
         "missingarg": "Събтага '{{tag}}' липсва аргумент: \"{{arg}}\"",
         "namedunsupported": "Събтага '{{tag}}' не поддържа аргументи с имена"
     },
