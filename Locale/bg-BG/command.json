@@ -93,28 +93,28 @@
                     "info": ""
                 },
                 "report": {
-                    "usage": "",
+                    "usage": "<име> <причина>",
                     "info": ""
                 },
                 "test": {
-                    "usage": "",
+                    "usage": "<код>",
                     "info": ""
                 },
                 "help": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[subcommand]",
+                    "info": "Показва това!"
                 },
                 "docs": {
-                    "usage": "",
+                    "usage": "[subtag]",
                     "info": ""
                 },
                 "setdesc": {
                     "info": "",
-                    "usage": ""
+                    "usage": "<име> <описание>"
                 },
                 "setusage": {
                     "info": "",
-                    "usage": ""
+                    "usage": "<име> <употреба>"
                 }
             },
             "subcommandnotfound": "",
