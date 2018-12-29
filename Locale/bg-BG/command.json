@@ -508,22 +508,22 @@
                     "info": ""
                 },
                 "raw": {
-                    "usage": "",
+                    "usage": "<име>",
                     "info": ""
                 },
                 "transfer": {
-                    "usage": "",
+                    "usage": "<име> <потребител>",
                     "info": ""
                 },
                 "author": {
-                    "usage": "<name>",
+                    "usage": "<име>",
                     "info": ""
                 },
                 "list": {
                     "info": ""
                 },
                 "test": {
-                    "usage": "<code>",
+                    "usage": "<код>",
                     "info": ""
                 },
                 "help": {
@@ -531,11 +531,11 @@
                     "info": "Показва това!"
                 },
                 "setdesc": {
-                    "usage": "<name> <description>",
+                    "usage": "<име> <описание>",
                     "info": ""
                 },
                 "setusage": {
-                    "usage": "<name> <usage>",
+                    "usage": "<име> <употреба>",
                     "info": ""
                 }
             },
