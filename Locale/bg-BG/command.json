@@ -232,13 +232,13 @@
             "invalidamount": "",
             "invalidcode": "",
             "converted": "",
-            "usage": ""
+            "usage": "<от> <до> <количество>"
         },
         "usettings": {
             "info": "",
             "subcommand": {
                 "dmerrors": {
-                    "usage": "",
+                    "usage": "[вярно|грешно]",
                     "info": ""
                 }
             },
@@ -248,7 +248,7 @@
         },
         "rr": {
             "info": "",
-            "usage": "",
+            "usage": "[bullets]",
             "flags": {
                 "capacity": "",
                 "emote": ""
