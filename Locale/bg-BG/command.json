@@ -207,11 +207,11 @@
             "info": "",
             "subcommand": {
                 "add": {
-                    "usage": "",
+                    "usage": "<префикс>",
                     "info": ""
                 },
                 "remove": {
-                    "usage": "",
+                    "usage": "<префикс>",
                     "info": ""
                 }
             },
@@ -282,7 +282,7 @@
             ]
         },
         "user": {
-            "usage": "",
+            "usage": "[user]",
             "info": "",
             "description": "",
             "guildinfoheader": "",
@@ -308,13 +308,13 @@
         },
         "shit": {
             "info": "",
-            "usage": "",
+            "usage": "[text]",
             "flags": {
                 "plural": ""
             }
         },
         "writepoem": {
-            "usage": "",
+            "usage": "[text]",
             "info": "",
             "flags": {
                 "monika": "",
@@ -422,11 +422,11 @@
             "invalidcount": "",
             "warningassigned": "",
             "negativecount": "",
-            "usage": "",
+            "usage": "<потребител>",
             "limitexceeded": ""
         },
         "pardon": {
-            "usage": "",
+            "usage": "<потребител>",
             "info": "",
             "flags": {
                 "count": "",
@@ -438,7 +438,7 @@
             "invaliduser": ""
         },
         "kick": {
-            "usage": "",
+            "usage": "<потребител>",
             "info": "",
             "flags": {
                 "reason": ""
@@ -447,7 +447,7 @@
             "invaliduser": ""
         },
         "mute": {
-            "usage": "",
+            "usage": "<потребител>",
             "info": "",
             "flags": {
                 "reason": "",
@@ -460,7 +460,7 @@
             "unmutein": ""
         },
         "unmute": {
-            "usage": "",
+            "usage": "<потребител>",
             "info": "",
             "flags": {
                 "reason": ""
@@ -470,7 +470,7 @@
             "unmutedafter": ""
         },
         "ban": {
-            "usage": "",
+            "usage": "<потребител>",
             "info": "",
             "flags": {
                 "reason": "",
@@ -482,7 +482,7 @@
             "unbunin": ""
         },
         "unban": {
-            "usage": "",
+            "usage": "<потребител>",
             "info": "",
             "flags": {
                 "reason": ""
@@ -492,19 +492,19 @@
             "unbannedafter": ""
         },
         "cc": {
-            "usage": "",
+            "usage": "<име | подкоманда> [args]",
             "info": "",
             "subcommand": {
                 "set": {
-                    "usage": "",
+                    "usage": "<име> <съдържание>",
                     "info": ""
                 },
                 "delete": {
-                    "usage": "",
+                    "usage": "<име>",
                     "info": ""
                 },
                 "rename": {
-                    "usage": "",
+                    "usage": "<име> <ново име>",
                     "info": ""
                 },
                 "raw": {
