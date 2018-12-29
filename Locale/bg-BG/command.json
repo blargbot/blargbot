@@ -516,26 +516,26 @@
                     "info": ""
                 },
                 "author": {
-                    "usage": "",
+                    "usage": "<name>",
                     "info": ""
                 },
                 "list": {
                     "info": ""
                 },
                 "test": {
-                    "usage": "",
+                    "usage": "<code>",
                     "info": ""
                 },
                 "help": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[subcommand]",
+                    "info": "Показва това!"
                 },
                 "setdesc": {
-                    "usage": "",
+                    "usage": "<name> <description>",
                     "info": ""
                 },
                 "setusage": {
-                    "usage": "",
+                    "usage": "<name> <usage>",
                     "info": ""
                 }
             },
