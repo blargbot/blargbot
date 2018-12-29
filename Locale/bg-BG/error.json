@@ -30,7 +30,7 @@
         "invalidradix": "",
         "notanarray": "",
         "notbool": "",
-        "missingarg": "",
+        "missingarg": "Събтага '{{tag}}' липсва аргумент: \"{{arg}}\"",
         "namedunsupported": "Събтага '{{tag}}' не поддържа аргументи с имена"
     },
     "inputtoolong": "Въведеният от вас текст е прекалено дълъг! Максималният брой знаци е {{max}}, но вие сте въвели {{length}} знака."
