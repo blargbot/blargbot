@@ -34,13 +34,13 @@
         },
         "ship": {
             "info": "",
-            "usage": "",
+            "usage": "<потребител1> <потребител2>",
             "final": "",
             "notenough": ""
         },
         "tag": {
             "info": "",
-            "usage": "",
+            "usage": "<име | подкоманда> [args]",
             "dontown": "",
             "alreadyexists": "",
             "notag": "",
@@ -50,46 +50,46 @@
             "testoutput": "",
             "subcommand": {
                 "set": {
-                    "usage": "",
+                    "usage": "<име> <съдържание>",
                     "info": ""
                 },
                 "delete": {
-                    "usage": "",
+                    "usage": "<име>",
                     "info": ""
                 },
                 "rename": {
-                    "usage": "",
+                    "usage": "<име> <ново име>",
                     "info": ""
                 },
                 "raw": {
-                    "usage": "",
+                    "usage": "<име>",
                     "info": ""
                 },
                 "info": {
-                    "usage": "",
+                    "usage": "<име>",
                     "info": ""
                 },
                 "transfer": {
-                    "usage": "",
+                    "usage": "<име> <потребител>",
                     "info": ""
                 },
                 "top": {
                     "info": ""
                 },
                 "author": {
-                    "usage": "",
+                    "usage": "<име>",
                     "info": ""
                 },
                 "search": {
-                    "usage": "",
+                    "usage": "<запитване>",
                     "info": ""
                 },
                 "list": {
-                    "usage": "",
+                    "usage": "[user]",
                     "info": ""
                 },
                 "favorite": {
-                    "usage": "",
+                    "usage": "[name]",
                     "info": ""
                 },
                 "report": {
@@ -174,7 +174,7 @@
             "info": "",
             "subcommand": {
                 "start": {
-                    "usage": "",
+                    "usage": "<местоположение>",
                     "info": ""
                 },
                 "end": {
@@ -264,12 +264,12 @@
                 "",
                 "",
                 "",
-                "",
+                ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
                 ""
             ],
             "deathmessages": [
                 "",
-                "",
+                ":skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:",
                 "",
                 "",
                 "",
