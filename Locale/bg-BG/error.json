@@ -28,8 +28,8 @@
         "unclosed": "",
         "unopened": "",
         "invalidradix": "",
-        "notanarray": "",
-        "notbool": "Променливата '{{name}}' не е булеън (Получени: \"{{value}}\")",
+        "notanarray": "Променливата '{{name}}' не е масив (Получени: \"{{value}}\")",
+        "notbool": "Променливата '{{name}}' не е булева (Получени: \"{{value}}\")",
         "missingarg": "Събтага '{{tag}}' липсва аргумент: \"{{arg}}\"",
         "namedunsupported": "Събтага '{{tag}}' не поддържа аргументи с имена"
     },
