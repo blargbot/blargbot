@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:21
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-12 22:15:06
+ * @Last Modified time: 2018-12-30 20:47:33
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -40,7 +40,7 @@ bot.on('guildMemberRemove', async function (guild, member) {
     }
     bu.logEvent(guild.id, member.user.id, 'memberleave', [{
         name: 'User',
-        value: bu.getFullName(member.user) + ` (${member.user.id})`,
+        value: bu.getFullName(member.user) + ` (${member.user.id}) | <@${member.user.id}>`,
         inline: true
     }]);
 
