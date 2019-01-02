@@ -57,6 +57,14 @@
                 font-family: monospace;
             }
 
+            .output-content {
+                overflow: hidden;
+            }
+
+            a {
+                word-break: break-all;
+            }
+
             .btn {
                 margin-bottom: 20px;
             }
@@ -122,9 +130,9 @@
                     <div class='card blue-grey darken-3 z-depth-2'>
                         <div class='card-content'>
                             <a class='btn btn-primary full waves-effect waves-light z-depth-2' href="{{msg.id}}.txt" download>Download</a>
-                            <p class='flow-text'>
+                            <div class='output-content'>
                                 {{{msg.content}}}
-                            </p>
+                            </div>
 
                             <hr>
                             <footer> This page will expire {{msg.expiry}} ({{msg.diff}})</footer>

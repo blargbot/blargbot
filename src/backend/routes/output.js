@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:10
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-12-14 19:58:54
+ * @Last Modified time: 2019-01-02 14:18:24
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -21,6 +21,15 @@ const moment = require('moment-timezone');
 
 
 async function getOutput(id) {
+    if (!bu.cclient) {
+        return {
+            id: 1,
+            content: 'Hello, world!',
+            embeds: [],
+            channelid: 1,
+            expiry: 0
+        };
+    }
     let m = await bu.cclient.execute(`SELECT id, content, embeds, channelid, TTL(content) as expiry FROM message_outputs WHERE id = :id`, {
         id
     }, { prepare: true });
