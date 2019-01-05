@@ -261,11 +261,11 @@
             "life": "{{content}}\n\n*Klik!* [[command.general.rr.livemessages]]",
             "livemessages": [
                 "Pištola klikne v prazno. Zaslužite si še en dan življenja.",
-                "",
-                "",
-                "",
-                "",
-                ""
+                "Izdihneš olajšano, saj ugotoviš, da danes ne boš umrl.",
+                "Kot da se bo kdaj sprožila! Sreča je na tvoji strani.",
+                "Zahvališ se RNGesus-u medtem ko spustiš pištolo.",
+                ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
+                "Zasmejiš se, ko ugotoviš, da si preživel."
             ],
             "deathmessages": [
                 "",
