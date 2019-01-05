@@ -254,7 +254,7 @@
                 "emote": "Določi, kateri emoji (ali besedilo) naj bo tisti, ki bo igral rusko ruleto."
             },
             "capacitylow": "Vaš revolver mora biti zmožen hraniti najmanj dve krogli, manj kot to, bi bila zagotovljena smrt!",
-            "bulletslow": "",
+            "bulletslow": "Ne moreš naložiti manj kot en metek, strahopetec.",
             "bulletshigh": "",
             "begin": "",
             "death": "",
