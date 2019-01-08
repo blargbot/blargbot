@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:37
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-01-08 11:05:23
+ * @Last Modified time: 2019-01-08 11:09:12
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,8 +15,8 @@ module.exports =
     .withAlias('ui')
     .withDesc('Unindents text (or code!). If no level is provided, attempts to guess the indentation level past the first line.')
     .withExample(
-    '```{unindent;\n  hello\n  world\n}```',
-    '```hello\nworld```'
+    '```\n{unindent;\n  hello\n  world\n}\n```',
+    '```\nhello\nworld\n```'
     )
     .whenArgs(0, Builder.errors.notEnoughArguments)
     .whenArgs('1-2', async function (subtag, context, args) {
