@@ -639,19 +639,23 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                 case 'exec':
                 case 'test':
                 case 'vtest':
+                    let splitter = words[1];
                     let args = words.slice(2), debug = false;
                     if (args.length == 0) break;
                     if (args[0].toLowerCase() == 'debug') {
+                        splitter = args[0];
                         debug = true;
                         args.shift();
                     }
+
+                    let code = msg.content.split(splitter).slice(1).join(splitter);
                     if (args.length > 0) {
                         if (await r.table('tag').get('test').run() == null)
                             await r.table('tag').get('test').replace(systemTag('test')).run();
                         await bbEngine.runTag({
                             msg,
                             limits: new bbtag.limits.tag(),
-                            tagContent: args.join(' '),
+                            tagContent: code,
                             input: '',
                             tagName: 'test',
                             author: msg.author.id,

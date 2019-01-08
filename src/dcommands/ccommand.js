@@ -711,17 +711,21 @@ ${command[0].desc}`);
                 case 'eval':
                 case 'test':
                 case 'vtest':
+                    let splitter = words[1];
                     let args = words.slice(2), debug = false;
                     if (args.length == 0) break;
                     if (args[0].toLowerCase() == 'debug') {
+                        splitter = args[0];
                         debug = true;
                         args.shift();
                     }
+
+                    let code = msg.content.split(splitter).slice(1).join(splitter);
                     if (args.length > 0) {
                         await bbEngine.runTag({
                             msg,
                             limits: new bbtag.limits.ccommand(),
-                            tagContent: args.join(' '),
+                            tagContent: code,
                             input: '',
                             tagName: 'test',
                             isCC: true,
