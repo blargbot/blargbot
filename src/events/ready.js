@@ -124,7 +124,7 @@ async function switchGame(forced) {
             name = 'Happy St. Patrick\'s day!';
             break;
         case '01-01':
-            name = 'Happy New Year\'s!';
+            name = 'Happy New Year!';
             break;
         case '07-01':
             name = 'Happy Canada Day!';
