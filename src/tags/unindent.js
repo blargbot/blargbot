@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:37
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-01-08 09:05:20
+ * @Last Modified time: 2019-01-08 09:09:44
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -36,7 +36,6 @@ module.exports =
       }
       if (level) {
         let regexp = new RegExp(`^ {1,${level}}`, 'gm');
-        console.log(level, regexp);
         let unindented = args[0].replace(regexp, '');
         return unindented;
       } else return args[0];
