@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:37
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-01-08 09:56:43
+ * @Last Modified time: 2019-01-08 11:05:23
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -13,10 +13,10 @@ module.exports =
   Builder.AutoTag('unindent')
     .withArgs(a => [a.require('text'), a.optional('level')])
     .withAlias('ui')
-    .withDesc('Unindents text (or code!). If no level is provided, attempts to guess the indentation level.')
+    .withDesc('Unindents text (or code!). If no level is provided, attempts to guess the indentation level past the first line.')
     .withExample(
-    '{unindent;\n  hello\n  world}',
-    'hello\nworld'
+    '```{unindent;\n  hello\n  world\n}```',
+    '```hello\nworld```'
     )
     .whenArgs(0, Builder.errors.notEnoughArguments)
     .whenArgs('1-2', async function (subtag, context, args) {
