@@ -106,7 +106,7 @@
                 },
                 "docs": {
                     "usage": "[subtag]",
-                    "info": ""
+                    "info": "Gir en lenke til BBTag dokumentasjonen, eller gir informasjon om en spesifert subtag."
                 },
                 "setdesc": {
                     "info": "",
