@@ -16,11 +16,11 @@
                 "Mjau.",
                 "Frykt er frihet.",
                 "Undertrykkelse er frigjøring.",
-                "",
-                "",
-                ""
+                "Selvmotsigelse er sannhet.",
+                "Ønsker du å lage en kontrakt?",
+                "La det gå, og kom deg videre."
             ],
-            "final": ""
+            "final": "Ping! ({{time}}ms)"
         },
         "brainfuck": {
             "info": "",
