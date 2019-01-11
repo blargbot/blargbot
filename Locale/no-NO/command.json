@@ -34,9 +34,9 @@
         },
         "ship": {
             "info": "Gir deg shipnavnet til to brukere.",
-            "usage": "",
-            "final": "",
-            "notenough": ""
+            "usage": "<bruker1> <bruker2>",
+            "final": "Shipnavn deres er **{{name}}**!",
+            "notenough": "Du må fortelle meg hvem jeg skal shippe!"
         },
         "tag": {
             "info": "",
