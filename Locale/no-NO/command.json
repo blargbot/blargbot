@@ -23,17 +23,17 @@
             "final": "Ping! ({{time}}ms)"
         },
         "brainfuck": {
-            "info": "",
-            "usage": "",
+            "info": "Utfører brainfuck kode.",
+            "usage": "<kode>",
             "flags": {
-                "p": "",
-                "i": "",
-                "pointers": "",
-                "input": ""
+                "p": "Viser en liste av pointere etter utførelsen.",
+                "i": "Spesifiserer inputtet for `,` operatoren.",
+                "pointers": "Spesifiserer at resultat pointerne skal bli outputta.",
+                "input": "Spesifiserer input parametere."
             }
         },
         "ship": {
-            "info": "",
+            "info": "Gir deg shipnavnet til to brukere.",
             "usage": "",
             "final": "",
             "notenough": ""
