@@ -63,37 +63,37 @@
                 },
                 "raw": {
                     "usage": "<navn>",
-                    "info": ""
+                    "info": "Henter den rå koden til en tag."
                 },
                 "info": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn>",
+                    "info": "Viser informasjonen til en tag."
                 },
                 "transfer": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn> <bruker>",
+                    "info": "Overfører en tag til en spesifisert bruker. Variabler vil ikke bli overført."
                 },
                 "top": {
-                    "info": ""
+                    "info": "Viser en liste over de mest favoriserte tag-ene."
                 },
                 "author": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn>",
+                    "info": "Viser forfatteren til en tag."
                 },
                 "search": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<forespørsel>",
+                    "info": "Søker etter en tag med et navn som inneholder din forespørsel."
                 },
                 "list": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[bruker]",
+                    "info": "Viser en liste over alle tags, eller en liste over alle tags en spesifisert bruker har lagd."
                 },
                 "favorite": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[navn]",
+                    "info": "Favoriserer en spesifisert tag, eller viser en liste over favorittene dine."
                 },
                 "report": {
-                    "usage": "",
+                    "usage": "<navn> <begrunnelse>",
                     "info": ""
                 },
                 "test": {
