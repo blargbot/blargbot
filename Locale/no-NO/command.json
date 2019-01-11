@@ -42,27 +42,27 @@
             "info": "Tags er et offentlig system av bruker-lagde kommandoer alle kan lage og utføre, ved bruk av BBTag språket.\n\n**Underkommandoer**:\n{{subcommands}}\n\nFor mer informasjon om en underkommando, skriv: `b!t help <underkommando>`\nFor mer informasjon om BBTag, besøk <https://blargbot.xyz/tags>.\nVed å lage en tag, bekrefter du at du godtar servicevilkårene (<https://blargbot.xyz/tags/tos>).",
             "usage": "<navn | underkommando> [args]",
             "dontown": "[[emote.x]] Du eier ikke den tag-en!",
-            "alreadyexists": "",
-            "notag": "",
-            "tagset": "",
-            "tagrename": "",
-            "raw": "",
-            "testoutput": "",
+            "alreadyexists": "[[emote.x]] En tag med det navnet eksisterer allerede!",
+            "notag": "[[emote.x]] Det er ingen tag med det navnet.",
+            "tagset": "[[emote.check]] Tag `{{name}}` {{process}}!",
+            "tagrename": "[[emote.check]] Tag-en `{{old}}` ble omdøpt til `{{new}}`.",
+            "raw": "Koden til {{name}} er:\n```{{code}}```",
+            "testoutput": "Test Output:\n\n{{output}}",
             "subcommand": {
                 "set": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn> <innhold>",
+                    "info": "Lager eller redigerer en tag med det angitte navnet og innholdet. Vil ikke erstatte noen andre sine tags."
                 },
                 "delete": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn>",
+                    "info": "Sletter en tag du eier."
                 },
                 "rename": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn> <nytt navn>",
+                    "info": "Omdøper en tag du eier."
                 },
                 "raw": {
-                    "usage": "",
+                    "usage": "<navn>",
                     "info": ""
                 },
                 "info": {
