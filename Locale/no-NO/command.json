@@ -1,11 +1,11 @@
 {
     "general": {
         "ping": {
-            "info": "",
+            "info": "Pong!\nFinner kommando forsinkelsen.",
             "randmsg": [
-                "",
-                "",
-                "",
+                "Eksistens er en løgn.",
+                "Du skal dø en dag, kanskje snart.",
+                "Ingenting betyr noe.",
                 "",
                 "",
                 "",
