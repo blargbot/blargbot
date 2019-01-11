@@ -39,9 +39,9 @@
             "notenough": "Du må fortelle meg hvem jeg skal shippe!"
         },
         "tag": {
-            "info": "",
-            "usage": "",
-            "dontown": "",
+            "info": "Tags er et offentlig system av bruker-lagde kommandoer alle kan lage og utføre, ved bruk av BBTag språket.\n\n**Underkommandoer**:\n{{subcommands}}\n\nFor mer informasjon om en underkommando, skriv: `b!t help <underkommando>`\nFor mer informasjon om BBTag, besøk <https://blargbot.xyz/tags>.\nVed å lage en tag, bekrefter du at du godtar servicevilkårene (<https://blargbot.xyz/tags/tos>).",
+            "usage": "<navn | underkommando> [args]",
+            "dontown": "[[emote.x]] Du eier ikke den tag-en!",
             "alreadyexists": "",
             "notag": "",
             "tagset": "",
