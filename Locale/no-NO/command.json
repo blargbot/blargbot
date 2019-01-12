@@ -356,32 +356,32 @@
             },
             "mute": {
                 "setrole": "Den dempede rollen har blitt oppdatert.",
-                "rolequery": ""
+                "rolequery": "Velg den dempede rollen. Den nåværende rollen er: {{current}}"
             },
             "announce": {
-                "set": "",
-                "rolequery": "",
-                "channelquery": ""
+                "set": "Kunngjøringer har blitt satt opp.",
+                "rolequery": "Velg rollen som skal nevnes når det kommer en kunngjøring.",
+                "channelquery": "Velg kanalen kunngjøringene skal sendes i."
             },
             "modlog": {
-                "set": "",
-                "remove": "",
-                "invalid": "",
-                "hadinvalid": "",
-                "list": ""
+                "set": "Modloggen har blitt satt til kanalen {{channel}} med disse handlingene:\n```\n{{events}}\n```\n{{hadInvalid}}",
+                "remove": "Modloggen for disse handlingene har blitt fjernet:\n```\n{{events}}\n```\n{{hadInvalid}}",
+                "invalid": "Ingen gyldig handling ble spesifisert. Liste over gyldige handlinger:\n```\n{{eventList}}\n```",
+                "hadinvalid": "Du hadde noen ugyldige handlinger i kommandoen din. Liste over gyldige handlinger:\n```\n{{eventList}}\n```",
+                "list": "Her er en liste over modloggene for denne serveren:\n\n{{events}}"
             },
             "subcommands": {
                 "modlog": {
                     "flags": {
-                        "channel": "",
-                        "remove": "",
-                        "list": ""
+                        "channel": "Spesifiserer hvilken kanal modloggen skal sendes i.",
+                        "remove": "Spesifiserer at modloggen skal slettes i steden for å lages.",
+                        "list": "Sender en liste av konfigurerte modlogger."
                     }
                 },
                 "punishment": {
                     "flags": {
-                        "kick": "",
-                        "ban": "",
+                        "kick": "Spesifiserer at straffen er å bli sparket. Et gitt antall advarsler kan bare lede til én straff.",
+                        "ban": "Spesifiserer at straffen er å bli utestengt. Et gitt antall advarsler kan bare lede til én straff.",
                         "mute": "",
                         "time": "",
                         "list": "Viser en liste over aktive straffer.",
