@@ -410,23 +410,23 @@
         "help": {
             "info": "",
             "allcommands": "Her er alle kommandoene du kan utføre i **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor mer informasjon om en kommando, skriv `help <kommando>` eller besøk <https://blargbot.xyz/commands>.",
-            "nocommand": "",
-            "commandinfo": ""
+            "nocommand": "Beklager, men det er ingen kommando med navnet '{{name}}'!",
+            "commandinfo": "**Kommando: {{name}}**\n\n**Aliaser**: {{aliases}}\n**Bruk**: {{usage}}\n\n{{description}}"
         },
         "warn": {
-            "info": "",
+            "info": "Gir en bruker en variabel mengde advarsler.",
             "flags": {
-                "count": "",
-                "reason": ""
+                "count": "Antallet advarsler som skal gis.",
+                "reason": "Årsaken til advarslen."
             },
-            "invalidcount": "",
-            "warningassigned": "",
-            "negativecount": "",
-            "usage": "",
-            "limitexceeded": ""
+            "invalidcount": "Det spesiferte antallet advarsler var ikke et nummer!",
+            "warningassigned": "**{{user}}** har blitt gitt **{{count}}** advarsel(er).",
+            "negativecount": "Det må gis minst én advarsel!",
+            "usage": "<bruker>",
+            "limitexceeded": "Overskred advarselsgrensa ({{warnings}}/{{weight}})"
         },
         "pardon": {
-            "usage": "",
+            "usage": "<bruker>",
             "info": "",
             "flags": {
                 "count": "",
