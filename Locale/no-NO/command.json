@@ -427,40 +427,40 @@
         },
         "pardon": {
             "usage": "<bruker>",
-            "info": "",
+            "info": "Gir en bruker en variabel mengde benådinger.",
             "flags": {
-                "count": "",
-                "reason": ""
+                "count": "Antallet benådinger som skal gis.",
+                "reason": "Årsaken til benådingen."
             },
-            "invalidcount": "",
-            "negativecount": "",
-            "warningassigned": "",
-            "invaliduser": ""
+            "invalidcount": "Det spesiferte antallet benådinger var ikke et nummer!",
+            "negativecount": "Det må gis minst én benåding!",
+            "warningassigned": "**{{user}}** har blitt gitt **{{count}}** benåding(er).",
+            "invaliduser": "Den spesifiserte brukeren kunne ikke bli funnet."
         },
         "kick": {
-            "usage": "",
-            "info": "",
+            "usage": "<bruker>",
+            "info": "Sparker en bruker.",
             "flags": {
-                "reason": ""
+                "reason": "Årsaken til sparket."
             },
-            "kicked": "",
-            "invaliduser": ""
+            "kicked": ":ok_hand: **{{user}}** har blit sparket.",
+            "invaliduser": "Den spesifiserte brukeren kunne ikke bli funnet."
         },
         "mute": {
-            "usage": "",
-            "info": "",
+            "usage": "<bruker>",
+            "info": "Demper en bruker.",
             "flags": {
-                "reason": "",
-                "duration": "",
-                "time": ""
+                "reason": "Årsaken til dempingen.",
+                "duration": "Hvor lenge brukeren skal være dempet.",
+                "time": "Hvor lenge brukeren skal være dempet."
             },
-            "muted": "",
-            "invaliduser": "",
-            "norole": "",
-            "unmutein": ""
+            "muted": ":ok_hand: **{{user}}** har blitt dempet.",
+            "invaliduser": "Den spesifiserte brukeren kunne ikke bli funnet.",
+            "norole": "En rolle for dempede brukere har ikke blitt satt! Bruk kommandoen `setup mute` for å sette den.",
+            "unmutein": "Dempingen vil fjernes om **{{seconds}}** sekunder."
         },
         "unmute": {
-            "usage": "",
+            "usage": "<bruker>",
             "info": "",
             "flags": {
                 "reason": ""
