@@ -497,60 +497,60 @@
             "subcommand": {
                 "set": {
                     "usage": "<navn> <innhold>",
-                    "info": ""
+                    "info": "Lager eller redigerer en egendefinert kommando med det angitte navnet og innholdet. Vil ikke erstatte noen andre sine tags."
                 },
                 "delete": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn>",
+                    "info": "Sletter en egendefinert kommando som du eier."
                 },
                 "rename": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn> <nytt navn>",
+                    "info": "Omdøper en egendefinert kommando som du eier."
                 },
                 "raw": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn>",
+                    "info": "Viser den rå koden til en egendefinert kommando."
                 },
                 "transfer": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn> <bruker>",
+                    "info": "Overfører en egendefinert kommando til en spesifisert bruker. Variabler vil ikke bli overført."
                 },
                 "author": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn>",
+                    "info": "Viser forfatteren av en egendefinert kommando."
                 },
                 "list": {
-                    "info": ""
+                    "info": "Viser en liste over alle de egendefinerte kommandoene."
                 },
                 "test": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<kode>",
+                    "info": "Utfører den angitte koden som en test."
                 },
                 "help": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[underkommando]",
+                    "info": "Viser dette!"
                 },
                 "setdesc": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn> <beskrivelse>",
+                    "info": "Setter info dokumentasjonen til en egendefinert kommando."
                 },
                 "setusage": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<navn> <bruk>",
+                    "info": "Setter bruk dokumentasjonen til en egendefinert kommando."
                 }
             },
-            "dontown": "",
-            "notag": "",
-            "tagset": "",
-            "tagrename": "",
-            "raw": "",
-            "alreadyexists": "",
-            "testoutput": "",
-            "subcommandnotfound": "",
-            "transferprompt": "",
-            "nobots": "",
-            "transfercancelled": "",
-            "transfercomplete": "",
+            "dontown": "[[emote.x]] Du kan ikke endre på denne egendefinerte kommandoen.",
+            "notag": "[[emote.x]] Det er ingen egendefinert kommando med det navnet.",
+            "tagset": "[[emote.check]] Den egendefinerte kommandoen `{{name}}` {{process}}!",
+            "tagrename": "[[emote.check]] Den egendefinerte kommandoen `{{old}}` ble omdøpt til `{{new}}`.",
+            "raw": "Koden til {{name}} er:\n```{{code}}```",
+            "alreadyexists": "[[emote.x]] En egendefinert kommando med det navnet eksisterer allerede!",
+            "testoutput": "Test Output:\n\n{{output}}",
+            "subcommandnotfound": "Kunne ikke finne en underkommando med navnet `{{subcommand}}`.",
+            "transferprompt": "{{target}}, {{user}} ønsker å overføre eierskapet av den egendefinerte kommandoen `{{tag}}` til deg. Aksepterer du?\nDette vil ikke overføre vedkommendes variabler.",
+            "nobots": "[[emote.x]] Du kan ikke overføre en egendefinert kommando til en bot!",
+            "transfercancelled": "[[emote.x]] Overføringen ble avbrutt.",
+            "transfercomplete": "[[emote.check]] {{user}} eier nå den egendefinerte kommandoen `{{tag}}`.",
             "descupdate": "Beskrivelsen til `{{tag}}` har blitt oppdatert.",
             "descreset": "Beskrivelsen til `{{tag}}` har blitt nullstilt.",
             "subcommandconflict": "Du kan ikke bruke navnet `{{name}}` siden det er en underkommando med det navnet!",
