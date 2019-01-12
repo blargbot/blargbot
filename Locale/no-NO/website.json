@@ -1,12 +1,12 @@
 {
-    "language": "",
+    "language": "Norsk",
     "header": {
-        "login": "",
-        "logout": "",
-        "commands": "",
-        "bbtag": "",
-        "subtags": "",
-        "dashboard": ""
+        "login": "Logg inn",
+        "logout": "Logg ut",
+        "commands": "Kommandoer",
+        "bbtag": "BBTag",
+        "subtags": "SubTags",
+        "dashboard": "Dashbord"
     },
     "generic": {
         "loading": "",
