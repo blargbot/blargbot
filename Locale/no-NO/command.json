@@ -130,8 +130,8 @@
             "toptags": "Her er de top 10 tag-ene!\n\n{{tags}}",
             "tagauthor": "Tag-en `{{tag}}` ble laget av **{{author}}**",
             "favouriteadd": "Tag-en `{{tag}}` har blitt lagt til favoritt lista di.",
-            "favouriteremove": "",
-            "favourites": ""
+            "favouriteremove": "Tag-en`{{tag}}` har blitt fjærnet fra favoritt lista di.",
+            "favourites": "Du har {{count}} tags på favoritt lista di.\n```fix\n{{tags}}\n```"
         },
         "locale": {
             "info": "",
