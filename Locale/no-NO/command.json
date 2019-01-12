@@ -391,16 +391,16 @@
             },
             "punishment": {
                 "toolow": "Den spesifiserte vekta må være større enn 0.",
-                "invalidweight": "Du må angi et nummer for vekta.",
-                "invalidchoice": "",
-                "invalidtypes": "",
-                "added": "",
-                "removed": "",
-                "overwritten": "",
-                "doesntexist": "",
-                "list": ""
+                "invalidweight": "Du må spesifisere et nummer for vekta av straffen.",
+                "invalidchoice": "Du må spesifisere om du legger til eller fjerner en straff.",
+                "invalidtypes": "Ugyldige flagg ble spesifisert. Bare en av `--mute`, `--kick`, og `--ban` kan brukes.",
+                "added": "En straff med en vekt på **{{weight}}** har blitt lagt til.",
+                "removed": "Straffen med en vekt på **{{weight}}** har blitt fjernet.",
+                "overwritten": "Straffen med en vekt på **{{weight}}** har blitt overskrevet.",
+                "doesntexist": "En straff med en vekt på **{{weight}}** eksisterer ikke.",
+                "list": "Dette er de aktive straffene i din server:\n\n{{list}}"
             },
-            "default": ""
+            "default": "Dette er de tilgjengelige underkommandoene:\n\n{{subcommands}}"
         },
         "reason": {
             "info": "",
@@ -409,7 +409,7 @@
         },
         "help": {
             "info": "",
-            "allcommands": "",
+            "allcommands": "Her er alle kommandoene du kan utføre i **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor mer informasjon om en kommando, skriv `help <kommando>` eller besøk <https://blargbot.xyz/commands>.",
             "nocommand": "",
             "commandinfo": ""
         },
