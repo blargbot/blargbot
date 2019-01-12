@@ -174,33 +174,33 @@
             "info": "Gå på en magisk ekspedisjon med Gamatoto! Bruk denne kommandoen til å sjekke stats, eller bruk en underkommando til å gå på et eventyr!",
             "subcommand": {
                 "start": {
-                    "usage": "<posisjon>",
+                    "usage": "<sted>",
                     "info": "Starter en ekspedisjon!"
                 },
                 "end": {
                     "info": "Slutter en ekspedisjon!"
                 },
                 "locations": {
-                    "info": ""
+                    "info": "Viser en liste over alle ekspedisjons stedene."
                 }
             },
-            "stats": "",
-            "alreadystarted": "",
-            "notstarted": "",
-            "nolocation": "",
-            "invalidlocation": "",
-            "expeditionbeings": "",
-            "expeditionends": "",
-            "notimeelapsed": "",
-            "itemfound": "",
-            "levelup": "",
-            "gamatotoxp": "",
-            "itemincrease": "",
-            "locations": "",
-            "wronglevel": "",
-            "gamatotoitems": "",
-            "gamatotostats": "",
-            "gamatotocurrent": "",
+            "stats": "<:bc_cat:345081695990710272> Her er gjenstandene dine!\n\n{{stats}}",
+            "alreadystarted": "En ekspedisjon er allerede i gang!",
+            "notstarted": "Du har ikke startet en ekspedisjon!",
+            "nolocation": "Sorry, det er ikke et gyldig sted. Stedene du for øyeblikket kan kan besøke:\n\n{{locations}}",
+            "invalidlocation": "Noe rart skjedde. Stedet du utforsket eksisterer ikke lenger! Vennligst start en ny ekspedisjon.",
+            "expeditionbeings": "<:bc_cat:345081695990710272> SØKEN BEGYNNER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\n\nSjekk igjen senere ved å skrive `gamatoto end`!",
+            "expeditionends": "<:bc_cat:345081695990710272> EKSPEDISJON RESULTATER! <:bc_cat:345081695990710272>\n\nSted: {{location}}\nVarighet: {{minutes}} minutter\n\n{{results}}",
+            "notimeelapsed": "Det har ikke gått noe tid siden ekspedisjonen startet. Gamatoto fant ikke noe!",
+            "itemfound": "Gamatoto fant {{amount}} {{item}} ved {{location}}.",
+            "levelup": ":fireworks: Gamatoto er nå level {{level}}!",
+            "gamatotoxp": "Gamatoto tjente **{{amount}}**XP ({{old}} → **{{new}}**)",
+            "itemincrease": "{{item}} Du fant **{{amount}}** ({{old}} → **{{new}}**)",
+            "locations": "Her er alle ekspedisjon stedene!\n\n{{locations}}",
+            "wronglevel": "Sorry, du må minst være level {{level}} for å utforske det stedet!",
+            "gamatotoitems": "Her er gjenstandene dine::\n{{items}}",
+            "gamatotostats": "Gamatoto er for øyeblikket level {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
+            "gamatotocurrent": "Gamatoto har utforsket **{{location}}** for **{{minutes}}** minutter.\n\nBruk `gamatoto end` for å ende ekspedisjonen.",
             "gamatotoidle": ""
         },
         "prefix": {
