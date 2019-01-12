@@ -229,13 +229,13 @@
         },
         "economy": {
             "info": "Konverterer valuta ved bruk av oppdaterte valutakurser.",
-            "invalidamount": "",
-            "invalidcode": "",
-            "converted": "",
-            "usage": ""
+            "invalidamount": "Spesifiser et gyldig beløp som kan konverteres.",
+            "invalidcode": "Ukjent valuta: {{code}}",
+            "converted": "{{amount}} {{from}} er det samme som {{converted}} {{to}}",
+            "usage": "<fra> <til> <beløp>"
         },
         "usettings": {
-            "info": "",
+            "info": "Endrer eller viser bruker instillingene dine.",
             "subcommand": {
                 "dmerrors": {
                     "usage": "",
