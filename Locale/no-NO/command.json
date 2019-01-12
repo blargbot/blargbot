@@ -467,13 +467,13 @@
             },
             "unmuted": ":ok_hand: **{{user}}** er ikke lenger dempet.",
             "invaliduser": "Den spesifiserte brukeren kunne ikke bli funnet.",
-            "unmutedafter": ""
+            "unmutedafter": "Fjerner automatisk dempingen av en bruker etter {{seconds}} sekunder."
         },
         "ban": {
-            "usage": "",
-            "info": "",
+            "usage": "<bruker>",
+            "info": "Utelukker en bruker.",
             "flags": {
-                "reason": "",
+                "reason": "Årsaken til utelukkingen.",
                 "days": "",
                 "time": ""
             },
@@ -554,8 +554,8 @@
             "descupdate": "Beskrivelsen til `{{tag}}` har blitt oppdatert.",
             "descreset": "Beskrivelsen til `{{tag}}` har blitt nullstilt.",
             "subcommandconflict": "Du kan ikke bruke navnet `{{name}}` siden det er en underkommando med det navnet!",
-            "tagauthor": "",
-            "list": ""
+            "tagauthor": "Den egendefinerte kommandoen `{{tag}}` ble laget av **{{author}}**",
+            "list": "Her er de egendefinerte kommandoene i denne serveren:\n```\n{{commands}}\n```"
         }
     }
 }
