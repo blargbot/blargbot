@@ -277,12 +277,12 @@
                 "Vel, du kan ikke vinne dem alle!",
                 "V-vel... Hvis hver kotelett var perfekt, ville vi ikke hatt pølser? Synd du er død uansett.",
                 "Skyld det på at du lagga!",
-                "",
-                ""
+                "I dag var bare ikke din lykkedag.",
+                "Pft, framsyn er for tapere."
             ]
         },
         "user": {
-            "usage": "",
+            "usage": "[bruker]",
             "info": "",
             "description": "",
             "guildinfoheader": "",
@@ -315,12 +315,12 @@
         },
         "writepoem": {
             "usage": "",
-            "info": "",
+            "info": "Skriver et veldig behagelig dikt.",
             "flags": {
-                "monika": "",
-                "sayori": "",
-                "yuri": "",
-                "natsuki": ""
+                "monika": "Hej hej Monika, hej på dig Monika.",
+                "sayori": "Hej hej Monika, hej på dig Monika.",
+                "yuri": "Hej hej Monika, hej på dig Monika.",
+                "natsuki": "Hej Monika, hej på dig Monika."
             }
         }
     },
