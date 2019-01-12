@@ -275,8 +275,8 @@
                 "Det der rydder ***ikke*** jeg opp.",
                 "Pistoler er ikke leketøy!",
                 "Vel, du kan ikke vinne dem alle!",
-                "",
-                "",
+                "V-vel... Hvis hver kotelett var perfekt, ville vi ikke hatt pølser? Synd du er død uansett.",
+                "Skyld det på at du lagga!",
                 "",
                 ""
             ]
@@ -384,14 +384,14 @@
                         "ban": "",
                         "mute": "",
                         "time": "",
-                        "list": "",
-                        "days": ""
+                        "list": "Viser en liste over aktive straffer.",
+                        "days": "Hvor mange dager tilbake meldinger skal slettes når en person blir utestengt. Som standard satt til 1."
                     }
                 }
             },
             "punishment": {
-                "toolow": "",
-                "invalidweight": "",
+                "toolow": "Den spesifiserte vekta må være større enn 0.",
+                "invalidweight": "Du må angi et nummer for vekta.",
                 "invalidchoice": "",
                 "invalidtypes": "",
                 "added": "",
