@@ -1,6 +1,6 @@
 {
-    "keyundef": "",
-    "memberundef": "",
+    "keyundef": "Ingen språkkode ble funnet: '{{key}}'.",
+    "memberundef": "Ingen medlemmer ble funnet: '{{member}}'.",
     "userundef": "",
     "channelundef": "",
     "roleundef": "",
