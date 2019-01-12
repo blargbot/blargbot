@@ -204,20 +204,20 @@
             "gamatotoidle": "Gamatoto er ikke på ekspedisjon akkurat nå. Send ham på et eventyr ved å skrive `gamatoto start [location]`!"
         },
         "prefix": {
-            "info": "",
+            "info": "Viser eller setter kommando prefiksene dine. Denne kommandoen setter en brukers prefiks. For server prefikser, bruk `setup` kommandoen.",
             "subcommand": {
                 "add": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<prefiks>",
+                    "info": "Legger til en prefiks i lista di."
                 },
                 "remove": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<prefiks>",
+                    "info": "Fjerner en prefiks fra lista di."
                 }
             },
-            "prefixlist": "",
-            "userprefixes": "",
-            "guildprefixes": "",
+            "prefixlist": "{{content}}\nFor å endre på prefiksene dine, bruk underkommandoene `add` og `remove`. For å endre på server prefiksene, bruk `setup` kommandoen.",
+            "userprefixes": "Her er prefiksene dine:\n```md\n{{userprefixes}}\n```",
+            "guildprefixes": "Her er serverens prefikser:\n```md\n{{guildprefixes}}\n```",
             "noprefixes": "",
             "defaultprefixes": "",
             "prefixadded": "",
