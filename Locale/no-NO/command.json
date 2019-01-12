@@ -260,11 +260,11 @@
             "death": "{{content}}\n\n***PANG!*** [[command.general.rr.deathmessages]]",
             "life": "{{content}}\n\n*Klikk!* [[command.general.rr.livemessages]]",
             "livemessages": [
-                "",
-                "",
-                "",
-                "",
-                "",
+                "Pistolen klikker, den er tom. Du får leve enda en dag.",
+                "Du puster lettet ut når du innser at du ikke kommer til å dø i dag.",
+                "Som om den noensinne ville gått av! Lykken er på din side.",
+                "Du takker RNGesus mens du senker pistolen.",
+                ":angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:",
                 ""
             ],
             "deathmessages": [
