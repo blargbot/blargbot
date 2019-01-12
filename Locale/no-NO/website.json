@@ -9,21 +9,21 @@
         "dashboard": "Dashbord"
     },
     "generic": {
-        "loading": "",
-        "collapse": "",
-        "expand": "",
-        "search": "",
-        "noresults": "",
-        "resultsfound": ""
+        "loading": "Laster",
+        "collapse": "Kollaps Alle",
+        "expand": "Utvid Alle",
+        "search": "Filter...",
+        "noresults": "Uh oh! Fant ingen resultater.",
+        "resultsfound": "Treff:"
     },
     "index": {
-        "desc": "",
+        "desc": "blargbot er en multifunksjonell Discord bot dedikert til å levere bra kommandoer og tjenester, i tillegg til chatlogs og et grundig egendefinert kommando system.",
         "commands": {
-            "title": "",
-            "desc": ""
+            "title": "Kommandoer",
+            "desc": "blargbot er utstyrt med en haug av kommandoer, som alle er dokumentert og kategorisert for å gjøre det lettere for deg."
         },
         "bbtag": {
-            "title": "",
+            "title": "BBTag",
             "desc": ""
         },
         "customization": {
