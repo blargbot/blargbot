@@ -151,34 +151,34 @@
         "donate": {
             "info": "",
             "willdm": "Ok, sender deg doneringsopplysningene mine i en DM.",
-            "message": ""
+            "message": "plassholder"
         },
         "mods": {
             "info": "",
-            "mods": "",
-            "nomods": "",
-            "nomodsonline": ""
+            "mods": "Mods i **{{guild}}**",
+            "nomods": "Det er ingen mods i denne serveren.",
+            "nomodsonline": "Det er ingen online mods."
         },
         "help": {
             "info": "",
-            "allcommands": "",
-            "nocommand": "",
-            "commandinfo": "",
-            "aliases": "",
-            "subcommand": "",
-            "command": "",
-            "nosubcommand": "",
-            "subcommands": ""
+            "allcommands": "Her er alle kommandoene jeg kan utføre i **{{guild}}**.\n```markdown\n{{commands}}\n```\nFor mer informasjon om kommandoer, skriv `help <kommando>` eller besøk <https://blargbot.xyz/commands>.",
+            "nocommand": "Sorry, det er ingen kommando med navnet '{{name}}'!",
+            "commandinfo": "**{{type}}: {{name}}**\n\n**Aliaser**: {{aliases}}\n**Bruk**: {{usage}}\n\n{{description}}",
+            "aliases": "Ingen aliaser",
+            "subcommand": "Underkommando",
+            "command": "Kommando",
+            "nosubcommand": "Sorry, det er ingen underkommando for '{{command}}' med navnet '{{name}}'!",
+            "subcommands": "**Underkommandoer**: {{subcommands}}\n\nSkriv `help <kommando> <underkommando>` for å få mer informasjon om en underkommando!"
         },
         "gamatoto": {
-            "info": "",
+            "info": "Gå på en magisk ekspedisjon med Gamatoto! Bruk denne kommandoen til å sjekke stats, eller bruk en underkommando til å gå på et eventyr!",
             "subcommand": {
                 "start": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "<posisjon>",
+                    "info": "Starter en ekspedisjon!"
                 },
                 "end": {
-                    "info": ""
+                    "info": "Slutter en ekspedisjon!"
                 },
                 "locations": {
                     "info": ""
