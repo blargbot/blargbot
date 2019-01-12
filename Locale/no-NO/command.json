@@ -201,7 +201,7 @@
             "gamatotoitems": "Her er gjenstandene dine::\n{{items}}",
             "gamatotostats": "Gamatoto er for øyeblikket level {{level}}! [{{currentxp}}XP/{{neededxp}}XP]",
             "gamatotocurrent": "Gamatoto har utforsket **{{location}}** for **{{minutes}}** minutter.\n\nBruk `gamatoto end` for å ende ekspedisjonen.",
-            "gamatotoidle": ""
+            "gamatotoidle": "Gamatoto er ikke på ekspedisjon akkurat nå. Send ham på et eventyr ved å skrive `gamatoto start [location]`!"
         },
         "prefix": {
             "info": "",
