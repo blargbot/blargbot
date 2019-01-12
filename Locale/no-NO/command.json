@@ -283,9 +283,9 @@
         },
         "user": {
             "usage": "[bruker]",
-            "info": "",
-            "description": "",
-            "guildinfoheader": "",
+            "info": "Gir deg informasjon om en bruker.",
+            "description": "**Brukernavn**: {{username}}\n**Diskriminator**: {{discriminator}}\n**ID**: {{id}}\n**Bot**: {{bot}}\n**Lagd**: {{created}}\n[Avatar]({{avatar}})",
+            "guildinfoheader": "Server Informasjon",
             "guildinfo": "",
             "status": [
                 "",
@@ -308,13 +308,13 @@
         },
         "shit": {
             "info": "",
-            "usage": "",
+            "usage": "[tekst]",
             "flags": {
                 "plural": ""
             }
         },
         "writepoem": {
-            "usage": "",
+            "usage": "[tekst]",
             "info": "Skriver et veldig behagelig dikt.",
             "flags": {
                 "monika": "Hej hej Monika, hej på dig Monika.",
