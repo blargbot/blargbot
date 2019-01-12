@@ -1,21 +1,21 @@
 {
     "events": {
-        "kick": "",
-        "ban": "",
-        "unban": "",
-        "mute": "",
-        "unmute": "",
-        "warn": "",
-        "pardon": "",
-        "rename": "",
-        "specialroleadd": "",
-        "specialroleremove": ""
+        "kick": "Kaste Ut",
+        "ban": "Utestenge",
+        "unban": "Oppheve utestengelse",
+        "mute": "Dempe",
+        "unmute": "Oppheve demping",
+        "warn": "Advarsel",
+        "pardon": "Benåding",
+        "rename": "Omdåp",
+        "specialroleadd": "Ny Spesiell Rolle",
+        "specialroleremove": "Spesiell Rolle Fjernet"
     },
-    "case": "",
-    "setreason": "",
+    "case": "{{icon}} Sak {{number}}: {{event}}",
+    "setreason": "Ansvarlig moderator, skriv `reason {{number}}` for å tilføye en årsak.",
     "warnings": {
-        "given": "",
-        "removed": "",
+        "given": "Advarsler Gitt",
+        "removed": "Advarsler Benådet",
         "total": "Ny Total"
     },
     "rename": {
