@@ -350,12 +350,12 @@
                     "info": "Setter opp modloggen for de valgte handlingene. Hvis ingen kanal er spesifisert, vil den kanalen meldingen er sendt i bli valgt. Om ingen handlinger er spesifisert, vil alle handlinger logges."
                 },
                 "punishment": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "punishment <add | remove> <vekt> [ban | mute | kick]",
+                    "info": "Legger til eller fjerner en advarselsstraff. `vekt` referer til antall advarsler man trenger for å aktivere straffen."
                 }
             },
             "mute": {
-                "setrole": "",
+                "setrole": "Den dempede rollen har blitt oppdatert.",
                 "rolequery": ""
             },
             "announce": {
