@@ -21,17 +21,17 @@
         "toofewargs": "Ikke nok argumenter (r:{{received}} e:{{expected}})",
         "isnan": "Forventet '{{arg}}' å være et nummer, men fikk '{{value}}'",
         "maxlessthanmin": "Max må være høyere enn Min",
-        "ccommandonly": "",
-        "authorstaff": "",
-        "noperms": "",
-        "toolow": "",
-        "unclosed": "",
-        "unopened": "",
-        "invalidradix": "",
-        "notanarray": "",
-        "notbool": "",
-        "missingarg": "",
-        "namedunsupported": ""
+        "ccommandonly": "'{{tag}}' kan kun brukes i egendefinerte kommandoer",
+        "authorstaff": "Forfatter {{author}} må være personell for å bruke '{{tag}}'",
+        "noperms": "Bot mangler tillatelsen '{{perm}}' for å bruke tag-en '{{tag}}'",
+        "toolow": "Bot kan ikke utføre '{{tag}}' fordi den er rangert lavere enn '{{target}}'",
+        "unclosed": "Umatchet åpnings klammer [{{column}}:{{row}}]",
+        "unopened": "Umatchet lukke klammer [{{column}}:{{row}}]",
+        "invalidradix": "Radix må være mellom 2 og 36, men fikk '{{radix}}'",
+        "notanarray": "Variabelen '{{name}}' er ikke en array (Mottok: '{{value}}')",
+        "notbool": "Variabelen '{{name}}' er ikke en boolean (Mottok: '{{value}}')",
+        "missingarg": "Subtag '{{tag}}' mangler argumentet: '{{arg}}'",
+        "namedunsupported": "Subtag '{{tag}}' støtter ikke navngitte argumenter"
     },
     "inputtoolong": ""
 }
