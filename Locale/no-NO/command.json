@@ -471,32 +471,32 @@
         },
         "ban": {
             "usage": "<bruker>",
-            "info": "Utelukker en bruker.",
+            "info": "Utestenger en bruker.",
             "flags": {
-                "reason": "Årsaken til utelukkingen.",
-                "days": "",
-                "time": ""
+                "reason": "Årsaken til utestengelsen.",
+                "days": "Hvor mange dager tilbake meldinger skal slettes (som standard satt til 1).",
+                "time": "Hvor lenge utestengelsen skal vare."
             },
-            "banned": "",
-            "invaliduser": "",
-            "unbunin": ""
+            "banned": ":ok_hand: **{{user}}** ble utestengt.",
+            "invaliduser": "Den spesifiserte brukeren kunne ikke bli funnet.",
+            "unbunin": "Utestengelsen vil fjernes om **{{seconds}}** sekunder."
         },
         "unban": {
-            "usage": "",
-            "info": "",
+            "usage": "<bruker>",
+            "info": "Fjerner en utestengelse.",
             "flags": {
-                "reason": ""
+                "reason": "Årsaken til utestengelsen."
             },
-            "banned": "",
-            "invaliduser": "",
-            "unbannedafter": ""
+            "banned": ":ok_hand: **{{user}}** er ikke lenger utestengt.",
+            "invaliduser": "Den spesifiserte brukeren kunne ikke bli funnet.",
+            "unbannedafter": "Fjerner automatisk utestengelsen etter {{seconds}} sekunder."
         },
         "cc": {
-            "usage": "",
-            "info": "",
+            "usage": "<navn | underkommando> [args]",
+            "info": "Egendefinerte Kommandoer (CC) er et system av server-spesifikke kommandoer som administratorer kan lage med BBTag språket.\n\n**Underkommandoer**:\n{{subcommands}}\n\nFor mer informasjon om en underkommando, skriv `b!cc help <underkommando>`\nFor mer informasjon om BBTag, besøk <https://blargbot.xyz/tags>.",
             "subcommand": {
                 "set": {
-                    "usage": "",
+                    "usage": "<navn> <innhold>",
                     "info": ""
                 },
                 "delete": {
