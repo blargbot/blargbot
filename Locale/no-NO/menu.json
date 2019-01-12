@@ -1,10 +1,10 @@
 {
     "cancel": {
-        "name": "",
-        "description": ""
+        "name": "Avbryt",
+        "description": "Lukk denne menyen."
     },
     "confirm": {
-        "name": "",
-        "description": ""
+        "name": "Bekreft",
+        "description": "Bekrefter denne menyen."
     }
 }
