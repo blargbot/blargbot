@@ -382,8 +382,8 @@
                     "flags": {
                         "kick": "Spesifiserer at straffen er å bli sparket. Et gitt antall advarsler kan bare lede til én straff.",
                         "ban": "Spesifiserer at straffen er å bli utestengt. Et gitt antall advarsler kan bare lede til én straff.",
-                        "mute": "",
-                        "time": "",
+                        "mute": "Spesifiserer at straffen er å bli dempet. Et gitt antall advarsler kan bare lede til én straff.",
+                        "time": "Spesifiserer hvor lenge utestengelsen eller dempingen skal vare.",
                         "list": "Viser en liste over aktive straffer.",
                         "days": "Hvor mange dager tilbake meldinger skal slettes når en person blir utestengt. Som standard satt til 1."
                     }
