@@ -247,18 +247,18 @@
             "userinfo": "Her er bruker instillingene dine:\n\n{{settings}}\n\nTilgjengelige underkommandoer: {{sub}}"
         },
         "rr": {
-            "info": "",
-            "usage": "",
+            "info": "Spiller en runde russian roulette. Som standard, kan revolveren din holde 6 kuler.",
+            "usage": "[kuler]",
             "flags": {
-                "capacity": "",
-                "emote": ""
+                "capacity": "Setter hvor mange kuler revolveren din kan holde.",
+                "emote": "Spesisiserer hvilken emoji (eller tekst) som spiller russian roulette."
             },
-            "capacitylow": "",
-            "bulletslow": "",
-            "bulletshigh": "",
-            "begin": "",
-            "death": "",
-            "life": "",
+            "capacitylow": "Revolveren din må være i stand til å skyte minst to skudd, noe lavere ville vært en garantert død!",
+            "bulletslow": "Du kan ikke lade mindre enn en kule, din tufs.",
+            "bulletshigh": "Woah, revolveren din kan bare holde {{capacity}} kuler! Det ville vært en garantert død! Har du et dødsønske?",
+            "begin": "Du lader {{bullets}} kule(r) i {{capacity}}-skudds revolveren din, gi den et spinn, og plasser den inntil hodet ditt.",
+            "death": "{{content}}\n\n***PANG!*** [[command.general.rr.deathmessages]]",
+            "life": "{{content}}\n\n*Klikk!* [[command.general.rr.livemessages]]",
             "livemessages": [
                 "",
                 "",
