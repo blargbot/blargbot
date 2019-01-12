@@ -16,11 +16,11 @@
     "warnings": {
         "given": "",
         "removed": "",
-        "total": ""
+        "total": "Ny Total"
     },
     "rename": {
-        "old": "",
-        "new": ""
+        "old": "Gammelt Navn",
+        "new": "Nytt Navn"
     },
-    "duration": ""
+    "duration": "Varighet"
 }
