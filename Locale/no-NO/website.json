@@ -44,7 +44,7 @@
         }
     },
     "bbtag": {
-        "main": "",
+        "main": "# BBTag\n> Må ikke forveksles med BBCode!\n\nBBTag er et mal-basert programmeringsspråk, utformet for å gi en kraftig ramme til å lage egne avanserte kommandoer.\n\n### Terminologi\n\n- En `tag` refererer til en blokk av BBTag kode, enten det er en offentlig tag eller en egendefinert kommando.\n- En `subtag` refererer til en BBTag komponent. Avanserte `tags` er bygd opp av mange `subtags`.\n- En `klasse` refererer til en gruppe av `subtags`.",
         "subtags": {
             "title": "",
             "desc": ""
