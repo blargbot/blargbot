@@ -1,35 +1,35 @@
 {
-    "output": "",
-    "nooutput": "",
-    "queryexpire": "",
+    "output": "Output:\n{{output}}",
+    "nooutput": "Ingen output...",
+    "queryexpire": "Søket vil gå ut om {{length}} minutes.",
     "resolveuser": {
-        "nousers": "",
-        "pickuser": ""
+        "nousers": "Ingen brukere funnet.",
+        "pickuser": "{{length}} brukere ble funnet! Vennligst velg en fra lista."
     },
     "resolverole": {
-        "noroles": "",
-        "pickrole": ""
+        "noroles": "Ingen roller funnet.",
+        "pickrole": "{{length}} roller ble funnet! Vennligst velg en fra lista."
     },
     "resolvechannel": {
-        "nochannels": "",
-        "pickchannel": ""
+        "nochannels": "Ingen kanaler ble funnet.",
+        "pickchannel": "{{length}} kanaler ble funnet! Vennligst velg en fra lista."
     },
-    "edited": "",
-    "created": "",
-    "deleted": "",
+    "edited": "redigert",
+    "created": "lagd",
+    "deleted": "slettet",
     "menu": {
-        "choices": ""
+        "choices": "Side {{page}}/{{max}}"
     },
-    "nochange": "",
-    "commandhelp": "",
+    "nochange": "Ingenting ble endret.",
+    "commandhelp": "**Kommando Navn**: **__{{name}}__**\n\n**__Bruk__**\n```{{usage}}```\n**__Info__**\n{{info}}\n\n**__Aliaser__**\n{{aliases}}",
     "example": {
-        "id1": "",
-        "id2": "",
-        "id3": ""
+        "id1": "111111111111111111",
+        "id2": "222222222222222222",
+        "id3": "333333333333333333"
     },
-    "test": "",
-    "querycancelled": "",
-    "user": "",
-    "role": "",
-    "channel": ""
+    "test": "[[[generic.example.id1]];[[generic.example.id2]];[[generic.example.id3]]]",
+    "querycancelled": "Søket ble avbrutt.",
+    "user": "Bruker",
+    "role": "Rolle",
+    "channel": "Kanal"
 }
