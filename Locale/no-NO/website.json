@@ -24,23 +24,23 @@
         },
         "bbtag": {
             "title": "BBTag",
-            "desc": ""
+            "desc": "blargbot bruker et sofistikert tag system kalt BBTag, som du kan bruke til å lage egne avanserte kommandoer."
         },
         "customization": {
-            "title": "",
-            "desc": ""
+            "title": "Tilpasning",
+            "desc": "Vi er klar over at ikke alle servere er like, så blargbot har omfattende tilpasning. Du kan kontrollere nøyaktig hvilke roller som kan bruke hvilke kommandoer, sette egendefinerte prefikser og velge språket!"
         },
         "moderation": {
-            "title": "",
-            "desc": ""
+            "title": "Moderasjon",
+            "desc": "Trenger du noen til å overvåke chatten din? blargbot er utstyrt med mange moderasjonsverktøy fra grunnleggende ting som å utestenge eller dempe en bruker, til mer avanserte ting som chatlogging eller automatisk sensur."
         },
         "opensource": {
-            "title": "",
-            "desc": ""
+            "title": "Open-Source",
+            "desc": "Sharing is caring! blargbot er helt open-sorce under GNU AGPLv3 lisensen. Du er velkommen til å ta en titt og lære deg hvordan alt funker. Om du bruker noe av koden min i ditt eget prosjekt, er du forpliktet til å henvise til meg. Se lisensen for fler detaljer."
         },
         "suggestions": {
-            "title": "",
-            "desc": ""
+            "title": "Åpen For Forslag",
+            "desc": "Har du et forslag til botten? Jeg vil gjerne høre det! Funnet en bug? Jeg vil gjerne høre det også! Du kan foreslå noe til meg ved bruk av `suggest` kommandoen, ved bli med i serveren min eller sende inn en tilbakemelding."
         }
     },
     "bbtag": {
