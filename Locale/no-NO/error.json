@@ -1,15 +1,15 @@
 {
     "keyundef": "Ingen språkkode ble funnet: '{{key}}'.",
     "memberundef": "Ingen medlemmer ble funnet: '{{member}}'.",
-    "userundef": "",
-    "channelundef": "",
-    "roleundef": "",
-    "pleasereport": "",
-    "generic": "",
-    "invalidduration": "",
+    "userundef": "Ingen bruker ble funnet: '{{user}}'.",
+    "channelundef": "Ingen kanal ble funnet: '{{channel}}'.",
+    "roleundef": "Ingen rolle ble funnet: '{{role}}'.",
+    "pleasereport": "Hvis du mener dette er en feil, vennligst rapporter det!",
+    "generic": "Noe gikk galt!\n```\n{{message}}\n```\n[[error.pleasereport]]",
+    "invalidduration": "Du oppga en ugyldig tidslengde. Prøv og formater tiden som '5m30s' eller '5 minutter og 30 sekunder'.",
     "moderation": {
-        "position": "",
-        "owner": ""
+        "position": "{{target}} er rangert høyere enn deg!",
+        "owner": "Du kan ikke gjøre noe med server eieren!"
     },
     "couldnotsend": "",
     "messagetoolong": "",
