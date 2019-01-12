@@ -218,17 +218,17 @@
             "prefixlist": "{{content}}\nFor å endre på prefiksene dine, bruk underkommandoene `add` og `remove`. For å endre på server prefiksene, bruk `setup` kommandoen.",
             "userprefixes": "Her er prefiksene dine:\n```md\n{{userprefixes}}\n```",
             "guildprefixes": "Her er serverens prefikser:\n```md\n{{guildprefixes}}\n```",
-            "noprefixes": "",
-            "defaultprefixes": "",
-            "prefixadded": "",
-            "prefixremoved": "",
-            "nothingchanged": ""
+            "noprefixes": "Du har ingen egendefinerte prefikser.",
+            "defaultprefixes": "Du kan alltid bruke disse prefiksene:\n{{prefixes}}",
+            "prefixadded": "Den prefiksen ble lagt til!",
+            "prefixremoved": "Den prefiksen ble fjernet!",
+            "nothingchanged": "Ingenting ble endret."
         },
         "warnings": {
-            "output": ""
+            "output": "**{{user}}** har fått **{{amount}}** advarsel(er) i **{{guild}}**."
         },
         "economy": {
-            "info": "",
+            "info": "Konverterer valuta ved bruk av oppdaterte valutakurser.",
             "invalidamount": "",
             "invalidcode": "",
             "converted": "",
