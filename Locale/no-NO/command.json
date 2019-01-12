@@ -238,13 +238,13 @@
             "info": "Endrer eller viser bruker instillingene dine.",
             "subcommand": {
                 "dmerrors": {
-                    "usage": "",
-                    "info": ""
+                    "usage": "[true|false]",
+                    "info": "Bestemmer om feilmeldinger skal bli sent i DMs eller ikke."
                 }
             },
-            "dmerrorsenabled": "",
-            "dmerrorsdisabled": "",
-            "userinfo": ""
+            "dmerrorsenabled": "Sender feilmeldinger i DM fra nå av.",
+            "dmerrorsdisabled": "Sender ikke feilmeldinger i DM fra nå av.",
+            "userinfo": "Her er bruker instillingene dine:\n\n{{settings}}\n\nTilgjengelige underkommandoer: {{sub}}"
         },
         "rr": {
             "info": "",
