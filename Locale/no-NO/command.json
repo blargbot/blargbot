@@ -109,12 +109,12 @@
                     "info": "Gir en lenke til BBTag dokumentasjonen, eller gir informasjon om en spesifert subtag."
                 },
                 "setdesc": {
-                    "info": "",
-                    "usage": ""
+                    "info": "Setter info dokumentasjonen til en spesifisert tag.",
+                    "usage": "<navn> <beskrivelse>"
                 },
                 "setusage": {
-                    "info": "",
-                    "usage": ""
+                    "info": "Setter bruk dokumentasjonen til en spesifisert tag.",
+                    "usage": "<navn> <bruk>"
                 }
             },
             "subcommandnotfound": "Kunne ikke finne en underkommando med navnet `{{subcommand}}`.",
@@ -122,14 +122,14 @@
             "nobots": "[[emote.x]] Du kan ikke overføre en tag til en bot!",
             "transfercancelled": "[[emote.x]] Overføringen ble avbrutt.",
             "transfercomplete": "[[emote.check]] {{user}} eier nå tag-en `{{tag}}`.",
-            "taginfo": "",
-            "descupdate": "",
-            "descreset": "",
-            "subcommandconflict": "",
-            "toptagformat": "",
-            "toptags": "",
-            "tagauthor": "",
-            "favouriteadd": "",
+            "taginfo": "__**Tag | {{name}}**__\nForfatter: **{{author}}**\nSist Endret: **{{lastModified}}**\nBrukt: **{{uses}}**\nFavoritter: **{{favourites}}**\n\nBruk: `{{usage}}`\n\n{{desc}}",
+            "descupdate": "Beskrivelsen til `{{tag}}` har blitt oppdatert.",
+            "descreset": "Beskrivelsen til `{{tag}}` har blitt nullstilt.",
+            "subcommandconflict": "Du kan ikke bruke navnet `{{name}}` siden det er en underkommando med det navnet!",
+            "toptagformat": "{{index}}. **{{name}}** ({{author}})\n    - Favoritter: {{favourites}} Brukt: {{uses}}",
+            "toptags": "Her er de top 10 tag-ene!\n\n{{tags}}",
+            "tagauthor": "Tag-en `{{tag}}` ble laget av **{{author}}**",
+            "favouriteadd": "Tag-en `{{tag}}` har blitt lagt til favoritt lista di.",
             "favouriteremove": "",
             "favourites": ""
         },
