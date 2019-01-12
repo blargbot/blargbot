@@ -286,18 +286,18 @@
             "info": "Gir deg informasjon om en bruker.",
             "description": "**Brukernavn**: {{username}}\n**Diskriminator**: {{discriminator}}\n**ID**: {{id}}\n**Bot**: {{bot}}\n**Lagd**: {{created}}\n[Avatar]({{avatar}})",
             "guildinfoheader": "Server Informasjon",
-            "guildinfo": "",
+            "guildinfo": "**Kallenavn**: {{nick}}\n**Tillatelser**: {{permissions}}\n**Status**: {{status}}\n**Ble med**: {{joined}}\n{{game}}",
             "status": [
-                "",
-                "",
-                "",
-                ""
+                "Spiller",
+                "Streamer",
+                "Hører på",
+                "Ser på"
             ]
         }
     },
     "image": {
         "cat": {
-            "info": ""
+            "info": "Gir deg en søt og kjærlig katt.\nAwwww!"
         },
         "delete": {
             "info": ""
@@ -307,10 +307,10 @@
             "defaulttext": ""
         },
         "shit": {
-            "info": "",
+            "info": "Forteller alle hva du synes er dritt.",
             "usage": "[tekst]",
             "flags": {
-                "plural": ""
+                "plural": "Spesifiserer om den gitte teksten skal være flertall."
             }
         },
         "writepoem": {
@@ -327,7 +327,7 @@
     "admin": {
         "setup": {
             "staff": {
-                "setrole": "",
+                "setrole": "Personellets rolle har blitt oppdatert.",
                 "rolequery": ""
             },
             "info": "",
