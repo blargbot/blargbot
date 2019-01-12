@@ -33,5 +33,5 @@
         "missingarg": "Subtag '{{tag}}' mangler argumentet: '{{arg}}'",
         "namedunsupported": "Subtag '{{tag}}' støtter ikke navngitte argumenter"
     },
-    "inputtoolong": ""
+    "inputtoolong": "Inputtet ditt var for langt! Maksimum antall tegn for dette var {{max}}, men du brukte {{length}} tegn."
 }
