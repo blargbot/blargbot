@@ -134,9 +134,9 @@
             "favourites": "Du har {{count}} tags på favoritt lista di.\n```fix\n{{tags}}\n```"
         },
         "locale": {
-            "info": "",
-            "set": "",
-            "list": ""
+            "info": "Setter hvilken språkkode meldinger skal sendes i.",
+            "set": "Din språkkode har blitt satt til {{locale}}!",
+            "list": "Nåværende språkkode: {{current}}\n\nVelg hvilken språkkode du ønsker å bruke."
         },
         "tokenify": {
             "info": ""
@@ -150,7 +150,7 @@
         },
         "donate": {
             "info": "",
-            "willdm": "",
+            "willdm": "Ok, sender deg doneringsopplysningene mine i en DM.",
             "message": ""
         },
         "mods": {
