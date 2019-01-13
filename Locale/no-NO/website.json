@@ -55,22 +55,22 @@
         },
         "arrays": {
             "title": "Arrays",
-            "desc": ""
+            "desc": "## Arrays\n\nArrays er kalt matriser på godt norsk og er en super nyttig datastruktur. En array er kort sagt en liste over elementer. De kan likne på subtags, men bruker hakeparenteser `[]` i stedet for klammeparenteser `{}`.\n\nDet er mange subtags dedikert til å bruke og manipulere arrays. Se `Array` subtag klassen for mer informasjon.\n\n### Syntaks\n> `[element;element;element]`\n\n### Indekser\n\nArrays er organisert. Hvert element i en array er tilordnet en **indeks**, som rett og slett er plasseringen til elementet.\n\nDet viktigste å vite om arrays er at de er **0-indekserte**. Dette betyr at indekser starter på 0 i stedet for 1. La oss ta en titt på en array:\n```\n Indeks:  0 1 2 3 4\n-------------------\nArray: [1;2;3;4;5]\n```\nDet første elementet `1` har en indeks på `0`. Likeledes har det fjerde elementet `4` en indeks på `3`. Dette kan virke vanskelig i begynnelsen, men det er enkelt når du blir vant til det."
         }
     },
     "subtags": {
         "components": {
-            "argument": "",
-            "named": "",
-            "unnamed": "",
-            "array": "",
-            "staff": "",
-            "noimplicit": ""
+            "argument": "Argumenter:",
+            "named": "Støtter navngitte argumenter",
+            "unnamed": "Støtter **ikke** navngitte argumenter",
+            "array": "Støtter arrays",
+            "staff": "Krever at forfatteren er personell",
+            "noimplicit": "Støtter ikke implisitt classifisering"
         },
-        "referdocs": ""
+        "referdocs": "Sjekk ut [documentation](/bbtag) for flere bruks instrukser."
     },
     "commands": {
-        "title": "",
+        "title": "Kommandoer",
         "desc": "",
         "components": {
             "usage": "",
