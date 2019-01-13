@@ -71,20 +71,20 @@
     },
     "commands": {
         "title": "Kommandoer",
-        "desc": "",
+        "desc": "blargbot er utstyrt med en haug av kommandoer. Som standard, svarer blargbot til prefiksene 'b!', 'blargbot' og @blargbot. Du kan legge til flere prefikser for både deg selv og serveren.\n\nNoen kommandoer kan kun brukes av medlemmer som anses som personell. Du kan i tillegg tilpasse bruks begrensninger for hver eneste kommando.\n\nNoen kommandoer har spesielle krav for å utføres, som å legge til filer for å sende bilder. Kontroller at blargbot har de nødvendige tillatelsene om en kommando ikke ser ut til å funke.\n\n## Argumenter \n- `<>` - et nødvendig argument\n- `[]` - et valgfritt argument\n- `...` - man kan gjenta argumentet\n\n### Flagg\n\nI noen kommandoer kan det brukes flagg parametere. Alle flagg er delt inn i flagg koder (prefiks: `-`) og ord (prefikset: --). Flaggene kan gis i hvilken som helst rekkefølge, men må være etter alle de vanlige argumentene.\n\nFor eksempel om en kommando tok imot et user imput kunne du brukt `-u` eller `--user`.\n```\nb!command --user @user#1234\nb!command -u @user#1234\n```\nDu kan også lage en kjede av flagg. For eksempel ville `-flag test` aktivere flaggene `-f`, `-l`, `-a`, og gi innholdet 'test' til det siste flagget i kjeden, som er `-g`.",
         "components": {
-            "usage": "",
-            "flags": "",
-            "aliases": "",
-            "subcommands": ""
+            "usage": "Bruk:",
+            "flags": "Flagg:",
+            "aliases": "Aliaser:",
+            "subcommands": "Underkommandoer:"
         }
     },
     "dashboard": {
-        "userheader": "",
-        "guildheader": "",
-        "notauthed": "",
+        "userheader": "Bruker Instillinger",
+        "guildheader": "Server Instillinger",
+        "notauthed": "### Beklager, men du har ikke tilgang til denne siden\n\nLogg inn for å bruke dashbordet.",
         "user": {
-            "dmerrors": ""
+            "dmerrors": "DM feil"
         }
     }
 }
