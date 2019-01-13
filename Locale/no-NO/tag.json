@@ -1,16 +1,16 @@
 {
     "array": {
         "filter": {
-            "desc": ""
+            "desc": "Går gjennom en array, og setter det gjeldende elementet til en midlertidig variabel `i`. Om `varName` er spesifisert, heter variabelen det i stedet.\n\nReturnerer en ny array som kun inneholder elementene som returnerte verdien `true` eller `1`."
         },
         "foreach": {
-            "desc": ""
+            "desc": "Går gjennom en array, og setter det gjeldende elementet til en midlertidig variabel `i`. Om `varName` er spesifisert, heter variabelen det i stedet."
         },
         "get": {
-            "desc": ""
+            "desc": "Henter et element fra en array i posisjonen `index`."
         },
         "isarray": {
-            "desc": ""
+            "desc": "Returnerer true om det gitte elementet er en array, og false ellers. Du kan ikke bruke variabelnavn."
         },
         "join": {
             "desc": ""
