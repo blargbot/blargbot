@@ -60,8 +60,15 @@ module.exports =
             let users = [];
             let errors = [];
             for (const emote of parsed)
+                let tempUsers = [];
+                let lastUser;
                 try {
-                    users.push(...await message.getReaction(emote));
+                    tempUsers = await message.getReaction(emote);
+                    while (tempUsers.length > 0) {
+                        users.push(...tempUsers);
+                        lastUser = tempUsers[tempUsers.length-1];
+                        tempUsers = await message.getReaction(emote, null, lastUser);
+                    }
                 } catch (err) {
                     if (err.message == 'Unknown Emoji')
                         errors.push(emote);
