@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-02-10 13:18:21
+ * @Last Modified time: 2019-02-10 13:23:15
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -165,9 +165,10 @@ class DiscordClient extends Client {
 
             try {
                 let g = this.guilds.get(guild.guildid);
-                let m = g.members.get(interval.authorizer);
-                let u = this.users.get(interval.authorizer);
-                if (!u) u = await this.getRESTUser(interval.authorizer);
+                let id = interval.authorizer || interval.author;
+                let m = g.members.get(id);
+                let u = this.users.get(id);
+                if (!u) u = await this.getRESTUser(id);
                 let c;
                 for (const channel of g.channels.values()) {
                     if (channel.type === 0) { c = channel; break; }
