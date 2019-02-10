@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-08 11:23:01
+ * @Last Modified time: 2019-02-10 13:18:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -162,30 +162,35 @@ class DiscordClient extends Client {
         guilds = guilds.filter(g => this.guilds.get(g.guildid));
         for (const guild of guilds) {
             let interval = guild.ccommands._interval;
-            let g = this.guilds.get(guild.guildid);
-            let m = g.members.get(interval.authorizer);
-            let u = this.users.get(interval.authorizer);
-            if (!u) u = await this.getRESTUser(interval.authorizer);
-            let c;
-            for (const channel of g.channels.values()) {
-                if (channel.type === 0) { c = channel; break; }
+
+            try {
+                let g = this.guilds.get(guild.guildid);
+                let m = g.members.get(interval.authorizer);
+                let u = this.users.get(interval.authorizer);
+                if (!u) u = await this.getRESTUser(interval.authorizer);
+                let c;
+                for (const channel of g.channels.values()) {
+                    if (channel.type === 0) { c = channel; break; }
+                }
+                await bbEngine.runTag({
+                    msg: {
+                        channel: c,
+                        author: u,
+                        member: m,
+                        guild: g
+                    },
+                    limits: new bbtag.limits.autoresponse_everything(),
+                    tagContent: interval.content,
+                    input: '',
+                    isCC: true,
+                    tagName: '_interval',
+                    author: interval.author,
+                    authorizer: interval.authorizer,
+                    silent: true
+                });
+            } catch (err) {
+                console.error('Issue with interval:', guild.guildid, err);
             }
-            await bbEngine.runTag({
-                msg: {
-                    channel: c,
-                    author: u,
-                    member: m,
-                    guild: g
-                },
-                limits: new bbtag.limits.autoresponse_everything(),
-                tagContent: interval.content,
-                input: '',
-                isCC: true,
-                tagName: '_interval',
-                author: interval.author,
-                authorizer: interval.authorizer,
-                silent: true
-            });
         }
     }
 
