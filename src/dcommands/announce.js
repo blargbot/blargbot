@@ -69,12 +69,14 @@ class AnnounceCommand extends BaseCommand {
             var message = words.join(' ');
             let channel = bot.getChannel(changeChannel);
             let role = channel.guild.roles.get(roleId);
+
+            let topRole = getTopRole(msg.member);
             let embed = {
                 footer: {
                     text: bu.getFullName(msg.author),
                     icon_url: msg.author.avatarURL
                 },
-                color: getTopRole(msg.member).color,
+                color: topRole ? topRole.color : undefined,
                 description: message + '\n',
                 timestamp: moment(msg.timestamp),
                 author: {
