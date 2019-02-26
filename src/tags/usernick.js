@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:20:48
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:02:25
+ * @Last Modified time: 2019-02-26 13:42:36
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -32,7 +32,7 @@ module.exports =
             if (user != null) {
                 let member = context.guild.members.get(user.id);
                 if (member == null) return user.username;
-                return member.nick || user.username;
+                return (member.nick || user.username).replace(/@/g, '@\u200b');
             }
 
             if (quiet)
