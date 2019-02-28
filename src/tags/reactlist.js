@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:35
  * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-02-28 11:00:02
+ * @Last Modified time: 2019-02-28 11:07:46
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -64,7 +64,7 @@ module.exports =
                     do {
                         let lastUser = users.length === 0 ? null : users[users.length - 1].id;
                         users.push(...await message.getReaction(emote, 100, null, lastUser));
-                    } while (users.length < message.reactions[emote.replace(/^(a):/gi, '')].count);
+                    } while (users.length < message.reactions[emote.replace(/^a?:/gi, '')].count);
                 } catch (err) {
                     if (err.message == 'Unknown Emoji')
                         errors.push(emote);
