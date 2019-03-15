@@ -34,17 +34,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- CodeMirror -->
-    <script src="/codemirror/lib/codemirror.js"></script>
-    <link rel="stylesheet" href="/codemirror/lib/codemirror.css">
-    <link rel="stylesheet" href="/codemirror/theme/monokai.css">
-    <script src="/codemirror/mode/javascript/javascript.js"></script>
-    <script src="/codemirror/addon/mode/simple.js"></script>
-    <script src="/codemirror/addon/edit/matchbrackets.js"></script>
-    <script src="/codemirror/addon/edit/closebrackets.js"></script>
-    <script src="/codemirror/addon/edit/matchtags.js"></script>
-    <script src="/codemirror/addon/hint/show-hint.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/codemirror.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/codemirror.min.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/theme/monokai.min.css">
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/mode/javascript/javascript.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/addon/mode/simple.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/addon/edit/matchbrackets.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/addon/edit/closebrackets.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/addon/edit/matchtags.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/addon/hint/show-hint.min.js"></script>
     <script src="/js/cattag-hint.js"></script>
-    <link rel="stylesheet" href="/codemirror/addon/hint/show-hint.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/codemirror/5.44.0/addon/hint/show-hint.min.css">
 
     <!-- OpenGraph -->
     <title>Tag IDE</title>
@@ -195,7 +195,7 @@
 										</button>
                                     </div>
                                 </div>
-                                <textarea id="yayEditor" style="height: 100%; font-size: 20px; background-color: #272822" name='content'>{{startText}}</textarea>
+                                <textarea id="yayEditor" style="height: 100%; font-size: 20px; background-color: #272822" name='content'></textarea>
                                 <div class='row'>
                                     <div class='col s12'>
                                         <button type='button' class="cyan accent-3 white-text btn waves-effect waves-light full" onclick='exportFile()'>
@@ -203,14 +203,20 @@
                                         </button>
                                     </div>
                                 </div>
+                                {{!-- <script>
+                                    let teditor = document.getElementById('yayEditor');
+                                    let startText = {{{startText}}};
+                                    teditor.value = startText || localStorage.content || '{//;Start by typing an opening brace.\nDocumentation is available here: https://blargbot.xyz/tags/ }';
+                                    
+                                </script> --}}
                                 <script> 
                                     let teditor = document.getElementById('yayEditor');
-                                    if (teditor.innerText === '') {
-                                        teditor.innerText = {{{startText}}} || localStorage.content || '{//;Start by typing an opening brace.\nDocumentation is available here: https://blargbot.xyz/tags/ }';
-                                    }
+                                    let startText = {{{startText}}};
+                                    teditor.value = startText || localStorage.content || '{//;Start by typing an opening brace.\nDocumentation is available here: https://blargbot.xyz/tags/ }';
                                     var words = {{#tagseditor}}{{/tagseditor}};
                                     words.length--;
-                                    var editor = CodeMirror.fromTextArea(document.getElementById("yayEditor"), {
+
+                                    var editor = CodeMirror.fromTextArea(teditor, {
                                         mode: 'cattag',
                                         lineNumbers: true,
                                         indentWithTabs: false,
@@ -223,7 +229,8 @@
                                         lineWrapping: true,
                                         hintOptions: {
                                             words: words
-                                        }
+                                        },
+                                        tabMode: 'indent'
                                     });
                                     editor.on("inputRead", function (editor, change) {
                                         if (change.text[0] == '{') {
@@ -254,7 +261,8 @@
 
 
                                     setFontSize(localStorage.fontSize || 20);
-                                </script><br>
+                                </script>
+                                <br>
                                 <!--	<input type="submit" value="Load" class="cyan accent-3 white-text btn waves-effect waves-light">-->
 
                             </form>
