@@ -1,7 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const bigInteger = require('big-integer');
 
-class ShipCommand extends BaseCommand {
+class ShardCommand extends BaseCommand {
     constructor() {
         super({
             name: 'shard',
@@ -30,4 +30,4 @@ class ShipCommand extends BaseCommand {
     }
 }
 
-module.exports = ShipCommand;
+module.exports = ShardCommand;
