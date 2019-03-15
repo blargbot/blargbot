@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-19 09:07:18
+ * @Last Modified time: 2019-03-15 13:30:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -443,7 +443,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
     if (storedGuild && storedGuild.autoresponse) {
         let ars = storedGuild.autoresponse;
 
-        if (everything && ars.everything) {
+        if (everything && ars.everything && storedGuild.ccommands[ars.everything.executes]) {
             await bbEngine.runTag({
                 msg,
                 limits: new bbtag.limits.autoresponse_everything(),
