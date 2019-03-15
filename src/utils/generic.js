@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-12-10 11:05:35
+ * @Last Modified time: 2019-03-15 13:01:48
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1724,9 +1724,13 @@ bu.findEmoji = function (text, distinct) {
     text = text.replace(/\ufe0f/g, '');
 
     // Find custom emotes
-    let regex = /<(a?:\w+:\d{17,23})>/gi;
-    while (match = regex.exec(text))
-        result.push(match[1]);
+    let regex = /<(a?:\w+:\d{17,23})>|(\w+:\d{17,23})/gi;
+    while (match = regex.exec(text)) {
+        if (match[2])
+            result.push(match[2]);
+        else
+            result.push(match[1]);
+    }
 
     // Find twemoji defined emotes
     twemoji.replace(text, function (match) {
