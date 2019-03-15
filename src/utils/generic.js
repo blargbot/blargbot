@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-03-15 13:01:48
+ * @Last Modified time: 2019-03-15 13:24:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -124,7 +124,7 @@ bu.awaitReact = async function (messages, users, reactions, check, timeout) {
     if (reactions != null) {
         if (!Array.isArray(reactions))
             reactions = [reactions];
-        reactions = reactions.map(r => r.replace(/[<>]]/g, ''));
+        reactions = reactions.map(r => r.replace(/[<>]/g, ''));
     }
     if (typeof check != "function")
         check = function () { return true; };
@@ -147,14 +147,24 @@ bu.awaitReact = async function (messages, users, reactions, check, timeout) {
 
     console.debug(`awaiting reaction | messages: [${messages}] users: [${users}] reactions: ${JSON.stringify(reactions)} timeout: ${timeout}`);
 
+    const SANITIZED = /(\w+:\d+)/;
+    const watchFor = reactions.map(r => {
+        if (SANITIZED.test(r)) return r.match(SANITIZED)[1];
+        else return r;
+    });
+
     return await new Promise(async function (resolve, reject) {
         let timeoutId = setTimeout(function () {
             reject(new TimeoutError(timeout));
         }, timeout);
 
         bu.emitter.on(eventName, async function (message, emoji, user) {
+            let sanitized = emoji;
+            if (SANITIZED.test(sanitized)) sanitized = sanitized.match(SANITIZED)[1];
+
+            console.log('Received reaction event:', eventName, sanitized, watchFor);
             try {
-                if (reactions && reactions.length > 0 && !reactions.includes(emoji))
+                if (reactions && reactions.length > 0 && !watchFor.includes(sanitized))
                     return;
                 if (await check(message, user, emoji)) {
                     clearTimeout(timeoutId);
