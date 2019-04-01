@@ -18,7 +18,7 @@ export default {
       "&scope=identify" +
       "&response_type=code" +
       "&redirect_uri=" +
-      encodeURIComponent("kys");
+      encodeURIComponent("beta.blargbot.xyz/callback");
   }
 };
 </script>
