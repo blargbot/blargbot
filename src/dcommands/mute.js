@@ -89,15 +89,24 @@ class MuteCommand extends BaseCommand {
                         bu.send(msg, 'That user is already muted!');
                     } else {
                         try {
-                            var roles = member.roles;
-                            roles.push(mutedrole);
-                            let reason;
+                            let reason, fullReason;
                             let input = bu.parseInput(this.flags, words);
-                            if (input.r) reason = input.r.join(' ');
-                            await bot.editGuildMember(msg.channel.guild.id, user.id, {
-                                roles: roles,
-                                mute: voiceMute ? true : undefined
-                            }, `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`);
+                            if (input.r) {
+                                reason = input.r.join(' ');
+                                fullReason = `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`;
+                            }
+                            await bot.addGuildMemberRole(msg.channel.guild.id, user.id, mutedrole, fullReason);
+
+                            // discord started erroring on voiceMute if the user wasn't in a voice channel (thanks, discord!)
+                            // so, now we gotta make two calls i guess
+                            // TODO: check if user is in a voice channel
+                            if (voiceMute) {
+                                try {
+                                    await bot.editGuildMember(msg.channel.guild.id, user.id, {
+                                        mute: true
+                                    }, fullReason);
+                                } catch (err) { /* no-op */ }
+                            }
 
                             bu.logAction(msg.channel.guild, user, msg.author, 'Mute', reason, bu.ModLogColour.MUTE);
                             let suffix = '';

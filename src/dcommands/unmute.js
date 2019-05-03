@@ -32,17 +32,27 @@ class UnmuteCommand extends BaseCommand {
                     if (member.roles.indexOf(mutedrole) == -1) {
                         bu.send(msg, 'That user isn\'t muted!');
                     } else {
-                        var roles = member.roles;
-                        roles.splice(roles.indexOf(mutedrole), 1);
                         let voiceMute = msg.guild.members.get(bot.user.id).permission.json.voiceMuteMembers;
                         try {
-                            let reason;
+                            let reason, fullReason;
                             let input = bu.parseInput(this.flags, words);
-                            if (input.r) reason = input.r.join(' ');
-                            await bot.editGuildMember(msg.channel.guild.id, user.id, {
-                                roles: roles,
-                                mute: voiceMute ? false : undefined
-                            }, `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`);
+                            if (input.r) {
+                                reason = input.r.join(' ');
+                                fullReason = `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`;
+                            }
+                            await bot.removeGuildMemberRole(msg.channel.guild.id, user.id, mutedrole, fullReason);
+
+                            // discord started erroring on voiceMute if the user wasn't in a voice channel (thanks, discord!)
+                            // so, now we gotta make two calls i guess
+                            // TODO: check if user is in a voice channel
+                            if (voiceMute) {
+                                try {
+                                    await bot.editGuildMember(msg.channel.guild.id, user.id, {
+                                        mute: false
+                                    }, fullReason);
+                                } catch (err) { /* no-op */ }
+                            }
+
                             bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', reason, bu.ModLogColour.UNMUTE);
                             bu.send(msg, ':ok_hand:');
                         } catch (err) {
