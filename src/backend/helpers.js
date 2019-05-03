@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:35
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-11 14:42:12
+ * @Last Modified time: 2019-05-02 19:37:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -56,7 +56,7 @@ const tagType = {
 };
 
 function mdToHtml(text) {
-    text = text.replace(/([,;/])(?=\S)/g, '$1\u200b');
+    // text = text.replace(/([,;/])(?=\S)/g, '$1\u200b');
     let result = converter.makeHtml(text).replace(/\n/g, '<br>');
 
     // if (result.startsWith('<p>'))
