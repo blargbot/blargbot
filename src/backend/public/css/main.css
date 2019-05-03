@@ -302,9 +302,8 @@ table, th, td {
 
 .tagexamples blockquote {
     overflow-wrap: break-word;
-    word-break: break-all;
 }
 
 code.block {
-    word-break: break-all;
+    overflow-wrap: break-word;
 }
