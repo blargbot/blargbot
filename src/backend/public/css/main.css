@@ -299,3 +299,7 @@ table, th, td {
     padding: 5px;
     width: 35%;
 }
+
+.tagexamples blockquote {
+    overflow-wrap: break-word;
+}
