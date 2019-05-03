@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:26:13
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-12 08:52:22
+ * @Last Modified time: 2019-04-05 15:32:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -63,12 +63,14 @@ var VERSION = config.version;
 class BlargbotClient {
     constructor() {
         // todo: make these not global because ew
-        this.discord = this.bot = global.bot = new Eris(config.discord.token, { restMode: true, defaultImageFormat: 'png' });
+        this.discord = this.bot = global.bot = new Eris(config.discord.token, {
+            restMode: true, defaultImageFormat: 'png'
+        });
         this.irc = irc;
         this.spawner = global.spawner = new Spawner(this);
 
         console.init('Initializing discord.');
-        spawner.spawnAll();
+        this.spawner.spawnAll();
         irc.init(VERSION, botEmitter);
         console.verbose('IRC finished?');
 
@@ -87,7 +89,7 @@ class BlargbotClient {
         reload.emptyCache(this.backend.requireCtx);
         console.website('Websites are GOING DOWN!');
         await Promise.all([this.frontend.stop(), this.backend.stop()]);
-        console.website('Starting sites back up...')
+        console.website('Starting sites back up...');
         this.spawnWebsite();
     }
 }
