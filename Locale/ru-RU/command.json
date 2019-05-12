@@ -164,7 +164,7 @@
             "allcommands": "Здесь все команды, которые вы можете использовать на сервере **{{guild}}**.\n```markdown\n{{commands}}\n```\nДля дополнительной информации о командах, введите `help <commandname>` или посетите <https://blargbot.xyz/commands>.",
             "nocommand": "Команды с именем {{name}} здесь нет.",
             "commandinfo": "**{{type}}: {{name}}**\n\n**Производное название**: {{aliases}}\n**Использование**: {{usage}}\n\n{{description}}",
-            "aliases": "Нет псевдонимов",
+            "aliases": "Нет других названий",
             "subcommand": "Подкоманда.",
             "command": "Команда.",
             "nosubcommand": "К сожалению, субкоманды '{{name}}' для команды '{{command}}' не существует.",
