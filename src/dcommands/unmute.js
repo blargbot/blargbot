@@ -74,13 +74,24 @@ class UnmuteCommand extends BaseCommand {
 
         var roles = member.roles;
         if (roles.indexOf(args.role) > -1) {
-            roles.splice(roles.indexOf(args.role), 1);
+            const reason = `Automatically unmuted after ${moment.duration(args.duration).humanize()}.`;
+
             let voiceMute = guild.members.get(bot.user.id).permission.json.voiceMuteMembers;
-            await bot.editGuildMember(guild.id, member.id, {
-                roles: roles,
-                mute: voiceMute ? false : undefined
-            });
-            bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', `Automatically unmuted after ${moment.duration(args.duration).humanize()}.`, bu.ModLogColour.UNMUTE);
+
+            await bot.removeGuildMemberRole(guild.id, member.id, args.role, reason);
+
+            // discord started erroring on voiceMute if the user wasn't in a voice channel (thanks, discord!)
+            // so, now we gotta make two calls i guess
+            // TODO: check if user is in a voice channel
+            if (voiceMute) {
+                try {
+                    await bot.editGuildMember(guild.id, member.id, {
+                        mute: false
+                    }, reason);
+                } catch (err) { /* no-op */ }
+            }
+
+            bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', reason, bu.ModLogColour.UNMUTE);
         }
     };
 }
