@@ -13,18 +13,18 @@
                 "",
                 "",
                 "",
-                "",
+                "Мяу.",
                 "",
                 "",
                 "",
                 "",
                 ""
             ],
-            "final": ""
+            "final": "Понг! ({{time}}ms)"
         },
         "brainfuck": {
             "info": "",
-            "usage": "",
+            "usage": "<code>",
             "flags": {
                 "p": "",
                 "i": "",
@@ -34,8 +34,8 @@
         },
         "ship": {
             "info": "",
-            "usage": "",
-            "final": "",
+            "usage": "<user1> <user2>",
+            "final": "Ім'я вашого корабля — **{{name}}**!",
             "notenough": ""
         },
         "tag": {
