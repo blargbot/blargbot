@@ -11,6 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('void')
+        .withAlias('null')
         .withArgs(a => a.optional('code'))
         .withDesc('Executes `code` but does not return the output from it. Useful for silent functionality')
         .withExample(
