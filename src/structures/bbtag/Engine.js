@@ -27,6 +27,7 @@ function parse(content) {
  * @returns {string}
  */
 async function execute(bbtag, context) {
+    console.log('calling execute');
     if (!context.guild) return;
     if (!(bbtag instanceof BBTag))
         throw new Error('Execute can only accept BBTag as its first parameter');
@@ -76,7 +77,9 @@ async function execute(bbtag, context) {
                 result.push(await runSubtag(subtag, context));
             } catch (err) {
                 if (err instanceof RangeError) {
-                    bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);
+                    if (context.state.return == 0)
+                        await bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);
+                    context.state.return = -1;
                     throw err;
                 }
                 result.push(addError(subtag, context, 'An internal server error has occurred'));
@@ -172,6 +175,27 @@ function addError(tag, context, message) {
     return context.scope.fallback;
 }
 
+function sleep(time = 100) {
+    return new Promise(res => {
+        setTimeout(res, time);
+    });
+}
+
+async function safeLoopIteration(context) {
+    if (context.state.safeLoops === undefined) context.state.safeLoops = 0;
+    context.state.safeLoops++;
+
+    if (context.state.safeLoops % 1000 === 0) {
+        await sleep(100);
+    }
+    // is 100,000 loops enough? :3
+    if (context.state.safeLoops >= 100000) {
+        return true;
+    }
+
+    return false;
+}
+
 /**
  * @typedef {Object} runArgs
  * @property {Object} runArgs.msg The message that triggered this tag.
@@ -254,7 +278,8 @@ module.exports = {
     execString,
     addError,
     runTag,
-    checks
+    checks,
+    safeLoopIteration
 };
 
 /**
@@ -272,8 +297,8 @@ module.exports = {
  * @property {string} StateScope.fallback
  */
 
- /**
- * @typedef {Object} bbError An error that ocurred while executing BBTag
- * @property {BaseTag} bbError.tag The loacation that the error ocurred
- * @property {string|bbError[]} bbError.error The error that happened
- */
+/**
+* @typedef {Object} bbError An error that ocurred while executing BBTag
+* @property {BaseTag} bbError.tag The loacation that the error ocurred
+* @property {string|bbError[]} bbError.error The error that happened
+*/

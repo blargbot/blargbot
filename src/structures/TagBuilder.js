@@ -315,7 +315,8 @@ TagBuilder.errors = {
     invalidDomain(subtag, context, url) { return TagBuilder.util.error(subtag, context, `A domain could not be extracted from url: ${url}`); },
     domainNotWhitelisted(subtag, context, domain) { return TagBuilder.util.error(subtag, context, `Domain is not whitelisted: ${domain}`); },
     invalidRequestMethod(subtag, context, method) { return TagBuilder.util.error(subtag, context, `Request method must be one of 'GET', 'PUT', 'PATCH', 'POST', or 'DELETE'`); },
-    customError(subtag, context, message) { return TagBuilder.util.error(subtag, context, message); }
+    customError(subtag, context, message) { return TagBuilder.util.error(subtag, context, message); },
+    maxSafeLoops(subtag, context) { return TagBuilder.util.error(subtag, context, 'Max safeloops reached'); }
 };
 
 function buildLengthEmbed(definition, subtag, context) {

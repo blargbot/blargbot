@@ -97,7 +97,8 @@ class Context {
             continue: 0,
             subtags: {},
             overrides: {},
-            cache: {}
+            cache: {},
+            safeLoops: 0
         };
     }
 

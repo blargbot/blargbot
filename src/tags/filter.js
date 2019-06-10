@@ -8,7 +8,8 @@
  */
 
 const Builder = require('../structures/TagBuilder'),
-    waitMessage = require('./waitmessage');
+    waitMessage = require('./waitmessage'),
+    bbengine = require('../structures/bbtag/Engine');
 
 module.exports =
     Builder.ArrayTag('filter')
@@ -39,6 +40,9 @@ module.exports =
 
             for (const item of array) {
                 if (processed[item]) continue;
+                if (await bbengine.safeLoopIteration(context)) {
+                    return Builder.errors.maxSafeLoops(subtag, context);
+                };
 
                 await context.variables.set(varName, item);
                 try {
