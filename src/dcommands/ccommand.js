@@ -667,14 +667,13 @@ class CcommandCommand extends BaseCommand {
                             return s.name == words[2].toLowerCase() || (s.aliases || []).includes(words[2].toLowerCase());
                         });
                         if (command.length > 0) {
-                            bu.send(msg, `**Subcommand:** ${command[0].name}${
-                                command[0].aliases && command[0].aliases.length > 0
-                                    ? `\n**Aliases:** ${(command[0].aliases || []).join(', ')}`
-                                    : ''
-                                }${
-                                command[0].args ? `**Args:** \`${command[0].args}\`` : ''
-                                }
-${command[0].desc}`);
+                            let subcommandHelp = `**Subcommand:** ${command[0].name}\n`;
+                            if (command[0].aliases && command[0].aliases.length > 0) 
+                                subcommandHelp += `**Aliases:** ${(command[0].aliases || []).join(', ')}\n`;
+                            if (command[0].args)
+                                subcommandHelp += `Args:** \`${command[0].args}\`\n`;
+                            message += `${command[0].desc}`;
+                            bu.send(msg, subcommandHelp);
                         } else {
                             bu.send(msg, 'That subcommand was not found!');
                         }
