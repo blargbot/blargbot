@@ -6,7 +6,7 @@ class HackbanCommand extends BaseCommand {
             name: 'hackban',
             category: bu.CommandType.ADMIN,
             usage: 'hackban <user...> [days]',
-            info: 'Bans a user who isn\'t currently on your guild, where `<user...>` is a list of user IDs or mentions (separated by spaces) and `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.',
+            info: 'Bans a user who isn\'t currently on your guild, where `<user...>` is a list of user IDs or mentions (separated by spaces) and `days` is the number of days to delete messages for (defaults to 0).\nIf mod-logging is enabled, the ban will be logged.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the ban.' }]
         });
     }
@@ -23,7 +23,7 @@ class HackbanCommand extends BaseCommand {
         }
         let input = bu.parseInput(this.flags, words);
         let userList = [];
-        let days = 1;
+        let days = 0;
         for (let i = 0; i < input.undefined.length; i++) {
             if (input.undefined[i]) {
                 if (/[0-9]{17,21}/.test(input.undefined[i])) {
@@ -31,7 +31,7 @@ class HackbanCommand extends BaseCommand {
                 } else if (i == input.undefined.length - 1) {
                     days = parseInt(input.undefined[i]);
                     if (isNaN(days)) {
-                        days = 1;
+                        days = 0;
                     }
                 }
             }
@@ -40,7 +40,11 @@ class HackbanCommand extends BaseCommand {
         if (!bu.bans[msg.channel.guild.id])
             bu.bans[msg.channel.guild.id] = {};
         console.verbose(userList);
-        if (userList.length == 1)
+        if (userList.length == 0) {
+            bu.send(msg, `You can't ban no one!`);
+            return;
+        }
+        else if (userList.length == 1)
             bu.bans[msg.channel.guild.id][userList[0]] = {
                 mod: msg.author,
                 type: 'Hack-Ban',
