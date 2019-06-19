@@ -558,7 +558,7 @@ ${command[0].desc}`);
                     let toSend = `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`;
                     if (tag.authorizer && tag.authorizer != author.id) {
                         authorizer = await r.table('user').get(tag.authorizer).run();
-                        toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}`;
+                        toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}**`;
                     }
                     bu.send(msg, toSend);
                     break;
