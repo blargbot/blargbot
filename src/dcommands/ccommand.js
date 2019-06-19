@@ -668,10 +668,10 @@ class CcommandCommand extends BaseCommand {
                         });
                         if (command.length > 0) {
                             let subcommandHelp = `**Subcommand:** ${command[0].name}\n`;
-                            if (command[0].aliases && command[0].aliases.length > 0) 
+                            if (command[0].aliases && command[0].aliases.length > 0)
                                 subcommandHelp += `**Aliases:** ${(command[0].aliases || []).join(', ')}\n`;
                             if (command[0].args)
-                                subcommandHelp += `Args:** \`${command[0].args}\`\n`;
+                                subcommandHelp += `**Args:** \`${command[0].args}\`\n`;
                             message += `${command[0].desc}`;
                             bu.send(msg, subcommandHelp);
                         } else {
