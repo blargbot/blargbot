@@ -1031,10 +1031,13 @@ function* tokenizeInput(source) {
 function* nextInputTokens(state, offset, type) {
     if (state.from != state.to) {
         yield { type: tokenTypes.TEXT, content: state.source.substring(state.from, state.to) };
+        state.from = state.to;
     }
-    state.from = state.to;
-    if (type) {
-        offset(state);
+    if (!type) {
+        return;
+    }
+    offset(state);
+    if (state.from != state.to) {
         yield { type, content: state.source.substring(state.from, state.to) };
         state.from = state.to;
     }
