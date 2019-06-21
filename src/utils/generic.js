@@ -991,54 +991,36 @@ function* splitInput(content, noTrim) {
 }
 
 function* tokenize(source) {
-    for (const token of _tokenizeInner(source)) {
-        if (token.content != "") {
-            yield token;
-        }
-    }
-}
-
-function* _tokenizeInner(source) {
     const state = { source, from: 0, to: 0 };
     while (state.to < source.length) {
         const char = state.source[state.to];
         switch (true) {
             case /^\\$/.test(char):
-                yield nextSplit(state, tokenTypes.TEXT);
-                state.to += 2;
-                yield nextSplit(state, tokenTypes.ESCAPE);
+                yield* nextTokens(state, s => s.to += 2, tokenTypes.ESCAPE);
                 break;
             case /^"$/.test(char):
-                yield nextSplit(state, tokenTypes.TEXT);
-                state.to++;
-                yield nextSplit(state, tokenTypes.QUOTE);
+                yield* nextTokens(state, s => s.to += 1, tokenTypes.QUOTE);
                 break;
             case /^\s$/.test(char):
-                yield nextSplit(state, tokenTypes.TEXT);
-                while (/^\s$/.test(state.source[++state.to]));
-                yield nextSplit(state, tokenTypes.WHITESPACE);
+                yield* nextTokens(state, s => { while (/^\s$/.test(s.source[++s.to])); }, tokenTypes.WHITESPACE);
                 break;
             default:
                 state.to++;
         }
     }
-    yield nextSplit(state, tokenTypes.TEXT);
+    yield* nextTokens(state);
 }
 
-/**
- * Returns a token spanning from state.from to before state.to.
- * state.from is then set to state.to
- * @param {{ source: string, from: number, to: number }} state 
- * @param {string} type
- */
-function nextSplit(state, type) {
-    const result = {
-        content: state.source.substring(state.from, state.to),
-        type
-    };
-
+function* nextTokens(state, offset, type) {
+    if (state.from != state.to) {
+        yield { type: tokenTypes.TEXT, content: state.source.substring(state.from, state.to) };
+    }
     state.from = state.to;
-    return result;
+    if (type) {
+        offset(state);
+        yield { type, content: state.source.substring(state.from, state.to) };
+        state.from = state.to;
+    }
 }
 
 const tokenTypes = {
