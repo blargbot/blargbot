@@ -960,9 +960,14 @@ bu.splitInput = (content, noTrim) => {
     return [...splitInput(content, noTrim)]
 };
 
+/**
+ * Produces a series of strings from the given content
+ * @param {string} content The content to split
+ * @param {boolean} noTrim Should concurrent whitespace characters be removed
+ */
 function* splitInput(content, noTrim) {
     let result = [], inQuote = false;
-    for (const token of tokenize(content)) {
+    for (const token of tokenizeInput(content)) {
         switch (token.type) {
             case tokenTypes.QUOTE:
                 inQuote = !inQuote;
@@ -990,28 +995,40 @@ function* splitInput(content, noTrim) {
         yield result.join('');
 }
 
-function* tokenize(source) {
+/**
+ * Produces a series of tokens from the `source`
+ * @param {string} source The input text
+ */
+function* tokenizeInput(source) {
     const state = { source, from: 0, to: 0 };
     while (state.to < source.length) {
         const char = state.source[state.to];
         switch (true) {
             case /^\\$/.test(char):
-                yield* nextTokens(state, s => s.to += 2, tokenTypes.ESCAPE);
+                yield* nextInputTokens(state, s => s.to += 2, tokenTypes.ESCAPE);
                 break;
             case /^"$/.test(char):
-                yield* nextTokens(state, s => s.to += 1, tokenTypes.QUOTE);
+                yield* nextInputTokens(state, s => s.to += 1, tokenTypes.QUOTE);
                 break;
             case /^\s$/.test(char):
-                yield* nextTokens(state, s => { while (/^\s$/.test(s.source[++s.to])); }, tokenTypes.WHITESPACE);
+                yield* nextInputTokens(state, s => { while (/^\s$/.test(s.source[++s.to])); }, tokenTypes.WHITESPACE);
                 break;
             default:
                 state.to++;
+                break;
         }
     }
-    yield* nextTokens(state);
+    yield* nextInputTokens(state);
 }
 
-function* nextTokens(state, offset, type) {
+/**
+ * Produces 0, 1 or 2 tokens. If `state.from != state.to`, a `TEXT` token will be yielded. Then, if `type` is set, the
+ * `offset` will be called and another token will be yielded of type `type`
+ * @param {{source: string, type: string, content: string}} state The state tracker
+ * @param {(state: {source: string, type: string, content: string}) => void} offset The offset function, to move from the first to the second tokens
+ * @param {string} type The type of the token after offset
+ */
+function* nextInputTokens(state, offset, type) {
     if (state.from != state.to) {
         yield { type: tokenTypes.TEXT, content: state.source.substring(state.from, state.to) };
     }
