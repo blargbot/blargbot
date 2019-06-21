@@ -957,51 +957,96 @@ bu.comparePerms = (m, allow) => {
 };
 
 bu.splitInput = (content, noTrim) => {
-    let input;
-    if (Array.isArray(content)) content = content.join(' ');
-    if (!noTrim) input = content.replace(/ +/g, ' ').split(' ');
-    else input = content.split(' ');
-    if (input.length > 0 && input[0] == '')
-        input.shift();
-    if (input.length > 0 && input.slice(-1)[0] == '')
-        input.pop();
-    let words = [];
-    let inQuote = false;
-    let quoted = '';
-
-    for (let i in input) {
-        if (!inQuote) {
-            if (input[i].startsWith('"') && !input[i].startsWith('\\"')) {
-                inQuote = true;
-                if (input[i].endsWith('"') && !input[i].endsWith('\\"')) {
-                    inQuote = false;
-                    words.push(input[i].substring(1, input[i].length - 1));
-                } else
-                    quoted = input[i].substring(1, input[i].length) + ' ';
-            } else {
-                words.push(input[i]);
-            }
-        } else if (inQuote) {
-            if (input[i].endsWith('"') && !input[i].endsWith('\\"')) {
-                inQuote = false;
-                quoted += input[i].substring(0, input[i].length - 1);
-                words.push(quoted);
-            } else {
-                quoted += input[i] + ' ';
-            }
-        }
-    }
-    if (inQuote) {
-        words = input;
-    }
-    for (let i in words) {
-        words[i] = words[i].replace(/\\"/g, '"');
-        if (!noTrim) words[i] = words[i].replace(/^ +/g, '');
-    }
-    //console.debug(words);
-    return words;
+    return [...splitInput(content, noTrim)]
 };
 
+function* splitInput(content, noTrim) {
+    let result = [], inQuote = false;
+    for (const token of tokenize(content)) {
+        switch (token.type) {
+            case tokenTypes.QUOTE:
+                inQuote = !inQuote;
+                break;
+            case tokenTypes.WHITESPACE:
+                if (!inQuote) {
+                    yield result.join('');
+                    result = [];
+                }
+                else if (noTrim) {
+                    result.push(token.content);
+                } else {
+                    result.push(token.content.replace(/ +/g, ' '));
+                }
+                break;
+            case tokenTypes.ESCAPE:
+                result.push(token.content[1]);
+                break;
+            case tokenTypes.TEXT:
+                result.push(token.content);
+                break;
+        }
+    }
+    if (result.length > 0)
+        yield result.join('');
+}
+
+function* tokenize(source) {
+    for (const token of _tokenizeInner(source)) {
+        if (token.content != "") {
+            yield token;
+        }
+    }
+}
+
+function* _tokenizeInner(source) {
+    const state = { source, from: 0, to: 0 };
+    while (state.to < source.length) {
+        const char = state.source[state.to];
+        switch (true) {
+            case /^\\$/.test(char):
+                yield nextSplit(state, tokenTypes.TEXT);
+                state.to += 2;
+                yield nextSplit(state, tokenTypes.ESCAPE);
+                break;
+            case /^"$/.test(char):
+                yield nextSplit(state, tokenTypes.TEXT);
+                state.to++;
+                yield nextSplit(state, tokenTypes.QUOTE);
+                break;
+            case /^\s$/.test(char):
+                yield nextSplit(state, tokenTypes.TEXT);
+                while (/^\s$/.test(state.source[++state.to]));
+                yield nextSplit(state, tokenTypes.WHITESPACE);
+                break;
+            default:
+                state.to++;
+        }
+    }
+    yield nextSplit(state, tokenTypes.TEXT);
+}
+
+/**
+ * Returns a token spanning from state.from to before state.to.
+ * state.from is then set to state.to
+ * @param {{ source: string, from: number, to: number }} state 
+ * @param {string} type
+ */
+function nextSplit(state, type) {
+    const result = {
+        content: state.source.substring(state.from, state.to),
+        type
+    };
+
+    state.from = state.to;
+    return result;
+}
+
+const tokenTypes = {
+    ESCAPE: 'escape',
+    QUOTE: 'quote',
+    TEXT: 'text',
+    WHITESPACE: 'whitespace'
+};
 
 
 bu.canExecuteCcommand = async function (msg, commandName, quiet) {
