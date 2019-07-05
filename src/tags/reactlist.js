@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const { distinct } = require('../utils/iterables');
 
 module.exports =
     Builder.APITag('reactlist')
@@ -17,13 +18,14 @@ module.exports =
             a.require('messageId')]),
             a.optional('reactions', true)
         ])
-        .withDesc('Lists reaction data about the given `messageId`. If `reactions` is supplied, then a list of users ' +
-        'who have added those reactions will be returned. If `reactions` is not supplied then a list of all reactions ' +
-        'on the given `messageId` will be given.\n`messageId` defaults to the command message.\n`channelId` defaults ' +
-        'to the current channel.')
+        .withDesc(
+            'Lists reaction data about the given `messageId`. If `reactions` is supplied, then a list of users ' +
+            'who have added those reactions will be returned. If `reactions` is not supplied then a list of all reactions ' +
+            'on the given `messageId` will be given.\n`messageId` defaults to the command message.\n`channelId` defaults ' +
+            'to the current channel.')
         .withExample(
-        '{reactlist}\n{reactlist;:thinking:}',
-        '["🤔","😂"]\n["1111111111111","2222222222222","1234567890123"]'
+            '{reactlist}\n{reactlist;:thinking:}',
+            '["🤔","😂"]\n["1111111111111","2222222222222","1234567890123"]'
         ).whenDefault(async function (subtag, context, emotes) {
             let channel = null,
                 message = null;
@@ -59,22 +61,27 @@ module.exports =
             // List all users per reaction
             let users = [];
             let errors = [];
-            for (const emote of parsed)
+            for (const emote of parsed) {
+                emote = emote.replace(/^a?:/gi, '');
+                if (!(emote in message.reactions)) {
+                    continue;
+                }
                 try {
                     do {
                         let lastUser = users.length === 0 ? null : users[users.length - 1].id;
                         users.push(...await message.getReaction(emote, 100, null, lastUser));
-                    } while (users.length < message.reactions[emote.replace(/^a?:/gi, '')].count);
+                    } while (users.length < message.reactions[emote].count);
                 } catch (err) {
                     if (err.message == 'Unknown Emoji')
                         errors.push(emote);
                     else
                         throw err;
                 }
+            }
 
             if (errors.length > 0)
                 return Builder.util.error(subtag, context, 'Unknown Emoji: ' + errors.join(', '));
             users = users.map(u => u.id);
-            return JSON.stringify([...new Set(users)]);
+            return JSON.stringify([...distinct(users)]);
         })
         .build();
