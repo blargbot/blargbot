@@ -4,7 +4,7 @@
  * @returns {Iterable<T>}
  * @template T The element type 
  */
-export function* distinct(values) {
+function* distinct(values) {
     const distinct = new Set();
 
     for (const value of values) {
@@ -14,4 +14,8 @@ export function* distinct(values) {
             yield value;
         }
     }
+}
+
+module.exports = {
+    distinct
 }
