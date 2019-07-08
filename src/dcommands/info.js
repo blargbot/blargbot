@@ -4,7 +4,7 @@ const reload = require('require-reload')(require);
 let patrons, donators;
 
 const startDate = 1444708800000;
-var patronStr, donatorStr;
+var patronStr, donatorStr, pgVal = '?';
 async function reloadStrings() {
     ({ patrons, donators } = reload('../../res/donators.json'));
     patronStr = (await Promise.map(patrons, async p => {
@@ -17,9 +17,12 @@ async function reloadStrings() {
             return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
         } else return p;
     })).join('\n - ');
+    let pg = (await r.table('vars').get('pg'));
+    if (pg) pgVal = pg.value;
     console.log('reloaded');
 }
 let titan;
+let pg;
 setInterval(reloadStrings, 60 * 60 * 1000);
 reloadStrings();
 
@@ -42,6 +45,10 @@ class InfoCommand extends BaseCommand {
             let t = await bot.getRESTUser('135556895086870528');
             titan = bu.getFullName(t);
         }
+        if (!pg) {
+            let t = await bot.getRESTUser('317592077066305536');
+            pg = bu.getFullName(t);
+        }
         let age = moment.duration(moment() - moment(startDate));
         let dateStr = `${age.years()} year${age.years() != 1 ? 's' : ''}, ${age.months()} month${age.months() != 1 ? 's' : ''}, ${age.days()} day${age.days() != 1 ? 's' : ''}, ${age.hours()} hour${age.hours() != 1 ? 's' : ''}, ${age.minutes()} minute${age.minutes() != 1 ? 's' : ''}, and ${age.seconds()} second${age.seconds() != 1 ? 's' : ''}`;
         try {
@@ -55,7 +62,10 @@ class InfoCommand extends BaseCommand {
 :heart: __**Special thanks to all my other donators!**__ :heart:
 ** - ${donatorStr}**
 
-Special huge thanks to the awesome **${titan}** for massive contributions to the BBTag system! :tada:
+Special huge thanks to:
+- the awesome **${titan}** for massive contributions to the BBTag system! :tada:
+- the amazing **${pg}** for huge financial contributions ($${pgVal})! :tada:
+Special
 
 Additional credits to Aurieh#0258! :thumbsup:
 
