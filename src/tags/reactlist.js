@@ -61,7 +61,7 @@ module.exports =
             // List all users per reaction
             let users = [];
             let errors = [];
-            for (const emote of parsed) {
+            for (let emote of parsed) {
                 emote = emote.replace(/^a?:/gi, '');
                 if (!(emote in message.reactions)) {
                     continue;
