@@ -65,7 +65,6 @@ class InfoCommand extends BaseCommand {
 Special huge thanks to:
 - the awesome **${titan}** for massive contributions to the BBTag system! :tada:
 - the amazing **${pg}** for huge financial contributions ($${pgVal})! :tada:
-Special
 
 Additional credits to Aurieh#0258! :thumbsup:
 
