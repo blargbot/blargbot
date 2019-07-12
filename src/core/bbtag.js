@@ -408,6 +408,10 @@ function* analyzeSubtag(subtag, parents) {
         return;
     } else if (name.children.length > 0) {
         yield { subtag, warning: 'Dynamic subtag' };
+        for (const child of subtag.children) {
+            yield* analyzeString(child, parents);
+        }
+        return;
     }
 
     const nameStr = name.content.toLowerCase();
@@ -422,7 +426,7 @@ function* analyzeSubtag(subtag, parents) {
         }
     }
 
-    const definition = findSubtag(nameStr, parent);
+    const definition = findSubtag(nameStr, parents);
 
     if (!definition) {
         yield { subtag, error: `Unknown subtag {${name.content}}` };
@@ -434,6 +438,7 @@ function* analyzeSubtag(subtag, parents) {
                 : '')
         };
     }
+
 
     parents.push(nameStr);
     for (const child of subtag.children) {
@@ -448,14 +453,14 @@ function* analyzeSubtag(subtag, parents) {
  * @returns {{deprecated: boolean} | undefined}
  */
 function findSubtag(name, parents) {
-    const definition = TagManager.get(nameStr);
+    const definition = TagManager.get(name);
     if (definition) {
         return definition;
     }
     if (name.startsWith('func.')) {
         return { deprecated: false };
     }
-    if (['params', 'paramsarray', 'paramslength'].includes(nameStr) && parents.some(p => p === 'func' || p === 'function')) {
+    if (['params', 'paramsarray', 'paramslength'].includes(name) && parents.some(p => p === 'func' || p === 'function')) {
         return { deprecated: false };
     }
 }
