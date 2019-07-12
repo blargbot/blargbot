@@ -410,7 +410,6 @@ function* analyzeSubtag(subtag, parents) {
         yield { subtag, warning: 'Dynamic subtag' };
     }
 
-    yield* analyzeString(name, parents);
     const nameStr = name.content.toLowerCase();
     if (nameStr === '//') { return; }
 
