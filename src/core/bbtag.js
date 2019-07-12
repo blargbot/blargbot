@@ -402,6 +402,9 @@ function* analyzeSubtag(subtag, parents) {
     const name = subtag.name;
     if (!name || !name.content) {
         yield { subtag, error: 'Unnamed subtag' };
+        for (const child of subtag.children) {
+            yield* analyzeString(child, parents);
+        }
         return;
     } else if (name.children.length > 0) {
         yield { subtag, warning: 'Dynamic subtag' };
