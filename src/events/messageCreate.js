@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-07-29 17:19:06
+ * @Last Modified time: 2019-07-29 17:24:25
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -468,7 +468,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
             const tag = storedGuild.ccommands[ars.everything.executes];
             if (!defaultMember(m, tag)) return;
             await bbEngine.runTag({
-                m,
+                msg: m,
                 limits: new bbtag.limits.autoresponse_everything(),
                 tagContent: tag.content,
                 author: tag.author,
@@ -503,7 +503,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                     const tag = storedGuild.ccommands[ar.executes];
                     if (!defaultMember(msg, tag)) return;
                     await bbEngine.runTag({
-                        m,
+                        msg: m,
                         limits: new bbtag.limits.autoresponse_general(),
                         tagContent: tag.content,
                         author: tag.author,
