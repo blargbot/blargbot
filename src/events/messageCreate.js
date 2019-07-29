@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-07-29 17:24:25
+ * @Last Modified time: 2019-07-29 17:51:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -456,13 +456,11 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
 
     if (storedGuild && storedGuild.autoresponse) {
         let ars = storedGuild.autoresponse;
-        let m = {
-            channel: msg.channel,
-            author: msg.author,
-            member: msg.member,
-            guild: msg.guild,
-            content: msg.content
-        };
+        let m = {};
+        // shallow clone msg
+        for (const key of Object.keys(msg)) {
+            m[key] = msg[key];
+        }
 
         if (everything && ars.everything && storedGuild.ccommands[ars.everything.executes]) {
             const tag = storedGuild.ccommands[ars.everything.executes];
