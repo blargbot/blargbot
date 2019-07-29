@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-03-15 13:30:02
+ * @Last Modified time: 2019-07-29 17:19:06
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -437,21 +437,44 @@ async function checkWhitelist() {
 setInterval(checkWhitelist, 1000 * 60 * 15);
 checkWhitelist();
 
+function defaultMember(msg, tag) {
+    if (!msg.member) {
+        const id = tag.authorizer || tag.author;
+        const member = msg.guild.members.get(id);
+        if (!member) return false;
+        msg.member = member;
+    }
+    return true;
+}
+
 async function handleAutoresponse(msg, storedGuild, everything = false) {
     if (!arWhitelist.includes(msg.guild.id)) return; // selective whitelist for now
+    if (!msg.member && msg.author.discriminator !== '0000') {
+        // skip over non-members who aren't webhooks
+        return;
+    }
 
     if (storedGuild && storedGuild.autoresponse) {
         let ars = storedGuild.autoresponse;
+        let m = {
+            channel: msg.channel,
+            author: msg.author,
+            member: msg.member,
+            guild: msg.guild,
+            content: msg.content
+        };
 
         if (everything && ars.everything && storedGuild.ccommands[ars.everything.executes]) {
+            const tag = storedGuild.ccommands[ars.everything.executes];
+            if (!defaultMember(m, tag)) return;
             await bbEngine.runTag({
-                msg,
+                m,
                 limits: new bbtag.limits.autoresponse_everything(),
-                tagContent: storedGuild.ccommands[ars.everything.executes].content,
-                author: storedGuild.ccommands[ars.everything.executes].author,
-                input: msg.content,
+                tagContent: tag.content,
+                author: tag.author,
+                input: m.content,
                 isCC: true,
-                tagName: ars.everything,
+                tagName: ars.everything.executes,
                 silent: true
             });
         }
@@ -463,7 +486,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                     try {
                         let exp = bu.createRegExp(ar.term);
 
-                        matches = msg.content.match(exp);
+                        matches = m.content.match(exp);
                         if (matches !== null) {
                             cont = true;
                             matches.map(m => '"' + m.replace(/"/g, '\\"') + '"');
@@ -474,15 +497,17 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                         bu.send(msg, 'Unsafe or invalid regex! Terminating.');
                         return;
                     }
-                } else cont = msg.content.includes(ar.term);
+                } else cont = m.content.includes(ar.term);
 
                 if (cont && storedGuild.ccommands[ar.executes]) {
+                    const tag = storedGuild.ccommands[ar.executes];
+                    if (!defaultMember(msg, tag)) return;
                     await bbEngine.runTag({
-                        msg,
+                        m,
                         limits: new bbtag.limits.autoresponse_general(),
-                        tagContent: storedGuild.ccommands[ar.executes].content,
-                        author: storedGuild.ccommands[ar.executes].author,
-                        input: matches || msg.content,
+                        tagContent: tag.content,
+                        author: tag.author,
+                        input: matches || m.content,
                         isCC: true,
                         tagName: ar.executes
                     });
