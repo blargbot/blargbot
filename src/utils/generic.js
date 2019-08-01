@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-03-15 13:24:10
+ * @Last Modified time: 2019-07-29 16:35:48
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -447,6 +447,12 @@ bu.send.catch = {
         return 'I tried to send a message in response to your command, ' +
             'but didn\'t have permission to create embeds. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Embed Links` permission.';
+    },
+
+    // try to catch the mystery of the autoresponse-object-in-field-value error
+    // https://stop-it.get-some.help/9PtuDEm.png
+    '50035': function (channel, payload) {
+        console.warn('%s|%s: %o', channel.id, channel.name, payload);
     }
 };
 

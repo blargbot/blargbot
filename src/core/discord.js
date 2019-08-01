@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-02-10 13:23:15
+ * @Last Modified time: 2019-07-29 18:02:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -160,13 +160,25 @@ class DiscordClient extends Client {
 
         let guilds = await r.table('guild').getAll(true, { index: 'interval' });
         guilds = guilds.filter(g => this.guilds.get(g.guildid));
+        console.info('[%s] Running intervals on %i guilds', nonce, guilds.length);
+
+        let count = 0;
+        let failures = 0;
         for (const guild of guilds) {
+            if (process.env.CLUSTER_ID == 2) {
+                console.info('[%s] Performing interval on %s', nonce, guild.guildid);
+            }
             let interval = guild.ccommands._interval;
 
             try {
                 let g = this.guilds.get(guild.guildid);
                 let id = interval.authorizer || interval.author;
                 let m = g.members.get(id);
+                if (!m) {
+                    // member does not exist, skip execution
+                    // TODO: some sort of notification that the authorizer is no longer around
+                    continue;
+                }
                 let u = this.users.get(id);
                 if (!u) u = await this.getRESTUser(id);
                 let c;
@@ -189,10 +201,14 @@ class DiscordClient extends Client {
                     authorizer: interval.authorizer,
                     silent: true
                 });
+                count++;
             } catch (err) {
                 console.error('Issue with interval:', guild.guildid, err);
+                failures++;
             }
         }
+
+        console.info('[%s] Intervals complete. %i success | %i fail', nonce, count, failures);
     }
 
     async eval(msg, text, send = true) {
