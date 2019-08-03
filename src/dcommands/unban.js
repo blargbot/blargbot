@@ -41,7 +41,8 @@ class UnbanCommand extends BaseCommand {
                 };
 
                 try {
-                    await bot.unbanGuildMember(msg.channel.guild.id, user, (tag ? '' : `[ ${bu.getFullName(msg.author)} ]`) + (reason ? ' ' + reason : ''));
+                    const fullReason = encodeURIComponent((tag ? '' : `[ ${bu.getFullName(msg.author)} ]`) + (reason ? ' ' + reason : ''));
+                    await bot.unbanGuildMember(msg.channel.guild.id, user, fullReason);
                     return [':ok_hand:', true];
                 } catch (err) {
                     return [`Failed to unban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, false];
