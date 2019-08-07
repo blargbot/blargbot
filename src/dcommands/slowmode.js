@@ -35,7 +35,7 @@ class SlowmodeCommand extends BaseCommand {
         try {
             await bot.requestHandler.request('PATCH', endpoint, true, {
                 rate_limit_per_user: time,
-                reason: `[${bu.getFullName(msg.author)}] ${input.r ? input.r.join(' ') : ''}`
+                reason: encodeURIComponent(`[${bu.getFullName(msg.author)}] ${input.r ? input.r.join(' ') : ''}`)
             });
 
             let out = ':ok_hand: ';
