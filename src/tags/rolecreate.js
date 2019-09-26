@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
  * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-05 15:16:59
+ * @Last Modified time: 2019-09-26 09:29:09
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -19,14 +19,14 @@ module.exports =
             a.optional('hoisted')
         ])
         .withDesc('Creates a role with the given information. ' +
-        '`color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. ' +
-        'Provide `permissions` as a number, which can be calculated [here](https://discordapi.com/permissions.html) ' +
-        '`hoisted` is if the role should be displayed separately from other roles ' +
-        '`color` defaults to #000000 (uncolored role), `permissions` defaults to 0, `mentionable` defaults to false, `hoisted` defaults to false. ' +
-        'Returns the new role\'s ID.')
+            '`color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. ' +
+            'Provide `permissions` as a number, which can be calculated [here](https://discordapi.com/permissions.html) ' +
+            '`hoisted` is if the role should be displayed separately from other roles ' +
+            '`color` defaults to #000000 (uncolored role), `permissions` defaults to 0, `mentionable` defaults to false, `hoisted` defaults to false. ' +
+            'Returns the new role\'s ID.')
         .withExample(
-        '{rolecreate;Super Cool Role!;ff0000;0;false;true}',
-        '11111111111111111'
+            '{rolecreate;Super Cool Role!;ff0000;0;false;true}',
+            '11111111111111111'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-5', async function (subtag, context, args) {
@@ -51,7 +51,8 @@ module.exports =
                 return Builder.util.error(subtag, context, 'Author missing requested permissions');
 
             try {
-                let role = await context.guild.createRole(options, context.scope.reason || `Created with a custom command command, executed by user: ${context.user.id}`);
+                let fullReason = bu.formatAuditReason(context.user, context.scope.reason);
+                let role = await context.guild.createRole(options, fullReason);
                 if (!context.guild.roles.get(role.id))
                     context.guild.roles.add(role);
                 return role.id;
