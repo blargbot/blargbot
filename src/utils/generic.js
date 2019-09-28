@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-09-26 09:28:43
+ * @Last Modified time: 2019-09-28 13:33:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1884,5 +1884,5 @@ bu.formatAuditReason = function (user, reason, ban = false) {
         fullReason += `: ${reason}`;
     }
     // bans use their own system and cannot be uriencoded. thanks discord!
-    return ban ? encodeURIComponent(fullReason) : fullReason;
+    return !ban ? encodeURIComponent(fullReason) : fullReason;
 };
