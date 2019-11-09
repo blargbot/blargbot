@@ -29,7 +29,7 @@
         "unopened": "Ongeëvenaard sluitingshaakje [{{column}}:{{row}}]",
         "invalidradix": "",
         "notanarray": "",
-        "notbool": "",
+        "notbool": "Variabele '{{name}}' is geen boolean (Ontving: '{{value}}')",
         "missingarg": "",
         "namedunsupported": ""
     },
