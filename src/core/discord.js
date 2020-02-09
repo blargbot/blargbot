@@ -6,6 +6,8 @@
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+require('./httpsInterceptor');
+
 global.Promise = require('bluebird');
 global.config = require('../../config.json');
 const CatLoggr = require('cat-loggr');

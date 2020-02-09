@@ -287,6 +287,10 @@ class Spawner extends EventEmitter {
                         break;
                 }
                 break;
+            case 'httpsMetric': {
+                bu.Metrics.httpsRequests.labels(data.message).inc();
+                break;
+            }
             case 'log':
                 if (!this.logCache[shard.id]) this.logCache[shard.id] = [];
                 data.text = stripAnsi(data.text);
