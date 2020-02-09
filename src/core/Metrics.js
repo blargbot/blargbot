@@ -54,7 +54,7 @@ const bbtagExecutions = new Prometheus.Counter({
 
 const httpsRequests = new Prometheus.Counter({
     name: 'https_requests', help: 'HTTPS Requests',
-    labelNames: ['endpoint']
+    labelNames: ['method', 'endpoint']
 });
 
 const aggregate = function (regArray) {

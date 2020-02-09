@@ -288,7 +288,7 @@ class Spawner extends EventEmitter {
                 }
                 break;
             case 'httpsMetric': {
-                bu.Metrics.httpsRequests.labels(data.message).inc();
+                bu.Metrics.httpsRequests.labels(...data.message).inc();
                 break;
             }
             case 'log':
