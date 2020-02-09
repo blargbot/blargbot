@@ -155,6 +155,7 @@ var flipTables = async function (msg, unflip) {
 };
 
 var handleDiscordCommand = async function (channel, user, text, msg) {
+    if (words.length === 0) return;
     let words = bu.splitInput(text);
     let outputLog = '';
     if (msg.channel.guild)
