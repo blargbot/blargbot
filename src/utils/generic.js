@@ -965,7 +965,7 @@ bu.comparePerms = (m, allow) => {
 bu.splitInput = (content, noTrim) => {
     let input;
     if (Array.isArray(content)) content = content.join(' ');
-    if (typeof input !== 'string') input = input.toString();
+    if (typeof content !== 'string') content = content.toString();
     if (!noTrim) input = content.replace(/ +/g, ' ').split(' ');
     else input = content.split(' ');
     if (input.length > 0 && input[0] == '')
