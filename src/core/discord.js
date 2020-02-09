@@ -84,7 +84,7 @@ class DiscordClient extends Client {
             restMode: true,
             defaultImageFormat: 'png',
             defaultImageSize: 512,
-            messageLimit: 0
+            messageLimit: 5
         });
         global.bot = this;
         bu.commandMessages = {};

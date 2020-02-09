@@ -645,6 +645,9 @@ C.cancel query
 
 bu.getMessage = async function (channelId, messageId) {
     if (/^\d{17,23}$/.test(messageId)) {
+        let channel = bot.getChannel(channelId);
+        let messageAttempt = channel.messages.get(messageId);
+        if (messageAttempt) return messageAttempt;
         try {
             return await bot.getMessage(channelId, messageId);
         } catch (e) { }
@@ -1212,6 +1215,7 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
 };
 
 bu.getAudit = async function (guildId, targetId, type) {
+    return null;
     try {
         let guild = bot.guilds.get(guildId);
         let user = bot.users.get(targetId);
