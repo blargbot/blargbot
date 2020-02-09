@@ -155,8 +155,8 @@ var flipTables = async function (msg, unflip) {
 };
 
 var handleDiscordCommand = async function (channel, user, text, msg) {
-    if (words.length === 0) return;
     let words = bu.splitInput(text);
+    if (words.length === 0) return;
     let outputLog = '';
     if (msg.channel.guild)
         outputLog = `Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id})`;
