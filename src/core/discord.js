@@ -128,11 +128,11 @@ class DiscordClient extends Client {
             });
         });
 
-        if (process.env.CLUSTER_ID == 0) {
-            bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
-            this.avatarTask = new CronJob('*/15 * * * *', this.avatarInterval.bind(this));
-            this.avatarTask.start();
-        }
+        // if (process.env.CLUSTER_ID == 0) {
+        //     bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
+        //     this.avatarTask = new CronJob('*/15 * * * *', this.avatarInterval.bind(this));
+        //     this.avatarTask.start();
+        // }
         this.intervalTask = new CronJob('*/15 * * * *', this.autoresponseInterval.bind(this));
         this.nonce = (Math.floor(Math.random() * 0xffffffff)).toString('16').padStart(8, '0').toUpperCase();
 
