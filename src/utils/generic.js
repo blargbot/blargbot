@@ -710,10 +710,10 @@ ${roleListString}${moreRoleString}--------------------
 C. cancel query
 \`\`\`
 **${bu.getFullName(msg.author)}**, please type the number of the role you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`, (msg2) => {
-                    if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
-                        return true;
-                    } else return false;
-                }, undefined, args.label, args.suppress);
+                if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
+                    return true;
+                } else return false;
+            }, undefined, args.label, args.suppress);
             let response = await query.response;
             if (response.content.toLowerCase() == 'c') {
                 if (!args.suppress)
@@ -965,6 +965,7 @@ bu.comparePerms = (m, allow) => {
 bu.splitInput = (content, noTrim) => {
     let input;
     if (Array.isArray(content)) content = content.join(' ');
+    if (typeof input !== 'string') input = input.toString();
     if (!noTrim) input = content.replace(/ +/g, ' ').split(' ');
     else input = content.split(' ');
     if (input.length > 0 && input[0] == '')
