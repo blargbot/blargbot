@@ -19,6 +19,7 @@ const Database = require('./Database');
 const seqErrors = require('sequelize/lib/errors');
 const { CronJob } = require('cron');
 const bbEngine = require('../structures/bbtag/Engine');
+const gameSwitcher = require('./gameSwitcher');
 
 const loggr = new CatLoggr({
     shardId: process.env.CLUSTER_ID,
@@ -128,11 +129,11 @@ class DiscordClient extends Client {
             });
         });
 
-        // if (process.env.CLUSTER_ID == 0) {
-        //     bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
-        //     this.avatarTask = new CronJob('*/15 * * * *', this.avatarInterval.bind(this));
-        //     this.avatarTask.start();
-        // }
+        if (process.env.CLUSTER_ID == 0) {
+            bu.avatars = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
+            this.avatarTask = new CronJob('*/15 * * * *', this.avatarInterval.bind(this));
+            this.avatarTask.start();
+        }
         this.intervalTask = new CronJob('*/15 * * * *', this.autoresponseInterval.bind(this));
         this.nonce = (Math.floor(Math.random() * 0xffffffff)).toString('16').padStart(8, '0').toUpperCase();
 
@@ -150,10 +151,12 @@ class DiscordClient extends Client {
         await this.editSelf({
             avatar: bu.avatars[id]
         });
-        await this.editGuild('194232473931087872', {
-            icon: bu.avatars[id]
-        });
-        await this.createMessage('492698595447930881', 'Switched avatar to #' + id);
+
+        await gameSwitcher();
+        // await this.editGuild('194232473931087872', {
+        //     icon: bu.avatars[id]
+        // });
+        // await this.createMessage('492698595447930881', 'Switched avatar to #' + id);
     }
 
     async autoresponseInterval() {
