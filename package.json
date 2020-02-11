@@ -13,7 +13,7 @@
         "body-parser": "^1.18.3",
         "brainfuck-node": "^1.0.1",
         "cassandra-driver": "^3.5.0",
-        "cat-loggr": "^1.0.10",
+        "cat-loggr": "^1.1.0",
         "catflake": "^1.0.0",
         "cli-table": "^0.3.1",
         "color": "^3.1.0",
