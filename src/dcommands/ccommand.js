@@ -612,6 +612,16 @@ class CcommandCommand extends BaseCommand {
                     }
                     break;
                 case 'list':
+                    let embed = {
+                        title: 'List of custom commands',
+                        color = 0x7289da,
+                        fields: [],
+                        get asString() {
+                            return stringify(this);
+                        }
+                    };
+                    let ccList = { '': [] };
+
                     let storedGuild = await bu.getGuild(msg.guild.id);
                     let ccommands = Object.keys(storedGuild.ccommands);
                     let modified = false;
@@ -627,10 +637,36 @@ class CcommandCommand extends BaseCommand {
                             ccommands: storedGuild.ccommands
                         });
                     }
-                    let output = (ccommands && ccommands.length > 0)
-                        ? `Here are a list of the custom commands on this guild:\`\`\`${ccommands.join(', ')}\`\`\` `
-                        : `There are no custom commands on this guild.`;
-                    bu.send(msg, output);
+
+                    ccommands.forEach(ccName => {
+                        const cc = storedGuild.ccommands[ccName];
+
+                        if (!cc.roles || cc.roles.length === 0)
+                            ccList[''].push(ccName);
+
+                        for (const role of cc.roles) {
+                            if (!ccList.hasOwnProperty(role)) {
+                                ccList[role] = [];
+                            }
+                            ccList[role].push(ccName);
+                        }
+                    });
+
+                    if (!ccommands || ccommands.length === 0)
+                        embed.description = 'There are no custom commands on this guild.';
+                    else {
+                        ccommands = Object.entries(ccList);
+
+                        for (let [role, ccs] of ccommands) {
+                            if (role.length === 0) = role = '\u200B';
+                            embed.fields.push({
+                                name: `${role}`,
+                                value: `\`\`\`\n${css.join(', ')}\n\`\`\``
+                            });
+                        }
+                    }
+
+                    bu.send(msg, { embed });
                 case 'sethelp':
                     if (words.length > 3) {
                         title = filterTitle(words[2]);
