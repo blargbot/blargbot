@@ -638,27 +638,29 @@ class CcommandCommand extends BaseCommand {
                         });
                     }
 
-                    ccommands.forEach(ccName => {
-                        const cc = storedGuild.ccommands[ccName];
-
-                        if (!cc.roles || cc.roles.length === 0)
-                            ccList[''].push(ccName);
-
-                        for (const role of cc.roles) {
-                            if (!ccList.hasOwnProperty(role)) {
-                                ccList[role] = [];
-                            }
-                            ccList[role].push(ccName);
-                        }
-                    });
-
                     if (!ccommands || ccommands.length === 0)
                         embed.description = 'There are no custom commands on this guild.';
                     else {
+                        ccommands.forEach(ccName => {
+                            const cc = storedGuild.ccommands[ccName];
+
+                            if (!cc.roles || cc.roles.length === 0)
+                                ccList[''].push(ccName);
+                            else {
+                                for (const role of cc.roles) {
+                                    if (!ccList.hasOwnProperty(role)) {
+                                        ccList[role] = [];
+                                    }
+                                    ccList[role].push(ccName);
+                                }
+                            }
+                        });
                         ccommands = Object.entries(ccList);
 
                         for (let [role, ccs] of ccommands) {
-                            if (role.length === 0) = role = '\u200B';
+                            if (role.length === 0)
+                                role = '\u200B';
+                            
                             embed.fields.push({
                                 name: `${role}`,
                                 value: `\`\`\`\n${css.join(', ')}\n\`\`\``
