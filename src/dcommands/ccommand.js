@@ -11,6 +11,11 @@ const subcommands = [
         desc: 'Displays the name of the custom command\'s author'
     },
     {
+        name: 'setauthorizer',
+        args: '<name> [authorizer]',
+        desc: 'Set the custom command\'s authorizer'
+    },
+    {
         name: 'cooldown',
         args: '<name> [time]',
         desc: 'Sets the cooldown of a ccommand, in milliseconds. Cooldowns must be greater than 500ms'
@@ -680,6 +685,31 @@ class CcommandCommand extends BaseCommand {
                     } else {
                         bu.send(msg, this.info);
                     }
+                    break;
+                case 'setauthorizer':
+                    if (words.length > 2) {
+                        let authorizer, author;
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (!tag) {
+                            bu.send(msg, 'That ccommand doesn\'t exist!');
+                            break;
+                        }
+                        author = await r.table('user').get(tag.author).run();
+                        if (author !== msg.author.id) {
+                            bu.send(msg, 'You don\'t own that custom command!');
+                            break;
+                        }
+                        
+                        title = filterTitle(words[2]);
+                        if (words[3])
+                            authorizer = await bu.getUser(msg, words[3]);
+                        if (!authorizer) authorizer = msg.author.id;
+                        
+                        await bu.ccommand.setauthorizer(msg.channel.guild.id, title, authorizer.id);
+                        bu.send(msg, `✅ The tag \`${tag.name}\` by **${author.username}#${author.discriminator}** ` +
+                            `is now authorized by **${authorizer.username}#${authorizer.discriminator}**. ✅`);
+                    } else
+                        bu.send(msg, `Not enough arguments! Usage is: \`ccommand setauthorizer <name> [user]\`.`);
                     break;
                 case 'author':
                 case 'owner':
