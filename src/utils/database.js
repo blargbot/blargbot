@@ -132,6 +132,21 @@ bu.ccommand = {
         r.table('guild').get(guildid).replace(storedGuild).run();
         return;
     },
+    setauthorizer: async function (guildid, key, authorizer) {
+        let storedGuild = await bu.getGuild(guildid);
+        key = key.toLowerCase();
+        if (!storedGuild || !storedGuild.ccommands[key]) return false;
+        
+        storedGuild.ccomands[key].authorizer = authorizer;
+        r.table('guild').get(guildid).replace(storedGuild).run();
+        return true;
+    },
+    getauthorizer: async function (guildid, key) {
+        let storedGuild = await bu.getGuild(guildid);
+
+        if (!storedGuild || !storedGuild.ccommands[key.toLowerCase()]) return undefined;
+        return storedGuild.ccommands[key.toLowerCase()].authorizer;
+    },
     sethelp: async function (guildid, key, help) {
         let storedGuild = await bu.getGuild(guildid);
 
