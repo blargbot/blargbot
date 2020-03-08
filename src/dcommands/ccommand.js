@@ -695,7 +695,7 @@ class CcommandCommand extends BaseCommand {
                             break;
                         }
                         author = await r.table('user').get(tag.author).run();
-                        if (author !== msg.author.id) {
+                        if (author.id != msg.author.id) {
                             bu.send(msg, 'You don\'t own that custom command!');
                             break;
                         }
