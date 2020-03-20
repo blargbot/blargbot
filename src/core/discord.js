@@ -24,6 +24,7 @@ const gameSwitcher = require('./gameSwitcher');
 const loggr = new CatLoggr({
     shardId: process.env.CLUSTER_ID,
     level: config.general.isbeta ? 'debug' : 'info',
+    shardLength: 4,
     levels: [
         { name: 'fatal', color: CatLoggr._chalk.red.bgBlack, err: true },
         { name: 'error', color: CatLoggr._chalk.black.bgRed, err: true },
