@@ -138,7 +138,6 @@ class DiscordClient extends Client {
         this.intervalTask = new CronJob('*/15 * * * *', this.autoresponseInterval.bind(this));
         this.nonce = (Math.floor(Math.random() * 0xffffffff)).toString('16').padStart(8, '0').toUpperCase();
 
-        this.avatarTask.start();
         this.intervalTask.start();
     }
 
