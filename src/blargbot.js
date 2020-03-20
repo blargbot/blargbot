@@ -9,6 +9,8 @@
 
 global.config = require('../config.json');
 const CatLoggr = require('cat-loggr');
+const snekfetch = require('snekfetch');
+const moment = require('moment');
 
 const loggr = new CatLoggr({
     shardId: 'MS',
@@ -156,4 +158,13 @@ if (config.cassandra) {
         });
 }
 
-const client = new BlargbotClient();
+
+snekfetch.post('https://discordapp.com/api/channels/684479299381755919/messages')
+    .set('Authorization', config.discord.token)
+    .send({ content: 'My master process just initialized ' + moment().format('[on `]MMMM Do, YYYY[` at `]hh:mm:ss.SS[`]') + '.' })
+    .then(() => {
+        const client = new BlargbotClient();
+    })
+    .catch(err => {
+        console.error('Could not post startup message', err);
+    });
