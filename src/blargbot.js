@@ -47,6 +47,8 @@ MAIN PROCESS INITIALIZED
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@`);
 
+const start = moment();
+
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Promise Rejection:', err);
 });
@@ -161,7 +163,7 @@ if (config.cassandra) {
 
 snekfetch.post('https://discordapp.com/api/channels/684479299381755919/messages')
     .set('Authorization', config.discord.token)
-    .send({ content: 'My master process just initialized ' + moment().format('[on `]MMMM Do, YYYY[` at `]hh:mm:ss.SS[`]') + '.' })
+    .send({ content: 'My master process just initialized ' + start.format('[on `]MMMM Do, YYYY[` at `]hh:mm:ss.SS[`]') + '.' })
     .catch(err => {
         console.error('Could not post startup message', err);
     })
