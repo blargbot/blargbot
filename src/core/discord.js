@@ -142,6 +142,7 @@ class DiscordClient extends Client {
     }
 
     async avatarInterval() {
+        console.info('!=! Performing the avatar interval !=!');
         if (config.general.isbeta) return;
         let time = moment();
         let h = parseInt(time.format('H'));
