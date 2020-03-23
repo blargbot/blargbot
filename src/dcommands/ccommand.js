@@ -689,6 +689,7 @@ class CcommandCommand extends BaseCommand {
                 case 'setauthorizer':
                     if (words.length > 2) {
                         let authorizer, author;
+                        title = filterTitle(words[2]);
                         tag = await bu.ccommand.get(msg.channel.guild.id, title);
                         if (!tag) {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
@@ -699,8 +700,7 @@ class CcommandCommand extends BaseCommand {
                             bu.send(msg, 'You don\'t own that custom command!');
                             break;
                         }
-                        
-                        title = filterTitle(words[2]);
+
                         if (words[3])
                             authorizer = await bu.getUser(msg, words[3]);
                         if (!authorizer) authorizer = msg.author.id;
