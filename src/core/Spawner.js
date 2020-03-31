@@ -16,7 +16,7 @@ class Spawner extends EventEmitter {
         this.file = options.file || 'src/core/discord.js';
         this.respawn = options.respawn || true;
         this.shards = new Map();
-        this.guildShardMap = {};
+        // this.guildShardMap = {};
 
         this.logCache = {};
         this.shardsSpawned = null;
@@ -295,7 +295,7 @@ class Spawner extends EventEmitter {
                 if (!this.logCache[shard.id]) this.logCache[shard.id] = [];
                 data.text = stripAnsi(data.text);
                 this.logCache[shard.id].unshift(data);
-                if (this.logCache[shard.id].length >= 180) this.logCache[shard.id].pop();
+                if (this.logCache[shard.id].length >= 30) this.logCache[shard.id].pop();
                 break;
             case 'shardStats':
                 if (global.wss) {
@@ -317,10 +317,10 @@ class Spawner extends EventEmitter {
                 break;
             case 'ready':
                 shard.emit('ready');
-                for (const guild in this.guildShardMap)
-                    if (this.guildShardMap[guild] === shard.id) delete this.guildShardMap[guild];
-                for (const guild of data)
-                    this.guildShardMap[guild] = shard.id;
+                // for (const guild in this.guildShardMap)
+                //     if (this.guildShardMap[guild] === shard.id) delete this.guildShardMap[guild];
+                // for (const guild of data)
+                //     this.guildShardMap[guild] = shard.id;
                 break;
             case 'shardReady':
                 if (this.shardsSpawned !== null) {
@@ -353,10 +353,10 @@ class Spawner extends EventEmitter {
                 break;
             }
             case 'guildCreate':
-                this.guildShardMap[data] = shard.js;
+                // this.guildShardMap[data] = shard.js;
                 break;
             case 'guildDelete':
-                delete this.guildShardMap[data];
+                // delete this.guildShardMap[data];
                 break;
             case 'KILLEVERYTHING':
                 console.fatal('We all deserve to die. Even you, mister cat. Even I.');

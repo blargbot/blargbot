@@ -50,9 +50,28 @@ class TidyCommand extends BaseCommand {
                 desc: 'Bypasses the confirmation'
             }]
         });
+
+        this.executing = {};
     }
 
-    async execute(msg, words, text) {
+    async executing(msg, words, text) {
+        const executing = this.executing[msg.channel.id];
+        if (executing) {
+            if (executing === 1) {
+                await bu.send(msg, `I'm already tidying up this channel. Please wait.`);
+                this.executing[msg.channel.id] = 2;
+            }
+            return;
+        }
+        this.executing[msg.channel.id] = 1;
+        try {
+            await this.perform(msg, words, text);
+        } finally {
+            delete this.executing[msg.channel.id];
+        }
+    }
+
+    async perform(msg, words, text) {
         let input = bu.parseInput(this.flags, words);
         let userList = [];
         let query;
@@ -66,7 +85,7 @@ class TidyCommand extends BaseCommand {
                 query = new RegExp(queryStr);
             }
             if (!isSafeRegex(query)) {
-                bu.send(msg, 'That regex is not safe! Terminating operation.');
+                await bu.send(msg, 'That regex is not safe! Terminating operation.');
                 return;
             }
         }

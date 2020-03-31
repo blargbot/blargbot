@@ -458,7 +458,7 @@ bu.send.catch = {
 
 bu.canDmErrors = async function (userId) {
     let storedUser = await r.table('user').get(userId);
-    return !storedUser.dontdmerrors;
+    return !storedUser || !storedUser.dontdmerrors;
 };
 
 /**
