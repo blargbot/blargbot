@@ -59,6 +59,8 @@ class Spawner extends EventEmitter {
     respawnShard(id, dirty = false) {
         return new Promise(async (res, rej) => {
             let logs = '';
+            if (!this.logCache[id])
+                this.logCache[id] = [];
             if (dirty) {
                 logs = `\n\nLast 5 console outputs:\n\`\`\`md\n${
                     this.logCache[id].slice(0, 5).reverse().map(m => {

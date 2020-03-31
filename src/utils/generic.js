@@ -1436,9 +1436,9 @@ bu.postStats = function () {
         shard_count: config.shards.max,
         shard_id: parseInt(process.env.CLUSTER_ID)
     };
-    bot.executeWebhook('511922345099919360', config.shards.shardToken, {
-        content: JSON.stringify(stats)
-    });
+    // bot.executeWebhook('511922345099919360', config.shards.shardToken, {
+    //     content: JSON.stringify(stats)
+    // });
     console.log(stats);
     request.post({
         'url': `https://discord.bots.gg/api/v1/bots/${bot.user.id}/stats`,

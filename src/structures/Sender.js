@@ -4,7 +4,8 @@ class Sender extends EventEmitter {
     constructor(client, proc) {
         super();
         this.client = client;
-        this.process = proc || process;
+        if (proc)
+            this.process = proc;
     }
 
     send(code, data) {
@@ -15,7 +16,7 @@ class Sender extends EventEmitter {
         if (!(data instanceof Object))
             data = {
                 message: data,
-                shard: parseInt(process.env.CLUSTER_ID)
+                shard: parseInt(this.process.env.CLUSTER_ID)
             };
         const message = {
             code, data
@@ -29,11 +30,11 @@ class Sender extends EventEmitter {
                     reject(err);
                 }
             });
-            if (message.code !== 'log' && !didSend) {
-                console.error('Shard failed to send message.\n  Connected: ' + this.process.connected + '\n  Code: ' + message.code + '\n   Message: ' + JSON.stringify(message).substring(0, 200));
-                if (!this.process.connected) this.process.exit();
-                reject(Error('Shard failed to send message'));
-            }
+            // if (message.code !== 'log' && !didSend) {
+            //     console.error('Shard failed to send message.\n  Connected: ' + this.process.connected + '\n  Code: ' + message.code + '\n   Message: ' + JSON.stringify(message).substring(0, 200));
+            //     if (!this.process.connected) this.process.exit();
+            //     reject(Error('Shard failed to send message'));
+            // }
         });
     }
 
