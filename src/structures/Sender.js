@@ -25,7 +25,7 @@ class Sender extends EventEmitter {
                 if (!err) fulfill();
                 else {
                     console.error(err);
-                    if (!this.process.connected) process.exit();
+                    if (!this.process.connected) this.process.exit();
                     reject(err);
                 }
             });
