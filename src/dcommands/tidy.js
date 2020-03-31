@@ -54,7 +54,7 @@ class TidyCommand extends BaseCommand {
         this.executing = {};
     }
 
-    async executing(msg, words, text) {
+    async execute(msg, words, text) {
         const executing = this.executing[msg.channel.id];
         if (executing) {
             if (executing === 1) {
