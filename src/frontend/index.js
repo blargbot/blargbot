@@ -7,38 +7,38 @@ const enableDestroy = require('server-destroy');
 
 module.exports = class Frontend {
     constructor(client) {
-        this.client = client;
+        // this.client = client;
 
-        this.app = new Koa();
-        this.router = new Router();
+        // this.app = new Koa();
+        // this.router = new Router();
 
-        let conf = require('../../nuxt.config.js');
-        conf.dev = config.general.isbeta === true;
-        this.nuxt = new Nuxt(conf);
-        if (this.nuxt.options.dev) {
-            new Builder(this.nuxt).build();
-        }
-        this.app.use(bodyParser());
+        // let conf = require('../../nuxt.config.js');
+        // conf.dev = config.general.isbeta === true;
+        // this.nuxt = new Nuxt(conf);
+        // if (this.nuxt.options.dev) {
+        //     new Builder(this.nuxt).build();
+        // }
+        // this.app.use(bodyParser());
 
-        const ApiRoute = require('./routes/api');
-        new ApiRoute(this);
+        // const ApiRoute = require('./routes/api');
+        // new ApiRoute(this);
 
-        this.app.use(async (ctx, next) => {
-            ctx.status = 200;
-            if (!ctx.path.startsWith('/api'))
-                return await (new Promise((resolve, reject) => {
-                    ctx.res.on('close', resolve);
-                    ctx.res.on('finish', resolve);
+        // this.app.use(async (ctx, next) => {
+        //     ctx.status = 200;
+        //     if (!ctx.path.startsWith('/api'))
+        //         return await (new Promise((resolve, reject) => {
+        //             ctx.res.on('close', resolve);
+        //             ctx.res.on('finish', resolve);
 
-                    this.nuxt.render(ctx.req, ctx.res, promise => {
-                        promise.then(resolve).catch(reject)
-                    });
-                }))
-        });
+        //             this.nuxt.render(ctx.req, ctx.res, promise => {
+        //                 promise.then(resolve).catch(reject)
+        //             });
+        //         }))
+        // });
 
-        this._server = this.app.listen(8086);
-        enableDestroy(this._server);
-        console.website('NEW SITE Listening on port', 8086);
+        // this._server = this.app.listen(8086);
+        // enableDestroy(this._server);
+        // console.website('NEW SITE Listening on port', 8086);
     }
 
     stop() {
@@ -56,4 +56,4 @@ module.exports = class Frontend {
     get requireCtx() {
         return require;
     }
-}
+};
