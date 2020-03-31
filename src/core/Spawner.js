@@ -72,7 +72,12 @@ class Spawner extends EventEmitter {
             shard.on('shardReady', async (data) => {
                 if (this.shards.get(id) !== undefined) {
                     let oldShard = this.shards.get(id);
-                    oldShard.send('killShard', { id: data });
+                    try {
+                        if (oldShard.process.connected)
+                            await oldShard.send('killShard', { id: data });
+                    } catch (err) {
+                        console.error('Wasn\'t able to send killShard message to shard ' + id, err);
+                    }
                 }
             });
             shard.on('ready', async () => {
