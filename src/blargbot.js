@@ -161,7 +161,7 @@ if (config.cassandra) {
 }
 
 
-snekfetch.post('https://discordapp.com/api/channels/229692244746043393/messages')
+snekfetch.post('https://discordapp.com/api/channels/684479299381755919/messages')
     .set('Authorization', config.discord.token)
     .send({ content: 'My master process just initialized ' + start.format('[on `]MMMM Do, YYYY[` at `]hh:mm:ss.SS[`]') + '.' })
     .catch(err => {
