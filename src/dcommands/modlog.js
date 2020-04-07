@@ -6,7 +6,7 @@ class ModlogCommand extends BaseCommand {
             name: 'modlog',
             category: bu.CommandType.ADMIN,
             usage: 'modlog [disable | clear [number to clear]]',
-            info: 'Enables the modlog and sets it to the current channel. Doing `modlog disable` will disable it. Doing `modlog clear [number]` will clear the specified number of cases from the modlog. Leaving `number` blank will clear all cases.When an admin does a moderation command (ban, unban, mute, unmute, and kick), the incident will be logged. The admin will then be encouraged to do `reason <case number> <reason>` to specify why the action took place.\nBans and unbans are logged regardless of whether the `ban` or `unban` commands are used.'
+            info: 'Enables the modlog and sets it to the current channel. Doing `modlog disable` will disable it. Doing `modlog clear [number]` will clear the specified number of cases from the modlog and delete the related messages. Leaving `number` blank will clear all cases.\nWhen an admin does a moderation command (ban, unban, mute, unmute, and kick), the incident will be logged. The admin will then be encouraged to do `reason <case number> <reason>` to specify why the action took place.\nBans and unbans are logged regardless of whether the `ban` or `unban` commands are used.'
         });
     }
 
@@ -18,7 +18,7 @@ class ModlogCommand extends BaseCommand {
                     bu.send(msg, 'Modlog disabled!');
                     break;
                 case 'clear':
-                    var limit = 0;
+                    let limit;
                     if (words[2]) {
                         limit = parseInt(words[2]);
                         if (isNaN(limit)) {
@@ -28,19 +28,30 @@ class ModlogCommand extends BaseCommand {
                     }
 
 
-                    let storedGuild = await bu.getGuild(msg.guild.id);
-                    if (storedGuild && storedGuild.modlog.length > 0) {
+                    const storedGuild = await bu.getGuild(msg.guild.id);
+                    if (storedGuild && storedGuild.modlog && storedGuild.modlog.length > 0) {
+                        const modlogChannel = await bu.guildSettings.get(msg.channel.guild.id, 'modlog');
+                        if (!modlogChannel) {
+                            bu.send(msg, 'Modlog is not enabled!');
+                            return;
+                        }
+                        
+                        if (!limit) {
+                            limit = storedGuild.modlog.length;
+                        }
+                        
                         let index = storedGuild.modlog.length - limit;
                         if (index < 0) {
                             index = 0;
                         }
-                        let cases = storedGuild.modlog.splice(index);
-                        let messages = cases.map(m => m.msgid);
-                        let modlogChannel = await bu.guildSettings.get(msg.channel.guild.id, 'modlog');
+                        
+                        const cases = storedGuild.modlog.splice(index);
+                        const messages = cases.map(m => m.msgid);
                         bot.deleteMessages(modlogChannel, messages);
                         await r.table('guild').get(msg.channel.guild.id).update({
                             modlog: storedGuild.modlog
                         }).run();
+                        
                         bu.send(msg, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
                     }
                     break;
