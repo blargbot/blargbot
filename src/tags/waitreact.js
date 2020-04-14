@@ -74,7 +74,7 @@ module.exports =
             }
 
             // parse check code
-            if (args[3]) {
+            if (args[3] && args[3] !== "") {
                 checkBBTag = args[3];
             } else {
                 checkBBTag = bbengine.parse("true").bbtag;
