@@ -59,7 +59,7 @@ global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
 const Spawner = require('./core/Spawner');
 const Eris = require('eris');
-const irc = require('./core/irc.js');
+// const irc = require('./core/irc.js');
 
 /** CONFIG STUFF **/
 
@@ -79,13 +79,13 @@ class BlargbotClient {
         this.discord = this.bot = global.bot = new Eris(config.discord.token, {
             restMode: true, defaultImageFormat: 'png'
         });
-        this.irc = irc;
+        // this.irc = irc;
         this.spawner = global.spawner = new Spawner(this);
 
         console.init('Initializing discord.');
         this.spawner.spawnAll();
-        irc.init(VERSION, botEmitter);
-        console.verbose('IRC finished?');
+        // irc.init(VERSION, botEmitter);
+        // console.verbose('IRC finished?');
 
         this.spawnWebsite();
     }
@@ -160,13 +160,16 @@ if (config.cassandra) {
         });
 }
 
-
-snekfetch.post('https://discordapp.com/api/channels/684479299381755919/messages')
-    .set('Authorization', config.discord.token)
-    .send({ content: 'My master process just initialized ' + start.format('[on `]MMMM Do, YYYY[` at `]hh:mm:ss.SS[`]') + '.' })
-    .catch(err => {
-        console.error('Could not post startup message', err);
-    })
-    .finally(() => {
-        const client = new BlargbotClient();
-    });
+if (!config.general.isbeta)
+    snekfetch.post('https://discordapp.com/api/channels/684479299381755919/messages')
+        .set('Authorization', config.discord.token)
+        .send({ content: 'My master process just initialized ' + start.format('[on `]MMMM Do, YYYY[` at `]hh:mm:ss.SS[`]') + '.' })
+        .catch(err => {
+            console.error('Could not post startup message', err);
+        })
+        .finally(() => {
+            new BlargbotClient();
+        });
+else {
+    new BlargbotClient();
+}

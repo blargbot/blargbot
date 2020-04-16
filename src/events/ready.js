@@ -70,7 +70,7 @@ bot.on('ready', async function () {
                 modlog: []
             }).run();
         }
-        bu.guildCache[g.id] = await r.table('guild').get(g.id);
+        // bu.guildCache[g.id] = await r.table('guild').get(g.id);
     });
 
     // gameId = bu.getRandomInt(0, 4);

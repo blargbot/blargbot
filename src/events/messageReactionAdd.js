@@ -6,15 +6,22 @@ bot.on('messageReactionAdd', async function (msg, emoji, user) {
         emojiString = `${emoji.animated ? 'a' : ''}:${emoji.name}:${emoji.id}`;
 
     if (!msg.author) {
-        msg = await bot.getMessage(msg.channel.id, msg.id);
+        try {
+            msg = await bot.getMessage(msg.channel.id, msg.id);
+        } catch (err) {
+            console.warn('Was unable to retrieve reacted message?\n- %s\n- Channel: %s\n- Has seen channel: %s', err.message, JSON.stringify(emoji), msg.channel.id, !!bot.getChannel(msg.channel.id));
+            return;
+        }
     }
-    user = await bu.getUserById(user);
-    handleAwaitReaction(msg, emojiString, user);
+    if (msg && msg.guild) {
+        user = await bu.getUserById(user);
+        handleAwaitReaction(msg, emojiString, user);
 
-    if (msg.channel.id === '481857751891443722' && user.id === bu.CAT_ID && msg.author.id === bot.user.id) {
-        let command = CommandManager.built['autoresponse'];
-        if (!emoji.id && [command.approved, command.rejected].includes(emoji.name)) {
-            await command.whitelist(msg, emoji.name === command.approved);
+        if (msg.channel.id === '481857751891443722' && msg.member.roles.includes('280159905825161216') && msg.author.id === bot.user.id) {
+            let command = CommandManager.built['autoresponse'];
+            if (!emoji.id && [command.approved, command.rejected].includes(emoji.name)) {
+                await command.whitelist(msg, emoji.name === command.approved);
+            }
         }
     }
 });

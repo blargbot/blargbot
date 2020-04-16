@@ -265,6 +265,7 @@ bu.hasRole = (msg, roles, override = true) => {
     if (msg instanceof Member) {
         member = msg;
     } else {
+        if (!msg.channel) return false;
         if (!msg.channel.guild) return true;
         if (!msg.member) return false;
         member = msg.member;
@@ -424,10 +425,10 @@ bu.send = async function (context, payload, files) {
  * A collection of handlers for response codes from a failed message send
  */
 bu.send.catch = {
-    '10003': function (channel) { console.error('10003: Channel not found. ', channel); },
-    '50006': function () { console.error('50006: Tried to send an empty message!'); },
-    '50007': function () { console.error('50007: Can\'t send a message to this user!'); },
-    '50008': function () { console.error('50008: Can\'t send messages in a voice channel!'); },
+    '10003': function (channel) { /* console.error('10003: Channel not found. ', channel); */ },
+    '50006': function (channel, payload) { console.error('50006: Tried to send an empty message:', payload); },
+    '50007': function () { /* console.error('50007: Can\'t send a message to this user!'); */ },
+    '50008': function () { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
 
     '50013': function () {
         console.warn('50013: Tried sending a message, but had no permissions!');

@@ -75,7 +75,7 @@ class DiscordClient extends Client {
         super(config.discord.token, {
             autoReconnect: true,
             disableEveryone: true,
-            getAllUsers: true,
+            getAllUsers: false,
             disableEvents: {
                 TYPING_START: true,
                 VOICE_STATE_UPDATE: true
