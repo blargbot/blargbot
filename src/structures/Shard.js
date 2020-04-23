@@ -11,7 +11,7 @@ class Shard extends Sender {
 
         let firstShard = Math.min(this.manager.max - 1, this.manager.shardsPerCluster * this.id);
         let lastShard = Math.min(this.manager.max - 1,
-            (this.manager.shardsPerCluster * this.id) + this.manager.shardsPerCluster - 1)
+            (this.manager.shardsPerCluster * this.id) + this.manager.shardsPerCluster - 1);
         let shardCount = lastShard - firstShard + 1;
         this.env = Object.assign({}, process.env, this.manager.env, {
             CLUSTER_ID: this.id,

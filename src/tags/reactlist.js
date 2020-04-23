@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:35
- * @Last Modified by: mikey.zhaopeng
- * @Last Modified time: 2019-02-28 11:07:46
+ * @Last Modified by: stupid cat
+ * @Last Modified time: 2019-08-03 17:43:40
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -67,6 +67,7 @@ module.exports =
                     continue;
                 }
                 try {
+                    const escaped = emote.replace(/^a?:/gi, '');
                     do {
                         let lastUser = users.length === 0 ? null : users[users.length - 1].id;
                         users.push(...await message.getReaction(emote, 100, null, lastUser));

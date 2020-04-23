@@ -10,7 +10,6 @@
 // Caches
 bu.guildCache = {};
 bu.userCache = {};
-bu.tagCache = {};
 bu.globalVars = {};
 
 // A list of command usage for the current session

@@ -8,15 +8,16 @@
  */
 
 bot.on('messageUpdate', async function (msg, oldmsg) {
-    if (oldmsg == undefined) {
-        if (bot.channelGuildMap.hasOwnProperty(msg.channel.id)) {
-            try {
-                msg = await bot.getMessage(msg.channel.id, msg.id);
-            } catch (err) {
-                return; // Message wasn't found
-            }
-        } else return; // Don't handle DM
+    if (!oldmsg) {
+        try {
+            msg = await bot.getMessage(msg.channel.id, msg.id);
+        } catch (err) {
+            return; // Message wasn't found
+        }
     }
+
+    if (!msg.guild) return; // don't handle dms
+
     const storedGuild = await bu.getGuild(msg.guild.id);
     await bu.handleCensor(msg, storedGuild);
 

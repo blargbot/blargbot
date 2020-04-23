@@ -31,9 +31,9 @@ module.exports = class Frontend {
                     ctx.res.on('finish', resolve);
 
                     this.nuxt.render(ctx.req, ctx.res, promise => {
-                        promise.then(resolve).catch(reject)
+                        promise.then(resolve).catch(reject);
                     });
-                }))
+                }));
         });
 
         this._server = this.app.listen(8086);
@@ -56,4 +56,4 @@ module.exports = class Frontend {
     get requireCtx() {
         return require;
     }
-}
+};

@@ -134,22 +134,6 @@ class LogsCommand extends BaseCommand {
             console.error(err, err.message);
         }
 
-        // let results = await r.table('chatlogs')
-        //     .between([channel, r.minval], [channel, msg.id], {
-        //         index: 'channel_id',
-        //         rightBound: 'open'
-        //     })
-        //     .orderBy({
-        //         index: r.desc('channel_id')
-        //     })
-        //     .filter(function (q) {
-        //         return r.expr(users).count().eq(0).or(r.expr(users).contains(q('userid')))
-        //             .and(r.expr(types).count().eq(0).or(r.expr(types).contains(q('type')))
-        //                 .and(r.expr(msgids).contains(q('msgid')).not())
-        //             );
-        //     })
-        //     .limit(numberOfMessages).run();
-
         if (results.length == 0) {
             clearTimeout(timer);
             bot.editMessage(msg2.channel.id, msg2.id, 'No results found!');

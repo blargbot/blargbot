@@ -40,7 +40,7 @@ class UnmuteCommand extends BaseCommand {
                                 reason = input.r.join(' ');
                                 fullReason = `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`;
                             }
-                            await bot.removeGuildMemberRole(msg.channel.guild.id, user.id, mutedrole, fullReason);
+                            await bot.removeGuildMemberRole(msg.channel.guild.id, user.id, mutedrole, encodeURIComponent(fullReason));
 
                             // discord started erroring on voiceMute if the user wasn't in a voice channel (thanks, discord!)
                             // so, now we gotta make two calls i guess

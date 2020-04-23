@@ -60,7 +60,8 @@ class HackbanCommand extends BaseCommand {
             };
         console.dir(bu.bans[msg.channel.guild.id]);
         userList.forEach(m => {
-            bot.banGuildMember(msg.channel.guild.id, m, days, 'Banned by ' + bu.getFullName(msg.author) + (input.r ? ' with reason: ' + input.r.join(' ') : '')).then(() => {
+            const fullReason = encodeURIComponent(`[ ${bu.getFullName(msg.author)} ]` + (input.r ? ' ' + input.r : ''));
+            bot.banGuildMember(msg.channel.guild.id, m, days, fullReason).then(() => {
                 return;
             }).catch(console.error);
         });

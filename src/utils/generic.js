@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-03-15 13:24:10
+ * @Last Modified time: 2019-09-28 13:33:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -265,6 +265,7 @@ bu.hasRole = (msg, roles, override = true) => {
     if (msg instanceof Member) {
         member = msg;
     } else {
+        if (!msg.channel) return false;
         if (!msg.channel.guild) return true;
         if (!msg.member) return false;
         member = msg.member;
@@ -424,10 +425,10 @@ bu.send = async function (context, payload, files) {
  * A collection of handlers for response codes from a failed message send
  */
 bu.send.catch = {
-    '10003': function (channel) { console.error('10003: Channel not found. ', channel); },
-    '50006': function () { console.error('50006: Tried to send an empty message!'); },
-    '50007': function () { console.error('50007: Can\'t send a message to this user!'); },
-    '50008': function () { console.error('50008: Can\'t send messages in a voice channel!'); },
+    '10003': function (channel) { /* console.error('10003: Channel not found. ', channel); */ },
+    '50006': function (channel, payload) { console.error('50006: Tried to send an empty message:', payload); },
+    '50007': function () { /* console.error('50007: Can\'t send a message to this user!'); */ },
+    '50008': function () { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
 
     '50013': function () {
         console.warn('50013: Tried sending a message, but had no permissions!');
@@ -447,12 +448,18 @@ bu.send.catch = {
         return 'I tried to send a message in response to your command, ' +
             'but didn\'t have permission to create embeds. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Embed Links` permission.';
+    },
+
+    // try to catch the mystery of the autoresponse-object-in-field-value error
+    // https://stop-it.get-some.help/9PtuDEm.png
+    '50035': function (channel, payload) {
+        console.warn('%s|%s: %o', channel.id, channel.name, payload);
     }
 };
 
 bu.canDmErrors = async function (userId) {
     let storedUser = await r.table('user').get(userId);
-    return !storedUser.dontdmerrors;
+    return !storedUser || !storedUser.dontdmerrors;
 };
 
 /**
@@ -600,7 +607,7 @@ bu.getUser = async function (msg, name, args = {}) {
                 newUserList.push(userList[i]);
             }
             for (let i = 0; i < newUserList.length; i++) {
-                userListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator}\n`;
+                userListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator} - ${newUserList[i].user.id}\n`;
             }
             let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
             try {
@@ -639,6 +646,9 @@ C.cancel query
 
 bu.getMessage = async function (channelId, messageId) {
     if (/^\d{17,23}$/.test(messageId)) {
+        let channel = bot.getChannel(channelId);
+        let messageAttempt = channel.messages.get(messageId);
+        if (messageAttempt) return messageAttempt;
         try {
             return await bot.getMessage(channelId, messageId);
         } catch (e) { }
@@ -704,10 +714,10 @@ ${roleListString}${moreRoleString}--------------------
 C. cancel query
 \`\`\`
 **${bu.getFullName(msg.author)}**, please type the number of the role you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`, (msg2) => {
-                    if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
-                        return true;
-                    } else return false;
-                }, undefined, args.label, args.suppress);
+                if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
+                    return true;
+                } else return false;
+            }, undefined, args.label, args.suppress);
             let response = await query.response;
             if (response.content.toLowerCase() == 'c') {
                 if (!args.suppress)
@@ -959,6 +969,7 @@ bu.comparePerms = (m, allow) => {
 bu.splitInput = (content, noTrim) => {
     let input;
     if (Array.isArray(content)) content = content.join(' ');
+    if (typeof content !== 'string') content = content.toString();
     if (!noTrim) input = content.replace(/ +/g, ' ').split(' ');
     else input = content.split(' ');
     if (input.length > 0 && input[0] == '')
@@ -1423,9 +1434,9 @@ bu.postStats = function () {
         shard_count: config.shards.max,
         shard_id: parseInt(process.env.CLUSTER_ID)
     };
-    bot.executeWebhook('511922345099919360', config.shards.shardToken, {
-        content: JSON.stringify(stats)
-    });
+    // bot.executeWebhook('511922345099919360', config.shards.shardToken, {
+    //     content: JSON.stringify(stats)
+    // });
     console.log(stats);
     request.post({
         'url': `https://discord.bots.gg/api/v1/bots/${bot.user.id}/stats`,
@@ -1868,4 +1879,13 @@ bu.findMessages = async function (channelId, count, filter, before, after) {
     }
 
     return result.filter(filter);
+};
+
+bu.formatAuditReason = function (user, reason, ban = false) {
+    let fullReason = bu.getFullName(user);
+    if (reason) {
+        fullReason += `: ${reason}`;
+    }
+    // bans use their own system and cannot be uriencoded. thanks discord!
+    return !ban ? encodeURIComponent(fullReason) : fullReason;
 };

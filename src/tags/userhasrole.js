@@ -47,12 +47,13 @@ module.exports =
 
             roleText = [roleText];
             if (userText) {
-                result.user = await context.getUser(userText, {
+                delete result.user;
+                let user = await context.getUser(userText, {
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });
-                if (result.user)
-                    result.user = context.guild.members.get(result.user.id);
+                if (user)
+                    result.user = context.guild.members.get(user.id);
             }
 
             if (deserialized && Array.isArray(deserialized.v))

@@ -2,10 +2,12 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:31:12
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-02-10 13:23:15
+ * @Last Modified time: 2019-07-29 18:02:34
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+require('./httpsInterceptor');
+
 global.Promise = require('bluebird');
 global.config = require('../../config.json');
 const CatLoggr = require('cat-loggr');
@@ -17,10 +19,12 @@ const Database = require('./Database');
 const seqErrors = require('sequelize/lib/errors');
 const { CronJob } = require('cron');
 const bbEngine = require('../structures/bbtag/Engine');
+const gameSwitcher = require('./gameSwitcher');
 
 const loggr = new CatLoggr({
     shardId: process.env.CLUSTER_ID,
     level: config.general.isbeta ? 'debug' : 'info',
+    shardLength: 4,
     levels: [
         { name: 'fatal', color: CatLoggr._chalk.red.bgBlack, err: true },
         { name: 'error', color: CatLoggr._chalk.black.bgRed, err: true },
@@ -70,8 +74,10 @@ class DiscordClient extends Client {
     constructor() {
         super(config.discord.token, {
             autoReconnect: true,
-            disableEveryone: true,
-            getAllUsers: true,
+            allowedMentions: {
+                everyone: false
+            },
+            getAllUsers: false,
             disableEvents: {
                 TYPING_START: true,
                 VOICE_STATE_UPDATE: true
@@ -82,7 +88,17 @@ class DiscordClient extends Client {
             restMode: true,
             defaultImageFormat: 'png',
             defaultImageSize: 512,
-            messageLimit: 0
+            messageLimit: 5,
+            intents: [
+                'guilds',
+                'guildMembers',
+                'guildBans',
+                'guildPresences',
+                'guildMessages',
+                'guildMessageReactions',
+                'directMessages',
+                'directmessageReactions'
+            ]
         });
         global.bot = this;
         bu.commandMessages = {};
@@ -138,6 +154,7 @@ class DiscordClient extends Client {
     }
 
     async avatarInterval() {
+        console.info('!=! Performing the avatar interval !=!');
         if (config.general.isbeta) return;
         let time = moment();
         let h = parseInt(time.format('H'));
@@ -148,10 +165,12 @@ class DiscordClient extends Client {
         await this.editSelf({
             avatar: bu.avatars[id]
         });
-        await this.editGuild('194232473931087872', {
-            icon: bu.avatars[id]
-        });
-        await this.createMessage('492698595447930881', 'Switched avatar to #' + id);
+
+        await gameSwitcher();
+        // await this.editGuild('194232473931087872', {
+        //     icon: bu.avatars[id]
+        // });
+        // await this.createMessage('492698595447930881', 'Switched avatar to #' + id);
     }
 
     async autoresponseInterval() {
@@ -160,13 +179,25 @@ class DiscordClient extends Client {
 
         let guilds = await r.table('guild').getAll(true, { index: 'interval' });
         guilds = guilds.filter(g => this.guilds.get(g.guildid));
+        console.info('[%s] Running intervals on %i guilds', nonce, guilds.length);
+
+        let count = 0;
+        let failures = 0;
         for (const guild of guilds) {
+            if (process.env.CLUSTER_ID == 2) {
+                console.info('[%s] Performing interval on %s', nonce, guild.guildid);
+            }
             let interval = guild.ccommands._interval;
 
             try {
                 let g = this.guilds.get(guild.guildid);
                 let id = interval.authorizer || interval.author;
                 let m = g.members.get(id);
+                if (!m) {
+                    // member does not exist, skip execution
+                    // TODO: some sort of notification that the authorizer is no longer around
+                    continue;
+                }
                 let u = this.users.get(id);
                 if (!u) u = await this.getRESTUser(id);
                 let c;
@@ -189,10 +220,14 @@ class DiscordClient extends Client {
                     authorizer: interval.authorizer,
                     silent: true
                 });
+                count++;
             } catch (err) {
                 console.error('Issue with interval:', guild.guildid, err);
+                failures++;
             }
         }
+
+        console.info('[%s] Intervals complete. %i success | %i fail', nonce, count, failures);
     }
 
     async eval(msg, text, send = true) {

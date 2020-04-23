@@ -9,10 +9,13 @@
 
 global.config = require('../config.json');
 const CatLoggr = require('cat-loggr');
+const snekfetch = require('snekfetch');
+const moment = require('moment');
 
 const loggr = new CatLoggr({
     shardId: 'MS',
     level: config.general.isbeta ? 'debug' : 'info',
+    shardLength: 4,
     levels: [
         { name: 'fatal', color: CatLoggr._chalk.red.bgBlack, err: true },
         { name: 'error', color: CatLoggr._chalk.black.bgRed, err: true },
@@ -36,6 +39,16 @@ const loggr = new CatLoggr({
         { name: 'module', color: CatLoggr._chalk.black.bgBlue }
     ]
 }).setGlobal();
+
+console.info(`
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+MAIN PROCESS INITIALIZED
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@`);
+
+const start = moment();
+
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Promise Rejection:', err);
 });
@@ -46,7 +59,7 @@ global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
 const Spawner = require('./core/Spawner');
 const Eris = require('eris');
-const irc = require('./core/irc.js');
+// const irc = require('./core/irc.js');
 
 /** CONFIG STUFF **/
 
@@ -66,13 +79,13 @@ class BlargbotClient {
         this.discord = this.bot = global.bot = new Eris(config.discord.token, {
             restMode: true, defaultImageFormat: 'png'
         });
-        this.irc = irc;
+        // this.irc = irc;
         this.spawner = global.spawner = new Spawner(this);
 
         console.init('Initializing discord.');
         this.spawner.spawnAll();
-        irc.init(VERSION, botEmitter);
-        console.verbose('IRC finished?');
+        // irc.init(VERSION, botEmitter);
+        // console.verbose('IRC finished?');
 
         this.spawnWebsite();
     }
@@ -147,4 +160,16 @@ if (config.cassandra) {
         });
 }
 
-const client = new BlargbotClient();
+if (!config.general.isbeta)
+    snekfetch.post('https://discordapp.com/api/channels/684479299381755919/messages')
+        .set('Authorization', config.discord.token)
+        .send({ content: 'My master process just initialized ' + start.format('[on `]MMMM Do, YYYY[` at `]hh:mm:ss.SS[`]') + '.' })
+        .catch(err => {
+            console.error('Could not post startup message', err);
+        })
+        .finally(() => {
+            new BlargbotClient();
+        });
+else {
+    new BlargbotClient();
+}

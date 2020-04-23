@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-01-02 12:26:06
+ * @Last Modified time: 2019-09-26 09:27:48
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -36,9 +36,8 @@ module.exports =
                     return Builder.util.error(subtag, context, 'Role above author');
 
                 try {
-                    await role.edit({ name },
-                        `Role edit by ${context.user.username}#${context.user.discriminator}`
-                        + (context.scope.reason ? ': ' + context.scope.reason : ''));
+                    let fullReason = bu.formatAuditReason(context.user, context.scope.reason);
+                    await role.edit({ name }, fullReason);
                     return;
                 } catch (err) {
                     if (!quiet)

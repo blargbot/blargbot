@@ -45,9 +45,11 @@ module.exports =
             bu.notCommandMessages[context.guild.id][context.msg.id] = true;
 
             try {
-                if (msg != null)
-                    msg.delete();
+                if (msg) {
+                    await bot.deleteMessage(msg.channel.id, msg.id);
+                }
             } catch (e) {
+                // NO-OP
             }
         })
         .build();

@@ -52,6 +52,11 @@ const bbtagExecutions = new Prometheus.Counter({
     labelNames: ['type']
 });
 
+const httpsRequests = new Prometheus.Counter({
+    name: 'https_requests', help: 'HTTPS Requests',
+    labelNames: ['method', 'endpoint']
+});
+
 const aggregate = function (regArray) {
     let aggregated = Prometheus.AggregatorRegistry.aggregate(regArray);
     return aggregated;
@@ -60,7 +65,7 @@ const aggregate = function (regArray) {
 module.exports = {
     Prometheus, aggregate, guildGauge, shardStatus, userGauge, messageCounter,
     chatlogCounter, commandCounter, commandError, commandLatency, bbtagExecutions,
-    subtagLatency,
+    subtagLatency, httpsRequests,
     registryCache: [],
     get aggregated() {
         let c = module.exports.registryCache.filter(m => true);

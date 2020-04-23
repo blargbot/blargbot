@@ -178,18 +178,6 @@ bu.isBlacklistedChannel = async function (channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
-
-bu.getCachedTag = async function (tagname) {
-    let storedTag;
-    if (bu.tagCache[tagname]) {
-        storedTag = bu.tagCache[tagname];
-    } else {
-        storedTag = await r.table('tag').get(tagname);
-        bu.tagCache[tagname] = storedTag;
-    }
-    return storedTag;
-};
-
 bu.getCachedUser = async function (userid) {
     let storedUser;
     if (bu.userCache[userid]) {

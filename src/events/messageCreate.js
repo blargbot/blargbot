@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: stupid cat
- * @Last Modified time: 2019-03-15 13:30:02
+ * @Last Modified time: 2019-07-29 17:55:23
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,12 +25,10 @@ cleverbot.create().then(function (session) {
 });
 
 bot.on('messageCreate', async function (msg) {
-    if (msg.guild && !msg.guild.shard.ready) return;
+    if (!msg.guild || (msg.guild && !msg.guild.shard.ready)) return;
     bu.Metrics.messageCounter.inc();
     await bu.processUser(msg.author);
-    let isDm = msg.channel.guild == undefined;
-    let storedGuild;
-    if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
+    let storedGuild = await bu.getGuild(msg.guild.id);
     if (storedGuild && storedGuild.settings.makelogs)
         bu.insertChatlog(msg, 0);
 
@@ -45,7 +43,7 @@ bot.on('messageCreate', async function (msg) {
 
 async function handleUserMessage(msg, storedGuild) {
     let prefix, prefixes = [];
-    let storedUser = await r.table('user').get(msg.author.id);
+    let storedUser = await bu.getCachedUser(msg.author.id);
     if (storedUser && storedUser.prefixes)
         prefixes.push(...storedUser.prefixes);
 
@@ -156,6 +154,7 @@ var flipTables = async function (msg, unflip) {
 
 var handleDiscordCommand = async function (channel, user, text, msg) {
     let words = bu.splitInput(text);
+    if (words.length === 0) return;
     let outputLog = '';
     if (msg.channel.guild)
         outputLog = `Command '${text}' executed by ${user.username} (${user.id}) on server ${msg.channel.guild.name} (${msg.channel.guild.id})`;
@@ -437,21 +436,41 @@ async function checkWhitelist() {
 setInterval(checkWhitelist, 1000 * 60 * 15);
 checkWhitelist();
 
+function defaultMember(msg, tag) {
+    if (!msg.member) {
+        const id = tag.authorizer || tag.author;
+        const member = msg.guild.members.get(id);
+        if (!member) return false;
+        msg.member = member;
+    }
+    return true;
+}
+
 async function handleAutoresponse(msg, storedGuild, everything = false) {
     if (!arWhitelist.includes(msg.guild.id)) return; // selective whitelist for now
+    if (!msg.member && msg.author.discriminator !== '0000') {
+        // skip over non-members who aren't webhooks
+        return;
+    }
 
     if (storedGuild && storedGuild.autoresponse) {
         let ars = storedGuild.autoresponse;
+        let m = {
+            ...msg,
+            guild: msg.guild
+        };
 
         if (everything && ars.everything && storedGuild.ccommands[ars.everything.executes]) {
+            const tag = storedGuild.ccommands[ars.everything.executes];
+            if (!defaultMember(m, tag)) return;
             await bbEngine.runTag({
-                msg,
+                msg: m,
                 limits: new bbtag.limits.autoresponse_everything(),
-                tagContent: storedGuild.ccommands[ars.everything.executes].content,
-                author: storedGuild.ccommands[ars.everything.executes].author,
-                input: msg.content,
+                tagContent: tag.content,
+                author: tag.author,
+                input: m.content,
                 isCC: true,
-                tagName: ars.everything,
+                tagName: ars.everything.executes,
                 silent: true
             });
         }
@@ -463,7 +482,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                     try {
                         let exp = bu.createRegExp(ar.term);
 
-                        matches = msg.content.match(exp);
+                        matches = m.content.match(exp);
                         if (matches !== null) {
                             cont = true;
                             matches.map(m => '"' + m.replace(/"/g, '\\"') + '"');
@@ -474,15 +493,17 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                         bu.send(msg, 'Unsafe or invalid regex! Terminating.');
                         return;
                     }
-                } else cont = msg.content.includes(ar.term);
+                } else cont = m.content.includes(ar.term);
 
                 if (cont && storedGuild.ccommands[ar.executes]) {
+                    const tag = storedGuild.ccommands[ar.executes];
+                    if (!defaultMember(msg, tag)) return;
                     await bbEngine.runTag({
-                        msg,
+                        msg: m,
                         limits: new bbtag.limits.autoresponse_general(),
-                        tagContent: storedGuild.ccommands[ar.executes].content,
-                        author: storedGuild.ccommands[ar.executes].author,
-                        input: matches || msg.content,
+                        tagContent: tag.content,
+                        author: tag.author,
+                        input: matches || m.content,
                         isCC: true,
                         tagName: ar.executes
                     });
@@ -551,7 +572,7 @@ function query(input) {
                 let content = bod.match(/<font size="2" face="Verdana" color=darkred>(.+)<\/font>/);
                 if (content)
                     res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2'));
-                else console.warn('An error occured in scraping a cleverbot response:', bod);
+                else res('Hi, I\'m blargbot! It\'s nice to meet you.');
             }
         });
     });
