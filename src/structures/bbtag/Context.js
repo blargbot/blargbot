@@ -208,7 +208,11 @@ class Context {
                             content: this.outputModify(this, text),
                             embed: this.state.embed,
                             nsfw: this.state.nsfw,
-                            disableEveryone: disableEveryone
+                            allowedMentions: {
+                                everyone: !disableEveryone,
+                                roles: this.isCC,
+                                users: this.isCC
+                            }
                         }, files || this.state.file);
 
                     if (response != null && response.channel != null) {

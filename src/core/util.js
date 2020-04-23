@@ -39,7 +39,6 @@ var changefeed;
 bu.registerChangefeed = async () => {
     await registerSubChangefeed('guild', 'guildid', bu.guildCache);
     await registerSubChangefeed('user', 'userid', bu.userCache);
-    await registerSubChangefeed('tag', 'name', bu.tagCache);
 };
 
 bu.registerIndexes = async () => {
@@ -47,7 +46,7 @@ bu.registerIndexes = async () => {
     if (!indexes.includes('interval')) {
         await r.table('guild').indexCreate('interval', r.row('ccommands').hasFields('_interval'));
     }
-}
+};
 
 async function registerSubChangefeed(type, idName, cache) {
     try {

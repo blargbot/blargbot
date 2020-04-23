@@ -24,6 +24,7 @@ const gameSwitcher = require('./gameSwitcher');
 const loggr = new CatLoggr({
     shardId: process.env.CLUSTER_ID,
     level: config.general.isbeta ? 'debug' : 'info',
+    shardLength: 4,
     levels: [
         { name: 'fatal', color: CatLoggr._chalk.red.bgBlack, err: true },
         { name: 'error', color: CatLoggr._chalk.black.bgRed, err: true },
@@ -73,8 +74,10 @@ class DiscordClient extends Client {
     constructor() {
         super(config.discord.token, {
             autoReconnect: true,
-            disableEveryone: true,
-            getAllUsers: true,
+            allowedMentions: {
+                everyone: false
+            },
+            getAllUsers: false,
             disableEvents: {
                 TYPING_START: true,
                 VOICE_STATE_UPDATE: true
@@ -85,7 +88,17 @@ class DiscordClient extends Client {
             restMode: true,
             defaultImageFormat: 'png',
             defaultImageSize: 512,
-            messageLimit: 5
+            messageLimit: 5,
+            intents: [
+                'guilds',
+                'guildMembers',
+                'guildBans',
+                'guildPresences',
+                'guildMessages',
+                'guildMessageReactions',
+                'directMessages',
+                'directmessageReactions'
+            ]
         });
         global.bot = this;
         bu.commandMessages = {};
@@ -141,6 +154,7 @@ class DiscordClient extends Client {
     }
 
     async avatarInterval() {
+        console.info('!=! Performing the avatar interval !=!');
         if (config.general.isbeta) return;
         let time = moment();
         let h = parseInt(time.format('H'));

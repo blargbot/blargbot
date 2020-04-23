@@ -70,15 +70,15 @@ bot.on('ready', async function () {
                 modlog: []
             }).run();
         }
-        bu.guildCache[g.id] = await r.table('guild').get(g.id);
+        // bu.guildCache[g.id] = await r.table('guild').get(g.id);
     });
 
-    gameId = bu.getRandomInt(0, 4);
-    if (config.general.isbeta)
-        bu.avatarId = 4;
-    else
-        bu.avatarId = 0;
-    switchGame();
+    // gameId = bu.getRandomInt(0, 4);
+    // if (config.general.isbeta)
+    //     bu.avatarId = 4;
+    // else
+    //     bu.avatarId = 0;
+    // switchGame();
     bu.postStats();
     if (eventTimer == undefined) {
         initEvents();
@@ -99,9 +99,6 @@ bot.on('ready', async function () {
         }
     }
 });
-
-
-
 
 var eventTimer;
 

@@ -25,12 +25,10 @@ cleverbot.create().then(function (session) {
 });
 
 bot.on('messageCreate', async function (msg) {
-    if (msg.guild && !msg.guild.shard.ready) return;
+    if (!msg.guild || (msg.guild && !msg.guild.shard.ready)) return;
     bu.Metrics.messageCounter.inc();
     await bu.processUser(msg.author);
-    let isDm = msg.channel.guild == undefined;
-    let storedGuild;
-    if (!isDm) storedGuild = await bu.getGuild(msg.guild.id);
+    let storedGuild = await bu.getGuild(msg.guild.id);
     if (storedGuild && storedGuild.settings.makelogs)
         bu.insertChatlog(msg, 0);
 
@@ -45,7 +43,7 @@ bot.on('messageCreate', async function (msg) {
 
 async function handleUserMessage(msg, storedGuild) {
     let prefix, prefixes = [];
-    let storedUser = await r.table('user').get(msg.author.id);
+    let storedUser = await bu.getCachedUser(msg.author.id);
     if (storedUser && storedUser.prefixes)
         prefixes.push(...storedUser.prefixes);
 
@@ -574,7 +572,7 @@ function query(input) {
                 let content = bod.match(/<font size="2" face="Verdana" color=darkred>(.+)<\/font>/);
                 if (content)
                     res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2'));
-                else console.warn('An error occured in scraping a cleverbot response:', bod);
+                else res('Hi, I\'m blargbot! It\'s nice to meet you.');
             }
         });
     });

@@ -23,26 +23,35 @@ class RemindCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
+        const example = '\`remind Do a thing! -t 1 day, two hours\`';
+        
         let input = bu.parseInput(this.flags, words);
         let duration = moment.duration();
         if (input.t && input.t.length > 0) duration = bu.parseDuration(input.t.join(' '));
+        
         if (duration.asMilliseconds() == 0) {
-            await bu.send(msg, `Hey, you didn't give me a period of time to remind you after!
-Example: \`remind Do a thing! -t 1 day, two hours\``);
-        } else {
-            let channel;
-            if (input.c) channel = msg.channel.id;
-            await r.table('events').insert({
-                type: 'remind',
-                source: channel ? msg.guild.id : msg.author.id,
-                user: msg.author.id,
-                content: input.undefined.join(' '),
-                channel: channel,
-                starttime: r.epochTime(moment().unix()),
-                endtime: r.epochTime(moment().add(duration).unix())
-            });
-            await bu.send(msg, `:alarm_clock: Ok! I'll remind you ${channel ? 'here' : 'in a DM'} ${duration.humanize(true)}! :alarm_clock: `);
+            bu.send(msg, `Hey, you didn't give me a period of time to remind you after!
+Example: ${example}`);
+            return;
         }
+        if (input.undefined.length == 0) {
+            bu.send(msg, `Hey, you didn't tell me what I should remind you!
+Example: ${example}`);
+            return;
+        }
+        
+        let channel;
+        if (input.c) channel = msg.channel.id;
+        await r.table('events').insert({
+            type: 'remind',
+            source: channel ? msg.guild.id : msg.author.id,
+            user: msg.author.id,
+            content: input.undefined.join(' '),
+            channel: channel,
+            starttime: r.epochTime(moment().unix()),
+            endtime: r.epochTime(moment().add(duration).unix())
+        });
+        await bu.send(msg, `:alarm_clock: Ok! I'll remind you ${channel ? 'here' : 'in a DM'} ${duration.humanize(true)}! :alarm_clock: `);
     }
 
     async event(args) {

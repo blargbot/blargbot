@@ -10,6 +10,7 @@
 const bbEngine = require('../structures/bbtag/Engine');
 
 bot.on('guildMemberRemove', async function (guild, member) {
+    const now = Date.now();
     let val = await bu.guildSettings.get(guild.id, 'farewell');
     let chan = await bu.guildSettings.get(guild.id, 'farewellchan');
     if (chan && val) {
@@ -45,7 +46,7 @@ bot.on('guildMemberRemove', async function (guild, member) {
     }]);
 
     let e = await bu.getAudit(guild.id, member.user.id, 20);
-    if (e && Date.now() - bu.unmakeSnowflake(e.id) <= 1000) {
+    if (e && now - bu.unmakeSnowflake(e.id) <= 1000) {
         let mod = bot.users.get(e.user.id);
         bu.logAction(
             guild,

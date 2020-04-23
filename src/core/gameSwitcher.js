@@ -26,7 +26,7 @@ module.exports = async function switchGame() {
     if (game.type) type = game.type;
   }
 
-  bot.editStatus(null, {
+  bot.editStatus("online", {
     name, type
   });
 };

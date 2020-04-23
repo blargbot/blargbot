@@ -265,6 +265,7 @@ bu.hasRole = (msg, roles, override = true) => {
     if (msg instanceof Member) {
         member = msg;
     } else {
+        if (!msg.channel) return false;
         if (!msg.channel.guild) return true;
         if (!msg.member) return false;
         member = msg.member;
@@ -424,10 +425,10 @@ bu.send = async function (context, payload, files) {
  * A collection of handlers for response codes from a failed message send
  */
 bu.send.catch = {
-    '10003': function (channel) { console.error('10003: Channel not found. ', channel); },
-    '50006': function () { console.error('50006: Tried to send an empty message!'); },
-    '50007': function () { console.error('50007: Can\'t send a message to this user!'); },
-    '50008': function () { console.error('50008: Can\'t send messages in a voice channel!'); },
+    '10003': function (channel) { /* console.error('10003: Channel not found. ', channel); */ },
+    '50006': function (channel, payload) { console.error('50006: Tried to send an empty message:', payload); },
+    '50007': function () { /* console.error('50007: Can\'t send a message to this user!'); */ },
+    '50008': function () { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
 
     '50013': function () {
         console.warn('50013: Tried sending a message, but had no permissions!');
@@ -458,7 +459,7 @@ bu.send.catch = {
 
 bu.canDmErrors = async function (userId) {
     let storedUser = await r.table('user').get(userId);
-    return !storedUser.dontdmerrors;
+    return !storedUser || !storedUser.dontdmerrors;
 };
 
 /**
@@ -1215,7 +1216,6 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
 };
 
 bu.getAudit = async function (guildId, targetId, type) {
-    return null;
     try {
         let guild = bot.guilds.get(guildId);
         let user = bot.users.get(targetId);
@@ -1436,9 +1436,9 @@ bu.postStats = function () {
         shard_count: config.shards.max,
         shard_id: parseInt(process.env.CLUSTER_ID)
     };
-    bot.executeWebhook('511922345099919360', config.shards.shardToken, {
-        content: JSON.stringify(stats)
-    });
+    // bot.executeWebhook('511922345099919360', config.shards.shardToken, {
+    //     content: JSON.stringify(stats)
+    // });
     console.log(stats);
     request.post({
         'url': `https://discord.bots.gg/api/v1/bots/${bot.user.id}/stats`,
