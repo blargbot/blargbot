@@ -1013,8 +1013,6 @@ bu.splitInput = (content, noTrim) => {
     return words;
 };
 
-
-
 bu.canExecuteCcommand = async function (msg, commandName, quiet) {
     let val = await bu.ccommand.get(msg.guild ? msg.guild.id : '', commandName);
     if (val && typeof val == "object") {
