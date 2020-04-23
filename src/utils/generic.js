@@ -1216,7 +1216,6 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
 };
 
 bu.getAudit = async function (guildId, targetId, type) {
-    return null;
     try {
         let guild = bot.guilds.get(guildId);
         let user = bot.users.get(targetId);
