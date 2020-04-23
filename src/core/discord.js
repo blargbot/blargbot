@@ -74,7 +74,9 @@ class DiscordClient extends Client {
     constructor() {
         super(config.discord.token, {
             autoReconnect: true,
-            disableEveryone: true,
+            allowedMentions: {
+                everyone: false
+            },
             getAllUsers: false,
             disableEvents: {
                 TYPING_START: true,
@@ -86,7 +88,17 @@ class DiscordClient extends Client {
             restMode: true,
             defaultImageFormat: 'png',
             defaultImageSize: 512,
-            messageLimit: 5
+            messageLimit: 5,
+            intents: [
+                'guilds',
+                'guildMembers',
+                'guildBans',
+                'guildPresences',
+                'guildMessages',
+                'guildMessageReactions',
+                'directMessages',
+                'directmessageReactions'
+            ]
         });
         global.bot = this;
         bu.commandMessages = {};
