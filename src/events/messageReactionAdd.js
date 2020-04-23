@@ -17,7 +17,9 @@ bot.on('messageReactionAdd', async function (msg, emoji, user) {
         user = await bu.getUserById(user);
         handleAwaitReaction(msg, emojiString, user);
 
-        if (msg.channel.id === '481857751891443722' && msg.member.roles.includes('280159905825161216') && msg.author.id === bot.user.id) {
+        const member = msg.channel.guild.members.get(user.id);
+
+        if (msg.channel.id === '481857751891443722' && member.roles.includes('280159905825161216') && msg.author.id === bot.user.id) {
             let command = CommandManager.built['autoresponse'];
             if (!emoji.id && [command.approved, command.rejected].includes(emoji.name)) {
                 await command.whitelist(msg, emoji.name === command.approved);
