@@ -27,7 +27,6 @@ class ModlogCommand extends BaseCommand {
                         }
                     }
 
-
                     const storedGuild = await bu.getGuild(msg.guild.id);
                     if (storedGuild && storedGuild.modlog && storedGuild.modlog.length > 0) {
                         const modlogChannel = await bu.guildSettings.get(msg.channel.guild.id, 'modlog');
@@ -35,24 +34,28 @@ class ModlogCommand extends BaseCommand {
                             bu.send(msg, 'Modlog is not enabled!');
                             return;
                         }
-                        
+
                         if (!limit) {
                             limit = storedGuild.modlog.length;
                         }
-                        
+
                         let index = storedGuild.modlog.length - limit;
                         if (index < 0) {
                             index = 0;
                         }
-                        
+
                         const cases = storedGuild.modlog.splice(index);
                         const messages = cases.map(m => m.msgid);
-                        bot.deleteMessages(modlogChannel, messages);
+                        try {
+                            await bot.deleteMessages(modlogChannel, messages);
+                        } catch (err) {
+                            await bu.send(msg, 'I was unable to delete modlog messages as some were over 2 weeks old.');
+                        }
                         await r.table('guild').get(msg.channel.guild.id).update({
                             modlog: storedGuild.modlog
                         }).run();
-                        
-                        bu.send(msg, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
+
+                        await bu.send(msg, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
                     }
                     break;
             }
