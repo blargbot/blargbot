@@ -672,7 +672,7 @@ class CcommandCommand extends BaseCommand {
                                 subcommandHelp += `**Aliases:** ${(command[0].aliases || []).join(', ')}\n`;
                             if (command[0].args)
                                 subcommandHelp += `**Args:** \`${command[0].args}\`\n`;
-                            message += `${command[0].desc}`;
+                            subcommandHelp += `${command[0].desc}`;
                             bu.send(msg, subcommandHelp);
                         } else {
                             bu.send(msg, 'That subcommand was not found!');
