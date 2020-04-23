@@ -44,29 +44,28 @@ bot.on('guildMemberUpdate', async (guild, member, oldMember) => {
 
             let roles = [].concat(newRoles, remRoles);
 
-            console.log(roles);
-
-            let e = await bu.getAudit(guild.id, member.user.id, 25);
-
-            for (const role of roles) {
-                let r = guild.roles.get(role.id);
-                if (!r) continue;
-                let fields = [{
-                    name: 'User',
-                    value: `${member.user.username}#${member.user.discriminator} (${member.user.id})`
-                }, {
-                    name: 'Role',
-                    value: `<@&${r.id}> (${r.id})`
-                }];
-                if (e && e.user.id !== member.user.id) fields.push({
-                    name: 'Updated By',
-                    value: `${bu.getFullName(e.user)} (${e.user.id})`
-                });
-                if (e && e.reason) fields.push({
-                    name: 'Reason',
-                    value: e.reason
-                });
-                bu.logEvent(guild.id, member.user.id, role.s, fields);
+            if (roles.length > 0) {
+                let e = await bu.getAudit(guild.id, member.user.id, 25);
+                for (const role of roles) {
+                    let r = guild.roles.get(role.id);
+                    if (!r) continue;
+                    let fields = [{
+                        name: 'User',
+                        value: `${member.user.username}#${member.user.discriminator} (${member.user.id})`
+                    }, {
+                        name: 'Role',
+                        value: `<@&${r.id}> (${r.id})`
+                    }];
+                    if (e && e.user.id !== member.user.id) fields.push({
+                        name: 'Updated By',
+                        value: `${bu.getFullName(e.user)} (${e.user.id})`
+                    });
+                    if (e && e.reason) fields.push({
+                        name: 'Reason',
+                        value: e.reason
+                    });
+                    bu.logEvent(guild.id, member.user.id, role.s, fields);
+                }
             }
         }
     }
