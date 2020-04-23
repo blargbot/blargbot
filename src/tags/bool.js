@@ -17,7 +17,8 @@ const Builder = require('../structures/TagBuilder'),
         '<': (a, b) => bu.compare(a, b) < 0,
         'startswith': (a, b) => tryArray(a).startsWith(b),
         'endswith': (a, b) => tryArray(a).endsWith(b),
-        'includes': (a, b) => tryArray(a).includes(b)
+        'includes': (a, b) => tryArray(a).includes(b),
+        'contains': (a, b) => tryArray(a).includes(b) // alias of 'includes'
     };
 
 function tryArray(text) {
