@@ -607,7 +607,7 @@ bu.getUser = async function (msg, name, args = {}) {
                 newUserList.push(userList[i]);
             }
             for (let i = 0; i < newUserList.length; i++) {
-                userListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator}\n`;
+                userListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator} - ${newUserList[i].user.id}\n`;
             }
             let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
             try {
