@@ -55,7 +55,7 @@
         "rethinkdbdash": "^2.3.26",
         "rwlock": "^5.0.0",
         "safe-regex": "^1.1.0",
-        "sequelize": "^4.39.0",
+        "sequelize": "^5.15.1",
         "server-destroy": "^1.0.1",
         "showdown": "^1.8.6",
         "snekfetch": "github:ratismal/snekfetch",
