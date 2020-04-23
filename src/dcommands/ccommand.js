@@ -109,7 +109,7 @@ const subcommands = [
 ];
 
 function filterTitle(title) {
-    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()<>]/gi, '').toLowerCase();
+    return (title || '').replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()<>]/gi, '').toLowerCase();
 }
 
 class CcommandCommand extends BaseCommand {

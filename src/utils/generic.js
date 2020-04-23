@@ -410,7 +410,7 @@ bu.send = async function (context, payload, files) {
         if (typeof result === 'string' && message && await bu.canDmErrors(message.author.id)) {
             if (message.guild) result += `\nGuild: ${message.guild.name} (${message.guild.id})`;
             result += `\nChannel: ${message.channel.name} (${message.channel.id})`;
-            if (message.content.length > 100) result += `\nCommand: ${message.content.substring(0, 100)}...`;
+            if (message.content && message.content.length > 100) result += `\nCommand: ${message.content.substring(0, 100)}...`;
             else result += `\nCommand: ${message.content}`;
             result += '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.';
 
