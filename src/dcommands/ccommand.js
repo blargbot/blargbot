@@ -3,6 +3,8 @@ const BaseCommand = require('../structures/BaseCommand'),
     bbtag = require('../core/bbtag'),
     snekfetch = require('snekfetch'),
     crypto = require('crypto');
+const stringify = BaseCommand.stringify;
+
 
 const subcommands = [
     {
@@ -614,7 +616,7 @@ class CcommandCommand extends BaseCommand {
                 case 'list':
                     let embed = {
                         title: 'List of custom commands',
-                        color = 0x7289da,
+                        color: 0x7289da,
                         fields: [],
                         get asString() {
                             return stringify(this);
@@ -660,15 +662,16 @@ class CcommandCommand extends BaseCommand {
                         for (let [role, ccs] of ccommands) {
                             if (role.length === 0)
                                 role = '\u200B';
-                            
+
                             embed.fields.push({
                                 name: `${role}`,
-                                value: `\`\`\`\n${css.join(', ')}\n\`\`\``
+                                value: `\`\`\`\n${ccs.join(', ')}\n\`\`\``
                             });
                         }
                     }
 
                     bu.send(msg, { embed });
+                    break;
                 case 'sethelp':
                     if (words.length > 3) {
                         title = filterTitle(words[2]);
