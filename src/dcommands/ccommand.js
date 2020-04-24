@@ -643,8 +643,6 @@ class CcommandCommand extends BaseCommand {
                         });
                     }
 
-
-
                     if (!ccommands || ccommands.length === 0)
                         output.push('', 'There are no custom commands on this guild.');
                     else {
@@ -655,10 +653,11 @@ class CcommandCommand extends BaseCommand {
                                 ccList[''].push(ccName);
                             else {
                                 for (const role of cc.roles) {
-                                    if (!ccList.hasOwnProperty(role)) {
-                                        ccList[role] = [];
+                                    let lowerRole = role.toLowerCase();
+                                    if (!ccList.hasOwnProperty(lowerRole)) {
+                                        ccList[lowerRole] = [];
                                     }
-                                    ccList[role].push(ccName);
+                                    ccList[lowerRole].push(ccName);
                                 }
                             }
                         });
