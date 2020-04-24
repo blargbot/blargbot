@@ -61,7 +61,10 @@ class PatchCommand extends BaseCommand {
         console.info(embed);
         await bu.send(changeChannel, {
             content,
-            embed
+            embed,
+            allowedMentions: {
+                roles: true
+            }
         });
         await role.edit({
             mentionable: false

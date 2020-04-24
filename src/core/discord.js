@@ -75,7 +75,9 @@ class DiscordClient extends Client {
         super(config.discord.token, {
             autoReconnect: true,
             allowedMentions: {
-                everyone: false
+                everyone: false,
+                roles: true,
+                users: true
             },
             getAllUsers: false,
             disableEvents: {

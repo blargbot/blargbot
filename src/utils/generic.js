@@ -363,6 +363,12 @@ bu.send = async function (context, payload, files) {
     }
 
     console.log(payload);
+    if (!payload.allowedMentions) {
+        payload.allowedMentions = {};
+    }
+    if (payload.disableEveryone) {
+        payload.allowedMentions.everyone = false;
+    }
 
     if ('permissionsOf' in channel &&
         payload.embed &&
