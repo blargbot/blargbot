@@ -36,28 +36,13 @@ Reason: ${tag.reason}`);
             tagName: tagName,
             author: tag.author,
             authorizer: tag.authorizer,
-            cooldown: tag.cooldown,
-            outputModify: escapeMentions
+            cooldown: tag.cooldown
         });
         /** @type {string} */
         result.code = tag.content;
         return result;
     }
 };
-
-function escapeMentions(context, text) {
-    return text.replace(/<@!?(\d{17,21})>/g, function (match, id) {
-        let user = context.guild.members.get(id);
-        if (user == null)
-            return '@' + id;
-        return '@' + user.username + '#' + user.discriminator;
-    }).replace(/<@&(\d{17,21})>/g, function (match, id) {
-        let role = context.guild.roles.get(id);
-        if (role == null)
-            return '@Unknown Role';
-        return '@' + role.name;
-    }).replace(/@(everyone|here)/g, (_match, type) => '@\u200b' + type);
-}
 
 async function executeCC(msg, ccName, command) {
     let ccommand = (await bu.getGuild(msg.guild.id)).ccommands[ccName.toLowerCase()];
@@ -636,7 +621,6 @@ for (const key of Object.keys(limits)) {
 module.exports = {
     executeTag,
     executeCC,
-    escapeMentions,
     docs,
     generateDebug,
     limits,

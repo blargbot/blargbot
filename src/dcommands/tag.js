@@ -676,7 +676,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                                     );
                                 }
                                 lines.push(text);
-                                return bbtag.escapeMentions(context, lines.join('\n'));
+                                return lines.join('\n');
                             }, attach: debug ? bbtag.generateDebug(args.join(' ')) : null
                         });
                     }

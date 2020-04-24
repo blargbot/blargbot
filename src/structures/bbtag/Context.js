@@ -210,8 +210,8 @@ class Context {
                             nsfw: this.state.nsfw,
                             allowedMentions: {
                                 everyone: !disableEveryone,
-                                roles: this.isCC,
-                                users: this.isCC
+                                roles: !!this.isCC,
+                                users: !!this.isCC
                             }
                         }, files || this.state.file);
 
