@@ -50,7 +50,11 @@ module.exports =
                     content: message,
                     embed: embed,
                     nsfw: context.state.nsfw,
-                    disableEveryone: false
+                    allowedMentions: {
+                        everyone: true,
+                        users: true,
+                        roles: true
+                    }
                 }, file);
 
                 if (!sent) throw new Error('Send unsuccessful');

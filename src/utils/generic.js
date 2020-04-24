@@ -363,10 +363,10 @@ bu.send = async function (context, payload, files) {
     }
 
     console.log(payload);
-    if (!payload.allowedMentions) {
-        payload.allowedMentions = {};
-    }
     if (payload.disableEveryone) {
+        if (!payload.allowedMentions) {
+            payload.allowedMentions = {};
+        }
         payload.allowedMentions.everyone = false;
     }
 
