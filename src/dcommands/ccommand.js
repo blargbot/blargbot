@@ -614,6 +614,9 @@ class CcommandCommand extends BaseCommand {
                     }
                     break;
                 case 'list':
+                    let output = [
+                        '**List of Custom Commands**'
+                    ];
                     let embed = {
                         title: 'List of custom commands',
                         color: 0x7289da,
@@ -640,8 +643,10 @@ class CcommandCommand extends BaseCommand {
                         });
                     }
 
+
+
                     if (!ccommands || ccommands.length === 0)
-                        embed.description = 'There are no custom commands on this guild.';
+                        output.push('', 'There are no custom commands on this guild.');
                     else {
                         ccommands.forEach(ccName => {
                             const cc = storedGuild.ccommands[ccName];
@@ -658,19 +663,17 @@ class CcommandCommand extends BaseCommand {
                             }
                         });
                         ccommands = Object.entries(ccList);
-
+                        output.push('```ini');
                         for (let [role, ccs] of ccommands) {
                             if (role.length === 0)
-                                role = '\u200B';
+                                role = 'All Roles';
 
-                            embed.fields.push({
-                                name: `${role}`,
-                                value: `\`\`\`\n${ccs.join(', ')}\n\`\`\``
-                            });
+                            output.push(`[ ${role} ]`, `${ccs.join(', ')}`, '');
                         }
+                        output.push('```');
                     }
 
-                    bu.send(msg, { embed });
+                    bu.send(msg, output.join('\n'));
                     break;
                 case 'sethelp':
                     if (words.length > 3) {
