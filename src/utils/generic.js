@@ -310,7 +310,7 @@ bu.generateOutputPage = async function (payload, channel) {
     if (typeof payload === 'string') payload = {
         content: payload
     };
-    id = bu.makeSnowflake();
+    const id = bu.makeSnowflake();
     await bu.cclient.execute(`INSERT INTO message_outputs (id, content, embeds, channelid) VALUES (:id, :content, :embeds, :channelid) USING TTL 604800`, {
         id,
         content: payload.content.toString(),
