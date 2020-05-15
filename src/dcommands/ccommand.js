@@ -12,8 +12,8 @@ const subcommands = [
     },
     {
         name: 'setauthorizer',
-        args: '<name> [authorizer]',
-        desc: 'Set the custom command\'s authorizer'
+        args: '<name>',
+        desc: 'Set the executing user as the custom command\'s authorizer'
     },
     {
         name: 'cooldown',
@@ -688,26 +688,17 @@ class CcommandCommand extends BaseCommand {
                     break;
                 case 'setauthorizer':
                     if (words.length > 2) {
-                        let authorizer, author;
                         title = filterTitle(words[2]);
                         tag = await bu.ccommand.get(msg.channel.guild.id, title);
                         if (!tag) {
                             bu.send(msg, 'That ccommand doesn\'t exist!');
                             break;
                         }
-                        author = await r.table('user').get(tag.author).run();
-                        if (author.id != msg.author.id) {
-                            bu.send(msg, 'You don\'t own that custom command!');
-                            break;
-                        }
-
-                        if (words[3])
-                            authorizer = await bu.getUser(msg, words[3]);
-                        if (!authorizer) authorizer = msg.author.id;
+                        let author = await r.table('user').get(tag.author).run();
                         
-                        await bu.ccommand.setauthorizer(msg.channel.guild.id, title, authorizer.id);
-                        bu.send(msg, `✅ The tag \`${tag.name}\` by **${author.username}#${author.discriminator}** ` +
-                            `is now authorized by **${authorizer.username}#${authorizer.discriminator}**. ✅`);
+                        await bu.ccommand.setauthorizer(msg.channel.guild.id, title, msg.author.id);
+                        bu.send(msg, `✅ You are now the authorizer of the ccommand \`${title}\` owned ` +
+                                `by **${author.username}#${author.discriminator}** ✅`);
                     } else
                         bu.send(msg, `Not enough arguments! Usage is: \`ccommand setauthorizer <name> [user]\`.`);
                     break;
