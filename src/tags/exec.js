@@ -20,7 +20,7 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
-            let tag = await context.getCached(args[0], key => r.table('tag').get(key).run());
+            let tag = await context.getCached(`tag_${args[0].toLowerCase()}`, key => r.table('tag').get(key).run());
 
             if (tag == null)
                 return Builder.util.error(subtag, context, 'Tag not found: ' + args[0]);
