@@ -19,7 +19,7 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
-            let ccommand = await context.getCached(args[0].toLowerCase(),
+            let ccommand = await context.getCached(`cc_${args[0].toLowerCase()}`,
                 async key => (await bu.getGuild(context.guild.id)).ccommands[key]);
 
             if (ccommand == null)
