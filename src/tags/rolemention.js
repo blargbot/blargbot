@@ -26,8 +26,12 @@ module.exports =
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });
 
-            if (role != null)
+            if (role != null) {
+                if (!context.state.allowedMentions.roles.includes(role.id)) {
+                    context.state.allowedMentions.roles.push(role.id);
+                }
                 return role.mention;
+            }
 
             if (quiet)
                 return '';

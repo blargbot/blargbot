@@ -98,7 +98,12 @@ class Context {
             subtags: {},
             overrides: {},
             cache: {},
-            safeLoops: 0
+            safeLoops: 0,
+            allowedMentions: {
+                users: [],
+                roles: [],
+                everybody: false
+            }
         };
     }
 
@@ -210,8 +215,8 @@ class Context {
                             nsfw: this.state.nsfw,
                             allowedMentions: {
                                 everyone: !disableEveryone,
-                                roles: !!this.isCC,
-                                users: !!this.isCC
+                                roles: !!this.isCC ? this.state.allowedMentions.roles : false,
+                                users: !!this.isCC ? this.state.allowedMentions.users : false
                             }
                         }, files || this.state.file);
 

@@ -28,8 +28,12 @@ module.exports =
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });
 
-            if (user != null)
+            if (user != null) {
+                if (!context.state.allowedMentions.users.includes(user.id)) {
+                    context.state.allowedMentions.users.push(user.id);
+                }
                 return user.mention;
+            }
 
             if (quiet)
                 return '';
