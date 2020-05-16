@@ -275,7 +275,7 @@ class Context {
             authorizer: obj.authorizer
         });
         result.scopes._scopes = [obj.scope];
-        result.state = obj.state;
+        result.state = Object.assign({}, result.state, obj.state);
         result.input = obj.input;
 
         result.state.cache = {};
