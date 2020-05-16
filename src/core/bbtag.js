@@ -457,7 +457,6 @@ const limits = {
             this.roleadd = { disabled: true };
             this.rolecreate = { disabled: true };
             this.roledelete = { disabled: true };
-            this.rolemention = { disabled: true };
             this.roleremove = { disabled: true };
             this.rolesetmentionable = { disabled: true };
 
