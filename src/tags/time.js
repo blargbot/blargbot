@@ -27,7 +27,7 @@ module.exports =
             'It\'s currently {time;YYYY/MM/DD HH:mm:ss}',
             'It\'s currently 2016/01/01 01:00:00'
         )
-        .whenArgs('0-4', async function (subtag, context, args) {
+        .whenArgs('0-5', async function (subtag, context, args) {
             let format = args[0],
                 time = args[1],
                 parse = args[2],
