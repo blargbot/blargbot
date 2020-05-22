@@ -15,7 +15,8 @@ module.exports =
             a.optional('format'),
             a.optional('time'),
             a.optional('parseformat'),
-            a.optional('timezone')
+            a.optional('fromTimezone'),
+            a.optional('toTimezone')
         ])
         .withDesc('Returns `time` formatted using `format`. `format` defaults to `YYYY-MM-DDTHH:mm:ssZ`. `time` defaults to the current time. ' +
             'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.\n' +
@@ -30,8 +31,9 @@ module.exports =
             let format = args[0],
                 time = args[1],
                 parse = args[2],
-                timezone = args[3],
-                date = bu.parseTime(time, parse, timezone);
+                fromTimezone = args[3],
+                toTimezone = args[4]
+                date = bu.parseTime(time, parse, fromTimezone, toTimezone);
 
             if (!date.isValid()) return Builder.util.error(subtag, context, 'Invalid date');
 
