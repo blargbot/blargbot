@@ -1706,8 +1706,8 @@ const prettyTimeMagnitudes = {
     mins: 'minutes', min: 'minute'
 };
 
-bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
-    let now = moment.tz(timezone);
+bu.parseTime = function (text, format = undefined, fromTimezone = 'Etc/UTC', toTimezone = 'Etc/UTC') {
+    let now = moment.tz(fromTimezone);
     if (!text) return now;
     switch (text.toLowerCase()) {
         case 'now': return now;
@@ -1726,7 +1726,7 @@ bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
         return now.add(magnitude, quantity);
     }
 
-    return moment.tz(text, format, timezone).utcOffset(0);
+    return moment.tz(text, format, fromTimezone).tz(toTimezone);
 };
 
 bu.parseInt = function (s, radix = 10) {
