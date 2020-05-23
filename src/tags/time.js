@@ -32,7 +32,7 @@ module.exports =
                 time = args[1],
                 parse = args[2],
                 fromTimezone = args[3],
-                toTimezone = args[4]
+                toTimezone = args[4],
                 date = bu.parseTime(time, parse, fromTimezone, toTimezone);
 
             if (!date.isValid()) return Builder.util.error(subtag, context, 'Invalid date');
