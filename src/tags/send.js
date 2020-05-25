@@ -49,7 +49,7 @@ module.exports =
                 let disableEveryone = true;
                 if (context.isCC) {
                     let s = await r.table('guild').get(context.msg.guild.id);
-                    disableEveryone = s.settings.disableeveryone === true;
+                    disableEveryone = s.settings.disableeveryone === true || !context.state.allowedMentions.everybody;
                 }
                 let sent = await bu.send(channel.id, {
                     content: message,

@@ -206,7 +206,7 @@ class Context {
                     let disableEveryone = true;
                     if (this.isCC) {
                         let s = await r.table('guild').get(this.msg.guild.id);
-                        disableEveryone = s.settings.disableeveryone === true;
+                        disableEveryone = s.settings.disableeveryone === true || !this.state.allowedMentions.everybody;
                     }
                     let response = await bu.send(this.msg,
                         {
