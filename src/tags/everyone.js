@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.BotTag('everyone')
+    Builder.APITag('everyone')
         .withArgs(a => [a.optional('enabled')])
         .withDesc(
             'Returns the mention of `@everyone`.\n' +
