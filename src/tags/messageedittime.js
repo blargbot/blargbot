@@ -34,7 +34,7 @@ module.exports =
                         format = args[0];
                     break;
                 case 2:
-                    channel = Builder.util.parseChannel(context, args[0]);
+                    channel = await Builder.util.parseChannel(context, args[0], { quiet : true });
                     let i = 1;
                     if (typeof channel == "function") {
                         channel = context.channel;
@@ -43,16 +43,14 @@ module.exports =
                     message = await bu.getMessage(channel.id, args[i]);
                     break;
                 case 3:
-                    channel = Builder.util.parseChannel(context, args[0]);
-                    if (typeof channel == "function")
+                    channel = await Builder.util.parseChannel(context, args[0], { quiet: true });
+                    if (typeof channel == "function") 
                         return channel(subtag, context);
                     message = await bu.getMessage(channel.id, args[1]);
                     format = args[2];
                     break;
             }
-            if (message == null)
-                return Builder.errors.noMessageFound(subtag, context);
-            return moment(message.editedTimestamp).format(format);
+            return message ? moment(message.editedTimestamp).format(format) : Builder.errors.noMessageFound(subtag, context);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
