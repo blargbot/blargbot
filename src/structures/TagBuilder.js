@@ -257,13 +257,13 @@ TagBuilder.util = {
     error(subtag, context, message) {
         return bbEngine.addError(subtag, context, message);
     },
-    parseChannel(context, channelId) {
+    async parseChannel(context, channelId, args = { quiet: true }) {
         let channel = context.channel;
         if (channel.id !== channelId) {
             if (!/([0-9]{17,23})/.test(channelId))
                 return TagBuilder.errors.noChannelFound;
             channelId = channelId.match(/([0-9]{17,23})/)[0];
-            channel = bot.getChannel(channelId);
+            channel = await bu.getChannel(context, channelId, args);
 
             if (channel == null)
                 return TagBuilder.errors.noChannelFound;
