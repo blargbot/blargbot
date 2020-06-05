@@ -67,7 +67,7 @@ class AnnounceCommand extends BaseCommand {
             }
             words.shift();
             var message = words.join(' ');
-            let channel = bot.getChannel(changeChannel);
+            let channel = await bu.getChannel(msg, changeChannel, { quiet: true });
             let role = channel.guild.roles.get(roleId);
 
             let topRole = getTopRole(msg.member);

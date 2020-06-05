@@ -140,7 +140,7 @@ class SettingsCommand extends BaseCommand {
             if (nsfw.length > 0) {
                 nsfwMessage = '';
                 for (i = 0; i < nsfw.length; i++) {
-                    let channel = bot.getChannel(nsfw[i]);
+                    let channel = await bu.getChannel(msg, nsfw[i], { quiet: true });
                     if (channel)
                         nsfwMessage += `${channel.name} (${nsfw[i]})\n                - `;
                 }
@@ -150,7 +150,7 @@ class SettingsCommand extends BaseCommand {
             if (blacklisted.length > 0) {
                 blacklistMessage = '';
                 for (i = 0; i < blacklisted.length; i++) {
-                    let channel = bot.getChannel(blacklisted[i]);
+                    let channel = await bu.getChannel(msg, blacklisted[i], { quiet: true });
                     if (channel)
                         blacklistMessage += `${channel.name} (${blacklisted[i]})\n                - `;
                 }
@@ -164,7 +164,7 @@ class SettingsCommand extends BaseCommand {
             if (farewell.length > 100) farewell = farewell.substring(0, 100) + '...';
             var modlogChannel;
             if (settings.modlog) {
-                let channel = bot.getChannel(settings.modlog);
+                let channel = await bu.getChannel(msg, settings.modlog, { quiet: true });
                 if (channel)
                     modlogChannel = `${channel.name} (${settings.modlog})`;
                 else
@@ -196,10 +196,10 @@ class SettingsCommand extends BaseCommand {
             let banPerms = settings.banoverride || 0;
             let disableEveryone = settings.disableeveryone || false;
             let disableNoPerms = settings.disablenoperms || false;
-            let greetChan = settings.greetchan ? bot.getChannel(settings.greetchan) : 'Default';
+            let greetChan = settings.greetchan ? await bu.getChannel(msg, settings.greetchan, { quiet: true }) : 'Default';
             if (greetChan && greetChan != 'Default') greetChan = greetChan.name;
             else greetChan = 'Default Channel';
-            let farewellChan = settings.farewellchan ? bot.getChannel(settings.farewellchan) : 'Default';
+            let farewellChan = settings.farewellchan ? await bu.getChannel(msg, settings.farewellchan, { quiet: true }) : 'Default';
             if (farewellChan && farewellChan != 'Default') farewellChan = farewellChan.name;
             else farewellChan = 'Default Channel';
             let cleverbot = settings.nocleverbot || false;

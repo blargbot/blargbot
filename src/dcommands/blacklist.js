@@ -22,16 +22,18 @@ class BlacklistCommand extends BaseCommand {
                     nsfw: false
                 };
 
+            const channelName = await bu.getChannel(msg, channelid, { quiet: true });
             if (channel.blacklisted) {
                 channel.blacklisted = false;
-                bu.send(msg, '**' + bot.getChannel(channelid).name + '** is no longer blacklisted.');
+                bu.send(msg, `**${channelName}** is no longer blacklisted.`);
             } else {
                 channel.blacklisted = true;
-                bu.send(msg, '**' + bot.getChannel(channelid).name + '** is now blacklisted.');
+                bu.send(msg, `**${channelName}** is now blacklisted.`);
             }
 
             storedGuild.channels[channelid] = channel;
         }
+
         r.table('guild').get(msg.guild.id).update({
             channels: storedGuild.channels
         }).run();

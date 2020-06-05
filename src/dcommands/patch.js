@@ -22,7 +22,7 @@ class PatchCommand extends BaseCommand {
             return;
         }
         let input = bu.parseInput(this.flags, words, true);
-        let channel = await bot.getChannel(changeChannel);
+        let channel = await bu.getChannel(msg, changeChannel, { quiet: true });
         let role = channel.guild.roles.get(config.general.isbeta ? betaRoleId : roleId);
         let content = role.mention;
         let embed = {
