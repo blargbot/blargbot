@@ -29,11 +29,9 @@ module.exports =
                 parsed;
 
             // Check if the first "emote" is actually a valid channel
-            channel = bu.parseChannel(emotes[0], true);
-            if (channel == null)
-                channel = context.channel;
-            else
-                emotes.shift();
+            channel = await Builder.util.parseChannel(context, emotes[0], { quiet: true });
+            if (!channel) channel = context.channel;
+            else emotes.shift();
 
             if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)
                 return Builder.errors.channelNotInGuild(subtag, context);
@@ -43,10 +41,9 @@ module.exports =
                 message = await bot.getMessage(channel.id, emotes[0]);
             } catch (e) { }
             finally {
-                if (message == null)
-                    return Builder.errors.noMessageFound(subtag, context);
+                if (!message) return Builder.errors.noMessageFound(subtag, context);
+                emotes.shift();
             }
-            emotes.shift();
 
             // Loop through the "emotes" and check if each is a user. If it is not, then break
             let emote;

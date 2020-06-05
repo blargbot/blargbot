@@ -25,11 +25,9 @@ module.exports =
                 message = null;
 
             // Check if the first "emote" is actually a valid channel
-            channel = bu.parseChannel(args[0], true);
-            if (channel == null)
-                channel = context.channel;
-            else
-                args.shift();
+            channel = await Builder.util.parseChannel(context, args[0], { quiet: true });
+            if (!channel) channel = context.channel;
+            else args.shift();
 
             if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)
                 return Builder.errors.channelNotInGuild(subtag, context);
@@ -37,9 +35,9 @@ module.exports =
             // Check that the current first "emote" is a message id
             try {
                 message = await bot.getMessage(channel.id, args[0]);
-            } catch (e) { } finally {
-                if (message == null)
-                    return Builder.errors.noMessageFound(subtag, context);
+            } catch (e) { } 
+            finally {
+                if (!message) return Builder.errors.noMessageFound(subtag, context);
             }
 
             await message.removeReactions();

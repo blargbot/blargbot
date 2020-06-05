@@ -28,10 +28,9 @@ module.exports =
                 return Builder.util.error(subtag, context, 'Author must be staff to delete unrelated messages');
 
             let msg = context.msg,
-                channel = Builder.util.parseChannel(context, channelId);
+                channel = await Builder.util.parseChannel(context, channelId, { quiet: true });
 
-            if (typeof channel === 'function') //One of the Builder.error values got returned
-                return channel(subtag, context);
+            if (typeof channel === 'function') return channel(subtag, context);
 
             if (msg.id !== messageId)
                 try {

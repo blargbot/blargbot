@@ -19,15 +19,13 @@ module.exports =
             'fluffy bunnies'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
-            let channel = context.channel;
-            if (args[0])
-                channel = bu.parseChannel(args[0], true);
-
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
+            let channel = context.channel;
+            if (args[0]) channel = await Builder.util.parseChannel(context, args[0], quiet);
 
-            if (channel == null) return quiet ? false : Builder.errors.noChannelFound(subtag, context);
-
-            return await bu.isNsfwChannel(channel.id);
+            if (typeof channel === "function") 
+                return quiet ? false : Builder.errors.noChannelFound(subtag, context);
+            return channel.nsfw;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

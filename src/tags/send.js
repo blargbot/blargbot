@@ -21,7 +21,7 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-5', async function (subtag, context, args) {
-            let channel = bu.parseChannel(args[0], true),
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet: true }),
                 message = args[1],
                 embed = bu.parseEmbed(args[1]);
 
@@ -30,7 +30,7 @@ module.exports =
             else
                 embed = bu.parseEmbed(args[2]);
 
-            if (channel == null)
+            if (!channel)
                 return Builder.errors.noChannelFound(subtag, context);
             if (channel.guild.id != context.guild.id)
                 return Builder.errors.channelNotInGuild(subtag, context);

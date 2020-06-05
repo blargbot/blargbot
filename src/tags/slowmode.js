@@ -19,9 +19,9 @@ module.exports =
             '(slowmode is enabled at a rate of 1 message per 5 seconds)'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
-            let channel = bu.parseChannel(args[0], true),
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet: true }),
                 time = parseInt(args[1]);
-            if (channel === null) {
+            if (!channel) {
                 time = parseInt(args[0]);
                 channel = context.channel;
             }

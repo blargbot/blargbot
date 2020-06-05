@@ -68,7 +68,7 @@ module.exports =
             // parse channels
             if (args[0]) {
                 channels = Builder.util.flattenArgArrays([args[0]]);
-                channels = await Promise.all(channels.map(async input => await Builder.util.parseChannel(context, input)));
+                channels = await Promise.all(channels.map(async input => await Builder.util.parseChannel(context, input, { quiet: true })));
                 if (failure = channels.find(channel => typeof channel == "function"))
                     return failure(subtag, context);
                 channels = channels.map(channel => channel);
