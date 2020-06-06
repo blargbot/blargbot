@@ -263,7 +263,7 @@ TagBuilder.util = {
             if (!/([0-9]{17,23})/.test(channelId))
                 return TagBuilder.errors.noChannelFound;
             channelId = channelId.match(/([0-9]{17,23})/)[0];
-            channel = await bu.getChannel(context, channelId, args);
+            channel = await context.getChannel(channelId, args);
 
             if (channel == null)
                 return TagBuilder.errors.noChannelFound;
