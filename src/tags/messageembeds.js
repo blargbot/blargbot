@@ -24,7 +24,7 @@ module.exports =
             return this.getMessageEmbeds(subtag, context, context.channel.id, args[0]);
         })
         .whenArgs(2, async function (subtag, context, args) {
-            let channel = await Builder.util.parseChannel(context, args[0], { quiet: true });
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup });
             if (typeof channel == "function") 
                 return channel(subtag, context);
             return this.getMessageEmbeds(subtag, context, channel.id, args[1]);

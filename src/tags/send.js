@@ -21,7 +21,7 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-5', async function (subtag, context, args) {
-            let channel = await Builder.util.parseChannel(context, args[0], { quiet: true }),
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup }),
                 message = args[1],
                 embed = bu.parseEmbed(args[1]);
 

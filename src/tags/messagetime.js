@@ -35,7 +35,7 @@ module.exports =
                         format = args[0];
                     break;
                 case 2:
-                    channel = await Builder.util.parseChannel(context, args[0], { quiet: true });
+                    channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup });
                     let i = 1;
                     if (typeof channel == "function") {
                         channel = context.channel;
@@ -44,7 +44,7 @@ module.exports =
                     message = await bu.getMessage(channel.id, args[i]);
                     break;
                 case 3:
-                    channel = await Builder.util.parseChannel(context, args[0], { quiet: true });
+                    channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup });
                     if (typeof channel == "function")
                         return channel(subtag, context);
                     message = await bu.getMessage(channel.id, args[1]);

@@ -28,7 +28,7 @@ module.exports =
                 return Builder.util.error(subtag, context, 'Author must be staff to delete unrelated messages');
 
             let msg = context.msg,
-                channel = await Builder.util.parseChannel(context, channelId, { quiet: true });
+                channel = await Builder.util.parseChannel(context, channelId, { quiet: true, suppress: context.scope.suppressLookup });
 
             if (typeof channel === 'function') return channel(subtag, context);
 

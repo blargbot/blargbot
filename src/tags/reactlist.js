@@ -31,7 +31,7 @@ module.exports =
                 message = null;
 
             // Check if the first "emote" is actually a valid channel
-            channel = await Builder.util.parseChannel(context, emotes[0], { quiet: true });
+            channel = await Builder.util.parseChannel(context, emotes[0], { quiet: true, suppress: context.scope.suppressLookup });
             if (!channel) channel = context.channel;
             else emotes.shift();
 

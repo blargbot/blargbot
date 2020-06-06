@@ -19,7 +19,7 @@ module.exports =
             '(slowmode is enabled at a rate of 1 message per 5 seconds)'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
-            let channel = await Builder.util.parseChannel(context, args[0], { quiet: true }),
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup }),
                 time = parseInt(args[1]);
             if (!channel) {
                 time = parseInt(args[0]);

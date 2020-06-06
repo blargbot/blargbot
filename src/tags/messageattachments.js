@@ -29,7 +29,7 @@ module.exports =
             return this.getMessageAttachments(subtag, context, context.channel.id, args[0]);
         })
         .whenArgs(2, async function (subtag, context, args) {
-            const channel = await Builder.util.parseChannel(context, args[0], { quiet: true });
+            const channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup });
             if (typeof channel == "function") 
                 return channel(subtag, context);
             return this.getMessageAttachments(subtag, context, channel.id, args[1]);

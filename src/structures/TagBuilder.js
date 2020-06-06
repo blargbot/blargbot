@@ -257,7 +257,7 @@ TagBuilder.util = {
     error(subtag, context, message) {
         return bbEngine.addError(subtag, context, message);
     },
-    async parseChannel(context, channelId, args = { quiet: true }) {
+    async parseChannel(context, channelId, args = { quiet: true, supppress: false }) {
         let channel = context.channel;
         if (channel.id !== channelId) {
             if (!/([0-9]{17,23})/.test(channelId))
