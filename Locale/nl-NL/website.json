@@ -3,43 +3,43 @@
     "header": {
         "login": "Login",
         "logout": "Loguit",
-        "commands": "",
-        "bbtag": "",
-        "subtags": "",
-        "dashboard": ""
+        "commands": "Commands",
+        "bbtag": "BBtag",
+        "subtags": "SubTags",
+        "dashboard": "Dashboard"
     },
     "generic": {
-        "loading": "",
-        "collapse": "",
-        "expand": "",
-        "search": "",
-        "noresults": "",
-        "resultsfound": ""
+        "loading": "Laden",
+        "collapse": "Alles inklappen",
+        "expand": "Alles uitklappen",
+        "search": "Filter...",
+        "noresults": "Oh nee! Geen resultaten gevonden.",
+        "resultsfound": "Overeenkomende resultaten:"
     },
     "index": {
-        "desc": "",
+        "desc": "blargbot is een multifunctionele Discord bot die gemaakt is om belangrijke commands en diensten aan te beiden, inclusief chatlogs en een zeer customiseerbare command systeem.",
         "commands": {
-            "title": "",
-            "desc": ""
+            "title": "Commands",
+            "desc": "blargbot is uitgerust met vele commands, die allemaal gedocumenteerd en beschreven zijn voor uw gemak."
         },
         "bbtag": {
-            "title": "",
-            "desc": ""
+            "title": "BBtag",
+            "desc": "blargbot gebruikt een geavanceerd tag systeem genaamd BBtag, die je kan gebruiken om geavanceerde commands te maken."
         },
         "customization": {
-            "title": "",
-            "desc": ""
+            "title": "Customisatie",
+            "desc": "We begrijpen dat niet iedere server gelijk is, blargbot heeft daarom uitgebreide customisatie. Zo kan bepalen welke roles commands kunnen gebruiken, welke prefixes blargbot gebruikt, en zelfs de taal!"
         },
         "moderation": {
-            "title": "",
+            "title": "Moderatie",
             "desc": "Need something to moderate your chat? blargbot is equiped with many moderation utilities, from basic operations like banning and muting, to more advanced stuff like chatlogging or automatic censoring."
         },
         "opensource": {
-            "title": "",
+            "title": "Open-Source",
             "desc": ""
         },
         "suggestions": {
-            "title": "",
+            "title": "Open voor suggesties",
             "desc": ""
         }
     },
