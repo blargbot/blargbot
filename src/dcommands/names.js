@@ -23,6 +23,11 @@ class NamesCommand extends BaseCommand {
                     flag: 'r',
                     word: 'remove',
                     desc: 'Removes all your usernames from the database.'
+                },
+                {
+                    flag: 'y',
+                    word: 'yes',
+                    desc: 'Bypasses the confirmation when removing usernames.'
                 }
             ]
         });
@@ -33,14 +38,62 @@ class NamesCommand extends BaseCommand {
         let user;
         if (input.r) {
             user = msg.author;
-            let storedUser = bu.getCachedUser(user.id);
+            let storedUser = await bu.getCachedUser(user.id);
             let updatedUser = { usernames: [] };
-            if (storedUser.usernames.length > 0 ) {
-                await r.table('user').get(user.id).update(updatedUser).run(); 
-                return bu.send(msg, `Succesfully removed ${storedUser.usernames.length} username${storedUser.usernames.length > 1 ? 's' : ''}.`);
-            } else {
-                return bu.send(msg, 'No usernames could be removed!')
+            if (!storedUser.usernames || storedUser.usernames.length == 0)
+                return bu.send(msg, 'You have no usernames to remove!');
+
+            if (input.a) {
+                let prompt, response;
+
+                if (!input.y) {
+                    prompt = await bu.createPrompt(msg, `Are you sure you want to remove ${storedUser.usernames.length} username${storedUser.usernames.length > 1 ? 's' : ''}?` +
+                        `\nType \`yes\` or anything else to cancel`, null, 60000);
+                    response = await prompt.response || {};
+                }
+                if (!response || bu.parseBoolean(response.content)) {
+                    await r.table('user').get(user.id).update(updatedUser).run();
+                    bu.send(msg, `Succesfully removed ${storedUser.usernames.length} username${storedUser.usernames.length > 1 ? 's' : ''}.`);
+                } else {
+                    bu.send(msg, `Removal cancelled.`)
+                }
+                if (prompt.prompt)
+                    await bot.deleteMessage(prompt.prompt.channel.id, prompt.prompt.id);
+                return;
+            } else if (input.r.length == 0) {
+                //lookup
+                let matches = storedUser.usernames.map((u, i) => { return { content: u.name, value: i } });
+                let lookup = await bu.createLookup(msg, 'username', matches);
+                if (await lookup == null)
+                    return;
+                let removedUsername = storedUser.usernames.splice(lookup, 1)[0];
+                await r.table('user').get(user.id).update(storedUser).run();
+                return bu.send(msg, `Succesfully removed **${removedUsername}**!`);
+            } else if (input.r.length > 0) {
+                //filter
+                let name = input.r.join(' ');
+                let filteredUsers = storedUser.usernames.filter(u => !(u.name.toLowerCase().includes(name)));
+                if (filteredUsers.length == storedUser.usernames.length)
+                    return bu.send(msg, `No usernames found!`);
+                let prompt, response;
+
+                if (!input.y) {
+                    prompt = await bu.createPrompt(msg, `Are you sure you want to remove ${storedUser.usernames.length - filteredUsers.length} username${storedUser.usernames.length - filteredUsers.length > 1 ? 's' : ''}?` +
+                        `\nType \`yes\` or anything else to cancel`, null, 60000);
+                    response = await prompt.response || {};
+                }
+                if (!response || bu.parseBoolean(response.content)) {
+                    await r.table('user').get(user.id).update({ usernames: filteredUsers }).run();
+                    await bu.send(msg, `Succesfully removed ${storedUser.usernames.length - filteredUsers.length} username${storedUser.usernames.length - filteredUsers.length > 1 ? 's' : ''}.`);
+                } else {
+                    await bu.send(msg, `OK, not removing your usernames!`);
+                }
+                if (response)
+                    await bot.deleteMessage(prompt.prompt.channel.id, prompt.prompt.id);
+                return;
             }
+
+
         }
         if (input.undefined.length == 0) {
             user = msg.author;
