@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: RagingLink
- * @Last Modified time: 2020-06-10 22:15:59
+ * @Last Modified time: 2020-06-11 16:58:11
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -240,7 +240,7 @@ bu.hasPerm = async (msg, perm, quiet, override = true) => {
                 role = getId(perm);
                 if (role === null) return false;
             };
-            return Array.isArray(role) ?
+            Array.isArray(role) ?
                 role.indexOf(m.id) > -1 :
                 m.id == role;
         }
@@ -602,21 +602,18 @@ bu.getUser = async function (msg, name, args = {}) {
     } else if (userList.length == 0) {
         if (!args.quiet && !args.suppress) {
             if (args.onSendCallback) args.onSendCallback();
-            bu.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
+            await bu.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
         }
         return null;
     } else {
         if (!args.quiet) {
             let matches = userList.map(m => { return { content: `${m.user.username}#${m.user.discriminator} - ${m.user.id}`, value: m.user } })
             let lookupResponse = await bu.createLookup(msg, 'user', matches, args);
-            if (lookupResponse == null)
-                return null;
             return lookupResponse;
-            
         } else {
             return null;
-        }
-    }
+        };
+    };
 };
 
 bu.getMessage = async function (channelId, messageId) {
@@ -678,13 +675,11 @@ bu.getRole = async function (msg, name, args = {}) {
         if (!args.quiet) {
             let matches = roleList.map(r => { return { content: `${r.name} - ${r.color.toString(16)} (${r.id})`, value: r } });
             let lookupResponse = await bu.createLookup(msg, 'role', matches, args);
-            if (lookupResponse == null)
-                return null;
             return lookupResponse;
         } else {
             return null;
-        }
-    }
+        };
+    };
 };
 
 bu.getMessage = async function (channelId, messageId) {
@@ -1864,23 +1859,19 @@ bu.createLookup = async function (msg, type, matches, args = {}) {
     let moreLookup = lookupList.length < matches.length ? `...and ${matches.length - lookupList.length}more.\n` : '';
     try {
         if (args.onSendCallback) args.onSendCallback();
-        let query = await bu.createQuery(msg, `Multiple ${type}s found! Please select one from the list.\`\`\`prolog
-${outputString}${moreLookup}--------------------
-C.cancel query
-\`\`\`
-**${bu.getFullName(msg.author)}**, please type the number of the ${type} you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.
-`,
-            (msg2) => {
-                if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1)) {
-                    return true;
-                } else return false;
+        let query = await bu.createQuery(msg, `Multiple ${type}s found! Please select one from the list.\`\`\`prolog` +
+            `\n${outputString}${moreLookup}--------------------` +
+            `\nC.cancel query\`\`\`` +
+            `\n**${bu.getFullName(msg.author)}**, please type the number of the ${type} you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`
+            ,(msg2) => {
+                return msg2.content.toLowerCase() === 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1)
             }, undefined, args.label, args.suppress);
         let response = await query.response;
-        if (response.content.toLowerCase() == 'c') {
+        if (response.content.toLowerCase() === 'c') {
             await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
             if (!args.suppress) {
                 if (args.onSendCallback) args.onSendCallback();
-                bu.send(msg, `Query canceled${args.label ? ' in ' + args.label : ''}.`);
+                await bu.send(msg, `Query canceled${args.label ? ' in ' + args.label : ''}.`);
             }
             return null;
         } else {
