@@ -45,19 +45,19 @@ class NamesCommand extends BaseCommand {
                 let prompt, response;
                 if (!input.a)
                     let name = input.r.join(' ');
-                let filteredUsers = input.a ? [] : storedUser.usernames.filter(u => !(u.name.toLowerCase().includes(name)));
+                let filteredUserNames = input.a ? [] : storedUser.usernames.filter(u => !(u.name.toLowerCase().includes(name)));
                 
-                if (filteredUsers.length === storedUser.usernames.length)
+                if (filteredUserNames.length === storedUser.usernames.length)
                     return bu.send(msg, `No usernames found!`);
                 
                 if (!input.y) {
-                    prompt = await bu.createPrompt(msg, `Are you sure you want to remove ${storedUser.usernames.length - filteredUsers.length} username${storedUser.usernames.length - filteredUsers.length > 1 ? 's' : ''}?` +
+                    prompt = await bu.createPrompt(msg, `Are you sure you want to remove ${storedUser.usernames.length - filteredUserNames.length} username${storedUser.usernames.length - filteredUserNames.length > 1 ? 's' : ''}?` +
                         `\nType \`yes\` or anything else to cancel`, null, 60000);
                     response = await prompt.response || {};
                 }
                 if ((response && bu.parseBoolean(response.content)) || input.y) {
-                    await r.table('user').get(user.id).update({usernames : filteredUsers}).run();
-                    await bu.send(msg, `Succesfully removed ${storedUser.usernames.length - filteredUsers.length} username${storedUser.usernames.length - filteredUsers.length > 1 ? 's' : ''}.`);
+                    await r.table('user').get(user.id).update({usernames : filteredUserNames}).run();
+                    await bu.send(msg, `Succesfully removed ${storedUser.usernames.length - filteredUserNames.length} username${storedUser.usernames.length - filteredUserNames.length > 1 ? 's' : ''}.`);
                 } else {
                     await bu.send(msg, `OK, not removing your usernames!`)
                 }
@@ -71,7 +71,7 @@ class NamesCommand extends BaseCommand {
                     return;
                 let removedUsername = storedUser.usernames.splice(lookup, 1)[0];
                 await r.table('user').get(user.id).update(storedUser).run();
-                return bu.send(msg, `Succesfully removed **${removedUsername}**!`);
+                return bu.send(msg, `Succesfully removed username **${removedUsername}**!`);
             };
         };
         if (input.undefined.length == 0) {
