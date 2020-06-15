@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
- * @Last Modified by: stupid cat
- * @Last Modified time: 2019-09-28 13:33:37
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2020-06-16 00:00:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -1707,7 +1707,7 @@ const prettyTimeMagnitudes = {
 };
 
 bu.parseTime = function (text, format = undefined, fromTimezone = 'Etc/UTC', toTimezone = 'Etc/UTC') {
-    let now = moment.tz(fromTimezone);
+    let now = moment.tz(fromTimezone).tz(toTimezone);
     if (!text) return now;
     switch (text.toLowerCase()) {
         case 'now': return now;
