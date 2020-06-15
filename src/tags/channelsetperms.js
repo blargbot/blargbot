@@ -21,7 +21,7 @@ module.exports =
       'If neither are provided, the permission overwrite will be deleted.\n' +
       'Returns the channel\'s ID.')
     .withExample(
-      '{channelsetperms;11111111111111111;user;222222222222222222;1024;2048}',
+      '{channelsetperms;11111111111111111;member;222222222222222222;1024;2048}',
       '11111111111111111'
     )
     .whenArgs(0, Builder.errors.notEnoughArguments)
