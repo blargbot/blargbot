@@ -46,6 +46,10 @@ module.exports =
                 if (message == null)
                     return Builder.errors.noMessageFound(subtag, context);
             }
+
+            if (!(await context.isStaff || context.ownsMessage(message.id)))
+                return Builder.util.error(subtag, context, 'Author must be staff to modify unrelated messages');
+
             emotes.shift();
 
             // Loop through the "emotes" and check if each is a user. If it is not, then break
