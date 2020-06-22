@@ -2681,10 +2681,10 @@ entities@^2.0.0:
   resolved "https://registry.yarnpkg.com/entities/-/entities-2.0.0.tgz#68d6084cab1b079767540d80e56a39b423e4abf4"
   integrity sha512-D9f7V0JSRwIxlRI2mjMqufDrRDnx8p+eEOz7aUM9SuvF8gsBzra0/6tbjl1m8eQHrZlYj6PxqE00hZ1SAIKPLw==
 
-eris@^0.12.0:
-  version "0.12.0"
-  resolved "https://registry.yarnpkg.com/eris/-/eris-0.12.0.tgz#4bcb0d4705fe188a59baec0baf6b31fcf5c9f809"
-  integrity sha512-LIw+uEOfHFCdE9BXL3wqxwml+74TJ7eMiMcyeW/jsmiWndDzybA/WlakiXAAnyg9a5OULOkHlKLOFsl+EgoZag==
+eris@^0.13.3:
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/eris/-/eris-0.13.3.tgz#22abb71f9ce0d453200b537cad457dc39c7b302b"
+  integrity sha512-WBtLyknOWZpYZL9yPhez0oKUWvYpunSg43hGxawwjwSf3gFXmbEPYrT8KlmZXtpJnX16eQ7mzIq+MgSh3LarEg==
   dependencies:
     ws "^7.2.1"
   optionalDependencies:
