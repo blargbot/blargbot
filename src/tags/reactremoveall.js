@@ -40,6 +40,11 @@ module.exports =
                 if (!message) return Builder.errors.noMessageFound(subtag, context);
             }
 
+            console.log(await context.isStaff, context.ownsMessage(message.id));
+
+            if (!(await context.isStaff || context.ownsMessage(message.id)))
+                return Builder.util.error(subtag, context, 'Author must be staff to modify unrelated messages');
+
             await message.removeReactions();
         })
         .build();
