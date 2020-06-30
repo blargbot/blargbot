@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:49:14
  * @Last Modified by: RagingLink
- * @Last Modified time: 2020-06-30 18:45:41
+ * @Last Modified time: 2020-06-30 19:59:24
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -30,7 +30,7 @@ module.exports =
 
             let varname = undefined;
             const deserializedTagArray = await bu.deserializeTagArray(value);
-            if (deserializedTagArray)
+            if (deserializedTagArray && !deserializedTagArray.n)
                 value = deserializedTagArray.v;
             
             let arr = await bu.getArray(obj);
