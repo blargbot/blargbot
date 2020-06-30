@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:49:14
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-06 14:19:25
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2020-06-30 18:45:41
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -29,7 +29,10 @@ module.exports =
                 obj = '{}';
 
             let varname = undefined;
-
+            const deserializedTagArray = await bu.deserializeTagArray(value);
+            if (deserializedTagArray)
+                value = deserializedTagArray.v;
+            
             let arr = await bu.getArray(obj);
             if (arr && Array.isArray(arr.v)) {
                 obj = arr.v;
