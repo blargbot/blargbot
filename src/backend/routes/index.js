@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:37
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-12 08:53:10
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2020-07-01 21:07:31
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -18,12 +18,6 @@ router.get('/', (req, res) => {
     // else
     res.render('index');
 });
-
-router.get('/shards', (req, res) => {
-    res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
-
-    res.render('shards');
-})
 
 router.get('/netneut', (req, res) => {
     res.locals.user = req.user;
