@@ -2,7 +2,7 @@
  * @Author: RagingLink 
  * @Date: 2020-07-01 21:00:54
  * @Last Modified by: RagingLink
- * @Last Modified time: 2020-07-01 21:07:31
+ * @Last Modified time: 2020-07-01 23:29:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
 
 router.get('/json', (req, res) => {
     res.type('json');
-    res.send(JSON.stringify(Object.values(spawner.shardCache), null, 2));
+    res.send(JSON.stringify(spawner.shardCache, null, 2));
 });
 
 module.exports = router;
