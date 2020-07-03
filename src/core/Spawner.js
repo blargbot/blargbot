@@ -43,9 +43,9 @@ class Spawner extends EventEmitter {
             }
         }, 10000);
         this.metricCache = {};
-        // this.metricsInterval = setInterval(async () => {
-        //     await this.retrieveMetrics();
-        // }, 15000);
+        this.metricsInterval = setInterval(async () => {
+            await this.retrieveMetrics();
+        }, 15000);
 
         this.domainCache = {};
         this.domainTTL = 0;
