@@ -22,7 +22,7 @@ RequestHandler.prototype.request = function (...args) {
             if (args[1].includes('webhook')) {
                 url = '/webhooks';
             } else {
-                url = args[1].replace(/\d+/g, '_id');
+                url = args[1].replace(/reactions\/.+(\/|$)/g, 'reactions/_reaction/').replace(/\d+/g, '_id');
             }
             bu.Metrics.httpsRequests.labels(args[0], url).inc();
         } catch (err) {
