@@ -15,10 +15,11 @@ module.exports =
         .withArgs(a => [
             a.optional('channelId'),
             a.require('messageId'),
-            a.require([a.optional('users', true), a.optional('reactions')])
+            a.require([a.optional('user', true), a.optional('reactions')])
         ])
-        .withDesc('Removes `reactions` from `messageId` which were placed by `users`.\n`users` defaults to the user who executed the tag.\n' +
-            '`reactions` defaults to all reactions.\n`channelId` defaults to the current channel.\nIf more than three users are specified, only the first three will be used.')
+        .withDesc('Removes `reactions` from `messageId` which were placed by `user`.\n`user` defaults to the user who executed the tag.\n' +
+            '`reactions` defaults to all reactions.\n`channelId` defaults to the current channel.'
+            + '\nOnly one `user` may be provided. Only a certain number reaction remove attempts can be done per tag, after which they\'ll be silently ignored.')
         .withExample(
             '{reactremove;12345678901234;:thinking:}',
             '(removed the 🤔 reaction by the user)'
@@ -80,35 +81,34 @@ module.exports =
             if (users.length == 0)
                 users.push(context.user);
 
-            if (users.length > 3) {
-                users = users.slice(0, 3);
-            }
-
-            users = users.map(u => u.id);
+            let user = users[0].id;
 
             // Default to all emotes
             if (parsed.length == 0)
                 parsed = Object.keys(message.reactions);
 
             // Perform removal for each reaction for each user
+            let remaining = context.state.limits.reactremove || { requests: 20 };
+
             let errored = [];
             for (const reaction of parsed) {
                 if (!message.reactions[reaction]) continue;
 
-                for (const user of users) {
-                    try {
+                try {
+                    if (remaining.requests > 0) {
                         await message.removeReaction(reaction, user);
+
+                        remaining.requests--;
                     }
-                    catch (err) {
-                        switch (err.code) {
-                            case 10014:
-                                errored.push(reaction);
-                                break;
-                            case 50013:
-                                return Builder.util.error(subtag, context, 'I need to be able to Manage Messages to remove reactions');
-                            default:
-                                throw err;
-                        }
+                } catch (err) {
+                    switch (err.code) {
+                        case 10014:
+                            errored.push(reaction);
+                            break;
+                        case 50013:
+                            return Builder.util.error(subtag, context, 'I need to be able to Manage Messages to remove reactions');
+                        default:
+                            throw err;
                     }
                 }
             }
