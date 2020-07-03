@@ -18,7 +18,7 @@ module.exports =
             a.require([a.optional('users', true), a.optional('reactions')])
         ])
         .withDesc('Removes `reactions` from `messageId` which were placed by `users`.\n`users` defaults to the user who executed the tag.\n' +
-            '`reactions` defaults to all reactions.\n`channelId` defaults to the current channel.')
+            '`reactions` defaults to all reactions.\n`channelId` defaults to the current channel.\nIf more than three users are specified, only the first three will be used.')
         .withExample(
             '{reactremove;12345678901234;:thinking:}',
             '(removed the 🤔 reaction by the user)'
@@ -80,6 +80,12 @@ module.exports =
             if (users.length == 0)
                 users.push(context.user);
 
+            if (users.length > 3) {
+                users = users.slice(0, 3);
+            }
+
+            users = users.map(u => u.id);
+
             // Default to all emotes
             if (parsed.length == 0)
                 parsed = Object.keys(message.reactions);
@@ -87,9 +93,11 @@ module.exports =
             // Perform removal for each reaction for each user
             let errored = [];
             for (const reaction of parsed) {
+                if (!message.reactions[reaction]) continue;
+
                 for (const user of users) {
                     try {
-                        await message.removeReaction(reaction, user.id);
+                        await message.removeReaction(reaction, user);
                     }
                     catch (err) {
                         switch (err.code) {
