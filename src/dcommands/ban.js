@@ -73,7 +73,7 @@ class BanCommand extends BaseCommand {
         };
         try {
             const fullReason = (tag ? '' : `[ ${bu.getFullName(msg.author)} ]`) + (reason ? ' ' + reason : '');
-            await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, fullReason);
+            await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, encodeURIComponent(fullReason));
             let suffix = '';
             if (duration) {
                 await r.table('events').insert({
