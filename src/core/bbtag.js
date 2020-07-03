@@ -465,7 +465,7 @@ const limits = {
             this.edit = { count: 10 };
             this.delete = { count: 11 };
 
-            this.reactremove = { count: 4 };
+            this.reactremove = { count: 10, requests: 40 };
 
             this.timer = { disabled: true };
 
@@ -510,7 +510,7 @@ const limits = {
             this.edit = { count: 10 };
             this.delete = { count: 11 };
 
-            this.reactremove = { count: 4 };
+            this.reactremove = { count: 10, requests: 40 };
 
             this.timer = { staff: true, count: 3 };
 
@@ -556,7 +556,7 @@ const limits = {
             this.edit = { count: 1 };
             this.delete = { count: 2 };
 
-            this.reactremove = { count: 1 };
+            this.reactremove = { count: 1, requests: 20 };
 
             this.timer = { disabled: true };
             this.sleep = { max: 5000 };
@@ -601,7 +601,7 @@ const limits = {
             this.edit = { count: 1 };
             this.delete = { count: 2 };
 
-            this.reactremove = { count: 1 };
+            this.reactremove = { count: 1, requests: 20 };
 
             this.timer = { disabled: true };
             this.sleep = { max: 5000 };
