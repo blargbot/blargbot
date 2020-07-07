@@ -98,6 +98,7 @@ class DiscordClient extends Client {
                 'guildPresences',
                 'guildMessages',
                 'guildMessageReactions',
+                'guildEmojis',
                 'directMessages',
                 'directmessageReactions'
             ]
