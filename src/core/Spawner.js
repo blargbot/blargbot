@@ -51,9 +51,12 @@ class Spawner extends EventEmitter {
         this.domainTTL = 0;
     }
 
-    respawnAll() {
+    async respawnAll() {
         this.shardsSpawned = 0;
-        return Promise.all(Array.from(this.shards.values()).filter(s => !isNaN(parseInt(s.id))).map(s => this.respawnShard(s.id)));
+        const shards = Array.from(this.shards.values()).filter(s => !isNaN(parseInt(s.id)));
+        for (const shard of shards) {
+            await this.respawnShard(shard.id);
+        }
     }
 
     respawnShard(id, dirty = false) {
