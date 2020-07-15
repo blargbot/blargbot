@@ -87,23 +87,11 @@ async function docs(msg, command, topic) {
 
     switch (words[0]) {
         case 'index':
-            embed.description = 'Please use `' + prefix + command + ' docs [topic]` to view available information on a topic\nAvailable topics are:';
-            embed.fields = Object.keys(bu.TagType.properties)
-                .map(k => {
-                    return {
-                        properties: bu.TagType.properties[k],
-                        tags: tags.filter(t => t.category == k)
-                    };
-                }).filter(c => c.tags.length > 0)
-                .map(c => {
-                    return {
-                        name: c.properties.name + ' subtags - ' + c.properties.desc,
-                        value: '```\n' + c.tags.map(t => t.name).join(', ') + '```'
-                    };
-                }).concat({
-                    name: 'Other useful topics',
-                    value: '```\nvariables, argTypes, terminology, dynamic```'
-                }).filter(f => f.value.length > 0);
+            embed.description = 'Please use `' + prefix + command + ' docs [topic]` to view available information on a subtag.';
+            embed.fields = [{
+                name: 'Other useful topics',
+                value: '```\nvariables, argTypes, terminology, dynamic```'
+            }];
             return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);
         case 'variables':
         case 'variable':
