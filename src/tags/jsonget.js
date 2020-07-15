@@ -10,7 +10,7 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.APITag('jsonget')
+    Builder.ArrayTag('jsonget')
         .withAlias('jget')
         .withArgs(a => [a.require('input'), a.require('path')])
         .withDesc('Navigates the path of a JSON object. Works with arrays too!\n' +
