@@ -437,7 +437,7 @@ class TagCommand extends BaseCommand {
                                     ? `\n**Aliases:** ${(command[0].aliases || []).join(', ')}`
                                     : ''
                                 }${
-                                command[0].args ? `**Args:** \`${command[0].args}\`` : ''
+                                command[0].args ? `\n**Args:** \`${command[0].args}\`` : ''
                                 }
 ${command[0].desc}`);
                         } else {
