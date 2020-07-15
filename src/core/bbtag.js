@@ -462,8 +462,16 @@ const limits = {
             this.rolesetperms = { disabled: true };
             this.rolesetposition = { disabled: true };
 
+            this.guildseticon = { disabled: true };
+
             this.emojicreate = { disabled: true };
             this.emojidelete = { disabled: true };
+
+            this.channelcreate = { disabled: true };
+            this.channeldelete = { disabled: true };
+            this.channeledit = { disabled: true };
+            this.channelsetperms = { disabled: true };
+            this.channelsetpos = { disabled: true };
 
             this.dm = { disabled: true };
             this.send = { disabled: true };
@@ -509,6 +517,19 @@ const limits = {
             this.rolemention = { staff: true };
             this.roleremove = { staff: true };
             this.rolesetmentionable = { staff: true };
+            this.rolesetperms = { staff: true };
+            this.rolesetposition = { staff: true };
+
+            this.guildseticon = { staff: true, count: 1 };
+
+            this.emojicreate = { staff: true };
+            this.emojidelete = { staff: true };
+
+            this.channelcreate = { staff: true };
+            this.channeldelete = { staff: true };
+            this.channeledit = { staff: true };
+            this.channelsetperms = { staff: true };
+            this.channelsetpos = { staff: true };
 
             this.dm = { staff: true, count: 1 };
             this.send = { staff: true, count: 10 };
@@ -555,6 +576,19 @@ const limits = {
             this.rolemention = { staff: true };
             this.roleremove = { staff: true };
             this.rolesetmentionable = { staff: true };
+            this.rolesetperms = { staff: true };
+            this.rolesetposition = { staff: true };
+
+            this.guildseticon = { staff: true, count: 1 };
+
+            this.emojicreate = { staff: true };
+            this.emojidelete = { staff: true };
+
+            this.channelcreate = { staff: true };
+            this.channeldelete = { staff: true };
+            this.channeledit = { staff: true };
+            this.channelsetperms = { staff: true };
+            this.channelsetpos = { staff: true };
 
             this.dm = { staff: true, count: 1 };
             this.send = { staff: true, count: 1 };
@@ -600,6 +634,19 @@ const limits = {
             this.rolemention = { staff: true };
             this.roleremove = { staff: true };
             this.rolesetmentionable = { staff: true };
+            this.rolesetperms = { staff: true };
+            this.rolesetposition = { staff: true };
+
+            this.guildseticon = { staff: true, count: 1 };
+
+            this.emojicreate = { staff: true };
+            this.emojidelete = { staff: true };
+
+            this.channelcreate = { staff: true };
+            this.channeldelete = { staff: true };
+            this.channeledit = { staff: true };
+            this.channelsetperms = { staff: true };
+            this.channelsetpos = { staff: true };
 
             this.dm = { staff: true, count: 1 };
             this.send = { staff: true, count: 1 };
