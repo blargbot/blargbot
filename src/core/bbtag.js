@@ -460,6 +460,9 @@ const limits = {
             this.roleremove = { disabled: true };
             this.rolesetmentionable = { disabled: true };
 
+            this.emojicreate = { disabled: true };
+            this.emojidelete = { disabled: true };
+
             this.dm = { disabled: true };
             this.send = { disabled: true };
             this.edit = { count: 10 };
