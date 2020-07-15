@@ -21,7 +21,7 @@ module.exports =
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
-            let channel = await Builder.util.parseChannel(context, args[0], quiet);
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet });
 
             if (typeof channel === 'function') 
                 return quiet ? false : channel(subtag, context);

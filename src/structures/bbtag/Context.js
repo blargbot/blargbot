@@ -133,6 +133,8 @@ class Context {
     }
 
     async getChannel(name, args) {
+        if (!name || name.trim() === '') return null;
+
         let didSend = false;
         if (this.state.query.count >= 5)
             args.quiet = args.suppress = true;

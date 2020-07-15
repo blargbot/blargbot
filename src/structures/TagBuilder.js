@@ -260,9 +260,9 @@ TagBuilder.util = {
     async parseChannel(context, channelId, args = { quiet: true, supppress: false }) {
         let channel = context.channel;
         if (channel.id !== channelId) {
-            if (!/([0-9]{17,23})/.test(channelId))
-                return TagBuilder.errors.noChannelFound;
-            channelId = channelId.match(/([0-9]{17,23})/)[0];
+            if (/([0-9]{17,23})/.test(channelId)) {
+                channelId = channelId.match(/([0-9]{17,23})/)[0];
+            }
             channel = await context.getChannel(channelId, args);
 
             if (channel == null)

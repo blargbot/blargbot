@@ -41,14 +41,14 @@ class FarewellCommand extends BaseCommand {
         let suffix = '';
         let channelStr = input.c ? input.c.join(' ') : msg.channel.id;
         if (/[0-9]{17,23}/.test(channelStr)) {
-            const channelid = channelStr.match(/([0-9]{17,23})/)[1];
-            const channel = await bu.getChannel(msg, channelid, { quiet: true });
+            const channelId = channelStr.match(/([0-9]{17,23})/)[1];
+            const channel = await bu.getChannel(msg, channelId, { quiet: true });
             if (!channel) {
                 suffix = `A channel could not be found from the channel input, so this message will go into the default channel. `;
-            } else if (bot.channelGuildMap[channelid] != msg.guild.id) {
+            } else if (bot.channelGuildMap[channelId] != msg.guild.id) {
                 suffix = `The channel must be on this guild! `;
             } else {
-                await bu.guildSettings.set(msg.guild.id, 'farewellchan', channelid);
+                await bu.guildSettings.set(msg.guild.id, 'farewellchan', channelId);
                 suffix = `This farewell will be outputted in ${channel.mention}. `;
             }
         }
