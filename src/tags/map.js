@@ -2,7 +2,7 @@
  * @Author: RagingLink 
  * @Date: 2020-06-03 23:26:05
  * @Last Modified by: RagingLink
- * @Last Modified time: 2020-06-04 00:17:35
+ * @Last Modified time: 2020-07-17 22:17:35
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -34,14 +34,13 @@ module.exports =
                 array = Array.from(arr.v),
                 newArray = [];
             
-            //let remaining = context.state.limits.map || {loops : NaN};
-            for (const item of array) { //Avoid using Array.prototype.map() due to the inability to exit the loop in case of context.state.return
-                /*Loop logic maybe ? dunno what the limit of map should be tbh
-                remaining.loops--
+            let remaining = context.state.limits.map || {loops : NaN};
+            for (const item of array) {
+                remaining.loops--;
                 if (!(remaining.loops >= 0)) {
-                    result += Builder.errors.tooManyLoops(subtag, context);
+                    newArray.push(Builder.errors.tooManyLoops(subtag, context));
                     break;
-                }*/
+                }
                 await context.variables.set(varName, item);
                 newArray.push(await this.executeArg(subtag, args[2], context));
 
