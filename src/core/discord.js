@@ -76,8 +76,8 @@ class DiscordClient extends Client {
             autoReconnect: true,
             allowedMentions: {
                 everyone: false,
-                roles: true,
-                users: true
+                roles: false,
+                users: false
             },
             getAllUsers: false,
             disableEvents: {

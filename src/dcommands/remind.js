@@ -24,11 +24,11 @@ class RemindCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         const example = '\`remind Do a thing! -t 1 day, two hours\`';
-        
+
         let input = bu.parseInput(this.flags, words);
         let duration = moment.duration();
         if (input.t && input.t.length > 0) duration = bu.parseDuration(input.t.join(' '));
-        
+
         if (duration.asMilliseconds() == 0) {
             bu.send(msg, `Hey, you didn't give me a period of time to remind you after!
 Example: ${example}`);
@@ -39,7 +39,7 @@ Example: ${example}`);
 Example: ${example}`);
             return;
         }
-        
+
         let channel;
         if (input.c) channel = msg.channel.id;
         await r.table('events').insert({
@@ -58,8 +58,13 @@ Example: ${example}`);
         let duration = moment.duration(moment() - moment(args.starttime));
         duration.subtract(duration * 2);
         if (args.channel) {
-            bu.send(args.channel, `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this ${duration.humanize(true)}:
-    ${args.content}`);
+            bu.send(args.channel, {
+                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this ${duration.humanize(true)}:
+${args.content}`,
+                allowedMentions: {
+                    users: [args.user]
+                }
+            });
         } else {
             bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this ${duration.humanize(true)}:
     ${args.content}`);

@@ -142,7 +142,12 @@ class LogsCommand extends BaseCommand {
             if (input.j) {
                 let toSend = `${pingUser ? 'Sorry that took so long, ' + msg.author.mention : ''}Here are your logs, in a JSON file!`;
                 results.forEach(m => delete m.id);
-                await bu.send(msg, toSend, {
+                await bu.send(msg, {
+                    content: toSend,
+                    allowedMentions: {
+                        users: [msg.author.id]
+                    }
+                }, {
                     file: JSON.stringify(results, null, 2),
                     name: `${msg.channel.id}-logs.json`
                 });
@@ -164,7 +169,12 @@ class LogsCommand extends BaseCommand {
             if (config.general.isbeta) toSend += `\nhttp://localhost:8085/logs/#beta${key}`;
             if (pingUser) {
                 toSend = `Sorry that took so long, ${msg.author.mention}!\n${toSend}`;
-                await bu.send(msg, toSend);
+                await bu.send(msg, {
+                    content: toSend,
+                    allowedMentions: {
+                        users: [msg.author.id]
+                    }
+                });
             } else
                 await bot.editMessage(msg2.channel.id, msg2.id, toSend);
         }
