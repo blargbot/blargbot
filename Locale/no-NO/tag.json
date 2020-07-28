@@ -25,16 +25,16 @@
             "desc": "Fjerner og returnerer det siste elementet i array lista."
         },
         "push": {
-            "desc": ""
+            "desc": "Pusher et element til slutten av en array. Returnerer den nye array lista."
         },
         "set": {
-            "desc": ""
+            "desc": "Setter et element i en array i posisjonen `index`."
         },
         "shift": {
-            "desc": ""
+            "desc": "Fjerner og returnerer det første elementet i array lista."
         },
         "slice": {
-            "desc": ""
+            "desc": "Returnerer en seksjon av en array hvor `start`-indeksen er inkludert og `end`-indeksen utelukket. Hvis `end` er uspesifisert vil alle elementer etter `start` bli returnert."
         },
         "sort": {
             "desc": ""
