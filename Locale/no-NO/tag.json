@@ -37,7 +37,7 @@
             "desc": "Returnerer en seksjon av en array hvor `start`-indeksen er inkludert og `end`-indeksen utelukket. Hvis `end` er uspesifisert vil alle elementer etter `start` bli returnert."
         },
         "sort": {
-            "desc": ""
+            "desc": "Sorterer og returnerer en liste, som standard i stigende rekkefølge.\n\nHvis `function` er tilført, vil sortering skje basert på resultatet av utføringen av nevnt funksjon. Dette settes to midlertidige variabler: `a` (eller `varNameOne`) og `b` (eller `varNameTwo`). \n\nFunksjonen må returnere et tall. Hvis tallet er større enn 0, vil `a` anses som større enn `b`. Hvis tallet er lavere enn 0, vil `b` anses som større enn `a`. Et hvert ikke-tallsresultat vil bli konvertert til 0, der begge elementene er like."
         },
         "splice": {
             "desc": ""
