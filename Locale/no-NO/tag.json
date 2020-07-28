@@ -13,16 +13,16 @@
             "desc": "Returnerer true om det gitte elementet er en array, og false ellers. Du kan ikke bruke variabelnavn."
         },
         "join": {
-            "desc": ""
+            "desc": "Slår sammen en array med en `delimiter` mellom hvert element."
         },
         "length": {
-            "desc": ""
+            "desc": "Returnerer lengden av array lista."
         },
         "map": {
-            "desc": ""
+            "desc": "Går gjennom en array, og setter det gjeldende elementet til en midlertidig variabel `i`. Om `varName` er spesifisert, heter variabelen det i stedet.\n\nReturnerer en ny array hvor hvert element er resultatet av hver iterasjon."
         },
         "pop": {
-            "desc": ""
+            "desc": "Fjerner og returnerer det siste elementet i array lista."
         },
         "push": {
             "desc": ""
