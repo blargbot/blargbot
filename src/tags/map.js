@@ -23,7 +23,7 @@ module.exports =
             ' it will simply output the new array.'
         )
         .withExample(
-            '{set;~array;apples;oranges;pears}\n{map;~item;{get;~array};{upper;{get;~item}}',
+            '{map;~item;["apples","oranges","pears"];{upper;{get;~item}}}',
             '["APPLES","ORANGES","PEARS"]'
         )
         .resolveArgs(0, 1)
