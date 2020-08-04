@@ -914,7 +914,8 @@ bu.issueWarning = async function (user, guild, count, params) {
     storedGuild.warnings.users[user.id] += count;
     if (storedGuild.warnings.users[user.id] < 0) storedGuild.warnings.users[user.id] = 0;
     let warningCount = storedGuild.warnings.users[user.id];
-    if (bu.isBotHigher(guild.members.get(user.id)))
+    const member = guild.members.get(user.id);
+    if (member && bu.isBotHigher(member))
         if (storedGuild.settings.banat && storedGuild.settings.banat > 0 && warningCount >= storedGuild.settings.banat) {
             if (!bu.bans[guild.id])
                 bu.bans[guild.id] = {};
