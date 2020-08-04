@@ -226,8 +226,8 @@ class Context {
                         resolve(response.id);
                         this.state.outputMessage = response.id;
                     } else {
-                        console.info(text);
-                        reject(new Error('Failed to send', response));
+                        console.info(text, response);
+                        reject(new Error('Failed to send'));
                     }
                 } catch (err) {
                     reject(err);
