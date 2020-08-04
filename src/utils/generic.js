@@ -121,7 +121,7 @@ bu.awaitReact = async function (messages, users, reactions, check, timeout) {
         messages = [messages];
     if (!Array.isArray(users))
         users = [users];
-    if (reactions != null) {
+    if (reactions) {
         if (!Array.isArray(reactions))
             reactions = [reactions];
         reactions = reactions.map(r => r.replace(/[<>]/g, ''));
@@ -148,10 +148,10 @@ bu.awaitReact = async function (messages, users, reactions, check, timeout) {
     console.debug(`awaiting reaction | messages: [${messages}] users: [${users}] reactions: ${JSON.stringify(reactions)} timeout: ${timeout}`);
 
     const SANITIZED = /(\w+:\d+)/;
-    const watchFor = reactions.map(r => {
+    const watchFor = reactions ? reactions.map(r => {
         if (SANITIZED.test(r)) return r.match(SANITIZED)[1];
         else return r;
-    });
+    }) : null;
 
     return await new Promise(async function (resolve, reject) {
         let timeoutId = setTimeout(function () {
@@ -164,7 +164,7 @@ bu.awaitReact = async function (messages, users, reactions, check, timeout) {
 
             console.log('Received reaction event:', eventName, sanitized, watchFor);
             try {
-                if (reactions && reactions.length > 0 && !watchFor.includes(sanitized))
+                if (reactions && reactions.length > 0 && (!watchFor || !watchFor.includes(sanitized)))
                     return;
                 if (await check(message, user, emoji)) {
                     clearTimeout(timeoutId);
