@@ -220,13 +220,14 @@ class Context {
                             }
                         }, files || this.state.file);
 
-                    if (response != null && response.channel != null) {
+                    if (response && response.channel) {
                         await bu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
                         this.state.ownedMsgs.push(response.id);
                         resolve(response.id);
                         this.state.outputMessage = response.id;
                     } else {
-                        reject(new Error('Failed to send'));
+                        console.info(text);
+                        reject(new Error('Failed to send', response));
                     }
                 } catch (err) {
                     reject(err);
