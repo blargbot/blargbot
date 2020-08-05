@@ -226,8 +226,15 @@ class Context {
                         resolve(response.id);
                         this.state.outputMessage = response.id;
                     } else {
-                        console.info(text, response);
-                        reject(new Error('Failed to send'));
+                        if (response instanceof Error) {
+                            if (response.message !== 'No content') {
+                                reject(response);
+                            } else {
+                                resolve();
+                            }
+                        } else {
+                            reject(new Error('Failed to send: ' + text + ' ' + response));
+                        }
                     }
                 } catch (err) {
                     reject(err);
