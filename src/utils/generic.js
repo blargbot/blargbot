@@ -1379,6 +1379,10 @@ bu.awaitEvent = function (obj) {
     return new Promise((fulfill, reject) => {
         cluster.send(obj);
         bu.emitter.once(obj.code, fulfill);
+
+        setTimeout(() => {
+            reject('Timed out after 60 seconds');
+        }, 60000);
     });
 };
 

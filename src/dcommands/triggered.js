@@ -7,25 +7,30 @@ class TriggeredCommand extends BaseCommand {
             category: bu.CommandType.IMAGE,
             usage: 'triggered [user]',
             info: 'Shows everyone how triggered you are.',
-            flags: [{ flag: 'i', word: 'invert', desc: 'Inverts the image.' },
-            {
-                flag: 'h',
-                word: 'horizontal',
-                desc: 'Flips the image horizontally.'
-            },
-            {
-                flag: 'v',
-                word: 'vertical',
-                desc: 'Flips the image vertically.'
-            },
-            { flag: 's', word: 'sepia', desc: 'Applies a sepia filter.' },
-            { flag: 'b', word: 'blur', desc: 'Applies a blur.' },
-            {
-                flag: 'g',
-                word: 'greyscale',
-                desc: 'Makes the image greyscale'
-            },
-            { flag: 'I', word: 'image', desc: 'A custom image.' }]
+            flags: [
+                { flag: 'i', word: 'invert', desc: 'Inverts the image.' },
+                {
+                    flag: 'h',
+                    word: 'horizontal',
+                    desc: 'Flips the image horizontally.'
+                },
+                {
+                    flag: 'v',
+                    word: 'vertical',
+                    desc: 'Flips the image vertically.'
+                },
+                { flag: 's', word: 'sepia', desc: 'Applies a sepia filter.' },
+                { flag: 'b', word: 'blur', desc: 'Applies a blur.' },
+                {
+                    flag: 'g',
+                    word: 'greyscale',
+                    desc: 'Makes the image greyscale'
+                },
+                { flag: 'I', word: 'image', desc: 'A custom image.' }
+            ],
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -64,7 +69,7 @@ class TriggeredCommand extends BaseCommand {
             blur,
             greyscale
         });
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'triggered.gif'
         });

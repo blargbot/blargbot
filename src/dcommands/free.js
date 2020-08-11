@@ -7,7 +7,10 @@ class FreeCommand extends BaseCommand {
             category: bu.CommandType.IMAGE,
             usage: 'free <caption> [flags]',
             info: 'Tells everyone what you got for free',
-            flags: [{ flag: 'b', word: 'bottom', desc: 'The bottom caption.' }]
+            flags: [{ flag: 'b', word: 'bottom', desc: 'The bottom caption.' }],
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -26,7 +29,7 @@ class FreeCommand extends BaseCommand {
             top: input.undefined.join(' '),
             bottom: input.b ? input.b.join(' ') : undefined
         });
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'FREEFREEFREE.gif'
         });

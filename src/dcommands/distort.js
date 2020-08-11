@@ -7,7 +7,10 @@ class DistortCommand extends BaseCommand {
             category: bu.CommandType.IMAGE,
             usage: 'distort [user]',
             info: 'Turns an avatar into modern art.',
-            flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }]
+            flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -36,7 +39,7 @@ class DistortCommand extends BaseCommand {
             avatar: url
         });
 
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'distorted.png'
         });

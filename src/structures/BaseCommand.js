@@ -11,6 +11,13 @@ class BaseCommand {
         this.onlyOn = params.onlyOn || undefined;
         this.flags = params.flags || undefined;
         this.cannotDisable = params.cannotDisable || false;
+        this.userRatelimit = params.userRatelimit || false;
+        this.channelRatelimit = params.channelRatelimit || false;
+        this.cooldown = params.cooldown || false;
+
+        this.users = {};
+        this.channels = {};
+        this.cooldowns = {};
     }
 
     get isCommand() {
@@ -19,6 +26,79 @@ class BaseCommand {
 
     get longinfo() {
         return this.info;
+    }
+
+    checkBucketRatelimit(bucket, id) {
+        if (!bucket[id]) {
+            bucket[id] = 0;
+        }
+
+        return bucket[id];
+    }
+
+    async _execute(msg, words, text) {
+        if (this.cooldown) {
+            if (!this.cooldowns[msg.author.id]) {
+                this.cooldowns[msg.author.id] = { lastTime: Date.now(), times: 1 };
+            } else {
+                console.log(this.cooldown, Date.now() - this.cooldowns[msg.author.id].lastTime);
+                const diff = Date.now() - this.cooldowns[msg.author.id].lastTime;
+
+                if (Date.now() - this.cooldowns[msg.author.id].lastTime <= this.cooldown) {
+                    let times = this.cooldowns[msg.author.id].times++;
+                    if (times === 1) {
+                        const diffText = Math.round(diff / 100) / 10;
+                        return await bu.send(msg, `Sorry, you ran this command too recently! Please wait ${diffText}s and try again.`);
+                    } else if (times > 1) {
+                        return;
+                    }
+                }
+            }
+        }
+
+        if (this.userRatelimit) {
+            const times = this.checkBucketRatelimit(this.users, msg.author.id);
+            if (times === 1) {
+                return await bu.send(msg, 'Sorry, you\'re already running this command! Please wait and try again.');
+            } else if (times > 1) {
+                return;
+            }
+        }
+        if (this.channelRatelimit) {
+            const times = this.checkBucketRatelimit(this.channels, msg.channel.id);
+            if (times === 1) {
+                return await bu.send(msg, 'Sorry, this command is already running in this channel! Please wait and try again.');
+            } else if (times > 1) {
+                return;
+            }
+        }
+
+        try {
+            if (this.cooldown) {
+                this.cooldowns[msg.author.id] = {
+                    lastTime: Date.now(),
+                    times: 1
+                };
+            }
+            if (this.userRatelimit) {
+                this.users[msg.author.id]++;
+            }
+            if (this.channelRatelimit) {
+                this.channels[msg.channel.id]++;
+            }
+
+            const res = await this.execute(msg, words, text);
+            return res;
+        } catch (err) {
+            throw err;
+        } finally {
+            if (this.userRatelimit) {
+                delete this.users[msg.author.id];
+            }
+            if (this.channelRatelimit) {
+                delete this.channels[msg.channel.id];
+            }
+        }
     }
 
     execute(msg, words, text) {

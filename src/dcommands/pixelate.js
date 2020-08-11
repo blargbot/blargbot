@@ -16,7 +16,10 @@ class PixelateCommand extends BaseCommand {
                 flag: 's',
                 word: 'scale',
                 desc: 'The amount to pixelate by (defaults to 64)'
-            }]
+            }],
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -52,7 +55,7 @@ class PixelateCommand extends BaseCommand {
             url,
             scale
         });
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'pixld.png'
         });

@@ -7,7 +7,10 @@ class ClippyCommand extends BaseCommand {
             aliases: ['clippit', 'paperclip'],
             category: bu.CommandType.IMAGE,
             usage: 'clippy <text>',
-            info: 'Clippy the paperclip is here to save the day!'
+            info: 'Clippy the paperclip is here to save the day!',
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -24,7 +27,7 @@ class ClippyCommand extends BaseCommand {
             code: code,
             text
         });
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'DOYOUNEEDHELP.png'
         });

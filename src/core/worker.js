@@ -622,6 +622,11 @@ process.on('message', async function (msg, handle) {
                     await functions[command](msg);
             } catch (err) {
                 console.error(err.stack);
+                process.send({
+                    cmd: 'img',
+                    code: msg.code,
+                    buffer: ''
+                });
             }
             break;
         default:

@@ -6,7 +6,10 @@ class ClydeCommand extends BaseCommand {
             name: 'clyde',
             category: bu.CommandType.IMAGE,
             usage: 'clyde <text>',
-            info: 'Give everyone a message from Clyde.'
+            info: 'Give everyone a message from Clyde.',
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -23,7 +26,7 @@ class ClydeCommand extends BaseCommand {
             code: code,
             text
         });
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'clyde.png'
         });
