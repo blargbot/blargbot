@@ -41,7 +41,6 @@ class BaseCommand {
             if (!this.cooldowns[msg.author.id]) {
                 this.cooldowns[msg.author.id] = { lastTime: Date.now(), times: 1 };
             } else {
-                console.log(this.cooldown, Date.now() - this.cooldowns[msg.author.id].lastTime);
                 const diff = Date.now() - this.cooldowns[msg.author.id].lastTime;
 
                 if (Date.now() - this.cooldowns[msg.author.id].lastTime <= this.cooldown) {
