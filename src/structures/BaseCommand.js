@@ -37,24 +37,6 @@ class BaseCommand {
     }
 
     async _execute(msg, words, text) {
-        if (this.cooldown) {
-            if (!this.cooldowns[msg.author.id]) {
-                this.cooldowns[msg.author.id] = { lastTime: Date.now(), times: 1 };
-            } else {
-                const diff = Date.now() - this.cooldowns[msg.author.id].lastTime;
-
-                if (Date.now() - this.cooldowns[msg.author.id].lastTime <= this.cooldown) {
-                    let times = this.cooldowns[msg.author.id].times++;
-                    if (times === 1) {
-                        const diffText = Math.round(diff / 100) / 10;
-                        return await bu.send(msg, `Sorry, you ran this command too recently! Please wait ${diffText}s and try again.`);
-                    } else if (times > 1) {
-                        return;
-                    }
-                }
-            }
-        }
-
         if (this.userRatelimit) {
             const times = this.checkBucketRatelimit(this.users, msg.author.id);
             if (times === 1) {
@@ -69,6 +51,26 @@ class BaseCommand {
                 return await bu.send(msg, 'Sorry, this command is already running in this channel! Please wait and try again.');
             } else if (times > 1) {
                 return;
+            }
+        }
+        if (this.cooldown) {
+            if (!this.cooldowns[msg.author.id]) {
+                this.cooldowns[msg.author.id] = { lastTime: Date.now(), times: 1 };
+            } else {
+                const diff = Date.now() - this.cooldowns[msg.author.id].lastTime;
+
+                if (Date.now() - this.cooldowns[msg.author.id].lastTime <= this.cooldown) {
+                    let times = this.cooldowns[msg.author.id].times++;
+                    if (times === 1) {
+                        const diffText = Math.round((this.cooldown - diff) / 100) / 10;
+                        if (diffText < 0) {
+                            return await bu.send(msg, `Sorry, you ran this command too recently! Please wait and try again.`);
+                        }
+                        return await bu.send(msg, `Sorry, you ran this command too recently! Please wait ${diffText}s and try again.`);
+                    } else if (times > 1) {
+                        return;
+                    }
+                }
             }
         }
 
