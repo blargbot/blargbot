@@ -75,7 +75,7 @@ class BaseCommand {
         try {
             if (this.cooldown) {
                 this.cooldowns[msg.author.id] = {
-                    lastTime: Date.now(),
+                    lastTime: Date.now() + 9999999,
                     times: 1
                 };
             }
@@ -91,6 +91,9 @@ class BaseCommand {
         } catch (err) {
             throw err;
         } finally {
+            if (this.cooldown) {
+                this.cooldowns[msg.author.id].lastTime = Date.now();
+            }
             if (this.userRatelimit) {
                 delete this.users[msg.author.id];
             }
