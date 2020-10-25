@@ -10,7 +10,13 @@ const subcommands = [
     {
         name: 'author',
         args: '<name>',
-        desc: 'Displays the name of the custom command\'s author'
+        desc: 'Displays the name of the custom command\'s author',
+        aliases: ['owner', 'authorizer']
+    },
+    {
+        name: 'authorize',
+        args: '<name> [\'clear\']',
+        desc: 'Sets you to be the authorizer for the given ccommand. If `clear` is given, the authorizer will be set back to the author.'
     },
     {
         name: 'cooldown',
@@ -105,7 +111,18 @@ const subcommands = [
         args: '<content>',
         desc: 'Uses the BBTag engine to execute the content as it was a ccommand.',
         aliases: ['eval', 'exec', 'vtest']
-    }
+    },
+    {
+        name: 'shrinkwrap',
+        args: '<names...>',
+        desc: 'Exports the ccommands you choose as a package for easy installation elsewhere'
+    },
+    {
+        name: 'install',
+        args: '',
+        desc: 'Installs a shrinkwrapped package into the current server. This package must be provided as an attachment to the command'
+    },
+
 ];
 
 function filterTitle(title) {
@@ -742,6 +759,27 @@ class CcommandCommand extends BaseCommand {
                         }
                         toSend += '.';
                         bu.send(msg, toSend);
+                    } else {
+                        bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
+                    }
+                    break;
+                case 'authorize':
+                    if (words[2]) {
+                        title = filterTitle(words[2]);
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (!tag) {
+                            bu.send(msg, `❌ That ccommand doesn't exist! ❌`);
+                            break;
+                        }
+                        let authorizer = msg.author.id;
+                        if (['clear', 'reset', 'remove', 'default', 'none'].includes(words[3])) {
+                            authorizer = tag.author;
+                        }
+                        let authorizerObj = await r.table('user').get(authorizer).run();
+                        await bu.ccommand.set(msg.channel.guild.id, title, {
+                            authorizer
+                        });
+                        bu.send(msg, `✅ The ccommand \`${title}\` is now authorized by **${authorizerObj.username}#${authorizerObj.discriminator}** ✅`);
                     } else {
                         bu.send(msg, 'Not enough arguments! Do `help ccommand` for more information.');
                     }
