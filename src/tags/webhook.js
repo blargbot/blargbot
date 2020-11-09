@@ -24,7 +24,7 @@ module.exports =
         .withDesc('Executes a webhook. The `embed` must be provided in a raw JSON format, properly escaped for BBTag. ' +
         'A simple escaping utility can be accessed [here](https://rewrite.blargbot.xyz/v1escaper). ' +
         'You can find an easy tool to test out embeds [here](https://leovoel.github.io/embed-visualizer/). ' +
-        'Please assign your webhook credentials to private variables! Do not leave them in your code.' +
+        'Please assign your webhook credentials to private variables! Do not leave them in your code. ' +
         'If `file` starts with `buffer:`, the following text will be parsed as base64 to a raw buffer.')
         .withExample(
         '{webhook;1111111111111111;t.OK-en;Hello!}',
