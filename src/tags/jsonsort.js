@@ -13,8 +13,8 @@ module.exports =
     Builder.ArrayTag('jsonsort')
         .withAlias('jsort')
         .withArgs(a => [a.require('array'), a.require('path'), a.optional('descending')])   
-        .withDesc('Sorts an array of objects based on on the provided `path`.\n' +
-            '`path` is a dot-noted series of properties.' +
+        .withDesc('Sorts an array of objects based on the provided `path`.\n' +
+            '`path` is a dot-noted series of properties.\n' +
             'If `descending` is provided, sorts in descending order.\n' +
             'If provided a variable, will modify the original `array`.'
         ).withExample(

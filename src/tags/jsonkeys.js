@@ -13,7 +13,7 @@ module.exports =
     Builder.ArrayTag('jsonkeys')
         .withAlias('jkeys')
         .withArgs(a => [a.require('object'), a.optional('path')])
-        .withDesc('Retrieves all keys from provided JSON object.' + 
+        .withDesc('Retrieves all keys from provided the JSON object. ' + 
         '`object` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n' +
         '`path` is a dot-noted series of properties.'
         )
