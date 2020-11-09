@@ -1,5 +1,5 @@
 /**
- * @Author: RagingLink 
+ * @Author: RagingLink
  * @Date: 2020-06-03 23:26:05
  * @Last Modified by: RagingLink
  * @Last Modified time: 2020-07-17 22:17:35
@@ -19,8 +19,7 @@ module.exports =
         .withDesc('Provides a way to populate an array by executing a function on each of its elements,' +
             ' more info [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\n' +
             'For every element in `array`, `variable` will be set and `function` will be executed. The output of `function`' +
-            ' will be the new value of the element. If `array` is a variable it will update the variable. Otherwise,' +
-            ' it will simply output the new array.'
+            ' will be the new value of the element. This will return the new array, and will not modify the original.'
         )
         .withExample(
             '{map;~item;["apples","oranges","pears"];{upper;{get;~item}}}',
@@ -33,7 +32,7 @@ module.exports =
                 arr = await bu.getArray(context, args[1]),
                 array = Array.from(arr.v),
                 newArray = [];
-            
+
             let remaining = context.state.limits.map || {loops : NaN};
             for (const item of array) {
                 remaining.loops--;
@@ -49,10 +48,6 @@ module.exports =
             };
 
             context.variables.reset(varName);
-            if (arr.n != null)
-                await context.variables.set(arr.n, newArray);
-            else
-                return bu.serializeTagArray(newArray);
-            
+            return bu.serializeTagArray(newArray);
         }).whenDefault(Builder.errors.tooManyArguments)
         .build();

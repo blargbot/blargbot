@@ -1,5 +1,5 @@
 /**
- * @Author: RagingLink 
+ * @Author: RagingLink
  * @Date: 2020-07-28 21:09:40
  * @Last Modified by: RagingLink
  * @Last Modified time: 2020-08-01 20:2 7:36
@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('jsonsort')
         .withAlias('jsort')
-        .withArgs(a => [a.require('array'), a.require('path'), a.optional('descending')])   
+        .withArgs(a => [a.require('array'), a.require('path'), a.optional('descending')])
         .withDesc('Sorts an array of objects based on the provided `path`.\n' +
             '`path` is a dot-noted series of properties.\n' +
             'If `descending` is provided, sorts in descending order.\n' +
@@ -26,9 +26,9 @@ module.exports =
         ).whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async (subtag, context, args) => {
             let arr = await bu.getArray(context, args[0]),
-                path = args[1] ? args[1].split('.') : undefined;
+                path = args[1] ? args[1].split('.') : undefined,
                 descending = bu.parseBoolean(args[2]);
-            
+
             if (!bu.isBoolean(descending))
                 descending = !!args[2];
 
@@ -36,10 +36,10 @@ module.exports =
                 return Builder.errors.notAnArray(subtag, context);
             if(!path) return Builder.errors.customError(subtag, context, 'No path provided');
             //Map array with values of array[item][path]
-            let mappedArray = await Promise.all(arr.v.map(item => {
+            let mappedArray = arr.v.map(item => {
                 try {
                     if (typeof item !== 'object')
-                        item = JSON.parse(item)
+                        item = JSON.parse(item);
                 } catch (e) {
                     item = {};
                 }
@@ -59,18 +59,18 @@ module.exports =
                     if (item && item.hasOwnProperty(part)) {
                         item = item[part];
                     } else item = undefined;
-                } 
+                }
                 return item;
-            }));
+            });
             //If there are any undefined values return an error stating at which index the 'faulty' object is and how many faulty there are
-            let undefinedItems = mappedArray.filter(v => v === undefined)
+            let undefinedItems = mappedArray.filter(v => v === undefined);
             if (undefinedItems.length !== 0) {
                 return Builder.errors.customError(subtag, context, 'Cannot read property ' + path + ' at index ' + mappedArray.indexOf(undefined) + ', ' + undefinedItems.length + ' total failures' );
             };
             //Sort the array
             arr.v = arr.v.sort((a, b) => {
                 if (typeof a !== 'object')
-                    a = JSON.parse(a)
+                    a = JSON.parse(a);
                 if (typeof b !== 'object')
                     b = JSON.parse(b);
                 //Value of path of a
@@ -104,10 +104,10 @@ module.exports =
                         }
                     }
                     if (b.hasOwnProperty(part)) b = b[part];
-                }   
-                return bu.compare(a,b)
+                }
+                return bu.compare(a,b);
             });
-            
+
             if (descending) arr.v.reverse();
 
             if (!arr.n)
