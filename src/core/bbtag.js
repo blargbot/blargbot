@@ -521,6 +521,7 @@ const limits = {
 
             this.for = { loops: 1500 };
             this.foreach = { loops: 3000 };
+            this.map = { loops: 3000 };
 
             this.dump = { count: 5 };
         }
@@ -579,6 +580,7 @@ const limits = {
 
             this.for = { loops: 1500 };
             this.foreach = { loops: 3000 };
+            this.map = { loops: 3000 };
 
             this.dump = { count: 5 };
         }
@@ -639,6 +641,7 @@ const limits = {
 
             this.for = { loops: 1000 };
             this.foreach = { loops: 2000 };
+            this.map = { loops: 2000 };
 
             this.dump = { count: 5 };
         }
@@ -697,6 +700,7 @@ const limits = {
 
             this.for = { loops: 500 };
             this.foreach = { loops: 1000 };
+            this.map = { loops: 1000 };
 
             this.dump = { count: 5 };
         }
