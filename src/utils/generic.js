@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
- * @Last Modified by: stupid cat
- * @Last Modified time: 2019-09-28 13:33:37
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2020-06-11 16:58:11
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -602,48 +602,14 @@ bu.getUser = async function (msg, name, args = {}) {
     } else if (userList.length == 0) {
         if (!args.quiet && !args.suppress) {
             if (args.onSendCallback) args.onSendCallback();
-            bu.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
+            await bu.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
         }
         return null;
     } else {
         if (!args.quiet) {
-            var userListString = '';
-            let newUserList = [];
-            for (let i = 0; i < userList.length && i < 20; i++) {
-                newUserList.push(userList[i]);
-            }
-            for (let i = 0; i < newUserList.length; i++) {
-                userListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newUserList[i].user.username}#${newUserList[i].user.discriminator} - ${newUserList[i].user.id}\n`;
-            }
-            let moreUserString = newUserList.length < userList.length ? `...and ${userList.length - newUserList.length}more.\n` : '';
-            try {
-                if (args.onSendCallback) args.onSendCallback();
-                let query = await bu.createQuery(msg, `Multiple users found! Please select one from the list.\`\`\`prolog
-${userListString}${moreUserString}--------------------
-C.cancel query
-\`\`\`
-**${bu.getFullName(msg.author)}**, please type the number of the user you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.
-`,
-                    (msg2) => {
-                        if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newUserList.length + 1 && parseInt(msg2.content) >= 1)) {
-                            return true;
-                        } else return false;
-                    }, undefined, args.label, args.suppress);
-                let response = await query.response;
-                if (response.content.toLowerCase() == 'c') {
-                    await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
-                    if (!args.suppress) {
-                        if (args.onSendCallback) args.onSendCallback();
-                        bu.send(msg, `Query canceled${args.label ? ' in ' + args.label : ''}.`);
-                    }
-                    return null;
-                } else {
-                    await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
-                    return newUserList[parseInt(response.content) - 1].user;
-                }
-            } catch (err) {
-                return null;
-            }
+            let matches = userList.map(m => { return { content: `${m.user.username}#${m.user.discriminator} - ${m.user.id}`, value: m.user } })
+            let lookupResponse = await bu.createLookup(msg, 'user', matches, args);
+            return lookupResponse;
         } else {
             return null;
         }
@@ -665,10 +631,11 @@ bu.getMessage = async function (channelId, messageId) {
 bu.getRole = async function (msg, name, args = {}) {
     if (typeof args !== 'object')
         args = { quiet: args };
+    if (/\d{17,23}/.test(name))
+        name = name.match(/\d{17,23}/)[0];
     if (msg.channel.guild.roles.get(name)) {
         return msg.channel.guild.roles.get(name);
     }
-    //userList =
     let roleList = msg.channel.guild.roles.filter(m => (m.name &&
         m.name.toLowerCase().indexOf(name.toLowerCase()) > -1));
 
@@ -706,33 +673,9 @@ bu.getRole = async function (msg, name, args = {}) {
         return null;
     } else {
         if (!args.quiet) {
-            var roleListString = '';
-            let newRoleList = [];
-            for (let i = 0; i < roleList.length && i < 20; i++) {
-                newRoleList.push(roleList[i]);
-            }
-            for (let i = 0; i < newRoleList.length; i++) {
-                roleListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newRoleList[i].name} - ${newRoleList[i].color.toString(16)} (${newRoleList[i].id})\n`;
-            }
-            let moreRoleString = newRoleList.length < roleList.length ? `...and ${roleList.length - newRoleList.length} more.\n` : '';
-            let query = await bu.createQuery(msg, `Multiple roles found! Please select one from the list.\`\`\`prolog
-${roleListString}${moreRoleString}--------------------
-C. cancel query
-\`\`\`
-**${bu.getFullName(msg.author)}**, please type the number of the role you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`, (msg2) => {
-                if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newRoleList.length + 1 && parseInt(msg2.content) >= 1)) {
-                    return true;
-                } else return false;
-            }, undefined, args.label, args.suppress);
-            let response = await query.response;
-            if (response.content.toLowerCase() == 'c') {
-                if (!args.suppress)
-                    bu.send(msg, 'Query canceled.');
-                return null;
-            } else {
-                await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
-                return newRoleList[parseInt(response.content) - 1];
-            }
+            let matches = roleList.map(r => { return { content: `${r.name} - ${r.color.toString(16)} (${r.id})`, value: r } });
+            let lookupResponse = await bu.createLookup(msg, 'role', matches, args);
+            return lookupResponse;
         } else {
             return null;
         }
@@ -1900,3 +1843,47 @@ bu.formatAuditReason = function (user, reason, ban = false) {
     // bans use their own system and cannot be uriencoded. thanks discord!
     return !ban ? encodeURIComponent(fullReason) : fullReason;
 };
+
+/**
+ * Sends lookup message to msg.channel and returns the selected item
+ * @param {Message} msg - Message of author
+ * @param {String} type - Type of lookup in the lookup message
+ * @param {Object[]} matches - An array of Objects with properties `content` and `value`
+ * @param {Object} args -
+ * @returns {*} The value of the matched item, returns {null} if cancelled
+ */
+bu.createLookup = async function (msg, type, matches, args = {}) {
+    var outputString = '';
+    let lookupList = [];
+    for (let i = 0; i < matches.length && i < 20; i++) {
+        lookupList.push(matches[i]);
+    }
+    for (let i = 0; i < lookupList.length; i++) {
+        outputString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${lookupList[i].content}\n`;
+    }
+    let moreLookup = lookupList.length < matches.length ? `...and ${matches.length - lookupList.length}more.\n` : '';
+    try {
+        if (args.onSendCallback) args.onSendCallback();
+        let query = await bu.createQuery(msg, `Multiple ${type}s found! Please select one from the list.\`\`\`prolog` +
+            `\n${outputString}${moreLookup}--------------------` +
+            `\nC.cancel query\`\`\`` +
+            `\n**${bu.getFullName(msg.author)}**, please type the number of the ${type} you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`
+            ,(msg2) => {
+                return msg2.content.toLowerCase() === 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1)
+            }, undefined, args.label, args.suppress);
+        let response = await query.response;
+        if (response.content.toLowerCase() === 'c') {
+            await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
+            if (!args.suppress) {
+                if (args.onSendCallback) args.onSendCallback();
+                await bu.send(msg, `Query canceled${args.label ? ' in ' + args.label : ''}.`);
+            }
+            return null;
+        } else {
+            await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
+            return lookupList[parseInt(response.content) - 1].value;
+        }
+    } catch (err) {
+        return null;
+    }
+}
