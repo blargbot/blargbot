@@ -22,7 +22,7 @@ class NamesCommand extends BaseCommand {
                 {
                     flag: 'r',
                     word: 'remove',
-                    desc: 'Removes all your usernames from the database.'
+                    desc: 'Removes the specified username from the database, or all usernames if used with the `all` flag.'
                 },
                 {
                     flag: 'y',
@@ -72,8 +72,8 @@ class NamesCommand extends BaseCommand {
                 let removedUsername = storedUser.usernames.splice(lookup, 1)[0];
                 await r.table('user').get(user.id).update(storedUser).run();
                 return bu.send(msg, `Succesfully removed username **${removedUsername}**!`);
-            };
-        };
+            }
+        }
         if (input.undefined.length == 0) {
             user = msg.author;
         } else {

@@ -612,8 +612,8 @@ bu.getUser = async function (msg, name, args = {}) {
             return lookupResponse;
         } else {
             return null;
-        };
-    };
+        }
+    }
 };
 
 bu.getMessage = async function (channelId, messageId) {
@@ -678,8 +678,8 @@ bu.getRole = async function (msg, name, args = {}) {
             return lookupResponse;
         } else {
             return null;
-        };
-    };
+        }
+    }
 };
 
 bu.getMessage = async function (channelId, messageId) {
