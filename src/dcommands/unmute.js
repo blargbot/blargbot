@@ -49,7 +49,7 @@ class UnmuteCommand extends BaseCommand {
                                 try {
                                     await bot.editGuildMember(msg.channel.guild.id, user.id, {
                                         mute: false
-                                    }, fullReason);
+                                    }, encodeURIComponent(fullReason));
                                 } catch (err) { /* no-op */ }
                             }
 
