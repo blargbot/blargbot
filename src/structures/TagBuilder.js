@@ -1,7 +1,7 @@
 const ArgFactory = require('./ArgumentFactory'),
     bbEngine = require('../structures/bbtag/Engine'),
     Timer = require('./Timer'),
-    Permission = require('eris/lib/structures/Permission'),
+    { Permission } = require('eris'),
     Context = require('./bbtag/Context'),
     { SubTag, BBTag } = require('./bbtag/Tag');
 

@@ -8,7 +8,6 @@
  */
 
 const Builder = require('../structures/TagBuilder');
-const Endpoints = require('eris/lib/rest/Endpoints');
 
 module.exports =
     Builder.APITag('slowmode')
@@ -33,8 +32,8 @@ module.exports =
             time = Math.min(time, 120);
 
             try {
-                await bot.requestHandler.request('PATCH', endpoint, true, {
-                    rate_limit_per_user: time,
+                await channel.edit({
+                    rateLimitPerUser: time,
                     reason: context.scope.reason || 'Initiated from BBTag by ' + bu.getFullName(context.user)
                 });
             } catch (err) {
