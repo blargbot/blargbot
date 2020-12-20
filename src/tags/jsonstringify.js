@@ -10,13 +10,13 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.APITag('jsonstringify')
+    Builder.ArrayTag('jsonstringify')
         .withAlias('jstringify')
         .withArgs(a => [a.require('input'), a.optional('indent')])
         .withDesc('Pretty-prints the provided JSON `input` with the provided `indent`, defaulting to 4.')
         .withExample(
-        '{jsonstringify;["one","two","three"]}',
-        '[\n    \"one\",\n    \"two\",\n    \"three\"\n]'
+            '{jsonstringify;["one","two","three"]}',
+            '[\n    \"one\",\n    \"two\",\n    \"three\"\n]'
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {

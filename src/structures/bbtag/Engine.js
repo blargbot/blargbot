@@ -27,7 +27,6 @@ function parse(content) {
  * @returns {string}
  */
 async function execute(bbtag, context) {
-    console.log('calling execute');
     if (!context.guild) return;
     if (!(bbtag instanceof BBTag))
         throw new Error('Execute can only accept BBTag as its first parameter');

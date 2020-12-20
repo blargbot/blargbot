@@ -87,23 +87,55 @@ async function docs(msg, command, topic) {
 
     switch (words[0]) {
         case 'index':
-            embed.description = 'Please use `' + prefix + command + ' docs [topic]` to view available information on a topic\nAvailable topics are:';
-            embed.fields = Object.keys(bu.TagType.properties)
-                .map(k => {
-                    return {
-                        properties: bu.TagType.properties[k],
-                        tags: tags.filter(t => t.category == k)
-                    };
-                }).filter(c => c.tags.length > 0)
-                .map(c => {
-                    return {
-                        name: c.properties.name + ' subtags - ' + c.properties.desc,
-                        value: '```\n' + c.tags.map(t => t.name).join(', ') + '```'
-                    };
-                }).concat({
-                    name: 'Other useful topics',
-                    value: '```\nvariables, argTypes, terminology, dynamic```'
-                }).filter(f => f.value.length > 0);
+            embed.description = [
+                'Please use `' + prefix + command + ' docs [topic]` to view available information on a topic.\n',
+                'Available Topics:',
+                '- subtags <category>',
+                '- variables',
+                '- argTypes',
+                '- terminology',
+                '- dynamic\n',
+                'Available Subtag Categories:',
+                ...Object.values(bu.TagType.properties).map(k => '- ' + k.name)
+            ].join('\n');
+            // embed.fields = Object.keys(bu.TagType.properties)
+            //     .map(k => {
+            //         return {
+            //             properties: bu.TagType.properties[k],
+            //             tags: tags.filter(t => t.category == k)
+            //         };
+            //     }).filter(c => c.tags.length > 0)
+            //     .map(c => {
+            //         return {
+            //             name: c.properties.name + ' subtags - ' + c.properties.desc,
+            //             value: '```\n' + c.tags.map(t => t.name).join(', ') + '```'
+            //         };
+            //     }).concat({
+            //         name: 'Other useful topics',
+            //         value: '```\nvariables, argTypes, terminology, dynamic```'
+            //     }).filter(f => f.value.length > 0);
+            return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);
+        case 'subtags':
+            const category = Object.keys(bu.TagType.properties).map(k => {
+                return {
+                    properties: bu.TagType.properties[k],
+                    id: k
+                };
+            }).find(k => k.properties.name.toLowerCase() === (words[1] || '').toLowerCase());
+            if (category) {
+                const subtags = tags.filter(t => t.category == category.id);
+                embed.description = [
+                    `**${category.properties.name} Subtags** - ${category.properties.desc}`,
+                    '```',
+                    subtags.map(t => t.name).join(', '),
+                    '```'
+                ].join('\n');
+            } else {
+                embed.description = [
+                    'Available Subtag Categories:',
+                    ...Object.values(bu.TagType.properties).map(k => '- ' + k.name + ' - ' + k.desc)
+                ].join('\n');
+            }
             return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);
         case 'variables':
         case 'variable':
@@ -459,6 +491,19 @@ const limits = {
             this.roledelete = { disabled: true };
             this.roleremove = { disabled: true };
             this.rolesetmentionable = { disabled: true };
+            this.rolesetperms = { disabled: true };
+            this.rolesetposition = { disabled: true };
+
+            this.guildseticon = { disabled: true };
+
+            this.emojicreate = { disabled: true };
+            this.emojidelete = { disabled: true };
+
+            this.channelcreate = { disabled: true };
+            this.channeldelete = { disabled: true };
+            this.channeledit = { disabled: true };
+            this.channelsetperms = { disabled: true };
+            this.channelsetpos = { disabled: true };
 
             this.dm = { disabled: true };
             this.send = { disabled: true };
@@ -476,6 +521,7 @@ const limits = {
 
             this.for = { loops: 1500 };
             this.foreach = { loops: 3000 };
+            this.map = { loops: 3000 };
 
             this.dump = { count: 5 };
         }
@@ -504,6 +550,19 @@ const limits = {
             this.rolemention = { staff: true };
             this.roleremove = { staff: true };
             this.rolesetmentionable = { staff: true };
+            this.rolesetperms = { staff: true };
+            this.rolesetposition = { staff: true };
+
+            this.guildseticon = { staff: true, count: 1 };
+
+            this.emojicreate = { staff: true };
+            this.emojidelete = { staff: true };
+
+            this.channelcreate = { staff: true };
+            this.channeldelete = { staff: true };
+            this.channeledit = { staff: true };
+            this.channelsetperms = { staff: true };
+            this.channelsetpos = { staff: true };
 
             this.dm = { staff: true, count: 1 };
             this.send = { staff: true, count: 10 };
@@ -521,6 +580,7 @@ const limits = {
 
             this.for = { loops: 1500 };
             this.foreach = { loops: 3000 };
+            this.map = { loops: 3000 };
 
             this.dump = { count: 5 };
         }
@@ -550,6 +610,19 @@ const limits = {
             this.rolemention = { staff: true };
             this.roleremove = { staff: true };
             this.rolesetmentionable = { staff: true };
+            this.rolesetperms = { staff: true };
+            this.rolesetposition = { staff: true };
+
+            this.guildseticon = { staff: true, count: 1 };
+
+            this.emojicreate = { staff: true };
+            this.emojidelete = { staff: true };
+
+            this.channelcreate = { staff: true };
+            this.channeldelete = { staff: true };
+            this.channeledit = { staff: true };
+            this.channelsetperms = { staff: true };
+            this.channelsetpos = { staff: true };
 
             this.dm = { staff: true, count: 1 };
             this.send = { staff: true, count: 1 };
@@ -568,6 +641,7 @@ const limits = {
 
             this.for = { loops: 1000 };
             this.foreach = { loops: 2000 };
+            this.map = { loops: 2000 };
 
             this.dump = { count: 5 };
         }
@@ -595,6 +669,19 @@ const limits = {
             this.rolemention = { staff: true };
             this.roleremove = { staff: true };
             this.rolesetmentionable = { staff: true };
+            this.rolesetperms = { staff: true };
+            this.rolesetposition = { staff: true };
+
+            this.guildseticon = { staff: true, count: 1 };
+
+            this.emojicreate = { staff: true };
+            this.emojidelete = { staff: true };
+
+            this.channelcreate = { staff: true };
+            this.channeldelete = { staff: true };
+            this.channeledit = { staff: true };
+            this.channelsetperms = { staff: true };
+            this.channelsetpos = { staff: true };
 
             this.dm = { staff: true, count: 1 };
             this.send = { staff: true, count: 1 };
@@ -613,6 +700,7 @@ const limits = {
 
             this.for = { loops: 500 };
             this.foreach = { loops: 1000 };
+            this.map = { loops: 1000 };
 
             this.dump = { count: 5 };
         }

@@ -1,4 +1,3 @@
-const User = require('eris/lib/structures/User');
 
 bot.on('messageReactionAdd', async function (msg, emoji, user) {
     let emojiString = emoji.name;

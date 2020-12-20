@@ -10,13 +10,13 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.APITag('json')
+    Builder.ArrayTag('json')
         .withAlias('j')
         .withArgs(a => [a.require('input')])
         .withDesc('Defines a raw JSON object without using subtags.')
         .withExample(
-        '{json;{\n  "key": "value"\n}}',
-        '{\n  "key": "value"\n}'
+            '{json;{\n  "key": "value"\n}}',
+            '{\n  "key": "value"\n}'
         ).resolveArgs(-1)
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs(1, async function (subtag, context, args) {

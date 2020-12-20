@@ -33,7 +33,12 @@ class TimerCommand extends BaseCommand {
     async event(args) {
         let duration = moment.duration(moment() - moment(args.starttime));
         duration.subtract(duration * 2);
-        bu.send(args.channel, `:alarm_clock: *Bzzt!* <@${args.user}>, the timer you set ${duration.humanize(true)} has gone off! *Bzzt!* :alarm_clock:`);
+        bu.send(args.channel, {
+            content: `:alarm_clock: *Bzzt!* <@${args.user}>, the timer you set ${duration.humanize(true)} has gone off! *Bzzt!* :alarm_clock:`,
+            allowedMentions: {
+                users: [args.user]
+            }
+        });
     };
 }
 

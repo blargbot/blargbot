@@ -86,32 +86,26 @@ class AnnounceCommand extends BaseCommand {
                 }
             };
             let roleMention = role.mention;
-            if (role.name == '@everyone')
+            let allowedMentions = {
+                roles: [role.id]
+            };
+
+            if (role.id == msg.channel.guild.id) {
                 roleMention = '@everyone';
+                allowedMentions = {
+                    everyone: true
+                };
+            }
             message = `**:information_source: Announcement [${moment().format('MM/DD/YYYY')}] ${roleMention} :information_source:**
 **${msg.author.username}#${msg.author.discriminator}** has made the following announcement:
 
 ${message}`;
             console.debug(message);
-            try {
-                await role.edit({
-                    mentionable: true
-                });
-            } catch (err) {
-                console.error(err);
-            }
             await bu.send(changeChannel, {
                 content: roleMention,
                 embed: embed,
-                disableEveryone: false
+                allowedMentions
             });
-            try {
-                await role.edit({
-                    mentionable: false
-                });
-            } catch (err) {
-                console.error(err);
-            }
         } else {
             bu.send(msg, 'You have to tell me what to announce!');
         }

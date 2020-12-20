@@ -7,8 +7,13 @@ class RetardedCommand extends BaseCommand {
             category: bu.CommandType.IMAGE,
             usage: 'retarded <text> [flags]',
             info: 'Tells everyone who is retarded.',
-            flags: [{ flag: 'u', word: 'user', desc: 'The person who is retarded.' },
-            { flag: 'I', word: 'image', desc: 'A custom image.' }]
+            flags: [
+                { flag: 'u', word: 'user', desc: 'The person who is retarded.' },
+                { flag: 'I', word: 'image', desc: 'A custom image.' }
+            ],
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -41,7 +46,7 @@ class RetardedCommand extends BaseCommand {
             text: quote,
             avatar: url
         });
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'retarded.png'
         });

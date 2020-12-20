@@ -104,7 +104,7 @@ class MuteCommand extends BaseCommand {
                                 try {
                                     await bot.editGuildMember(msg.channel.guild.id, user.id, {
                                         mute: true
-                                    }, fullReason);
+                                    }, encodeURIComponent(fullReason));
                                 } catch (err) { /* no-op */ }
                             }
 

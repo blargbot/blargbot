@@ -7,7 +7,10 @@ class TruthCommand extends BaseCommand {
             aliases: ['scrolloftruth'],
             category: bu.CommandType.IMAGE,
             usage: 'truth <text>',
-            info: 'Shows everyone what is written in the Scroll of Truth.'
+            info: 'Shows everyone what is written in the Scroll of Truth.',
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -24,7 +27,7 @@ class TruthCommand extends BaseCommand {
             code: code,
             text
         });
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'ScrollOfTruth.png'
         });

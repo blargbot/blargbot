@@ -55,19 +55,13 @@ class PatchCommand extends BaseCommand {
         if (res.content.toLowerCase() !== 'yes')
             return await bu.send(msg, 'Patch canceled.');
 
-        await role.edit({
-            mentionable: true
-        });
         console.info(embed);
         await bu.send(changeChannel, {
             content,
             embed,
             allowedMentions: {
-                roles: true
+                roles: [role.id]
             }
-        });
-        await role.edit({
-            mentionable: false
         });
 
         let changelogs = await r.table('vars').get('changelog');
