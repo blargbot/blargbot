@@ -201,32 +201,19 @@ class PollCommand extends BaseCommand {
         let role;
         if (args.roleId) {
             role = msg3.guild.roles.get(args.roleId);
-            if (role.name == '@everyone') {
+            if (role.id == msg3.guild.id) {
                 output.content = '@everyone';
-                output.disableEveryone = false;
+                output.allowedMentions = {
+                    everyone: true
+                };
             } else {
                 output.content = role.mention;
-            }
-        }
-        if (role) {
-            try {
-                await role.edit({
-                    mentionable: true
-                });
-            } catch (err) {
-                console.error(err);
+                output.allowedMentions = {
+                    roles: role.id
+                };
             }
         }
         await bu.send(args.channel, output);
-        if (role) {
-            try {
-                await role.edit({
-                    mentionable: false
-                });
-            } catch (err) {
-                console.error(err);
-            }
-        }
     };
 }
 

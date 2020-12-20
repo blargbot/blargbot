@@ -10,16 +10,16 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.APITag('jsonget')
+    Builder.ArrayTag('jsonget')
         .withAlias('jget')
         .withArgs(a => [a.require('input'), a.require('path')])
         .withDesc('Navigates the path of a JSON object. Works with arrays too!\n' +
-        '`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n' +
-        '`path` is a dot-noted series of properties.'
+            '`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n' +
+            '`path` is a dot-noted series of properties.'
         )
         .withExample(
-        '{jsonget;{j;{\n  "array": [\n    "zero",\n    { "value": "one" },\n    "two"\n  ]\n}};array.1.value}',
-        'one'
+            '{jsonget;{j;{\n  "array": [\n    "zero",\n    { "value": "one" },\n    "two"\n  ]\n}};array.1.value}',
+            'one'
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs(2, async function (subtag, context, args) {
@@ -63,6 +63,14 @@ module.exports =
                             obj = JSON.parse(obj);
                         } catch (err) { }
                     }
+
+                    if (typeof obj === 'object') {
+                        const keys = Object.keys(obj);
+                        if (keys.length === 2 && keys.includes('v') && keys.includes('n') && /^\d+$/.test(part)) {
+                            obj = obj.v;
+                        }
+                    }
+
                     // intentionally let it error if undefined
                     if (obj === undefined || obj.hasOwnProperty(part))
                         obj = obj[part];

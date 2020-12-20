@@ -18,7 +18,7 @@ class ThesearchCommand extends BaseCommand {
         let buffer = await bu.blargbotApi('thesearch', {
             text: text
         });
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'TheSearch.png'
         });

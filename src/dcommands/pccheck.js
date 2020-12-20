@@ -20,7 +20,7 @@ class PccheckCommand extends BaseCommand {
         text = await bu.filterMentions(text);
         let buf = await bu.blargbotApi('pccheck', { text: text });
 
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buf,
             name: 'didyouknow.png'
         });

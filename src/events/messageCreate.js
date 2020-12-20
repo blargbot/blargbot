@@ -241,7 +241,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
 };
 var executeCommand = async function (commandName, msg, words, text) {
     try {
-        await CommandManager.built[commandName].execute(msg, words, text);
+        await CommandManager.built[commandName]._execute(msg, words, text);
     } catch (err) {
         console.error(err);
         if (err.code !== undefined) {

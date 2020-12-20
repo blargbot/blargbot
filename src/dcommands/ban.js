@@ -7,7 +7,7 @@ class BanCommand extends BaseCommand {
             name: 'ban',
             category: bu.CommandType.ADMIN,
             usage: 'ban <user> [days] [flags]',
-            info: 'Bans a user, where `days` is the number of days to delete messages for (defaults to 0).\nIf mod-logging is enabled, the ban will be logged.',
+            info: 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the ban.' },
             {
                 flag: 't',
@@ -73,7 +73,7 @@ class BanCommand extends BaseCommand {
         };
         try {
             const fullReason = (tag ? '' : `[ ${bu.getFullName(msg.author)} ]`) + (reason ? ' ' + reason : '');
-            await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, fullReason);
+            await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, encodeURIComponent(fullReason));
             let suffix = '';
             if (duration) {
                 await r.table('events').insert({

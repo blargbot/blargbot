@@ -64,7 +64,8 @@ class KickCommand extends BaseCommand {
             return 4;
 
         try {
-            const fullReason = encodeURIComponent((tag ? '' : `[ ${bu.getFullName(msg.author)} ]`) + (reason ? ' ' + reason : ''));
+            const fullReason = encodeURIComponent((tag ? '' : `[ ${bu.getFullName(msg.author)} ]`)
+                + (reason ? ' ' + (Array.isArray(reason) ? reason.join(' ') : reason) : ''));
 
             await bot.kickGuildMember(
                 msg.channel.guild.id,
