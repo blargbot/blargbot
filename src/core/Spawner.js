@@ -47,11 +47,11 @@ class Spawner extends EventEmitter {
                 }
 
                 let downShards = cluster.shards
-                    .map(s => ({ delay: moment.duration(moment() - s.time), id: s.id }))
-                    .filter(s => s.delay.asMilliseconds() > 60000);
+                    .map(s => ({ diff: moment.duration(moment() - s.time), id: s.id }))
+                    .filter(s => s.diff.asMilliseconds() > 60000);
                 if (downShards.length > 0) {
                     cluster.respawning = true;
-                    let shardsText = downShards.map(s => `⏰ shard ${s.id} unresponsive for ${s.delay.asSeconds()} seconds`).join('\n')
+                    let shardsText = downShards.map(s => `⏰ shard ${s.id} unresponsive for ${s.diff.asSeconds()} seconds`).join('\n')
                     await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${cluster.id}...\n${shardsText}`);
                     this.respawnShard(parseInt(cluster.id), true);
                 }
@@ -80,11 +80,11 @@ class Spawner extends EventEmitter {
             if (!this.logCache[id])
                 this.logCache[id] = [];
             if (dirty) {
-                let consoleOutputs = this.logCache[id]
+                let consoleLines = this.logCache[id]
                     .slice(0, 5)
                     .reverse()
                     .map(m => `[${m.timestamp}][${m.level}] ${m.text}`);
-                logs = `\n\nLast 5 console outputs:\n\`\`\`md\n${output.join('\n')}\n\`\`\` `;
+                logs = `\n\nLast 5 console outputs:\n\`\`\`md\n${consoleLines.join('\n')}\n\`\`\` `;
             }
             let shard = await this.spawn(id, false);
             shard.on('shardReady', async (data) => {
