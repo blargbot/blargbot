@@ -446,7 +446,7 @@ let shardStatusInterval = setInterval(async () => {
             latency: s.latency,
             guilds: bot.guilds.filter(g => g.shard.id === s.id).length,
             cluster: clusterId,
-            time: Date.now()
+            time: s.lastHeartbeatReceived
         }))
     });
 }, 10000);
