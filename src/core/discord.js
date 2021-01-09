@@ -428,6 +428,15 @@ function getCPU() {
         });
     });
 }
+
+var lastReady = {};
+function getLastReady(shard) {
+    if (shard.status == 'ready')
+        return lastReady[shard.id] = new Date();
+
+    return lastReady[shard.id];
+}
+
 // shard status posting
 let shardStatusInterval = setInterval(async () => {
     let mem = process.memoryUsage();
@@ -446,7 +455,7 @@ let shardStatusInterval = setInterval(async () => {
             latency: s.latency,
             guilds: bot.guilds.filter(g => g.shard.id === s.id).length,
             cluster: clusterId,
-            time: s.lastHeartbeatReceived
+            time: getLastReady(s)
         }))
     });
 }, 10000);
