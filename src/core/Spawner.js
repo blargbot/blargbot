@@ -34,10 +34,25 @@ class Spawner extends EventEmitter {
                 for (const shard of cluster.shards) {
                     bu.Metrics.shardStatus.labels(shard.status).inc();
                 }
+                if (cluster.respawning) {
+                    continue;
+                }
+
+                // Do we still need a check for the whole cluster being down if we respawn on shards being down instead?
                 let diff = moment.duration(moment() - cluster.time);
-                if (!cluster.respawning && diff.asMilliseconds() > 60000) {
+                if (diff.asMilliseconds() > 60000) {
                     cluster.respawning = true;
                     await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${cluster.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
+                    this.respawnShard(parseInt(cluster.id), true);
+                }
+
+                let downShards = cluster.shards
+                    .map(s => ({ diff: moment.duration(moment() - s.time), id: s.id }))
+                    .filter(s => s.diff.asMilliseconds() > 60000);
+                if (downShards.length > 0) {
+                    cluster.respawning = true;
+                    let shardsText = downShards.map(s => `⏰ shard ${s.id} unresponsive for ${s.diff.asSeconds()} seconds`).join('\n')
+                    await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${cluster.id}...\n${shardsText}`);
                     this.respawnShard(parseInt(cluster.id), true);
                 }
             }
@@ -65,11 +80,11 @@ class Spawner extends EventEmitter {
             if (!this.logCache[id])
                 this.logCache[id] = [];
             if (dirty) {
-                logs = `\n\nLast 5 console outputs:\n\`\`\`md\n${
-                    this.logCache[id].slice(0, 5).reverse().map(m => {
-                        return `[${m.timestamp}][${m.level}] ${m.text}`;
-                    }).join('\n')
-                    }\n\`\`\` `;
+                let consoleLines = this.logCache[id]
+                    .slice(0, 5)
+                    .reverse()
+                    .map(m => `[${m.timestamp}][${m.level}] ${m.text}`);
+                logs = `\n\nLast 5 console outputs:\n\`\`\`md\n${consoleLines.join('\n')}\n\`\`\` `;
             }
             let shard = await this.spawn(id, false);
             shard.on('shardReady', async (data) => {
