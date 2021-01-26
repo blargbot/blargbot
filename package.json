@@ -20,7 +20,7 @@
         "color-thief-jimp": "^2.0.2",
         "cookieparser": "^0.1.0",
         "cron": "^1.4.1",
-        "eris": "^0.13.3",
+        "eris": "^0.14.0",
         "eslint-plugin-vue": "^4.7.1",
         "eventemitter3": "^2.0.3",
         "express": "^4.16.3",
