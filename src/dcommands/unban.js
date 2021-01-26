@@ -26,9 +26,9 @@ class UnbanCommand extends BaseCommand {
     }
 
     async unban(msg, user, reason, tag = false, noPerms = false) {
-        if (msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
+        if (msg.channel.guild.members.get(bot.user.id).permissions.json.banMembers) {
             let banPerms = await bu.guildSettings.get(msg.guild.id, 'banoverride') || 0;
-            if (noPerms || (bu.comparePerms(msg.member, banPerms) || msg.member.permission.json.banMembers)) {
+            if (noPerms || (bu.comparePerms(msg.member, banPerms) || msg.member.permissions.json.banMembers)) {
                 if (typeof user === 'object') user = user.id;
                 if (!bu.unbans[msg.channel.guild.id])
                     bu.unbans[msg.channel.guild.id] = {};

@@ -20,8 +20,8 @@ class UnmuteCommand extends BaseCommand {
         }
         if (words.length > 1) {
 
-            if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
-                //     if (msg.member.permission.json.manageRoles) {
+            if (msg.channel.guild.members.get(bot.user.id).permissions.json.manageRoles) {
+                //     if (msg.member.permissions.json.manageRoles) {
                 let role = msg.guild.roles.get(mutedrole);
                 if (words[1]) {
                     var user = await bu.getUser(msg, words[1]);
@@ -32,7 +32,7 @@ class UnmuteCommand extends BaseCommand {
                     if (member.roles.indexOf(mutedrole) == -1) {
                         bu.send(msg, 'That user isn\'t muted!');
                     } else {
-                        let voiceMute = msg.guild.members.get(bot.user.id).permission.json.voiceMuteMembers;
+                        let voiceMute = msg.guild.members.get(bot.user.id).permissions.json.voiceMuteMembers;
                         try {
                             let reason, fullReason;
                             let input = bu.parseInput(this.flags, words);
@@ -76,7 +76,7 @@ class UnmuteCommand extends BaseCommand {
         if (roles.indexOf(args.role) > -1) {
             const reason = `Automatically unmuted after ${moment.duration(args.duration).humanize()}.`;
 
-            let voiceMute = guild.members.get(bot.user.id).permission.json.voiceMuteMembers;
+            let voiceMute = guild.members.get(bot.user.id).permissions.json.voiceMuteMembers;
 
             await bot.removeGuildMemberRole(guild.id, member.id, args.role, reason);
 

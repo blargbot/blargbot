@@ -217,7 +217,7 @@ bu.hasPerm = async (msg, perm, quiet, override = true) => {
     }
     if (override && ((member.id === bu.CAT_ID && bu.catOverrides) ||
         member.guild.ownerID == member.id ||
-        member.permission.json.administrator)) {
+        member.permissions.json.administrator)) {
         return true;
     }
 
@@ -273,7 +273,7 @@ bu.hasRole = (msg, roles, override = true) => {
 
     if (override && ((member.id === bu.CAT_ID && bu.catOverrides) ||
         member.guild.ownerID == msg.member.id ||
-        member.permission.json.administrator)) {
+        member.permissions.json.administrator)) {
         return true;
     }
     if (!Array.isArray(roles)) roles = [roles];
@@ -607,7 +607,7 @@ bu.getUser = async function (msg, name, args = {}) {
         return null;
     } else {
         if (!args.quiet) {
-            let matches = userList.map(m => { return { content: `${m.user.username}#${m.user.discriminator} - ${m.user.id}`, value: m.user } })
+            let matches = userList.map(m => { return { content: `${m.user.username}#${m.user.discriminator} - ${m.user.id}`, value: m.user }; });
             let lookupResponse = await bu.createLookup(msg, 'user', matches, args);
             return lookupResponse;
         } else {
@@ -673,7 +673,7 @@ bu.getRole = async function (msg, name, args = {}) {
         return null;
     } else {
         if (!args.quiet) {
-            let matches = roleList.map(r => { return { content: `${r.name} - ${r.color.toString(16)} (${r.id})`, value: r } });
+            let matches = roleList.map(r => { return { content: `${r.name} - ${r.color.toString(16)} (${r.id})`, value: r }; });
             let lookupResponse = await bu.createLookup(msg, 'role', matches, args);
             return lookupResponse;
         } else {
@@ -909,7 +909,7 @@ bu.comparePerms = (m, allow) => {
     if (!allow) allow = bu.defaultStaff;
     let newPerm = new Permission(allow);
     for (let key in newPerm.json) {
-        if (m.permission.has(key)) {
+        if (m.permissions.has(key)) {
             return true;
         }
     }
@@ -1353,7 +1353,7 @@ bu.isUserStaff = async function (userId, guildId) {
     if (!member) return false;
 
     if (guild.ownerID == userId) return true;
-    if (member.permission.has('administrator')) return true;
+    if (member.permissions.has('administrator')) return true;
 
     let storedGuild = await bu.getGuild(guildId);
     if (storedGuild && storedGuild.settings && storedGuild.settings.permoverride) {
@@ -1869,7 +1869,7 @@ bu.createLookup = async function (msg, type, matches, args = {}) {
             `\nC.cancel query\`\`\`` +
             `\n**${bu.getFullName(msg.author)}**, please type the number of the ${type} you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`
             ,(msg2) => {
-                return msg2.content.toLowerCase() === 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1)
+                return msg2.content.toLowerCase() === 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1);
             }, undefined, args.label, args.suppress);
         let response = await query.response;
         if (response.content.toLowerCase() === 'c') {
@@ -1886,4 +1886,4 @@ bu.createLookup = async function (msg, type, matches, args = {}) {
     } catch (err) {
         return null;
     }
-}
+};
