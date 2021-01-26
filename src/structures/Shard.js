@@ -25,6 +25,7 @@ class Shard extends Sender {
             return !/debug-brk/.test(a);
         });
         execArgv.push('--max-old-space-size=4096'); // 4GB max ram
+        execArgv.push('--prof'); // node-tick profiling
 
         this.process = childProcess.fork(this.file, process.argv, {
             env: this.env,
