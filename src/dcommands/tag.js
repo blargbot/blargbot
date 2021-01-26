@@ -389,7 +389,7 @@ class TagCommand extends BaseCommand {
                         content: content,
                         lastmodified: r.epochTime(moment() / 1000),
                         uses: tag ? tag.uses : 0,
-                        flags: [],
+                        flags: tag ? (tag.flags || []) : [],
                         lang: tag ? tag.lang : ''
                     }).run();
                     result = bbtag.addAnalysis(content, `✅ Tag \`${title}\` set. ✅`);
