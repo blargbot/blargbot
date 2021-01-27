@@ -118,5 +118,5 @@ function initEvents() {
             CommandManager.built[type].event(event);
             r.table('events').get(event.id).delete().run();
         }
-    }, 10000);
+    }, 60000);
 }
