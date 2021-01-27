@@ -76,7 +76,7 @@ class BanCommand extends BaseCommand {
             await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, encodeURIComponent(fullReason));
             let suffix = '';
             if (duration) {
-                await r.table('events').insert({
+                await bu.events.insert({
                     type: 'unban',
                     source: msg.guild.id,
                     user: user.id,

@@ -46,5 +46,5 @@ bot.on('guildBanRemove', async function (guild, user) {
         value: bu.getFullName(user) + ` (${user.id})`,
         inline: true
     }]);
-    r.table('events').filter({ user: user.id, type: 'unban', source: guild.id }).delete().run();
+    bu.events.deleteFilter({ user: user.id, type: 'unban', source: guild.id });
 });

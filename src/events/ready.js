@@ -80,9 +80,7 @@ bot.on('ready', async function () {
     //     bu.avatarId = 0;
     // switchGame();
     bu.postStats();
-    if (eventTimer == undefined) {
-        initEvents();
-    }
+    initEvents();
 
     let blacklist = await r.table('vars').get('guildBlacklist');
 
@@ -100,23 +98,21 @@ bot.on('ready', async function () {
     }
 });
 
-var eventTimer;
+let obtainEventTimer;
+let processEventTimer;
 
-function initEvents() {
+async function initEvents() {
     console.init('Starting event interval!');
-    if (eventTimer) clearInterval(eventTimer);
-    eventTimer = setInterval(async function () {
-        let events = await r.table('events').between(r.epochTime(0), r.now(), {
-            index: 'endtime'
-        });
-        for (let event of events) {
-            if (event.channel && !bot.getChannel(event.channel)) continue;
-            else if (event.guild && !bot.guilds.get(event.guild)) continue;
-            else if (!event.channel && !event.guild && event.user && process.env.CLUSTER_ID != 0) continue;
-            else if (event.type === 'purgelogs' && process.env.CLUSTER_ID != 0) continue;
-            let type = event.type;
-            CommandManager.built[type].event(event);
-            r.table('events').get(event.id).delete().run();
-        }
-    }, 60000);
+    if (obtainEventTimer) clearInterval(obtainEventTimer);
+    obtainEventTimer = setInterval(function () {
+        bu.events.obtain();
+    }, 5 * 60 * 1000);
+
+    if (processEventTimer) clearInterval(processEventTimer);
+    processEventTimer = setInterval(function () {
+        bu.events.process();
+    }, 10 * 1000);
+
+    await bu.events.obtain();
+    await bu.events.process();
 }

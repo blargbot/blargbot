@@ -125,7 +125,7 @@ class PollCommand extends BaseCommand {
                 //NO-OP
                 //   console.error(err);
             }
-            await r.table('events').insert({
+            await bu.events.insert({
                 source: msg.guild ? msg.guild.id : msg.author.id,
                 content: title,
                 user: msg.author.id,

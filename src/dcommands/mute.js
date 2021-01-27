@@ -113,7 +113,7 @@ class MuteCommand extends BaseCommand {
                             if (input.t) {
                                 let duration = bu.parseDuration(input.t.join(' '));
                                 if (duration.asMilliseconds() > 0) {
-                                    await r.table('events').insert({
+                                    await bu.events.insert({
                                         type: 'unmute',
                                         source: msg.guild.id,
                                         user: user.id,
