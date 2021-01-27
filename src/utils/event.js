@@ -28,7 +28,6 @@ class EventManager {
       }
 
       let type = event.type;
-      console.log('processing event', event);
       CommandManager.built[type].event(event);
       await this.delete(event.id);
     }
