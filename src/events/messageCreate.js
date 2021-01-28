@@ -60,7 +60,7 @@ async function handleUserMessage(msg, storedGuild) {
     };
     prefixes.push(config.discord.defaultPrefix, 'blargbot');
     prefixes.sort((a, b) => {
-        return a.length < b.length;
+        return b.length - a.length; //Sort descending
     });
     if (await handleBlacklist(msg, storedGuild)) return;
 
