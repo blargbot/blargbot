@@ -583,7 +583,7 @@ async function handleCleverbot(msg) {
     var username = msg.channel.guild.members.get(bot.user.id).nick ?
         msg.channel.guild.members.get(bot.user.id).nick :
         bot.user.username;
-    var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
+    var msgToSend = msg.cleanContent.replace(new RegExp('@' + '\u200b' + username + ',?'), '').trim();
     bu.cleverbotStats++;
     updateStats();
     try {
