@@ -571,7 +571,7 @@ function query(input) {
             else {
                 let content = bod.match(/<font size="2" face="Verdana" color=darkred>(.+)<\/font>/);
                 if (content)
-                    res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2'));
+                    res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2').replace(/<br>/gm, '\n'));
                 else res('Hi, I\'m blargbot! It\'s nice to meet you.');
             }
         });
