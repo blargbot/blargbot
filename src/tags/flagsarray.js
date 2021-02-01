@@ -10,10 +10,10 @@
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
-    Builder.BotTag('flags')
+    Builder.BotTag('flagsarray')
         .withDesc('Returns an array of all flags provided.')
         .withExample(
-            '{flags}',
+            '{flagsarray}',
             'Hello -dc world',
             '["_","d","c"]'
         )
