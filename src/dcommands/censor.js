@@ -6,7 +6,7 @@ class CensorCommand extends BaseCommand {
             name: 'censor',
             category: bu.CommandType.ADMIN,
             usage: 'censor help',
-            info: 'Creates message censorships.\nCommands:\n   ADD <text> [flags] - Adds a censor with for the provided text.\n   REMOVE - Brings up a menu to remove a censor\n   EXCEPTION <add | remove> [flags] - Adds or removes an exception.\n   RULE [flags] - Sets the censorship rules.\n   INFO - Displays information about censors.',
+            info: 'Creates message censorships.\nCommands:\n   ADD <text> [flags] - Adds a censor with for the provided text.\n   EDIT [text] [flags] - Brings up a menu to edit a censor where `text` can be the new trigger phrase\n   REMOVE - Brings up a menu to remove a censor\n   EXCEPTION <add | remove> [flags] - Adds or removes an exception.\n   RULE [flags] - Sets the censorship rules.\n   INFO - Displays information about censors.',
             flags: [{
                 flag: 'R',
                 word: 'regex',
